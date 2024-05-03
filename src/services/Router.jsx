@@ -1,5 +1,6 @@
 import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom';
 import NavigationBar from "../modules/NavigationBar.jsx";
+import Footer from "../modules/Footer.jsx";
 import Home from '../pages/Home';
 import Faqs from '../pages/FAQs/FAQs.jsx';
 import MinimumStageAge from '../pages/FAQs/MinimumStageAge.jsx';
@@ -114,10 +115,9 @@ function Router() {
                 <Route path="/gallery/videos" element={<VideosGallery />} />
                 <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
 
-
-
                 <Route path="*" element={<NotFound />} />
             </Routes>
+            <Footer/>
         </BrowserRouter>
     );
 }
