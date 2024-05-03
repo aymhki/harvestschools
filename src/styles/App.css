@@ -1,0 +1,49 @@
+#root {
+
+}
+
+.logo {
+    height: 6rem;
+    width: 6rem;
+    margin: 1rem;
+    will-change: filter;
+    transition: filter 0.25s;
+}
+
+
+
+.logo:hover {
+    filter: drop-shadow(0 0 1em #1f2152);
+}
+
+.logo.react:hover {
+    filter: drop-shadow(0 0 1em #1f2152);
+}
+
+@media (max-width: 1600px) {
+    .logo {
+        height: 6rem;
+        width: 6rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .logo {
+        height: 5rem;
+        width: 5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .logo {
+        height: 4rem;
+        width: 4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .logo {
+        height: 3rem;
+        width: 3rem;
+    }
+}
