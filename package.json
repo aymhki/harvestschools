@@ -6,12 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "react-snap",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.16",
+    "@mui/material": "^5.15.16",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.23.0",
+    "react-snap": "^1.23.0",
+    "react-spring": "^9.7.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
@@ -22,5 +30,53 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "vite": "^5.2.0"
+  },
+  "reactSnap": {
+    "include": [
+      "/",
+      "/home",
+      "/faqs",
+      "/faqs/minimum-stage-age",
+      "/vacancies",
+      "/admission/admission-process",
+      "/admission/admission-requirements",
+      "/admission/inside-egypt-requirements",
+      "/admission/outside-egypt-requirements",
+      "/admission/outside-egypt-requirements-foreigners",
+      "/academics/national",
+      "/academics/american",
+      "/academics/partners",
+      "/academics/staff",
+      "/academics/staff/national-staff",
+      "/academics/staff/british-staff",
+      "/academics/staff/american-staff",
+      "/academics/staff/kindergarten-staff",
+      "/students-life/students-union",
+      "/students-life/activities",
+      "/students-life/library",
+      "/students-life/library/english-library",
+      "/students-life/library/arabic-library",
+      "/students-life/library/english-fairy-tails",
+      "/students-life/library/english-drama",
+      "/students-life/library/english-levels",
+      "/students-life/library/english-general",
+      "/students-life/library/arabic-information",
+      "/students-life/library/arabic-general",
+      "/students-life/library/arabic-religion",
+      "/students-life/library/arabic-stories",
+      "/events/british-calendar",
+      "/events/american-calendar",
+      "/events/kg-calendar",
+      "/gallery/photos",
+      "/gallery/videos",
+      "/gallery/360-tour",
+      "/covid-19",
+      "/covid-19/covid-19-english-read",
+      "/covid-19/covid-19-arabic-read",
+      "/covid-19/covid-19-english",
+      "/covid-19/covid-19-arabic",
+      "/not-found"
+    ],
+    "crawl": true
   }
 }
