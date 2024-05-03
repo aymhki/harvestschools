@@ -2,7 +2,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
+    position: sticky;
     bottom: 0;
     width: 100%;
     box-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
@@ -17,7 +17,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
+    position: sticky;
     bottom: 0;
     width: 100%;
     box-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
