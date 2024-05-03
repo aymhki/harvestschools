@@ -42,7 +42,7 @@ const NavigationBar = () => {
         <nav className={`navbar`}>
             <div className="logo-container">
                 <Link to="/" onClick={() => { (isMobile ? setIsOpen(false) : null); navigate('/home'); } }>
-                    <img src="/assets/images/Logos/HarvestLogoCropped.png" alt="Harvest Logo" className="logo" />
+                    <img src="/assets/images/HarvestLogos/HarvestLogoCropped.png" alt="Harvest Logo" className="logo" />
                 </Link>
 
                 {isMobile && (
@@ -54,6 +54,7 @@ const NavigationBar = () => {
                         </div>
                     </button>
                 )}
+
             </div>
             <animated.ul style={{
                 transform: menuAnimation.transform,
