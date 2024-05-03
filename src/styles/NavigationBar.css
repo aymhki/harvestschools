@@ -7,6 +7,8 @@
     background-color: #ffffff;
     border-top: 1rem solid #1f2152;
     border-bottom: 1rem solid #1f2152;
+    min-width: 20rem;
+
 }
 
 .logo-container {
