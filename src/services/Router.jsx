@@ -56,67 +56,69 @@ function Router() {
     return (
         <BrowserRouter>
             <NavigationBar/>
-            <Routes>
-                <Route path="/" element={<Navigate to="/home" />} />
-                <Route path="/home" element={<Home />} />
+                <div className="content">
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/home" />} />
+                        <Route path="/home" element={<Home />} />
 
-                <Route path="/more-info" element={<MoreInfo />} />
-                <Route path="/faqs" element={<Faqs />} />
-                <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
-                <Route path="/covid-19" element={<Covid19 />} />
-                <Route path="/covid-19/covid-19-english-read" element={<Covid19EnglishRead />} />
-                <Route path="/covid-19/covid-19-arabic-read" element={<Covid19ArabicRead />} />
-                <Route path="/covid-19/covid-19-english" element={<Covid19English />} />
-                <Route path="/covid-19/covid-19-arabic" element={<Covid19Arabic />} />
+                        <Route path="/more-info" element={<MoreInfo />} />
+                        <Route path="/faqs" element={<Faqs />} />
+                        <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
+                        <Route path="/covid-19" element={<Covid19 />} />
+                        <Route path="/covid-19/covid-19-english-read" element={<Covid19EnglishRead />} />
+                        <Route path="/covid-19/covid-19-arabic-read" element={<Covid19ArabicRead />} />
+                        <Route path="/covid-19/covid-19-english" element={<Covid19English />} />
+                        <Route path="/covid-19/covid-19-arabic" element={<Covid19Arabic />} />
 
-                <Route path="/vacancies" element={<Vacancies />} />
+                        <Route path="/vacancies" element={<Vacancies />} />
 
-                <Route path="/admission" element={<Admission />} />
-                <Route path="/admission/admission-process" element={<AdmissionProcess />} />
-                <Route path="/admission/admission-requirements" element={<AdmissionRequirements />} />
-                <Route path="/admission/inside-egypt-requirements" element={<InsideEgyptRequirements />} />
-                <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
-                <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
+                        <Route path="/admission" element={<Admission />} />
+                        <Route path="/admission/admission-process" element={<AdmissionProcess />} />
+                        <Route path="/admission/admission-requirements" element={<AdmissionRequirements />} />
+                        <Route path="/admission/inside-egypt-requirements" element={<InsideEgyptRequirements />} />
+                        <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
+                        <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
 
-                <Route path="/academics" element={<Academics />} />
-                <Route path="/academics/british" element={<British />} />
-                <Route path="/academics/national" element={<NationalAcademics />} />
-                <Route path="/academics/american" element={<AmericanAcademics />} />
-                <Route path="/academics/partners" element={<PartnersAcademics />} />
-                <Route path="/academics/staff" element={<StaffAcademics />} />
-                <Route path="/academics/staff/national-staff" element={<NationalStaff />} />
-                <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
-                <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
-                <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
+                        <Route path="/academics" element={<Academics />} />
+                        <Route path="/academics/british" element={<British />} />
+                        <Route path="/academics/national" element={<NationalAcademics />} />
+                        <Route path="/academics/american" element={<AmericanAcademics />} />
+                        <Route path="/academics/partners" element={<PartnersAcademics />} />
+                        <Route path="/academics/staff" element={<StaffAcademics />} />
+                        <Route path="/academics/staff/national-staff" element={<NationalStaff />} />
+                        <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
+                        <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
+                        <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
 
-                <Route path="/students-life" element={<StudentLife />} />
-                <Route path="/students-life/students-union" element={<StudentsUnion />} />
-                <Route path="/students-life/activities" element={<Activities />} />
-                <Route path="/students-life/library" element={<Library />} />
-                <Route path="/students-life/library/english-library" element={<EnglishLibrary />} />
-                <Route path="/students-life/library/arabic-library" element={<ArabicLibrary />} />
-                <Route path="/students-life/library/english-fairy-tails" element={<EnglishFairyTails />} />
-                <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
-                <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />
-                <Route path="/students-life/library/english-general" element={<EnglishGeneral />} />
-                <Route path="/students-life/library/arabic-information" element={<ArabicInformation />} />
-                <Route path="/students-life/library/arabic-general" element={<ArabicGeneral />} />
-                <Route path="/students-life/library/arabic-religion" element={<ArabicReligion />} />
-                <Route path="/students-life/library/arabic-stories" element={<ArabicStories />} />
+                        <Route path="/students-life" element={<StudentLife />} />
+                        <Route path="/students-life/students-union" element={<StudentsUnion />} />
+                        <Route path="/students-life/activities" element={<Activities />} />
+                        <Route path="/students-life/library" element={<Library />} />
+                        <Route path="/students-life/library/english-library" element={<EnglishLibrary />} />
+                        <Route path="/students-life/library/arabic-library" element={<ArabicLibrary />} />
+                        <Route path="/students-life/library/english-fairy-tails" element={<EnglishFairyTails />} />
+                        <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
+                        <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />
+                        <Route path="/students-life/library/english-general" element={<EnglishGeneral />} />
+                        <Route path="/students-life/library/arabic-information" element={<ArabicInformation />} />
+                        <Route path="/students-life/library/arabic-general" element={<ArabicGeneral />} />
+                        <Route path="/students-life/library/arabic-religion" element={<ArabicReligion />} />
+                        <Route path="/students-life/library/arabic-stories" element={<ArabicStories />} />
 
-                <Route path="/events" element={<Events />} />
-                <Route path="/events/national-calendar" element={<NationalCalendar />} />
-                <Route path="/events/british-calendar" element={<BritishCalendar />} />
-                <Route path="/events/american-calendar" element={<AmericanCalendar />} />
-                <Route path="/events/kg-calendar" element={<KgCalendarEvents />} />
+                        <Route path="/events" element={<Events />} />
+                        <Route path="/events/national-calendar" element={<NationalCalendar />} />
+                        <Route path="/events/british-calendar" element={<BritishCalendar />} />
+                        <Route path="/events/american-calendar" element={<AmericanCalendar />} />
+                        <Route path="/events/kg-calendar" element={<KgCalendarEvents />} />
 
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/gallery/photos" element={<PhotosGallery />} />
-                <Route path="/gallery/videos" element={<VideosGallery />} />
-                <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
+                        <Route path="/gallery" element={<Gallery />} />
+                        <Route path="/gallery/photos" element={<PhotosGallery />} />
+                        <Route path="/gallery/videos" element={<VideosGallery />} />
+                        <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
 
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </div>
             <Footer/>
         </BrowserRouter>
     );

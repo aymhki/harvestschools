@@ -2,22 +2,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: sticky;
+    position: relative;
     bottom: 0;
-    width: 100%;
     box-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
     height: 5rem;
     font-size: small;
     padding: 1rem;
     z-index: 1000;
-    background-color: #ffffff;
 }
 
 .footer-mobile {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: sticky;
+    position: relative;
     bottom: 0;
     width: 100%;
     box-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
@@ -25,7 +23,6 @@
     font-size: small;
     min-width: 20rem;
     padding: 1rem 0;
-    background-color: #ffffff;
     color: #1f2152;
 }
 
@@ -44,10 +41,13 @@
 }
 
 .copy-right-text {
-    font-size: xx-small;
-    position: fixed;
-    right: 0;
+    font-size: 0.5rem;
+    font-family: 'Futura', sans-serif;
+    position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: right;
     color: #1f2152;
 }
 
@@ -64,7 +64,11 @@
     cursor: pointer;
 }
 
-.mobile-footer-action-icon {
+.mobile-footer-action-icon,
+.mobile-footer-action-icon-facebook,
+.mobile-footer-action-icon-google-maps,
+.mobile-footer-chat-icon,
+.mobile-footer-call-icon {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -76,6 +80,23 @@
 .mobile-footer-action-text {
     font-size: small;
     text-decoration: underline;
+}
+
+.mobile-footer-action-icon-facebook:hover {
+    filter: drop-shadow(0 0 1rem #1977f3);
+}
+
+.mobile-footer-action-icon-google-maps:hover {
+    filter: drop-shadow(0 0 1rem green);
+
+}
+
+.mobile-footer-chat-icon:hover {
+    filter: drop-shadow(0 0 1rem #1f2152);
+}
+
+.mobile-footer-call-icon:hover {
+    filter: drop-shadow(0 0 1rem #1f2152);
 }
 
 @media (max-width: 1600px) {
@@ -94,4 +115,40 @@
 
 @media (max-width: 768px) {
 
+}
+
+@media (prefers-color-scheme: dark) {
+
+
+    .copy-right-text {
+        color: #ffffff;
+    }
+
+    .mobile-footer-action-text {
+        color: #ffffff;
+    }
+
+    .mobile-footer-chat-icon {
+        filter: drop-shadow(0 0 1rem #ffffff);
+    }
+
+    .mobile-footer-call-icon {
+        filter: drop-shadow(0 0 1rem #ffffff);
+    }
+
+    .footer {
+        box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.5);
+    }
+
+    .footer-mobile {
+        box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.5);
+    }
+
+    .mobile-footer-chat-icon:hover {
+        filter: drop-shadow(0 0 1rem #ffffff);
+    }
+
+    .mobile-footer-call-icon:hover {
+        filter: drop-shadow(0 0 1rem #ffffff);
+    }
 }

@@ -45,6 +45,20 @@ const NavigationBar = () => {
                     <img src="/assets/images/HarvestLogos/HarvestLogoCropped.png" alt="Harvest Logo" className="logo" />
                 </Link>
 
+                <div className="navbar-quick-action-buttons-container">
+                    <button className="navbar-quick-action-button" onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission.php', '_blank')} >
+                        Apply Now
+                    </button>
+
+                    <button className="navbar-quick-action-button" onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmissionlogin.php', '_blank')} >
+                        Check Status
+                    </button>
+
+                    <button className="navbar-quick-action-button" onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/') } >
+                        SchoolEverywhere
+                    </button>
+                </div>
+
                 {isMobile && (
                     <button className={"menu-icon-container"}
                             onClick={toggleMenu}>
