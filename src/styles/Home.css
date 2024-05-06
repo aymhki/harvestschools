@@ -1,0 +1,124 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+
+}
+
+.home-page-about-us-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem;
+    padding: 2rem;
+    min-width: 20rem;
+
+}
+
+.home-page-about-us-video {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60vw;
+    height: 50vh;
+    margin-top: 1rem;
+    min-width: 20rem;
+
+}
+
+.home-page-accreditations-section-container {
+
+
+
+}
+
+.home-page-accreditations-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem;
+    min-width: 20rem;
+}
+
+.accreditation-photo {
+    width: 40%;
+    height: 40%;
+    object-fit: cover;
+    min-width: 10rem;
+    filter: drop-shadow(0 0 1rem #ffffff);
+}
+
+
+.home-page-contact-us-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem;
+    padding: 2rem;
+    min-width: 20rem;
+    width: 100%;
+
+}
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1200px) {
+
+
+    .home-page-about-us-video {
+        width: 60vw;
+        height: 45vh;
+    }
+}
+
+@media (max-width: 1024px) {
+    .home-page-about-us-section {
+        margin: 1rem;
+        padding: 1rem;
+
+    }
+
+    .home-page-about-us-video {
+        width: 70vw;
+        height: 40vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-page-about-us-section {
+        margin: 0.5rem;
+        padding: 0.5rem;
+
+    }
+
+    .home-page-about-us-video {
+        width: 90vw;
+        height: 30vh;
+    }
+
+    .home-page-accreditations-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 1rem;
+        min-width: 20rem;
+    }
+
+    .accreditation-photo {
+        width: 30%;
+        height: 30%;
+        object-fit: cover;
+        min-width: 20rem;
+    }
+}
