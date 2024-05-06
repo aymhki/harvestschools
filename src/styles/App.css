@@ -2,6 +2,17 @@
 
 }
 
+.content {
+    width: 100vw;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .logo {
     height: 6rem;
     width: 6rem;
@@ -19,6 +30,7 @@
 .logo.react:hover {
     filter: drop-shadow(0 0 1em #1f2152);
 }
+
 
 @media (max-width: 1600px) {
     .logo {
@@ -45,5 +57,15 @@
     .logo {
         height: 3rem;
         width: 3rem;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .logo {
+        filter: drop-shadow(0 0 1em #ffffff);
+    }
+
+    .logo:hover {
+        filter: drop-shadow(0 0 1em #ffffff);
     }
 }

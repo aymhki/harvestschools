@@ -1,0 +1,82 @@
+
+.form {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    width: 30%;
+    margin: 0;
+    padding: 0;
+
+}
+
+.text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field {
+    margin: 1rem;
+
+}
+
+.text-form-field {
+
+}
+
+.textarea-form-field {
+    resize: none;
+}
+
+.select-form-field {
+
+}
+
+.radio-form-field {
+
+}
+
+.checkbox-form-field {
+
+}
+
+.file-form-field {
+
+}
+
+.full-width {
+    width: 100%;
+}
+
+.half-width {
+    width: 45%;
+}
+
+.third-width {
+    width: 33.33%;
+}
+
+.general-form-error {
+
+}
+
+.success-message {
+
+}
+
+.submit-button {
+
+}
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1200px) {
+
+}
+
+@media (max-width: 1024px) {
+
+}
+
+@media (max-width: 768px) {
+
+}
