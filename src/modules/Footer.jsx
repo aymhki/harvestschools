@@ -24,7 +24,7 @@ function Footer() {
             {(isMobile) ? (
                 <>
                     <div className="mobile-footer-action-container" onClick={() => window.open('https://www.facebook.com/HarvestInternationalSchools/', '_blank')} >
-                        <div className="mobile-footer-action-icon">
+                        <div className="mobile-footer-action-icon-facebook">
                             <img src="/assets/images/FooterLogos/Facebook_f_logo_(2019).svg" alt="Facebook icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
@@ -33,7 +33,7 @@ function Footer() {
                     </div>
 
                     <div className="mobile-footer-action-container" onClick={() => window.open('https://maps.app.goo.gl/8nqczZg9sFAdCesw7', '_blank')} >
-                        <div className="mobile-footer-action-icon">
+                        <div className="mobile-footer-action-icon-google-maps">
                             <img src="/assets/images/FooterLogos/google_maps_icon.png" alt="Google maps Directions icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
@@ -43,7 +43,7 @@ function Footer() {
 
 
                     <div className="mobile-footer-action-container" onClick={() => window.open('https://m.me/HarvestInternationalSchools', '_blank')} >
-                        <div className="mobile-footer-action-icon">
+                        <div className="mobile-footer-chat-icon">
                             <img src="/assets/images/FooterLogos/chat_icon.png" alt="Chat icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
@@ -52,7 +52,7 @@ function Footer() {
                     </div>
 
                     <div className="mobile-footer-action-container" onClick={() => window.open('tel:+201028329668', '_blank')} >
-                        <div className="mobile-footer-action-icon">
+                        <div className="mobile-footer-call-icon">
                             <img src="/assets/images/FooterLogos/mobile_ringing_icon.png" alt="Call icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
@@ -69,9 +69,8 @@ function Footer() {
                              alt='Footer social media logo' className="footer-social-media-logo"/>
                     </div>
 
-                    <div className="copy-right-text">
-                        <p>© {new Date().getFullYear()} Harvest International Schools. All rights reserved.</p>
-                    </div>
+                    <div className="copy-right-text">© {new Date().getFullYear()} Harvest International Schools. All rights reserved.</div>
+
                 </>
 
             )}

@@ -1,0 +1,158 @@
+.slider {
+    position: relative;
+    height: calc(100vh + 3rem);
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+    min-width: 20rem;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0%);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+.slide {
+    opacity: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.slide.active {
+    opacity: 1;
+    z-index: 2;
+    animation: slideIn 1s forwards;
+}
+
+.slide.exiting {
+    opacity: 1;
+    z-index: 2;
+    animation: slideOut 1s forwards;
+}
+
+.left-arrow, .right-arrow {
+    position: absolute;
+    top: calc(50vh + 1.5rem);
+    transform: translate(0, -50%);
+    box-shadow: 0 0 0.01rem #1f2152;
+    font-size: 3rem;
+    font-weight: 10;
+    color: white;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.left-arrow {
+    left: 1.5rem;
+}
+
+.right-arrow {
+    right: 1.5rem;
+}
+
+.photo-text {
+    color: white;
+    position: absolute;
+    top: 35vh;
+    left: 20%;
+    right: 20%;
+}
+
+.slider-caption {
+    font-size: 2rem;
+    letter-spacing: 0.3rem;
+    line-height: 2;
+}
+
+.slider-photo {
+    width: 100vw;
+    height: calc(100vh + 3rem);
+    object-fit: cover;
+    min-width: 20rem;
+
+}
+
+.slider-photo-dark {
+    width: 100vw;
+    height: calc(100vh + 3rem);
+    object-fit: cover;
+    filter: brightness(0.5);
+    min-width: 20rem;
+
+}
+
+.dots {
+    position: absolute;
+    bottom: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.dot {
+    cursor: pointer;
+    height: 1rem;
+    width: 1rem;
+    margin: 0 0.5rem;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.active {
+    background-color: #717171; /* Change this to any color that indicates an active slide */
+}
+
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1200px) {
+    .slider-caption {
+        font-size: 1.5rem;
+    }
+
+    .left-arrow, .right-arrow {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 1024px) {
+
+}
+
+@media (max-width: 768px) {
+
+    .photo-text {
+        top: 30vh;
+        left: 15%;
+        right: 15%;
+    }
+
+    .slider-caption {
+        font-size: large;
+        letter-spacing: 0.1rem;
+    }
+
+    .left-arrow, .right-arrow {
+        font-size: 1rem;
+    }
+}
