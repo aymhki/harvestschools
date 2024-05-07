@@ -24,16 +24,30 @@
     will-change: transform;
     box-shadow: none;
     font-weight: bold;
+    font-size: xxx-large;
+
 }
 
 .menu-icon.open {
-    transform: rotate(45deg);
+    transform:  translateX(10%) rotate(45deg);
     transition: transform 0.25s;
     will-change: transform;
     box-shadow: none;
     font-weight: bold;
+    font-size: xxx-large;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+
+
 }
 
+.menu-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+
+}
 
 .menu-icon.react:hover {
     filter: drop-shadow(0 0 1rem #1f2152);
@@ -195,6 +209,11 @@
 }
 
 @media (max-width: 768px) {
+    .navbar {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
     .menu-icon {
         display: block;
     }
@@ -276,6 +295,7 @@
 
     .nav-links-mobile {
         background-color: #242425FF;
+
     }
 
     .nav-links-mobile li {
