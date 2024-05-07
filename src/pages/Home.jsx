@@ -10,11 +10,11 @@ function Home() {
     ]
 
     const contactUsFormFields = [
-        { id: 1, type: 'text', label: 'Name', httpName: 'name', required: true, value: '', setValue: null, widthOfField: 1 },
-        { id: 2, type: 'email', label: 'Email', httpName: 'email', required: true, value: '', setValue: null, widthOfField: 2 },
-        { id: 3, type: 'tel', label: 'Phone Number', httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
-        { id: 4, type: 'textarea', label: 'Message', httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 },
-
+        { id: 1, type: 'text', label:     'Name', httpName: 'name', required: true, value: '', setValue: null, widthOfField: 1 },
+        { id: 2, type: 'email', label:    'Email', httpName: 'email', required: true, value: '', setValue: null, widthOfField: 2 },
+        { id: 3, type: 'number', label:   'Phone Number', httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
+        {id:  4, type: 'select', label:   'Subject', httpName: 'subject', required: true, value: '', setValue: null, widthOfField: 1, choices: ['Admissions', 'General Inquiry', 'Feedback', 'Other']},
+        { id: 5, type: 'textarea', label: 'Message', httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 }
     ]
 
     return (
@@ -36,7 +36,7 @@ function Home() {
                 <p>Harvest International School (HIS) was founded in 2016 by Eng. Hassan Khalil Ibrahim to be the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. Eng. Hassan has, for many years, dreamt and planned of founding a school with a true mission and vision. He consulted various specialized educators and finally, the dream came true. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program. The purpose-built world-class educational facility includes extended grounds, specialized sports fields and courts, a well-equipped gymnasium and an outdoor swimming pool. Eng. Hassan’s mission is to raise well-rounded young people who are physically, ethically and educationally capable to face the challenges of the twenty-first century in an ever-evolving global community. At HIS, we are committed to providing the best by offering simultaneously the Egyptian, British and American syllabi.  Lifelong education and eagerness to discover and experiment are at the heart of our mission.</p>
 
                 <div className="home-page-about-us-video">
-                    <iframe className="home-page-about-us-video" src="https://www.youtube.com/embed/c_NWecZZ01M" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                    <iframe className="home-page-about-us-video" src="https://www.youtube.com/embed/c_NWecZZ01M" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                 </div>
             </div>
 
@@ -60,13 +60,24 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection image={'/assets/images/HomePagePhotos/Explore360.png'} darken={true}  buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} image={'/assets/images/HomePagePhotos/Explore360.png'} darken={true}  buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
             </div>
 
-            {/*<div className="home-page-contact-us-section">*/}
-            {/*    <h1>Contact Us</h1>*/}
-            {/*    <Form fields={contactUsFormFields} sendPdf={true} mailTo={'ayman.ibrahim@harvestschools.com'} />*/}
-            {/*</div>*/}
+            <div className="home-page-contact-and-visit-us-container">
+                <div className="home-page-contact-us-section">
+                    <h1>Contact Us</h1>
+                    <Form fields={contactUsFormFields} sendPdf={true} mailTo={'ayman.ibrahim@harvestschools.com'} />
+                </div>
+
+                <div className="home-page-visit-us-section">
+                    <h1>Visit Us</h1>
+                    <div className="home-page-visit-us-section-map-container">
+                        <iframe className="home-page-visit-us-section-map"
+                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13698.65926645064!2d29.59631!3d30.868058!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6e0538b2d2ee1e57!2sHarvest%20International%20School!5e0!3m2!1sen!2sus!4v1623455102421!5m2!1sen!2sus;output=embed;">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
