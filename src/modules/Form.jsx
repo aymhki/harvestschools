@@ -36,7 +36,7 @@ function Form({fields, mailTo, sendPdf}) {
                             placeholder={field.label}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
-                            className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                         />
                     }
 
@@ -48,7 +48,7 @@ function Form({fields, mailTo, sendPdf}) {
                             placeholder={field.label}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
-                            className={`textarea-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`textarea-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                         />
                     }
 
@@ -58,7 +58,7 @@ function Form({fields, mailTo, sendPdf}) {
                             name={field.httpName}
                             required={field.required}
                             disabled={submitting}
-                            className={`select-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`select-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                             onChange={(e) => onChange(e, field)}
                         >
                             <option value="">{field.label}</option>
@@ -78,7 +78,7 @@ function Form({fields, mailTo, sendPdf}) {
                                     required={field.required}
                                     value={choice}
                                     disabled={submitting}
-                                    className={`radio-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                    className={`radio-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                                     onChange={(e) => onChange(e, field)}
                                 />
                                 {choice}
@@ -96,7 +96,7 @@ function Form({fields, mailTo, sendPdf}) {
                                     required={field.required}
                                     value={choice}
                                     disabled={submitting}
-                                    className={`checkbox-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                    className={`checkbox-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                                     onChange={(e) => onChange(e, field)}
                                 />
                                 {choice}
@@ -110,9 +110,9 @@ function Form({fields, mailTo, sendPdf}) {
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            accept={field.allowedFileTypes.map(type => type.type).join(',')}
+                            accept={field.allowedFileTypes ? field.allowedFileTypes.map(type => type.type).join(',') : '*/*'}
                             disabled={submitting}
-                            className={`file-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`file-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                             onChange={(e) => {
                                 const file = e.target.files[0];
                                 if (file && !field.allowedFileTypes.some(type => type.type === file.type)) {
@@ -173,10 +173,13 @@ function Form({fields, mailTo, sendPdf}) {
                 renderFieldBasedOnType(field)
             ))}
 
-            {generalFormError && <p className="general-form-error">{generalFormError}</p>}
-            {successMessage && <p className="success-message">{successMessage}</p>}
 
-            <button type="submit" disabled={submitting} className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
+
+            <div className="form-footer">
+                <button type="submit" disabled={submitting} className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
+                {generalFormError && <p className="general-form-error">{generalFormError}</p>}
+                {successMessage && <p className="success-message">{successMessage}</p>}
+            </div>
         </form>
     );
 }
@@ -193,7 +196,7 @@ Form.propTypes = {
         regex: PropTypes.string,
         widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
         labelOutside: PropTypes.bool.isRequired,
-        allowedFileTypes: PropTypes.arrayOf(PropTypes.shape({type: PropTypes.string, description: PropTypes.string})),
+        allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
     })).isRequired,
     mailTo: PropTypes.string.isRequired,
     sendPdf: PropTypes.bool.isRequired,

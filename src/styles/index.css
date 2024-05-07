@@ -89,7 +89,7 @@ button {
     border: 0;
     padding: 1rem;
     margin: 1rem;
-    font-size: xxx-large;
+    font-size: x-large;
     font-weight: bold;
     font-family: 'Futura-Bold', sans-serif;
     letter-spacing: 0.3rem;
@@ -129,18 +129,18 @@ button:hover {
 
 @media (max-width: 1600px) {
     button {
-        font-size: xxx-large;
+        font-size: x-large;
     }
 
 }
 
 @media (max-width: 1200px) {
     button {
-        font-size: xx-large;
+        font-size: large;
     }
 
     h1 {
-        font-size: 4rem;
+        font-size: 3rem;
         font-weight: 400;
     }
 
@@ -151,14 +151,15 @@ button:hover {
 
 @media (max-width: 1024px) {
     button {
-        font-size: x-large;
+        font-size: large;
     }
 
 }
 
 @media (max-width: 768px) {
     button {
-        font-size: large;
+        font-size: small;
+        letter-spacing: 0.1rem;
     }
 
     h1 {
