@@ -3,18 +3,38 @@
     position: relative;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-
-    width: 30%;
+    justify-content: start;
+    align-items: start;
+    width: 100%;
     margin: 0;
     padding: 0;
-
+    overflow-y: auto;
 }
 
 .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field {
     margin: 1rem;
+    will-change: filter;
+    transition: filter 0.5s;
+    color: #1f2152;
+    font-size: large;
+    font-family: 'Futura', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    padding: 0.5rem;
+    border: 0.1rem solid #1f2152;
+    width: 100%;
+    line-height: 1.5;
+    letter-spacing: 0.1rem;
+    border-radius: 0.5rem;
+    cursor: text;
+}
 
+.text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
+}
+
+.text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
 .text-form-field {
@@ -23,6 +43,9 @@
 
 .textarea-form-field {
     resize: none;
+    overflow: auto;
+    height: 10vh;
+    max-height: 15rem;
 }
 
 .select-form-field {
@@ -38,30 +61,60 @@
 }
 
 .file-form-field {
-
+    cursor: pointer;
 }
 
 .full-width {
-    width: 100%;
+    padding-right: 0;
+    margin-right: 0;
+    width: calc(100%);
+}
+
+.two-thirds-width {
+    margin-right: 0;
+    width: calc(66.66% - 2.5rem);
 }
 
 .half-width {
-    width: 45%;
+    margin-right: 0;
+    width: calc(50% - 2.2rem);
 }
 
 .third-width {
-    width: 33.33%;
+    margin-right: 0;
+    width: calc(33.33% - 2.5rem);
 }
 
 .general-form-error {
-
+    font-size: xx-small;
+    letter-spacing: 0.005rem;
+    color: #ff0000;
+    margin: 0.5rem;
+    word-break-wrap: break-word;
+    word-wrap: break-word;
+    wrap-option: auto;
+    overflow-wrap: break-word;
 }
 
 .success-message {
-
+    font-size: xx-small;
+    letter-spacing: 0.005rem;
+    color: #00ff00;
+    margin: 0.5rem;
 }
 
 .submit-button {
+
+}
+
+.form-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 
 }
 
@@ -78,5 +131,43 @@
 }
 
 @media (max-width: 768px) {
+
+    .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field {
+        margin: 0.5rem;
+    }
+
+    .full-width {
+        width: calc(100% );
+    }
+
+    .third-width {
+        width: calc(100% - 1.5rem);
+    }
+
+    .half-width {
+        width: calc(100% - 1.5rem);
+    }
+
+    .two-thirds-width {
+        width: calc(100% - 1.5rem);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field {
+        color: #ffffff;
+        border: 0.1rem solid #ffffff;
+    }
+
+    .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover {
+        filter: drop-shadow(0 0 0.5rem #ffffff);
+    }
+
+    .text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus {
+        filter: drop-shadow(0 0 0.5rem #ffffff);
+    }
+
+
 
 }
