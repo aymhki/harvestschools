@@ -5,8 +5,8 @@ import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
 function Home() {
     const homeSliderPhotos = [
-        { id: 1, url: '/assets/images/HomePagePhotos/VisionBackground.jpg', title: 'Our Vision', text: 'Is to invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.' },
-        { id: 2, url: '/assets/images/HomePagePhotos/MissionBackground.jpg', title: 'Our Mission', text: 'Is to invest in the skills of educators and administrative calibers to provide an inspirational environment made fit to qualify students to be part of a gleaming future placing technology in its best use to activate the most effective educational system.' },
+        { id: 1, url: '/assets/images/HomePage/VisionBackground.jpg', title: 'Our Vision', text: 'Is to invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.' },
+        { id: 2, url: '/assets/images/HomePage/MissionBackground.jpg', title: 'Our Mission', text: 'Is to invest in the skills of educators and administrative calibers to provide an inspirational environment made fit to qualify students to be part of a gleaming future placing technology in its best use to activate the most effective educational system.' },
     ]
 
     const contactUsFormFields = [
@@ -42,8 +42,8 @@ function Home() {
 
             <div className="home-page-accreditations-section-container">
                 <div className="home-page-accreditations-section">
-                    <img className="accreditation-photo" src="/assets/images/HomePagePhotos/AccreditedCognia.png" alt="Cognia Accredited" />
-                    <img className="accreditation-photo" src="/assets/images/HomePagePhotos/university-of-cambridge-logo-1.png" alt="University of Cambridge Accredited" />
+                    <img className="accreditation-photo" src="/assets/images/HomePage/AccreditedCognia.png" alt="Cognia Accredited" />
+                    <img className="accreditation-photo" src="/assets/images/HomePage/university-of-cambridge-logo-1.png" alt="University of Cambridge Accredited" />
                 </div>
             </div>
 
@@ -51,7 +51,7 @@ function Home() {
                 <ParallaxScrollSection
                     title="E-Learning & Academics"
                     text="At Harvest Schools, E-learning is integrated with all National, British, and American stages making it the first school in Egypt that not only allow parents to access classes live from anywhere around the world but also allow students to follow up with their previously recorded lessons online and solve related assignments. All of this is powered by an advanced, moderated, and well-tested system called schoolEverywhere. To understand the policies and the curriculums that are embedded within the online system, learn more below."
-                    image="/assets/images/HomePagePhotos/E-Learning&Academics.png"
+                    image="/assets/images/HomePage/E-Learning&Academics.png"
                     darken={true}
                     buttonText="Learn More"
                     buttonLink="/academics/partners"
@@ -60,7 +60,7 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} image={'/assets/images/HomePagePhotos/Explore360.png'} darken={true}  buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} image={'/assets/images/HomePage/Explore360.png'} darken={true}  buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">

@@ -1,0 +1,127 @@
+.options-grid-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    padding: 1rem 0;
+    margin: 1rem 0;
+    min-height: 100vh;
+}
+
+.options-grid-single, .options-grid-double, .options-grid-triple {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+.options-grid-single {
+    grid-template-columns: repeat(auto-fill, minmax(calc(100.0% - 1rem), 1fr));
+}
+
+.options-grid-double {
+    grid-template-columns: repeat(auto-fill, minmax(calc(50.0% - 1rem), 1fr));
+}
+
+.options-grid-triple {
+    grid-template-columns: repeat(auto-fill, minmax(calc(33.3% - 1rem), 1fr));
+}
+
+.options-grid-items-container {
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(calc(25% - 1rem), 1fr));;
+    gap: 3em;
+    padding: 1rem;
+    align-items: center;
+    justify-content: stretch;
+    justify-items: center;
+    will-change: filter;
+    transition: filter 0.25s;
+    box-shadow: 0 0 0.5rem #1f2152;
+    border-radius: 1rem;
+}
+
+
+.options-grid-items-container:hover {
+    filter: drop-shadow(0 0 1em #1f2152);
+}
+
+.options-grid-items-container img {
+    max-height: 20rem;
+    max-width: 20rem;
+}
+
+
+@media (max-width: 1600px) {
+    .options-grid-container {
+        width: 98%;
+    }
+
+    .options-grid-items-container img {
+        max-height: 15rem;
+        max-width: 15rem;
+    }
+
+}
+
+@media (max-width: 1200px) {
+    .options-grid-container {
+        width: 90%;
+    }
+
+    .options-grid-items-container {
+        gap: 1rem;
+    }
+
+    .options-grid-items-container img {
+        max-height: 10rem;
+        max-width: 10rem;
+    }
+
+}
+
+@media (max-width: 1024px) {
+    .options-grid-container {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        padding-top: 1rem;
+    }
+
+    .options-grid-triple {
+        grid-template-columns: repeat(auto-fill, minmax(calc(100% - 1rem), 1fr));
+    }
+
+    .options-grid-items-container {
+    }
+
+    .options-grid-items-container img {
+        max-height: 8rem;
+        max-width: 8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .options-grid-item img {
+        max-height: 6rem;
+        max-width: 6rem;
+    }
+
+    .options-grid-double {
+        grid-template-columns: repeat(auto-fill, minmax(calc(100% - 1rem), 1fr));
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .options-grid-items-container {
+        color: #ffffff;
+        box-shadow: 0 0 0.5rem #ffffff;
+    }
+
+    .options-grid-items-container:hover {
+        filter: drop-shadow(0 0 1em #ffffff);
+    }
+
+}

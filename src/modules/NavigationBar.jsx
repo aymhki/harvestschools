@@ -148,7 +148,7 @@ const NavigationBar = () => {
                 </li>
                 <li className="dropdown">
                     <Link to="/students-life" onClick={() => isMobile ? null : navigate('/students-life')}>
-                        <div className={"dropdown-icon-container"}>Student Life {isMobile ?
+                        <div className={"dropdown-icon-container"}>Students Life {isMobile ?
                             <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
                     </Link>
                     <ul className="dropdown-content">
