@@ -23,6 +23,22 @@
     font-style: auto;
 }
 
+@font-face {
+    font-family: 'Arian Lt';
+    src: url('public/assets/fonts/Arian LT/Arian LT.woff2') format('woff2'),
+    url('public/assets/fonts/Arian LT/Arian LT.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+}
+
+@font-face {
+    font-family: 'Arian LT Demi';
+    src: url('public/assets/fonts/Arian LT Demi/Arian LT Demi.woff2') format('woff2'),
+    url('public/assets/fonts/Arian LT Demi/Arian LT Demi.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+}
+
 
 
 :root {
@@ -77,12 +93,30 @@ h1 {
     letter-spacing: 0.3rem;
 }
 
+h2 {
+    font-family: "American Typewriter", "Courier New", Courier, monospace;
+    font-size: 3rem;
+    line-height: 1;
+    letter-spacing: 0.2rem;
+    font-weight: 400;
+}
+
 p {
+
     font-size: 1.5rem;
     line-height: 2;
     letter-spacing: 0.1rem;
     font-weight: 300;
 }
+
+h1:lang(ar) {
+    font-family: 'Arian LT Demi', sans-serif;
+}
+
+p:lang(ar) {
+    font-family: 'Arian LT Demi', sans-serif;
+}
+
 
 button {
     border-radius: 1rem;
@@ -144,6 +178,10 @@ button:hover {
         font-weight: 400;
     }
 
+    h2 {
+        font-size: 2rem;
+    }
+
     p {
         font-size: 1.25rem;
     }
@@ -165,6 +203,10 @@ button:hover {
     h1 {
         font-size: 2rem;
         font-weight: 600;
+    }
+
+    h2 {
+        font-size: 1.5rem;
     }
 
     p {

@@ -21,7 +21,7 @@ import NationalStaff from '../pages/Academics/Staff/NationalStaff';
 import BritishStaff from '../pages/Academics/Staff/BritishStaff';
 import AmericanStaff from '../pages/Academics/Staff/AmericanStaff';
 import KindergartenStaff from '../pages/Academics/Staff/KindergartenStaff';
-import StudentLife from "../pages/StudentsLife/StudentLife.jsx";
+import StudentLife from "../pages/StudentsLife/StudentsLife.jsx";
 import StudentsUnion from '../pages/StudentsLife/StudentsUnion';
 import Activities from '../pages/StudentsLife/Activities';
 import Library from '../pages/StudentsLife/Library/EnglishOrArabic';

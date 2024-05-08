@@ -22,8 +22,6 @@
     transition: filter 0.25s;
 }
 
-
-
 .logo:hover {
     filter: drop-shadow(0 0 1em #1f2152);
 }
@@ -31,6 +29,7 @@
 .logo.react:hover {
     filter: drop-shadow(0 0 1em #1f2152);
 }
+
 
 
 @media (max-width: 1600px) {

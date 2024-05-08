@@ -1,0 +1,49 @@
+.full-page-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.left-option-in-full-page-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: #1f2152;
+    color: white;
+}
+
+.left-option-in-full-page-selector:hover {
+    background-color: white;
+    color: #1f2152;
+}
+
+.right-option-in-full-page-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: #c94349;
+    color: white;
+}
+
+.left-option-in-full-page-selector h1 {
+    font-size: 10vw;
+    font-weight: bold;
+}
+
+
+
+.right-option-in-full-page-selector h1 {
+    font-size: 10vw;
+    font-weight: bold;
+}
+
+.right-option-in-full-page-selector:hover {
+    background-color: white;
+    color: #c94349;
+}
