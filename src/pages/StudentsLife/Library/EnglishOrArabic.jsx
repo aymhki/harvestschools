@@ -1,9 +1,19 @@
+import FullPageOptionsSelector from "../../../modules/FullPageOptionsSelector.jsx";
 
 function EnglishOrArabic() {
+    const left = {
+        text: "English",
+        link: "/library/english",
+        inArabic: false
+    };
+    const right = {
+        text: "عربي",
+        link: "/library/arabic",
+        inArabic: true
+    };
+
   return (
-    <div>
-        <h1>English Or Arabic Library</h1>
-    </div>
+    <FullPageOptionsSelector left={left} right={right} />
   );
 }
 
