@@ -3,13 +3,14 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 90%;
+    width: 95%;
     padding: 1rem 0;
     margin: 1rem 0;
     min-height: 100vh;
+    color: #1f2152;
 }
 
-.options-grid-single, .options-grid-double, .options-grid-triple {
+.options-grid-single, .options-grid-double, .options-grid-triple, .options-grid-quadruple {
     display: grid;
     gap: 1rem;
     width: 100%;
@@ -29,10 +30,14 @@
     grid-template-columns: repeat(auto-fill, minmax(calc(33.3% - 1rem), 1fr));
 }
 
+.options-grid-quadruple {
+    grid-template-columns: repeat(auto-fill, minmax(calc(25% - 1rem), 1fr));
+}
+
 .options-grid-items-container {
     display: grid;
     grid-template-rows: repeat(auto-fill, minmax(calc(25% - 1rem), 1fr));;
-    gap: 3em;
+    gap: 2rem;
     padding: 1rem;
     align-items: center;
     justify-content: stretch;
@@ -41,6 +46,7 @@
     transition: filter 0.25s;
     box-shadow: 0 0 0.5rem #1f2152;
     border-radius: 1rem;
+    cursor: pointer;
 }
 
 
@@ -56,19 +62,18 @@
 
 @media (max-width: 1600px) {
     .options-grid-container {
-        width: 98%;
+        width: 95%;
     }
 
     .options-grid-items-container img {
         max-height: 15rem;
         max-width: 15rem;
     }
-
 }
 
 @media (max-width: 1200px) {
     .options-grid-container {
-        width: 90%;
+        width: 95%;
     }
 
     .options-grid-items-container {
@@ -89,9 +94,6 @@
         padding-top: 1rem;
     }
 
-    .options-grid-triple {
-        grid-template-columns: repeat(auto-fill, minmax(calc(100% - 1rem), 1fr));
-    }
 
     .options-grid-items-container {
     }
@@ -100,6 +102,8 @@
         max-height: 8rem;
         max-width: 8rem;
     }
+
+
 }
 
 @media (max-width: 768px) {
@@ -108,12 +112,16 @@
         max-width: 6rem;
     }
 
-    .options-grid-double {
+    .options-grid-triple, .options-grid-quadruple, .options-grid-double {
         grid-template-columns: repeat(auto-fill, minmax(calc(100% - 1rem), 1fr));
     }
 }
 
 @media (prefers-color-scheme: dark) {
+
+    .options-grid-container {
+        color: #ffffff;
+    }
 
     .options-grid-items-container {
         color: #ffffff;

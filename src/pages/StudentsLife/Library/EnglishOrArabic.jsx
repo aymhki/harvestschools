@@ -3,17 +3,21 @@ import FullPageOptionsSelector from "../../../modules/FullPageOptionsSelector.js
 function EnglishOrArabic() {
     const left = {
         text: "English",
-        link: "/library/english",
-        inArabic: false
+        link: "/students-life/library/english-library",
+        inArabic: false,
+        isAssetLink: false
     };
     const right = {
         text: "عربي",
-        link: "/library/arabic",
-        inArabic: true
+        link: "/students-life/library/arabic-library",
+        inArabic: true,
+        isAssetLink: false
     };
 
+    const options = [left, right];
+
   return (
-    <FullPageOptionsSelector left={left} right={right} />
+    <FullPageOptionsSelector options={options} />
   );
 }
 

@@ -14,24 +14,38 @@ const NavigationBar = () => {
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
+    // const handleContainerClick = (e) => {
+    //     if (!e.target.closest('a') && !e.target.closest('li') ) {
+    //         setIsOpen(false);
+    //     }
+    // };
+
     const handleContainerClick = (e) => {
+        const dropdownItem = e.target.closest('.dropdown');
+        const mainLink = dropdownItem.querySelector('a');
 
-        if (!e.target.closest('a') && !e.target.closest('li') ) {
+        if (!dropdownItem && !e.target.closest('a') && !e.target.closest('li') ) {
             setIsOpen(false);
+        } else if (dropdownItem && e.target.closest('.dropdown-icon-container')) {
+            if (mainLink) {
+                setIsOpen(false);
+                navigate(mainLink.getAttribute('href'));
+            }
         }
-
     };
 
-    useEffect(() => {
-        if (isMobile && isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
 
-        return () => {
-            document.body.style.overflow = 'auto';
-        };
+
+    useEffect(() => {
+        // if (isMobile && isOpen) {
+        //     document.body.style.overflow = 'hidden';
+        // } else {
+        //     document.body.style.overflow = 'auto';
+        // }
+        //
+        // return () => {
+        //     document.body.style.overflow = 'auto';
+        // };
     }, [isMobile, isOpen]);
 
 
@@ -94,7 +108,7 @@ const NavigationBar = () => {
                 transform: menuAnimation.transform,
                 opacity: menuAnimation.opacity
             }} className={(isMobile) ? "nav-links-mobile" : "nav-links"} onClick={isMobile ? handleContainerClick : undefined} >
-                <li><Link to="/" onClick={() => {
+                <li onClick={() => { (isMobile ? setIsOpen(false) : null); navigate('/home'); } }><Link to="/" onClick={() => {
                     (isMobile ? setIsOpen(false) : null);
                     navigate('/');
                 }}>Home</Link></li>

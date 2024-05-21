@@ -1,3 +1,5 @@
+// noinspection XmlDeprecatedElement
+
 import PhotoSlider from "../modules/PhotoSlider.jsx";
 import '../styles/Home.css';
 import {Helmet} from "react-helmet";
@@ -21,7 +23,7 @@ function Home() {
 
         <div className="home-page">
             <Helmet>
-                <title>Harvest International School</title>
+                <title>Harvest International School | Burg El Arab</title>
                 <meta name="description" content="Harvest International School is the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program." />
                 <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Egypt, International School, British Syllabus, American Syllabus, Egyptian Syllabus, Education, School, Learning, Teaching, Students, Teachers, Administrators, Extracurricular Program, World-Class Educational Facility, Sports Fields, Gymnasium, Swimming Pool, Lifelong Education, Global Community, Well-Rounded Young People, Twenty-First Century, Education, Discover, Experiment, Mission, Vision, Eng. Hassan Khalil Ibrahim" />
                 <meta name="author" content="Harvest International School" />
@@ -36,7 +38,13 @@ function Home() {
                 <p>Harvest International School (HIS) was founded in 2016 by Eng. Hassan Khalil Ibrahim to be the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. Eng. Hassan has, for many years, dreamt and planned of founding a school with a true mission and vision. He consulted various specialized educators and finally, the dream came true. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program. The purpose-built world-class educational facility includes extended grounds, specialized sports fields and courts, a well-equipped gymnasium and an outdoor swimming pool. Eng. Hassan’s mission is to raise well-rounded young people who are physically, ethically and educationally capable to face the challenges of the twenty-first century in an ever-evolving global community. At HIS, we are committed to providing the best by offering simultaneously the Egyptian, British and American syllabi.  Lifelong education and eagerness to discover and experiment are at the heart of our mission.</p>
 
                 <div className="home-page-about-us-video">
-                    <iframe className="home-page-about-us-video" src="https://www.youtube.com/embed/c_NWecZZ01M" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                    <iframe className="home-page-about-us-video"
+    src="https://www.youtube.com/embed/c_NWecZZ01M"
+    title="YouTube video player"
+    frameBorder={0}
+    loading={"lazy"}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen/>
                 </div>
             </div>
 
@@ -73,8 +81,10 @@ function Home() {
                     <h1>Visit Us</h1>
                     <div className="home-page-visit-us-section-map-container">
                         <iframe className="home-page-visit-us-section-map"
-                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13698.65926645064!2d29.59631!3d30.868058!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6e0538b2d2ee1e57!2sHarvest%20International%20School!5e0!3m2!1sen!2sus!4v1623455102421!5m2!1sen!2sus;output=embed;">
-                        </iframe>
+    frameBorder={0}
+    allowFullScreen
+    loading="lazy"
+    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13698.65926645064!2d29.59631!3d30.868058!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6e0538b2d2ee1e57!2sHarvest%20International%20School!5e0!3m2!1sen!2sus!4v1623455102421!5m2!1sen!2sus;output=embed;frameborder=0;loading=lazy;"/>
                     </div>
                 </div>
             </div>

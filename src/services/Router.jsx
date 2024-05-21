@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom';
+import {BrowserRouter, Route, Routes, Navigate, useLocation} from 'react-router-dom';
 import NavigationBar from "../modules/NavigationBar.jsx";
 import Footer from "../modules/Footer.jsx";
 import Home from '../pages/Home';
@@ -27,7 +27,7 @@ import Activities from '../pages/StudentsLife/Activities';
 import Library from '../pages/StudentsLife/Library/EnglishOrArabic';
 import EnglishLibrary from '../pages/StudentsLife/Library/EnglishLibrary';
 import ArabicLibrary from '../pages/StudentsLife/Library/ArabicLibrary';
-import EnglishFairyTails from '../pages/StudentsLife/Library/EnglishFairyTails';
+import EnglishFairyTales from '../pages/StudentsLife/Library/EnglishFairyTales';
 import EnglishDrama from '../pages/StudentsLife/Library/EnglishDrama';
 import EnglishLevels from '../pages/StudentsLife/Library/EnglishLevels';
 import EnglishGeneral from '../pages/StudentsLife/Library/EnglishGeneral';
@@ -52,10 +52,22 @@ import Covid19Arabic from '../pages/FAQs/Covid19/Covid19Arabic';
 import MoreInfo from "../pages/FAQs/MoreInfo.jsx";
 import NotFound from '../pages/NotFound';
 
-function Router() {
+function App() {
+    const location = useLocation();
+
+    const excludePaths = [
+        '/students-life/library',
+        '/covid-19',
+        '/covid-19/covid-19-english',
+        '/covid-19/covid-19-arabic',
+        '/academics/staff'
+    ];
+
+    const shouldExclude = excludePaths.includes(location.pathname);
+
     return (
-        <BrowserRouter>
-            <NavigationBar/>
+        <>
+            {!shouldExclude && <NavigationBar />}
                 <div className="content">
                     <Routes>
                         <Route path="/" element={<Navigate to="/home" />} />
@@ -96,7 +108,7 @@ function Router() {
                         <Route path="/students-life/library" element={<Library />} />
                         <Route path="/students-life/library/english-library" element={<EnglishLibrary />} />
                         <Route path="/students-life/library/arabic-library" element={<ArabicLibrary />} />
-                        <Route path="/students-life/library/english-fairy-tails" element={<EnglishFairyTails />} />
+                        <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />
                         <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
                         <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />
                         <Route path="/students-life/library/english-general" element={<EnglishGeneral />} />
@@ -119,7 +131,15 @@ function Router() {
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </div>
-            <Footer/>
+            {!shouldExclude && <Footer />}
+        </>
+    );
+}
+
+function Router() {
+    return (
+        <BrowserRouter>
+            <App />
         </BrowserRouter>
     );
 }
