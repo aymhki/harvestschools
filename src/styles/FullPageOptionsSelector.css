@@ -1,12 +1,22 @@
-.full-page-selector {
+.quadruple-full-page-selector {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat( auto-fill, minmax( calc(25%), 1fr ) );
     align-items: center;
     width: 100vw;
     height: 100vh;
+    font-size: 100%;
 }
 
-.left-option-in-full-page-selector {
+.double-in-full-page-selector {
+    display: grid;
+    grid-template-columns: repeat( auto-fill, minmax( calc(50%), 1fr ) );
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    font-size: 100%;
+}
+
+.double-in-full-page-selector-left-option-in-full-page-selector, .quadruple-full-page-selector-left-option-in-full-page-selector {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,14 +24,15 @@
     width: 100%;
     background-color: #1f2152;
     color: white;
+    font-size: 100%;
 }
 
-.left-option-in-full-page-selector:hover {
+.double-in-full-page-selector-left-option-in-full-page-selector:hover, .quadruple-full-page-selector-left-option-in-full-page-selector:hover {
     background-color: white;
     color: #1f2152;
 }
 
-.right-option-in-full-page-selector {
+.double-in-full-page-selector-right-option-in-full-page-selector, .quadruple-full-page-selector-right-option-in-full-page-selector {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -29,21 +40,33 @@
     width: 100%;
     background-color: #c94349;
     color: white;
+    font-size: 100%;
 }
 
-.left-option-in-full-page-selector h1 {
-    font-size: 10vw;
-    font-weight: bold;
-}
-
-
-
-.right-option-in-full-page-selector h1 {
-    font-size: 10vw;
-    font-weight: bold;
-}
-
-.right-option-in-full-page-selector:hover {
+.double-in-full-page-selector-right-option-in-full-page-selector:hover, .quadruple-full-page-selector-right-option-in-full-page-selector:hover {
     background-color: white;
     color: #c94349;
 }
+
+.double-in-full-page-selector-left-option-in-full-page-selector h1 {
+    font-size: 5vw;
+    font-weight: normal;
+}
+
+.double-in-full-page-selector-right-option-in-full-page-selector h1 {
+    font-size: 5vw;
+    font-weight: normal;
+}
+
+
+.quadruple-full-page-selector-left-option-in-full-page-selector h1 {
+    font-size: 3vw;
+    font-weight: normal;
+}
+
+.quadruple-full-page-selector-right-option-in-full-page-selector h1 {
+    font-size: 3vw;
+    font-weight: normal;
+}
+
+

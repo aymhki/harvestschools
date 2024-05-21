@@ -1,5 +1,5 @@
 
-function EnglishFairyTails() {
+function EnglishFairyTales() {
   return (
     <div>
       <h1>English Fairy Tails</h1>
@@ -7,4 +7,4 @@ function EnglishFairyTails() {
   );
 }
 
-export default EnglishFairyTails;
+export default EnglishFairyTales;
