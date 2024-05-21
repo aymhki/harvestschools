@@ -1,15 +1,15 @@
 @font-face {
     font-family: 'Futura';
-    src: url('public/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
-        url('public/assets/fonts/Futura/FuturaLT.woff') format('woff');
+    src: url('../../public/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
+        url('../../public/assets/fonts/Futura/FuturaLT.woff') format('woff');
     font-weight: auto;
     font-style: auto;
 }
 
 @font-face {
     font-family: 'Futura-Bold';
-    src: url('public/assets/fonts/Futura/FuturaLT-Bold.woff2') format('woff2'),
-        url('public/assets/fonts/Futura/FuturaLT-Bold.woff') format('woff');
+    src: url('../../public/assets/fonts/Futura/FuturaLT-Bold.woff2') format('woff2'),
+        url('../../public/assets/fonts/Futura/FuturaLT-Bold.woff') format('woff');
     font-weight: auto;
     font-style: auto;
 }
@@ -17,28 +17,35 @@
 
 @font-face {
     font-family: 'American Typewriter';
-    src: url('public/assets/fonts/American Typewriter/American Typewriter ITCW01 Lt.woff2') format('woff2'),
-        url('public/assets/fonts/American Typewriter/American Typewriter ITCW01 Lt.woff') format('woff');
+    src: url('../../public/assets/fonts/American Typewriter/American Typewriter ITCW01 Lt.woff2') format('woff2'),
+        url('../../public/assets/fonts/American Typewriter/American Typewriter ITCW01 Lt.woff') format('woff');
     font-weight: auto;
     font-style: auto;
 }
 
 @font-face {
     font-family: 'Arian Lt';
-    src: url('public/assets/fonts/Arian LT/Arian LT.woff2') format('woff2'),
-    url('public/assets/fonts/Arian LT/Arian LT.woff') format('woff');
+    src: url('../../public/assets/fonts/Arian LT/Arian LT.woff2') format('woff2'),
+    url('../../public/assets/fonts/Arian LT/Arian LT.woff') format('woff');
     font-weight: auto;
     font-style: auto;
 }
 
 @font-face {
     font-family: 'Arian LT Demi';
-    src: url('public/assets/fonts/Arian LT Demi/Arian LT Demi.woff2') format('woff2'),
-    url('public/assets/fonts/Arian LT Demi/Arian LT Demi.woff') format('woff');
+    src: url('../../public/assets/fonts/Arian LT Demi/Arian LT Demi.woff2') format('woff2'),
+    url('../../public/assets/fonts/Arian LT Demi/Arian LT Demi.woff') format('woff');
     font-weight: auto;
     font-style: auto;
 }
 
+@font-face {
+    font-family: 'American Typewriter Light';
+    src: url('../../public/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff2') format('woff2'),
+        url('../../public/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+}
 
 
 :root {
@@ -111,10 +118,15 @@ p {
 
 h1:lang(ar) {
     font-family: 'Arian LT Demi', sans-serif;
+    letter-spacing: 0.1rem;
 }
 
 p:lang(ar) {
     font-family: 'Arian LT Demi', sans-serif;
+}
+
+h2:lang(ar) {
+    font-family: 'Arian Lt', sans-serif;
 }
 
 
@@ -141,6 +153,13 @@ button:hover {
     background-color: #1f2152;
     color: #ffffff;
 }
+
+button:lang(ar) {
+    font-family:'Arian LT Demi', sans-serif;
+    letter-spacing: 0.1rem;
+
+}
+
 
 
 @media (prefers-color-scheme: light) {
@@ -192,6 +211,14 @@ button:hover {
         font-size: large;
     }
 
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h2:lang(ar) {
+        letter-spacing: 0.1rem;
+    }
+
 }
 
 @media (max-width: 768px) {
@@ -205,12 +232,24 @@ button:hover {
         font-weight: 600;
     }
 
+    h1:lang(ar) {
+        letter-spacing: 0.1rem;
+    }
+
     h2 {
         font-size: 1.5rem;
     }
 
+    h2:lang(ar) {
+        letter-spacing: 0.1rem;
+    }
+
     p {
         font-size: 1rem;
+    }
+
+    p:lang(ar) {
+        letter-spacing: 0.1rem;
     }
 
 }
