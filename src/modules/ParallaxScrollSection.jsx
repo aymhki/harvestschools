@@ -27,8 +27,8 @@ function ParallaxScrollSection({ title, text, image, darken, buttonText, buttonL
 }
 
 ParallaxScrollSection.propTypes = {
-    title: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    text: PropTypes.string,
     image: PropTypes.string.isRequired,
     darken: PropTypes.bool,
     buttonText: PropTypes.string,

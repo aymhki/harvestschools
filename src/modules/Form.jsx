@@ -2,6 +2,7 @@
 import PropTypes from "prop-types";
 import {useState} from "react";
 import footer from "./Footer.jsx";
+import {Fragment} from "react";
 import '../styles/Form.css'
 function Form({fields, mailTo, sendPdf}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
@@ -22,7 +23,7 @@ function Form({fields, mailTo, sendPdf}) {
 
     const renderFieldBasedOnType = (field) => {
             return (
-                <>
+                <Fragment key={field.id}>
                 {field.labelOutside && <label htmlFor={field.id}>{field.label}
                     {field.required && <span className="required">*</span>}
                 </label>}
@@ -126,7 +127,8 @@ function Form({fields, mailTo, sendPdf}) {
                             }}
                         />
                     }
-                </>
+
+                </Fragment>
             );
 
     }
@@ -169,8 +171,8 @@ function Form({fields, mailTo, sendPdf}) {
             className="form"
             onSubmit={onSubmit}
         >
-            {fields.map(field => (
-                renderFieldBasedOnType(field)
+            {fields.map((field, index) => (
+                    renderFieldBasedOnType(field, index)
             ))}
 
 
@@ -195,7 +197,7 @@ Form.propTypes = {
         choices: PropTypes.arrayOf(PropTypes.string),
         regex: PropTypes.string,
         widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
-        labelOutside: PropTypes.bool.isRequired,
+        labelOutside: PropTypes.bool,
         allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
     })).isRequired,
     mailTo: PropTypes.string.isRequired,

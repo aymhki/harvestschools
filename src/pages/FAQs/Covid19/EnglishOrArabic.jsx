@@ -1,10 +1,24 @@
+import FullPageOptionsSelector from "../../../modules/FullPageOptionsSelector.jsx";
 
 function EnglishOrArabic() {
-  return (
-    <div>
-      <h1>English or Arabic Covid-19</h1>
-    </div>
-  );
+    const left = {
+        text: "English",
+        link: "/covid-19/covid-19-english",
+        inArabic: false,
+        isAssetLink: false
+    };
+    const right = {
+        text: "عربي",
+        link: "/covid-19/covid-19-arabic",
+        inArabic: true,
+        isAssetLink: false
+    };
+
+    const options = [left, right];
+
+    return (
+        <FullPageOptionsSelector options={options} />
+    );
 }
 
 export default EnglishOrArabic;
