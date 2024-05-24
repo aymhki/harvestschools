@@ -92,6 +92,11 @@ body {
 
 }
 
+body.lock-scroll {
+    overflow: hidden;
+}
+
+
 h1 {
     font-family: "American Typewriter", "Courier New", Courier, monospace;
     font-weight: 600;
