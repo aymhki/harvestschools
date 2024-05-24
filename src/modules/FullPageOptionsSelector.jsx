@@ -20,78 +20,11 @@ function FullPageOptionsSelector({options}) {
 
             ))}
 
-            {/*{left.isAssetLink ? (*/}
-            {/*    <div className="left-option-in-full-page-selector" onClick={() => window.open(left.link, "_blank")}>*/}
-            {/*        {left.inArabic ?*/}
-            {/*            (<h1 lang="ar">{left.text}</h1>) :*/}
-            {/*            (<h1>{left.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*) : (*/}
-            {/*    <div className="left-option-in-full-page-selector" onClick={() => navigate(left.link)}>*/}
-            {/*        {left.inArabic ?*/}
-            {/*            (<h1 lang="ar">{left.text}</h1>) :*/}
-            {/*            (<h1>{left.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*)}*/}
-
-            {/*{right.isAssetLink ? (*/}
-            {/*    <div className="right-option-in-full-page-selector" onClick={() => window.open(right.link, "_blank")}>*/}
-            {/*        {right.inArabic ?*/}
-            {/*            (<h1 lang="ar">{right.text}</h1>) :*/}
-            {/*            (<h1>{right.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*) : (*/}
-            {/*    <div className="right-option-in-full-page-selector" onClick={() => navigate(right.link)}>*/}
-            {/*        {right.inArabic ?*/}
-            {/*            (<h1 lang="ar">{right.text}</h1>) :*/}
-            {/*            (<h1>{right.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*)}*/}
-
-            {/*{left.isAssetLink ? (*/}
-            {/*    <div className="left-option-in-full-page-selector" onClick={() => window.open(left.link, "_blank")}>*/}
-            {/*        {left.inArabic ?*/}
-            {/*            (<h1 lang="ar">{left.text}</h1>) :*/}
-            {/*            (<h1>{left.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*) : (*/}
-            {/*    <div className="left-option-in-full-page-selector" onClick={() => navigate(left.link)}>*/}
-            {/*        {left.inArabic ?*/}
-            {/*            (<h1 lang="ar">{left.text}</h1>) :*/}
-            {/*            (<h1>{left.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*)}*/}
-
-            {/*{right.isAssetLink ? (*/}
-            {/*    <div className="right-option-in-full-page-selector" onClick={() => window.open(right.link, "_blank")}>*/}
-            {/*        {right.inArabic ?*/}
-            {/*            (<h1 lang="ar">{right.text}</h1>) :*/}
-            {/*            (<h1>{right.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*) : (*/}
-            {/*    <div className="right-option-in-full-page-selector" onClick={() => navigate(right.link)}>*/}
-            {/*        {right.inArabic ?*/}
-            {/*            (<h1 lang="ar">{right.text}</h1>) :*/}
-            {/*            (<h1>{right.text}</h1>)*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*)}*/}
-
         </div>
     );
 }
 
 FullPageOptionsSelector.propTypes = {
-    // left: PropTypes.object.isRequired,
-    // right: PropTypes.object.isRequired,
-    // isAssetLink: PropTypes.bool
     options: PropTypes.array.isRequired
 }
 
