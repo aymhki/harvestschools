@@ -8,7 +8,7 @@
     height: 5rem;
     font-size: small;
     padding: 1rem;
-    z-index: 1000;
+    z-index: 999;
 }
 
 .footer-mobile {
