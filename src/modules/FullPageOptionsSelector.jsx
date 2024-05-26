@@ -6,6 +6,7 @@ function FullPageOptionsSelector({options}) {
     const navigate = useNavigate();
     const doubleLeftRightOptions = ["double-in-full-page-selector-left-option-in-full-page-selector", "double-in-full-page-selector-right-option-in-full-page-selector"];
     const quadrupleLeftRightOptions = ["quadruple-full-page-selector-left-option-in-full-page-selector", "quadruple-full-page-selector-right-option-in-full-page-selector"];
+
     return (
         <div className={options.length === 2 ? "double-in-full-page-selector" : "quadruple-full-page-selector"}>
 

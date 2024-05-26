@@ -1,11 +1,11 @@
-// noinspection XmlDeprecatedElement
-
 import PhotoSlider from "../modules/PhotoSlider.jsx";
 import '../styles/Home.css';
 import {Helmet} from "react-helmet";
 import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
+
 function Home() {
+
     const homeSliderPhotos = [
         { id: 1, url: '/assets/images/HomePage/VisionBackground.jpg', title: 'Our Vision', text: 'Is to invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.' },
         { id: 2, url: '/assets/images/HomePage/MissionBackground.jpg', title: 'Our Mission', text: 'Is to invest in the skills of educators and administrative calibers to provide an inspirational environment made fit to qualify students to be part of a gleaming future placing technology in its best use to activate the most effective educational system.' },
@@ -14,7 +14,7 @@ function Home() {
     const contactUsFormFields = [
         { id: 1, type: 'text', label:     'Name', httpName: 'name', required: true, value: '', setValue: null, widthOfField: 1 },
         { id: 2, type: 'email', label:    'Email', httpName: 'email', required: true, value: '', setValue: null, widthOfField: 2 },
-        { id: 3, type: 'number', label:   'Phone Number', httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
+        { id: 3, type: 'tel', label:   'Phone Number', httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
         {id:  4, type: 'select', label:   'Subject', httpName: 'subject', required: true, value: '', setValue: null, widthOfField: 1, choices: ['Admissions', 'General Inquiry', 'Feedback', 'Other']},
         { id: 5, type: 'textarea', label: 'Message', httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 }
     ]
@@ -22,6 +22,7 @@ function Home() {
     return (
 
         <div className="home-page">
+
             <Helmet>
                 <title>Harvest International School | Burg El Arab</title>
                 <meta name="description" content="Harvest International School is the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program." />
@@ -74,11 +75,32 @@ function Home() {
             <div className="home-page-contact-and-visit-us-container">
                 <div className="home-page-contact-us-section">
                     <h1>Contact Us</h1>
-                    <Form fields={contactUsFormFields} sendPdf={true} mailTo={'ayman.ibrahim@harvestschools.com'} />
+
+                    <p className="important-info-hyperlink-text">
+                        Phone: &nbsp;
+                        <span  onClick={() => window.open('tel:+201028329668')}>
+                             01028329668,
+                        </span> &nbsp;
+                        <span  onClick={() => window.open('tel:+201097875407')}>
+                            01097875407,
+                        </span> &nbsp;
+                        <span onClick={() => window.open('tel:+201028940675')}>
+                           01028940675
+                        </span>
+                    </p>
+
+
+                    <Form fields={contactUsFormFields} sendPdf={true} mailTo={'ayman.ibrahim@harvestschools.com'}/>
                 </div>
 
                 <div className="home-page-visit-us-section">
                     <h1>Visit Us</h1>
+
+                    <p className="important-info-hyperlink-text"
+                       onClick={() => window.open('https://maps.app.goo.gl/4mWYs9jX5T2gK1FL7', '_blank')}>
+                        Borg Al Arab City, Second Territory, Alexandria Governorate, Egypt
+                    </p>
+
                     <div className="home-page-visit-us-section-map-container">
                         <iframe className="home-page-visit-us-section-map"
                             frameBorder={0}
