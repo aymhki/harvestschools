@@ -31,3 +31,20 @@
 }
 
 
+
+@media (max-width: 768px) {
+    .parallax-section {
+        background-attachment: scroll;
+        background-size: cover;
+    }
+
+    .parallax-section .content {
+        padding: 1rem;
+    }
+
+    .darken {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+
+}
