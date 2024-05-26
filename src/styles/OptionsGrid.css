@@ -36,7 +36,6 @@
 
 .options-grid-items-container {
     display: grid;
-    grid-template-rows: repeat(auto-fill, minmax(calc(25% - 1rem), 1fr));;
     gap: 2rem;
     padding: 1rem;
     align-items: center;
@@ -47,6 +46,7 @@
     box-shadow: 0 0 0.5rem #1f2152;
     border-radius: 1rem;
     cursor: pointer;
+    height: auto;
 }
 
 
