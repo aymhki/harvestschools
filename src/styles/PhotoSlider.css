@@ -131,7 +131,7 @@
     }
 
     .left-arrow, .right-arrow {
-        font-size: 2rem;
+        font-size: 3rem;
     }
 }
 
@@ -153,6 +153,6 @@
     }
 
     .left-arrow, .right-arrow {
-        font-size: 1rem;
+        font-size: 2rem;
     }
 }

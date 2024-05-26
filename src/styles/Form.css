@@ -49,6 +49,15 @@
 }
 
 .select-form-field {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%231f2152" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.7rem top 50%;
+    background-size: 1.5rem;
+    padding-right: 3rem;
+    cursor: pointer;
 
 }
 
@@ -168,6 +177,8 @@
         filter: drop-shadow(0 0 0.5rem #ffffff);
     }
 
-
+    .select-form-field {
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
+    }
 
 }
