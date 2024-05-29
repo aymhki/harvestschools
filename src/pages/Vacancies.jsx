@@ -1,8 +1,11 @@
 
 function Vacancies() {
   return (
-    <div>
+    <div style={{textAlign: 'center'}}>
       <h1>Vacancies</h1>
+        <p>
+            This Page is Under Construction
+        </p>
     </div>
   );
 }

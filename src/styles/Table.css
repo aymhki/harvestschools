@@ -66,12 +66,12 @@ tr:hover {
 @media (max-width: 768px) {
 
     td p {
-        font-size: 50%;
+        font-size: 80%;
         min-font-size: 0.1rem;
     }
 
     td h2 {
-        font-size: 50%;
+        font-size: 80%;
         min-font-size: 0.1rem;
     }
 
