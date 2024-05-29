@@ -51,6 +51,7 @@ import Covid19English from '../pages/FAQs/Covid19/Covid19English';
 import Covid19Arabic from '../pages/FAQs/Covid19/Covid19Arabic';
 import MoreInfo from "../pages/FAQs/MoreInfo.jsx";
 import NotFound from '../pages/NotFound';
+import Facilities from "../pages/Academics/Facilities.jsx";
 
 function App() {
     const location = useLocation();
@@ -96,11 +97,12 @@ function App() {
                         <Route path="/academics/national" element={<NationalAcademics />} />
                         <Route path="/academics/american" element={<AmericanAcademics />} />
                         <Route path="/academics/partners" element={<PartnersAcademics />} />
+                        <Route path="/academics/facilities" element={<Facilities />} />
                         <Route path="/academics/staff" element={<StaffAcademics />} />
                         <Route path="/academics/staff/national-staff" element={<NationalStaff />} />
                         <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
                         <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
-                        <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
+                        <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />\
 
                         <Route path="/students-life" element={<StudentLife />} />
                         <Route path="/students-life/students-union" element={<StudentsUnion />} />
