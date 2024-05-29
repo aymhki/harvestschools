@@ -1,5 +1,5 @@
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
-import '../../styles/FAQs.css';
+import '../../styles/MoreInfo.css';
 
 
 function MoreInfo() {

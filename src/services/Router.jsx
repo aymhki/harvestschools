@@ -52,6 +52,7 @@ import Covid19Arabic from '../pages/FAQs/Covid19/Covid19Arabic';
 import MoreInfo from "../pages/FAQs/MoreInfo.jsx";
 import NotFound from '../pages/NotFound';
 import Facilities from "../pages/Academics/Facilities.jsx";
+import AdmissionFees from "../pages/Admission/AdmissionFees.jsx";
 
 function App() {
     const location = useLocation();
@@ -91,6 +92,7 @@ function App() {
                         <Route path="/admission/inside-egypt-requirements" element={<InsideEgyptRequirements />} />
                         <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
                         <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
+                        <Route path="/admission/admission-fees" element={<AdmissionFees />} />
 
                         <Route path="/academics" element={<Academics />} />
                         <Route path="/academics/british" element={<British />} />
