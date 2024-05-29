@@ -113,6 +113,14 @@ h2 {
     font-weight: 400;
 }
 
+h3 {
+    font-family: "American Typewriter", "Courier New", Courier, monospace;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: 0.1rem;
+    font-weight: 400;
+}
+
 p {
 
     font-size: 1.5rem;
@@ -131,6 +139,10 @@ p:lang(ar) {
 }
 
 h2:lang(ar) {
+    font-family: 'Arian Lt', sans-serif;
+}
+
+h3:lang(ar) {
     font-family: 'Arian Lt', sans-serif;
 }
 
@@ -206,6 +218,10 @@ button:lang(ar) {
         font-size: 2rem;
     }
 
+    h3 {
+        font-size: 1.5rem;
+    }
+
     p {
         font-size: 1.25rem;
     }
@@ -220,9 +236,15 @@ button:lang(ar) {
         font-size: 1.5rem;
     }
 
+    h3 {
+        font-size: 1.25rem;
+    }
+
     h2:lang(ar) {
         letter-spacing: 0.1rem;
     }
+
+
 
 }
 
@@ -247,6 +269,10 @@ button:lang(ar) {
 
     h2:lang(ar) {
         letter-spacing: 0.1rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
     }
 
     p {

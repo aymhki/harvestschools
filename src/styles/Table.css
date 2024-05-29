@@ -1,0 +1,121 @@
+
+.table-module {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+
+}
+
+.table-module-table {
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    background-color: white;
+    color: #1f2152;
+    border-collapse: collapse;
+}
+
+td {
+    border: #1f2152 0.1rem solid;
+}
+
+tr {
+    border: #1f2152 0.1rem solid;
+}
+
+th {
+
+}
+
+th, td {
+    padding: 1rem;
+}
+
+
+
+
+
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+
+@media  (max-width: 1600px) {
+
+}
+
+@media  (max-width: 1440px) {
+
+}
+
+
+@media  (max-width: 1024px) {
+    th, td {
+        padding: 0.5rem;
+    }
+
+
+}
+
+@media (max-width: 768px) {
+
+    td p {
+        font-size: 50%;
+        min-font-size: 0.1rem;
+    }
+
+    td h2 {
+        font-size: 50%;
+        min-font-size: 0.1rem;
+    }
+
+    table {
+
+    }
+}
+
+
+@media (max-height: 768px) {
+
+
+}
+
+@media (max-height: 600px) {
+    th, td {
+        padding: 0.25rem;
+    }
+}
+
+@media (max-height: 400px) {
+    th, td {
+        padding: 0.1rem;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+
+    table {
+        background-color: inherit;
+        color: white;
+        border-collapse: collapse;
+        border-radius: 1rem;
+    }
+
+    td {
+        border: white 0.1rem solid;
+    }
+
+    tr {
+        border: white 0.1rem solid;
+    }
+
+    tr:hover {
+        color: #1f2152;
+    }
+}
