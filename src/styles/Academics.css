@@ -6,3 +6,369 @@
     width: 100%;
 
 }
+
+.national-academics-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    text-align: center;
+
+}
+
+.american-academics-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.academics-partners-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.academics-national-staff-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.academics-british-staff-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.academics-american-staff-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.academics-kindergarten-staff-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+
+}
+
+.academics-facilities-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.facilities-show-case-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-gap: 1rem;
+    align-content: stretch;
+    justify-content: stretch;
+    width: auto;
+    height: auto;
+    box-size: border-box;
+    object-fit: fill;
+
+}
+
+.facilities-show-case-image {
+    max-width: 100%;
+    column-span: 1;
+    row-span: 1;
+    object-fit: fill;
+    overflow: clip;
+    display: inline-block;
+    box-size: border-box;
+}
+
+
+.academics-partners-page img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: auto;
+    margin: auto;
+}
+
+.academics-partners-page h1 {
+    text-align: center;
+    color: #1f2152;
+}
+
+
+.national-academics-page-header {
+    position: relative;
+    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageHeaderBackground.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+.national-academics-page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.national-academics-page-header > * {
+    position: relative;
+    z-index: 2;
+}
+
+.national-academics-page-header-title-logo {
+    width: 20%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.national-academics-vision-and-mission {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 10rem);
+    padding: 5rem;
+    background-color: #c94349;
+    color: white;
+    margin: 0;
+    min-height: 100vh;
+    justify-content: center;
+}
+
+.national-academics-page-grades-and-break-times-table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #1f2152;
+    color: white;
+    min-height: 100vh;
+}
+
+.national-academics-page-safe-environment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    background-color: #c94349;
+    color: white;
+    min-height: 100vh;
+}
+
+.national-academics-page-safe-environment-image,
+.national-academics-page-extra-worksheets-image,
+.national-academics-page-english-syllabus-image,
+.national-academics-page-science-syllabus-image
+{
+    width: 50%;
+    height: auto;
+}
+
+.national-academics-page-science-middle-two-video,
+.national-academics-page-arabic-junior-one-video,
+.national-academics-page-french-junior-one-video,
+.national-academics-page-english-junior-six-video,
+.national-academics-page-math-junior-one-video,
+.national-academics-page-english-junior-one-video,
+.national-academics-page-quran-syllabus-video
+{
+    width: 50rem;
+    height: 30rem;
+}
+
+.national-academics-page-preparation-to-the-new-academic-year-images-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #1f2152;
+    color: white;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+
+
+
+.national-academics-page-science-labs-images-section,
+.national-academics-page-science-middle-two,
+.national-academics-page-science-syllabus,
+.national-academics-page-quran-syllabus,
+.national-academics-page-english-junior-one,
+.national-academics-page-french-junior-one
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #c94349;
+    color: white;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.national-academics-page-english-syllabus,
+.national-academics-page-extra-worksheets-syllabus,
+.national-academics-page-math-junior-one,
+.national-academics-page-english-junior-six,
+.national-academics-page-arabic-junior-one
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #1f2152;
+    color: white;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.national-academics-page-covid-19-policy {
+    position: relative;
+    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageFooterBackground.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+.national-academics-page-covid-19-policy::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.national-academics-page-covid-19-policy > * {
+    position: relative;
+    z-index: 2;
+}
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1440px) {
+
+    .national-academics-page-safe-environment-image,
+    .national-academics-page-extra-worksheets-image,
+    .national-academics-page-english-syllabus-image,
+    .national-academics-page-science-syllabus-image
+    {
+        width: 60%;
+
+    }
+
+    .national-academics-page-science-middle-two-video,
+    .national-academics-page-arabic-junior-one-video,
+    .national-academics-page-french-junior-one-video,
+    .national-academics-page-english-junior-six-video,
+    .national-academics-page-math-junior-one-video,
+    .national-academics-page-english-junior-one-video,
+    .national-academics-page-quran-syllabus-video
+    {
+        width: 40rem;
+        height: 25rem;
+
+    }
+}
+
+@media (max-width: 1200px) {
+
+}
+
+@media (max-width: 1024px) {
+    .national-academics-page-safe-environment-image {
+        width: 80%;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .national-academics-page-header-title-logo {
+        width: 50%;
+    }
+
+    .national-academics-vision-and-mission {
+        width: calc(100% - 4rem);
+        padding: 2rem;
+    }
+
+
+    .national-academics-page-safe-environment-image,
+    .national-academics-page-extra-worksheets-image,
+    .national-academics-page-english-syllabus-image,
+    .national-academics-page-science-syllabus-image
+    {
+        width: 90%;
+    }
+
+    .national-academics-page-science-middle-two-video,
+    .national-academics-page-arabic-junior-one-video,
+    .national-academics-page-french-junior-one-video,
+    .national-academics-page-english-junior-six-video,
+    .national-academics-page-math-junior-one-video,
+    .national-academics-page-english-junior-one-video,
+    .national-academics-page-quran-syllabus-video
+    {
+        width: 90%;
+        height: 20rem;
+
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .academics-partners-page h1 {
+        color: white;
+    }
+}

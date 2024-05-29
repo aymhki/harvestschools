@@ -30,6 +30,11 @@
     z-index: 1;
 }
 
+.parallax-section-image {
+    width: 10%;
+    height: 10%;
+}
+
 
 
 @media (max-width: 768px) {
@@ -45,6 +50,4 @@
     .darken {
         background-color: rgba(0, 0, 0, 0.7);
     }
-
-
 }
