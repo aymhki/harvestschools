@@ -181,10 +181,6 @@ function Facilities() {
                                                 Swimming Pool:
                                             </p>
 
-                                            <p>
-                                                Regulations on Using Swimming Pool:
-                                            </p>
-
                                             <ul className={"swimming-pool-rules"}>
 
                                                 <li><p>Student may not be allowed to enter the swimming pool if he/she has suffered from any communicable diseases.</p></li>

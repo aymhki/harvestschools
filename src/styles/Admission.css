@@ -7,3 +7,173 @@
 
 }
 
+
+.admission-process-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.admission-process-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.admission-process-steps {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
+    gap: 3rem;
+    flex-direction: column;
+}
+
+.admission-process-step {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.admission-process-button-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.admission-process-button {
+
+}
+
+.admission-inside-egypt-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.admission-requirements-list-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: stretch;
+    align-content: stretch;
+    column-gap: 3rem;
+    row-gap: 0;
+}
+
+.admission-requirements-list-arabic {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admission-requirements-list-arabic {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.admission-requirements-list-english {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.admission-requirements-list-arabic ul {
+    direction: rtl;
+    text-align: right;
+}
+
+.admission-requirements-list-arabic ul li {
+    direction: rtl;
+    text-align: right;
+}
+
+.admission-requirements-list-english ul {
+    direction: ltr;
+    text-align: left;
+
+}
+
+.admission-requirements-list-english ul li {
+    direction: ltr;
+    text-align: left;
+}
+
+.admission-requirements-list li p,  .admission-requirements-list li {
+    font-size: 2.5rem;
+}
+
+.admission-outside-egypt-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.admission-outside-egypt-foreigners-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    text-align: center;
+
+}
+
+@media (max-width: 1600px) {
+
+    .admission-requirements-list li p, .admission-requirements-list li {
+        font-size: 2rem;
+    }
+
+}
+
+@media (max-width: 1440px) {
+
+}
+
+@media (max-width: 1200px) {
+    .admission-requirements-list li p, .admission-requirements-list li {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .admission-requirements-list-container {
+        grid-template-columns: 1fr;
+    }
+
+
+}
+
+@media (max-width: 768px) {
+    .admission-requirements-list li p, .admission-requirements-list li {
+        font-size: inherit;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .admission-process-image {
+        filter: drop-shadow(0 0 1rem white);
+    }
+}

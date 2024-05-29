@@ -208,7 +208,14 @@ const NavigationBar = () => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/admission/admission-requirements');
                         }}><Link to="/admission/admission-requirements">Admission Requirements</Link></li>
+                        <li onClick={() => {
+                            (isMobile ? toggleMenu() : null);
+                            navigate('/admission/admission-fees');
+                        }}><Link to="/admission/admission-fees">Admission Fees</Link></li>
+
                     </ul>
+
+
                 </li>
 
                 <li className="dropdown"
