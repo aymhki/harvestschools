@@ -49,15 +49,15 @@ function Academics() {
             titleInArabic: false,
             descriptionInArabic: false
         },
-        // {
-        //     title: "Facilities",
-        //     image: "/assets/images/AcademicsPages/Facilities1.png",
-        //     description: "Information about our facilities.",
-        //     link: "/gallery/",
-        //     buttonText: "Learn More",
-        //     titleInArabic: false,
-        //     descriptionInArabic: false
-        // }
+        {
+            title: "Facilities",
+            image: "/assets/images/AcademicsPages/Facilities1.png",
+            description: "Information about our facilities.",
+            link: "/academics/facilities",
+            buttonText: "Learn More",
+            titleInArabic: false,
+            descriptionInArabic: false
+        }
     ];
 
   return (

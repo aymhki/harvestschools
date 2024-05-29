@@ -60,7 +60,7 @@ function Home() {
                 <ParallaxScrollSection
                     title="E-Learning & Academics"
                     text="At Harvest Schools, E-learning is integrated with all National, British, and American stages making it the first school in Egypt that not only allow parents to access classes live from anywhere around the world but also allow students to follow up with their previously recorded lessons online and solve related assignments. All of this is powered by an advanced, moderated, and well-tested system called schoolEverywhere. To understand the policies and the curriculums that are embedded within the online system, learn more below."
-                    image="/assets/images/HomePage/E-Learning&Academics.png"
+                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.png"
                     darken={true}
                     buttonText="Learn More"
                     buttonLink="/academics/partners"
@@ -69,7 +69,7 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} image={'/assets/images/HomePage/Explore360.png'} darken={true}  buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.png'} darken={true} buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">

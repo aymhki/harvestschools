@@ -34,6 +34,17 @@ const NavigationBar = () => {
 
     }
 
+    const closeMenu = () => {
+        setIsOpen(false);
+        document.body.classList.toggle('lock-scroll', false);
+        setAcademicsOpen(false);
+        setAdmissionOpen(false);
+        setStudentsLifeOpen(false);
+        setEventsOpen(false);
+        setGalleryOpen(false);
+        setMoreInfoOpen(false);
+    }
+
 
 
     const toggleDropdown = (dropdown, setDropdown) => {
@@ -94,7 +105,7 @@ const NavigationBar = () => {
     return (
         <nav className={`navbar`} >
             <div className="logo-container">
-                <Link to="/" onClick={() => { (isMobile ? toggleMenu() : null); navigate('/home'); } }>
+                <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate('/home'); } }>
                     <img src="/assets/images/HarvestLogos/HarvestLogoCropped.png" alt="Harvest Logo" className="logo" />
                 </Link>
 
@@ -165,6 +176,10 @@ const NavigationBar = () => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/academics/staff');
                         }}><Link to="/academics/staff">Staff</Link></li>
+                        <li onClick={() => {
+                            (isMobile ? toggleMenu() : null);
+                            navigate('/academics/facilities');
+                        }}><Link to="/academics/facilities">Facilities</Link></li>
                         <li onClick={() => {
                             window.open('https://mail.harvestschools.com:2096/', '_blank');
                         }}>
