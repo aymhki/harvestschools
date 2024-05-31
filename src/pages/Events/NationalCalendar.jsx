@@ -1,8 +1,11 @@
 
 function NationalCalendar() {
   return (
-    <div>
+    <div style={{textAlign: "center"}}>
       <h1>National Calendar</h1>
+        <p>
+            This Page is Under Construction
+        </p>
     </div>
   );
 }
