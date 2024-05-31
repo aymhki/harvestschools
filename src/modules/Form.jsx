@@ -4,7 +4,7 @@ import {useState} from "react";
 import footer from "./Footer.jsx";
 import {Fragment} from "react";
 import '../styles/Form.css'
-function Form({fields, mailTo, sendPdf, formTitle}) {
+function Form({fields, mailTo, sendPdf, formTitle, lang}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
@@ -24,8 +24,9 @@ function Form({fields, mailTo, sendPdf, formTitle}) {
     const renderFieldBasedOnType = (field) => {
             return (
                 <Fragment key={field.id}>
-                {field.labelOutside && <label htmlFor={field.id}>{field.label}
-                    {field.required && <span className="required">*</span>}
+                {field.labelOutside && <label htmlFor={field.id} className={ "form-label-outside"}>
+                    {field.label}
+
                 </label>}
 
                     {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'date' || field.type === 'time' || field.type === 'password') &&
@@ -69,9 +70,10 @@ function Form({fields, mailTo, sendPdf, formTitle}) {
                                 (`select-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
 
                             }
+
                             onChange={(e) => onChange(e, field)}
                         >
-                            <option value="">{field.label}</option>
+                            {(!field.multiple) && <option value="">{field.label}</option>}
                             {field.choices.map((choice, index) => (
                                 <option key={index} value={choice}>{choice}</option>
                             ))}
@@ -145,8 +147,8 @@ function Form({fields, mailTo, sendPdf, formTitle}) {
     const onSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
-        setGeneralFormError('');
-        setSuccessMessage('');
+        // setGeneralFormError('');
+        // setSuccessMessage('');
 
 
     };
@@ -164,10 +166,22 @@ function Form({fields, mailTo, sendPdf, formTitle}) {
 
 
             <div className="form-footer">
-                <button type="submit" disabled={submitting} className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
+
+                {
+                    lang === 'ar' ? (
+                        <button type="submit" disabled={submitting}
+                                className="submit-button">{submitting ? 'جاري الارسال...' : 'ارسال'}</button>
+                    ) : (
+                        <button type="submit" disabled={submitting}
+                                className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
+                    )
+                }
+
+
                 {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                 {successMessage && <p className="success-message">{successMessage}</p>}
             </div>
+
         </form>
     );
 }
@@ -190,7 +204,8 @@ Form.propTypes = {
     })).isRequired,
     mailTo: PropTypes.string.isRequired,
     sendPdf: PropTypes.bool.isRequired,
-    formTitle: PropTypes.string.isRequired
+    formTitle: PropTypes.string.isRequired,
+    lang: PropTypes.string.isRequired,
 };
 
 export default Form;

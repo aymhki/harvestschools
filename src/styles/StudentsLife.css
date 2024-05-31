@@ -21,3 +21,37 @@
     align-items: center;
     width: 100%;
 }
+
+.students-life-activities-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.students-life-students-union-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+}
+
+.students-life-library-books-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+}
+
+.students-life-activities-phone-number {
+    color: white;
+}
+
+.students-life-activities-phone-number:hover {
+    color: #f5f5f5;
+}
