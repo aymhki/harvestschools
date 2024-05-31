@@ -147,40 +147,8 @@ function Form({fields, mailTo, sendPdf, formTitle}) {
         setSubmitting(true);
         setGeneralFormError('');
         setSuccessMessage('');
-        const formData = new FormData();
-        formData.append('mailTo', mailTo);
-        formData.append('sendPdf', sendPdf);
-        formData.append('formTitle', formTitle);
-        formData.append('fields', JSON.stringify(fields));
 
-        fields.forEach(field => {
-            if (field.type === 'file') {
-                const fileInput = document.getElementById(field.id);
-                if (fileInput && fileInput.files[0]) {
-                    formData.append(field.httpName, fileInput.files[0]);
-                }
-            } else {
-                formData.append(field.httpName, document.getElementById(field.id).value);
-            }
-        });
 
-        try {
-            const response = await fetch('/src/services/SendMail.php', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const result = await response.text();
-            setSuccessMessage(result);
-        } catch (error) {
-            setGeneralFormError(error.message);
-        } finally {
-            setSubmitting(false);
-        }
     };
 
     return (
