@@ -50,6 +50,9 @@ function MinimumStageAge() {
                 ["Y 12, G 12", "16 Years & 6 Months"],
                 ]}/>
 
+            <p>
+                Note: This page was last updated on January 02, 2023
+            </p>
         </container>
     </div>
   );

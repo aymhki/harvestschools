@@ -52,7 +52,7 @@ function Home() {
             <div className="home-page-accreditations-section-container">
                 <div className="home-page-accreditations-section">
                     <img className="accreditation-photo" src="/assets/images/HomePage/AccreditedCognia.png" alt="Cognia Accredited" />
-                    <img className="accreditation-photo" src="/assets/images/HomePage/university-of-cambridge-logo-1.png" alt="University of Cambridge Accredited" />
+                    <img className="accreditation-photo" src="/assets/images/HomePage/CICIS.png" alt="University of Cambridge Accredited" />
                 </div>
             </div>
 
@@ -90,7 +90,7 @@ function Home() {
                     </p>
 
 
-                    <Form fields={contactUsFormFields} sendPdf={true} mailTo={'ayman.ibrahim@harvestschools.com'}/>
+                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'sonichki@gmail.com'} formTitle={'Contact Us'}/>
                 </div>
 
                 <div className="home-page-visit-us-section">
