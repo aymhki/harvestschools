@@ -36,13 +36,13 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     };
 
     const renderSlider = () => {
-        let photosWidth = photos.map(photo => {
-            let img = new Image();
-            img.src = photo.src;
-            return img.width;
-        });
+        // let photosWidth = photos.map(photo => {
+        //     let img = new Image();
+        //     img.src = photo.src;
+        //     return img.width;
+        // });
 
-        let maxIndex = photosWidth.indexOf(Math.max(...photosWidth));
+        let maxIndex = 0; //photosWidth.indexOf(Math.max(...photosWidth));
 
         return (
             <div className="photo-slider">
