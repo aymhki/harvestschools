@@ -40,8 +40,7 @@ function PhotoSlider({ photos, darken }) {
             {photos.map((photo, index) => (
                 <div
                     className={`slide ${index === current ? 'active' : index === exiting ? 'exiting' : ''}`}
-                    key={photo.id}
-                >
+                    key={photo.id}>
                     <img
                         src={photo.url}
                         alt={photo.text}

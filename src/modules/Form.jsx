@@ -4,7 +4,7 @@ import {useState} from "react";
 import footer from "./Footer.jsx";
 import {Fragment} from "react";
 import '../styles/Form.css'
-function Form({fields, mailTo, sendPdf}) {
+function Form({fields, mailTo, sendPdf, formTitle}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
@@ -34,7 +34,7 @@ function Form({fields, mailTo, sendPdf}) {
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            placeholder={field.label}
+                            placeholder={field.placeholder ? field.placeholder : field.label}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
                             className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
@@ -46,7 +46,7 @@ function Form({fields, mailTo, sendPdf}) {
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            placeholder={field.label}
+                            placeholder={field.placeholder ? field.placeholder : field.label}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
                             className={`textarea-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
@@ -55,11 +55,20 @@ function Form({fields, mailTo, sendPdf}) {
 
                     {field.type === 'select' &&
                         <select
+                            multiple={field.multiple}
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
                             disabled={submitting}
-                            className={`select-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+
+                            className={
+                            field.multiple ? (
+                                `select-multiple-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
+                                ) :
+
+                                (`select-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
+
+                            }
                             onChange={(e) => onChange(e, field)}
                         >
                             <option value="">{field.label}</option>
@@ -133,43 +142,52 @@ function Form({fields, mailTo, sendPdf}) {
 
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
-        const formData = new FormData(e.target);
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', mailTo);
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    setSuccessMessage('Your form has been submitted successfully!');
-                    setTimeout(() => { setSuccessMessage(''); }, 5000);
-                } else {
-                    setGeneralFormError('There was an error submitting the form. Please try again later.');
-                    setTimeout(() => { setGeneralFormError(''); }, 5000);
+        setGeneralFormError('');
+        setSuccessMessage('');
+        const formData = new FormData();
+        formData.append('mailTo', mailTo);
+        formData.append('sendPdf', sendPdf);
+        formData.append('formTitle', formTitle);
+        formData.append('fields', JSON.stringify(fields));
+
+        fields.forEach(field => {
+            if (field.type === 'file') {
+                const fileInput = document.getElementById(field.id);
+                if (fileInput && fileInput.files[0]) {
+                    formData.append(field.httpName, fileInput.files[0]);
                 }
-                setSubmitting(false);
+            } else {
+                formData.append(field.httpName, document.getElementById(field.id).value);
             }
-        };
+        });
 
-        xhr.send(formData);
+        try {
+            const response = await fetch('/src/services/SendMail.php', {
+                method: 'POST',
+                body: formData,
+            });
 
-        if (sendPdf) {
-            const pdf = new Blob([footer], {type: 'application/pdf'});
-            const pdfFormData = new FormData();
-            pdfFormData.append('pdf', pdf);
-            const pdfXhr = new XMLHttpRequest();
-            pdfXhr.open('POST', mailTo);
-            pdfXhr.send(pdfFormData);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const result = await response.text();
+            setSuccessMessage(result);
+        } catch (error) {
+            setGeneralFormError(error.message);
+        } finally {
+            setSubmitting(false);
         }
-
-
-    }
+    };
 
     return (
         <form
             className="form"
             onSubmit={onSubmit}
+            method="post"
         >
             {fields.map((field, index) => (
                     renderFieldBasedOnType(field, index)
@@ -199,9 +217,12 @@ Form.propTypes = {
         widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
         labelOutside: PropTypes.bool,
         allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
+        placeholder: PropTypes.string,
+        multiple: PropTypes.bool,
     })).isRequired,
     mailTo: PropTypes.string.isRequired,
     sendPdf: PropTypes.bool.isRequired,
+    formTitle: PropTypes.string.isRequired
 };
 
 export default Form;
