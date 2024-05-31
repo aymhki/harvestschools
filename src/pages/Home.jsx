@@ -90,7 +90,7 @@ function Home() {
                     </p>
 
 
-                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'sonichki@gmail.com'} formTitle={'Contact Us'}/>
+                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'asmaa.samir@harvestschools.com'} formTitle={'Contact Us'}/>
                 </div>
 
                 <div className="home-page-visit-us-section">

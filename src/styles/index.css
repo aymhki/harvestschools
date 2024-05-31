@@ -177,7 +177,19 @@ button:lang(ar) {
 
 }
 
+form:lang(ar) {
+    direction: rtl;
+}
 
+input:lang(ar) {
+    direction: rtl;
+    font-family: 'Arian LT', sans-serif;
+}
+
+textarea:lang(ar) {
+    direction: rtl;
+    font-family: 'Arian LT', sans-serif;
+}
 
 @media (prefers-color-scheme: light) {
     :root {

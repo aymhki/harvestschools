@@ -50,6 +50,15 @@
     padding: 5rem;
 }
 
+.extreme-padding-container:lang(ar) {
+    direction: rtl;
+}
+
+.extreme-padding-container:lang(ar) h1 {
+    text-align: right;
+    color: #1f2152;
+}
+
 @media (max-width: 1600px) {
     .logo {
         height: 6rem;
@@ -107,5 +116,9 @@
 
     .logo:hover {
         filter: drop-shadow(0 0 1em #ffffff);
+    }
+
+    .extreme-padding-container:lang(ar) h1 {
+        color: #ffffff;
     }
 }

@@ -29,12 +29,17 @@
     cursor: text;
 }
 
-.text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover {
+.text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover, .select-multiple-form-field:hover {
     filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
-.text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus {
+.text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus, .select-multiple-form-field:focus {
     filter: drop-shadow(0 0 0.5rem #1f2152);
+}
+
+.text-form-field:lang(ar), .textarea-form-field:lang(ar), .select-form-field:lang(ar), .radio-form-field:lang(ar), .checkbox-form-field:lang(ar), .file-form-field:lang(ar), .select-multiple-form-field:lang(ar) {
+    direction: rtl;
+
 }
 
 .text-form-field {
@@ -46,6 +51,11 @@
     overflow: auto;
     height: 10vh;
     max-height: 15rem;
+}
+
+.textarea-form-field:lang(ar) {
+    direction: rtl;
+    padding: 1rem;
 }
 
 .select-form-field {
@@ -66,7 +76,14 @@
     -moz-appearance: none;
     appearance: none;
     cursor: pointer;
+
 }
+
+.form-label-outside {
+    margin-left: 1rem;
+    margin-top: 1rem;
+}
+
 
 .radio-form-field {
 
@@ -98,7 +115,7 @@
 
 .third-width {
     margin-right: 0;
-    width: calc(33.33% - 2.5rem);
+    width: calc(33.3333333333% - 2.2rem);
 }
 
 .general-form-error {
@@ -148,7 +165,7 @@
 
 @media (max-width: 768px) {
 
-    .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field {
+    .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field {
         margin: 0.5rem;
     }
 
@@ -167,20 +184,25 @@
     .two-thirds-width {
         width: calc(100% - 1.5rem);
     }
+
+    .form-label-outside {
+        margin-left: 0.5rem;
+
+    }
 }
 
 @media (prefers-color-scheme: dark) {
 
-    .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field {
+    .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field {
         color: #ffffff;
         border: 0.1rem solid #ffffff;
     }
 
-    .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover {
+    .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover, .select-multiple-form-field:hover {
         filter: drop-shadow(0 0 0.5rem #ffffff);
     }
 
-    .text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus {
+    .text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus, .select-multiple-form-field:focus {
         filter: drop-shadow(0 0 0.5rem #ffffff);
     }
 
