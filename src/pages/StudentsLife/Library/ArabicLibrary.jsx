@@ -1,5 +1,6 @@
 import OptionsGrid from "../../../modules/OptionsGrid.jsx";
 import '../../../styles/StudentsLife.css';
+import {Helmet} from "react-helmet";
 
 function ArabicLibrary() {
     const options = [
@@ -47,6 +48,16 @@ function ArabicLibrary() {
 
   return (
     <div className={"arabic-library-page"}>
+        <Helmet>
+            <title>Harvest International School | Arabic Library</title>
+            <meta name="description"
+                  content="Choose the category of books you would like to read in the Arabic library at Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords"
+                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
+        </Helmet>
       <OptionsGrid options={options} title="اختر تصنيفًا" titleInArabic={true} />
     </div>
   );

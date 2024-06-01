@@ -1,11 +1,23 @@
 import '../../styles/Admission.css';
 import {useNavigate} from "react-router-dom";
+import {Helmet} from "react-helmet";
 
 function AdmissionProcess() {
     const navigate = useNavigate();
 
   return (
     <div className="admission-process-page">
+        <Helmet>
+            <title>Harvest International School | Admission Process</title>
+            <meta name="description"
+                  content="Learn more about the admission process in terms of the application process, the interview, and the follow-up process for Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords"
+                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Admission, Admission Process, Admission Requirements, Admissione Fees, مصاريف مدارس هارفست، متطلبات القبول، عملية القبول"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
+        </Helmet>
+
         <container className="extreme-padding-container">
             <img src={'/assets/images/AdmissionPages/AdmissionProcess.png'} className={"admission-process-image"}
                  alt="Admission Process"/>

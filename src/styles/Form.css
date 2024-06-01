@@ -11,6 +11,11 @@
     overflow-y: auto;
 }
 
+.form-field-container {
+
+
+}
+
 .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field {
     margin: 1rem;
     will-change: filter;
@@ -66,8 +71,9 @@
     background-repeat: no-repeat;
     background-position: right 0.7rem top 50%;
     background-size: 1.5rem;
-    padding-right: 3rem;
+    padding-right: 1rem;
     cursor: pointer;
+
 
 }
 
@@ -76,6 +82,7 @@
     -moz-appearance: none;
     appearance: none;
     cursor: pointer;
+
 
 }
 
@@ -87,6 +94,7 @@
 
 .radio-form-field {
 
+
 }
 
 .checkbox-form-field {
@@ -95,6 +103,10 @@
 
 .file-form-field {
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 1rem;
 }
 
 .full-width {
@@ -113,9 +125,14 @@
     width: calc(50% - 2.2rem);
 }
 
+.select-form-field.third-width {
+    margin-right: 0;
+    width: calc(33.33333333334% - 1rem);
+}
+
 .third-width {
     margin-right: 0;
-    width: calc(33.3333333333% - 2.2rem);
+    width: calc(33.33333333334% - 2.2rem);
 }
 
 .general-form-error {
@@ -188,6 +205,10 @@
     .form-label-outside {
         margin-left: 0.5rem;
 
+    }
+
+    .select-form-field.third-width {
+        width: calc(100% - 1rem);
     }
 }
 

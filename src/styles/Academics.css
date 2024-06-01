@@ -118,7 +118,7 @@
 
 .national-academics-page-header {
     position: relative;
-    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageHeaderBackground.png');
+    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageHeaderBackground.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -259,7 +259,7 @@
 
 .national-academics-page-covid-19-policy {
     position: relative;
-    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageFooterBackground.png');
+    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageFooterBackground.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

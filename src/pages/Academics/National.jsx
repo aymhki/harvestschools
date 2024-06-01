@@ -2,6 +2,7 @@ import '../../styles/Academics.css';
 import Table from '../../modules/Table';
 import PhotoCollage from '../../modules/PhotoCollage';
 import {useNavigate} from "react-router-dom";
+import {Helmet} from "react-helmet";
 
 function National() {
 
@@ -17,75 +18,85 @@ function National() {
 
     const preparationToTheNewAcademicYearPhotos = [
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/Countries.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/Countries.jpg',
             alt: 'Countries'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/HarvestLanguageSchoolLogo.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/HarvestLanguageSchoolLogo.jpg',
             alt: 'Harvest Language School Logo'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/LearnDiscoverExplore.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/LearnDiscoverExplore.jpg',
             alt: 'Learn Discover Explore'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/MagnifyingGlass.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/MagnifyingGlass.jpg',
             alt: 'Magnifying Glass'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/MindsetIsEverything.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/MindsetIsEverything.jpg',
             alt: 'Mindset Is Everything'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/MinionsClimbing.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/MinionsClimbing.jpg',
             alt: 'Minions Climbing'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/OpenTheWorld.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/OpenTheWorld.jpg',
             alt: 'Open The World'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/STEMIcons.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/STEMIcons.jpg',
             alt: 'STEM Icons'
         },
         {
-            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/ThinkLikeAProton.png',
+            src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/ThinkLikeAProton.jpg',
             alt: 'Think Like A Proton'
         }
     ]
 
     const scienceLabsPhotos = [
         {
-            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab1.png',
+            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab1.jpg',
             alt: 'Science Lab 1'
         },
         {
-            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab2.png',
+            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab2.jpg',
             alt: 'Science Lab 2'
         },
         {
-            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab3.png',
+            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab3.jpg',
             alt: 'Science Lab 3'
         },
         {
-            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab4.png',
+            src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLab4.jpg',
             alt: 'Science Lab 4'
         },
     ]
 
     const preparationToTheNewAcademicYearCollagePreview = {
-        src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/PreparationToTheNewAcademicYear.png',
+        src: '../assets/images/AcademicsPages/PreparationToTheNewAcademicYear/PreparationToTheNewAcademicYear.jpg',
         alt: 'Preparation To The New Academic Year'
     }
 
     const scienceLabsCollagePreview = {
-        src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLabs.png',
+        src: '../assets/images/AcademicsPages/ScienceLabs/ScienceLabs.jpg',
         alt: 'Science Labs'
     }
 
 
   return (
     <div className="national-academics-page">
+        <Helmet>
+            <title>Harvest International School | National</title>
+            <meta name="description"
+                  content="Learn more about the National academics, the curriculum, and facilities for the National Division at Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords"
+                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
+        </Helmet>
 
         <div className="national-academics-page-header">
 
@@ -114,7 +125,7 @@ function National() {
         <div className="national-academics-page-safe-environment">
             <container className={"standard-padding-container"}>
             <h1>Safe Environment</h1>
-            <img src={'../assets/images/AcademicsPages/SafeEnvironment.png'} alt="Safe Environment" className="national-academics-page-safe-environment-image"/>
+            <img src={'../assets/images/AcademicsPages/SafeEnvironment.jpg'} alt="Safe Environment" className="national-academics-page-safe-environment-image"/>
             </container>
         </div>
 
