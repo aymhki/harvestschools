@@ -21,7 +21,7 @@ const NavigationBar = () => {
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
-        document.body.classList.toggle('lock-scroll', !isOpen);
+        // document.body.classList.toggle('lock-scroll', !isOpen);
 
         if (isOpen) {
             setAcademicsOpen(false);
@@ -36,7 +36,7 @@ const NavigationBar = () => {
 
     const closeMenu = () => {
         setIsOpen(false);
-        document.body.classList.toggle('lock-scroll', false);
+        // document.body.classList.toggle('lock-scroll', false);
         setAcademicsOpen(false);
         setAdmissionOpen(false);
         setStudentsLifeOpen(false);
@@ -135,7 +135,9 @@ const NavigationBar = () => {
             </div>
             <animated.ul style={{
                 transform: menuAnimation.transform,
-                opacity: menuAnimation.opacity
+                opacity: menuAnimation.opacity,
+                position: (isMobile) ? (isOpen ? 'absolute' : 'fixed') : 'absolute',
+
             }} className={(isMobile) ? "nav-links-mobile" : "nav-links"}>
                 <li onClick={() => {
                     (isMobile ? toggleMenu() : null);
