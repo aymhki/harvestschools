@@ -1,35 +1,44 @@
 
 import PropTypes from "prop-types";
 import {useState} from "react";
-import footer from "./Footer.jsx";
 import {Fragment} from "react";
 import '../styles/Form.css'
 function Form({fields, mailTo, sendPdf, formTitle, lang}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
+    const [datesValues, setDatesValues] = useState({}); //dates values
 
     const onChange = (e, field) => {
+        const maxSizeInBytes = 5 * 1024 * 1024;
         const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
 
-        if (field.regex && !new RegExp(field.regex).test(value)) {
-            e.target.setCustomValidity(field.errorMsg);
+        if (field.type === 'file' && e.target.files[0].size > maxSizeInBytes) {
+            e.target.setCustomValidity('File size must be less than 5MB');
         } else {
-            e.target.setCustomValidity('');
-            setGeneralFormError('');
-            setSuccessMessage('');
+
+            if (field.regex && !new RegExp(field.regex).test(value)) {
+                e.target.setCustomValidity(field.errorMsg);
+            } else {
+                e.target.setCustomValidity('');
+                setGeneralFormError('');
+                setSuccessMessage('');
+
+            }
         }
     }
 
     const renderFieldBasedOnType = (field) => {
+
+
             return (
-                <Fragment key={field.id}>
+                <Fragment key={field.id} >
                 {field.labelOutside && <label htmlFor={field.id} className={ "form-label-outside"}>
                     {field.label}
 
                 </label>}
 
-                    {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'date' || field.type === 'time' || field.type === 'password') &&
+                    {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time' || field.type === 'password') &&
                         <input
                             type={field.type}
                             id={field.id}
@@ -41,6 +50,35 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
                             className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                         />
                     }
+
+                    {field.type === 'date' && (
+
+                        <input
+                            type={datesValues[field.id] ? 'date' : 'text'}
+                            id={field.id}
+                            name={field.httpName}
+                            required={field.required}
+                            onFocus={(e) => e.target.type = 'date'}
+                            onBlur={(e) => e.target.type = datesValues[field.id] ? 'date' : 'text'}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Backspace') {
+                                    setDatesValues({...datesValues, [field.id]: ''})
+                                    e.target.type = 'text';
+                                    e.target.value = '';
+                                } else {
+                                    e.target.type = 'date';
+
+                                }
+                            }}
+                            placeholder={field.placeholder ? field.placeholder : field.label}
+                            disabled={submitting}
+                            onChange={(e) => {
+                                setDatesValues({...datesValues, [field.id]: e.target.value})
+                                onChange(e, field);
+                            }}
+                            className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                        />
+                    )}
 
                     {field.type === 'textarea' &&
                         <textarea
@@ -117,26 +155,38 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
                     }
 
                     {field.type === 'file' &&
+                        <div className={`file-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                        <label htmlFor={field.id} >{field.label}</label>
                         <input
                             type="file"
                             id={field.id}
                             name={field.httpName}
+                            label={field.label}
                             required={field.required}
-                            accept={field.allowedFileTypes ? field.allowedFileTypes.map(type => type.type).join(',') : '*/*'}
+                            accept={field.allowedFileTypes ? field.allowedFileTypes.join(',') : ''}
                             disabled={submitting}
-                            className={`file-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                             onChange={(e) => {
                                 const file = e.target.files[0];
-                                if (file && !field.allowedFileTypes.some(type => type.type === file.type)) {
-                                    e.target.setCustomValidity(`File type must be one of the following: ${field.allowedFileTypes.map(type => type.description).join(', ')}`);
-                                } else {
+
+                                if (file && !field.allowedFileTypes.includes(file.type)) {
+                                    e.target.setCustomValidity(`File type must be one of the following: ${field.allowedFileTypes.join(', ')}`);
+                                } else if (file && file.size > 5 * 1024 * 1024) {
+                                    e.target.setCustomValidity('File size must be less than 5MB');
+                                }else {
                                     e.target.setCustomValidity('');
                                     setGeneralFormError('');
                                     setSuccessMessage('');
                                     field.setValue(file);
                                 }
                             }}
-                        />
+                        >
+                        </input>
+                            <label>
+                                Maximum file size: 5MB
+                            </label>
+
+                        </div>
+
                     }
 
                 </Fragment>
@@ -147,10 +197,34 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
     const onSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
-        // setGeneralFormError('');
-        // setSuccessMessage('');
+        setGeneralFormError('');
+        setSuccessMessage('');
 
+        const formData = new FormData();
+        fields.forEach(field => {
+            const value = field.type === 'file' ? field.value : document.getElementById(field.id).value;
+            formData.append(field.httpName, value);
+        });
 
+        const finalApiLink = 'https://harvestschools.com/api/form/'+mailTo;
+
+        try {
+            const response = await fetch(finalApiLink, {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            if (data.error) {
+                setGeneralFormError(data.error);
+                setSubmitting(false);
+            } else {
+                setSuccessMessage(data.message);
+                setSubmitting(false);
+            }
+        } catch (error) {
+            setGeneralFormError('An error occurred. Please try again later.');
+            setSubmitting(false)
+        }
     };
 
     return (

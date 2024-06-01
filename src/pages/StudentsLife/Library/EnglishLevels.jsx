@@ -1,10 +1,22 @@
 import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
+import {Helmet} from "react-helmet";
 
 function EnglishLevels() {
   return (
       <div className={'students-life-library-books-page'}>
+          <Helmet>
+              <title>Harvest International School | English Library | Levels</title>
+              <meta name="description"
+                    content="Learn more about the avialable books in the Levels category at the English library at Harvest International School in Borg El Arab, Egypt."/>
+              <meta name="keywords"
+                    content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+              <meta name="author" content="Harvest International School"/>
+              <meta name="robots" content="index, follow"/>
+              <meta name="googlebot" content="index, follow"/>
+          </Helmet>
+
           <container className={"extreme-padding-container"}>
               <h1>English Levels</h1>
 

@@ -1,9 +1,20 @@
 import '../../styles/Events.css'
 import Table from "../../modules/Table.jsx";
+import {Helmet} from "react-helmet";
 
 function BritishCalendar() {
   return (
       <div className={"events-calendar-page"}>
+          <Helmet>
+              <title>Harvest International School | British Calendar</title>
+              <meta name="description"
+                    content="Learn more about the British academic year calendar at Harvest International School in Borg El Arab, Egypt."/>
+              <meta name="keywords"
+                    content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Events, Calendar, Academic Year, National, British, American, Kindergarten, سنة أكاديمية, تقويم, وطني, بريطاني, أمريكي, روضة, الروضة, سنة دراسية, مواعيد, امتحنات, اجازات"/>
+              <meta name="author" content="Harvest International School"/>
+              <meta name="robots" content="index, follow"/>
+              <meta name="googlebot" content="index, follow"/>
+          </Helmet>
           <container className={"extreme-padding-container"}>
               <h1>British Calendar</h1>
 
