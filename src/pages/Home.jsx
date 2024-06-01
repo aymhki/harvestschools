@@ -3,8 +3,13 @@ import '../styles/Home.css';
 import {Helmet} from "react-helmet";
 import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
+import LoadingSpinner from "../modules/LoadingSpinner.jsx";
+import {useEffect, useState} from "react";
 
 function Home() {
+
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const homeSliderPhotos = [
         { id: 1, url: '/assets/images/HomePage/VisionBackground.jpg', title: 'Our Vision', text: 'Is to invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.' },
@@ -19,10 +24,14 @@ function Home() {
         { id: 5, type: 'textarea', label: 'Message', httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 }
     ]
 
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
+
     return (
 
-        <div className="home-page">
-
+        <div className="home-page" >
+            {isLoading && <LoadingSpinner />}
             <Helmet>
                 <title>Harvest International School | Egypt</title>
                 <meta name="description"
@@ -35,7 +44,7 @@ function Home() {
             </Helmet>
 
             <div className="home-page-vision-and-mission-slider">
-                <PhotoSlider photos={homeSliderPhotos} darken={true}/>
+                <PhotoSlider photos={homeSliderPhotos} darken={true} />
             </div>
 
             <div className="home-page-about-us-section">
@@ -94,7 +103,7 @@ function Home() {
                     </p>
 
 
-                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'asmaa.samir@harvestschools.com'} formTitle={'Contact Us'}/>
+                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'asmaa.samir@harvestschools.com'} formTitle={'Contact Us Form Submission'}/>
                 </div>
 
                 <div className="home-page-visit-us-section">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/PhotoCollage.css';
 import PropTypes from "prop-types";
 import { useSpring, animated } from 'react-spring';
@@ -21,10 +21,11 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
 
     const changePhoto = (newIndex) => {
         setIsTransitioning(true);
-        setTimeout(() => {
-            setCurrentIndex(newIndex);
-            setIsTransitioning(false);
-        }, 500); // Match this duration with the CSS transition duration
+        setCurrentIndex(newIndex);
+        // setTimeout(() => {
+        //
+        //     setIsTransitioning(false);
+        // }, 500); // Match this duration with the CSS transition duration
     };
 
     const nextPhoto = () => {
@@ -34,6 +35,11 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     const prevPhoto = () => {
         changePhoto((currentIndex - 1 + photos.length) % photos.length);
     };
+
+    const handleImageLoad = () => {
+        setIsTransitioning(false);
+    }
+
 
     const renderSlider = () => {
         // let photosWidth = photos.map(photo => {
@@ -85,6 +91,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                         src={photos[currentIndex].src}
                         alt={photos[currentIndex].alt}
                         className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
+                        onLoad={handleImageLoad}
                     />
                     <div onClick={closeLightBox} className="close-lightbox">&#10007;</div>
                     <div onClick={prevPhoto} className="prev-photo">&#10094;</div>
