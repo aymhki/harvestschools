@@ -75,7 +75,7 @@
     background-color: #1f2152;
     align-items: center;
     z-index: 1000;
-    overflow: hidden;
+    overflow: scroll;
 }
 
 .dropdown {
