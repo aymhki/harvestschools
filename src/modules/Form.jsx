@@ -237,18 +237,18 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
                 setSuccessMessage('Form submitted successfully!');
                 setTimeout(() => {
                     setSuccessMessage('');
-                }, 5000);
+                }, 3000);
             } else {
                 setGeneralFormError('Form submission failed. Please try again.');
                 setTimeout(() => {
                     setGeneralFormError('');
-                }, 5000);
+                }, 3000);
             }
         } catch (error) {
             setGeneralFormError('Form submission failed. Please try again.');
             setTimeout(() => {
                 setGeneralFormError('');
-            }, 5000);
+            }, 3000);
         } finally {
             setSubmitting(false);
 

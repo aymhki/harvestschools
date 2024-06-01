@@ -9,7 +9,7 @@ import {useNavigate} from "react-router-dom";
 
 const NavigationBar = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [isOpen, setIsOpen] = useState(isMobile);
+    const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
     const [academicsOpen, setAcademicsOpen] = useState(false);
     const [admissionOpen, setAdmissionOpen] = useState(false);
@@ -157,7 +157,7 @@ const NavigationBar = () => {
                             <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: academicsOpen ? 'block' : 'none'}}>
+                    <ul className="dropdown-content" style={{display: academicsOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/academics/national');
@@ -201,7 +201,7 @@ const NavigationBar = () => {
                             <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: admissionOpen ? 'block' : 'none'}}>
+                    <ul className="dropdown-content" style={{display: admissionOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/admission/admission-process');
@@ -230,7 +230,7 @@ const NavigationBar = () => {
                             <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: studentsLifeOpen ? 'block' : 'none'}}>
+                    <ul className="dropdown-content" style={{display: studentsLifeOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/students-life/students-union');
@@ -256,7 +256,7 @@ const NavigationBar = () => {
                             <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: eventsOpen ? 'block' : 'none'}}>
+                    <ul className="dropdown-content" style={{display: eventsOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/events/national-calendar');
@@ -286,7 +286,7 @@ const NavigationBar = () => {
                             <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: galleryOpen ? 'block' : 'none'}}>
+                    <ul className="dropdown-content" style={{display: galleryOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/gallery/photos');
@@ -313,7 +313,7 @@ const NavigationBar = () => {
                         </div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: moreInfoOpen ? 'block' : 'none'}}>
+                    <ul className="dropdown-content" style={{display: moreInfoOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/faqs');
