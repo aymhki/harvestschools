@@ -70,13 +70,12 @@
     display: flex;
     list-style: none;
     flex-direction: column;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
-    position: fixed;
     background-color: #1f2152;
     align-items: center;
-    overflow-y: auto;
     z-index: 1000;
+    overflow: hidden;
 }
 
 .dropdown {
@@ -124,8 +123,8 @@
     color: #ffffff;
     background-color: #1f2152;
     font-size: xxx-large;
-    width: 100%;
     text-align: center;
+    width: 90%;
     cursor: pointer;
     margin-top: 1rem;
     margin-bottom: 1rem;
