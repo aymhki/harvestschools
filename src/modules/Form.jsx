@@ -3,11 +3,13 @@ import PropTypes from "prop-types";
 import {useState} from "react";
 import {Fragment} from "react";
 import '../styles/Form.css'
+import jsPDF from 'jspdf';
+
+
 function Form({fields, mailTo, sendPdf, formTitle, lang}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
-    const [datesValues, setDatesValues] = useState({}); //dates values
 
     const onChange = (e, field) => {
         const maxSizeInBytes = 5 * 1024 * 1024;
@@ -54,26 +56,13 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
                     {field.type === 'date' && (
 
                         <input
-                            type={datesValues[field.id] ? 'date' : 'text'}
+                            type={'text'}
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            onFocus={(e) => e.target.type = 'date'}
-                            onBlur={(e) => e.target.type = datesValues[field.id] ? 'date' : 'text'}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Backspace') {
-                                    setDatesValues({...datesValues, [field.id]: ''})
-                                    e.target.type = 'text';
-                                    e.target.value = '';
-                                } else {
-                                    e.target.type = 'date';
-
-                                }
-                            }}
-                            placeholder={field.placeholder ? field.placeholder : field.label}
+                            placeholder={field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}
                             disabled={submitting}
                             onChange={(e) => {
-                                setDatesValues({...datesValues, [field.id]: e.target.value})
                                 onChange(e, field);
                             }}
                             className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
@@ -194,6 +183,8 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
 
     }
 
+
+
     const onSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -202,30 +193,51 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
 
         const formData = new FormData();
         fields.forEach(field => {
-            const value = field.type === 'file' ? field.value : document.getElementById(field.id).value;
-            formData.append(field.httpName, value);
+            if (field.type === 'file') {
+                const file = field.value;
+                formData.append(field.label, file, file.name);
+            } else {
+                const value = document.getElementById(field.id).value;
+                formData.append(field.label, value);
+            }
         });
 
-        const finalApiLink = 'https://harvestschools.com/api/form/'+mailTo;
+        formData.append('mailTo', mailTo);
+        formData.append('formTitle', formTitle);
+
+        if (sendPdf) {
+            // Create a PDF file using jsPDF
+            const pdf = new jsPDF();
+            pdf.text("Form Submission", 10, 10);
+            pdf.text(`Title: ${formTitle}`, 10, 20);
+            fields.forEach((field, index) => {
+                const value = document.getElementById(field.id).value;
+                pdf.text(`${field.label}: ${value}`, 10, 30 + (index * 10));
+            });
+
+            const pdfBlob = pdf.output('blob');
+            formData.append('pdfFile', pdfBlob, 'form.pdf');
+        }
 
         try {
-            const response = await fetch(finalApiLink, {
+            const response = await fetch('/forms/script.php', {
                 method: 'POST',
-                body: formData,
+                body: formData
             });
-            const data = await response.json();
-            if (data.error) {
-                setGeneralFormError(data.error);
-                setSubmitting(false);
+
+            const result = await response.json();
+            if (result.success) {
+                setSuccessMessage('Form submitted successfully!');
             } else {
-                setSuccessMessage(data.message);
-                setSubmitting(false);
+                setGeneralFormError('Form submission failed. Please try again.');
             }
         } catch (error) {
-            setGeneralFormError('An error occurred. Please try again later.');
-            setSubmitting(false)
+            setGeneralFormError('Form submission failed. Please try again.');
+        } finally {
+            setSubmitting(false);
         }
     };
+
 
     return (
         <form

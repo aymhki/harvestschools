@@ -8,5 +8,3 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <App />
     </React.StrictMode>
 )
-
-// what is another way to do this?
