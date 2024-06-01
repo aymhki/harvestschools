@@ -41,7 +41,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 5rem;
     margin: 2rem;
     min-width: 20rem;
 }
@@ -184,7 +184,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
+        gap: 5rem;
         margin: 1rem;
         min-width: 20rem;
     }
