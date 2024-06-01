@@ -24,10 +24,14 @@ function Home() {
         <div className="home-page">
 
             <Helmet>
-                <title>Harvest International School | Burg El Arab</title>
-                <meta name="description" content="Harvest International School is the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program." />
-                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Egypt, International School, British Syllabus, American Syllabus, Egyptian Syllabus, Education, School, Learning, Teaching, Students, Teachers, Administrators, Extracurricular Program, World-Class Educational Facility, Sports Fields, Gymnasium, Swimming Pool, Lifelong Education, Global Community, Well-Rounded Young People, Twenty-First Century, Education, Discover, Experiment, Mission, Vision, Eng. Hassan Khalil Ibrahim" />
-                <meta name="author" content="Harvest International School" />
+                <title>Harvest International School | Egypt</title>
+                <meta name="description"
+                      content="Harvest International School (HIS) was founded in 2016 by Eng. Hassan Khalil Ibrahim to be the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. "/>
+                <meta name="keywords"
+                      content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, International School, British Syllabus, American Syllabus, Egyptian Syllabus, Education, School, Learning, Teaching, Students, Teachers, World-Class Educational Facility, Sports Fields, Gymnasium, Swimming Pool, Twenty-First Century, Education, Eng. Hassan Khalil Ibrahim, مدارس هارفست, برج العرب, مدرسة, هارفست"/>
+                <meta name="author" content="Harvest International School"/>
+                <meta name="robots" content="index, follow"/>
+                <meta name="googlebot" content="index, follow"/>
             </Helmet>
 
             <div className="home-page-vision-and-mission-slider">
@@ -60,7 +64,7 @@ function Home() {
                 <ParallaxScrollSection
                     title="E-Learning & Academics"
                     text="At Harvest Schools, E-learning is integrated with all National, British, and American stages making it the first school in Egypt that not only allow parents to access classes live from anywhere around the world but also allow students to follow up with their previously recorded lessons online and solve related assignments. All of this is powered by an advanced, moderated, and well-tested system called schoolEverywhere. To understand the policies and the curriculums that are embedded within the online system, learn more below."
-                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.png"
+                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.jpg"
                     darken={true}
                     buttonText="Learn More"
                     buttonLink="/academics/partners"
@@ -69,7 +73,7 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.png'} darken={true} buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.jpg'} darken={true} buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">

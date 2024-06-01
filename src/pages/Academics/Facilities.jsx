@@ -1,25 +1,36 @@
 import '../../styles/Academics.css'
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
+import {Helmet} from "react-helmet";
 
 function Facilities() {
     return (
         <div className="academics-facilities-page">
+            <Helmet>
+                <title>Harvest International School | Facilities</title>
+                <meta name="description"
+                      content="Learn more about the classrooms, labs, libraries, canteens, sports facilities, and more at Harvest International School in Borg El Arab, Egypt."/>
+                <meta name="keywords"
+                      content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
+                <meta name="author" content="Harvest International School"/>
+                <meta name="robots" content="index, follow"/>
+                <meta name="googlebot" content="index, follow"/>
+            </Helmet>
             <container className={"extreme-padding-container"}>
                 <h1>Facilities</h1>
 
                 <div className="facilities-show-case-grid">
-                    <img src="/assets/images/AcademicsPages/Facilities/HandballField2.png" alt="Handball Field"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/FootballField.png" alt="Football Field"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/Library.png" alt="Library"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/Gym1.png" alt={"Gym"} className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/BasketballField.png" alt="Basketball Field"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/Lab1.png" alt="Biology Lab"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/Lab2.png" alt="Chemistry Lab"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/Toys.png" alt="Playground"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/HandballField1.png" alt="Handball Field"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/BasketballField1.png" alt="Basketball Field"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/Lab3.png" alt="Physics Lab"  className="facilities-show-case-image"/>
-                    <img src="/assets/images/AcademicsPages/Facilities/Gym2.png" alt="Gym"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/HandballField2.jpg" alt="Handball Field"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/FootballField.jpg" alt="Football Field"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/Library.jpg" alt="Library"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/Gym1.jpg" alt={"Gym"} className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/BasketballField.jpg" alt="Basketball Field"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/Lab1.jpg" alt="Biology Lab"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/Lab2.jpg" alt="Chemistry Lab"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/Toys.jpg" alt="Playground"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/HandballField1.jpg" alt="Handball Field"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/BasketballField1.jpg" alt="Basketball Field"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/Lab3.jpg" alt="Physics Lab"  className="facilities-show-case-image"/>
+                    <img src="/assets/images/AcademicsPages/Facilities/Gym2.jpg" alt="Gym"  className="facilities-show-case-image"/>
                 </div>
 
 
@@ -29,7 +40,7 @@ function Facilities() {
 
             </container>
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/ComputerLab.png"} title={"Computer Lab Policy"} darken={true}
+            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/ComputerLab.jpg"} title={"Computer Lab Policy"} darken={true}
                                    divElements={[
                                        (
                                            <div className={"computer-lab-policy"} key={"computer-lab-policy"}>
@@ -74,7 +85,7 @@ function Facilities() {
 
                                        )]}/>
             
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Library.png"} title={"Library"} darken={true}
+            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Library.jpg"} title={"Library"} darken={true}
                                    divElements={[(
                                        <div className={"library-policy"} key={"library-policy"}>
                                            <p>
@@ -101,7 +112,7 @@ function Facilities() {
                                    )]}/>
 
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Canteen.png"} title={"School Canteen"} darken={true}
+            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Canteen.jpg"} title={"School Canteen"} darken={true}
                                       divElements={[(
                                         <div className={"canteen-policy"} key={"canteen-policy"}>
                                              <p>
@@ -123,7 +134,7 @@ function Facilities() {
                                         </div>
                                       )]}/>
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Classroom.png"} title={"Smart Classes"} darken={true}
+            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Classroom.jpg"} title={"Smart Classes"} darken={true}
 
                                       divElements={[(
                                             <div className={"smart-classes-policy"} key={"smart-classes-policy"}>
@@ -133,7 +144,7 @@ function Facilities() {
                                             </div>
                                       )]}/>
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Gym2.png"} title={"Sports"} darken={true}
+            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Gym2.jpg"} title={"Sports"} darken={true}
                                       divElements={[(
                                         <div className={"sports-policy"} key={"sports-policy"}>
                                              <p>

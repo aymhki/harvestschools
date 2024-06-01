@@ -35,6 +35,13 @@
     "vite": "^5.2.0"
   },
   "reactSnap": {
+    "preconnectThirdParty": true,
+    "inlineCss": true,
+    "saveAs": "html",
+    "crawl": true,
+    "source": "dist",
+    "script":"serve",
+    "port": 45678,
     "include": [
       "/",
       "/home",
@@ -79,7 +86,11 @@
       "/covid-19/covid-19-english",
       "/covid-19/covid-19-arabic",
       "/not-found"
-    ],
-    "crawl": true
+    ]
+  },
+  "snap": {
+    "source": "dist",
+    "script":"serve",
+    "port": 45678
   }
 }
