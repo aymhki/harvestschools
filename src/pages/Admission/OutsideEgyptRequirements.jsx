@@ -1,11 +1,23 @@
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import '../../styles/Admission.css'
+import {Helmet} from "react-helmet";
 
 function OutsideEgyptRequirements() {
   return (
       <div className="admission-outside-egypt-page">
+          <Helmet>
+              <title>Harvest International School | Admission Requirements Outside Egypt</title>
+              <meta name="description"
+                    content="Learn more about what is required from parents and students when applying to transfer from a school outside of Egypt or applying to schools for the first time from outside of Egypt"/>
+              <meta name="keywords"
+                    content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Admission, Admission Process, Admission Requirements, Admissione Fees, مصاريف مدارس هارفست، متطلبات القبول، عملية القبول"/>
+              <meta name="author" content="Harvest International School"/>
+              <meta name="robots" content="index, follow"/>
+              <meta name="googlebot" content="index, follow"/>
+          </Helmet>
+
           <ParallaxScrollSection
-              backgroundImage={'/assets/images/AdmissionPages/OutsideEgyptRequirementsHeaderBackground.png'}
+              backgroundImage={'/assets/images/AdmissionPages/OutsideEgyptRequirementsHeaderBackground.jpg'}
               title={"Admission Requirements Note"} titleInArabic={false}
               darken={true}
               divElements={[(

@@ -1,5 +1,6 @@
 import '../../styles/Academics.css';
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
+import {Helmet} from "react-helmet";
 
 function Academics() {
 
@@ -62,6 +63,17 @@ function Academics() {
 
   return (
     <div className="academics-page">
+        <Helmet>
+            <title>Harvest International School | Academics</title>
+            <meta name="description"
+                  content="Learn more about the American, National, and British academics, the curriculums, partners, staff, and facilities at Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords"
+                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
+        </Helmet>
+
         <OptionsGrid title="Academics" titleInArabic={false} options={options}/>
     </div>
   );
