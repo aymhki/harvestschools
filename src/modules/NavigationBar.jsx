@@ -68,24 +68,32 @@ const NavigationBar = () => {
 
 
     useEffect(() => {
+        let lastWidth = window.innerWidth;
+
         const checkWindowSize = () => {
-            setIsMobile(window.innerWidth < 768);
-            if (window.innerWidth >= 768) {
-                setIsOpen(true);
-                setAcademicsOpen(false);
-                setAdmissionOpen(false);
-                setStudentsLifeOpen(false);
-                setEventsOpen(false);
-                setGalleryOpen(false);
-                setMoreInfoOpen(false);
-            } else {
-                setIsOpen(false);
-                setAcademicsOpen(false);
-                setAdmissionOpen(false);
-                setStudentsLifeOpen(false);
-                setEventsOpen(false);
-                setGalleryOpen(false);
-                setMoreInfoOpen(false);
+            const currentWidth = window.innerWidth;
+            if (currentWidth !== lastWidth) {
+                lastWidth = currentWidth;
+                setIsMobile(currentWidth < 768);
+                if (currentWidth >= 768) {
+                    setIsOpen(true);
+                    // Close all dropdowns
+                    setAcademicsOpen(false);
+                    setAdmissionOpen(false);
+                    setStudentsLifeOpen(false);
+                    setEventsOpen(false);
+                    setGalleryOpen(false);
+                    setMoreInfoOpen(false);
+                } else {
+                    setIsOpen(false);
+                    // Close all dropdowns
+                    setAcademicsOpen(false);
+                    setAdmissionOpen(false);
+                    setStudentsLifeOpen(false);
+                    setEventsOpen(false);
+                    setGalleryOpen(false);
+                    setMoreInfoOpen(false);
+                }
             }
         };
 

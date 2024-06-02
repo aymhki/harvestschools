@@ -685,7 +685,6 @@ function Covid19ArabicRead() {
                 </li>
             </ul>
 
-
         </container>
     </div>
   );

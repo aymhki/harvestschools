@@ -15,8 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $text = "";
     foreach ($_POST as $key => $value) {
-        if ($key != 'mailTo' && $key != 'formTitle') {
-            $text .= "$key: $value\n";
+        if (strpos($key, 'field_') === 0) {
+            $fieldId = substr($key, 6); // Remove 'field_' prefix to get the original ID
+            $labelKey = 'label_' . $fieldId;
+            if (isset($_POST[$labelKey])) {
+                $label = $_POST[$labelKey];
+                $text .= "$label: $value\n";
+            }
         }
     }
 
