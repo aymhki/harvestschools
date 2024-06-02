@@ -199,7 +199,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
                 formData.append(`field_${field.id}`, value);
                 formData.append(`label_${field.id}`, field.label); // Append labels separately
 
-                if(field.type === 'file') {
+                if(field.type === 'file' && field.file) {
                     formData.append(field.label, field.file, field.file.name ? field.file.name : field.label);
                 }
             });
