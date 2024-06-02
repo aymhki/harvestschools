@@ -187,34 +187,24 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        if (submitting) { return; }
         setSubmitting(true);
         setGeneralFormError('');
         setSuccessMessage('');
 
-
-
         try {
             const formData = new FormData();
             fields.forEach(field => {
-                if (field.type === 'file') {
-                    const file = field.file;
+                const value = document.getElementById(field.id).value;
+                formData.append(`field_${field.id}`, value);
+                formData.append(`label_${field.id}`, field.label); // Append labels separately
 
-                    if (file && file.name) {
-                        formData.append(field.label, file, file.name);
-                    } else if (file) {
-                        formData.append(field.label, file, field.label);
-                    }
-                } else {
-                    const value = document.getElementById(field.id).value;
-                    formData.append(field.label, value);
+                if(field.type === 'file') {
+                    formData.append(field.label, field.file, field.file.name ? field.file.name : field.label);
                 }
             });
 
-            formData.append('mailTo', mailTo);
-            formData.append('formTitle', formTitle);
-
             if (sendPdf) {
-                // Create a PDF file using jsPDF
                 const pdf = new jsPDF();
                 pdf.text("Form Submission", 10, 10);
                 pdf.text(`Title: ${formTitle}`, 10, 20);
@@ -227,6 +217,9 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
                 formData.append('pdfFile', pdfBlob, 'form.pdf');
             }
 
+            formData.append('mailTo', mailTo);
+            formData.append('formTitle', formTitle);
+
             const response = await fetch('/forms/script.php', {
                 method: 'POST',
                 body: formData
@@ -234,27 +227,21 @@ function Form({fields, mailTo, sendPdf, formTitle, lang}) {
 
             const result = await response.json();
             if (result.success) {
-                setSuccessMessage('Form submitted successfully!');
-                setTimeout(() => {
-                    setSuccessMessage('');
-                }, 3000);
+                setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
+                setTimeout(() => { setSuccessMessage(''); }, 3000);
             } else {
-                setGeneralFormError('Form submission failed. Please try again.');
-                setTimeout(() => {
-                    setGeneralFormError('');
-                }, 3000);
+                setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.');
+                setTimeout(() => { setGeneralFormError(''); }, 3000);
             }
         } catch (error) {
-            setGeneralFormError('Form submission failed. Please try again.');
-            setTimeout(() => {
-                setGeneralFormError('');
-            }, 3000);
+            setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.');
+            setTimeout(() => { setGeneralFormError(''); }, 3000);
         } finally {
             setSubmitting(false);
-
-
         }
     };
+
+
 
 
     return (
