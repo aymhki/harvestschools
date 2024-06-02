@@ -39,6 +39,10 @@
     animation: slideIn 1s forwards;
 }
 
+.slide.not-active {
+    opacity: 0;
+}
+
 .slide.exiting {
     opacity: 1;
     z-index: 2;
