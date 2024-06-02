@@ -239,9 +239,11 @@
 
     .dropdown-icon-container {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         gap: 1rem;
         align-items: center;
+        margin-left: 30%;
+        margin-right: 30%;
     }
 
     .navbar-quick-action-buttons-container {

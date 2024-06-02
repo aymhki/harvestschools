@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: center;
     width: 60vw;
-    height: 50vh;
+    height: 60vh;
     margin-top: 1rem;
     min-width: 20rem;
 
@@ -42,8 +42,12 @@
     align-items: center;
     justify-content: center;
     gap: 5rem;
-    margin: 2rem;
+
     min-width: 20rem;
+    margin-bottom: 5rem;
+    margin-left: 5rem;
+    margin-right: 3rem;
+    margin-top: 3rem;
 }
 
 .accreditation-photo {
@@ -52,6 +56,7 @@
     object-fit: cover;
     min-width: 10rem;
     filter: drop-shadow(0 0 1rem #ffffff);
+    margin-bottom: 5rem;
 }
 
 .home-page-contact-and-visit-us-container {
@@ -138,6 +143,9 @@
 }
 
 @media (max-width: 1024px) {
+
+
+
     .home-page-about-us-section {
         margin: 1rem;
         padding: 1rem;
