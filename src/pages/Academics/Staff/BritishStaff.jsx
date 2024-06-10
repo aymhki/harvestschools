@@ -54,7 +54,8 @@ function BritishStaff() {
                   ['Eman Abas', 'Mathematics', 'Coordinator'],
                   ['Dr. Zeinab El Shazly', 'Mathematics', 'Coordinator'],
                   ['Ghadeer Raslan', 'English', 'Coordinator']
-                  ]} numCols={3} />
+                  ]} numCols={3}
+                     sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
               <p>
                   This page was last updated on June 20, 2021
