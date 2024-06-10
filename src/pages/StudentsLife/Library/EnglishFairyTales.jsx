@@ -47,7 +47,8 @@ function EnglishFairyTales() {
                       ['The wonderful story of Henry sugar and six more', '50 years']
                   ]
 
-              } numCols={2}/>
+              } numCols={2}
+                     sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
               <h2>
                   Recommend a book for the Library to add it to its collection

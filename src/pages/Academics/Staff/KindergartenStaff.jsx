@@ -43,7 +43,8 @@ function KindergartenStaff() {
                 ['Maha Mohamed Kamal Mohamed Abdelmaksoud', 'General', 'Teacher'],
                 ['Asmaa Mohamed Abbas Aglan', 'Assistant KG1', 'Assistant']
 
-                ]} numCols={3} />
+                ]} numCols={3}
+                   sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
             <p>
                 This page was last updated on June 20, 2021

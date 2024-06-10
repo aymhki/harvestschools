@@ -81,7 +81,8 @@ function ArabicInformation() {
                       ['اساسيات الكمبيوتر', 'سلسلة الكمبيوتر التعليمية']
                   ]
 
-              } numCols={2}/>
+              } numCols={2}
+                     sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
 
               <h1 lang={'ar'}>
@@ -161,7 +162,8 @@ function ArabicInformation() {
                         ]
                     }
 
-                    lang={"ar"}/>
+                    lang={"ar"}
+                    />
 
           </container>
       </div>

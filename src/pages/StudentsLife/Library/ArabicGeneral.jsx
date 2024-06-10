@@ -115,7 +115,9 @@ function ArabicGeneral() {
                         ['تيستروجين', '-']
                     ]
 
-                } numCols={2}/>
+                } numCols={2}
+
+                       sortConfigParam={{column: 0, direction: 'ascending'}}/>
 
 
                 <h1 lang={'ar'}>
