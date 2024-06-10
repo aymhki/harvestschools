@@ -116,7 +116,9 @@ function ArabicStories() {
                         ['زقملان النظيف', 'مغامرات سمسم']
                     ]
 
-                } numCols={2}/>
+                } numCols={2}
+
+                       sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
                 <h1 lang={'ar'}>
                     اقترح كتاب للمكتبة لاضافته الى مجموعتها

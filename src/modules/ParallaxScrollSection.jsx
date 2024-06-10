@@ -2,17 +2,26 @@ import '../styles/ParallaxScrollSection.css';
 import {useNavigate} from "react-router-dom";
 import PropTypes from 'prop-types';
 import {Fragment} from "react";
+import {useEffect, useState} from "react";
 
-function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonText, buttonLink, image, imageAlt, divElements }) {
+function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonText, buttonLink, image, imageAlt, divElements, noParallax }) {
     const navigate = useNavigate();
+    const [isSafari, setIsSafari] = useState(false);
+
 
 
     const style = {
         backgroundImage: `url(${backgroundImage})`
     };
 
+    useEffect(() => {
+        const userAgent = navigator.userAgent.toLowerCase();
+        setIsSafari(userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1);
+    }, []);
+
     return (
-        <div className="parallax-section" style={style}>
+        <div className={`parallax-section + ${(noParallax || isSafari) ? 'no-parallax' : ''}`}
+             style={style}>
             {darken && <div className="darken"></div>}
             <div className="content">
                 {image && imageAlt && (<img src={image} alt={imageAlt} className="parallax-section-image"/>)}
@@ -46,7 +55,8 @@ ParallaxScrollSection.propTypes = {
     buttonLink: PropTypes.string,
     image: PropTypes.string,
     imageAlt: PropTypes.string,
-    divElements: PropTypes.array
+    divElements: PropTypes.array,
+    noParallax: PropTypes.bool
 };
 
 

@@ -200,7 +200,8 @@ function EnglishGeneral() {
                       ['Wizard and glass +']
                   ]
 
-              } numCols={1}/>
+              } numCols={1}
+                     sortConfigParam={{column: 0, direction: 'ascending'}}/>
 
 
               <h2>

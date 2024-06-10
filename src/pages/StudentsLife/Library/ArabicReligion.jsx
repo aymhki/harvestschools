@@ -83,7 +83,9 @@ function ArabicReligion() {
                       ['زكريا و يحيى و عيسى عليهم السلام', 'قصص الانبياء']
                   ]
 
-              } numCols={2}/>
+              } numCols={2}
+
+                     sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
 
               <h1 lang={'ar'}>

@@ -32,6 +32,8 @@ function Activities() {
 
                                        )
                                    ]}
+
+                                   noParallax={false}
             />
 
         <container className={'extreme-padding-container'}>

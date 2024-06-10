@@ -54,7 +54,8 @@ function EnglishLevels() {
                       ['Treasure island', 'Green apple']
                   ]
 
-              } numCols={2}/>
+              } numCols={2}
+                     sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
               <h2>
                   Recommend a book for the Library to add it to its collection
