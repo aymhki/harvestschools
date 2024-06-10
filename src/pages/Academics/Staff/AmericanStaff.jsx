@@ -40,7 +40,9 @@ function AmericanStaff() {
                     ['Walaa Gharib', 'English + Social Studies', 'Teacher'],
                     ['Ghada Said', 'English + Social Studies', 'Coordinator']
 
-                ]} numCols={3} />
+                ]} numCols={3}
+                       sortConfigParam={{column: 1, direction: 'ascending'}}
+                />
 
                 <p>
                     This page was last updated on June 20, 2021

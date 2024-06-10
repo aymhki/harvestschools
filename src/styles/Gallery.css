@@ -87,6 +87,23 @@
 
 }
 
+.gallery-360-tour-buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    align-content: center;
+    gap: 2rem;
+
+}
+
+.gallery-360-tour-index-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    gap: 1rem;
+
+}
+
 @media (max-width: 1024px) {
     .gallery-360-tour-iframe {
         width: 90vw;
@@ -125,6 +142,7 @@
 }
 
 @media (max-width: 768px) {
+
     .narrow-sliders-grid {
         grid-template-columns: 1fr;
         gap: 2rem;

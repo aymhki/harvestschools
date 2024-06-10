@@ -59,7 +59,8 @@ function NationalStaff() {
               ['Samya Adel Metwally Abdel Mohsen', 'ARABIC, RELIGION', 'Teacher'],
               ['Sarah Hamdy Hamed Ahmed', 'ARABIC, RELIGION', 'Teacher'],
               ['Sara Ahmed Abd Elmonim', 'French', 'Teacher']
-          ]} numCols={3} />
+          ]} numCols={3}
+                 sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
           <p>
               This page was last updated on June 20, 2021
