@@ -36,10 +36,23 @@
 }
 
 .parallax-section-image {
-    width: 10%;
-    height: 10%;
+    width: 15rem;
+    height: 15rem;
 }
 
+@media (max-width: 1440px) {
+    .parallax-section-image {
+        width: 12rem;
+        height: 12rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .parallax-section-image {
+        width: 10rem;
+        height: 10rem;
+    }
+}
 
 
 @media (max-width: 768px) {
@@ -54,5 +67,10 @@
 
     .darken {
         background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .parallax-section-image {
+        width: 5rem;
+        height: 5rem;
     }
 }
