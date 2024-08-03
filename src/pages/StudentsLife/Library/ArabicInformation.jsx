@@ -163,7 +163,7 @@ function ArabicInformation() {
                     }
 
                     lang={"ar"}
-                    />
+                    captchaLength={1}/>
 
           </container>
       </div>
