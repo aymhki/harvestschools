@@ -197,7 +197,7 @@ function ArabicGeneral() {
                           ]
                       }
 
-                      lang={"ar"}/>
+                      lang={"ar"}  captchaLength={1}/>
 
             </container>
         </div>

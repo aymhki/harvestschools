@@ -196,7 +196,7 @@ function ArabicStories() {
                           ]
                     }
 
-              lang={"ar"}/>
+              lang={"ar"}  captchaLength={1}/>
 
           </container>
     </div>
