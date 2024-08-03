@@ -23,32 +23,11 @@ function Vacancies() {
                 Dear Applicant,
             </h2>
             <p>
-                Harvest Schools does not only hire experienced people or fresh graduates, At Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, upload it here using this tool:
+                Harvest Schools does not only hire experienced people or fresh graduates, At Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form available in this page.
             </p>
 
-
-
-            <Form sendPdf={false} mailTo={'info@harvestschools.com'} formTitle={'Resume Submission'} fields={[
-                {
-                    id: 1,
-                    type: 'file',
-                    name: 'resume',
-                    label: 'Resume',
-                    required: true,
-                    placeholder: 'Upload your resume here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
-                    errorMessage: 'Please upload your resume in PDF format',
-                    value: '',
-                    setValue: null,
-                    widthOfField: 1,
-                    httpName: 'resume'
-
-
-                }
-            ]} />
-
             <p>
-                However, If you would like to create a new CV, you can use the application tool  below. After filing the form, your new CV will be sent to us. If you are not sure about any of the fields required in the form, please read the example pdf available here:
+                If you are not sure about any of the fields required in the form, please read the example pdf available below.
             </p>
 
             <div className={"download-cv-button-wrapper"} >
@@ -59,7 +38,7 @@ function Vacancies() {
                 Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type "N/A."
             </p>
 
-            <Form sendPdf={false} formTitle={'Resume Submission'} mailTo={'info@harvestschools.com'} fields={[
+            <Form sendPdf={false} formTitle={'Job Application Submission'} mailTo={'info@harvestschools.com'} fields={[
                 {
                     id: 1,
                     type: 'text',
@@ -72,8 +51,6 @@ function Vacancies() {
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'first-name',
-
-
                 },
                 {
                     id: 2,
@@ -142,25 +119,12 @@ function Vacancies() {
                     setValue: null,
                     httpName: 'gender'
                 },
+
                 {
                     id: 7,
-                    type: 'file',
-                    name: 'personal-photo',
-                    label: 'Personal Photo',
-                    required: false,
-                    placeholder: 'Upload your personal photo here',
-                    allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff', 'image/svg+xml', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'],
-                    errorMsg: 'Please upload your personal photo in a valid format',
-                    value: '',
-                    setValue: null,
-                    widthOfField: 1,
-
-                },
-                {
-                    id: 8,
                     type: 'text',
                     name: 'address-1',
-                    label: 'Address 1: Street',
+                    label: 'Address Street',
                     required: true,
                     placeholder: 'Address 1: Street',
                     errorMsg: 'Please enter your street address',
@@ -170,13 +134,13 @@ function Vacancies() {
                     httpName: 'address-1'
                 },
                 {
-                    id: 9,
+                    id: 8,
                     type: 'select',
                     name: 'address-2',
                     choices: ['Burj Al Arab', 'Raml Station', 'Azareta', 'Al Shoban Al Muslimen', 'Al Shatby', 'Kamp Cheezar', 'Ibrahmia', 'Sporting', 'Kilopatra', 'Sidi Gaber', 'Mostafa Kamel', 'Roshdy', 'Bolkely', 'Al Wzara', 'Fliming', 'Bakoos', 'Safr', 'Janakless', 'San Stefano', 'Thrwt', 'Loran', 'Al Sraia', 'Al Siof', 'Victoria', 'Street 45', 'Smouha', 'Abo Qeer', 'Mandra', 'Manshia', 'Mohram Beek', 'Bitash', 'Hanoviel', 'Abo Youssef', 'Agmy', 'Al Kilo 21', 'North Coast', 'Other'],
                     widthOfField: 3,
                     required: true,
-                    label: 'Address 2: District',
+                    label: 'Address District',
                     errorMsg: 'Please select your district',
                     value: '',
                     setValue: null,
@@ -184,10 +148,10 @@ function Vacancies() {
 
                 },
                 {
-                    id: 10,
+                    id: 9,
                     type: 'text',
                     name: 'address-2-other',
-                    label: 'If Other District: Specify',
+                    label: 'Address District: Other',
                     required: false,
                     placeholder: 'If Other District: Specify',
                     errorMsg: 'Please specify your district',
@@ -197,7 +161,7 @@ function Vacancies() {
                     httpName: 'address-2-other'
                 },
                 {
-                    id: 11,
+                    id: 10,
                     type: 'select',
                     name: 'position-applying-for',
                     choices: ['Teacher', 'Assistant', 'Social Worker', 'Coordinator', 'Administrator', 'Human Resources (HR)', 'Accountant', 'Event Planner', 'Project Manger', 'Marketing Manger', 'Designer', 'Stock Manger', 'IT Engineer', 'Quality Control Manger', 'Maintainance Manger', 'Transportation Manger', 'Receptionist', 'Secretary', 'Intern', 'Worker', 'Part - Timer', 'Other'],
@@ -207,13 +171,33 @@ function Vacancies() {
                     errorMsg: 'Please select the position you are applying for',
                     value: '',
                     setValue: null,
-                    httpName: 'position-applying-for'
+                    httpName: 'position-applying-for',
+                    rules: [
+                        {
+                            value: 'Teacher',
+                            ruleResult: [
+                                {
+                                    id: 11,
+                                    type: 'select',
+                                    name: 'subject-to-teach',
+                                    choices: ['Math', 'Science', 'English', 'Arabic', 'French', 'History & Geography', 'Art', 'Music', 'Physical Education (P. E.)', 'ICT', 'Other'],
+                                    widthOfField: 3,
+                                    required: true,
+                                    label: 'Subject to Teach',
+                                    errorMsg: 'Please select the subject you are applying for',
+                                    value: '',
+                                    setValue: null,
+                                    httpName: 'subject-to-teach'
+                                },
+                            ]
+                        }
+                    ]
                 },
                 {
                     id: 12,
                     type: 'text',
                     name: 'position-applying-for-other',
-                    label: 'If Other Position: Specify',
+                    label: 'Position Applying For: Other',
                     required: false,
                     placeholder: 'If Other Position: Specify',
                     errorMsg: 'Please specify the position you are applying for',
@@ -226,7 +210,7 @@ function Vacancies() {
                     id: 13,
                     type: 'text',
                     name: 'high-school',
-                    label: 'What was your high school?',
+                    label: 'High School Name',
                     required: true,
                     placeholder: 'What was your high school?',
                     errorMsg: 'Please enter the name of your high school',
@@ -242,7 +226,7 @@ function Vacancies() {
                     choices: ['IGCSE', 'American', 'National', 'Other'],
                     widthOfField: 3,
                     required: true,
-                    label: 'What was your high school system?',
+                    label: 'High School System',
                     errorMsg: 'Please select the system of your high school',
                     value: '',
                     setValue: null,
@@ -252,7 +236,7 @@ function Vacancies() {
                     id: 15,
                     type: 'text',
                     name: 'high-school-system-other',
-                    label: 'If Other System: Specify',
+                    label: 'High School System: Other',
                     required: false,
                     placeholder: 'If Other System: Specify',
                     errorMsg: 'Please specify the system of your high school',
@@ -265,7 +249,7 @@ function Vacancies() {
                     id: 16,
                     type: 'date',
                     name: 'high-school-finish-date',
-                    label: 'When did you finish high school?',
+                    label: 'High School Graduation Date',
                     required: true,
                     placeholder: 'When did you finish high school?',
                     errorMsg: 'Please enter the date you finished high school in the format YYYY-MM-DD',
@@ -280,7 +264,7 @@ function Vacancies() {
                     id: 17,
                     type: 'text',
                     name: 'graduation-institution',
-                    label: 'What institution did you graduate from?',
+                    label: 'Institution/University Name',
                     required: true,
                     placeholder: 'What institution did you graduate from?',
                     errorMsg: 'Please enter the institution you graduated from',
@@ -294,7 +278,7 @@ function Vacancies() {
                     id: 18,
                     type: 'text',
                     name: 'graduation-degree',
-                    label: 'What did you graduate in?',
+                    label: 'Institution/University Major',
                     required: true,
                     placeholder: 'What did you graduate in?',
                     errorMsg: 'Please enter the degree you graduated in',
@@ -307,7 +291,7 @@ function Vacancies() {
                     id: 19,
                     type: 'date',
                     name: 'graduation-date',
-                    label: 'When did you graduate?',
+                    label: 'Institution/University Graduation Date',
                     required: true,
                     placeholder: 'When did you graduate?',
                     errorMsg: 'Please enter the date you graduated in the format YYYY-MM-DD',
@@ -325,7 +309,7 @@ function Vacancies() {
                     choices: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10+'],
                     widthOfField: 1,
                     required: true,
-                    label: 'Number of Years of Experience',
+                    label: 'Years of Experience',
                     errorMsg: 'Please select the number of years of experience',
                     value: '',
                     setValue: null,
@@ -335,7 +319,7 @@ function Vacancies() {
                     id: 21,
                     type: 'textarea',
                     name: 'experience',
-                    label: 'Write your experience here',
+                    label: 'Experience Details',
                     required: false,
                     placeholder: 'Write your experience here',
                     errorMsg: 'Please write about your experience',
@@ -348,7 +332,7 @@ function Vacancies() {
                     id: 22,
                     type: 'textarea',
                     name: 'skills',
-                    label: 'Write your skills or hobbies here',
+                    label: 'Skills or Hobbies',
                     required: false,
                     placeholder: 'Write your skills or hobbies here',
                     errorMsg: 'Please write about your skills or hobbies',
@@ -361,7 +345,7 @@ function Vacancies() {
                     id: 23,
                     type: 'textarea',
                     name: 'about',
-                    label: 'Here you can write anything you want to add about yourself',
+                    label: 'Other Details',
                     required: false,
                     placeholder: 'Here you can write anything you want to add about yourself',
                     errorMsg: 'Please write about yourself',
@@ -371,48 +355,144 @@ function Vacancies() {
                 },
                 {
                     id: 24,
-                    type: 'file',
-                    name: 'attachment-1',
-                    label: 'If you wanted to attach cover letters, certificates, or anything that you\'re proud of!',
+                    type: 'text',
+                    name: 'reference-name',
+                    label: 'Reference Name',
                     required: false,
-                    placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
-                    errorMsg: 'Please upload your attachment in PDF format',
+                    placeholder: 'Reference Name',
+                    errorMsg: 'Please enter your reference name',
                     value: '',
                     setValue: null,
-                    widthOfField: 1,
-                    httpName: 'attachment-1'
+                    widthOfField: 2,
+                    httpName: 'reference-name'
+
+
                 },
                 {
                     id: 25,
-                    type: 'file',
-                    name: 'attachment-2',
-                    label: 'If you wanted to attach cover letters, certificates, or anything that you\'re proud of!',
+                    type: 'text',
+                    name: 'reference-position',
+                    label: 'Reference Position',
                     required: false,
-                    placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
-                    errorMsg: 'Please upload your attachment in PDF format',
+                    placeholder: 'Reference Position',
+                    errorMsg: 'Please enter your reference position',
                     value: '',
                     setValue: null,
-                    widthOfField: 1,
-                    httpName: 'attachment-2'
+                    widthOfField: 2,
+                    httpName: 'reference-position'
+
                 },
                 {
                     id: 26,
+                    type: 'email',
+                    name: 'reference-email',
+                    label: 'Reference Email',
+                    required: false,
+                    placeholder: 'Reference Email',
+                    errorMsg: 'Please enter your reference email',
+                    value: '',
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'reference-email'
+                },
+                {
+                    id: 27,
+                    type: 'tel',
+                    name: 'reference-phone',
+                    label: 'Reference Phone Number',
+                    required: false,
+                    placeholder: 'Reference Phone Number',
+                    errorMsg: 'Please enter your reference phone number',
+                    value: '',
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'reference-phone'
+                },
+                {
+                    id: 28,
+                    type: 'file',
+                    name: 'personal-photo',
+                    label: 'Personal Photo',
+                    required: false,
+                    placeholder: 'Upload your personal photo here',
+                    allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff', 'image/svg+xml', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'],
+                    errorMsg: 'Please upload your personal photo in a valid format',
+                    value: '',
+                    setValue: null,
+                    widthOfField: 3,
+                },
+                {
+                    id: 29,
+                    type: 'file',
+                    name: 'attachment-1',
+                    label: 'CV',
+                    required: false,
+                    placeholder: 'Upload your CV here',
+                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    errorMsg: 'Please upload your attachment in PDF format',
+                    value: '',
+                    setValue: null,
+                    widthOfField: 3,
+                    httpName: 'attachment-1',
+                },
+                {
+                    id: 30,
+                    type: 'file',
+                    name: 'attachment-2',
+                    label: 'Cover Letter',
+                    required: false,
+                    placeholder: 'Upload your cover letter here',
+                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    errorMsg: 'Please upload your attachment in PDF format',
+                    value: '',
+                    setValue: null,
+                    widthOfField: 3,
+                    httpName: 'attachment-2',
+                },
+                {
+                    id: 31,
                     type: 'file',
                     name: 'attachment-3',
-                    label: 'If you wanted to attach cover letters, certificates, or anything that you\'re proud of!',
+                    label: 'Other Documents: First',
                     required: false,
                     placeholder: 'Upload your attachment here',
                     allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
-                    widthOfField: 1,
-                    httpName: 'attachment-3'
+                    widthOfField: 3,
+                    httpName: 'attachment-3',
+                },
+                {
+                    id: 32,
+                    type: 'file',
+                    name: 'attachment-4',
+                    label: 'Other Documents: Second',
+                    required: false,
+                    placeholder: 'Upload your attachment here',
+                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    errorMsg: 'Please upload your attachment in PDF format',
+                    value: '',
+                    setValue: null,
+                    widthOfField: 3,
+                    httpName: 'attachment-4',
+                },
+                {
+                    id: 33,
+                    type: 'file',
+                    name: 'attachment-5',
+                    label: 'Other Documents: Third',
+                    required: false,
+                    placeholder: 'Upload your attachment here',
+                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    errorMsg: 'Please upload your attachment in PDF format',
+                    value: '',
+                    setValue: null,
+                    widthOfField: 3,
+                    httpName: 'attachment-5',
                 }
 
-            ]}/>
+            ]} captchaLength={1}/>
 
         </container>
     </div>

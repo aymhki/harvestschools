@@ -132,7 +132,7 @@ function EnglishLevels() {
                           widthOfField: 1
                       },
                   ]
-              }/>
+              }  captchaLength={1}/>
 
           </container>
       </div>

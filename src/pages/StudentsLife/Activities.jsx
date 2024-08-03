@@ -55,7 +55,7 @@ function Activities() {
                 {id: 2, type: 'tel', label: 'Contact Phone Number', required: true, value: '', setValue: null, widthOfField: 3 },
                 {id: 3, type: 'date', label: 'Date of Birth', required: true, value: '', setValue: null, widthOfField: 3, regex: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/ , errorMsg: 'Please enter a valid date in the format YYYY-MM-DD' },
                 {id: 4, type: 'select', multiple: true, label: 'Select a Sport (You can select more than one)', required: true, value: '', setValue: null, widthOfField: 1, choices: ['Swimming', 'Football (Soccer)', 'Gymnastics', 'Basketball'], labelOutside: true },
-            ]}/>
+            ]} captchaLength={1}/>
 
 
         </container>
