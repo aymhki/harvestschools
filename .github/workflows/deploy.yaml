@@ -32,17 +32,15 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
           server-dir: public_html/
+          method: sync
+          delete: false
 
       - name: Update index.html
         run: |
-          ls
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
-          ls
-          cd /public_html  # Replace with your target directory on the server
-          ls
+          cd /public_html 
           mput index.html
-          ls
           bye
           EOF
 
@@ -50,7 +48,7 @@ jobs:
         run: |
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
-          cd /public_html/assets  # Replace with your target directory for assets
-          mput -R /dist/assets/*
+          cd /public_html/assets 
+          mput -R assets/*
           bye
           EOF
