@@ -79,6 +79,11 @@ function JobApplications() {
 
   return (
       <>
+          <h1>
+              test test test
+          </h1>
+          <img src="/assets/test.png" alt={"test"} />
+
             {isLoading && <Spinner/>}
             <div className={"job-applications-page"}>
                 {((
