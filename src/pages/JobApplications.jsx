@@ -79,55 +79,57 @@ function JobApplications() {
 
   return (
       <>
+
+          <img src="/assets/test2.png" alt={"test"}/>
           <h1>
               test test test
           </h1>
-          <img src="/assets/test.png" alt={"test"} />
 
-            {isLoading && <Spinner/>}
-            <div className={"job-applications-page"}>
-                {((
-                    jobApplications && Array.isArray(jobApplications) && jobApplications.length > 0
-                ) ? (
-                    <Table tableData={jobApplications} numCols={3} scrollable={true} compact={true} allowHideColumns={true} defaultHiddenColumns={[
-                        'Skills or Hobbies',
-                        'Experience Details',
-                        'Other Details',
-                        'Address District Other',
-                        'Address Street',
+          {isLoading && <Spinner/>}
+          <div className={"job-applications-page"}>
+              {((
+                  jobApplications && Array.isArray(jobApplications) && jobApplications.length > 0
+              ) ? (
+                  <Table tableData={jobApplications} numCols={3} scrollable={true} compact={true}
+                         allowHideColumns={true} defaultHiddenColumns={[
+                      'Skills or Hobbies',
+                      'Experience Details',
+                      'Other Details',
+                      'Address District Other',
+                      'Address Street',
 
-                        'Position Applying For Other',
-                        'High School System Other',
-                        'Other Documents Link First',
-                        'Other Documents Link Second',
-                        'Other Documents Link Third'
+                      'Position Applying For Other',
+                      'High School System Other',
+                      'Other Documents Link First',
+                      'Other Documents Link Second',
+                      'Other Documents Link Third'
 
-                    ]} allowExport={true}
-                           exportFileName={'job-applications'}
-                           sortConfigParam={{
-                        column: 1, direction: 'ascending'
-                    }}
-                    filterableColumns={[
-                        'Date of Birth',
-                        'Application Time',
-                        'Gender',
-                        'Address District',
-                        'Position Applying For',
-                        'Position Applying For Specialty',
-                        'High School System',
-                        'High School Graduation Date',
-                        'Institution Major',
-                        'Institution Graduation Date',
-                        'Years of Experience',
+                  ]} allowExport={true}
+                         exportFileName={'job-applications'}
+                         sortConfigParam={{
+                             column: 1, direction: 'ascending'
+                         }}
+                         filterableColumns={[
+                             'Date of Birth',
+                             'Application Time',
+                             'Gender',
+                             'Address District',
+                             'Position Applying For',
+                             'Position Applying For Specialty',
+                             'High School System',
+                             'High School Graduation Date',
+                             'Institution Major',
+                             'Institution Graduation Date',
+                             'Years of Experience',
 
-                    ]}
-                    />
-                    ) : (
-                        <h1>
-                            No job applications found.
-                        </h1>
-                    ))}
-            </div>
+                         ]}
+                  />
+              ) : (
+                  <h1>
+                      No job applications found.
+                  </h1>
+              ))}
+          </div>
       </>
   );
 }
