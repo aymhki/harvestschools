@@ -1,0 +1,42 @@
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 50px;
+    padding: 8px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #ffffff;
+    --_m:
+            conic-gradient(#0000 10%,#000),
+            linear-gradient(#000 0 0) content-box;
+    -webkit-mask: var(--_m);
+    mask: var(--_m);
+    -webkit-mask-composite: source-out;
+    mask-composite: subtract;
+    animation: l3 1s infinite linear;
+    scale: 1.5;
+}
+@keyframes l3 {to{transform: rotate(1turn)}}
+
+
+.spinner-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vw;
+    height: 100%;
+    width: 100%;
+    z-index: 100000;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+
+
+@media (max-width: 768px) {
+
+}
+
+
+
+

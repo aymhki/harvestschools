@@ -73,12 +73,13 @@ a {
 }
 
 a:hover {
-    color: #ffffff;
+    color: #747bff;
+    cursor: pointer;
 
 }
 
 a:visited {
-    color: #1f2152;
+    color: #747bff;
 }
 
 a:visited:hover {
