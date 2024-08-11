@@ -40,7 +40,7 @@ jobs:
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
           cd /public_html 
-          mput index.html
+          mput /dist/index.html
           bye
           EOF
 
@@ -49,4 +49,4 @@ jobs:
 
       - name: Sync assets folder with lftp
         run: |
-          lftp -e "set ssl:verify-certificate no; mirror -R dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=upload.log --parallel=2 dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
