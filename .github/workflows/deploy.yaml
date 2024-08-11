@@ -31,14 +31,14 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
-          server-dir: /public_html/
+          server-dir: ../../public_html/
 
       - name: Update index.html
         run: |
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
           pwd
-          cd /public_html  # Replace with your target directory on the server
+          cd ../../public_html  # Replace with your target directory on the server
           binary
           mput dist/index.html
           bye
@@ -49,7 +49,7 @@ jobs:
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
           pwd
-          cd /public_html/assets  # Replace with your target directory for assets
+          cd ../../public_html/assets  # Replace with your target directory for assets
           binary
           mput -R dist/assets/*
           bye
