@@ -35,10 +35,14 @@ jobs:
 
       - name: Update index.html
         run: |
+          ls
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
+          ls
           cd /public_html  # Replace with your target directory on the server
+          ls
           mput dist/index.html
+          ls
           bye
           EOF
 
