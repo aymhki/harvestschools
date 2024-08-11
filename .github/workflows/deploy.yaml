@@ -49,4 +49,4 @@ jobs:
 
       - name: Sync assets folder with lftp
         run: |
-          lftp -e "mirror -R dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+          lftp -e "set ssl:verify-certificate no; mirror -R dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
