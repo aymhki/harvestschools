@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Use the Node.js version compatible with your project
+          node-version: '21'
 
       - name: Install dependencies
         run: npm install
@@ -34,18 +34,6 @@ jobs:
           server-dir: public_html/
           method: sync
           delete: false
-
-#      - name: Update index.html
-#        run: |
-#          ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
-#          user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
-#          cd /public_html
-#          ls
-#          mput dist/index.html
-#          ls
-#          bye
-#          EOF
-
 
       - name: Install lftp
         run: sudo apt-get install lftp
