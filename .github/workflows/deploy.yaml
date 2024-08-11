@@ -44,11 +44,9 @@ jobs:
           bye
           EOF
 
-      - name: Sync assets folder
+      - name: Install lftp
+        run: sudo apt-get install lftp
+
+      - name: Sync assets folder with lftp
         run: |
-          ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
-          user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
-          cd /public_html/assets 
-          mput -r ./*
-          bye
-          EOF
+          lftp -e "mirror -R dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
