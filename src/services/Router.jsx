@@ -53,6 +53,9 @@ import MoreInfo from "../pages/FAQs/MoreInfo.jsx";
 import NotFound from '../pages/NotFound';
 import Facilities from "../pages/Academics/Facilities.jsx";
 import AdmissionFees from "../pages/Admission/AdmissionFees.jsx";
+import Login from "../pages/Login.jsx";
+import Dashboard from "../pages/Dashboard.jsx";
+import JobApplications from "../pages/JobApplications.jsx";
 
 function App() {
     const location = useLocation();
@@ -74,6 +77,9 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Navigate to="/home" />} />
                         <Route path="/home" element={<Home />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/job-applications" element={<JobApplications />} />
 
                         <Route path="/more-info" element={<MoreInfo />} />
                         <Route path="/faqs" element={<Faqs />} />

@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $servername = "localhost";
                 $username = "harvest_admin";
                 $password = "Hkibrahim@3";
-                $dbname = "harvest_job_applications";
+                $dbname = "harvest_schools";
                 $conn = new mysqli($servername, $username, $password, $dbname);
 
                 if ($conn->connect_error) {

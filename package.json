@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.16",
     "@mui/material": "^5.15.16",
+    "axios": "^1.7.3",
     "jspdf": "^2.5.1",
     "lodash.debounce": "^4.0.8",
     "prop-types": "^15.8.1",
@@ -26,7 +27,8 @@
     "react-router-dom": "^6.23.0",
     "react-slick": "^0.30.2",
     "react-snap": "^1.23.0",
-    "react-spring": "^9.7.3"
+    "react-spring": "^9.7.3",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
