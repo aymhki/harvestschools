@@ -8,7 +8,7 @@ import Table from "../modules/Table.jsx";
 function JobApplications() {
 
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [jobApplications, setJobApplications] = useState(null);
 
 
