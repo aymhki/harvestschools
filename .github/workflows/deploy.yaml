@@ -46,13 +46,9 @@ jobs:
 
       - name: Sync assets folder
         run: |
-          ls
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
-          ls
           cd /public_html/assets 
-          ls
-          mput -r /assets/*
-          ls
+          mput -r ./*
           bye
           EOF
