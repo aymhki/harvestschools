@@ -262,6 +262,22 @@
     color: #ffffff;
 }
 
+.captcha-wrapper:lang(ar) {
+    direction: ltr;
+    font-family: 'Futura', sans-serif
+}
+
+
+.captcha-wrapper-half-width:lang(ar) {
+    direction: ltr;
+    font-family: 'Futura', sans-serif
+}
+
+.captcha-input:lang(ar) {
+    direction: ltr;
+    font-family: 'Futura', sans-serif
+}
+
 @media (max-width: 1600px) {
     .captcha-box {
         letter-spacing: 2rem;

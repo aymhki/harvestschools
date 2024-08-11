@@ -352,9 +352,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
             formData.append('mailTo', mailTo);
             formData.append('formTitle', formTitle);
 
-
-
-            const response = await fetch('forms/script.php', {
+            const response = await fetch('scripts/submitForm.php', {
                 method: 'POST',
                 body: formData
             });
@@ -387,6 +385,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 onSubmit={onSubmit}
                 method="post"
                 onReset={resetForm}
+
             >
                 {dynamicFields.map((field, index) => (
                     renderFieldBasedOnType(field, index)
@@ -397,6 +396,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 </label>
 
                 <div className={`${captchaLength === 2 ? 'captcha-wrapper-half-width' : 'captcha-wrapper'}`}
+
                 >
 
 
@@ -415,12 +415,14 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                     />
 
                 <div className={`text-form-field ${captchaLength === 2 ? 'full-width' : 'half-width'} captcha-box`} type={"text"}
-                            onCopy={handleCopy}
-                           onCut={handleCut}
-                           onPaste={handlePaste}
-                           onMouseDown={handleMouseDown}
-                           onKeyDown={handleKeyDown}
-                    onTouchStart={handleMouseDown}>{captchaValue}</div>
+                     onCopy={handleCopy}
+                     onCut={handleCut}
+                     onPaste={handlePaste}
+                     onMouseDown={handleMouseDown}
+                     onKeyDown={handleKeyDown}
+                    onTouchStart={handleMouseDown}
+
+                >{captchaValue}</div>
 
                     <button className={`${captchaLength === 2 ? 'captcha-refresh-button-half-width' : 'refresh-captcha-button'}`} onClick={(e)=> { e.preventDefault(); setCaptchaValue(generateCaptcha()); }} type={"button"}>⟳</button>
 

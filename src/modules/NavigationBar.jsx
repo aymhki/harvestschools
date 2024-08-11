@@ -196,6 +196,12 @@ const NavigationBar = () => {
                             <a href="https://mail.harvestschools.com:2096/" target="_blank" rel="noreferrer"
                                style={{width: '100%', height: '100%'}}>Web Mail</a>
                         </li>
+                        <li onClick={() => {
+                            (isMobile ? toggleMenu() : null);
+                            navigate('/login');
+                        }}>
+                            <Link to={'/login'}>Login</Link>
+                        </li>
                     </ul>
                 </li>
 
@@ -224,8 +230,6 @@ const NavigationBar = () => {
                         }}><Link to="/admission/admission-fees">Admission Fees</Link></li>
 
                     </ul>
-
-
                 </li>
 
                 <li className="dropdown"
