@@ -41,7 +41,7 @@ jobs:
           ls
           cd /public_html  # Replace with your target directory on the server
           ls
-          mput dist/index.html
+          mput index.html
           ls
           bye
           EOF
@@ -51,6 +51,6 @@ jobs:
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
           cd /public_html/assets  # Replace with your target directory for assets
-          mput -R dist/assets/*
+          mput -R /dist/assets/*
           bye
           EOF
