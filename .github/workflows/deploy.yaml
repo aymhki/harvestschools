@@ -49,6 +49,6 @@ jobs:
           ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
           cd /public_html/assets 
-          mput -R assets/*
+          mput -r /assets/*
           bye
           EOF
