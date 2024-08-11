@@ -1,0 +1,158 @@
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vw;
+    background: radial-gradient(circle, #ffffff, #1a2a6c);
+}
+
+.login-page-form-controller {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vw;
+
+}
+
+.login-form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 30vw;
+    height: 50vh;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    will-change: filter;
+    transition: filter 0.5s;
+
+
+}
+
+.login-form-wrapper:hover {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.login-form input {
+    margin: 1rem;
+    padding: 0.5rem;
+    will-change: filter;
+    transition: filter 0.5s;
+    color: #1f2152;
+    font-size: large;
+    font-family: 'Futura', sans-serif;
+    font-style: normal;
+    border: 0.1rem solid #1f2152;
+    width: 80%;
+    line-height: 1.5;
+    letter-spacing: 0.1rem;
+    border-radius: 0.5rem;
+    cursor: text;
+
+}
+
+.login-form input:focus {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
+}
+
+.login-form input:hover {
+
+    filter: drop-shadow(0 0 0.5rem #1f2152);
+
+}
+
+.login-error-msg {
+    color: red;
+    font-size: 0.1rem;
+}
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1440px) {
+
+}
+
+@media (max-width: 1200px) {
+    .login-form-wrapper {
+        width: 40vw;
+        height: 40vh;
+    }
+
+
+}
+
+
+
+@media (max-width: 1024px) {
+    .login-form-wrapper {
+        width: 60vw;
+        height: 40vh;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .login-page {
+
+    }
+
+    .login-form-wrapper {
+        width: 90vw;
+        height: 50vh;
+    }
+
+    .login-form {
+        gap: 1rem;
+    }
+
+    .login-form input {
+
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+
+
+    .login-page {
+        background: radial-gradient(circle, #ffffff, #0f0f0f) ;
+    }
+
+    .login-form-wrapper {
+        background-color: #0f0f0f;
+    }
+
+    .login-form input {
+        color: #ffffff;
+        border: 0.1rem solid #ffffff;
+    }
+
+    .login-form-wrapper:hover {
+        filter: drop-shadow(0 0 0.5rem #ffffff);
+    }
+
+    .login-form input:focus {
+        filter: drop-shadow(0 0 0.5rem #ffffff);
+    }
+
+    .login-form input:hover {
+        filter: drop-shadow(0 0 0.5rem #ffffff);
+    }
+
+    .login-error-msg {
+        color: red;
+    }
+}
+
