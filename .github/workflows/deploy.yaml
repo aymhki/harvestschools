@@ -35,18 +35,22 @@ jobs:
 
       - name: Update index.html
         run: |
-          ftp -inv ${{ secrets.FTP_SERVER }} << EOF
+          ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
+          pwd
           cd /public_html  # Replace with your target directory on the server
+          binary
           mput dist/index.html
           bye
           EOF
 
       - name: Sync assets folder
         run: |
-          ftp -inv ${{ secrets.FTP_SERVER }} << EOF
+          ftp -v -inv ${{ secrets.FTP_SERVER }} << EOF
           user ${{ secrets.FTP_USERNAME }} ${{ secrets.FTP_PASSWORD }}
+          pwd
           cd /public_html/assets  # Replace with your target directory for assets
+          binary
           mput -R dist/assets/*
           bye
           EOF
