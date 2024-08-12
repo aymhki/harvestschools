@@ -285,7 +285,7 @@ tr:hover {
 
     .table-module-accordion-content {
         width: 90%;
-        height: 60%;
+        height: 70%;
         grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
         overflow: auto;
