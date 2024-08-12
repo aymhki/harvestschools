@@ -82,7 +82,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         const link = text.match(linkRegex);
         if (link) {
             const linkText = text.replace(linkRegex, '');
-            // return <a  className={"table-link"} href={(link+linkText)} target="_blank" rel="noreferrer">{link+linkText}</a>;
             return <p className={"table-link"}
                 onClick={() => {
 
