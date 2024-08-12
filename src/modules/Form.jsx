@@ -337,12 +337,25 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 //     formData.append(field.label, field.file, field.file.name ? field.file.name : field.label);
                 // }
 
-                if(field.type === 'file' && field.file) {
+                // if(field.type === 'file' && field.file) {
+                //     const file = field.file;
+                //     const fileExtension = file.name.split('.').pop();
+                //     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+                //     const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
+                //     formData.append(field.label, file, uniqueFileName);
+                // }
+
+                if (field.type === 'file' && field.file) {
                     const file = field.file;
                     const fileExtension = file.name.split('.').pop();
                     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
-                    const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
-                    formData.append(field.label, file, uniqueFileName);
+                    const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`; // Generate unique file name
+
+                    // Create a new file with the renamed name
+                    const renamedFile = new File([file], uniqueFileName, { type: file.type });
+
+                    // Append the renamed file to FormData
+                    formData.append(field.label, renamedFile, uniqueFileName);
                 }
             });
 
