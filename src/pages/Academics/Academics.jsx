@@ -58,6 +58,26 @@ function Academics() {
             buttonText: "Learn More",
             titleInArabic: false,
             descriptionInArabic: false
+        },
+        {
+            title: "Web Mail",
+            image: "/assets/images/AcademicsPages/WebMail1.png",
+            description: "Access your Harvest International School email.",
+            link: "https://mail.harvestschools.com:2096/",
+            buttonText: "Learn More",
+            titleInArabic: false,
+            descriptionInArabic: false,
+            externalLink: true
+
+        },
+        {
+            title: "Login",
+            image: "/assets/images/AcademicsPages/Login1.png",
+            description: "Web app login to view admin information.",
+            link: "/login",
+            buttonText: "Learn More",
+            titleInArabic: false,
+            descriptionInArabic: false
         }
     ];
 
