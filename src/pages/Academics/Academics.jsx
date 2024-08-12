@@ -68,7 +68,6 @@ function Academics() {
             titleInArabic: false,
             descriptionInArabic: false,
             externalLink: true
-
         },
         {
             title: "Login",
