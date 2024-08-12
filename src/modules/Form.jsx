@@ -350,7 +350,6 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                     const fileExtension = file.name.split('.').pop();
                     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
                     const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
-                    console.log(uniqueFileName);
                     const renamedFile = new File([file], uniqueFileName, { type: file.type });
                     formData.append(field.label, renamedFile, uniqueFileName);
                 }

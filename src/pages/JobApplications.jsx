@@ -84,7 +84,10 @@ function JobApplications() {
               {((
                   jobApplications && Array.isArray(jobApplications) && jobApplications.length > 0
               ) ? (
-                  <Table tableData={jobApplications} numCols={3} scrollable={true} compact={true}
+                  <Table tableData={jobApplications}
+                         numCols={3}
+                         scrollable={true}
+                         compact={true}
                          allowHideColumns={true} defaultHiddenColumns={[
                                                                           'Skills or Hobbies',
                                                                           'Experience Details',
@@ -96,9 +99,11 @@ function JobApplications() {
                                                                           'Other Documents Link First',
                                                                           'Other Documents Link Second',
                                                                           'Other Documents Link Third'
-                                                                        ]} allowExport={true}
-                         exportFileName={'job-applications'} sortConfigParam={{column: 1, direction: 'ascending'}}
-                                                filterableColumns={[
+                        ]}
+                         allowExport={true}
+                         exportFileName={'job-applications'}
+                         sortConfigParam={{column: 1, direction: 'descending'}}
+                        filterableColumns={[
                                                                      'Date of Birth',
                                                                      'Application Time',
                                                                      'Gender',
@@ -110,7 +115,7 @@ function JobApplications() {
                                                                      'Institution Major',
                                                                      'Institution Graduation Date',
                                                                      'Years of Experience',
-                                                ]}
+                        ]}
                   />
               ) : (
                   <h1>
