@@ -46,8 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
 
                      if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-
-                        $fileUrl = $file["name"];
+                        $fileUrl = $_FILES[$fileKey]['name'];
                         $label = isset($_POST['label_' . $fileKey]) ? $_POST['label_' . $fileKey] : 'File URL';
                         $text .= "$label: $fileUrl\n";
                         $formData[$label] = $fileUrl;
