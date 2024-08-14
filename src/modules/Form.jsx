@@ -316,6 +316,8 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
     const onSubmit = async (e) => {
         e.preventDefault();
         if (submitting) { return; }
+
+
         if (enteredCaptcha !== captchaValue) {
             setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
             setTimeout(() => { setGeneralFormError(''); }, 3000);
@@ -329,20 +331,32 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
         try {
             const formData = new FormData();
             dynamicFields.forEach(field => {
-                const value = document.getElementById(field.id).value;
-                formData.append(`field_${field.id}`, value);
-                formData.append(`label_${field.id}`, field.label); // Append labels separately
+                let value = document.getElementById(field.id).value;
 
-
+                // Check if the field is of type 'file'
                 if (field.type === 'file' && field.file) {
                     const file = field.file;
                     const fileExtension = file.name.split('.').pop();
                     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
                     const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
                     const renamedFile = new File([file], uniqueFileName, { type: file.type });
+
+                    // Append the unique file name instead of the original value
+                    value = uniqueFileName;
+
+                    // Append unique file name and renamed file to formData
                     formData.append(`uniqueFileName_${field.label}`, uniqueFileName); // Append unique file name
                     formData.append(field.label, renamedFile, uniqueFileName);
                 }
+
+                // Append value and label to formData
+                formData.append(`field_${field.id}`, value);
+                formData.append(`label_${field.id}`, field.label); // Append labels separately
+            });
+
+
+            formData.forEach((value, key) => {
+                console.log(`${key}: ${value}`);
             });
 
             if (sendPdf) {
