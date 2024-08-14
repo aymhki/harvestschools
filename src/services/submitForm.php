@@ -37,7 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             foreach ($_FILES as $fileKey => $file) {
                 if ($file['error'] == 0) {
                     $targetDir = "../fileUploads/";
-                    $targetFile = $targetDir . basename($file["name"]);
+                    $targetFile = $targetDir . $_FILES[$fileKey]['name'];
+
 
                     // Create the uploads directory if it doesn't exist
                     if (!file_exists($targetDir)) {
