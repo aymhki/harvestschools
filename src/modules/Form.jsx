@@ -333,17 +333,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 formData.append(`field_${field.id}`, value);
                 formData.append(`label_${field.id}`, field.label); // Append labels separately
 
-                // if(field.type === 'file' && field.file) {
-                //     formData.append(field.label, field.file, field.file.name ? field.file.name : field.label);
-                // }
 
-                // if(field.type === 'file' && field.file) {
-                //     const file = field.file;
-                //     const fileExtension = file.name.split('.').pop();
-                //     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
-                //     const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
-                //     formData.append(field.label, file, uniqueFileName);
-                // }
 
                 if (field.type === 'file' && field.file) {
                     const file = field.file;
