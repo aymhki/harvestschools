@@ -125,7 +125,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                             const visibleData = sortedData.map((row) => row.filter((_, index) => !hiddenColumns.has(sortedData[0][index])));
                             const csv = visibleData.map(row =>
                                 row.map(field =>
-                                    typeof field === 'string' && field.includes(',') ? `"${field}"` : field.includes(', ') ? `"${field}"` : field.includes('\n') ? `"${field}"` : field.includes('\r') ? `"${field}"` : field.includes('\r\n') ? `"${field}"` : field.includes('\n\r') ? `"${field}"` : field
+                                    field && field !== null && field !== undefined && typeof field === 'string' && field.includes(',') ? `"${field}"` : field.includes(', ') ? `"${field}"` : field.includes('\n') ? `"${field}"` : field.includes('\r') ? `"${field}"` : field.includes('\r\n') ? `"${field}"` : field.includes('\n\r') ? `"${field}"` : field
                                 ).join(',')
                             ).join('\n');
                             const blob = new Blob([csv], {type: 'text/csv'});
@@ -136,9 +136,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                             a.click();
                             window.URL.revokeObjectURL(url);
 
-                        }}
-
-                        >
+                        }}>
                             Export to CSV
                         </button>
                     )}
