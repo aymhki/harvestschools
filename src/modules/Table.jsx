@@ -124,8 +124,13 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         <button onClick={() => {
                             const visibleData = sortedData.map((row) => row.filter((_, index) => !hiddenColumns.has(sortedData[0][index])));
                             const csv = visibleData.map(row =>
-                                row.map(field =>
-                                    field && field !== null && field !== undefined && typeof field === 'string' && field.includes(',') ? `"${field}"` : field.includes(', ') ? `"${field}"` : field.includes('\n') ? `"${field}"` : field.includes('\r') ? `"${field}"` : field.includes('\r\n') ? `"${field}"` : field.includes('\n\r') ? `"${field}"` : field
+                                row.map(field => {
+                                        if (field && field !== null && field !== undefined && typeof field === 'string' && field.length > 0) {
+                                           return field.includes(',') ? `"${field}"` : field.includes(', ') ? `"${field}"` : field.includes('\n') ? `"${field}"` : field.includes('\r') ? `"${field}"` : field.includes('\r\n') ? `"${field}"` : field.includes('\n\r') ? `"${field}"` : field
+                                        } else {
+                                           return field
+                                        }
+                                    }
                                 ).join(',')
                             ).join('\n');
                             const blob = new Blob([csv], {type: 'text/csv'});
