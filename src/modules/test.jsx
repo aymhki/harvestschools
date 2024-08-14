@@ -1,7 +1,7 @@
-import {useEffect, useMemo, useState, useCallback} from "react";
+import {useEffect, useState, useMemo} from "react";
 import PropTypes from "prop-types";
 import '../styles/Table.css';
-import {animated, useSpring} from 'react-spring';
+import { animated, useSpring } from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 
@@ -12,9 +12,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
     const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
     const [columnToFilterBasedOn, setColumnToFilterBasedOn] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-
-
-
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [finalTableData, setFinalTableData] = useState(tableData); // This is the data that will be displayed after filtering and sorting and hiding columns
 
@@ -53,26 +50,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         return sorted.slice(0, startIndex).concat(sortedSection);
     }, [tableData, sortConfig, tableHeader]);
 
-    const getFilterUniqueValuesDict = useCallback(() => {
-            const filterUniqueValuesDict = {};
-            const startIndex = tableHeader ? 2 : 1;
-            for (let i = 0; i < tableData[0].length; i++) {
-                if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
-                    filterUniqueValuesDict[tableData[0][i]] = {
-                        uniqueValues: [...new Set(tableData.slice(startIndex).map(row => row[i]))],
-                        checked: [...new Array([...new Set(tableData.slice(startIndex).map(row => row[i]))].length).fill(true)]
-                    };
-                }
-            }
-
-            return filterUniqueValuesDict;
-        },
-        [tableHeader, tableData, filterableColumns]
-    );
-
-    const [filterUniqueValuesDict, setFilterUniqueValuesDict] = useState(getFilterUniqueValuesDict());
-
-
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
@@ -81,10 +58,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
-
-
-
 
     const requestSort = (columnIndex) => {
         let direction = 'ascending';
@@ -117,6 +90,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                           }}
                 >{link + linkText}</p>;
             }
+
         }
 
         return text;
@@ -139,22 +113,22 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         return arabicRegex.test(text) ? 'ar' : 'en';
     }
 
-    const updateFinalTableData = useCallback(() => {
-        let filteredData = [...sortedData];
-        for (let i = 0; i < tableData[0].length; i++) {
-            if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
-                filteredData = filteredData.filter((row, rowIndex) => rowIndex === 0 || filterUniqueValuesDict[tableData[0][i]].checked[filterUniqueValuesDict[tableData[0][i]].uniqueValues.indexOf(row[i])]);
-            }
-        }
-        let hiddenColumnsData = filteredData.map(row => row.filter((cell, index) => !hiddenColumns.has(sortedData[0][index])));
-        setFinalTableData(hiddenColumnsData);
-    }, [sortedData, hiddenColumns, filterUniqueValuesDict, tableData, filterableColumns]);
+    const updatefinalTableData = () => {
+        // make the finalTableData the same as the tableData after applying sorting, filtering and hiding columns
+
+        // 1. Apply sorting
+        // 2. Apply filtering
+        // 3. Apply hiding columns
+
+
+    }
 
     useEffect(() => {
-            updateFinalTableData();
-        },
-        [hiddenColumns, sortConfig, updateFinalTableData]
-    );
+
+    }, [
+        hiddenColumns,
+        sortConfig,
+    ]);
 
 
     return (
@@ -169,12 +143,13 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                     )}
                     {allowExport && (
                         <button onClick={() => {
-                            const csv = finalTableData.map(row =>
+                            const visibleData = sortedData.map((row) => row.filter((_, index) => !hiddenColumns.has(sortedData[0][index])));
+                            const csv = visibleData.map(row =>
                                 row.map(field => {
                                         if (field && field !== null && field !== undefined && typeof field === 'string' && field.length > 0) {
-                                           return (field.includes(',') || field.includes(', ') || field.includes('\n') || field.includes('\r') || field.includes('\r\n') || field.includes('\n\r'))  ? `"${field}"` : field
+                                            return (field.includes(',') || field.includes(', ') || field.includes('\n') || field.includes('\r') || field.includes('\r\n') || field.includes('\n\r'))  ? `"${field}"` : field
                                         } else {
-                                           return '';
+                                            return '';
                                         }
                                     }
                                 ).join(',')
@@ -191,91 +166,54 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                             Export to CSV
                         </button>
                     )}
-
-                    {
-                        // if one value in the filterUniqueValuesDict is not checked, show the reset filter button
-                        Object.keys(filterUniqueValuesDict).some(key => filterUniqueValuesDict[key].checked.includes(false)) &&
-                        <button onClick={() => {
-                            for (let i = 0; i < tableData[0].length; i++) {
-                                if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
-                                    filterUniqueValuesDict[tableData[0][i]].checked = filterUniqueValuesDict[tableData[0][i]].checked.map(() => true);
-                                }
-                            }
-                            setFilterUniqueValuesDict({...filterUniqueValuesDict});
-                        }}>
-                            Reset Filters
-                        </button>
-
-                    }
                 </div>
 
 
             </div>
             <table className={`${scrollable ? 'table-module-table-scrollable' : 'table-module-table'}`}
-            style={{
-                marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
-            }}
+                   style={{
+                       marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
+                   }}
             >
+
                 <tbody>
-                {tableHeader &&
-                    <tr>
-                        <th colSpan={numCols}>
-                            <h1>{tableHeader}</h1>
-                        </th>
-                    </tr>
-                }
-                {finalTableData.map((row, rowIndex) => (
+                {tableHeader && <tr>
+                    <th colSpan={numCols}><h1>{tableHeader}</h1></th>
+                </tr>}
+                {sortedData.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                         {row.map((cell, cellIndex) => (
-                                <td key={cellIndex}
+                            !hiddenColumns.has(sortedData[0][cellIndex]) && (
+                                <td key={cellIndex} onClick={() => rowIndex === 0 ? requestSort(cellIndex) : null}
                                     style={{
                                         cursor: rowIndex === 0 ? 'pointer' : 'default',
                                         whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
-                                    }}>
+                                    }}
+
+                                >
                                     {rowIndex === (tableHeader ? 0 : 0) ? (
                                         <>
                                             {compact ? (
-                                                <div style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                }}>
-                                                    <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                        {detectLink(cell)}{getSortIndicator(cellIndex)}
-                                                    </h3>
-
-                                                    {(filterableColumns && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                        <FilterAltIcon onClick={() =>
-                                                            {
-                                                                setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                                setSearchQuery('');
-                                                                setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
-                                                            }
-                                                        }/>
-                                                    }
-
-                                                </div>
+                                                <h3 className={"compact-table-header-text"}
+                                                    lang={detectLang(cell)}
+                                                >
+                                                    {detectLink(cell)}{getSortIndicator(cellIndex)} {(filterableColumns && filterableColumns.includes(sortedData[0][cellIndex])) &&
+                                                    <FilterAltIcon onClick={() => {
+                                                        setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                        setColumnToFilterBasedOn(cellIndex);
+                                                    }}/>}
+                                                </h3>
 
                                             ) : (
-                                                <div style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                }}>
-                                                    <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                        {detectLink(cell)}{getSortIndicator(cellIndex)}
-                                                    </h2>
-
-                                                    {(filterableColumns && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                        <FilterAltIcon onClick={() =>
-                                                            {
-                                                                setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                                setSearchQuery('');
-                                                                setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
-                                                            }
-                                                        }/>
-                                                    }
-                                                </div>
+                                                <h2
+                                                    lang={detectLang(cell)}
+                                                >
+                                                    {detectLink(cell)}{getSortIndicator(cellIndex)} {(filterableColumns && filterableColumns.includes(sortedData[0][cellIndex])) &&
+                                                    <FilterAltIcon onClick={() => {
+                                                        setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                        setColumnToFilterBasedOn(cellIndex);
+                                                    }}/>}
+                                                </h2>
                                             )}
                                         </>
                                     ) : (
@@ -297,6 +235,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                         </>
                                     )}
                                 </td>
+                            )
                         ))}
                     </tr>
                 ))}
@@ -342,69 +281,46 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
 
 
             <animated.div className={"table-module-filter-popup-container"} style={popupAnimation}>
-                <div className={"table-module-filter-popup-background"} onClick={() => {
-                    setIsFilterPopupOpen(false);
-                    setSearchQuery('');
-                }}/>
+                <div className={"table-module-filter-popup-background"} onClick={() => setIsFilterPopupOpen(false)}/>
                 <div className={"table-module-filter-popup"}>
+                    {/*
+                            This should be very similar to excel filter options in the since that it should have the following:
+                            // A checkbox list of all the unique values in the column
+                            // A search bar to search for specific values
+                            // A button to close the filter popup
+                            // A button to uncheck all checkboxes
+                            // A button to check all checkboxes
+
+                            // if the column is of type date or number then allow the user to set a range accordingly
+                        */}
+
                     <div className={"table-module-filter-popup-content"}>
                         <h2>Filter Options</h2>
                         <div>
                             <h3>Unique Values</h3>
-                            <input type="text" className={"table-module-filter-search-input-field"}
-                                   placeholder={"Search"} value={searchQuery}
-                                   onChange={(e) => setSearchQuery(e.target.value)}/>
+                            <input type="text" className={"table-module-filter-search-input-field"} placeholder={"Search"} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
 
                             <div className={"table-module-filter-popup-values-list"}>
                                 {
-                                    filterUniqueValuesDict[columnToFilterBasedOn] &&
-                                    filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues
-                                        .filter(value => {
-                                            // Filter based on search query
-                                            if (searchQuery) {
-                                                return value.toLowerCase().includes(searchQuery.toLowerCase());
-                                            }
-                                            return true;
-                                        })
-                                        // .filter(value => {
-                                        //     // TODO: if a value is checked but not in the finalTableData, don't show it
-                                        //
-                                        // })
-                                        .map((value, index) => (
-                                            <label key={index}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={filterUniqueValuesDict[columnToFilterBasedOn].checked[index]}
-                                                    onChange={() => {
-                                                        filterUniqueValuesDict[columnToFilterBasedOn].checked[index] = !filterUniqueValuesDict[columnToFilterBasedOn].checked[index];
-                                                        setFilterUniqueValuesDict({...filterUniqueValuesDict});
-                                                    }}
-                                                />
-                                                {value}
-                                            </label>
-                                        ))
+                                    /*
+                                    * Should have a list of checkboxes with the unique values of the column
+                                    * Should all be checked by default unless a filter is already applied
+                                    * Should be able to check and uncheck all checkboxes
+                                    * Should be able to clear all filters
+                                    * */
+                                    // TODO: Implement the above
                                 }
+
                             </div>
                         </div>
                         <div className={"table-module-filter-popup-buttons-wrapper"}>
                             <button
-                                onClick={() => {
-                                    filterUniqueValuesDict[columnToFilterBasedOn].checked = filterUniqueValuesDict[columnToFilterBasedOn].checked.map(() => true);
-                                    setFilterUniqueValuesDict({...filterUniqueValuesDict});
-                                }}
-                            >Check All
-                            </button>
+                                // TODO: Implement the clear filters functionality
+                            >Check All</button>
                             <button
-                                onClick={() => {
-                                    filterUniqueValuesDict[columnToFilterBasedOn].checked = filterUniqueValuesDict[columnToFilterBasedOn].checked.map(() => false);
-                                    setFilterUniqueValuesDict({...filterUniqueValuesDict});
-                                }}
-                            >Uncheck All
-                            </button>
-                            <button onClick={() => {
-                                setIsFilterPopupOpen(false);
-                                setSearchQuery('');
-                            }}>Close</button>
+                                // TODO: Implement the clear all rows functionality
+                            >Uncheck All</button>
+                            <button onClick={() => setIsFilterPopupOpen(false)}>Close</button>
                         </div>
                     </div>
                 </div>
