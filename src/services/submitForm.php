@@ -37,8 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             foreach ($_FILES as $fileKey => $file) {
                 if ($file['error'] == 0) {
                     $targetDir = "../fileUploads/";
-                    $targetFile = $targetDir . $_FILES[$fileKey]['name'];
+                    $uniqueFileName = isset($_POST['uniqueFileName_' . $fileKey]) ? $_POST['uniqueFileName_' . $fileKey] : basename($file["name"]);
 
+                    $targetFile = $targetDir . $uniqueFileName;
 
                     // Create the uploads directory if it doesn't exist
                     if (!file_exists($targetDir)) {
@@ -46,7 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
 
                      if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-                        $fileUrl = $_FILES[$fileKey]['name'];
+
+                        $fileUrl = $uniqueFileName;
                         $label = isset($_POST['label_' . $fileKey]) ? $_POST['label_' . $fileKey] : 'File URL';
                         $text .= "$label: $fileUrl\n";
                         $formData[$label] = $fileUrl;
