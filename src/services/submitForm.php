@@ -46,8 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         mkdir($targetDir, 0777, true);
                     }
 
-                     if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-
+                    if (move_uploaded_file($file["tmp_name"], $targetFile)) {
                         $fileUrl = $uniqueFileName;
                         $label = isset($_POST['label_' . $fileKey]) ? $_POST['label_' . $fileKey] : 'File URL';
                         $text .= "$label: $fileUrl\n";
