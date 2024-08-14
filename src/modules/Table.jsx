@@ -126,9 +126,9 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                             const csv = visibleData.map(row =>
                                 row.map(field => {
                                         if (field && field !== null && field !== undefined && typeof field === 'string' && field.length > 0) {
-                                           return field.includes(',') ? `"${field}"` : field.includes(', ') ? `"${field}"` : field.includes('\n') ? `"${field}"` : field.includes('\r') ? `"${field}"` : field.includes('\r\n') ? `"${field}"` : field.includes('\n\r') ? `"${field}"` : field
+                                           return (field.includes(',') || field.includes(', ') || field.includes('\n') || field.includes('\r') || field.includes('\r\n') || field.includes('\n\r'))  ? `"${field}"` : field
                                         } else {
-                                           return field
+                                           return '';
                                         }
                                     }
                                 ).join(',')
