@@ -19,8 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $text = "";
         $formData = [];
 
-
-
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
                 $fieldId = substr($key, 6); // Remove 'field_' prefix to get the original ID
@@ -103,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $formData['Position Applying For: Other'] = $formData['Position Applying For: Other'] ? $formData['Position Applying For: Other'] : '';
                     $formData['Subject to Teach'] = $formData['Subject to Teach'] ? $formData['Subject to Teach'] : '';
                     $formData['High School System: Other'] = $formData['High School System: Other'] ? $formData['High School System: Other'] : '';
-                    $formData['Personal Photo'] = $formData['Personal Photo'] ? $formData['Personal Photo'] : $formData['File URL'];
+                    $formData['Personal Photo'] = $formData['Personal Photo'] ? $formData['Personal Photo'] : (isset($formData['File URL']) ? $formData['File URL'] : '');
                     $formData['Other Documents: First'] = $formData['Other Documents: First'] ? $formData['Other Documents: First'] : '';
                     $formData['Other Documents: Second'] = $formData['Other Documents: Second'] ? $formData['Other Documents: Second'] : '';
                     $formData['Other Documents: Third'] = $formData['Other Documents: Third'] ? $formData['Other Documents: Third'] : '';
@@ -132,7 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         {$formData['Cover Letter']}, {$formData['Other Documents: First']}, {$formData['Other Documents: Second']},
                         {$formData['Other Documents: Third']}
                     )";
-
 
                     if ($conn->query($stmt) === TRUE) {
                         echo json_encode(['success' => true, 'message' => 'Email sent successfully']);
