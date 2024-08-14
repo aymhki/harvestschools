@@ -102,7 +102,7 @@ function JobApplications() {
                         ]}
                          allowExport={true}
                          exportFileName={'job-applications'}
-                         sortConfigParam={{column: 1, direction: 'descending'}}
+                         sortConfigParam={{column: 0, direction: 'descending'}}
                         filterableColumns={[
                                                                      'Date of Birth',
                                                                      'Application Time',
