@@ -99,6 +99,17 @@ tr:hover {
     align-items: center;
     margin: 0;
     padding: 0;
+
+}
+
+.table-module-filter-popup-buttons-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
 }
 
 .table-module-accordion {
@@ -203,9 +214,12 @@ tr:hover {
     flex-direction: column;
     justify-content: center;
     align-items: start;
-    padding: 1rem;
     overflow-y: auto;
     background-color: #f0f0f0;
+    border-radius: 0.5rem;
+    height: 8rem;
+    max-height: 8rem;
+    padding: 3rem 1rem 1rem;
 }
 
 .table-module-accordion-buttons {
@@ -215,6 +229,29 @@ tr:hover {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+}
+
+.table-module-filter-search-input-field {
+    width: 50%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid #1f2152;
+    font-family: 'Futura', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s;
+    margin-bottom: 1rem;
+}
+
+.table-module-filter-search-input-field:focus {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
+}
+
+.table-module-filter-search-input-field::placeholder {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
+}
+
+.table-module-filter-search-input-field:hover {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
 @media  (max-width: 1600px) {
@@ -365,4 +402,24 @@ tr:hover {
         background-color: #454545;
     }
 
+    .table-module-accordion-content {
+        background-color: #242424;
+    }
+
+    .table-module-filter-search-input-field {
+        border: 0.1rem solid white;
+    }
+
+    .table-module-filter-search-input-field::placeholder {
+        color: white;
+    }
+
+    .table-module-filter-search-input-field:focus {
+        filter: drop-shadow(0 0 0.5rem white);
+    }
+
+
+    .table-module-filter-search-input-field:hover {
+        filter: drop-shadow(0 0 0.5rem white);
+    }
 }
