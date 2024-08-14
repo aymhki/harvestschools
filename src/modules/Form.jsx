@@ -334,13 +334,13 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 formData.append(`label_${field.id}`, field.label); // Append labels separately
 
 
-
                 if (field.type === 'file' && field.file) {
                     const file = field.file;
                     const fileExtension = file.name.split('.').pop();
                     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
                     const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
                     const renamedFile = new File([file], uniqueFileName, { type: file.type });
+                    formData.append(`uniqueFileName_${field.label}`, uniqueFileName); // Append unique file name
                     formData.append(field.label, renamedFile, uniqueFileName);
                 }
             });
