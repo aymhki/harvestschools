@@ -78,16 +78,19 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
     };
 
     const detectLink = (text) => {
-        const linkRegex = /https?:\/\/[^\s]+?\.[a-zA-Z]{3}/g;
-        const link = text.match(linkRegex);
-        if (link) {
-            const linkText = text.replace(linkRegex, '');
-            return <p className={"table-link"}
-                onClick={() => {
+        if (text) {
 
-                    window.open(link+linkText, "_blank");
-                }}
-            >{link+linkText}</p>;
+            const linkRegex = /https?:\/\/[^\s]+?\.[a-zA-Z]{3}/g;
+            const link = text.match(linkRegex);
+            if (link) {
+                const linkText = text.replace(linkRegex, '');
+                return <p className={"table-link"}
+                          onClick={() => {
+                              window.open(link + linkText, "_blank");
+                          }}
+                >{link + linkText}</p>;
+            }
+
         }
 
         return text;
