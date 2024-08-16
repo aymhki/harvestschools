@@ -1,9 +1,16 @@
 import {Helmet} from "react-helmet";
 import '../styles/Vacancies.css'
 import Form from "../modules/Form";
+import Spinner from "../modules/Spinner.jsx";
+import {useState} from "react";
 
 function Vacancies() {
+
+    const [isLoading, setIsLoading] = useState(false);
+
   return (
+      <>
+          {isLoading && <Spinner/>}
     <div className={"vacancies-page"}>
         <Helmet>
             <title>Harvest International School | Vacancies</title>
@@ -492,10 +499,11 @@ function Vacancies() {
                     httpName: 'attachment-5',
                 }
 
-            ]} captchaLength={1}/>
+            ]} captchaLength={1} setIsLoading={setIsLoading}/>
 
         </container>
     </div>
+      </>
   );
 }
 
