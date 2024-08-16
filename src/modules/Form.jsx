@@ -8,7 +8,7 @@ import {createRef} from "react";
 import { v4 as uuidv4 } from 'uuid'; // Import the UUID library
 
 
-function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
+function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, setIsLoading}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
@@ -316,7 +316,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
     const onSubmit = async (e) => {
         e.preventDefault();
         if (submitting) { return; }
-
+        setIsLoading(true);
 
         if (enteredCaptcha !== captchaValue) {
             setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
@@ -344,6 +344,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                     // Append the unique file name instead of the original value
                     value = uniqueFileName;
 
+
                     // Append unique file name and renamed file to formData
                     formData.append(`uniqueFileName_${field.label}`, uniqueFileName); // Append unique file name
                     formData.append(field.label, renamedFile, uniqueFileName);
@@ -352,11 +353,6 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 // Append value and label to formData
                 formData.append(`field_${field.id}`, value);
                 formData.append(`label_${field.id}`, field.label); // Append labels separately
-            });
-
-
-            formData.forEach((value, key) => {
-                console.log(`${key}: ${value}`);
             });
 
             if (sendPdf) {
@@ -396,6 +392,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
             setTimeout(() => { setGeneralFormError(''); }, 3000);
         } finally {
             setSubmitting(false);
+            setIsLoading(false);
         }
     };
 
@@ -530,7 +527,8 @@ Form.propTypes = {
     sendPdf: PropTypes.bool.isRequired,
     formTitle: PropTypes.string.isRequired,
     lang: PropTypes.string.isRequired,
-    captchaLength: PropTypes.number.isRequired
+    captchaLength: PropTypes.number.isRequired,
+    setIsLoading: PropTypes.func
 };
 
 export default Form;
