@@ -367,8 +367,21 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                             return true;
                                         })
                                         // .filter(value => {
-                                        //     // TODO: if a value is checked but not in the finalTableData, don't show it
+                                        //     // TODO: if a value is checked but not in the rendered table, it should not be in the list displayed
+                                        //     let valueInRenderedTable = false;
+                                        //     let valueIsChecked = false;
                                         //
+                                        //     for (let i = 0; i < finalTableData.length && !valueInRenderedTable; i++) {
+                                        //         if (finalTableData[i].includes(value)) {
+                                        //             valueInRenderedTable = true;
+                                        //         }
+                                        //     }
+                                        //
+                                        //     if (filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues.includes(value)) {
+                                        //         valueIsChecked = filterUniqueValuesDict[columnToFilterBasedOn].checked[filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues.indexOf(value)];
+                                        //     }
+                                        //
+                                        //     return !(!valueInRenderedTable && valueIsChecked);
                                         // })
                                         .map((value, index) => (
                                             <label key={index}>
