@@ -8,7 +8,7 @@ import {createRef} from "react";
 import { v4 as uuidv4 } from 'uuid'; // Import the UUID library
 
 
-function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, setIsLoading}) {
+function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
@@ -316,7 +316,6 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, setIsLoa
     const onSubmit = async (e) => {
         e.preventDefault();
         if (submitting) { return; }
-        setIsLoading(true);
 
         if (enteredCaptcha !== captchaValue) {
             setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
@@ -392,7 +391,6 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, setIsLoa
             setTimeout(() => { setGeneralFormError(''); }, 3000);
         } finally {
             setSubmitting(false);
-            setIsLoading(false);
         }
     };
 
@@ -528,7 +526,6 @@ Form.propTypes = {
     formTitle: PropTypes.string.isRequired,
     lang: PropTypes.string.isRequired,
     captchaLength: PropTypes.number.isRequired,
-    setIsLoading: PropTypes.func
 };
 
 export default Form;
