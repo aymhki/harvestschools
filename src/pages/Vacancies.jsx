@@ -26,7 +26,7 @@ function Vacancies() {
                 Dear Applicant,
             </h2>
             <p>
-                Harvest Schools does not only hire experienced people or fresh graduates, At Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form available in this page.
+                Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form below.
             </p>
 
             <p>
@@ -147,21 +147,28 @@ function Vacancies() {
                     errorMsg: 'Please select your district',
                     value: '',
                     setValue: null,
-                    httpName: 'address-2'
+                    httpName: 'address-2',
+                    rules: [
+                        {
+                            value: 'Other',
+                            ruleResult: [
+                                {
+                                    id: 9,
+                                    type: 'text',
+                                    name: 'address-2-other',
+                                    label: 'Address District: Other',
+                                    required: true,
+                                    placeholder: 'If Other District: Specify',
+                                    errorMsg: 'Please specify your district',
+                                    value: '',
+                                    setValue: null,
+                                    widthOfField: 3,
+                                    httpName: 'address-2-other'
+                                },
+                            ]
+                        }
+                    ]
 
-                },
-                {
-                    id: 9,
-                    type: 'text',
-                    name: 'address-2-other',
-                    label: 'Address District: Other',
-                    required: false,
-                    placeholder: 'If Other District: Specify',
-                    errorMsg: 'Please specify your district',
-                    value: '',
-                    setValue: null,
-                    widthOfField: 3,
-                    httpName: 'address-2-other'
                 },
                 {
                     id: 10,
@@ -190,27 +197,33 @@ function Vacancies() {
                                     errorMsg: 'Please select the subject you are applying for',
                                     value: '',
                                     setValue: null,
-                                    httpName: 'subject-to-teach'
+                                    httpName: 'subject-to-teach',
+                                    multiple: false,
+                                }
+                            ]
+                        },
+                        {
+                            value: 'Other',
+                            ruleResult: [
+                                {
+                                    id: 13,
+                                    type: 'text',
+                                    name: 'position-applying-for-other',
+                                    label: 'Position Applying For: Other',
+                                    required: true,
+                                    placeholder: 'If Other Position: Specify',
+                                    errorMsg: 'Please specify the position you are applying for',
+                                    value: '',
+                                    setValue: null,
+                                    widthOfField: 3,
+                                    httpName: 'position-applying-for-other'
                                 },
                             ]
                         }
                     ]
                 },
                 {
-                    id: 12,
-                    type: 'text',
-                    name: 'position-applying-for-other',
-                    label: 'Position Applying For: Other',
-                    required: false,
-                    placeholder: 'If Other Position: Specify',
-                    errorMsg: 'Please specify the position you are applying for',
-                    value: '',
-                    setValue: null,
-                    widthOfField: 3,
-                    httpName: 'position-applying-for-other'
-                },
-                {
-                    id: 13,
+                    id: 14,
                     type: 'text',
                     name: 'high-school',
                     label: 'High School Name',
@@ -223,7 +236,7 @@ function Vacancies() {
                     httpName: 'high-school'
                 },
                 {
-                    id: 14,
+                    id: 15,
                     type: 'select',
                     name: 'high-school-system',
                     choices: ['IGCSE', 'American', 'National', 'Other'],
@@ -233,23 +246,30 @@ function Vacancies() {
                     errorMsg: 'Please select the system of your high school',
                     value: '',
                     setValue: null,
-                    httpName: 'high-school-system'
+                    httpName: 'high-school-system',
+                    rules: [
+                        {
+                            value: 'Other',
+                            ruleResult: [
+                                {
+                                    id: 16,
+                                    type: 'text',
+                                    name: 'high-school-system-other',
+                                    label: 'High School System: Other',
+                                    required: true,
+                                    placeholder: 'If Other System: Specify',
+                                    errorMsg: 'Please specify the system of your high school',
+                                    value: '',
+                                    setValue: null,
+                                    widthOfField: 3,
+                                    httpName: 'high-school-system-other'
+                                },
+                            ]
+                        }
+                    ]
                 },
                 {
-                    id: 15,
-                    type: 'text',
-                    name: 'high-school-system-other',
-                    label: 'High School System: Other',
-                    required: false,
-                    placeholder: 'If Other System: Specify',
-                    errorMsg: 'Please specify the system of your high school',
-                    value: '',
-                    setValue: null,
-                    widthOfField: 3,
-                    httpName: 'high-school-system-other'
-                },
-                {
-                    id: 16,
+                    id: 17,
                     type: 'date',
                     name: 'high-school-finish-date',
                     label: 'High School Graduation Date',
@@ -264,7 +284,7 @@ function Vacancies() {
 
                 },
                 {
-                    id: 17,
+                    id: 18,
                     type: 'text',
                     name: 'graduation-institution',
                     label: 'Institution/University Name',
@@ -278,7 +298,7 @@ function Vacancies() {
 
                 },
                 {
-                    id: 18,
+                    id: 19,
                     type: 'text',
                     name: 'graduation-degree',
                     label: 'Institution/University Major',
@@ -291,7 +311,7 @@ function Vacancies() {
                     httpName: 'graduation-degree'
                 },
                 {
-                    id: 19,
+                    id: 20,
                     type: 'date',
                     name: 'graduation-date',
                     label: 'Institution/University Graduation Date',
@@ -306,7 +326,7 @@ function Vacancies() {
 
                 },
                 {
-                    id: 20,
+                    id: 21,
                     type: 'select',
                     name: 'years-of-experience',
                     choices: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10+'],
@@ -319,7 +339,7 @@ function Vacancies() {
                     httpName: 'years-of-experience'
                 },
                 {
-                    id: 21,
+                    id: 22,
                     type: 'textarea',
                     name: 'experience',
                     label: 'Experience Details',
@@ -329,10 +349,11 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     widthOfField: 1,
-                    httpName: 'experience'
+                    httpName: 'experience',
+                    large: true
                 },
                 {
-                    id: 22,
+                    id: 23,
                     type: 'textarea',
                     name: 'skills',
                     label: 'Skills or Hobbies',
@@ -342,10 +363,11 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     widthOfField: 1,
-                    httpName: 'skills'
+                    httpName: 'skills',
+                    large: true
                 },
                 {
-                    id: 23,
+                    id: 24,
                     type: 'textarea',
                     name: 'about',
                     label: 'Other Details',
@@ -355,9 +377,10 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     widthOfField: 1,
+                    large: true,
                 },
                 {
-                    id: 24,
+                    id: 25,
                     type: 'text',
                     name: 'reference-name',
                     label: 'Reference Name',
@@ -372,7 +395,7 @@ function Vacancies() {
 
                 },
                 {
-                    id: 25,
+                    id: 26,
                     type: 'text',
                     name: 'reference-position',
                     label: 'Reference Position',
@@ -386,7 +409,7 @@ function Vacancies() {
 
                 },
                 {
-                    id: 26,
+                    id: 27,
                     type: 'email',
                     name: 'reference-email',
                     label: 'Reference Email',
@@ -399,7 +422,7 @@ function Vacancies() {
                     httpName: 'reference-email'
                 },
                 {
-                    id: 27,
+                    id: 28,
                     type: 'tel',
                     name: 'reference-phone',
                     label: 'Reference Phone Number',
@@ -412,7 +435,7 @@ function Vacancies() {
                     httpName: 'reference-phone'
                 },
                 {
-                    id: 28,
+                    id: 29,
                     type: 'file',
                     name: 'personal-photo',
                     label: 'Personal Photo',
@@ -425,7 +448,7 @@ function Vacancies() {
                     widthOfField: 3,
                 },
                 {
-                    id: 29,
+                    id: 30,
                     type: 'file',
                     name: 'attachment-1',
                     label: 'CV',
@@ -439,7 +462,7 @@ function Vacancies() {
                     httpName: 'attachment-1',
                 },
                 {
-                    id: 30,
+                    id: 31,
                     type: 'file',
                     name: 'attachment-2',
                     label: 'Cover Letter',
@@ -453,7 +476,7 @@ function Vacancies() {
                     httpName: 'attachment-2',
                 },
                 {
-                    id: 31,
+                    id: 32,
                     type: 'file',
                     name: 'attachment-3',
                     label: 'Other Documents: First',
@@ -467,7 +490,7 @@ function Vacancies() {
                     httpName: 'attachment-3',
                 },
                 {
-                    id: 32,
+                    id: 33,
                     type: 'file',
                     name: 'attachment-4',
                     label: 'Other Documents: Second',
@@ -481,7 +504,7 @@ function Vacancies() {
                     httpName: 'attachment-4',
                 },
                 {
-                    id: 33,
+                    id: 34,
                     type: 'file',
                     name: 'attachment-5',
                     label: 'Other Documents: Third',
