@@ -577,7 +577,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 ))}
 
                 <label htmlFor={"captcha"} className={"form-label-outside"}>
-                    {lang === 'ar' ? '*كود التحقق' : 'Captcha*'}
+                    {lang === 'ar' ? 'كود التحقق*' : 'Captcha*'}
                 </label>
 
                 <div className={`${captchaLength === 2 ? 'captcha-wrapper-half-width' : 'captcha-wrapper'}`}
