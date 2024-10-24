@@ -52,10 +52,15 @@
 }
 
 .textarea-form-field {
-    resize: none;
+    resize: vertical;
     overflow: auto;
-    height: 10vh;
-    max-height: 15rem;
+    height: 15rem;
+    max-height: 30rem;
+}
+
+.large-height-textarea {
+    height: 40rem;
+    max-height: 60rem;
 }
 
 .textarea-form-field:lang(ar) {
@@ -143,7 +148,7 @@
 }
 
 .general-form-error {
-    font-size: xx-small;
+    font-size: medium;
     letter-spacing: 0.005rem;
     color: #ff0000;
     margin: 0.5rem;
@@ -154,7 +159,7 @@
 }
 
 .success-message {
-    font-size: xx-small;
+    font-size: medium;
     letter-spacing: 0.005rem;
     color: #00ff00;
     margin: 0.5rem;
@@ -278,6 +283,89 @@
     font-family: 'Futura', sans-serif
 }
 
+.form-select-date-modal {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+
+}
+
+
+.form-select-date-modal-overlay {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+}
+
+.form-select-date-modal-container {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    width: 30%;
+    max-height: 100%;
+    z-index: 1001;
+}
+
+.form-select-date-modal-header {
+    margin: 0.5rem;
+}
+
+
+
+.form-select-date-modal-header p {
+    margin: 0.5rem;
+}
+
+.form-select-date-modal-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.form-select-date-modal-footer button {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    font-size: large;
+}
+
+.form-select-date-modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.form-select-date-modal-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
 @media (max-width: 1600px) {
     .captcha-box {
         letter-spacing: 2rem;
@@ -311,6 +399,9 @@
     }
 
 
+    .form-select-date-modal-container {
+        width: 40%;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -328,6 +419,8 @@
     .file-form-field-styled.third-width {
         width: calc(50% - 2.2rem);
     }
+
+
 }
 
 @media (max-width: 768px) {
@@ -399,7 +492,9 @@
 
     }
 
-
+    .form-select-date-modal-container {
+        width: 90%;
+    }
 
 }
 
@@ -434,6 +529,14 @@
 
     .captcha-wrapper {
         border: 0.1rem solid #ffffff;
+    }
+
+    .captcha-wrapper-half-width {
+        border: 0.1rem solid #ffffff;
+    }
+
+    .form-select-date-modal-container {
+        background-color: #242424;
     }
 
 }

@@ -1,12 +1,52 @@
 
 import PropTypes from "prop-types";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useMemo} from "react";
 import {Fragment} from "react";
 import '../styles/Form.css'
 import jsPDF from 'jspdf';
 import {createRef} from "react";
 import { v4 as uuidv4 } from 'uuid'; // Import the UUID library
+import {useSpring, animated} from "react-spring";
+import { useCallback } from 'react';
 
+
+const getStorageKey = (formTitle, fieldId, fieldLabel) => {
+    return `form_${formTitle}_${fieldLabel}_${fieldId}`;
+};
+
+const useFormCache = (formTitle, fields) => {
+
+    const loadCachedValues = useCallback(() => {
+        const cachedValues = {};
+        fields.forEach(field => {
+            const storageKey = getStorageKey(formTitle, field.id, field.label);
+            const cachedValue = localStorage.getItem(storageKey);
+            if (cachedValue !== null) {
+                cachedValues[field.id] = cachedValue;
+            }
+        });
+        return cachedValues;
+    }, [fields, formTitle]);
+
+
+    const saveToCache = useCallback((field, value) => {
+        const storageKey = getStorageKey(formTitle, field.id, field.label);
+        if (value) {
+            localStorage.setItem(storageKey, value);
+        } else {
+            localStorage.removeItem(storageKey);
+        }
+    }, [formTitle]);
+
+    const clearCache = useCallback(() => {
+        fields.forEach(field => {
+            const storageKey = getStorageKey(formTitle, field.id, field.label);
+            localStorage.removeItem(storageKey);
+        });
+    }, [fields, formTitle]);
+
+    return { loadCachedValues, saveToCache, clearCache };
+};
 
 function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
@@ -17,6 +57,20 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
     const characters = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghkmnopqrstuvwxyz0123456789@#$%&';
     const [refs, setRefs] = useState({}); // Store references to form fields
     const [fileInputs, setFileInputs] = useState({});
+    const [showSelectDateModal, setShowSelectDateModal] = useState(false);
+    const [selectedDateDay, setSelectedDateDay] = useState('');
+    const [selectedDateMonth, setSelectedDateMonth] = useState('');
+    const [selectedDateYear, setSelectedDateYear] = useState('');
+    const [selectedDateFieldID, setSelectedDateFieldID] = useState(null);
+    const [selectedDateFieldLabel, setSelectedDateFieldLabel] = useState('');
+    const [selectedDateError, setSelectedDateError] = useState('');
+    const animateDateModal = useSpring({
+        opacity: showSelectDateModal ? 1 : 0,
+        transform: showSelectDateModal ? 'translateY(0)' : 'translateY(-100%)'
+    });
+
+    const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
+
 
     useEffect(() => {
         const newRefs = {};
@@ -25,6 +79,101 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
         });
         setRefs(newRefs);
     }, []);
+
+    const processFieldRules = useCallback((currentFields, field, value) => {
+
+        if (field.rules) {
+            const rule = field.rules.find(r => r.value === value);
+
+            if (rule) {
+
+                const newFields = currentFields.filter(f => {
+                    let keep = true;
+                    field.rules.forEach(rule => {
+                        rule.ruleResult.forEach(newField => {
+                            if (newField.name === f.name) {
+                                keep = false;
+                            } else if (newField.rules) {
+                                newField.rules.forEach(subRule => {
+                                    subRule.ruleResult.forEach(subNewField => {
+                                        if (subNewField.name === f.name) {
+                                            keep = false;
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                    return keep;
+                });
+
+                const currentIndex = newFields.findIndex(f => f.name === field.name);
+
+                rule.ruleResult.forEach(newField => {
+                    newFields.splice(currentIndex + 1, 0, newField);
+                });
+
+                return newFields;
+            } else {
+
+                return currentFields.filter(f => {
+                    let keep = true;
+                    field.rules.forEach(rule => {
+                        rule.ruleResult.forEach(newField => {
+                            if (newField.name === f.name) {
+                                keep = false;
+                            } else if (newField.rules) {
+                                newField.rules.forEach(subRule => {
+                                    subRule.ruleResult.forEach(subNewField => {
+                                        if (subNewField.name === f.name) {
+                                            keep = false;
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                    return keep;
+                });
+
+            }
+        }
+
+        return currentFields;
+    }, []);
+
+    useEffect(() => {
+        let cachedValues = loadCachedValues();
+
+        const initializeForm = () => {
+
+            let currentFields = [...fields];
+
+            Object.entries(cachedValues).forEach(([fieldId, value]) => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.value = value;
+                }
+            });
+
+            fields.forEach(field => {
+                const cachedValue = cachedValues[field.id];
+                if (field.rules && cachedValue) {
+                    currentFields = processFieldRules(currentFields, field, cachedValue);
+                }
+            });
+
+            setDynamicFields(currentFields);
+
+
+
+        };
+
+        initializeForm();
+
+    }, [fields, loadCachedValues, processFieldRules]);
+
+
 
     function resetForm() {
         setTimeout(() => {
@@ -40,6 +189,8 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
             })
 
         }, 3000);
+
+        clearCache();
     }
 
 
@@ -79,45 +230,20 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 e.target.setCustomValidity('');
                 setGeneralFormError('');
                 setSuccessMessage('');
+                field.value = value;
+                saveToCache(field, value);
 
             }
 
 
             // Check and apply rules
-            if (field.rules) {
-                const rule = field.rules.find(r => r.value === value);
+            const newFields = processFieldRules(dynamicFields, field, value);
+            setDynamicFields(newFields);
 
-                if (rule) {
-                    const newFields = [...dynamicFields];
-                    const currentIndex = newFields.findIndex(f => f.name === field.name);
-
-                    // Add fields if rule applies
-                    rule.ruleResult.forEach(newField => {
-                        // push the newField after the current field
-                        newFields.splice(currentIndex + 1, 0, newField);
-                    });
-
-                    setDynamicFields(newFields);
-                } else {
-                    const newFields = dynamicFields.filter(f => {
-                        let keep = true;
-                        field.rules.forEach(rule => {
-                            rule.ruleResult.forEach(newField => {
-                                if (newField.name === f.name) {
-                                    keep = false;
-                                }
-                            });
-                        });
-                        return keep;
-                    });
-
-                    setDynamicFields(newFields);
-                }
-            }
         }
-
-
     }
+
+
 
     const renderFieldBasedOnType = (field) => {
 
@@ -125,7 +251,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
             return (
                 <Fragment key={field.id} >
                 {field.labelOutside && <label htmlFor={field.id} className={ "form-label-outside"}>
-                    {field.label}
+                    {field.label+ (field.required ? '*' : '')}
 
                 </label>}
 
@@ -135,7 +261,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            placeholder={field.placeholder ? field.placeholder : field.label}
+                            placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
                             className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
@@ -149,13 +275,17 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            placeholder={field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}
+                            placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
                             disabled={submitting}
+                            readOnly={true}
                             onChange={(e) => {
                                 onChange(e, field);
                             }}
-                            className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
 
+
+
+                            onFocus={() => showSelectDateModalForField(field.id, field.label)}
+                            className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                         />
                     )}
 
@@ -164,10 +294,10 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            placeholder={field.placeholder ? field.placeholder : field.label}
+                            placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
-                            className={`textarea-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`textarea-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''}`}
                         />
                     }
 
@@ -190,7 +320,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
 
                             onChange={(e) => onChange(e, field)}
                         >
-                            {(!field.multiple) && <option value="">{field.label}</option>}
+                            {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
                             {field.choices.map((choice, index) => (
                                 <option key={index} value={choice}>{choice}</option>
                             ))}
@@ -235,7 +365,9 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
 
                     {field.type === 'file' &&
                         <div className={`file-form-field-styled ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
-                            <label htmlFor={field.id}>{field.label}</label>
+                            <label htmlFor={field.id}>
+                                {field.label + (field.required ? '*' : '')}
+                            </label>
 
                             <div className={"file-form-field-styled-buttons-wrapper"}>
 
@@ -312,6 +444,40 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
         }
     };
 
+    const showSelectDateModalForField = (fieldID, fieldLabel) => {
+        setSelectedDateFieldID(fieldID);
+        setSelectedDateFieldLabel(fieldLabel);
+        setShowSelectDateModal(true);
+    }
+
+    const handleDateSelection = (day, month, year) => {
+
+        if (!day || !month || !year) {
+            setSelectedDateError(lang === 'ar' ? 'الرجاء اختيار تاريخ صحيح' : 'Please select a valid date');
+            setTimeout(() => { setSelectedDateError(''); }, 3000);
+            return;
+        }
+
+
+        if (day < 10) {
+            day = `0${day}`;
+        }
+
+        if (month < 10) {
+            month = `0${month}`;
+        }
+
+        setSelectedDateDay(day);
+        setSelectedDateMonth(month);
+        setSelectedDateYear(year);
+        document.getElementById(selectedDateFieldID).value = `${year}-${month}-${day}`;
+        setSelectedDateMonth('');
+        setSelectedDateDay('');
+        setSelectedDateYear('');
+        setShowSelectDateModal(false);
+        saveToCache({id: selectedDateFieldID, label: selectedDateFieldLabel}, `${year}-${month}-${day}`);
+    }
+
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -381,6 +547,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
                 setTimeout(() => { setSuccessMessage(''); }, 3000);
                 resetForm();
+                clearCache();
             } else {
                 console.log(result)
                 setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message + 'Form submission failed. Please try again.');
@@ -410,7 +577,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                 ))}
 
                 <label htmlFor={"captcha"} className={"form-label-outside"}>
-                    {lang === 'ar' ? 'الكود التحقق' : 'Captcha'}
+                    {lang === 'ar' ? '*كود التحقق' : 'Captcha*'}
                 </label>
 
                 <div className={`${captchaLength === 2 ? 'captcha-wrapper-half-width' : 'captcha-wrapper'}`}
@@ -458,12 +625,116 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                         )
                     }
 
+                    {
+                        lang === 'ar' ? (
+                            <button type="reset" disabled={submitting}
+                                    className="reset-button">مسح</button>
+                        ) : (
+                            <button type="reset" disabled={submitting}
+                                    className="reset-button">Clear</button>
+                        )
+
+                    }
+
 
                     {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                     {successMessage && <p className="success-message">{successMessage}</p>}
                 </div>
             </form>
-        </>
+
+
+
+
+
+        <animated.div style={animateDateModal} className={"form-select-date-modal"}>
+            <div className={"form-select-date-modal-overlay"} onClick={() => {
+                setShowSelectDateModal(false);
+                setSelectedDateMonth('');
+                setSelectedDateDay('');
+                setSelectedDateYear('');
+                setSelectedDateError('');
+
+            }}/>
+
+                <div className={"form-select-date-modal-container"}>
+
+                    <div className={"form-select-date-modal-header"}>
+                        <p>
+                            {selectedDateFieldLabel}
+                        </p>
+                    </div>
+
+                    <div className={"form-select-date-modal-content"}>
+                        <form className={"form-select-date-modal-form"} onSubmit={(e) => {
+                            e.preventDefault();
+                            handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
+                        }}>
+
+                            <select className={"select-form-field third-width"} onChange={(e) => setSelectedDateYear(e.target.value)}
+                                    value={selectedDateYear}
+
+                            >
+                                <option value={''}>Year</option>
+
+                                {Array.from({length: new Date().getFullYear() - 1900 + 1}, (v, k) => k + 1900).map(year => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
+
+                            <select className={"select-form-field third-width"} onChange={(e) => setSelectedDateMonth(e.target.value)}
+                                    value={selectedDateMonth}
+                            >
+                                <option value={''}>Month</option>
+                                {Array.from({length: 12}, (v, k) => k + 1).map(month => (
+                                    <option key={month} value={month}>{month}</option>
+                                ))}
+                            </select>
+
+                            <select className={"select-form-field third-width"} onChange={(e) => setSelectedDateDay(e.target.value)}
+                                    value={selectedDateDay}
+                            >
+                                <option value={''}>Day</option>
+
+                                { (selectedDateMonth && selectedDateYear && parseInt(selectedDateYear) !== undefined && parseInt(selectedDateMonth))  ?
+                                    Array.from({length: new Date(parseInt(selectedDateYear), parseInt(selectedDateMonth), 0).getDate()}, (v, k) => k + 1).map(day => (
+                                        <option key={day} value={day}>{day}</option>
+                                    )) : null
+                                }
+
+                            </select>
+
+
+                        </form>
+                    </div>
+
+                    {
+                        selectedDateError && <p className={"general-form-error"}>{selectedDateError}</p>
+                    }
+
+                    <div className={"form-select-date-modal-footer"}>
+
+                        <button className={"form-select-date-modal-close-btn"} onClick={() => {
+                            setShowSelectDateModal(false);
+                            setSelectedDateMonth('');
+                            setSelectedDateDay('');
+                            setSelectedDateYear('');
+                            setSelectedDateError('');
+                        }}>
+                            {lang === 'ar' ? 'إغلاق' : 'Close'}
+                        </button>
+
+                        <button className={"form-select-date-modal-confirm-btn"} onClick={() => {
+                            handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
+                        }}>
+                            {lang === 'ar' ? 'تأكيد' : 'Confirm'}
+                        </button>
+                    </div>
+
+
+
+            </div>
+        </animated.div>
+    </>
     );
 }
 
