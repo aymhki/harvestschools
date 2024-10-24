@@ -54,11 +54,13 @@
 .textarea-form-field {
     resize: vertical;
     overflow: auto;
+    min-height: 10rem;
     height: 15rem;
     max-height: 30rem;
 }
 
 .large-height-textarea {
+    min-height: 30rem;
     height: 40rem;
     max-height: 60rem;
 }
