@@ -89,11 +89,11 @@ function ArabicReligion() {
 
 
               <h1 lang={'ar'}>
-                  اقترح كتاب للمكتبة لاضافته الى مجموعتها
+                  اقترح كتاب للمكتبة لاضافته الى مجموعتنا
               </h1>
 
               <Form sendPdf={false} mailTo={'ayman.ibrahim@harvestschools.com'}
-                    formTitle={'اقتراح كتاب للمكتبة لاضافته الى مجموعتها'}
+                    formTitle={'اقتراح كتاب للمكتبة لاضافته الى مجموعتنا'}
                     fields={
                         [
                             {

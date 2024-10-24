@@ -61,7 +61,7 @@ function StudentsUnion() {
                 </p>
 
                 <h2>
-                    What is the students union benefits?
+                    What are the students union benefits?
                 </h2>
 
                 <ul className={"students-union-benefits-list"}>
