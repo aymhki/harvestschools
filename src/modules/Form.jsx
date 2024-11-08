@@ -1,6 +1,6 @@
 
 import PropTypes from "prop-types";
-import {useEffect, useState, useMemo} from "react";
+import {useEffect, useState } from "react";
 import {Fragment} from "react";
 import '../styles/Form.css'
 import jsPDF from 'jspdf';
@@ -283,8 +283,19 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                             }}
 
 
-
                             onFocus={() => showSelectDateModalForField(field.id, field.label)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Tab') {
+                                    setShowSelectDateModal(false);
+                                    setSelectedDateMonth('');
+                                    setSelectedDateDay('');
+                                    setSelectedDateYear('');
+                                    setSelectedDateError('');
+                                }
+                            }}
+
+
+
                             className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                         />
                     )}
@@ -668,15 +679,21 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
                         <form className={"form-select-date-modal-form"} onSubmit={(e) => {
                             e.preventDefault();
                             handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
-                        }}>
+                        }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
+                                }
+                            }}
+                        >
 
                             <select className={"select-form-field third-width"} onChange={(e) => setSelectedDateYear(e.target.value)}
                                     value={selectedDateYear}
-
+                                    autoFocus={true}
                             >
                                 <option value={''}>Year</option>
 
-                                {Array.from({length: new Date().getFullYear() - 1900 + 1}, (v, k) => k + 1900).map(year => (
+                                {Array.from({length: new Date().getFullYear() - 1970 + 1}, (v, k) => k + 1970).map(year => (
                                     <option key={year} value={year}>{year}</option>
                                 ))}
                             </select>
@@ -725,7 +742,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
 
                         <button className={"form-select-date-modal-confirm-btn"} onClick={() => {
                             handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
-                        }}>
+                        }} type={"submit"}>
                             {lang === 'ar' ? 'تأكيد' : 'Confirm'}
                         </button>
                     </div>
