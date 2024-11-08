@@ -27,7 +27,7 @@
     border-radius: 1rem;
     will-change: filter;
     transition: filter 0.5s;
-
+    min-height: 25rem;
 
 }
 
@@ -87,8 +87,8 @@
 
 @media (max-width: 1200px) {
     .login-form-wrapper {
-        width: 40vw;
-        height: 40vh;
+        width: 50vw;
+        height: 50vh;
     }
 
 
@@ -97,10 +97,7 @@
 
 
 @media (max-width: 1024px) {
-    .login-form-wrapper {
-        width: 60vw;
-        height: 40vh;
-    }
+
 }
 
 
@@ -110,12 +107,13 @@
     }
 
     .login-form-wrapper {
-        width: 90vw;
-        height: 50vh;
+        width: 80vw;
+        height: 40vh;
     }
 
     .login-form {
         gap: 1rem;
+
     }
 
     .login-form input {
