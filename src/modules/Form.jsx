@@ -48,7 +48,7 @@ const useFormCache = (formTitle, fields) => {
     return { loadCachedValues, saveToCache, clearCache };
 };
 
-function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
+function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputFieldsCache}) {
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
@@ -143,6 +143,10 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
     }, []);
 
     useEffect(() => {
+        if(noInputFieldsCache) {
+            return;
+        }
+
         let cachedValues = loadCachedValues();
 
         const initializeForm = () => {
@@ -226,12 +230,16 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
 
             if (field.regex && !new RegExp(field.regex).test(value)) {
                 e.target.setCustomValidity(field.errorMsg);
-            } else {
+            } else  {
+
                 e.target.setCustomValidity('');
                 setGeneralFormError('');
                 setSuccessMessage('');
                 field.value = value;
-                saveToCache(field, value);
+
+                if(!noInputFieldsCache) {
+                    saveToCache(field, value);
+                }
 
             }
 
@@ -486,7 +494,11 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength}) {
         setSelectedDateDay('');
         setSelectedDateYear('');
         setShowSelectDateModal(false);
-        saveToCache({id: selectedDateFieldID, label: selectedDateFieldLabel}, `${year}-${month}-${day}`);
+
+        if (!noInputFieldsCache) {
+
+            saveToCache({id: selectedDateFieldID, label: selectedDateFieldLabel}, `${year}-${month}-${day}`);
+        }
     }
 
 
@@ -814,6 +826,7 @@ Form.propTypes = {
     formTitle: PropTypes.string.isRequired,
     lang: PropTypes.string.isRequired,
     captchaLength: PropTypes.number.isRequired,
+    noInputFieldsCache: PropTypes.bool
 };
 
 export default Form;
