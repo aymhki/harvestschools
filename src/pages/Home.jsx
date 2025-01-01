@@ -52,19 +52,29 @@ function Home() {
                 <p>Harvest International School (HIS) was founded in 2016 by Eng. Hassan Khalil Ibrahim to be the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. Eng. Hassan has, for many years, dreamt and planned of founding a school with a true mission and vision. He consulted various specialized educators and finally, the dream came true. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program. The purpose-built world-class educational facility includes extended grounds, specialized sports fields and courts, a well-equipped gymnasium and an outdoor swimming pool. Eng. Hassan’s mission is to raise well-rounded young people who are physically, ethically and educationally capable to face the challenges of the twenty-first century in an ever-evolving global community. At HIS, we are committed to providing the best by offering simultaneously the Egyptian, British and American syllabi.  Lifelong education and eagerness to discover and experiment are at the heart of our mission.</p>
 
                 <div className="home-page-about-us-video">
-                    <iframe className="home-page-about-us-video"
-                            src="https://www.youtube.com/embed/c_NWecZZ01M"
-                            title="YouTube video player"
-                            frameBorder={0}
+                    {/*<iframe className="home-page-about-us-video"*/}
+                    {/*        src="https://www.youtube.com/embed/c_NWecZZ01M"*/}
+                    {/*        title="YouTube video player"*/}
+                    {/*        frameBorder={0}*/}
+                    {/*        loading={"lazy"}*/}
+                    {/*        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"*/}
+                    {/*        allowFullScreen/>*/}
+
+
+                    <iframe
+                            className={"home-page-about-us-video"}
+                            src="https://www.youtube-nocookie.com/embed/BoRMW82VEIc?si=2pP32Q9CJSw-zx_F"
+                            title="YouTube video player" frameBorder="0"
                             loading={"lazy"}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen/>
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                 </div>
             </div>
 
             <div className="home-page-accreditations-section-container">
                 <div className="home-page-accreditations-section">
-                    <img className="accreditation-photo" src="/assets/images/HomePage/AccreditedCognia.png" alt="Cognia Accredited" />
+                    <img className="accreditation-photo" src="/assets/images/HomePage/AccreditedCognia.png"
+                         alt="Cognia Accredited"/>
                     <img className="accreditation-photo" src="/assets/images/HomePage/CICIS.png" alt="University of Cambridge Accredited" />
                 </div>
             </div>
