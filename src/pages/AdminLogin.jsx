@@ -132,7 +132,7 @@ function AdminLogin() {
                                     setPassword('');
                               }}
                         >
-                            <h2>Login</h2>
+                            <h2>Admin Login</h2>
                             <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)}
                                    value={username}/>
                             <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}
