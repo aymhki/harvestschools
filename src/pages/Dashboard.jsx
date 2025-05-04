@@ -10,7 +10,7 @@ function Dashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const checkSession = async () => {
+        const checkAdminSession = async () => {
             const cookies = document.cookie.split(';').reduce((acc, cookie) => {
                 const [key, value] = cookie.trim().split('=');
                 acc[key] = value;
@@ -23,12 +23,12 @@ function Dashboard() {
             if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
                 document.cookie = 'harvest_schools_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 document.cookie = 'harvest_schools_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                navigate('/login');
+                navigate('/admin-login');
                 return;
             }
 
             try {
-                const response = await axios.post('scripts/checkSession.php', {
+                const response = await axios.post('scripts/checkAdminSession.php', {
                     session_id: sessionId
                 }, {
                     headers: {
@@ -37,14 +37,14 @@ function Dashboard() {
                 });
 
                 if (!response.data.success) {
-                    navigate('/login');
+                    navigate('/admin-login');
                 }
             } catch (error) {
                 console.log(error);
             }
         };
 
-        checkSession();
+        checkAdminSession();
     }, []);
 
   return (
