@@ -70,10 +70,10 @@ function Academics() {
             externalLink: true
         },
         {
-            title: "Login",
+            title: "Admin Login",
             image: "/assets/images/AcademicsPages/Login1.png",
-            description: "Web app login to view admin information.",
-            link: "/login",
+            description: "Web app admin login to view admin information.",
+            link: "/admin-login",
             buttonText: "Learn More",
             titleInArabic: false,
             descriptionInArabic: false
