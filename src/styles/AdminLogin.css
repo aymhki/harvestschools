@@ -1,4 +1,4 @@
-.login-page {
+.admin-login-page {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,7 +7,7 @@
     background: radial-gradient(circle, #ffffff, #1a2a6c);
 }
 
-.login-page-form-controller {
+.admin-login-page-form-controller {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,7 +16,7 @@
 
 }
 
-.login-form-wrapper {
+.admin-login-form-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,11 +31,11 @@
 
 }
 
-.login-form-wrapper:hover {
+.admin-login-form-wrapper:hover {
     filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
-.login-form {
+.admin-login-form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -44,7 +44,7 @@
     height: 100%;
 }
 
-.login-form input {
+.admin-login-form input {
     margin: 1rem;
     padding: 0.5rem;
     will-change: filter;
@@ -62,17 +62,17 @@
 
 }
 
-.login-form input:focus {
+.admin-login-form input:focus {
     filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
-.login-form input:hover {
+.admin-login-form input:hover {
 
     filter: drop-shadow(0 0 0.5rem #1f2152);
 
 }
 
-.login-error-msg {
+.admin-login-error-msg {
     color: red;
     font-size: 0.1rem;
 }
@@ -86,7 +86,7 @@
 }
 
 @media (max-width: 1200px) {
-    .login-form-wrapper {
+    .admin-login-form-wrapper {
         width: 50vw;
         height: 50vh;
     }
@@ -102,21 +102,21 @@
 
 
 @media (max-width: 768px) {
-    .login-page {
+    .admin-login-page {
 
     }
 
-    .login-form-wrapper {
+    .admin-login-form-wrapper {
         width: 80vw;
         height: 40vh;
     }
 
-    .login-form {
+    .admin-login-form {
         gap: 1rem;
 
     }
 
-    .login-form input {
+    .admin-login-form input {
 
     }
 }
@@ -124,32 +124,32 @@
 @media (prefers-color-scheme: dark) {
 
 
-    .login-page {
+    .admin-login-page {
         background: radial-gradient(circle, #ffffff, #0f0f0f) ;
     }
 
-    .login-form-wrapper {
+    .admin-login-form-wrapper {
         background-color: #0f0f0f;
     }
 
-    .login-form input {
+    .admin-login-form input {
         color: #ffffff;
         border: 0.1rem solid #ffffff;
     }
 
-    .login-form-wrapper:hover {
+    .admin-login-form-wrapper:hover {
         filter: drop-shadow(0 0 0.5rem #ffffff);
     }
 
-    .login-form input:focus {
+    .admin-login-form input:focus {
         filter: drop-shadow(0 0 0.5rem #ffffff);
     }
 
-    .login-form input:hover {
+    .admin-login-form input:hover {
         filter: drop-shadow(0 0 0.5rem #ffffff);
     }
 
-    .login-error-msg {
+    .admin-login-error-msg {
         color: red;
     }
 }
