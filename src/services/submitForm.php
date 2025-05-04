@@ -1,4 +1,13 @@
 <?php
+header('Content-Type: application/json');
+
+$dbConfig = require 'dbConfig.php';
+
+$servername = $dbConfig['db_host'];
+$username = $dbConfig['db_username'];
+$password = $dbConfig['db_password'];
+$dbname = $dbConfig['db_name'];
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     try {
@@ -59,10 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (mail($mailTo, $subject, $body, $headers)) {
             if ($subject === 'Job Application Submission') {
-                $servername = "localhost";
-                $username = "harvest_admin";
-                $password = "Hkibrahim@3";
-                $dbname = "harvest_schools";
                 $conn = new mysqli($servername, $username, $password, $dbname);
 
                 if ($conn->connect_error) {
