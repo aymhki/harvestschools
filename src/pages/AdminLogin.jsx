@@ -1,18 +1,18 @@
-import '../styles/Login.css'
+import '../styles/AdminLogin.css'
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import {useNavigate} from "react-router-dom";
 import Spinner from "../modules/Spinner.jsx";
 
-function Login() {
+function AdminLogin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleAdminLogin = async (e) => {
         e.preventDefault();
 
         if (submitting) {
@@ -28,7 +28,7 @@ function Login() {
         setSubmitting(true);
 
         try {
-            const response = await axios.post('scripts/validateLogin.php', {
+            const response = await axios.post('scripts/validateAdminLogin.php', {
                 username,
                 password
             }, {
@@ -45,7 +45,7 @@ function Login() {
                 document.cookie = `harvest_schools_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
 
 
-                const sessionResponse = await axios.post('scripts/createSession.php', {
+                const sessionResponse = await axios.post('scripts/createAdminSession.php', {
                     username: username,
                     session_id: sessionId
                 }, {
@@ -78,7 +78,7 @@ function Login() {
 
 
     useEffect(() => {
-        const checkSession = async () => {
+        const checkAdminSession = async () => {
             const cookies = document.cookie.split(';').reduce((acc, cookie) => {
                 const [key, value] = cookie.trim().split('=');
                 acc[key] = value;
@@ -95,7 +95,7 @@ function Login() {
             }
 
             try {
-                const response = await axios.post('scripts/checkSession.php', {
+                const response = await axios.post('scripts/checkAdminSession.php', {
                     session_id: sessionId
                 }, {
                     headers: {
@@ -111,7 +111,7 @@ function Login() {
             }
         };
 
-        checkSession().then(() =>
+        checkAdminSession().then(() =>
             console.log('Session checked')
         );
     }, []);
@@ -120,31 +120,32 @@ function Login() {
   return (
       <>
           {submitting && <Spinner/>}
-    <div className={'login-page'}>
-        <div className={'login-page-form-controller'}>
-            <div className={'login-form-wrapper'}>
 
-                <form className={'login-form'} onSubmit={handleLogin}
-                      onReset={(e) => {
-                            e.preventDefault();
-                            setUsername('');
-                            setPassword('');
-                      }}
-                >
-                    <h2>Login</h2>
-                    <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)}
-                           value={username}/>
-                    <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}
-                           value={password}/>
-                    <p className={'login-error-msg'}>{errorMsg}</p>
-                    <button disabled={submitting} type={"submit"}>Login</button>
-                </form>
+            <div className={'admin-login-page'}>
+                <div className={'admin-login-page-form-controller'}>
+                    <div className={'admin-login-form-wrapper'}>
+
+                        <form className={'admin-login-form'} onSubmit={handleAdminLogin}
+                              onReset={(e) => {
+                                    e.preventDefault();
+                                    setUsername('');
+                                    setPassword('');
+                              }}
+                        >
+                            <h2>Login</h2>
+                            <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)}
+                                   value={username}/>
+                            <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}
+                                   value={password}/>
+                            <p className={'admin-login-error-msg'}>{errorMsg}</p>
+                            <button disabled={submitting} type={"submit"}>Login</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
       </>
   );
 }
 
-export default Login;
+export default AdminLogin;

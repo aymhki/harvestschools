@@ -1,10 +1,10 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = "localhost";
-$username = "harvest_admin";
-$password = "Hkibrahim@3";
-$dbname = "harvest_schools";
+$servername = get_cfg_var('Database.db_host');
+$username = get_cfg_var('Database.db_username');
+$password = get_cfg_var('Database.db_password');
+$dbname = get_cfg_var('Database.db_name');
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
