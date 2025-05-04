@@ -1,10 +1,12 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = get_cfg_var('Database.db_host');
-$username = get_cfg_var('Database.db_username');
-$password = get_cfg_var('Database.db_password');
-$dbname = get_cfg_var('Database.db_name');
+$dbConfig = require 'dbConfig.php';
+
+$servername = $dbConfig['db_host'];
+$username = $dbConfig['db_username'];
+$password = $dbConfig['db_password'];
+$dbname = $dbConfig['db_name'];
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
