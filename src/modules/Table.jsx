@@ -39,16 +39,28 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         const startIndex = tableHeader ? 2 : 1;
 
         const compare = (a, b) => {
-            if (a[sortConfig.column] < b[sortConfig.column]) {
+            const valueA = a[sortConfig.column];
+            const valueB = b[sortConfig.column];
+
+            const numA = Number(valueA);
+            const numB = Number(valueB);
+
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return sortConfig.direction === 'ascending'
+                    ? numA - numB
+                    : numB - numA;
+            }
+
+            if (valueA < valueB) {
                 return sortConfig.direction === 'ascending' ? -1 : 1;
             }
-            if (a[sortConfig.column] > b[sortConfig.column]) {
+            if (valueA > valueB) {
                 return sortConfig.direction === 'ascending' ? 1 : -1;
             }
+
             return 0;
         };
 
-        // Only sort the part of the array we want
         const sortedSection = sorted.slice(startIndex).sort(compare);
         return sorted.slice(0, startIndex).concat(sortedSection);
     }, [tableData, sortConfig, tableHeader]);
