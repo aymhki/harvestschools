@@ -53,14 +53,16 @@ import MoreInfo from "../pages/FAQs/MoreInfo.jsx";
 import NotFound from '../pages/NotFound';
 import Facilities from "../pages/Academics/Facilities.jsx";
 import AdmissionFees from "../pages/Admission/AdmissionFees.jsx";
-import AdminLogin from "../pages/AdminLogin.jsx";
-import Dashboard from "../pages/Dashboard.jsx";
-import JobApplications from "../pages/JobApplications.jsx";
+import AdminLogin from "../pages/Admin/AdminLogin.jsx";
+import Dashboard from "../pages/Admin/Dashboard.jsx";
+import JobApplications from "../pages/Admin/JobApplications.jsx";
 import BookingDashboard from '../pages/Events/Booking/BookingDashboard.jsx'
+import BookingManagement from "../pages/Admin/BookingManagement.jsx";
 import BookingLogin from "../pages/Events/Booking/BookingLogin.jsx";
 import BookingMedia from "../pages/Events/Booking/BookingMedia.jsx";
 import BookingExtras from "../pages/Events/Booking/BookingExtras.jsx";
 import BookingStatusInfo from "../pages/Events/Booking/BookingStatusInfo.jsx";
+
 
 function App() {
     const location = useLocation();
@@ -82,9 +84,11 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Navigate to="/home" />} />
                         <Route path="/home" element={<Home />} />
-                        <Route path="/admin-login" element={<AdminLogin />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/job-applications" element={<JobApplications />} />
+
+                        <Route path="/admin/admin-login" element={<AdminLogin />} />
+                        <Route path="/admin/dashboard" element={<Dashboard />} />
+                        <Route path="/admin/job-applications" element={<JobApplications />} />
+                        <Route path="/admin/booking-management" element={<BookingManagement />} />
 
                         <Route path="/more-info" element={<MoreInfo />} />
                         <Route path="/faqs" element={<Faqs />} />

@@ -26,8 +26,8 @@ try {
     $sessionId = $conn->real_escape_string($data['session_id']);
 
     $sql = "SELECT u.permission_level 
-            FROM sessions s
-            JOIN users u ON LOWER(s.username) = LOWER(u.username)
+            FROM admin_sessions s
+            JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
             WHERE s.id = '$sessionId'";
 
     $result = $conn->query($sql);
@@ -51,7 +51,7 @@ try {
                 "title" => "Job Applications",
                 "image" => '/assets/images/Dashboard/JobApplications.png',
                 "description" => "View and manage job applications",
-                "link" => '/job-applications',
+                "link" => '/admin/job-applications',
                 "buttonText" => 'View Applications',
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
@@ -59,10 +59,10 @@ try {
         ],
         1 => [
             [
-                "title" => "Event Booking",
+                "title" => "Event Bookings",
                 "image" => '/assets/images/Dashboard/BookingManagement.png',
-                "description" => "View Bookings",
-                "link" => '/booking-management',
+                "description" => "View & Manage Bookings",
+                "link" => '/admin/booking-management',
                 "buttonText" => 'View Bookings',
                 "titleInArabic" => false,
                 "descriptionInArabic" => false

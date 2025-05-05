@@ -1,9 +1,9 @@
-import OptionsGrid from "../modules/OptionsGrid.jsx";
-import '../styles/Dashboard.css';
+import OptionsGrid from "../../modules/OptionsGrid.jsx";
+import '../../styles/Dashboard.css';
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import Spinner from "../modules/Spinner.jsx";
+import Spinner from "../../modules/Spinner.jsx";
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ function Dashboard() {
             if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
                 document.cookie = 'harvest_schools_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 document.cookie = 'harvest_schools_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                navigate('/admin-login');
+                navigate('/admin/login');
                 return;
             }
 
@@ -38,7 +38,7 @@ function Dashboard() {
                 });
 
                 if (!sessionResponse.data.success) {
-                    navigate('/admin-login');
+                    navigate('/admin/login');
                     return;
                 }
 
@@ -59,7 +59,7 @@ function Dashboard() {
             } catch (error) {
                 console.log(error);
                 setIsLoading(false);
-                navigate('/admin-login');
+                navigate('/admin/login');
             }
         };
 

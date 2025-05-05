@@ -198,9 +198,9 @@ const NavigationBar = () => {
                         </li>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
-                            navigate('/admin-login');
+                            navigate('/admin/login');
                         }}>
-                            <Link to={'/admin-login'}>Admin Login</Link>
+                            <Link to={'/admin/login'}>Admin Login</Link>
                         </li>
                     </ul>
                 </li>
