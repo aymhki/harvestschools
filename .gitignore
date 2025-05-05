@@ -23,4 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-/src/services/dbConfig.php
+/src/scripts/dbConfig.php
