@@ -1,18 +1,51 @@
 <?php
 header('Content-Type: application/json');
-
 $dbConfig = require 'dbConfig.php';
-
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $cookies = [];
+    foreach ($_COOKIE as $key => $value) {
+        $cookies[$key] = $value;
+    }
 
+    if (!isset($cookies['harvest_schools_session_id'])) {
+        throw new Exception("Unauthorized: No session found", 401);
+    }
+
+    $sessionId = $cookies['harvest_schools_session_id'];
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
+    }
+
+    $permissionSql = "SELECT u.permission_level 
+                     FROM sessions s
+                     JOIN users u ON LOWER(s.username) = LOWER(u.username)
+                     WHERE s.id = '$sessionId'";
+
+    $permissionResult = $conn->query($permissionSql);
+
+    if ($permissionResult->num_rows == 0) {
+        throw new Exception("Invalid session", 401);
+    }
+
+    $permissionRow = $permissionResult->fetch_assoc();
+    $permissionLevels = explode(',', $permissionRow['permission_level']);
+
+    $cleanPermissionLevels = array_map(function($level) {
+        return intval(trim($level));
+    }, $permissionLevels);
+
+    $hasPermission = in_array(0, $cleanPermissionLevels);
+
+    if (!$hasPermission) {
+        echo json_encode([]);
+        exit;
     }
 
     $sql = "SELECT
@@ -60,9 +93,15 @@ try {
     echo json_encode($data);
 
 } catch (Exception $e) {
-    http_response_code($e->getCode());
-    echo json_encode(["error" => $e->getMessage()]);
+    if ($e->getCode() == 401) {
+        echo json_encode([]);
+    } else {
+        http_response_code($e->getCode() ?: 500);
+        echo json_encode(["error" => $e->getMessage()]);
+    }
 } finally {
-    $conn->close();
+    if (isset($conn) && $conn->ping()) {
+        $conn->close();
+    }
 }
 ?>

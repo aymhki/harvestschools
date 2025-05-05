@@ -56,6 +56,11 @@ import AdmissionFees from "../pages/Admission/AdmissionFees.jsx";
 import AdminLogin from "../pages/AdminLogin.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
 import JobApplications from "../pages/JobApplications.jsx";
+import BookingDashboard from '../pages/Events/Booking/BookingDashboard.jsx'
+import BookingLogin from "../pages/Events/Booking/BookingLogin.jsx";
+import BookingMedia from "../pages/Events/Booking/BookingMedia.jsx";
+import BookingExtras from "../pages/Events/Booking/BookingExtras.jsx";
+import BookingStatusInfo from "../pages/Events/Booking/BookingStatusInfo.jsx";
 
 function App() {
     const location = useLocation();
@@ -132,6 +137,13 @@ function App() {
                         <Route path="/events/british-calendar" element={<BritishCalendar />} />
                         <Route path="/events/american-calendar" element={<AmericanCalendar />} />
                         <Route path="/events/kg-calendar" element={<KgCalendarEvents />} />
+                        <Route path="/events/booking" element={<BookingLogin />} />
+                        <Route path="/events/booking/dashboard" element={<BookingDashboard />} />
+                        <Route path="/events/booking/media" element={<BookingMedia />} />
+                        <Route path="/events/booking/extras" element={<BookingExtras />} />
+                        <Route path="/events/booking/info" element={<BookingStatusInfo />} />
+
+
 
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/gallery/photos" element={<PhotosGallery />} />

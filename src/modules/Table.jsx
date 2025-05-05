@@ -123,7 +123,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
             const link = text.match(linkRegex);
             if (link) {
                 const linkText = text.replace(linkRegex, '');
-                return <p className={"table-link"}
+                return <p className={"table-link"} lang={"en"}
                           onClick={() => {
                               window.open(link + linkText, "_blank");
                           }}

@@ -43,6 +43,22 @@ function JobApplications() {
                 if (!response.data.success) {
                     navigate('/admin-login');
                 }
+
+
+                const userPermissionsResponse = await axios.post('scripts/getUserPermissions.php', {
+                    session_id: sessionId
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+
+                console.log(userPermissionsResponse.data);
+
+
+                setIsLoading(false);
+
             } catch (error) {
                 console.log(error);
             }
@@ -82,8 +98,11 @@ function JobApplications() {
   return (
       <>
           {isLoading && <Spinner/>}
+
           <div className={"job-applications-page"}>
-              {((
+              {(
+
+              (
                   jobApplications && Array.isArray(jobApplications) && jobApplications.length > 0
               ) ? (
                   <Table tableData={jobApplications}
@@ -125,11 +144,12 @@ function JobApplications() {
                         }
                   />
               ) : (
-                  <h1>
-                      No job applications found.
-                  </h1>
-              ))}
+                  isLoading ? <h1>Loading...</h1> : <h1>No job applications found.</h1>
+              )
+
+              )}
           </div>
+
       </>
   );
 }

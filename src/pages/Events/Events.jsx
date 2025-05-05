@@ -40,6 +40,15 @@ function Events() {
             buttonText: "Select",
             titleInArabic: false,
             descriptionInArabic: false
+        },
+        {
+            title: "Booking",
+            image: "/assets/images/EventsPages/Booking1.png",
+            description: "Access booking info, extras, and media.",
+            link: "/events/booking",
+            buttonText: "Select",
+            titleInArabic: false,
+            descriptionInArabic: false
         }
     ];
 
