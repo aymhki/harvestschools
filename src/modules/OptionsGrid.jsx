@@ -53,9 +53,9 @@ function OptionsGrid({title, titleInArabic, options, divElements})
                         ))}
                     </div>
                 ) : (
-                    <h3>
+                    <p>
                         No Options available.
-                    </h3>
+                    </p>
                 )
             }
 
