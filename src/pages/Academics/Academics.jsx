@@ -73,7 +73,7 @@ function Academics() {
             title: "Admin Login",
             image: "/assets/images/AcademicsPages/Login1.png",
             description: "Web app admin login to view admin information.",
-            link: "/admin-login",
+            link: "/admin/login",
             buttonText: "Learn More",
             titleInArabic: false,
             descriptionInArabic: false

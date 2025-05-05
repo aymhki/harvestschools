@@ -24,7 +24,6 @@ try {
     if ($result->num_rows > 0) {
         echo json_encode(["success" => true]);
     } else {
-        // Check if username exists to provide more specific error
         $userCheckSql = "SELECT * FROM admin_users WHERE username = '$user'";
         $userResult = $conn->query($userCheckSql);
 
