@@ -107,7 +107,7 @@ function AdminLogin() {
                 });
 
                 if (response.data.success) {
-                    navigate('/dashboard');
+                    navigate('/admin/dashboard');
                 }
             } catch (error) {
                 console.log(error);
