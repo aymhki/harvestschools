@@ -54,7 +54,7 @@ function JobApplications() {
                 });
 
 
-                if (!userPermissionsResponse.data.contains(0)) {
+                if (!userPermissionsResponse.data.includes(0)) {
                     navigate('/admin/login');
                     return;
                 }
