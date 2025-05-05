@@ -559,7 +559,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
             formData.append('mailTo', mailTo);
             formData.append('formTitle', formTitle);
 
-            const response = await fetch('scripts/submitForm.php', {
+            const response = await fetch('/scripts/submitForm.php', {
                 method: 'POST',
                 body: formData
             });

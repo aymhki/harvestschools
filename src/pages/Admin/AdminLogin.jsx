@@ -28,7 +28,7 @@ function AdminLogin() {
         setSubmitting(true);
 
         try {
-            const response = await axios.post('scripts/validateAdminLogin.php', {
+            const response = await axios.post('/scripts/validateAdminLogin.php', {
                 username,
                 password
             }, {
@@ -45,7 +45,7 @@ function AdminLogin() {
                 document.cookie = `harvest_schools_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
 
 
-                const sessionResponse = await axios.post('scripts/createAdminSession.php', {
+                const sessionResponse = await axios.post('/scripts/createAdminSession.php', {
                     username: username,
                     session_id: sessionId
                 }, {
@@ -98,7 +98,7 @@ function AdminLogin() {
             }
 
             try {
-                const response = await axios.post('scripts/checkAdminSession.php', {
+                const response = await axios.post('/scripts/checkAdminSession.php', {
                     session_id: sessionId
                 }, {
                     headers: {

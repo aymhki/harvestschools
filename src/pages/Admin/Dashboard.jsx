@@ -29,7 +29,7 @@ function Dashboard() {
             }
 
             try {
-                const sessionResponse = await axios.post('scripts/checkAdminSession.php', {
+                const sessionResponse = await axios.post('/scripts/checkAdminSession.php', {
                     session_id: sessionId
                 }, {
                     headers: {
@@ -42,7 +42,7 @@ function Dashboard() {
                     return;
                 }
 
-                const permissionsResponse = await axios.post('scripts/getDashboardPermissions.php', {
+                const permissionsResponse = await axios.post('/scripts/getDashboardPermissions.php', {
                     session_id: sessionId
                 }, {
                     headers: {
