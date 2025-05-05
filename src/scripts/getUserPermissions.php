@@ -30,15 +30,19 @@ try {
     $row = $result->fetch_assoc();
 
     $cleanPermissionLevels = [];
-    if (!empty($row['permission_level'])) {
+
+    if ($row['permission_level'] === "0") {
+        $cleanPermissionLevels = [0];
+    }
+    elseif ($row['permission_level'] !== "" && $row['permission_level'] !== null) {
         $permissionLevels = explode(',', $row['permission_level']);
-        $cleanPermissionLevels = array_map(function($level) {
-            return intval(trim($level));
-        }, $permissionLevels);
-        $cleanPermissionLevels = array_filter($cleanPermissionLevels, function($level) {
-            return $level > 0 || (string)trim($level) === '0';
-        });
-        $cleanPermissionLevels = array_values($cleanPermissionLevels);
+        $cleanPermissionLevels = [];
+        foreach ($permissionLevels as $level) {
+            $trimmedLevel = trim($level);
+            if ($trimmedLevel !== "") {
+                $cleanPermissionLevels[] = intval($trimmedLevel);
+            }
+        }
     }
 
     echo json_encode($cleanPermissionLevels);
