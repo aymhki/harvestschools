@@ -85,7 +85,7 @@ function App() {
                         <Route path="/" element={<Navigate to="/home" />} />
                         <Route path="/home" element={<Home />} />
 
-                        <Route path="/admin/admin-login" element={<AdminLogin />} />
+                        <Route path="/admin/login" element={<AdminLogin />} />
                         <Route path="/admin/dashboard" element={<Dashboard />} />
                         <Route path="/admin/job-applications" element={<JobApplications />} />
                         <Route path="/admin/booking-management" element={<BookingManagement />} />

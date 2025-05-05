@@ -58,11 +58,13 @@ function AdminLogin() {
                     navigate('/admin/dashboard');
                 } else {
                     setErrorMsg('Session creation failed. Please try again');
+
                     setTimeout(() => { setErrorMsg(''); }, 3000);
                 }
                 setSubmitting(false);
             } else {
-                setErrorMsg('Login failed. Please try again');
+                setErrorMsg('Login failed. Wrong Username or Password. Please try again');
+
                 setTimeout(() => { setErrorMsg(''); }, 3000);
                 setSubmitting(false);
             }
