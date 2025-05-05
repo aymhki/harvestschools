@@ -748,8 +748,9 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                             setSelectedDateDay('');
                             setSelectedDateYear('');
                             setSelectedDateError('');
+                            document.getElementById(selectedDateFieldID).value = '';
                         }}>
-                            {lang === 'ar' ? 'إغلاق' : 'Close'}
+                            {lang === 'ar' ? 'إلغاء' : 'Cancel'}
                         </button>
 
                         <button className={"form-select-date-modal-confirm-btn"} onClick={() => {

@@ -285,6 +285,10 @@ const NavigationBar = () => {
                             (isMobile ? toggleMenu() : null);
                             navigate('/events/kg-calendar');
                         }}><Link to="/events/kg-calendar">KG Calendar</Link></li>
+                        <li onClick={() => {
+                            (isMobile ? toggleMenu() : null);
+                            navigate('/events/booking');
+                        }}><Link to="/events/booking">Booking</Link></li>
                     </ul>
                 </li>
 

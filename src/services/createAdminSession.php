@@ -1,8 +1,6 @@
 <?php
 header('Content-Type: application/json');
-
 $dbConfig = require 'dbConfig.php';
-
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -24,18 +22,18 @@ try {
     $sessionId = $conn->real_escape_string($input['session_id']);
 
     // Check and delete existing sessions for the username
-    $checkSql = "SELECT id FROM sessions WHERE username = '$user'";
+    $checkSql = "SELECT id FROM admin_sessions WHERE username = '$user'";
     $checkResult = $conn->query($checkSql);
 
     if ($checkResult->num_rows > 0) {
-        $deleteSql = "DELETE FROM sessions WHERE username = '$user'";
+        $deleteSql = "DELETE FROM admin_sessions WHERE username = '$user'";
         if (!$conn->query($deleteSql)) {
             throw new Exception("Internal Server Error: " . $conn->error, 500);
         }
     }
 
     // Insert the new session
-    $insertSql = "INSERT INTO sessions (username, id) VALUES ('$user', '$sessionId')";
+    $insertSql = "INSERT INTO admin_sessions (username, id) VALUES ('$user', '$sessionId')";
     if (!$conn->query($insertSql)) {
         throw new Exception("Internal Server Error: " . $conn->error, 500);
     }

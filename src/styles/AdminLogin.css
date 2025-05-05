@@ -119,6 +119,11 @@
     .admin-login-form input {
 
     }
+
+    .admin-login-error-msg {
+        font-size: x-small;
+
+    }
 }
 
 @media (prefers-color-scheme: dark) {

@@ -1,8 +1,6 @@
 <?php
 header('Content-Type: application/json');
-
 $dbConfig = require 'dbConfig.php';
-
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];

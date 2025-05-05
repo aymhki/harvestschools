@@ -1,13 +1,14 @@
 import OptionsGrid from "../modules/OptionsGrid.jsx";
 import '../styles/Dashboard.css';
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-
+import Spinner from "../modules/Spinner.jsx";
 
 function Dashboard() {
-
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
+    const [dashboardOptions, setDashboardOptions] = useState([]);
 
     useEffect(() => {
         const checkAdminSession = async () => {
@@ -28,7 +29,7 @@ function Dashboard() {
             }
 
             try {
-                const response = await axios.post('scripts/checkAdminSession.php', {
+                const sessionResponse = await axios.post('scripts/checkAdminSession.php', {
                     session_id: sessionId
                 }, {
                     headers: {
@@ -36,35 +37,47 @@ function Dashboard() {
                     }
                 });
 
-                if (!response.data.success) {
+                if (!sessionResponse.data.success) {
                     navigate('/admin-login');
+                    return;
                 }
+
+                const permissionsResponse = await axios.post('scripts/getDashboardPermissions.php', {
+                    session_id: sessionId
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (permissionsResponse.data.success) {
+                    setDashboardOptions(permissionsResponse.data.dashboardOptions);
+                }
+
+                setIsLoading(false);
+
             } catch (error) {
                 console.log(error);
+                setIsLoading(false);
+                navigate('/admin-login');
             }
         };
 
         checkAdminSession();
     }, []);
 
-  return (
-      <div className={"dashboard-page"}>
-          <OptionsGrid options={
-              [
-                  {
-                      title: "Job Applications",
-                      image: '/assets/images/Dashboard/JobApplications.png',
-                      description: "View and manage job applications",
-                      link: '/job-applications',
-                      buttonText: 'View Applications',
-                      titleInArabic: false,
-                      descriptionInArabic: false
-                  }
-              ]
-          } title={"Dashboard"}  />
-
-      </div>
-  );
+    return (
+        <div className={"dashboard-page"}>
+            {isLoading ? (
+                <Spinner />
+            ) : (
+                <OptionsGrid
+                    options={dashboardOptions}
+                    title={"Dashboard"}
+                />
+            )}
+        </div>
+    );
 }
 
 export default Dashboard;
