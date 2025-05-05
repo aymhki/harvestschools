@@ -32,7 +32,7 @@ function JobApplications() {
             }
 
             try {
-                const response = await axios.post('scripts/checkAdminSession.php', {
+                const response = await axios.post('/scripts/checkAdminSession.php', {
                     session_id: sessionId
                 }, {
                     headers: {
@@ -45,7 +45,7 @@ function JobApplications() {
                 }
 
 
-                const userPermissionsResponse = await axios.post('scripts/getUserPermissions.php', {
+                const userPermissionsResponse = await axios.post('/scripts/getUserPermissions.php', {
                     session_id: sessionId
                 }, {
                     headers: {
@@ -72,7 +72,7 @@ function JobApplications() {
     useEffect(() => {
         try {
 
-            axios.get('scripts/GetJobApplications.php')
+            axios.get('/scripts/GetJobApplications.php')
                 .then((response) => {
 
                     if (!Array.isArray(response.data) || !response.data.length > 0) {
