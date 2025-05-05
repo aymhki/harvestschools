@@ -24,8 +24,8 @@ try {
     }
 
     $permissionSql = "SELECT u.permission_level 
-                     FROM sessions s
-                     JOIN users u ON LOWER(s.username) = LOWER(u.username)
+                     FROM admin_sessions s
+                     JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
                      WHERE s.id = '$sessionId'";
 
     $permissionResult = $conn->query($permissionSql);

@@ -26,8 +26,8 @@ try {
     $sessionId = $conn->real_escape_string($data['session_id']);
 
     $sql = "SELECT u.permission_level 
-            FROM sessions s
-            JOIN users u ON LOWER(s.username) = LOWER(u.username)
+            FROM admin_sessions s
+            JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
             WHERE s.id = '$sessionId'";
 
     $result = $conn->query($sql);

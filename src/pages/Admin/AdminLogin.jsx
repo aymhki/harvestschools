@@ -1,9 +1,9 @@
-import '../styles/AdminLogin.css'
+import '../../styles/AdminLogin.css'
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import {useNavigate} from "react-router-dom";
-import Spinner from "../modules/Spinner.jsx";
+import Spinner from "../../modules/Spinner.jsx";
 
 function AdminLogin() {
     const [username, setUsername] = useState('');
@@ -55,7 +55,7 @@ function AdminLogin() {
                 });
 
                 if (sessionResponse.data.success) {
-                    navigate('/dashboard');
+                    navigate('/admin/dashboard');
                 } else {
                     setErrorMsg('Session creation failed. Please try again');
                     setTimeout(() => { setErrorMsg(''); }, 3000);

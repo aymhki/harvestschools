@@ -1,9 +1,9 @@
-import '../styles/Dashboard.css';
+import '../../styles/Dashboard.css';
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import Spinner from "../modules/Spinner.jsx";
-import Table from "../modules/Table.jsx";
+import Spinner from "../../modules/Spinner.jsx";
+import Table from "../../modules/Table.jsx";
 
 function JobApplications() {
 
@@ -28,7 +28,7 @@ function JobApplications() {
             if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
                 document.cookie = 'harvest_schools_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 document.cookie = 'harvest_schools_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                navigate('/admin-login');
+                navigate('/admin/login');
             }
 
             try {
@@ -41,7 +41,7 @@ function JobApplications() {
                 });
 
                 if (!response.data.success) {
-                    navigate('/admin-login');
+                    navigate('/admin/login');
                 }
 
 
@@ -54,8 +54,10 @@ function JobApplications() {
                 });
 
 
-                console.log(userPermissionsResponse.data);
-
+                if (!userPermissionsResponse.data.contains(0)) {
+                    navigate('/admin/login');
+                    return;
+                }
 
                 setIsLoading(false);
 
