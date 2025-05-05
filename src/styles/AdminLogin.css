@@ -74,7 +74,7 @@
 
 .admin-login-error-msg {
     color: red;
-    font-size: medium;
+    font-size: small;
 }
 
 @media (max-width: 1600px) {

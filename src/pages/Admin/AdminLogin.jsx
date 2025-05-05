@@ -61,10 +61,11 @@ function AdminLogin() {
 
                     setTimeout(() => { setErrorMsg(''); }, 3000);
                 }
+
                 setSubmitting(false);
             } else {
                 setErrorMsg('Login failed. Wrong Username or Password. Please try again');
-
+                console.log(response.data);
                 setTimeout(() => { setErrorMsg(''); }, 3000);
                 setSubmitting(false);
             }
