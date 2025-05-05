@@ -55,7 +55,7 @@ function JobApplications() {
 
 
                 if (!userPermissionsResponse.data.includes(0)) {
-                    navigate('/admin/login');
+                    navigate('/admin/dashboard');
                     return;
                 }
 
