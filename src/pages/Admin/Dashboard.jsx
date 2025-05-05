@@ -71,10 +71,21 @@ function Dashboard() {
             {isLoading ? (
                 <Spinner />
             ) : (
-                <OptionsGrid
-                    options={dashboardOptions}
-                    title={"Dashboard"}
-                />
+                <>
+                    <OptionsGrid
+                        options={dashboardOptions}
+                        title={"Dashboard"}
+                    />
+
+                    <div className={"dashboard-page-footer"}>
+                        <button onClick={() => {
+                            document.cookie = 'harvest_schools_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                            document.cookie = 'harvest_schools_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                            navigate('/admin/login');
+                        }}>Logout</button>
+                    </div>
+
+                </>
             )}
         </div>
     );
