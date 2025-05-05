@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '../styles/PhotoCollage.css';
 import PropTypes from "prop-types";
 import { useSpring, animated } from 'react-spring';
