@@ -21,7 +21,6 @@ try {
     $user = $conn->real_escape_string($input['username']);
     $sessionId = $conn->real_escape_string($input['session_id']);
 
-    // Check and delete existing sessions for the username
     $checkSql = "SELECT id FROM admin_sessions WHERE username = '$user'";
     $checkResult = $conn->query($checkSql);
 

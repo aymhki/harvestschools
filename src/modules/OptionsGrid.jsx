@@ -10,6 +10,8 @@ function OptionsGrid({title, titleInArabic, options})
     return (
         <div className="options-grid-container">
             {titleInArabic ? (<h1 lang="ar" className={"options-grid-title"}>{title}</h1>) : (<h1>{title}</h1>)}
+
+            {options.length > 0 ? (
             <div className={  options.length === 1 ? "options-grid-single" : options.length === 2 ? "options-grid-double" : options.length === 3 ? "options-grid-triple" : options.length === 4 ? "options-grid-quadruple" : "options-grid-double" }>
                 {options.map((option, index) => (
                     <div key={index} className="options-grid-items-container" onClick={() => {
@@ -49,6 +51,12 @@ function OptionsGrid({title, titleInArabic, options})
                 ))}
 
             </div>
+                ) : (
+                    <h3>
+                        No Options available.
+                    </h3>
+                )
+            }
 
         </div>
     );
