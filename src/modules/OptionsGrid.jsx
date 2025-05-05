@@ -13,8 +13,6 @@ function OptionsGrid({title, titleInArabic, options, divElements})
             {titleInArabic ? (<h1 lang="ar" className={"options-grid-title"}>{title}</h1>) : (<h1>{title}</h1>)}
 
             {options.length > 0 ? (
-
-                <>
                     <div className={  options.length === 1 ? "options-grid-single" : options.length === 2 ? "options-grid-double" : options.length === 3 ? "options-grid-triple" : options.length === 4 ? "options-grid-quadruple" : "options-grid-double" }>
                         {options.map((option, index) => (
                             <div key={index} className="options-grid-items-container" onClick={() => {
@@ -25,6 +23,7 @@ function OptionsGrid({title, titleInArabic, options, divElements})
                                 }
 
                             }}>
+
                                 {option.titleInArabic ? (<h2 lang="ar">{option.title}</h2>) : (<h2>{option.title}</h2>)}
                                     <img src={option.image} alt={option.title}/>
                                 {option.descriptionInArabic ? (<p lang="ar">{option.description}</p>) : (<p>{option.description}</p>)}
@@ -53,16 +52,6 @@ function OptionsGrid({title, titleInArabic, options, divElements})
                             </div>
                         ))}
                     </div>
-
-
-                    {divElements && divElements.map((element, index) => (
-                        <Fragment key={index}>
-                            {element}
-                        </Fragment>
-                    ))}
-
-                </>
-
                 ) : (
                     <h3>
                         No Options available.
@@ -70,6 +59,11 @@ function OptionsGrid({title, titleInArabic, options, divElements})
                 )
             }
 
+            {divElements && divElements.map((element, index) => (
+                <Fragment key={index}>
+                    {element}
+                </Fragment>
+            ))}
         </div>
     );
 }
