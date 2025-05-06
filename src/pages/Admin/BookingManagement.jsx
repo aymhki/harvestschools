@@ -27,7 +27,7 @@ function BookingManagement() {
 
             <div className={"booking-management-page"}>
                 {(
-                    (allBookings && Array.isArray(allBookings) && allBookings.length > 0) ? (
+                    ( (allBookings && Array.isArray(allBookings) && allBookings.length > 0) || true ) ? (
                         <Table tableData={[
                             ['1', '2', '3', '4', '5'],
                             ['6', '7', '8', '9', '10']
