@@ -4,16 +4,6 @@ import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 
 
 function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, compact, allowHideColumns, defaultHiddenColumns, allowExport, exportFileName, filterableColumns, headerModuleElements, onDeleteEntry, allowDeleteEntryOption }) {
@@ -23,15 +13,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
     const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
     const [columnToFilterBasedOn, setColumnToFilterBasedOn] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-
-
-    const [columnType, setColumnType] = useState(null); // 'date', 'number', 'text'
-    const [dateFilterOption, setDateFilterOption] = useState('exact'); // 'exact', 'before', 'after'
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [numberFilterOption, setNumberFilterOption] = useState('exact'); // 'exact', 'greater', 'less'
-    const [filterNumber, setFilterNumber] = useState('');
-    const [textFilterOption, setTextFilterOption] = useState('contains'); // 'contains', 'startsWith', 'endsWith', 'regex'
-    const [textFilterValue, setTextFilterValue] = useState('');
 
 
 
@@ -115,129 +96,8 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
     }, []);
 
 
-    // Add this function to detect column type
-    const detectColumnType = (columnName) => {
-        // Get all values for this column excluding the header
-        const startIndex = tableHeader ? 2 : 1;
-        const columnIndex = tableData[0].indexOf(columnName);
-        const values = tableData.slice(startIndex).map(row => row[columnIndex]);
 
-        // Check if most values match date format YYYY-MM-DD
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        const dateCount = values.filter(val => dateRegex.test(val)).length;
 
-        // Check if most values are numbers
-        const numberRegex = /^-?\d+(\.\d+)?%?$/;
-        const numberCount = values.filter(val => numberRegex.test(val)).length;
-
-        // Determine the majority type
-        if (dateCount > values.length * 0.5) {
-            return 'date';
-        } else if (numberCount > values.length * 0.5) {
-            return 'number';
-        } else {
-            return 'text';
-        }
-    };
-
-    // Add this function to apply dynamic filtering
-    const applyDynamicFilter = () => {
-        let filteredData = [...sortedData];
-        const startIndex = tableHeader ? 2 : 1;
-
-        for (let i = 0; i < tableData[0].length; i++) {
-            if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
-                // If we're using checkboxes filter method
-                if (filterUniqueValuesDict[tableData[0][i]].checked) {
-                    filteredData = filteredData.filter((row, rowIndex) =>
-                        rowIndex < startIndex ||
-                        filterUniqueValuesDict[tableData[0][i]].checked[
-                            filterUniqueValuesDict[tableData[0][i]].uniqueValues.indexOf(row[i])
-                            ]
-                    );
-                }
-
-                // If we're using dynamic filter for this column
-                if (tableData[0][i] === columnToFilterBasedOn) {
-                    const colIndex = tableData[0].indexOf(columnToFilterBasedOn);
-
-                    // Apply date filtering
-                    if (columnType === 'date' && selectedDate) {
-                        const selectedDateObj = new Date(selectedDate);
-
-                        filteredData = filteredData.filter((row, rowIndex) => {
-                            if (rowIndex < startIndex) return true;
-
-                            const cellDate = new Date(row[colIndex]);
-
-                            if (dateFilterOption === 'exact') {
-                                return cellDate.toISOString().split('T')[0] === selectedDateObj.toISOString().split('T')[0];
-                            } else if (dateFilterOption === 'before') {
-                                return cellDate <= selectedDateObj;
-                            } else if (dateFilterOption === 'after') {
-                                return cellDate >= selectedDateObj;
-                            }
-                            return true;
-                        });
-                    }
-
-                    // Apply number filtering
-                    else if (columnType === 'number' && filterNumber !== '') {
-                        const numValue = parseFloat(filterNumber);
-
-                        filteredData = filteredData.filter((row, rowIndex) => {
-                            if (rowIndex < startIndex) return true;
-
-                            // Remove percentage sign if exists and convert to number
-                            const cellValue = parseFloat(row[colIndex].replace('%', ''));
-
-                            if (numberFilterOption === 'exact') {
-                                return cellValue === numValue;
-                            } else if (numberFilterOption === 'greater') {
-                                return cellValue >= numValue;
-                            } else if (numberFilterOption === 'less') {
-                                return cellValue <= numValue;
-                            }
-                            return true;
-                        });
-                    }
-
-                    // Apply text filtering
-                    else if (columnType === 'text' && textFilterValue !== '') {
-                        filteredData = filteredData.filter((row, rowIndex) => {
-                            if (rowIndex < startIndex) return true;
-
-                            const cellText = row[colIndex].toString().toLowerCase();
-                            const filterText = textFilterValue.toLowerCase();
-
-                            if (textFilterOption === 'contains') {
-                                return cellText.includes(filterText);
-                            } else if (textFilterOption === 'startsWith') {
-                                return cellText.startsWith(filterText);
-                            } else if (textFilterOption === 'endsWith') {
-                                return cellText.endsWith(filterText);
-                            } else if (textFilterOption === 'regex') {
-                                try {
-                                    const regex = new RegExp(textFilterValue);
-                                    return regex.test(row[colIndex]);
-                                } catch (e) {
-                                    return true; // Invalid regex
-                                }
-                            }
-                            return true;
-                        });
-                    }
-                }
-            }
-        }
-
-        // Hide columns as needed
-        let hiddenColumnsData = filteredData.map(row =>
-            row.filter((cell, index) => !hiddenColumns.has(sortedData[0][index]))
-        );
-
-        setFinalTableData(hiddenColumnsData);
-    };
 
     const requestSort = (columnIndex) => {
         let direction = 'ascending';
@@ -292,12 +152,16 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         return arabicRegex.test(text) ? 'ar' : 'en';
     }
 
-    // Replace the updateFinalTableData function with this one
     const updateFinalTableData = useCallback(() => {
-        applyDynamicFilter();
-    }, [sortedData, hiddenColumns, filterUniqueValuesDict, tableData, filterableColumns,
-        columnToFilterBasedOn, columnType, dateFilterOption, selectedDate,
-        numberFilterOption, filterNumber, textFilterOption, textFilterValue]);
+        let filteredData = [...sortedData];
+        for (let i = 0; i < tableData[0].length; i++) {
+            if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
+                filteredData = filteredData.filter((row, rowIndex) => rowIndex === 0 || filterUniqueValuesDict[tableData[0][i]].checked[filterUniqueValuesDict[tableData[0][i]].uniqueValues.indexOf(row[i])]);
+            }
+        }
+        let hiddenColumnsData = filteredData.map(row => row.filter((cell, index) => !hiddenColumns.has(sortedData[0][index])));
+        setFinalTableData(hiddenColumnsData);
+    }, [sortedData, hiddenColumns, filterUniqueValuesDict, tableData, filterableColumns]);
 
     useEffect(() => {
             updateFinalTableData();
@@ -305,25 +169,9 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         [hiddenColumns, sortConfig, updateFinalTableData]
     );
 
-    // Modify the existing filter icon click handler
-    const handleFilterIconClick = (columnName) => {
-        setIsFilterPopupOpen(!isFilterPopupOpen);
-        setSearchQuery('');
-        setColumnToFilterBasedOn(columnName);
-
-        // Reset dynamic filter values
-        setSelectedDate(null);
-        setFilterNumber('');
-        setTextFilterValue('');
-
-        // Detect column type
-        const type = detectColumnType(columnName);
-        setColumnType(type);
-    };
-
 
     return (
-        <div className="table-module" style={{overflow: scrollable ? 'auto' : 'hidden',}}>
+        <div className="table-module" style={{overflow: scrollable ? 'auto' : 'hidden'}}>
             <div className={"table-module-header"}>
                 <div className={"table-module-header-buttons-wrapper"}>
                     {allowHideColumns && (
@@ -370,7 +218,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         }}>
                             Reset Filters
                         </button>
-
                     }
 
                     {
@@ -418,8 +265,13 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                                     </h3>
 
                                                     {(filterableColumns && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-
-                                                        <FilterAltIcon onClick={() => handleFilterIconClick(finalTableData[0][cellIndex])} />
+                                                        <FilterAltIcon onClick={() =>
+                                                            {
+                                                                setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                                setSearchQuery('');
+                                                                setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                                                            }
+                                                        }/>
                                                     }
 
                                                 </div>
@@ -435,8 +287,13 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                                     </h2>
 
                                                     {(filterableColumns && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-
-                                                        <FilterAltIcon onClick={() => handleFilterIconClick(finalTableData[0][cellIndex])} />
+                                                        <FilterAltIcon onClick={() =>
+                                                            {
+                                                                setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                                setSearchQuery('');
+                                                                setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                                                            }
+                                                        }/>
                                                     }
                                                 </div>
                                             )}
@@ -515,7 +372,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
 
             </animated.div>
 
-            {/* Replace the existing filter popup content with this */}
             <animated.div className={"table-module-filter-popup-container"} style={popupAnimation}>
                 <div className={"table-module-filter-popup-background"} onClick={() => {
                     setIsFilterPopupOpen(false);
@@ -523,130 +379,13 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                 }}/>
                 <div className={"table-module-filter-popup"}>
                     <div className={"table-module-filter-popup-content"}>
-                        <h2>Filter {columnToFilterBasedOn}</h2>
-
-                        {/* Dynamic Filter Options */}
-                        {columnType === 'date' && (
-                            <div className="filter-date-section">
-                                <FormControl component="fieldset">
-                                    <FormLabel component="legend">Date Filter</FormLabel>
-                                    <RadioGroup
-                                        value={dateFilterOption}
-                                        onChange={(e) => setDateFilterOption(e.target.value)}
-                                    >
-                                        <FormControlLabel value="exact" control={<Radio />} label="Exact Date" />
-                                        <FormControlLabel value="before" control={<Radio />} label="Before Date" />
-                                        <FormControlLabel value="after" control={<Radio />} label="After Date" />
-                                    </RadioGroup>
-                                </FormControl>
-
-                                <LocalizationProvider>
-                                    <DatePicker
-                                        label="Select Date"
-                                        value={selectedDate}
-                                        onChange={(newDate) => setSelectedDate(newDate)}
-                                        renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-                                    />
-                                </LocalizationProvider>
-
-                                <div className="filter-buttons">
-                                    <button onClick={() => {
-                                        applyDynamicFilter();
-                                        setIsFilterPopupOpen(false);
-                                    }}>Apply Filter</button>
-                                    <button onClick={() => {
-                                        setSelectedDate(null);
-                                        applyDynamicFilter();
-                                    }}>Clear Date Filter</button>
-                                </div>
-                            </div>
-                        )}
-
-                        {columnType === 'number' && (
-                            <div className="filter-number-section">
-                                <FormControl component="fieldset">
-                                    <FormLabel component="legend">Number Filter</FormLabel>
-                                    <RadioGroup
-                                        value={numberFilterOption}
-                                        onChange={(e) => setNumberFilterOption(e.target.value)}
-                                    >
-                                        <FormControlLabel value="exact" control={<Radio />} label="Equal To" />
-                                        <FormControlLabel value="greater" control={<Radio />} label="Greater Than or Equal" />
-                                        <FormControlLabel value="less" control={<Radio />} label="Less Than or Equal" />
-                                    </RadioGroup>
-                                </FormControl>
-
-                                <TextField
-                                    label="Enter Number"
-                                    type="number"
-                                    value={filterNumber}
-                                    onChange={(e) => setFilterNumber(e.target.value)}
-                                    fullWidth
-                                    margin="normal"
-                                />
-
-                                <div className="filter-buttons">
-                                    <button onClick={() => {
-                                        applyDynamicFilter();
-                                        setIsFilterPopupOpen(false);
-                                    }}>Apply Filter</button>
-                                    <button onClick={() => {
-                                        setFilterNumber('');
-                                        applyDynamicFilter();
-                                    }}>Clear Number Filter</button>
-                                </div>
-                            </div>
-                        )}
-
-                        {columnType === 'text' && (
-                            <div className="filter-text-section">
-                                <FormControl component="fieldset">
-                                    <FormLabel component="legend">Text Filter</FormLabel>
-                                    <RadioGroup
-                                        value={textFilterOption}
-                                        onChange={(e) => setTextFilterOption(e.target.value)}
-                                    >
-                                        <FormControlLabel value="contains" control={<Radio />} label="Contains" />
-                                        <FormControlLabel value="startsWith" control={<Radio />} label="Starts With" />
-                                        <FormControlLabel value="endsWith" control={<Radio />} label="Ends With" />
-                                        <FormControlLabel value="regex" control={<Radio />} label="Regular Expression" />
-                                    </RadioGroup>
-                                </FormControl>
-
-                                <TextField
-                                    label="Search Text"
-                                    value={textFilterValue}
-                                    onChange={(e) => setTextFilterValue(e.target.value)}
-                                    fullWidth
-                                    margin="normal"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-
-                                <div className="filter-buttons">
-                                    <button onClick={() => {
-                                        applyDynamicFilter();
-                                        setIsFilterPopupOpen(false);
-                                    }}>Apply Filter</button>
-                                    <button onClick={() => {
-                                        setTextFilterValue('');
-                                        applyDynamicFilter();
-                                    }}>Clear Text Filter</button>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Original Unique Values Filter Section */}
+                        <h2>Filter Options</h2>
                         <div>
-                            <h3>Filter by Unique Values</h3>
+                            <h3>Unique Values</h3>
                             <input type="text" className={"table-module-filter-search-input-field"}
                                    placeholder={"Search"} value={searchQuery}
                                    onChange={(e) => setSearchQuery(e.target.value)}/>
+
                             <div className={"table-module-filter-popup-values-list"}>
                                 {
                                     filterUniqueValuesDict[columnToFilterBasedOn] &&
@@ -658,6 +397,23 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                             }
                                             return true;
                                         })
+                                        // .filter(value => {
+                                        //     // TODO: if a value is checked but not in the rendered table, it should not be in the list displayed
+                                        //     let valueInRenderedTable = false;
+                                        //     let valueIsChecked = false;
+                                        //
+                                        //     for (let i = 0; i < finalTableData.length && !valueInRenderedTable; i++) {
+                                        //         if (finalTableData[i].includes(value)) {
+                                        //             valueInRenderedTable = true;
+                                        //         }
+                                        //     }
+                                        //
+                                        //     if (filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues.includes(value)) {
+                                        //         valueIsChecked = filterUniqueValuesDict[columnToFilterBasedOn].checked[filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues.indexOf(value)];
+                                        //     }
+                                        //
+                                        //     return !(!valueInRenderedTable && valueIsChecked);
+                                        // })
                                         .map((value, index) => (
                                             <label key={index}>
                                                 <input
@@ -674,18 +430,20 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                 }
                             </div>
                         </div>
-
                         <div className={"table-module-filter-popup-buttons-wrapper"}>
                             <button
                                 onClick={() => {
                                     filterUniqueValuesDict[columnToFilterBasedOn].checked = filterUniqueValuesDict[columnToFilterBasedOn].checked.map(() => true);
                                     setFilterUniqueValuesDict({...filterUniqueValuesDict});
-                                    setSelectedDate(null);
-                                    setFilterNumber('');
-                                    setTextFilterValue('');
-                                    applyDynamicFilter();
                                 }}
-                            >Reset All Filters
+                            >Check All
+                            </button>
+                            <button
+                                onClick={() => {
+                                    filterUniqueValuesDict[columnToFilterBasedOn].checked = filterUniqueValuesDict[columnToFilterBasedOn].checked.map(() => false);
+                                    setFilterUniqueValuesDict({...filterUniqueValuesDict});
+                                }}
+                            >Uncheck All
                             </button>
                             <button onClick={() => {
                                 setIsFilterPopupOpen(false);
@@ -695,7 +453,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                     </div>
                 </div>
             </animated.div>
-
         </div>
     );
 }
