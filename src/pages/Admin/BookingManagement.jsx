@@ -3,7 +3,6 @@ import {useEffect, useState} from "react";
 import {checkAdminSession} from "../../services/Utils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
-import table from "../../modules/Table.jsx";
 
 
 
