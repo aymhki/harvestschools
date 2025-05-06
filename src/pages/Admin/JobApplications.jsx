@@ -58,7 +58,6 @@ function JobApplications() {
                   jobApplications && Array.isArray(jobApplications) && jobApplications.length > 0
               ) ? (
                   <Table tableData={jobApplications}
-                         numCols={3}
                          scrollable={true}
                          compact={true}
                          allowHideColumns={true}

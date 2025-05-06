@@ -1,11 +1,11 @@
-import {useEffect, useMemo, useState, useCallback} from "react";
+import {useEffect, useMemo, useState, useCallback, Fragment} from "react";
 import PropTypes from "prop-types";
 import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 
-function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, compact, allowHideColumns, defaultHiddenColumns, allowExport, exportFileName, filterableColumns }) {
+function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, compact, allowHideColumns, defaultHiddenColumns, allowExport, exportFileName, filterableColumns, headerModuleElements, onDeleteEntry, allowDeleteEntryOption }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -219,6 +219,14 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         </button>
 
                     }
+
+                    {
+                        headerModuleElements && headerModuleElements.map((element, index) => (
+                            <Fragment key={index}>
+                                {element}
+                            </Fragment>
+                        ))
+                    }
                 </div>
 
 
@@ -310,6 +318,18 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                     )}
                                 </td>
                         ))}
+
+                        {allowDeleteEntryOption && onDeleteEntry && rowIndex !== 0 && (
+                            <td style={{ textAlign: 'center' }}>
+                                <button
+                                    onClick={() => onDeleteEntry(rowIndex)}
+                                    aria-label="Delete row"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        )}
+
                     </tr>
                 ))}
                 </tbody>
@@ -351,7 +371,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
 
 
             </animated.div>
-
 
             <animated.div className={"table-module-filter-popup-container"} style={popupAnimation}>
                 <div className={"table-module-filter-popup-background"} onClick={() => {
@@ -453,6 +472,9 @@ Table.propTypes = {
     allowExport: PropTypes.bool,
     exportFileName: PropTypes.string,
     filterableColumns: PropTypes.arrayOf(PropTypes.string),
+    headerModuleElements: PropTypes.array,
+    onDeleteEntry: PropTypes.func,
+    allowDeleteEntryOption: PropTypes.bool,
 };
 
 export default Table;
