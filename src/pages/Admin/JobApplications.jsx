@@ -78,21 +78,21 @@ function JobApplications() {
                          allowExport={true}
                          exportFileName={'job-applications'}
                          sortConfigParam={{column: 0, direction: 'descending'}}
-                        filterableColumns={
-                              [
-                                     'Date of Birth',
-                                     'Application Time',
-                                     'Gender',
-                                     'Address District',
-                                     'Position Applying For',
-                                     'Position Applying For Specialty',
-                                     'High School System',
-                                     'High School Graduation Date',
-                                     'Institution Major',
-                                     'Institution Graduation Date',
-                                     'Years of Experience',
-                              ]
-                        }
+                            filterableColumns={
+                                  [
+                                         'Date of Birth',
+                                         'Application Time',
+                                         'Gender',
+                                         'Address District',
+                                         'Position Applying For',
+                                         'Position Applying For Specialty',
+                                         'High School System',
+                                         'High School Graduation Date',
+                                         'Institution Major',
+                                         'Institution Graduation Date',
+                                         'Years of Experience',
+                                  ]
+                            }
                   />
               ) : (
                   isLoading ? <h1>Loading...</h1> : <h1>No job applications found.</h1>

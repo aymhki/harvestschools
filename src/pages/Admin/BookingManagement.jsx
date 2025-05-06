@@ -27,11 +27,8 @@ function BookingManagement() {
 
             <div className={"booking-management-page"}>
                 {(
-                    ( (allBookings && Array.isArray(allBookings) && allBookings.length > 0) || true ) ? (
-                        <Table tableData={[
-                            ['1', '2', '3', '4', '5'],
-                            ['6', '7', '8', '9', '10']
-                        ]}
+                    ( (allBookings && Array.isArray(allBookings) && allBookings.length > 0)  ) ? (
+                        <Table tableData={allBookings}
                                scrollable={true}
                                compact={true}
                                allowHideColumns={true}
@@ -43,9 +40,7 @@ function BookingManagement() {
                                filterableColumns={
                                []}
                                onDeleteEntry={(rowIndex) => {
-                                   const newBookings = [...allBookings];
-                                   newBookings.splice(rowIndex, 1);
-                                   setAllBookings(newBookings);
+                                   console.log(rowIndex);
                                }}
                                allowDeleteEntryOption={true}
                         />
