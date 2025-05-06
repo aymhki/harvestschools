@@ -4,6 +4,7 @@ import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
+import {checkAdminSession} from "../../services/Utils.jsx";
 
 function JobApplications() {
 
@@ -15,58 +16,7 @@ function JobApplications() {
 
 
     useEffect(() => {
-        const checkAdminSession = async () => {
-            const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-                const [key, value] = cookie.trim().split('=');
-                acc[key] = value;
-                return acc;
-            }, {});
-
-            const sessionId = cookies.harvest_schools_session_id;
-            const sessionTime = parseInt(cookies.harvest_schools_session_time, 10);
-
-            if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
-                document.cookie = 'harvest_schools_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                document.cookie = 'harvest_schools_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                navigate('/admin/login');
-            }
-
-            try {
-                const response = await axios.post('/scripts/checkAdminSession.php', {
-                    session_id: sessionId
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.data.success) {
-                    navigate('/admin/login');
-                }
-
-
-                const userPermissionsResponse = await axios.post('/scripts/getUserPermissions.php', {
-                    session_id: sessionId
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-
-                if (!userPermissionsResponse.data.includes(0)) {
-                    navigate('/admin/dashboard');
-                    return;
-                }
-
-                setIsLoading(false);
-
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        checkAdminSession();
+        checkAdminSession(navigate, setIsLoading, 0);
     }, []);
 
     useEffect(() => {
