@@ -6,7 +6,6 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
@@ -541,7 +540,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                     </RadioGroup>
                                 </FormControl>
 
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <LocalizationProvider>
                                     <DatePicker
                                         label="Select Date"
                                         value={selectedDate}
