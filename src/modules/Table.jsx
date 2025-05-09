@@ -36,6 +36,10 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
             return tableData;
         }
 
+        if (!tableData) {
+            return [];
+        }
+
         const sorted = [...tableData];
         const startIndex = tableHeader ? 2 : 1;
 
@@ -67,6 +71,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
     }, [tableData, sortConfig, tableHeader]);
 
     const getFilterUniqueValuesDict = useCallback(() => {
+            if (!tableData) {return {};}
             const filterUniqueValuesDict = {};
             const startIndex = tableHeader ? 2 : 1;
             for (let i = 0; i < tableData[0].length; i++) {
@@ -153,6 +158,8 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
     }
 
     const updateFinalTableData = useCallback(() => {
+        if (!tableData) {return;}
+
         let filteredData = [...sortedData];
         for (let i = 0; i < tableData[0].length; i++) {
             if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
@@ -174,14 +181,15 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         <div className="table-module" style={{overflow: scrollable ? 'auto' : 'hidden'}}>
             <div className={"table-module-header"}>
                 <div className={"table-module-header-buttons-wrapper"}>
-                    {allowHideColumns && (
+                    {finalTableData && allowHideColumns && (
                         <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
                             {isAccordionOpen ? 'Hide Columns' : 'Show Columns'}
                         </button>
-
                     )}
-                    {allowExport && (
+
+                    {finalTableData && allowExport && (
                         <button onClick={() => {
+                            if (!finalTableData) {return;}
                             const csv = finalTableData.map(row =>
                                 row.map(field => {
                                         if (field && field !== null && field !== undefined && typeof field === 'string' && field.length > 0) {
@@ -206,7 +214,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                     )}
 
                     {
-                        // if one value in the filterUniqueValuesDict is not checked, show the reset filter button
                         Object.keys(filterUniqueValuesDict).some(key => filterUniqueValuesDict[key].checked.includes(false)) &&
                         <button onClick={() => {
                             for (let i = 0; i < tableData[0].length; i++) {
@@ -244,7 +251,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         </th>
                     </tr>
                 }
-                {finalTableData.map((row, rowIndex) => (
+                {finalTableData && finalTableData.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                         {row.map((cell, cellIndex) => (
                                 <td key={cellIndex}
@@ -353,7 +360,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         <button onClick={() => setIsAccordionOpen(false)}>Close</button>
                     </div>
 
-                    {tableData[0].map((header, index) => (
+                    {tableData && tableData[0].map((header, index) => (
                         <div key={index}>
                             <label>
                                 <input
@@ -459,7 +466,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
 
 Table.propTypes = {
     tableHeader: PropTypes.string,
-    tableData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+    tableData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
     numCols: PropTypes.number,
     sortConfigParam: PropTypes.shape({
         column: PropTypes.number,

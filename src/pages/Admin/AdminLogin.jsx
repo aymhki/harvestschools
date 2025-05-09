@@ -22,8 +22,6 @@ function AdminLogin() {
         const username = formDataEntries.find(entry => entry[0] ===  ('field_' + usernameFieldId) )[1];
         const password = formDataEntries.find(entry => entry[0] ===  ('field_' + passwordFieldId) )[1];
 
-        // setSubmittingLocal(true);
-
         try {
             const response = await axios.post('/scripts/validateAdminLogin.php', {
                 username,

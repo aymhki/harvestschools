@@ -5,6 +5,7 @@ import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
+import '../../styles/Dashboard.css';
 
 
 function BookingManagement() {
@@ -14,15 +15,57 @@ function BookingManagement() {
         ["1", "2", "3", "4", "5"],
         ["6", "7", "8", "9", "10"],
     ]);
+
+    const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
+
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
         transform: showAddBookingModal ? 'translateY(0)' : 'translateY(-100%)'
     });
-    const [lastAddedStudentSectionId, setLastAddedStudentSectionId] = useState(6);
-    const [addBookingModalFields, setAddBookingModalFields] = useState([
+
+    const addBookingModalCoreFormFields = [
         {
             id: 1,
+            type: 'text',
+            name: 'booking-username',
+            label: 'Booking Username',
+            required: true,
+            placeholder: 'Booking Username',
+            errorMsg: 'Please enter the booking username',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'booking-username'
+        },
+        {
+            id: 2,
+            type: 'password',
+            name: 'booking-password',
+            label: 'Booking Password',
+            required: true,
+            placeholder: 'Booking Password',
+            errorMsg: 'Please enter the booking password',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'booking-password'
+        },
+        {
+            id: 3,
+            type: 'password',
+            name: 'confirm-booking-password',
+            label: 'Confirm Booking Password',
+            required: true,
+            placeholder: 'Confirm Booking Password',
+            errorMsg: 'Please enter the booking password',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'confirm-booking-password'
+        },
+        {
+            id: 4,
             type: 'text',
             name: 'first-parent-name',
             label: 'First Parent Name',
@@ -35,7 +78,7 @@ function BookingManagement() {
             httpName: 'first-parent-name',
         },
         {
-            id: 2,
+            id: 5,
             type: 'email',
             name: 'first-parent-email',
             label: 'First Parent Email',
@@ -48,7 +91,7 @@ function BookingManagement() {
             httpName: 'first-parent-email',
         },
         {
-            id: 3,
+            id: 6,
             type: 'tel',
             name: 'first-parent-phone-number',
             label: 'First Parent Phone Number',
@@ -61,7 +104,7 @@ function BookingManagement() {
             httpName: 'first-parent-phone-number',
         },
         {
-            id: 4,
+            id: 7,
             type: 'text',
             name: 'second-parent-name',
             label: 'Second Parent Name',
@@ -74,7 +117,7 @@ function BookingManagement() {
             httpName: 'second-parent-name',
         },
         {
-            id: 5,
+            id: 8,
             type: 'email',
             name: 'second-parent-email',
             label: 'Second Parent Email',
@@ -87,7 +130,7 @@ function BookingManagement() {
             httpName: 'second-parent-email',
         },
         {
-            id: 6,
+            id: 9,
             type: 'tel',
             name: 'second-parent-phone-number',
             label: 'Second Parent Phone Number',
@@ -98,27 +141,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'second-parent-phone-number',
-        },
-        {
-            id: lastAddedStudentSectionId + 1,
-            type: 'button',
-            name: 'add-student-section',
-            label: 'Add Student',
-            required: true,
-            placeholder: 'Add Student',
-            errorMsg: '',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'add-student-section',
-            onClick: (e, field) => {
-                e.preventDefault();
-                console.log(field);
-                addStudentSection(e, field);
-            }
         }
-
-    ])
+    ]
 
     const studentSectionFields = [
         {
@@ -171,79 +195,17 @@ function BookingManagement() {
             widthOfField: 3,
             httpName: 'student-grade',
         },
-        {
-            type: 'button',
-            name: 'remove-student-section',
-            label: 'Remove Student',
-            required: true,
-            placeholder: 'Remove Student',
-            errorMsg: '',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'remove-student-section',
-            onClick: (e, field) => {
-                e.preventDefault();
-                console.log(field);
-                removeStudentSection(e, field);
-            }
-        }
     ]
 
 
-    const removeStudentSection = (e, field) => {
-
-        // Find the section's position in the array
-        const sectionIndex = addBookingModalFields.findIndex(f => f.id === field.id);
-
-        // Get the section's fields (all fields in this student section)
-        const sectionFields = studentSectionFields.length;
-
-        // Find the starting index of this section (going backwards to find the section header)
-        let sectionStartIndex = sectionIndex;
-        while (sectionStartIndex > 0 &&
-        addBookingModalFields[sectionStartIndex].type !== 'section') {
-            sectionStartIndex--;
-        }
-
-        const finalWorkingAddBookingModalFields = [
-            ...addBookingModalFields.slice(0, sectionStartIndex),
-            ...addBookingModalFields.slice(sectionStartIndex + sectionFields, addBookingModalFields.length)
-        ];
-
-        setAddBookingModalFields(finalWorkingAddBookingModalFields);
-        setLastAddedStudentSectionId(lastAddedStudentSectionId - sectionFields);
-    };
-
-    const addStudentSection = () => {
-        const newStudentSectionFields = JSON.parse(JSON.stringify(studentSectionFields));
-        let currentLastAddedStudentSectionId = lastAddedStudentSectionId;
-
-        newStudentSectionFields.forEach((field) => {
-            field.id = currentLastAddedStudentSectionId + 1;
-            currentLastAddedStudentSectionId++;
-        });
-
-        const finalWorkingAddBookingModalFields = [
-            ...addBookingModalFields.slice(0, lastAddedStudentSectionId),
-            ...newStudentSectionFields,
-            ...addBookingModalFields.slice(lastAddedStudentSectionId, addBookingModalFields.length)
-        ];
-
-        finalWorkingAddBookingModalFields[finalWorkingAddBookingModalFields.length - 1].id = currentLastAddedStudentSectionId + 1;
-
-        setAddBookingModalFields(finalWorkingAddBookingModalFields);
-        setLastAddedStudentSectionId(currentLastAddedStudentSectionId);
-    };
-
     const cancelAddBookingModal = () => {
         setShowAddBookingModal(false);
+        setResetAddBookingModal(true);
     }
 
     useEffect(() => {
         // checkAdminSession(navigate, setIsLoading, 1);
     }, []);
-
 
     useEffect(() => {
        // setAllBookings(null);
@@ -301,7 +263,31 @@ function BookingManagement() {
 
 
                     <div className={"add-booking-modal-content"}>
-                        <Form fields={addBookingModalFields} mailTo={"sonichki@gmail.com"} sendPdf={false} formTitle={"Add Booking Modal Form"} lang={"en"} captchaLength={1} noInputFieldsCache={true} noCaptcha={true}/>
+
+                        <Form fields={addBookingModalCoreFormFields}
+                              mailTo={"sonichki@gmail.com"}
+                              sendPdf={false}
+                              formTitle={"Add Booking Modal Form"}
+                              lang={"en"}
+                              captchaLength={1}
+                              noInputFieldsCache={true}
+                              noCaptcha={true}
+                              resetFormFromParent={resetAddBookingModal}
+                              setResetForFromParent={setResetAddBookingModal}
+                              sectionsToAdd={[
+
+                              {
+                                  addButtonText: "Add Student",
+                                  removeButtonText: "Remove Student",
+                                  startAddingFieldsFromId: 5,
+                                  fieldsToAdd: studentSectionFields,
+                                  maxSectionInstancesToAdd: 5,
+                                  sectionId: "new-student-section"
+                              }
+
+                              ]}
+                        />
+
                     </div>
 
 
