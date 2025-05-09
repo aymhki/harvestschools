@@ -36,7 +36,8 @@ function BookingManagement() {
             value: '',
             setValue: null,
             widthOfField: 3,
-            httpName: 'booking-username'
+            httpName: 'booking-username',
+            dontLetTheBrowserSaveField: true
         },
         {
             id: 2,
@@ -49,7 +50,8 @@ function BookingManagement() {
             value: '',
             setValue: null,
             widthOfField: 3,
-            httpName: 'booking-password'
+            httpName: 'booking-password',
+            dontLetTheBrowserSaveField: true
         },
         {
             id: 3,
@@ -62,7 +64,9 @@ function BookingManagement() {
             value: '',
             setValue: null,
             widthOfField: 3,
-            httpName: 'confirm-booking-password'
+            httpName: 'confirm-booking-password',
+            mustMatchFieldWithId: 2,
+            dontLetTheBrowserSaveField: true,
         },
         {
             id: 4,
@@ -265,7 +269,7 @@ function BookingManagement() {
                     <div className={"add-booking-modal-content"}>
 
                         <Form fields={addBookingModalCoreFormFields}
-                              mailTo={"sonichki@gmail.com"}
+                              mailTo={''}
                               sendPdf={false}
                               formTitle={"Add Booking Modal Form"}
                               lang={"en"}
