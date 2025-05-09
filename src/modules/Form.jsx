@@ -93,14 +93,13 @@ function Form({
     const msgTimeout = 3500
 
     useEffect(() => {
-        setDynamicFields(fields);
-
         const newRefs = {};
         dynamicFields.forEach(field => {
             newRefs[field.id] = createRef();
         });
+
         setRefs(newRefs);
-    }, [fields]);
+    }, []);
 
     const processFieldRules = useCallback((currentFields, field, value) => {
 
@@ -197,7 +196,7 @@ function Form({
 
         initializeForm();
 
-    }, [fields, loadCachedValues, processFieldRules]);
+    }, [fields, loadCachedValues, processFieldRules, noInputFieldsCache]);
 
     function resetForm() {
         setTimeout(() => {
@@ -222,7 +221,6 @@ function Form({
 
         clearCache();
     }
-
 
     function generateCaptcha() {
         let captcha = '';
@@ -270,8 +268,6 @@ function Form({
 
             }
 
-
-            // Check and apply rules
             const newFields = processFieldRules(dynamicFields, field, value);
             setDynamicFields(newFields);
 
@@ -545,7 +541,6 @@ function Form({
         }
     }
 
-
     const onSubmit = async (e) => {
         e.preventDefault();
         if (submitting) { return; }
@@ -567,32 +562,25 @@ function Form({
 
 
         try {
-
             const formData = new FormData();
+
             dynamicFields.forEach(field => {
                 if (field.type !== 'section' && field.type !== 'button') {
                     let value = document.getElementById(field.id).value;
 
-                    // Check if the field is of type 'file'
                     if (field.type === 'file' && field.file) {
                         const file = field.file;
                         const fileExtension = file.name.split('.').pop();
                         const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
                         const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
                         const renamedFile = new File([file], uniqueFileName, {type: file.type});
-
-                        // Append the unique file name instead of the original value
                         value = uniqueFileName;
-
-
-                        // Append unique file name and renamed file to formData
-                        formData.append(`uniqueFileName_${field.label}`, uniqueFileName); // Append unique file name
+                        formData.append(`uniqueFileName_${field.label}`, uniqueFileName);
                         formData.append(field.label, renamedFile, uniqueFileName);
                     }
 
-                    // Append value and label to formData
                     formData.append(`field_${field.id}`, value);
-                    formData.append(`label_${field.id}`, field.label); // Append labels separately
+                    formData.append(`label_${field.id}`, field.label);
                 }
             });
 
@@ -600,6 +588,7 @@ function Form({
                 const pdf = new jsPDF();
                 pdf.text("Form Submission", 10, 10);
                 pdf.text(`Title: ${formTitle}`, 10, 20);
+
                 dynamicFields.forEach((field, index) => {
                     if (field.type !== 'button' && field.type !== 'section') {
                         const value = document.getElementById(field.id).value;
@@ -666,7 +655,7 @@ function Form({
 
         } catch (error) {
             setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : error || error.message + ': Form submission failed. Please try again.');
-            setTimeout(() => { setGeneralFormError(''); }, 3000);
+            setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
         } finally {
             setSubmitting(false);
 
@@ -771,9 +760,6 @@ function Form({
                         }
 
                     </div>
-
-
-
                 </div>
             </form>
 
@@ -788,7 +774,6 @@ function Form({
                 setSelectedDateDay('');
                 setSelectedDateYear('');
                 setSelectedDateError('');
-
             }}/>
 
                 <div className={"form-select-date-modal-container"}>
@@ -844,15 +829,12 @@ function Form({
 
                             </select>
 
-
                         </form>
                     </div>
 
-                    {
-                        selectedDateError && <p className={"general-form-error"}>{selectedDateError}</p>
-                    }
+                    {selectedDateError && <p className={"general-form-error"}>{selectedDateError}</p>}
 
-                    <div className={"form-select-date-modal-footer"}        >
+                    <div className={"form-select-date-modal-footer"}>
 
                         <button className={"form-select-date-modal-close-btn"} onClick={() => {
                             setShowSelectDateModal(false);
@@ -871,9 +853,6 @@ function Form({
                             {lang === 'ar' ? 'تأكيد' : 'Confirm'}
                         </button>
                     </div>
-
-
-
             </div>
 
 
