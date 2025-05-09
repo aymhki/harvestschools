@@ -48,12 +48,32 @@ const useFormCache = (formTitle, fields) => {
     return { loadCachedValues, saveToCache, clearCache };
 };
 
-function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputFieldsCache}) {
+function Form({
+                  fields,
+                  mailTo,
+                  sendPdf,
+                  formTitle,
+                  lang,
+                  captchaLength,
+                  noInputFieldsCache,
+                  noCaptcha,
+                  hasDifferentOnSubmitBehaviour,
+                  differentOnSubmitBehaviour,
+                  noClearOption,
+                  hasDifferentSubmitButtonText,
+                  differentSubmitButtonText,
+                  centerSubmitButton,
+                  easySimpleCaptcha,
+                  fullMarginField,
+                    hasSetSubmittingLocal,
+                    setSubmittingLocal
+}) {
+
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
     const [successMessage, setSuccessMessage] = useState(''); //success message
     const [dynamicFields, setDynamicFields] = useState(fields); // Store dynamic fields based on rules
-    const captchaMaxLength = 10; // Maximum length of captcha
+    const captchaMaxLength = easySimpleCaptcha ? 4 : 7; // Maximum length of captcha
     const characters = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghkmnopqrstuvwxyz0123456789@#$%&';
     const [refs, setRefs] = useState({}); // Store references to form fields
     const [fileInputs, setFileInputs] = useState({});
@@ -70,15 +90,17 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
     });
 
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
-
+    const msgTimeout = 3500
 
     useEffect(() => {
+        setDynamicFields(fields);
+
         const newRefs = {};
         dynamicFields.forEach(field => {
             newRefs[field.id] = createRef();
         });
         setRefs(newRefs);
-    }, []);
+    }, [fields]);
 
     const processFieldRules = useCallback((currentFields, field, value) => {
 
@@ -177,13 +199,17 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
 
     }, [fields, loadCachedValues, processFieldRules]);
 
-
-
     function resetForm() {
         setTimeout(() => {
             setGeneralFormError('');
             setSuccessMessage('');
             setSubmitting(false);
+
+            if (hasSetSubmittingLocal) {
+                setSubmittingLocal(false);
+            }
+
+
             setDynamicFields(fields);
             setFileInputs({});
             setCaptchaValue(generateCaptcha());
@@ -192,7 +218,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                 document.getElementById(field.id).value = '';
             })
 
-        }, 3000);
+        }, msgTimeout);
 
         clearCache();
     }
@@ -230,6 +256,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
 
             if (field.regex && !new RegExp(field.regex).test(value)) {
                 e.target.setCustomValidity(field.errorMsg);
+                e.target.reportValidity();
             } else  {
 
                 e.target.setCustomValidity('');
@@ -252,7 +279,6 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
     }
 
 
-
     const renderFieldBasedOnType = (field) => {
 
 
@@ -272,7 +298,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                             placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
-                            className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                         />
                     }
 
@@ -304,7 +330,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
 
 
 
-                            className={`text-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                         />
                     )}
 
@@ -316,7 +342,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                             placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
-                            className={`textarea-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''}`}
+                            className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''}`}
                         />
                     }
 
@@ -330,10 +356,10 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
 
                             className={
                             field.multiple ? (
-                                `select-multiple-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
+                                `select-multiple-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
                                 ) :
 
-                                (`select-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
+                                (`select-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
 
                             }
 
@@ -356,7 +382,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                                     required={field.required}
                                     value={choice}
                                     disabled={submitting}
-                                    className={`radio-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                    className={`radio-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                                     onChange={(e) => onChange(e, field)}
                                 />
                                 {choice}
@@ -374,7 +400,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                                     required={field.required}
                                     value={choice}
                                     disabled={submitting}
-                                    className={`checkbox-form-field ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                    className={`checkbox-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                                     onChange={(e) => onChange(e, field)}
                                 />
                                 {choice}
@@ -383,7 +409,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                     }
 
                     {field.type === 'file' &&
-                        <div className={`file-form-field-styled ${field.widthOfField === 1 ? 'full-width' : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                        <div className={`file-form-field-styled ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
                             <label htmlFor={field.id}>
                                 {field.label + (field.required ? '*' : '')}
                             </label>
@@ -436,6 +462,24 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                             </label>
                         </div>
                     }
+
+                    {field.type === 'section' && (
+                        <div className={`form-title-section ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`} id={field.id} key={field.id}  ref={refs[field.id]}>
+                            <h3 >
+                                {field.label}
+                            </h3>
+                        </div>
+                    )}
+
+
+                    {field.type === 'button' && (
+                        <button className={`form-button ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`} onClick={(e) => {
+                            field.onClick(e, field);
+                        }} type={"button"} disabled={submitting} id={field.id} key={field.id}  ref={refs[field.id]} >
+                            {field.label}
+                        </button>
+                    )}
+
                 </Fragment>
             );
 
@@ -473,7 +517,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
 
         if (!day || !month || !year) {
             setSelectedDateError(lang === 'ar' ? 'الرجاء اختيار تاريخ صحيح' : 'Please select a valid date');
-            setTimeout(() => { setSelectedDateError(''); }, 3000);
+            setTimeout(() => { setSelectedDateError(''); }, msgTimeout);
             return;
         }
 
@@ -506,41 +550,50 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
         e.preventDefault();
         if (submitting) { return; }
 
-        if (enteredCaptcha !== captchaValue) {
+        if (enteredCaptcha !== captchaValue && !noCaptcha) {
             setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
-            setTimeout(() => { setGeneralFormError(''); }, 3000);
+            setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
             return;
         }
 
         setSubmitting(true);
+
+        if (hasSetSubmittingLocal) {
+            setSubmittingLocal(true);
+        }
+
         setGeneralFormError('');
         setSuccessMessage('');
 
+
         try {
+
             const formData = new FormData();
             dynamicFields.forEach(field => {
-                let value = document.getElementById(field.id).value;
+                if (field.type !== 'section' && field.type !== 'button') {
+                    let value = document.getElementById(field.id).value;
 
-                // Check if the field is of type 'file'
-                if (field.type === 'file' && field.file) {
-                    const file = field.file;
-                    const fileExtension = file.name.split('.').pop();
-                    const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
-                    const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
-                    const renamedFile = new File([file], uniqueFileName, { type: file.type });
+                    // Check if the field is of type 'file'
+                    if (field.type === 'file' && field.file) {
+                        const file = field.file;
+                        const fileExtension = file.name.split('.').pop();
+                        const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+                        const uniqueFileName = `${fileNameWithoutExt}-${uuidv4()}.${fileExtension}`;
+                        const renamedFile = new File([file], uniqueFileName, {type: file.type});
 
-                    // Append the unique file name instead of the original value
-                    value = uniqueFileName;
+                        // Append the unique file name instead of the original value
+                        value = uniqueFileName;
 
 
-                    // Append unique file name and renamed file to formData
-                    formData.append(`uniqueFileName_${field.label}`, uniqueFileName); // Append unique file name
-                    formData.append(field.label, renamedFile, uniqueFileName);
+                        // Append unique file name and renamed file to formData
+                        formData.append(`uniqueFileName_${field.label}`, uniqueFileName); // Append unique file name
+                        formData.append(field.label, renamedFile, uniqueFileName);
+                    }
+
+                    // Append value and label to formData
+                    formData.append(`field_${field.id}`, value);
+                    formData.append(`label_${field.id}`, field.label); // Append labels separately
                 }
-
-                // Append value and label to formData
-                formData.append(`field_${field.id}`, value);
-                formData.append(`label_${field.id}`, field.label); // Append labels separately
             });
 
             if (sendPdf) {
@@ -548,8 +601,10 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                 pdf.text("Form Submission", 10, 10);
                 pdf.text(`Title: ${formTitle}`, 10, 20);
                 dynamicFields.forEach((field, index) => {
-                    const value = document.getElementById(field.id).value;
-                    pdf.text(`${field.label}: ${value}`, 10, 30 + (index * 10));
+                    if (field.type !== 'button' && field.type !== 'section') {
+                        const value = document.getElementById(field.id).value;
+                        pdf.text(`${field.label}: ${value}`, 10, 30 + (index * 10));
+                    }
                 });
 
                 const pdfBlob = pdf.output('blob');
@@ -559,28 +614,65 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
             formData.append('mailTo', mailTo);
             formData.append('formTitle', formTitle);
 
-            const response = await fetch('/scripts/submitForm.php', {
-                method: 'POST',
-                body: formData
-            });
+            if (hasDifferentOnSubmitBehaviour) {
+                try {
+                    await differentOnSubmitBehaviour(formData);
+                } catch (error) {
+                    setGeneralFormError(error.message + ': Form submission failed. Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
+                    setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
+                    // resetForm();
+                    // clearCache();
 
-            const result = await response.json();
-
-            if (result.success) {
-                setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
-                setTimeout(() => { setSuccessMessage(''); }, 3000);
-                resetForm();
-                clearCache();
+                    setSubmitting(false);
+                    if (hasSetSubmittingLocal) {
+                        setSubmittingLocal(false)
+                    }
+                }
             } else {
-                console.log(result)
-                setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message + 'Form submission failed. Please try again.');
-                setTimeout(() => { setGeneralFormError(''); }, 3000);
+                try {
+                    const response = await fetch('/scripts/submitForm.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
+                        setTimeout(() => {
+                            setSuccessMessage('');
+                        }, msgTimeout);
+                        resetForm();
+                        clearCache();
+                    } else {
+                        setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message + ': Form submission failed. Please try again.');
+                        setTimeout(() => {
+                            setGeneralFormError('');
+                        }, msgTimeout);
+                    }
+                } catch (error) {
+                    setGeneralFormError(error.message + ': Form submission failed. Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
+                    setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
+                    // resetForm();
+                    // clearCache();
+
+                    setSubmitting(false);
+                    if (hasSetSubmittingLocal) {
+                        setSubmittingLocal(false)
+                    }
+                }
             }
+
+
         } catch (error) {
-            setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : error || 'Form submission failed. Please try again.');
+            setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : error || error.message + ': Form submission failed. Please try again.');
             setTimeout(() => { setGeneralFormError(''); }, 3000);
         } finally {
             setSubmitting(false);
+
+            if (hasSetSubmittingLocal) {
+                setSubmittingLocal(false);
+            }
         }
     };
 
@@ -593,75 +685,95 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                 onSubmit={onSubmit}
                 method="post"
                 onReset={resetForm}
-
             >
                 {dynamicFields.map((field, index) => (
                     renderFieldBasedOnType(field, index)
                 ))}
 
-                <label htmlFor={"captcha"} className={"form-label-outside"}>
-                    {lang === 'ar' ? 'كود التحقق*' : 'Captcha*'}
-                </label>
+                {!noCaptcha && (
+                    <>
+                        {!easySimpleCaptcha && (
+                            <label htmlFor={"captcha"} className={"form-label-outside"}>
+                                {lang === 'ar' ? 'كود التحقق*' : 'Captcha*'}
+                            </label>
+                            )
+                        }
 
-                <div className={`${captchaLength === 2 ? 'captcha-wrapper-half-width' : 'captcha-wrapper'}`}
-
-                >
+                        <div className={`${captchaLength === 2 ? (fullMarginField ? 'captcha-wrapper-with-half-width-full-margin' : 'captcha-wrapper-half-width') : (fullMarginField ? 'captcha-wrapper-with-full-margin' : 'captcha-wrapper')}`}>
 
 
-                    <input className={`text-form-field ${captchaLength === 2 ? 'full-width' : 'half-width'} captcha-input`} type={"text"}
-                           placeholder={""} required={true} value={enteredCaptcha}
+                            <input className={`text-form-field ${captchaLength === 2 ? 'full-width' : 'half-width'} captcha-input`} type={"text"}
+                                   placeholder={""} required={true} value={enteredCaptcha}
 
-                           onChange={
+                                   onChange={
 
-                            (e) => {
+                                    (e) => {
 
-                               setEnteredCaptcha(e.target.value);
+                                       setEnteredCaptcha(e.target.value);
+                                    }
                             }
-                    }
-                           onPaste={handlePaste}
+                                   onPaste={handlePaste}
 
-                    />
+                            />
 
-                <div className={`text-form-field ${captchaLength === 2 ? 'full-width' : 'half-width'} captcha-box`} type={"text"}
-                     onCopy={handleCopy}
-                     onCut={handleCut}
-                     onPaste={handlePaste}
-                     onMouseDown={handleMouseDown}
-                     onKeyDown={handleKeyDown}
-                    onTouchStart={handleMouseDown}
+                        <div className={`text-form-field ${captchaLength === 2 ? 'full-width': 'half-width'} captcha-box`} type={"text"}
+                             onCopy={handleCopy}
+                             onCut={handleCut}
+                             onPaste={handlePaste}
+                             onMouseDown={handleMouseDown}
+                             onKeyDown={handleKeyDown}
+                            onTouchStart={handleMouseDown}
 
-                >{captchaValue}</div>
+                        >{captchaValue}</div>
 
-                    <button className={`${captchaLength === 2 ? 'captcha-refresh-button-half-width' : 'refresh-captcha-button'}`} onClick={(e)=> { e.preventDefault(); setCaptchaValue(generateCaptcha()); }} type={"button"}>⟳</button>
+                            <button className={`${captchaLength === 2 ? 'captcha-refresh-button-half-width' : 'refresh-captcha-button'}`} onClick={(e)=> { e.preventDefault(); setCaptchaValue(generateCaptcha()); }} type={"button"}>⟳</button>
 
-                </div>
+                        </div>
+                    </>
+                )}
 
-                <div className="form-footer">
-
-                    {
-                        lang === 'ar' ? (
-                            <button type="submit" disabled={submitting}
-                                    className="submit-button">{submitting ? 'جاري الارسال...' : 'ارسال'}</button>
-                        ) : (
-                            <button type="submit" disabled={submitting}
-                                    className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
-                        )
-                    }
-
-                    {
-                        lang === 'ar' ? (
-                            <button type="reset" disabled={submitting}
-                                    className="reset-button">مسح</button>
-                        ) : (
-                            <button type="reset" disabled={submitting}
-                                    className="reset-button">Clear</button>
-                        )
-
-                    }
-
+                <div className={`form-footer ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
 
                     {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                     {successMessage && <p className="success-message">{successMessage}</p>}
+
+                    <div className={`form-footer-buttons-wrapper ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
+
+                        {hasDifferentSubmitButtonText ? (
+                            lang === 'ar' ? (
+                                <button type={"submit"} disabled={submitting} className={"submit-button"}>
+                                    {submitting ? differentSubmitButtonText[3] : differentSubmitButtonText[2]}
+                                </button>
+                            ) : (
+                                <button type={"submit"} disabled={submitting} className={"submit-button"}>
+                                    {submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]}
+                                </button>
+                            )
+                        ) : (
+                            lang === 'ar' ? (
+                                <button type="submit" disabled={submitting}
+                                        className="submit-button">{submitting ? 'جاري الارسال...' : 'ارسال'}</button>
+                            ) : (
+                                <button type="submit" disabled={submitting}
+                                        className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
+                            )
+                        )}
+
+                        { !noClearOption && (
+                            lang === 'ar' ? (
+                                <button type="reset" disabled={submitting}
+                                        className="reset-button">مسح</button>
+                            ) : (
+                                <button type="reset" disabled={submitting}
+                                        className="reset-button">Clear</button>
+                            ))
+
+                        }
+
+                    </div>
+
+
+
                 </div>
             </form>
 
@@ -740,7 +852,7 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
                         selectedDateError && <p className={"general-form-error"}>{selectedDateError}</p>
                     }
 
-                    <div className={"form-select-date-modal-footer"}>
+                    <div className={"form-select-date-modal-footer"}        >
 
                         <button className={"form-select-date-modal-close-btn"} onClick={() => {
                             setShowSelectDateModal(false);
@@ -763,6 +875,8 @@ function Form({fields, mailTo, sendPdf, formTitle, lang, captchaLength, noInputF
 
 
             </div>
+
+
         </animated.div>
     </>
     );
@@ -783,6 +897,7 @@ Form.propTypes = {
         allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
         placeholder: PropTypes.string,
         multiple: PropTypes.bool,
+        onClick: PropTypes.func,
         rules: PropTypes.arrayOf(PropTypes.shape({
             value: PropTypes.string.isRequired,
             ruleResult: PropTypes.arrayOf(PropTypes.shape({
@@ -799,6 +914,7 @@ Form.propTypes = {
                 allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
                 placeholder: PropTypes.string,
                 multiple: PropTypes.bool,
+                onClick: PropTypes.func,
                 rules: PropTypes.arrayOf(PropTypes.shape({
                     value: PropTypes.string.isRequired,
                     ruleResult: PropTypes.arrayOf(PropTypes.shape({
@@ -827,7 +943,18 @@ Form.propTypes = {
     formTitle: PropTypes.string.isRequired,
     lang: PropTypes.string.isRequired,
     captchaLength: PropTypes.number.isRequired,
-    noInputFieldsCache: PropTypes.bool
+    noInputFieldsCache: PropTypes.bool,
+    noCaptcha: PropTypes.bool,
+    hasDifferentOnSubmitBehaviour: PropTypes.bool,
+    differentOnSubmitBehaviour: PropTypes.func,
+    noClearOption: PropTypes.bool,
+    hasDifferentSubmitButtonText: PropTypes.bool,
+    differentSubmitButtonText: PropTypes.arrayOf(PropTypes.string),
+    centerSubmitButton: PropTypes.bool,
+    easySimpleCaptcha: PropTypes.bool,
+    fullMarginField: PropTypes.bool,
+    hasSetSubmittingLocal: PropTypes.bool,
+    setSubmittingLocal: PropTypes.func
 };
 
 export default Form;

@@ -1,5 +1,6 @@
 import '../../styles/MoreInfo.css'
 import {Helmet} from "react-helmet";
+
 function FAQs() {
   return (
     <div className={"faqs-page"}>
@@ -182,7 +183,7 @@ function FAQs() {
 
                         <li className={"faq-q-and-a-list-arabic-a"} lang={"ar"}>
                             <p lang={"ar"}>
-                                عم تغطي سيارتنا  كل المناطق بالأسكندرية
+                                نعم تغطي سيارتنا  كل المناطق بالأسكندرية
                             </p>
                         </li>
                     </ul>
