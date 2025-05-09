@@ -122,7 +122,6 @@ function Vacancies() {
                     setValue: null,
                     httpName: 'gender'
                 },
-
                 {
                     id: 7,
                     type: 'text',

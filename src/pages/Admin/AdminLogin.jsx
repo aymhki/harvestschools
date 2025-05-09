@@ -4,28 +4,25 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
+import Form from '../../modules/Form.jsx'
 
 function AdminLogin() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMsg, setErrorMsg] = useState('');
-    const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
+    const [submittingLocal, setSubmittingLocal] = useState(false);
+    const usernameFieldId = 1
+    const passwordFieldId = 2
 
-    const handleAdminLogin = async (e) => {
-        e.preventDefault();
+    const handleAdminLogin = async (formData) => {
 
-        if (submitting) {
+        if (submittingLocal) {
             return;
         }
 
-        if (username === '' || password === '') {
-            setErrorMsg('Please enter username and password');
-            setTimeout(() => { setErrorMsg(''); }, 3000);
-            return;
-        }
+        const formDataEntries = Array.from(formData.entries());
+        const username = formDataEntries.find(entry => entry[0] ===  ('field_' + usernameFieldId) )[1];
+        const password = formDataEntries.find(entry => entry[0] ===  ('field_' + passwordFieldId) )[1];
 
-        setSubmitting(true);
+        // setSubmittingLocal(true);
 
         try {
             const response = await axios.post('/scripts/validateAdminLogin.php', {
@@ -57,24 +54,15 @@ function AdminLogin() {
                 if (sessionResponse.data.success) {
                     navigate('/admin/dashboard');
                 } else {
-                    setErrorMsg('Session creation failed. Please try again');
-
-                    setTimeout(() => { setErrorMsg(''); }, 3000);
+                    throw new Error('Session creation failed. Please try again');
                 }
 
-                setSubmitting(false);
             } else {
-                setErrorMsg('Login failed. Wrong Username or Password. Please try again');
-                console.log(response.data);
-                setTimeout(() => { setErrorMsg(''); }, 3000);
-                setSubmitting(false);
+                throw new Error('Login failed. Wrong Username or Password. Please try again');
             }
 
         } catch (error) {
-            setErrorMsg('Login failed. Please try again');
-            console.log(error);
-            setTimeout(() => { setErrorMsg(''); }, 3000);
-            setSubmitting(false);
+            throw new Error(error.message);
         }
     };
 
@@ -122,27 +110,63 @@ function AdminLogin() {
 
   return (
       <>
-          {submitting && <Spinner/>}
+          {submittingLocal && <Spinner/>}
 
             <div className={'admin-login-page'}>
                 <div className={'admin-login-page-form-controller'}>
                     <div className={'admin-login-form-wrapper'}>
 
-                        <form className={'admin-login-form'} onSubmit={handleAdminLogin}
-                              onReset={(e) => {
-                                    e.preventDefault();
-                                    setUsername('');
-                                    setPassword('');
-                              }}
-                        >
                             <h2>Admin Login</h2>
-                            <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)}
-                                   value={username}/>
-                            <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}
-                                   value={password}/>
-                            <p className={'admin-login-error-msg'}>{errorMsg}</p>
-                            <button disabled={submitting} type={"submit"}>Login</button>
-                        </form>
+
+                            <Form mailTo={''}
+                                  sendPdf={false}
+                                  formTitle={'Admin Login'}
+                                  lang={'en'}
+                                  captchaLength={1}
+                                  noInputFieldsCache={true}
+                                  noCaptcha={false}
+                                  hasDifferentOnSubmitBehaviour={true}
+                                  differentOnSubmitBehaviour={handleAdminLogin}
+                                  hasDifferentSubmitButtonText={true}
+                                  differentSubmitButtonText={['Login', 'Logging in...', 'تسجيل دخول', 'جاري تسجيل الدخول...']}
+                                  noClearOption={true}
+                                  centerSubmitButton={true}
+                                  easySimpleCaptcha={true}
+                                  fullMarginField={true}
+                                  hasSetSubmittingLocal={true}
+                                  setSubmittingLocal={setSubmittingLocal}
+                                  fields={
+                                    [
+                                        {
+                                            id: usernameFieldId,
+                                            type: 'text',
+                                            name: 'username',
+                                            label: 'Username',
+                                            required: true,
+                                            placeholder: 'Username',
+                                            errorMsg: 'Please enter username',
+                                            value: '',
+                                            setValue: null,
+                                            widthOfField: 1,
+                                            httpName: 'username',
+                                        },
+                                        {
+                                            id: passwordFieldId,
+                                            type: 'password',
+                                            name: 'password',
+                                            label: 'Password',
+                                            required: true,
+                                            placeholder: 'Password',
+                                            errorMsg: 'Please enter password',
+                                            widthOfField: 1,
+                                            value: '',
+                                            setValue: null,
+                                            httpName: 'password'
+                                        }
+                                    ]
+                                  }
+
+                            />
                     </div>
                 </div>
             </div>

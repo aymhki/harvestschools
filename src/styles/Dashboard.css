@@ -30,3 +30,88 @@
     flex-direction: column;
     padding: 1.5rem;
 }
+
+
+.add-booking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.add-booking-modal-form-overlay {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+}
+
+
+.add-booking-modal-form-container {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    width: 80%;
+    min-height: 80%;
+    z-index: 1001;
+}
+
+.add-booking-modal-form-header {
+    margin: 0.5rem;
+}
+
+.add-booking-modal-form-header h3,  .add-booking-modal-form-header p {
+    margin: 0.5rem;
+}
+
+.add-booking-modal-form-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: flex-end;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.add-booking-modal-form-footer button {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    font-size: large;
+}
+
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1200px) {
+
+}
+
+@media (max-width: 1024px) {
+
+}
+
+@media (max-width: 768px) {
+
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .add-booking-modal-form-container {
+        background-color: #242424;
+    }
+}
