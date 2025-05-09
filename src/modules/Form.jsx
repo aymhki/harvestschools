@@ -1,5 +1,4 @@
-
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import {useEffect, useState } from "react";
 import {Fragment} from "react";
 import '../styles/Form.css'
@@ -285,18 +284,33 @@ function Form({
 
                 </label>}
 
-                    {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time' || field.type === 'password') &&
-                        <input
-                            type={field.type}
-                            id={field.id}
-                            name={field.httpName}
-                            required={field.required}
-                            placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                            disabled={submitting}
-                            onChange={(e) => onChange(e, field)}
-                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                        />
-                    }
+                    {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time' || field.type === 'password') && (
+                        field.dontLetTheBrowserSaveField ? (
+                            <input
+                                type={field.type}
+                                id={field.id}
+                                name={field.httpName}
+                                required={field.required}
+                                placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                disabled={submitting}
+                                onChange={(e) => onChange(e, field)}
+                                autoComplete="new-password"
+                                data-lpignore="true"
+                                className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            />
+                        ) : (
+                            <input
+                                type={field.type}
+                                id={field.id}
+                                name={field.httpName}
+                                required={field.required}
+                                placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                disabled={submitting}
+                                onChange={(e) => onChange(e, field)}
+                                className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            />
+                        )
+                    )}
 
                     {field.type === 'date' && (
 
@@ -549,6 +563,27 @@ function Form({
             setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
             setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
             return;
+        }
+
+        for (let i=0; i < dynamicFields.length; i++) {
+            if (dynamicFields[i].mustMatchFieldWithId) {
+                let firstValue = document.getElementById(dynamicFields[i].id).value;
+                let secondValue = document.getElementById(dynamicFields[i].mustMatchFieldWithId).value;
+
+                if (firstValue && secondValue) {
+                    if (firstValue !== secondValue) {
+                        setGeneralFormError("Field '" + dynamicFields[i].label + "' must match field '" + dynamicFields.find(field => field.id === dynamicFields[i].mustMatchFieldWithId).label + "'");
+                        setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
+
+                        document.getElementById(dynamicFields[i].id).value = '';
+                        document.getElementById(dynamicFields[i].mustMatchFieldWithId).value = '';
+
+                        document.getElementById(dynamicFields[i].mustMatchFieldWithId).focus();
+                        document.getElementById(dynamicFields[i].mustMatchFieldWithId).setCustomValidity("This field values must match the value of the field '" + dynamicFields.find(field => field.id === dynamicFields[i].mustMatchFieldWithId).label + "'");
+                        return;
+                    }
+                }
+            }
         }
 
         setSubmitting(true);
@@ -875,8 +910,10 @@ Form.propTypes = {
         labelOutside: PropTypes.bool,
         allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
         placeholder: PropTypes.string,
+        dontLetTheBrowserSaveField: PropTypes.bool,
         multiple: PropTypes.bool,
         onClick: PropTypes.func,
+        mustMatchFieldWithId: PropTypes.number,
         rules: PropTypes.arrayOf(PropTypes.shape({
             value: PropTypes.string.isRequired,
             ruleResult: PropTypes.arrayOf(PropTypes.shape({
@@ -892,8 +929,11 @@ Form.propTypes = {
                 labelOutside: PropTypes.bool,
                 allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
                 placeholder: PropTypes.string,
+                dontLetTheBrowserSaveField: PropTypes.bool,
                 multiple: PropTypes.bool,
                 onClick: PropTypes.func,
+                mustMatchFieldWithId: PropTypes.number,
+
                 rules: PropTypes.arrayOf(PropTypes.shape({
                     value: PropTypes.string.isRequired,
                     ruleResult: PropTypes.arrayOf(PropTypes.shape({
@@ -905,10 +945,12 @@ Form.propTypes = {
                         errorMsg: PropTypes.string,
                         choices: PropTypes.arrayOf(PropTypes.string),
                         regex: PropTypes.string,
+                        mustMatchFieldWithId: PropTypes.number,
                         widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
                         labelOutside: PropTypes.bool,
                         allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
                         placeholder: PropTypes.string,
+                        dontLetTheBrowserSaveField: PropTypes.bool,
                         multiple: PropTypes.bool,
                     }))
                 }))
