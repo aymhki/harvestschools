@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid'; // Import the UUID library
 import {useSpring, animated} from "react-spring";
 import { useCallback } from 'react';
 
-
 const getStorageKey = (formTitle, fieldId, fieldLabel) => {
     return `form_${formTitle}_${fieldLabel}_${fieldId}`;
 };
@@ -64,9 +63,13 @@ function Form({
                   centerSubmitButton,
                   easySimpleCaptcha,
                   fullMarginField,
-                    hasSetSubmittingLocal,
-                    setSubmittingLocal
-}) {
+                  hasSetSubmittingLocal,
+                  setSubmittingLocal,
+                  resetFormFromParent,
+                  setResetForFromParent,
+                  dynamicSections = [],
+                  pedanticIds
+              }) {
 
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
     const [generalFormError, setGeneralFormError] = useState(''); //general form error message
@@ -88,25 +91,51 @@ function Form({
         transform: showSelectDateModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
+    const [sectionInstances, setSectionInstances] = useState({});
+    const [nextIdCounter, setNextIdCounter] = useState(fields.length + 1);
+
+    useEffect(() => {
+        if (resetFormFromParent) {
+            resetFormCompletely();
+
+            if (setResetForFromParent) {
+                setResetForFromParent(false);
+            }
+        }
+    }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
+
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
-    const msgTimeout = 3500
+    const msgTimeout = 3500;
+
+    useEffect(() => {
+        const initialSectionInstances = {};
+        dynamicSections.forEach(section => {
+            initialSectionInstances[section.sectionId] = {
+                count: 0,
+                instances: [],
+                nextInsertPosition: section.startAddingFieldsFromId
+            };
+        });
+        setSectionInstances(initialSectionInstances);
+    }, [dynamicSections]);
 
     useEffect(() => {
         const newRefs = {};
         dynamicFields.forEach(field => {
-            newRefs[field.id] = createRef();
+            if (!refs[field.id]) {
+                newRefs[field.id] = createRef();
+            } else {
+                newRefs[field.id] = refs[field.id];
+            }
         });
-
         setRefs(newRefs);
-    }, []);
+    }, [dynamicFields]);
 
     const processFieldRules = useCallback((currentFields, field, value) => {
-
         if (field.rules) {
             const rule = field.rules.find(r => r.value === value);
 
             if (rule) {
-
                 const newFields = currentFields.filter(f => {
                     let keep = true;
                     field.rules.forEach(rule => {
@@ -135,7 +164,6 @@ function Form({
 
                 return newFields;
             } else {
-
                 return currentFields.filter(f => {
                     let keep = true;
                     field.rules.forEach(rule => {
@@ -155,10 +183,8 @@ function Form({
                     });
                     return keep;
                 });
-
             }
         }
-
         return currentFields;
     }, []);
 
@@ -170,7 +196,6 @@ function Form({
         let cachedValues = loadCachedValues();
 
         const initializeForm = () => {
-
             let currentFields = [...fields];
 
             Object.entries(cachedValues).forEach(([fieldId, value]) => {
@@ -188,36 +213,51 @@ function Form({
             });
 
             setDynamicFields(currentFields);
-
-
-
         };
 
         initializeForm();
-
     }, [fields, loadCachedValues, processFieldRules, noInputFieldsCache]);
 
-    function resetForm() {
+    const resetFormCompletely = () => {
+        setDynamicFields([...fields]);
+        setFileInputs({});
+        setCaptchaValue(generateCaptcha());
+        setEnteredCaptcha('');
+
+        setSectionInstances(prevState => {
+            const resetState = {};
+
+            dynamicSections.forEach(section => {
+                resetState[section.sectionId] = {
+                    count: 0,
+                    instances: [],
+                    nextInsertPosition: section.startAddingFieldsFromId
+                };
+            });
+
+            return resetState;
+        });
+
+        setNextIdCounter(fields.length + 1);
+        setGeneralFormError('');
+        setSuccessMessage('');
+
+        if (hasSetSubmittingLocal) {
+            setSubmittingLocal(false);
+        }
+
         setTimeout(() => {
-            setGeneralFormError('');
-            setSuccessMessage('');
-            setSubmitting(false);
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (element) {
+                    element.value = '';
+                }
+            });
+        }, 0);
+    };
 
-            if (hasSetSubmittingLocal) {
-                setSubmittingLocal(false);
-            }
-
-
-            setDynamicFields(fields);
-            setFileInputs({});
-            setCaptchaValue(generateCaptcha());
-            setEnteredCaptcha('');
-            dynamicFields.forEach(field => {
-                document.getElementById(field.id).value = '';
-            })
-
-        }, msgTimeout);
-
+    function resetForm() {
+        resetFormCompletely();
         clearCache();
     }
 
@@ -230,9 +270,172 @@ function Form({
         return captcha;
     }
 
-    const [captchaValue, setCaptchaValue] = useState(generateCaptcha()); // Store captcha value
-    const [enteredCaptcha, setEnteredCaptcha] = useState(''); // Store entered captcha value
+    const [captchaValue, setCaptchaValue] = useState(generateCaptcha());
+    const [enteredCaptcha, setEnteredCaptcha] = useState('');
 
+    const findInsertionIndex = (sectionId) => {
+        const section = dynamicSections.find(s => s.sectionId === sectionId);
+        const sectionState = sectionInstances[sectionId];
+
+        if (!section || !sectionState) {
+            return -1;
+        }
+
+        if (sectionState.instances.length === 0) {
+            const startFieldIndex = dynamicFields.findIndex(field => field.id === section.startAddingFieldsFromId);
+            return startFieldIndex !== -1 ? startFieldIndex + 1 : dynamicFields.length;
+        }
+
+        const lastInstance = sectionState.instances[sectionState.instances.length - 1];
+        const lastFieldId = Math.max(...lastInstance.fieldIds);
+        const lastFieldIndex = dynamicFields.findIndex(field => field.id === lastFieldId);
+        return lastFieldIndex !== -1 ? lastFieldIndex + 1 : dynamicFields.length;
+    };
+
+    const addSectionInstance = (sectionId) => {
+        setSectionInstances(prevState => {
+            const section = dynamicSections.find(s => s.sectionId === sectionId);
+            if (!section) return prevState;
+            const currentSectionState = prevState[sectionId];
+
+            if (section.maxSectionInstancesToAdd !== -1 &&
+                currentSectionState.count >= section.maxSectionInstancesToAdd) {
+                return prevState;
+            }
+
+            const instanceId = `${sectionId}_${currentSectionState.count}`;
+            const insertionIndex = findInsertionIndex(sectionId);
+            if (insertionIndex === -1) return prevState;
+
+            const newFields = section.fieldsToAdd.map((field, index) => {
+                return {
+                    ...field,
+                    id: nextIdCounter + index,
+                    originalId: field.id,
+                    instanceId: instanceId
+                };
+            });
+
+            const controlField = {
+                id: nextIdCounter + newFields.length,
+                type: 'control',
+                instanceId: instanceId,
+                sectionId: sectionId,
+                isControl: true,
+                httpName: `control_${instanceId}`,
+                label: `Control ${instanceId}`
+            };
+
+            const allNewFields = [...newFields, controlField];
+            const updatedDynamicFields = [...dynamicFields];
+            updatedDynamicFields.splice(insertionIndex, 0, ...allNewFields);
+
+            const newRefs = {...refs};
+            allNewFields.forEach(field => {
+                newRefs[field.id] = createRef();
+            });
+
+            setRefs(newRefs);
+            setDynamicFields(updatedDynamicFields);
+
+            setNextIdCounter(nextIdCounter + allNewFields.length);
+
+            return {
+                ...prevState,
+                [sectionId]: {
+                    count: currentSectionState.count + 1,
+                    instances: [
+                        ...currentSectionState.instances,
+                        {
+                            instanceId: instanceId,
+                            fieldIds: allNewFields.map(field => field.id),
+                            insertedAtIndex: insertionIndex
+                        }
+                    ],
+                    nextInsertPosition: insertionIndex + allNewFields.length
+                }
+            };
+        });
+    };
+
+    const removeSectionInstance = (sectionId, instanceId) => {
+        setSectionInstances(prevState => {
+            const currentSectionState = {...prevState[sectionId]};
+            if (!currentSectionState) return prevState;
+
+            const instanceIndex = currentSectionState.instances.findIndex(
+                instance => instance.instanceId === instanceId
+            );
+
+            if (instanceIndex === -1) return prevState;
+
+            const instanceToRemove = currentSectionState.instances[instanceIndex];
+
+            const fieldsToRemove = instanceToRemove.fieldIds;
+            const updatedDynamicFields = dynamicFields.filter(
+                field => !fieldsToRemove.includes(field.id)
+            );
+
+            const newRefs = {...refs};
+            fieldsToRemove.forEach(fieldId => {
+                delete newRefs[fieldId];
+            });
+
+            setRefs(newRefs);
+            setDynamicFields(updatedDynamicFields);
+
+            const updatedInstances = [...currentSectionState.instances];
+            updatedInstances.splice(instanceIndex, 1);
+
+            return {
+                ...prevState,
+                [sectionId]: {
+                    ...currentSectionState,
+                    count: currentSectionState.count - 1,
+                    instances: updatedInstances,
+                }
+            };
+        });
+    };
+
+    const renderAddSectionButton = (section) => {
+        const sectionState = sectionInstances[section.sectionId];
+        if (!sectionState) return null;
+
+        if (section.maxSectionInstancesToAdd !== -1 &&
+            sectionState.count >= section.maxSectionInstancesToAdd) {
+            return null;
+        }
+
+        return (
+            <button
+                type="button"
+                className="add-section-button"
+                onClick={() => addSectionInstance(section.sectionId)}
+                disabled={submitting}
+            >
+                {section.addButtonText || `Add ${section.sectionId}`}
+            </button>
+        );
+    };
+
+    const renderControlField = (field) => {
+        if (!field.isControl) return null;
+        const section = dynamicSections.find(s => s.sectionId === field.sectionId);
+
+        return (
+            <div className="dynamic-section-control">
+                <button
+                    type="button"
+                    className="remove-section-button"
+                    onClick={() => removeSectionInstance(field.sectionId, field.instanceId)}
+                    disabled={submitting}
+                >
+                    {section?.removeButtonText || `Remove`}
+                </button>
+            </div>
+        );
+    };
 
     const onChange = (e, field) => {
         const maxSizeInBytes = 2 * 1024 * 1024;
@@ -250,12 +453,10 @@ function Form({
             setFileInputs(prev => ({...prev, [field.id]: file}));
             field.file = file;
         } else {
-
             if (field.regex && !new RegExp(field.regex).test(value)) {
                 e.target.setCustomValidity(field.errorMsg);
                 e.target.reportValidity();
             } else  {
-
                 e.target.setCustomValidity('');
                 setGeneralFormError('');
                 setSuccessMessage('');
@@ -264,236 +465,257 @@ function Form({
                 if(!noInputFieldsCache) {
                     saveToCache(field, value);
                 }
-
             }
 
             const newFields = processFieldRules(dynamicFields, field, value);
             setDynamicFields(newFields);
-
         }
     }
 
-
     const renderFieldBasedOnType = (field) => {
-
-
+        if (field.type === 'control' && field.isControl) {
             return (
-                <Fragment key={field.id} >
+                <div className="dynamic-section-instance" key={field.id}>
+                    {renderControlField(field)}
+                </div>
+            );
+        }
+
+        return (
+            <Fragment key={field.id}>
                 {field.labelOutside && <label htmlFor={field.id} className={ "form-label-outside"}>
                     {field.label+ (field.required ? '*' : '')}
-
                 </label>}
 
-                    {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time' || field.type === 'password') && (
-                        field.dontLetTheBrowserSaveField ? (
-                            <input
-                                type={field.type}
-                                id={field.id}
-                                name={field.httpName}
-                                required={field.required}
-                                placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                disabled={submitting}
-                                onChange={(e) => onChange(e, field)}
-                                autoComplete="new-password"
-                                data-lpignore="true"
-                                className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                            />
-                        ) : (
-                            <input
-                                type={field.type}
-                                id={field.id}
-                                name={field.httpName}
-                                required={field.required}
-                                placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                disabled={submitting}
-                                onChange={(e) => onChange(e, field)}
-                                className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                            />
-                        )
-                    )}
-
-                    {field.type === 'date' && (
-
+                {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time' || field.type === 'password') && (
+                    field.dontLetTheBrowserSaveField ? (
                         <input
-                            type={'text'}
-                            id={field.id}
-                            name={field.httpName}
-                            required={field.required}
-                            placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
-                            disabled={submitting}
-                            readOnly={true}
-                            onChange={(e) => {
-                                onChange(e, field);
-                            }}
-
-
-                            onFocus={() => showSelectDateModalForField(field.id, field.label)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Tab') {
-                                    setShowSelectDateModal(false);
-                                    setSelectedDateMonth('');
-                                    setSelectedDateDay('');
-                                    setSelectedDateYear('');
-                                    setSelectedDateError('');
-                                }
-                            }}
-
-
-
-                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                        />
-                    )}
-
-                    {field.type === 'textarea' &&
-                        <textarea
+                            type={field.type}
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
                             placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                             disabled={submitting}
                             onChange={(e) => onChange(e, field)}
-                            className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''}`}
+                            autoComplete="new-password"
+                            data-lpignore="true"
+                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            data-instance-id={field.instanceId || ''}
                         />
-                    }
-
-                    {field.type === 'select' &&
-                        <select
-                            multiple={field.multiple}
+                    ) : (
+                        <input
+                            type={field.type}
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
+                            placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                             disabled={submitting}
-
-                            className={
-                            field.multiple ? (
-                                `select-multiple-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
-                                ) :
-
-                                (`select-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
-
-                            }
-
                             onChange={(e) => onChange(e, field)}
-                        >
-                            {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
-                            {field.choices.map((choice, index) => (
-                                <option key={index} value={choice}>{choice}</option>
-                            ))}
-                        </select>
-                    }
+                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            data-instance-id={field.instanceId || ''}
+                        />
+                    )
+                )}
 
-                    {field.type === 'radio' &&
-                        field.choices.map((choice, index) => (
-                            <label key={index}>
-                                <input
-                                    type="radio"
-                                    id={field.id}
-                                    name={field.httpName}
-                                    required={field.required}
-                                    value={choice}
-                                    disabled={submitting}
-                                    className={`radio-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                                    onChange={(e) => onChange(e, field)}
-                                />
-                                {choice}
-                            </label>
-                        ))
-                    }
+                {field.type === 'date' && (
+                    <input
+                        type={'text'}
+                        id={field.id}
+                        name={field.httpName}
+                        required={field.required}
+                        placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
+                        disabled={submitting}
+                        readOnly={true}
+                        onChange={(e) => {
+                            onChange(e, field);
+                        }}
+                        onFocus={() => showSelectDateModalForField(field.id, field.label)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Tab') {
+                                setShowSelectDateModal(false);
+                                setSelectedDateMonth('');
+                                setSelectedDateDay('');
+                                setSelectedDateYear('');
+                                setSelectedDateError('');
+                            }
+                        }}
+                        className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                        data-instance-id={field.instanceId || ''}
+                    />
+                )}
 
-                    {field.type === 'checkbox' &&
-                        field.choices.map((choice, index) => (
-                            <label key={index}>
-                                <input
-                                    type="checkbox"
-                                    id={field.id}
-                                    name={field.httpName}
-                                    required={field.required}
-                                    value={choice}
-                                    disabled={submitting}
-                                    className={`checkbox-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                                    onChange={(e) => onChange(e, field)}
-                                />
-                                {choice}
-                            </label>
-                        ))
-                    }
+                {field.type === 'textarea' &&
+                    <textarea
+                        id={field.id}
+                        name={field.httpName}
+                        required={field.required}
+                        placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                        disabled={submitting}
+                        onChange={(e) => onChange(e, field)}
+                        className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''}`}
+                        data-instance-id={field.instanceId || ''}
+                    />
+                }
 
-                    {field.type === 'file' &&
-                        <div className={`file-form-field-styled ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
-                            <label htmlFor={field.id}>
-                                {field.label + (field.required ? '*' : '')}
-                            </label>
+                {field.type === 'select' &&
+                    <select
+                        multiple={field.multiple}
+                        id={field.id}
+                        name={field.httpName}
+                        required={field.required}
+                        disabled={submitting}
+                        className={
+                            field.multiple ? (
+                                    `select-multiple-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
+                                ) :
+                                (`select-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
+                        }
+                        onChange={(e) => onChange(e, field)}
+                        data-instance-id={field.instanceId || ''}
+                    >
+                        {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
+                        {field.choices.map((choice, index) => (
+                            <option key={index} value={choice}>{choice}</option>
+                        ))}
+                    </select>
+                }
 
-                            <div className={"file-form-field-styled-buttons-wrapper"}>
-
-                                <button onClick={() => {
-                                    refs[field.id].current.click();
-                                }} type={"button"}  disabled={submitting}>Upload</button>
-
-
-                                {fileInputs[field.id] && (
-                                        <button  className={"remove-button"}
-                                            onClick={(e) => {{
-                                                e.preventDefault();
-                                                field.file = null;
-                                                setFileInputs(prev => ({ ...prev, [field.id]: null }));
-                                                refs[field.id].current.value = '';
-                                            }}} type={"button"}
-                                            disabled={submitting}
-                                        >
-                                            Remove
-                                        </button>
-                                )}
-
-                            </div>
-
-                            <label>
-                                {fileInputs[field.id] ? (fileInputs[field.id].name.length > 20 ? fileInputs[field.id].name.substring(0, 20) + '...' : fileInputs[field.id].name) : 'No file selected'}
-                            </label>
-
+                {field.type === 'radio' &&
+                    field.choices.map((choice, index) => (
+                        <label key={index}>
                             <input
-                                type="file"
-                                className={"file-form-field"}
+                                type="radio"
                                 id={field.id}
                                 name={field.httpName}
-                                label={field.label}
                                 required={field.required}
-                                accept={field.allowedFileTypes ? field.allowedFileTypes.join(',') : ''}
+                                value={choice}
                                 disabled={submitting}
-                                onChange={(e) => {
-                                    onChange(e, field)
-                                }}
-
-                                ref={refs[field.id]}
+                                className={`radio-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                onChange={(e) => onChange(e, field)}
+                                data-instance-id={field.instanceId || ''}
                             />
+                            {choice}
+                        </label>
+                    ))
+                }
 
-                            <label>
-                                Maximum file size: 2MB
-                            </label>
+                {field.type === 'checkbox' &&
+                    field.choices.map((choice, index) => (
+                        <label key={index}>
+                            <input
+                                type="checkbox"
+                                id={field.id}
+                                name={field.httpName}
+                                required={field.required}
+                                value={choice}
+                                disabled={submitting}
+                                className={`checkbox-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                onChange={(e) => onChange(e, field)}
+                                data-instance-id={field.instanceId || ''}
+                            />
+                            {choice}
+                        </label>
+                    ))
+                }
+
+                {field.type === 'file' &&
+                    <div className={`file-form-field-styled ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                         data-instance-id={field.instanceId || ''}
+                    >
+                        <label htmlFor={field.id}>
+                            {field.label + (field.required ? '*' : '')}
+                        </label>
+
+                        <div className={"file-form-field-styled-buttons-wrapper"}>
+                            <button onClick={() => {
+                                refs[field.id].current.click();
+                            }} type={"button"}  disabled={submitting}>Upload</button>
+
+                            {fileInputs[field.id] && (
+                                <button  className={"remove-button"}
+                                         onClick={(e) => {{
+                                             e.preventDefault();
+                                             field.file = null;
+                                             setFileInputs(prev => ({ ...prev, [field.id]: null }));
+                                             refs[field.id].current.value = '';
+                                         }}} type={"button"}
+                                         disabled={submitting}
+                                >
+                                    Remove
+                                </button>
+                            )}
                         </div>
-                    }
 
-                    {field.type === 'section' && (
-                        <div className={`form-title-section ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`} id={field.id} key={field.id}  ref={refs[field.id]}>
-                            <h3 >
-                                {field.label}
-                            </h3>
-                        </div>
-                    )}
+                        <label>
+                            {fileInputs[field.id] ? (fileInputs[field.id].name.length > 20 ? fileInputs[field.id].name.substring(0, 20) + '...' : fileInputs[field.id].name) : 'No file selected'}
+                        </label>
 
+                        <input
+                            type="file"
+                            className={"file-form-field"}
+                            id={field.id}
+                            name={field.httpName}
+                            label={field.label}
+                            required={field.required}
+                            accept={field.allowedFileTypes ? field.allowedFileTypes.join(',') : ''}
+                            disabled={submitting}
+                            onChange={(e) => {
+                                onChange(e, field)
+                            }}
+                            ref={refs[field.id]}
+                            data-instance-id={field.instanceId || ''}
+                        />
 
-                    {field.type === 'button' && (
-                        <button className={`form-button ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`} onClick={(e) => {
-                            field.onClick(e, field);
-                        }} type={"button"} disabled={submitting} id={field.id} key={field.id}  ref={refs[field.id]} >
+                        <label>
+                            Maximum file size: 2MB
+                        </label>
+                    </div>
+                }
+
+                {field.type === 'section' && (
+                    <div className={`form-title-section ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                         id={field.id}
+                         ref={refs[field.id]}
+                         data-instance-id={field.instanceId || ''}
+                    >
+                        <h3>
                             {field.label}
-                        </button>
-                    )}
+                        </h3>
+                    </div>
+                )}
 
-                </Fragment>
-            );
-
+                {field.type === 'button' && (
+                    <button
+                        className={`form-button ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                        onClick={(e) => {
+                            field.onClick(e, field);
+                        }}
+                        type={"button"}
+                        disabled={submitting}
+                        id={field.id}
+                        ref={refs[field.id]}
+                        data-instance-id={field.instanceId || ''}
+                    >
+                        {field.label}
+                    </button>
+                )}
+            </Fragment>
+        );
     }
+
+    const renderDynamicSectionButtons = () => {
+        if (dynamicSections.length === 0) return null;
+
+        return (
+            <div className="dynamic-sections-container">
+                {dynamicSections.map(section => (
+                    <div key={`add_section_${section.sectionId}`} className="dynamic-section-button-wrapper">
+                        {renderAddSectionButton(section)}
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
     const handleCopy = (event) => {
         event.preventDefault();
@@ -524,13 +746,11 @@ function Form({
     }
 
     const handleDateSelection = (day, month, year) => {
-
         if (!day || !month || !year) {
             setSelectedDateError(lang === 'ar' ? 'الرجاء اختيار تاريخ صحيح' : 'Please select a valid date');
             setTimeout(() => { setSelectedDateError(''); }, msgTimeout);
             return;
         }
-
 
         if (day < 10) {
             day = `0${day}`;
@@ -550,13 +770,39 @@ function Form({
         setShowSelectDateModal(false);
 
         if (!noInputFieldsCache) {
-
             saveToCache({id: selectedDateFieldID, label: selectedDateFieldLabel}, `${year}-${month}-${day}`);
         }
     }
 
     const onSubmit = async (e) => {
         e.preventDefault();
+
+
+        if (pedanticIds) {
+            const idMap = {};
+            dynamicFields.forEach((field, index) => {
+                const newId = index + 1;
+                if (field.id !== newId) {
+                    idMap[field.id] = newId;
+                    field.id = newId;
+                }
+            });
+
+            if (Object.keys(idMap).length > 0) {
+                setSectionInstances(prevState => {
+                    const newState = {...prevState};
+                    Object.keys(newState).forEach(sectionId => {
+                        newState[sectionId].instances = newState[sectionId].instances.map(instance => ({
+                            ...instance,
+                            fieldIds: instance.fieldIds.map(id => idMap[id] || id)
+                        }));
+                    });
+                    return newState;
+                });
+            }
+        }
+
+
         if (submitting) { return; }
 
         if (enteredCaptcha !== captchaValue && !noCaptcha) {
@@ -595,13 +841,12 @@ function Form({
         setGeneralFormError('');
         setSuccessMessage('');
 
-
         try {
             const formData = new FormData();
 
             dynamicFields.forEach(field => {
-                if (field.type !== 'section' && field.type !== 'button') {
-                    let value = document.getElementById(field.id).value;
+                if (field.type !== 'section' && field.type !== 'button' && field.type !== 'control') {
+                    let value = document.getElementById(field.id)?.value || '';
 
                     if (field.type === 'file' && field.file) {
                         const file = field.file;
@@ -616,6 +861,12 @@ function Form({
 
                     formData.append(`field_${field.id}`, value);
                     formData.append(`label_${field.id}`, field.label);
+
+                    if (field.instanceId) {
+                        formData.append(`instance_${field.id}`, field.instanceId);
+                        const sectionId = field.instanceId.split('_')[0];
+                        formData.append(`section_${field.id}`, sectionId);
+                    }
                 }
             });
 
@@ -625,8 +876,8 @@ function Form({
                 pdf.text(`Title: ${formTitle}`, 10, 20);
 
                 dynamicFields.forEach((field, index) => {
-                    if (field.type !== 'button' && field.type !== 'section') {
-                        const value = document.getElementById(field.id).value;
+                    if (field.type !== 'button' && field.type !== 'section' && field.type !== 'control') {
+                        const value = document.getElementById(field.id)?.value || '';
                         pdf.text(`${field.label}: ${value}`, 10, 30 + (index * 10));
                     }
                 });
@@ -644,9 +895,6 @@ function Form({
                 } catch (error) {
                     setGeneralFormError(error.message + ': Form submission failed. Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
                     setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
-                    // resetForm();
-                    // clearCache();
-
                     setSubmitting(false);
                     if (hasSetSubmittingLocal) {
                         setSubmittingLocal(false)
@@ -666,7 +914,7 @@ function Form({
                         setTimeout(() => {
                             setSuccessMessage('');
                         }, msgTimeout);
-                        resetForm();
+                        resetFormCompletely();
                         clearCache();
                     } else {
                         setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message + ': Form submission failed. Please try again.');
@@ -677,17 +925,12 @@ function Form({
                 } catch (error) {
                     setGeneralFormError(error.message + ': Form submission failed. Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
                     setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
-                    // resetForm();
-                    // clearCache();
-
                     setSubmitting(false);
                     if (hasSetSubmittingLocal) {
                         setSubmittingLocal(false)
                     }
                 }
             }
-
-
         } catch (error) {
             setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : error || error.message + ': Form submission failed. Please try again.');
             setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
@@ -700,10 +943,8 @@ function Form({
         }
     };
 
-
     return (
         <>
-
             <form
                 className="form"
                 onSubmit={onSubmit}
@@ -720,49 +961,37 @@ function Form({
                             <label htmlFor={"captcha"} className={"form-label-outside"}>
                                 {lang === 'ar' ? 'كود التحقق*' : 'Captcha*'}
                             </label>
-                            )
+                        )
                         }
 
                         <div className={`${captchaLength === 2 ? (fullMarginField ? 'captcha-wrapper-with-half-width-full-margin' : 'captcha-wrapper-half-width') : (fullMarginField ? 'captcha-wrapper-with-full-margin' : 'captcha-wrapper')}`}>
-
-
                             <input className={`text-form-field ${captchaLength === 2 ? 'full-width' : 'half-width'} captcha-input`} type={"text"}
                                    placeholder={""} required={true} value={enteredCaptcha}
-
-                                   onChange={
-
-                                    (e) => {
-
+                                   onChange={(e) => {
                                        setEnteredCaptcha(e.target.value);
-                                    }
-                            }
+                                   }}
                                    onPaste={handlePaste}
-
                             />
 
-                        <div className={`text-form-field ${captchaLength === 2 ? 'full-width': 'half-width'} captcha-box`} type={"text"}
-                             onCopy={handleCopy}
-                             onCut={handleCut}
-                             onPaste={handlePaste}
-                             onMouseDown={handleMouseDown}
-                             onKeyDown={handleKeyDown}
-                            onTouchStart={handleMouseDown}
-
-                        >{captchaValue}</div>
+                            <div className={`text-form-field ${captchaLength === 2 ? 'full-width': 'half-width'} captcha-box`} type={"text"}
+                                 onCopy={handleCopy}
+                                 onCut={handleCut}
+                                 onPaste={handlePaste}
+                                 onMouseDown={handleMouseDown}
+                                 onKeyDown={handleKeyDown}
+                                 onTouchStart={handleMouseDown}
+                            >{captchaValue}</div>
 
                             <button className={`${captchaLength === 2 ? 'captcha-refresh-button-half-width' : 'refresh-captcha-button'}`} onClick={(e)=> { e.preventDefault(); setCaptchaValue(generateCaptcha()); }} type={"button"}>⟳</button>
-
                         </div>
                     </>
                 )}
 
                 <div className={`form-footer ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
-
                     {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                     {successMessage && <p className="success-message">{successMessage}</p>}
 
                     <div className={`form-footer-buttons-wrapper ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
-
                         {hasDifferentSubmitButtonText ? (
                             lang === 'ar' ? (
                                 <button type={"submit"} disabled={submitting} className={"submit-button"}>
@@ -791,28 +1020,23 @@ function Form({
                                 <button type="reset" disabled={submitting}
                                         className="reset-button">Clear</button>
                             ))
-
                         }
 
+                        {renderDynamicSectionButtons()}
                     </div>
                 </div>
             </form>
 
-
-
-
-
-        <animated.div style={animateDateModal} className={"form-select-date-modal"}>
-            <div className={"form-select-date-modal-overlay"} onClick={() => {
-                setShowSelectDateModal(false);
-                setSelectedDateMonth('');
-                setSelectedDateDay('');
-                setSelectedDateYear('');
-                setSelectedDateError('');
-            }}/>
+            <animated.div style={animateDateModal} className={"form-select-date-modal"}>
+                <div className={"form-select-date-modal-overlay"} onClick={() => {
+                    setShowSelectDateModal(false);
+                    setSelectedDateMonth('');
+                    setSelectedDateDay('');
+                    setSelectedDateYear('');
+                    setSelectedDateError('');
+                }}/>
 
                 <div className={"form-select-date-modal-container"}>
-
                     <div className={"form-select-date-modal-header"}>
                         <p>
                             {selectedDateFieldLabel}
@@ -824,13 +1048,12 @@ function Form({
                             e.preventDefault();
                             handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
                         }}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
-                                }
-                            }}
+                              onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                      handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
+                                  }
+                              }}
                         >
-
                             <select className={"select-form-field third-width"} onChange={(e) => setSelectedDateYear(e.target.value)}
                                     value={selectedDateYear}
                                     autoFocus={true}
@@ -861,16 +1084,13 @@ function Form({
                                         <option key={day} value={day}>{day}</option>
                                     )) : null
                                 }
-
                             </select>
-
                         </form>
                     </div>
 
                     {selectedDateError && <p className={"general-form-error"}>{selectedDateError}</p>}
 
                     <div className={"form-select-date-modal-footer"}>
-
                         <button className={"form-select-date-modal-close-btn"} onClick={() => {
                             setShowSelectDateModal(false);
                             setSelectedDateMonth('');
@@ -888,11 +1108,9 @@ function Form({
                             {lang === 'ar' ? 'تأكيد' : 'Confirm'}
                         </button>
                     </div>
-            </div>
-
-
-        </animated.div>
-    </>
+                </div>
+            </animated.div>
+        </>
     );
 }
 
@@ -908,7 +1126,7 @@ Form.propTypes = {
         regex: PropTypes.string,
         widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
         labelOutside: PropTypes.bool,
-        allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
+        allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
         placeholder: PropTypes.string,
         dontLetTheBrowserSaveField: PropTypes.bool,
         multiple: PropTypes.bool,
@@ -927,7 +1145,7 @@ Form.propTypes = {
                 regex: PropTypes.string,
                 widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
                 labelOutside: PropTypes.bool,
-                allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
+                allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
                 placeholder: PropTypes.string,
                 dontLetTheBrowserSaveField: PropTypes.bool,
                 multiple: PropTypes.bool,
@@ -948,7 +1166,7 @@ Form.propTypes = {
                         mustMatchFieldWithId: PropTypes.number,
                         widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
                         labelOutside: PropTypes.bool,
-                        allowedFileTypes: PropTypes.arrayOf(PropTypes.string.isRequired),
+                        allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
                         placeholder: PropTypes.string,
                         dontLetTheBrowserSaveField: PropTypes.bool,
                         multiple: PropTypes.bool,
@@ -956,7 +1174,6 @@ Form.propTypes = {
                 }))
             }))
         }))
-
     })).isRequired,
 
     mailTo: PropTypes.string.isRequired,
@@ -975,7 +1192,20 @@ Form.propTypes = {
     easySimpleCaptcha: PropTypes.bool,
     fullMarginField: PropTypes.bool,
     hasSetSubmittingLocal: PropTypes.bool,
-    setSubmittingLocal: PropTypes.func
+    setSubmittingLocal: PropTypes.func,
+    resetFormFromParent: PropTypes.bool,
+    setResetForFromParent: PropTypes.func,
+    dynamicSections: PropTypes.arrayOf(PropTypes.shape({
+        addButtonText: PropTypes.string.isRequired,
+        removeButtonText: PropTypes.string.isRequired,
+        startAddingFieldsFromId: PropTypes.number.isRequired,
+        fieldsToAdd: PropTypes.arrayOf(PropTypes.object).isRequired,
+        maxSectionInstancesToAdd: PropTypes.number.isRequired,
+        sectionId: PropTypes.string.isRequired,
+        sectionTitle: PropTypes.string
+    })),
+    pedanticIds: PropTypes.bool
 };
 
 export default Form;
+

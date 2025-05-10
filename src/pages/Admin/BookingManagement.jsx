@@ -7,7 +7,6 @@ import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import '../../styles/Dashboard.css';
 
-
 function BookingManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -201,7 +200,6 @@ function BookingManagement() {
         },
     ]
 
-
     const cancelAddBookingModal = () => {
         setShowAddBookingModal(false);
         setResetAddBookingModal(true);
@@ -222,7 +220,6 @@ function BookingManagement() {
             <div className={"booking-management-page"}>
                 {(
                     ( (allBookings && Array.isArray(allBookings) && allBookings.length > 0)   ) ? (
-
                         <Table tableData={allBookings}
                                scrollable={true}
                                compact={true}
@@ -253,21 +250,16 @@ function BookingManagement() {
                 )}
             </div>
 
-
             <animated.div style={animateAddBookingModal} className={"add-booking-modal"}>
                 <div className={"add-booking-modal-form-overlay"} onClick={cancelAddBookingModal}/>
-
                 <div className={"add-booking-modal-form-container"}>
-
                     <div className={"add-booking-modal-form-header"}>
                         <h3>
                             Add A New Booking
                         </h3>
                     </div>
 
-
                     <div className={"add-booking-modal-content"}>
-
                         <Form fields={addBookingModalCoreFormFields}
                               mailTo={''}
                               sendPdf={false}
@@ -278,20 +270,18 @@ function BookingManagement() {
                               noCaptcha={true}
                               resetFormFromParent={resetAddBookingModal}
                               setResetForFromParent={setResetAddBookingModal}
-                              sectionsToAdd={[
-
-                              {
-                                  addButtonText: "Add Student",
-                                  removeButtonText: "Remove Student",
-                                  startAddingFieldsFromId: 5,
-                                  fieldsToAdd: studentSectionFields,
-                                  maxSectionInstancesToAdd: 5,
-                                  sectionId: "new-student-section"
-                              }
-
+                              dynamicSections={[
+                                  {
+                                      addButtonText: "Add Student",
+                                      removeButtonText: "Remove Student",
+                                      startAddingFieldsFromId: 9,
+                                      fieldsToAdd: studentSectionFields,
+                                      maxSectionInstancesToAdd: 5,
+                                      sectionId: "student-section"
+                                  }
                               ]}
+                              pedanticIds={true}
                         />
-
                     </div>
 
 
@@ -300,11 +290,8 @@ function BookingManagement() {
                             Cancel
                         </button>
                     </div>
-
                 </div>
-
             </animated.div>
-
         </>
     );
 }
