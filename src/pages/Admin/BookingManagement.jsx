@@ -217,7 +217,7 @@ function BookingManagement() {
         try {
             setIsLoading(true);
 
-            const response = await fetch('/scripts/addBooking.php', {
+            const response = await fetch('/scripts/submitAddBookingForm.php', {
                 method: 'POST',
                 body: formData
             });
