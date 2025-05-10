@@ -181,6 +181,16 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         <div className="table-module" style={{overflow: scrollable ? 'auto' : 'hidden'}}>
             <div className={"table-module-header"}>
                 <div className={"table-module-header-buttons-wrapper"}>
+                    {
+                        (!finalTableData || finalTableData.length === 0) && (
+                            <div className={"table-module-header-empty-state"}>
+                                <h3>
+                                    No Table Entries Found.
+                                </h3>
+                            </div>
+                        )
+                    }
+
                     {finalTableData && allowHideColumns && (
                         <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
                             {isAccordionOpen ? 'Hide Columns' : 'Show Columns'}
@@ -251,6 +261,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         </th>
                     </tr>
                 }
+
                 {finalTableData && finalTableData.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                         {row.map((cell, cellIndex) => (

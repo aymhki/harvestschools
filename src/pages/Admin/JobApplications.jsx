@@ -19,9 +19,10 @@ function JobApplications() {
         checkAdminSession(navigate, setIsLoading, 0);
     }, []);
 
-    useEffect(() => {
-        try {
+    const loadTableData = async () => {
 
+        try {
+            setIsLoading(true);
             axios.get('/scripts/GetJobApplications.php')
                 .then((response) => {
 
@@ -44,7 +45,10 @@ function JobApplications() {
             setIsLoading(false);
             setJobApplications(null);
         }
+    }
 
+    useEffect(() => {
+        loadTableData();
     }, []);
 
   return (
@@ -52,11 +56,8 @@ function JobApplications() {
           {isLoading && <Spinner/>}
 
           <div className={"job-applications-page"}>
-              {(
 
-              (
-                  jobApplications && Array.isArray(jobApplications) && jobApplications.length > 0
-              ) ? (
+
                   <Table tableData={jobApplications}
                          scrollable={true}
                          compact={true}
@@ -77,6 +78,13 @@ function JobApplications() {
                         }
                          allowExport={true}
                          exportFileName={'job-applications'}
+                         headerModuleElements={[(
+                             <button key={1} onClick={() => {
+                                 loadTableData();
+                             }} disabled={isLoading}>
+                                 Reload Table Data
+                             </button>
+                         )]}
                          sortConfigParam={{column: 0, direction: 'descending'}}
                             filterableColumns={
                                   [
@@ -94,11 +102,7 @@ function JobApplications() {
                                   ]
                             }
                   />
-              ) : (
-                  isLoading ? <h1>Loading...</h1> : <h1>No job applications found.</h1>
-              )
 
-              )}
           </div>
 
       </>
