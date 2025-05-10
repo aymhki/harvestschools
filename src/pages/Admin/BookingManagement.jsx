@@ -44,7 +44,9 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'booking-username',
-            dontLetTheBrowserSaveField: true
+            dontLetTheBrowserSaveField: true,
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: bookingPasswordFieldId,
@@ -58,7 +60,9 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'booking-password',
-            dontLetTheBrowserSaveField: true
+            dontLetTheBrowserSaveField: true,
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: confirmBookingPasswordFieldId,
@@ -74,6 +78,8 @@ function BookingManagement() {
             httpName: 'confirm-booking-password',
             mustMatchFieldWithId: 2,
             dontLetTheBrowserSaveField: true,
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: firstParentNameFieldId,
@@ -87,6 +93,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'first-parent-name',
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: firstParentEmailFieldId,
@@ -100,6 +108,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'first-parent-email',
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: firstParentPhoneNumberFieldId,
@@ -113,6 +123,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'first-parent-phone-number',
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: secondParentNameFieldId,
@@ -126,6 +138,9 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'second-parent-name',
+            mustNotMatchFieldWithId: firstParentNameFieldId,
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: secondParentEmailFieldId,
@@ -139,6 +154,9 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'second-parent-email',
+            mustNotMatchFieldWithId: firstParentEmailFieldId,
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             id: secondParentPhoneNumberFieldId,
@@ -152,6 +170,9 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'second-parent-phone-number',
+            mustNotMatchFieldWithId: firstParentPhoneNumberFieldId,
+            labelOutside: true,
+            labelOnTop: true,
         }
     ]
 
@@ -167,6 +188,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 1,
             httpName: 'student-section',
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             type: 'text',
@@ -179,6 +202,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'student-name',
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             type: 'select',
@@ -192,6 +217,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'student-school-division',
+            labelOutside: true,
+            labelOnTop: true,
         },
         {
             type: 'select',
@@ -205,6 +232,8 @@ function BookingManagement() {
             setValue: null,
             widthOfField: 3,
             httpName: 'student-grade',
+            labelOutside: true,
+            labelOnTop: true,
         },
     ]
 
@@ -311,12 +340,14 @@ function BookingManagement() {
                                       startAddingFieldsFromId: 9,
                                       fieldsToAdd: studentSectionFields,
                                       maxSectionInstancesToAdd: 5,
-                                      sectionId: "student-section"
+                                      sectionId: "student-section",
+                                      minimumSectionInstancesForValidSubmission: 1,
+                                      sectionTitle: "New Student",
                                   }
                               ]}
                               formInModalPopup={true}
                               setShowFormModalPopup={setShowAddBookingModal}
-                              pedanticIds={true}
+                              pedanticIds={false}
                         />
                     </div>
 
