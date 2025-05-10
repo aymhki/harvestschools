@@ -94,16 +94,6 @@ function Form({
     const [sectionInstances, setSectionInstances] = useState({});
     const [nextIdCounter, setNextIdCounter] = useState(fields.length + 1);
 
-    useEffect(() => {
-        if (resetFormFromParent) {
-            resetFormCompletely();
-
-            if (setResetForFromParent) {
-                setResetForFromParent(false);
-            }
-        }
-    }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
-
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
     const msgTimeout = 3500;
 
@@ -269,6 +259,16 @@ function Form({
 
         return captcha;
     }
+
+    useEffect(() => {
+        if (resetFormFromParent) {
+            resetFormCompletely();
+
+            if (setResetForFromParent) {
+                setResetForFromParent(false);
+            }
+        }
+    }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
 
     const [captchaValue, setCaptchaValue] = useState(generateCaptcha());
     const [enteredCaptcha, setEnteredCaptcha] = useState('');
