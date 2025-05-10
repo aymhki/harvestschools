@@ -68,7 +68,9 @@ function Form({
                   resetFormFromParent,
                   setResetForFromParent,
                   dynamicSections = [],
-                  pedanticIds
+                  pedanticIds,
+                    formInModalPopup,
+                    setShowFormModalPopup
               }) {
 
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
@@ -913,6 +915,9 @@ function Form({
                         setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
                         setTimeout(() => {
                             setSuccessMessage('');
+                            if (formInModalPopup) {
+                                setShowFormModalPopup(false);
+                            }
                         }, msgTimeout);
                         resetFormCompletely();
                         clearCache();
@@ -1204,7 +1209,9 @@ Form.propTypes = {
         sectionId: PropTypes.string.isRequired,
         sectionTitle: PropTypes.string
     })),
-    pedanticIds: PropTypes.bool
+    pedanticIds: PropTypes.bool,
+    formInModalPopup: PropTypes.bool,
+    setShowFormModalPopup: PropTypes.func
 };
 
 export default Form;

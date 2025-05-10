@@ -10,22 +10,30 @@ import '../../styles/Dashboard.css';
 function BookingManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [allBookings, setAllBookings] = useState([
-        ["1", "2", "3", "4", "5"],
-        ["6", "7", "8", "9", "10"],
-    ]);
+    const [allBookings, setAllBookings] = useState(null);
 
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
+
 
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
         transform: showAddBookingModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
+    const bookingUsernameFieldId = 1
+    const bookingPasswordFieldId = 2
+    const confirmBookingPasswordFieldId = 3
+    const firstParentNameFieldId = 4
+    const firstParentEmailFieldId = 5
+    const firstParentPhoneNumberFieldId = 6
+    const secondParentNameFieldId = 7
+    const secondParentEmailFieldId = 8
+    const secondParentPhoneNumberFieldId = 9
+
     const addBookingModalCoreFormFields = [
         {
-            id: 1,
+            id: bookingUsernameFieldId,
             type: 'text',
             name: 'booking-username',
             label: 'Booking Username',
@@ -39,7 +47,7 @@ function BookingManagement() {
             dontLetTheBrowserSaveField: true
         },
         {
-            id: 2,
+            id: bookingPasswordFieldId,
             type: 'password',
             name: 'booking-password',
             label: 'Booking Password',
@@ -53,7 +61,7 @@ function BookingManagement() {
             dontLetTheBrowserSaveField: true
         },
         {
-            id: 3,
+            id: confirmBookingPasswordFieldId,
             type: 'password',
             name: 'confirm-booking-password',
             label: 'Confirm Booking Password',
@@ -68,7 +76,7 @@ function BookingManagement() {
             dontLetTheBrowserSaveField: true,
         },
         {
-            id: 4,
+            id: firstParentNameFieldId,
             type: 'text',
             name: 'first-parent-name',
             label: 'First Parent Name',
@@ -81,7 +89,7 @@ function BookingManagement() {
             httpName: 'first-parent-name',
         },
         {
-            id: 5,
+            id: firstParentEmailFieldId,
             type: 'email',
             name: 'first-parent-email',
             label: 'First Parent Email',
@@ -94,7 +102,7 @@ function BookingManagement() {
             httpName: 'first-parent-email',
         },
         {
-            id: 6,
+            id: firstParentPhoneNumberFieldId,
             type: 'tel',
             name: 'first-parent-phone-number',
             label: 'First Parent Phone Number',
@@ -107,11 +115,11 @@ function BookingManagement() {
             httpName: 'first-parent-phone-number',
         },
         {
-            id: 7,
+            id: secondParentNameFieldId,
             type: 'text',
             name: 'second-parent-name',
             label: 'Second Parent Name',
-            required: true,
+            required: false,
             placeholder: 'Second Parent Name',
             errorMsg: 'Please enter the second parent name',
             value: '',
@@ -120,11 +128,11 @@ function BookingManagement() {
             httpName: 'second-parent-name',
         },
         {
-            id: 8,
+            id: secondParentEmailFieldId,
             type: 'email',
             name: 'second-parent-email',
             label: 'Second Parent Email',
-            required: true,
+            required: false,
             placeholder: 'Second Parent Email',
             errorMsg: 'Please enter the second parent email',
             value: '',
@@ -133,11 +141,11 @@ function BookingManagement() {
             httpName: 'second-parent-email',
         },
         {
-            id: 9,
+            id: secondParentPhoneNumberFieldId,
             type: 'tel',
             name: 'second-parent-phone-number',
             label: 'Second Parent Phone Number',
-            required: true,
+            required: false,
             placeholder: 'Second Parent Phone Number',
             errorMsg: 'Please enter the second parent phone number',
             value: '',
@@ -205,12 +213,43 @@ function BookingManagement() {
         setResetAddBookingModal(true);
     }
 
+    const handleAddBooking = async (formData) => {
+        try {
+            setIsLoading(true);
+
+            const response = await fetch('/scripts/addBooking.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Close modal and refresh booking list
+                // setShowAddBookingModal(false);
+                // setResetAddBookingModal(true);
+                // Refresh the bookings list
+                // You might need to implement a function to fetch bookings
+                // fetchBookings();
+                console.log("Successfully added booking.")
+            } else {
+                // Show error message
+                alert('Error: ' + result.message);
+            }
+        } catch (error) {
+            console.error("Error adding booking:", error);
+            alert("Failed to add booking. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
         // checkAdminSession(navigate, setIsLoading, 1);
     }, []);
 
     useEffect(() => {
-       // setAllBookings(null);
+        setAllBookings(null);
     }, []);
 
     return (
@@ -218,36 +257,29 @@ function BookingManagement() {
             {isLoading && <Spinner/>}
 
             <div className={"booking-management-page"}>
-                {(
-                    ( (allBookings && Array.isArray(allBookings) && allBookings.length > 0)   ) ? (
-                        <Table tableData={allBookings}
-                               scrollable={true}
-                               compact={true}
-                               allowHideColumns={true}
-                               defaultHiddenColumns={
-                               []}
-                               allowExport={true}
-                               exportFileName={'bookings'}
-                               sortConfigParam={{column: 0, direction: 'descending'}}
-                               filterableColumns={
-                               []}
-                               headerModuleElements={[(
-                                   <button key={1} onClick={() => {
-                                        setShowAddBookingModal(true);
-                                   }}>
-                                       Add Booking
-                                   </button>
-                               )]}
-                               onDeleteEntry={(rowIndex) => {
-                                   console.log(rowIndex);
-                               }}
-                               allowDeleteEntryOption={true}
-                        />
-
-                    ) : (
-                        isLoading ? <h1>Loading...</h1> : <h1>No bookings found.</h1>
-                    )
-                )}
+                <Table tableData={allBookings}
+                       scrollable={true}
+                       compact={true}
+                       allowHideColumns={true}
+                       defaultHiddenColumns={
+                       []}
+                       allowExport={true}
+                       exportFileName={'bookings'}
+                       sortConfigParam={{column: 0, direction: 'descending'}}
+                       filterableColumns={
+                       []}
+                       headerModuleElements={[(
+                           <button key={1} onClick={() => {
+                                setShowAddBookingModal(true);
+                           }}>
+                               Add Booking
+                           </button>
+                       )]}
+                       onDeleteEntry={(rowIndex) => {
+                           console.log(rowIndex);
+                       }}
+                       allowDeleteEntryOption={true}
+                />
             </div>
 
             <animated.div style={animateAddBookingModal} className={"add-booking-modal"}>
@@ -270,6 +302,8 @@ function BookingManagement() {
                               noCaptcha={true}
                               resetFormFromParent={resetAddBookingModal}
                               setResetForFromParent={setResetAddBookingModal}
+                              hasDifferentOnSubmitBehaviour={true}
+                              differentOnSubmitBehaviour={handleAddBooking}
                               dynamicSections={[
                                   {
                                       addButtonText: "Add Student",
@@ -280,6 +314,8 @@ function BookingManagement() {
                                       sectionId: "student-section"
                                   }
                               ]}
+                              formInModalPopup={true}
+                              setShowFormModalPopup={setShowAddBookingModal}
                               pedanticIds={true}
                         />
                     </div>
