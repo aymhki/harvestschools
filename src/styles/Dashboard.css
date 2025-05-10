@@ -107,7 +107,10 @@
 }
 
 @media (max-width: 1024px) {
-
+    .add-booking-modal-form-container {
+        width: 90%;
+        min-height: 90%;
+    }
 }
 
 @media (max-width: 768px) {

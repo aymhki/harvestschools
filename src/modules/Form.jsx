@@ -97,7 +97,7 @@ function Form({
     const [nextIdCounter, setNextIdCounter] = useState(fields.length + 1);
 
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
-    const msgTimeout = 3500;
+    const msgTimeout = 5000;
 
     useEffect(() => {
         const initialSectionInstances = {};
@@ -109,7 +109,7 @@ function Form({
             };
         });
         setSectionInstances(initialSectionInstances);
-    }, [dynamicSections]);
+    }, []);
 
     useEffect(() => {
         const newRefs = {};
@@ -485,68 +485,162 @@ function Form({
 
         return (
             <Fragment key={field.id}>
-                {field.labelOutside && <label htmlFor={field.id} className={ "form-label-outside"}>
+                { (field.labelOutside && !field.labelOnTop) && <label htmlFor={field.id} className={ "form-label-outside"}>
                     {field.label+ (field.required ? '*' : '')}
                 </label>}
 
                 {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time' || field.type === 'password') && (
                     field.dontLetTheBrowserSaveField ? (
-                        <input
-                            type={field.type}
-                            id={field.id}
-                            name={field.httpName}
-                            required={field.required}
-                            placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                            disabled={submitting}
-                            onChange={(e) => onChange(e, field)}
-                            autoComplete="new-password"
-                            data-lpignore="true"
-                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                            data-instance-id={field.instanceId || ''}
-                        />
+                         (field.labelOutside && field.labelOnTop) ? (
+                             <div className={`field-with-label-on-top ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                                <label htmlFor={field.id} className={ "form-label-outside"}>
+                                    {field.label+ (field.required ? '*' : '')}
+                                </label>
+                                <input
+                                    type={field.type}
+                                    id={field.id}
+                                    name={field.httpName}
+                                    required={field.required}
+                                    placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                    disabled={submitting}
+                                    onChange={(e) => onChange(e, field)}
+                                    autoComplete="new-password"
+                                    data-lpignore="true"
+                                    className={`text-form-field`}
+                                    data-instance-id={field.instanceId || ''}
+                                />
+                             </div>
+
+                        ) : (
+                             <input
+                                 type={field.type}
+                                 id={field.id}
+                                 name={field.httpName}
+                                 required={field.required}
+                                 placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                 disabled={submitting}
+                                 onChange={(e) => onChange(e, field)}
+                                 autoComplete="new-password"
+                                 data-lpignore="true"
+                                 className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                 data-instance-id={field.instanceId || ''}
+                             />
+                         )
+
+                    ) : (
+                        (field.labelOutside && field.labelOnTop) ? (
+                        <div className={`field-with-label-on-top ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                            <label htmlFor={field.id} className={ "form-label-outside"}>
+                                {field.label+ (field.required ? '*' : '')}
+                            </label>
+                            <input
+                                type={field.type}
+                                id={field.id}
+                                name={field.httpName}
+                                required={field.required}
+                                placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                disabled={submitting}
+                                onChange={(e) => onChange(e, field)}
+                                className={`text-form-field`}
+                                data-instance-id={field.instanceId || ''}
+                            />
+                        </div>
+                        ) : (
+                            <input
+                                type={field.type}
+                                id={field.id}
+                                name={field.httpName}
+                                required={field.required}
+                                placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                disabled={submitting}
+                                onChange={(e) => onChange(e, field)}
+                                className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                data-instance-id={field.instanceId || ''}
+                            />
+                        )
+                    )
+                )}
+
+                {field.type === 'date' && (
+                    (field.labelOutside && field.labelOnTop) ? (
+                        <div className={`field-with-label-on-top ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                            <label htmlFor={field.id} className={ "form-label-outside"}>
+                                {field.label+ (field.required ? '*' : '')}
+                            </label>
+                                <input
+                                    type={'text'}
+                                    id={field.id}
+                                    name={field.httpName}
+                                    required={field.required}
+                                    placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
+                                    disabled={submitting}
+                                    readOnly={true}
+                                    onChange={(e) => {
+                                        onChange(e, field);
+                                    }}
+                                    onFocus={() => showSelectDateModalForField(field.id, field.label)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Tab') {
+                                            setShowSelectDateModal(false);
+                                            setSelectedDateMonth('');
+                                            setSelectedDateDay('');
+                                            setSelectedDateYear('');
+                                            setSelectedDateError('');
+                                        }
+                                    }}
+                                    className={`text-form-field`}
+                                    data-instance-id={field.instanceId || ''}
+                                />
+                        </div>
                     ) : (
                         <input
-                            type={field.type}
+                            type={'text'}
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                            placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
                             disabled={submitting}
-                            onChange={(e) => onChange(e, field)}
+                            readOnly={true}
+                            onChange={(e) => {
+                                onChange(e, field);
+                            }}
+                            onFocus={() => showSelectDateModalForField(field.id, field.label)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Tab') {
+                                    setShowSelectDateModal(false);
+                                    setSelectedDateMonth('');
+                                    setSelectedDateDay('');
+                                    setSelectedDateYear('');
+                                    setSelectedDateError('');
+                                }
+                            }}
                             className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                             data-instance-id={field.instanceId || ''}
                         />
                     )
                 )}
 
-                {field.type === 'date' && (
-                    <input
-                        type={'text'}
-                        id={field.id}
-                        name={field.httpName}
-                        required={field.required}
-                        placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
-                        disabled={submitting}
-                        readOnly={true}
-                        onChange={(e) => {
-                            onChange(e, field);
-                        }}
-                        onFocus={() => showSelectDateModalForField(field.id, field.label)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Tab') {
-                                setShowSelectDateModal(false);
-                                setSelectedDateMonth('');
-                                setSelectedDateDay('');
-                                setSelectedDateYear('');
-                                setSelectedDateError('');
-                            }
-                        }}
-                        className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
-                        data-instance-id={field.instanceId || ''}
-                    />
-                )}
+                {field.type === 'textarea' && (
+                (field.labelOutside && field.labelOnTop) ? (
+                    <div className={`field-with-label-on-top ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                        <label htmlFor={field.id} className={ "form-label-outside"}>
+                            {field.label+ (field.required ? '*' : '')}
+                        </label>
 
-                {field.type === 'textarea' &&
+                        <textarea
+                            id={field.id}
+                            name={field.httpName}
+                            required={field.required}
+                            placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                            disabled={submitting}
+                            onChange={(e) => onChange(e, field)}
+                            className={`textarea-form-field`}
+                            data-instance-id={field.instanceId || ''}
+                        />
+
+                    </div>
+
+                ) : (
                     <textarea
                         id={field.id}
                         name={field.httpName}
@@ -557,30 +651,61 @@ function Form({
                         className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''}`}
                         data-instance-id={field.instanceId || ''}
                     />
-                }
+                )
+                )}
 
-                {field.type === 'select' &&
-                    <select
-                        multiple={field.multiple}
-                        id={field.id}
-                        name={field.httpName}
-                        required={field.required}
-                        disabled={submitting}
-                        className={
-                            field.multiple ? (
-                                    `select-multiple-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
-                                ) :
-                                (`select-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
-                        }
-                        onChange={(e) => onChange(e, field)}
-                        data-instance-id={field.instanceId || ''}
-                    >
-                        {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
-                        {field.choices.map((choice, index) => (
-                            <option key={index} value={choice}>{choice}</option>
-                        ))}
-                    </select>
-                }
+                {field.type === 'select' && (
+                (field.labelOutside && field.labelOnTop) ? (
+                    <div className={`field-with-label-on-top ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                        <label htmlFor={field.id} className={ "form-label-outside"}>
+                            {field.label+ (field.required ? '*' : '')}
+                        </label>
+
+                        <select
+                            multiple={field.multiple}
+                            id={field.id}
+                            name={field.httpName}
+                            required={field.required}
+                            disabled={submitting}
+                            className={
+                                field.multiple ? (
+                                        `select-multiple-form-field`
+                                    ) : (
+                                        `select-form-field`
+                                )
+                            }
+                            onChange={(e) => onChange(e, field)}
+                            data-instance-id={field.instanceId || ''}
+                        >
+                            {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
+                            {field.choices.map((choice, index) => (
+                                <option key={index} value={choice}>{choice}</option>
+                            ))}
+                        </select>
+                    </div>
+                    ) : (
+                        <select
+                            multiple={field.multiple}
+                            id={field.id}
+                            name={field.httpName}
+                            required={field.required}
+                            disabled={submitting}
+                            className={
+                                field.multiple ? (
+                                        `select-multiple-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
+                                    ) :
+                                    (`select-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
+                            }
+                            onChange={(e) => onChange(e, field)}
+                            data-instance-id={field.instanceId || ''}
+                        >
+                            {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
+                            {field.choices && field.choices.map((choice, index) => (
+                                <option key={index} value={choice}>{choice}</option>
+                            ))}
+                        </select>
+                    )
+                )}
 
                 {field.type === 'radio' &&
                     field.choices.map((choice, index) => (
@@ -830,6 +955,35 @@ function Form({
                         document.getElementById(dynamicFields[i].mustMatchFieldWithId).setCustomValidity("This field values must match the value of the field '" + dynamicFields.find(field => field.id === dynamicFields[i].mustMatchFieldWithId).label + "'");
                         return;
                     }
+                }
+            }
+
+            if (dynamicFields[i].mustNotMatchFieldWithId) {
+                let firstValue = document.getElementById(dynamicFields[i].id).value;
+                let secondValue = document.getElementById(dynamicFields[i].mustNotMatchFieldWithId).value;
+
+                if (firstValue && secondValue) {
+                    if (firstValue === secondValue) {
+                        setGeneralFormError("Field '" + dynamicFields[i].label + "' must not match field '" + dynamicFields.find(field => field.id === dynamicFields[i].mustNotMatchFieldWithId).label + "'");
+                        setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
+
+                        document.getElementById(dynamicFields[i].id).value = '';
+                        document.getElementById(dynamicFields[i].mustNotMatchFieldWithId).value = '';
+
+                        document.getElementById(dynamicFields[i].mustNotMatchFieldWithId).focus();
+                        document.getElementById(dynamicFields[i].mustNotMatchFieldWithId).setCustomValidity("This field values must not match the value of the field '" + dynamicFields.find(field => field.id === dynamicFields[i].mustNotMatchFieldWithId).label + "'");
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (dynamicSections && dynamicSections.length > 0) {
+            for (let i=0; i < dynamicSections.length; i++) {
+                if (sectionInstances[dynamicSections[i].sectionId].count < dynamicSections[i].minimumSectionInstancesForValidSubmission) {
+                    setGeneralFormError( 'You need a minimum of ' + dynamicSections[i].minimumSectionInstancesForValidSubmission + " instances for the section '" + dynamicSections[i].sectionTitle + "'");
+                    setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
+                    return;
                 }
             }
         }
@@ -1137,6 +1291,9 @@ Form.propTypes = {
         multiple: PropTypes.bool,
         onClick: PropTypes.func,
         mustMatchFieldWithId: PropTypes.number,
+        mustNotMatchFieldWithId: PropTypes.number,
+        labelOnTop: PropTypes.bool,
+
         rules: PropTypes.arrayOf(PropTypes.shape({
             value: PropTypes.string.isRequired,
             ruleResult: PropTypes.arrayOf(PropTypes.shape({
@@ -1156,6 +1313,8 @@ Form.propTypes = {
                 multiple: PropTypes.bool,
                 onClick: PropTypes.func,
                 mustMatchFieldWithId: PropTypes.number,
+                mustNotMatchFieldWithId: PropTypes.number,
+                labelOnTop: PropTypes.bool,
 
                 rules: PropTypes.arrayOf(PropTypes.shape({
                     value: PropTypes.string.isRequired,
@@ -1169,12 +1328,14 @@ Form.propTypes = {
                         choices: PropTypes.arrayOf(PropTypes.string),
                         regex: PropTypes.string,
                         mustMatchFieldWithId: PropTypes.number,
+                        mustNotMatchFieldWithId: PropTypes.number,
                         widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
                         labelOutside: PropTypes.bool,
                         allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
                         placeholder: PropTypes.string,
                         dontLetTheBrowserSaveField: PropTypes.bool,
                         multiple: PropTypes.bool,
+                        labelOnTop: PropTypes.bool
                     }))
                 }))
             }))
@@ -1207,7 +1368,8 @@ Form.propTypes = {
         fieldsToAdd: PropTypes.arrayOf(PropTypes.object).isRequired,
         maxSectionInstancesToAdd: PropTypes.number.isRequired,
         sectionId: PropTypes.string.isRequired,
-        sectionTitle: PropTypes.string
+        sectionTitle: PropTypes.string.isRequired,
+        minimumSectionInstancesForValidSubmission: PropTypes.number.isRequired,
     })),
     pedanticIds: PropTypes.bool,
     formInModalPopup: PropTypes.bool,

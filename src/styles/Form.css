@@ -427,6 +427,65 @@
     margin: 1rem
 }
 
+.field-with-label-on-top {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.field-with-label-on-top.full-width-with-margin {
+    width: calc(100%);
+}
+
+.field-with-label-on-top.full-width {
+    width: calc(100%);
+}
+
+.field-with-label-on-top.two-thirds-width {
+    width: calc(66.66666666667%);
+}
+
+.field-with-label-on-top.half-width {
+    width: calc(50%);
+}
+
+.field-with-label-on-top.third-width {
+    width: calc(33.33333333334%);
+}
+
+.field-with-label-on-top.full-width .text-form-field {
+    margin-right: 0;
+    width: calc(100%);
+}
+
+.field-with-label-on-top.full-width-with-margin .text-form-field {
+    width: calc(100%);
+}
+
+.field-with-label-on-top.two-thirds-width .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 2.5rem);
+}
+
+.field-with-label-on-top.half-width .text-form-field  {
+    margin-right: 0;
+    width: calc(100% - 2.2rem);
+}
+
+.field-with-label-on-top.third-width .text-form-field {
+    padding-right: 0;
+    margin-right: 0;
+    width: calc(100% - 2.2rem);
+}
+
+.field-with-label-on-top.third-width .select-form-field {
+    margin-right: 0;
+    width: calc(100% - 1rem);
+}
+
+
 @media (max-width: 1600px) {
     .captcha-box {
         letter-spacing: 2rem;
@@ -444,7 +503,6 @@
 }
 
 @media (max-width: 1200px) {
-
     .captcha-box {
         letter-spacing: 1.5rem;
         font-size: x-large;
@@ -455,12 +513,13 @@
         font-size: x-large;
     }
 
-
     .form-select-date-modal-container {
         width: 40%;
     }
 
-
+    .field-with-label-on-top .form-label-outside {
+        font-size: medium;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -511,21 +570,26 @@
         width: calc(100%);
     }
 
-    .third-width {
+    .third-width,   .half-width,     .two-thirds-width {
         width: calc(100% - 1.5rem);
     }
 
-    .half-width {
+    .field-with-label-on-top.two-thirds-width .text-form-field,     .field-with-label-on-top.third-width .text-form-field,     .field-with-label-on-top.half-width .text-form-field {
+        margin: 0.5rem;
         width: calc(100% - 1.5rem);
     }
 
-    .two-thirds-width {
-        width: calc(100% - 1.5rem);
+    .field-with-label-on-top.third-width .select-form-field {
+        margin: 0.5rem;
+        width: calc(100% - 1rem);
     }
 
     .form-label-outside {
         margin-left: 0.5rem;
+    }
 
+    .field-with-label-on-top.two-thirds-width,     .field-with-label-on-top.half-width,    .field-with-label-on-top.third-width  {
+        width: calc(100%);
     }
 
     .refresh-captcha-button {
@@ -568,15 +632,12 @@
         margin: 0.5rem;
     }
 
-
     .captcha-wrapper-half-width-with-full-margin {
         margin: 0.5rem 0.5rem 0.5rem 0.5rem;
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
     }
-
-
 
     .captcha-box {
 
