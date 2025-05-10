@@ -95,7 +95,6 @@
     margin-top: 1rem;
 }
 
-
 .radio-form-field {
 
 
@@ -153,7 +152,6 @@
     width: calc(33.33333333334% - 2.2rem);
 }
 
-
 .form-footer {
     display: flex;
     flex-wrap: wrap;
@@ -201,8 +199,6 @@
 .submit-button {
 
 }
-
-
 
 .captcha-wrapper {
     padding-right: 0;
@@ -260,7 +256,6 @@
     align-items: center;
 
 }
-
 
 .captcha-wrapper-half-width {
     width: calc(100%);
@@ -328,7 +323,6 @@
     font-family: 'Futura', sans-serif
 }
 
-
 .captcha-wrapper-half-width:lang(ar) {
     direction: ltr;
     font-family: 'Futura', sans-serif
@@ -365,7 +359,6 @@
 
 }
 
-
 .form-select-date-modal-overlay {
     position: absolute;
     width: 100vw;
@@ -390,8 +383,6 @@
 .form-select-date-modal-header {
     margin: 0.5rem;
 }
-
-
 
 .form-select-date-modal-header p {
     margin: 0.5rem;
