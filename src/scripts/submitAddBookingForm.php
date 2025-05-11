@@ -6,6 +6,10 @@ $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
+// Set up error logging
+ini_set('display_errors', 0);
+error_log("Starting booking process at " . date('Y-m-d H:i:s'));
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn = null;
     $authId = null;
@@ -21,8 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Database connection failed: ' . $conn->connect_error);
         }
 
+        // IMPORTANT: Set the proper transaction isolation level
+        $conn->query("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
         $conn->autocommit(false);
 
+        // Process form data
         $formData = [];
         $studentSections = [];
         foreach ($_POST as $key => $value) {
@@ -65,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to create authentication record: ' . $stmt->error);
         }
         $authId = $conn->insert_id;
+        error_log("Created auth record with ID: " . $authId);
 
         $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
         $stmt->bind_param("i", $authId);
@@ -72,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to create booking record: ' . $stmt->error);
         }
         $bookingId = $conn->insert_id;
+        error_log("Created booking record with ID: " . $bookingId);
 
         $firstParentName = $formData['First Parent Name'];
         $firstParentEmail = $formData['First Parent Email'];
@@ -83,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to add first parent: ' . $stmt->error);
         }
         $firstParentId = $conn->insert_id;
+        error_log("Created first parent with ID: " . $firstParentId);
 
         $isPrimary = 1;
         $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
@@ -90,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!$stmt->execute()) {
             throw new Exception('Failed to link first parent to booking: ' . $stmt->error);
         }
+        error_log("Linked first parent to booking");
 
         if (!empty($formData['Second Parent Name'])) {
             $secondParentName = $formData['Second Parent Name'];
@@ -102,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new Exception('Failed to add second parent: ' . $stmt->error);
             }
             $secondParentId = $conn->insert_id;
+            error_log("Created second parent with ID: " . $secondParentId);
 
             $isPrimary = 0;
             $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
@@ -109,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!$stmt->execute()) {
                 throw new Exception('Failed to link second parent to booking: ' . $stmt->error);
             }
+            error_log("Linked second parent to booking");
         }
 
         foreach ($studentSections as $studentData) {
@@ -124,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
                 $studentId = $conn->insert_id;
                 $createdStudentIds[] = $studentId;
+                error_log("Created student with ID: " . $studentId);
 
                 // Link student to booking
                 $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
@@ -131,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (!$stmt->execute()) {
                     throw new Exception('Failed to link student to booking: ' . $stmt->error);
                 }
+                error_log("Linked student to booking");
             }
         }
 
@@ -139,8 +154,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!$stmt->execute()) {
             throw new Exception('Failed to create extras record: ' . $stmt->error);
         }
+        error_log("Created extras record for booking");
 
         $conn->commit();
+        error_log("Transaction committed successfully");
 
         echo json_encode([
             'success' => true,
@@ -149,46 +166,98 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
     } catch (Exception $e) {
+        error_log("Error occurred: " . $e->getMessage());
+
         if ($conn !== null && !$conn->connect_error) {
             try {
-                if ($conn !== null && !$conn->connect_error) {
-                    $conn->rollback();
+                error_log("Attempting rollback...");
+                $conn->rollback();
+                error_log("Rollback complete");
 
+                // Always perform manual cleanup
+                error_log("Starting manual cleanup");
 
-                    if ($bookingId !== null) {
-                        $conn->query("DELETE FROM booking_extras WHERE booking_id = $bookingId");
+                // 1. Delete booking_extras
+                if ($bookingId !== null) {
+                    error_log("Attempting to delete booking_extras for booking_id: $bookingId");
+                    if (!$conn->query("DELETE FROM booking_extras WHERE booking_id = $bookingId")) {
+                        error_log("Error deleting booking_extras: " . $conn->error);
+                    } else {
+                        error_log("Successfully deleted booking_extras");
                     }
+                }
 
-                    if ($bookingId !== null) {
-                        $studentResult = $conn->query("SELECT student_id FROM booking_students_linker WHERE booking_id = $bookingId");
-                        if ($studentResult) {
-                            while ($row = $studentResult->fetch_assoc()) {
-                                $studentId = $row['student_id'];
-                                $conn->query("DELETE FROM booking_students WHERE id = $studentId");
+                // 2. Delete student links and students
+                if ($bookingId !== null) {
+                    error_log("Fetching students for booking_id: $bookingId");
+                    $studentResult = $conn->query("SELECT student_id FROM booking_students_linker WHERE booking_id = $bookingId");
+                    if ($studentResult) {
+                        while ($row = $studentResult->fetch_assoc()) {
+                            $studentId = $row['student_id'];
+                            error_log("Attempting to delete student with ID: $studentId");
+                            if (!$conn->query("DELETE FROM booking_students WHERE id = $studentId")) {
+                                error_log("Error deleting student: " . $conn->error);
+                            } else {
+                                error_log("Successfully deleted student");
                             }
                         }
-
-                        $conn->query("DELETE FROM booking_students_linker WHERE booking_id = $bookingId");
+                    } else {
+                        error_log("Error fetching students: " . $conn->error);
                     }
 
-                    if ($bookingId !== null) {
-                        $parentResult = $conn->query("SELECT parent_id FROM booking_parents_linker WHERE booking_id = $bookingId");
-                        if ($parentResult) {
-                            while ($row = $parentResult->fetch_assoc()) {
-                                $parentId = $row['parent_id'];
-                                $conn->query("DELETE FROM booking_parents WHERE id = $parentId");
+                    error_log("Attempting to delete student links for booking_id: $bookingId");
+                    if (!$conn->query("DELETE FROM booking_students_linker WHERE booking_id = $bookingId")) {
+                        error_log("Error deleting student links: " . $conn->error);
+                    } else {
+                        error_log("Successfully deleted student links");
+                    }
+                }
+
+                // 3. Delete parent links and parents
+                if ($bookingId !== null) {
+                    error_log("Fetching parents for booking_id: $bookingId");
+                    $parentResult = $conn->query("SELECT parent_id FROM booking_parents_linker WHERE booking_id = $bookingId");
+                    if ($parentResult) {
+                        $parentCount = $parentResult->num_rows;
+                        error_log("Found $parentCount parents to delete");
+                        while ($row = $parentResult->fetch_assoc()) {
+                            $parentId = $row['parent_id'];
+                            error_log("Attempting to delete parent with ID: $parentId");
+                            if (!$conn->query("DELETE FROM booking_parents WHERE id = $parentId")) {
+                                error_log("Error deleting parent: " . $conn->error);
+                            } else {
+                                error_log("Successfully deleted parent with ID: $parentId");
                             }
                         }
-
-                        $conn->query("DELETE FROM booking_parents_linker WHERE booking_id = $bookingId");
+                    } else {
+                        error_log("Error fetching parents: " . $conn->error);
                     }
 
-                    if ($bookingId !== null) {
-                        $conn->query("DELETE FROM bookings WHERE id = $bookingId");
+                    error_log("Attempting to delete parent links for booking_id: $bookingId");
+                    if (!$conn->query("DELETE FROM booking_parents_linker WHERE booking_id = $bookingId")) {
+                        error_log("Error deleting parent links: " . $conn->error);
+                    } else {
+                        error_log("Successfully deleted parent links");
                     }
+                }
 
-                    if ($authId !== null) {
-                        $conn->query("DELETE FROM booking_auth_credentials WHERE auth_id = $authId");
+                // 4. Delete booking record
+                if ($bookingId !== null) {
+                    error_log("Attempting to delete booking with ID: $bookingId");
+                    if (!$conn->query("DELETE FROM bookings WHERE id = $bookingId")) {
+                        error_log("Error deleting booking: " . $conn->error);
+                    } else {
+                        error_log("Successfully deleted booking");
+                    }
+                }
+
+                // 5. Delete auth record
+                if ($authId !== null) {
+                    error_log("Attempting to delete auth record with ID: $authId");
+                    if (!$conn->query("DELETE FROM booking_auth_credentials WHERE auth_id = $authId")) {
+                        error_log("Error deleting auth credentials: " . $conn->error);
+                    } else {
+                        error_log("Successfully deleted auth credentials");
                     }
                 }
 
@@ -198,12 +267,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ]);
 
             } catch (Exception $cleanupError) {
+                error_log("Cleanup error: " . $cleanupError->getMessage());
                 echo json_encode([
                     'success' => false,
                     'message' => $e->getMessage() . ' (Initial error). Additional error during cleanup: ' . $cleanupError->getMessage()
                 ]);
             }
-
         } else {
             echo json_encode([
                 'success' => false,
@@ -213,6 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } finally {
         if ($conn !== null && !$conn->connect_error) {
             $conn->close();
+            error_log("Database connection closed");
         }
     }
 } else {
