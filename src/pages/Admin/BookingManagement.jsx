@@ -260,10 +260,10 @@ function BookingManagement() {
                 // You might need to implement a function to fetch bookings
                 // fetchBookings();
             } else {
-                throw new Error(`Result: ${result.message}`);
+                throw new Error(`${result.message}`);
             }
         } catch (error) {
-            throw new Error("Error adding booking: " + error.message);
+            throw new Error(error.message);
         } finally {
             setIsLoading(false);
         }
