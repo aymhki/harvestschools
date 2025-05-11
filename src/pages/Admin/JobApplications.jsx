@@ -19,14 +19,9 @@ function JobApplications() {
     const loadTableData = async () => {
         setIsLoading(true);
         setJobApplications(null);
-
-        // Add timestamp to prevent caching
         const timestamp = new Date().getTime();
 
         try {
-            console.log("Fetching job applications data...");
-            const startTime = new Date().getTime();
-
             const response = await axios.get(`/scripts/GetJobApplications.php?_=${timestamp}`, {
                 headers: {
                     'Cache-Control': 'no-cache',
@@ -35,25 +30,14 @@ function JobApplications() {
                 }
             });
 
-            const endTime = new Date().getTime();
-            console.log(`Data fetch completed in ${endTime - startTime}ms`);
+            if (!Array.isArray(response.data) || response.data.length === 0) {
+                setJobApplications(null);
+            } else {
+                setJobApplications(response.data);
+            }
 
-            // Ensure minimum loading time for better UX (optional)
-            const minLoadingTime = 0; // ms
-            const remainingTime = Math.max(0, minLoadingTime - (endTime - startTime));
-
-            setTimeout(() => {
-                if (!Array.isArray(response.data) || response.data.length === 0) {
-                    console.log("No data returned or invalid format");
-                    setJobApplications(null);
-                } else {
-                    console.log(`Received ${response.data.length} rows of data`);
-                    setJobApplications(response.data);
-                }
-
-                setIsLoading(false);
-                setLastUpdated(new Date().toLocaleTimeString());
-            }, remainingTime);
+            setIsLoading(false);
+            setLastUpdated(new Date().toLocaleTimeString());
 
         } catch (error) {
             console.error("Error fetching job applications:", error);
