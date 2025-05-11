@@ -62,21 +62,17 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
             const filterUniqueValuesDict = {};
             const startIndex = tableHeader ? 2 : 1;
 
-            // Only process if we have filterable columns defined
             if (filterableColumns && filterableColumns.length > 0) {
                 for (let i = 0; i < tableData[0].length; i++) {
                     const columnName = tableData[0][i];
 
-                    // Check if this column is in the filterable columns list
                     if (filterableColumns.includes(columnName)) {
-                        // Extract unique values for this column from the data rows
                         const uniqueValues = [...new Set(
                             tableData.slice(startIndex)
                                 .map(row => row[i])
                                 .filter(value => value !== undefined && value !== null)
                         )];
 
-                        // Create the filter structure for this column
                         filterUniqueValuesDict[columnName] = {
                             uniqueValues: uniqueValues,
                             checked: new Array(uniqueValues.length).fill(true)
@@ -92,7 +88,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
 
     const [filterUniqueValuesDict, setFilterUniqueValuesDict] = useState({});
 
-    // Initialize filterUniqueValuesDict when tableData changes
     useEffect(() => {
         if (tableData && tableData.length > 0) {
             setFilterUniqueValuesDict(getFilterUniqueValuesDict());
@@ -162,21 +157,16 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
             return;
         }
 
-        // Start with sorted data
         let filteredData = [...sortedData];
 
-        // Apply filtering only if we have filterableColumns
         if (filterableColumns && filterableColumns.length > 0) {
             for (let i = 0; i < tableData[0].length; i++) {
                 const columnName = tableData[0][i];
 
-                // Check if this column is filterable and has filter settings in the dictionary
                 if (filterableColumns.includes(columnName) && filterUniqueValuesDict[columnName]) {
                     const columnFilter = filterUniqueValuesDict[columnName];
 
-                    // Apply the filter
                     filteredData = filteredData.filter((row, rowIndex) => {
-                        // Always keep header rows
                         if (rowIndex === 0 || (tableHeader && rowIndex === 1)) {
                             return true;
                         }
@@ -184,19 +174,16 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         const cellValue = row[i];
                         const valueIndex = columnFilter.uniqueValues.indexOf(cellValue);
 
-                        // If the value is not found in the unique values array, keep it (defensive programming)
                         if (valueIndex === -1) {
                             return true;
                         }
 
-                        // Check if this value is checked in the filter
                         return columnFilter.checked[valueIndex];
                     });
                 }
             }
         }
 
-        // Apply column hiding
         const hiddenColumnsData = filteredData.map(row =>
             row.filter((cell, index) => !hiddenColumns.has(sortedData[0][index]))
         );
@@ -210,7 +197,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         [hiddenColumns, sortConfig, filterUniqueValuesDict, updateFinalTableData]
     );
 
-    // Function to check if there are any active filters
     const hasActiveFilters = useCallback(() => {
         if (!filterUniqueValuesDict) return false;
 
@@ -221,7 +207,6 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         );
     }, [filterUniqueValuesDict]);
 
-    // Function to reset all filters
     const resetAllFilters = useCallback(() => {
         const updatedFilters = {...filterUniqueValuesDict};
 

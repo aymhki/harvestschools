@@ -20,9 +20,10 @@ function JobApplications() {
     }, []);
 
     const loadTableData = async () => {
+        setIsLoading(true);
 
         try {
-            setIsLoading(true);
+
             axios.get('/scripts/GetJobApplications.php')
                 .then((response) => {
 
