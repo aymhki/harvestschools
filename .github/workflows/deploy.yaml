@@ -12,15 +12,15 @@ jobs:
         with:
           fetch-depth: 2  # Fetch the current and previous commit for comparison
 
-      - name: Check for changes in assets folder
-        id: check_changes
+      - name: Check for changes in asset subfolders
+        id: check_assets_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q "public/assets/"; then
+          if git diff --name-only HEAD^ HEAD | grep -q -E "public/assets/(fonts|images|videos|documents)/"; then
             echo "assets_changed=true" >> $GITHUB_OUTPUT
-            echo "Changes detected in assets folder"
+            echo "Changes detected in assets subfolders"
           else
             echo "assets_changed=false" >> $GITHUB_OUTPUT
-            echo "No changes detected in assets folder"
+            echo "No changes detected in assets subfolders"
           fi
 
       - name: Set up Node.js
@@ -42,10 +42,16 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
           server-dir: public_html/
-          method: sync
-          delete: false
+          dangerous-clean-slate: false
           exclude: |
-            **/assets/**  # Exclude assets directory, will be handled separately
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            assets/fonts/**
+            assets/images/**
+            assets/videos/**
+            assets/documents/**
+          log-level: verbose
 
       - name: Install lftp
         run: sudo apt-get install lftp
@@ -55,7 +61,12 @@ jobs:
           lftp -e "set ssl:verify-certificate no; put -O /public_html dist/index.html; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
 
       - name: Sync assets folder with lftp
-        if: steps.check_changes.outputs.assets_changed == 'true'
+        if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
-          echo "Syncing assets folder as changes were detected"
+          echo "Syncing entire assets folder as changes were detected in excluded subfolders"
           lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=upload.log --parallel=2 dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+
+      - name: Sync scripts folder with lftp
+        run: |
+          echo "Syncing scripts folder to public_html/scripts"
+          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=scripts_upload.log --parallel=2 --no-remove scripts /public_html/scripts; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}

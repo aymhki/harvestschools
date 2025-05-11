@@ -8,19 +8,21 @@ $dbname = $dbConfig['db_name'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn = null;
+    $authId = null;
+    $bookingId = null;
+    $firstParentId = null;
+    $secondParentId = null;
+    $createdStudentIds = [];
+
     try {
-        // Create connection
         $conn = new mysqli($servername, $username, $password, $dbname);
 
-        // Check connection
         if ($conn->connect_error) {
             throw new Exception('Database connection failed: ' . $conn->connect_error);
         }
 
-        // Begin transaction
         $conn->begin_transaction();
 
-        // Process form data
         $formData = [];
         $studentSections = [];
         foreach ($_POST as $key => $value) {
@@ -46,11 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // 1. Create Authentication Record
         $bookingUsername = $formData['Booking Username'];
         $bookingPassword = $formData['Booking Password'];
 
-        // Check if username already exists
         $stmt = $conn->prepare("SELECT auth_id FROM booking_auth_credentials WHERE username = ?");
         $stmt->bind_param("s", $bookingUsername);
         $stmt->execute();
@@ -59,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Username already exists. Please choose a different username.');
         }
 
-        // Insert authentication record
         $stmt = $conn->prepare("INSERT INTO booking_auth_credentials (username, password_hash) VALUES (?, SHA2(?, 256))");
         $stmt->bind_param("ss", $bookingUsername, $bookingPassword);
         if (!$stmt->execute()) {
@@ -67,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $authId = $conn->insert_id;
 
-        // 2. Create Booking Record
         $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
         $stmt->bind_param("i", $authId);
         if (!$stmt->execute()) {
@@ -75,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $bookingId = $conn->insert_id;
 
-        // 3. Add First Parent
         $firstParentName = $formData['First Parent Name'];
         $firstParentEmail = $formData['First Parent Email'];
         $firstParentPhone = $formData['First Parent Phone Number'];
@@ -87,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $firstParentId = $conn->insert_id;
 
-        // Link parent to booking
         $isPrimary = 1;
         $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
         $stmt->bind_param("iii", $bookingId, $firstParentId, $isPrimary);
@@ -95,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to link first parent to booking: ' . $stmt->error);
         }
 
-        // 4. Add Second Parent (if provided)
         if (!empty($formData['Second Parent Name'])) {
             $secondParentName = $formData['Second Parent Name'];
             $secondParentEmail = $formData['Second Parent Email'] ?? '';
@@ -108,7 +103,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             $secondParentId = $conn->insert_id;
 
-            // Link second parent to booking
             $isPrimary = 0;
             $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
             $stmt->bind_param("iii", $bookingId, $secondParentId, $isPrimary);
@@ -117,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // 5. Add Students
         foreach ($studentSections as $studentData) {
             if (!empty($studentData['Student Name'])) {
                 $studentName = $studentData['Student Name'];
@@ -130,8 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     throw new Exception('Failed to add student: ' . $stmt->error);
                 }
                 $studentId = $conn->insert_id;
+                $createdStudentIds[] = $studentId;
 
-                // Link student to booking
                 $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
                 $stmt->bind_param("ii", $bookingId, $studentId);
                 if (!$stmt->execute()) {
@@ -140,14 +133,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // 6. Create extras record
         $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id) VALUES (?)");
         $stmt->bind_param("i", $bookingId);
         if (!$stmt->execute()) {
             throw new Exception('Failed to create extras record: ' . $stmt->error);
         }
 
-        // If we got this far, commit the transaction
         $conn->commit();
 
         echo json_encode([
@@ -157,14 +148,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
     } catch (Exception $e) {
-        // Only attempt to rollback if we have a valid connection
         if ($conn !== null && !$conn->connect_error) {
             $conn->rollback();
 
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage() . ' (Transaction rolled back)'
-            ]);
+            try {
+                if (!empty($createdStudentIds)) {
+                    foreach ($createdStudentIds as $studentId) {
+                        $conn->query("DELETE FROM booking_students_linker WHERE student_id = $studentId");
+                        $conn->query("DELETE FROM booking_students WHERE id = $studentId");
+                    }
+                }
+
+                if ($firstParentId !== null) {
+                    $conn->query("DELETE FROM booking_parents_linker WHERE parent_id = $firstParentId");
+                    $conn->query("DELETE FROM booking_parents WHERE id = $firstParentId");
+                }
+
+                if ($secondParentId !== null) {
+                    $conn->query("DELETE FROM booking_parents_linker WHERE parent_id = $secondParentId");
+                    $conn->query("DELETE FROM booking_parents WHERE id = $secondParentId");
+                }
+
+                if ($bookingId !== null) {
+                    $conn->query("DELETE FROM booking_extras WHERE booking_id = $bookingId");
+                    $conn->query("DELETE FROM bookings WHERE id = $bookingId");
+                }
+
+                if ($authId !== null) {
+                    $conn->query("DELETE FROM booking_auth_credentials WHERE auth_id = $authId");
+                }
+
+                echo json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]);
+
+            } catch (Exception $cleanupError) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage() . $cleanupError->getMessage()
+                ]);
+            }
         } else {
             echo json_encode([
                 'success' => false,
@@ -172,7 +196,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ]);
         }
     } finally {
-        // Close the connection if it was successfully established
         if ($conn !== null && !$conn->connect_error) {
             $conn->close();
         }
