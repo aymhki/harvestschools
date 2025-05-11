@@ -10,9 +10,6 @@ $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
-// Add artificial delay for testing (remove in production)
-// sleep(1);
-
 try {
     $cookies = [];
     foreach ($_COOKIE as $key => $value) {
@@ -24,8 +21,6 @@ try {
     }
 
     $sessionId = $cookies['harvest_schools_session_id'];
-
-    // Log request start time (for debugging)
     $startTime = microtime(true);
 
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -105,12 +100,8 @@ try {
         }
     }
 
-    // Log execution time (for debugging)
     $endTime = microtime(true);
-    $executionTime = ($endTime - $startTime) * 1000; // in milliseconds
-
-    // For debugging, you can add this info to the response
-    // $data['debug'] = ["execution_time_ms" => $executionTime];
+    $executionTime = ($endTime - $startTime) * 1000;
 
     echo json_encode($data);
 
@@ -119,13 +110,11 @@ try {
     http_response_code($statusCode);
 
     if ($statusCode == 401 || $statusCode == 403) {
-        // Return clear error for authentication/authorization issues
         echo json_encode([
             "error" => $e->getMessage(),
             "code" => $statusCode
         ]);
     } else {
-        // Return error for other issues
         echo json_encode([
             "error" => $e->getMessage(),
             "code" => $statusCode
