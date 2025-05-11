@@ -162,7 +162,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
 
         let filteredData = [...sortedData];
         for (let i = 0; i < tableData[0].length; i++) {
-            if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
+            if ( filterableColumns && filterableColumns.includes(tableData[0][i])) {
                 filteredData = filteredData.filter((row, rowIndex) => rowIndex === 0 || filterUniqueValuesDict[tableData[0][i]].checked[filterUniqueValuesDict[tableData[0][i]].uniqueValues.indexOf(row[i])]);
             }
         }
@@ -223,11 +223,11 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         </button>
                     )}
 
-                    {
+                    {finalTableData && (
                         Object.keys(filterUniqueValuesDict).some(key => filterUniqueValuesDict[key].checked.includes(false)) &&
                         <button onClick={() => {
                             for (let i = 0; i < tableData[0].length; i++) {
-                                if (filterableColumns && filterableColumns.includes(tableData[0][i])) {
+                                if ( filterableColumns && filterableColumns.includes(tableData[0][i])) {
                                     filterUniqueValuesDict[tableData[0][i]].checked = filterUniqueValuesDict[tableData[0][i]].checked.map(() => true);
                                 }
                             }
@@ -235,7 +235,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                         }}>
                             Reset Filters
                         </button>
-                    }
+                    ) }
 
                     {
                         headerModuleElements && headerModuleElements.map((element, index) => (
