@@ -32,6 +32,7 @@ function JobApplications() {
                         setJobApplications(null)
                     } else {
                         setJobApplications(response.data);
+                        console.log("wtf how is it that fast")
                     }
 
                     setIsLoading(false);
