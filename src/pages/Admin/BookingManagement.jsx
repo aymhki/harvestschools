@@ -263,7 +263,7 @@ function BookingManagement() {
                 throw new Error('Error: ' + result.message);
             }
         } catch (error) {
-            throw new Error("Error adding booking:", error);
+            throw new Error("Error adding booking: ", error.message);
         } finally {
             setIsLoading(false);
         }

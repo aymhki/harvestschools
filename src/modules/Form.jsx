@@ -1108,7 +1108,7 @@ function Form({
                 try {
                     await differentOnSubmitBehaviour(formData)
                 } catch (error) {
-                    setGeneralFormError(error.message + ': Form submission failed. Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
+                    setGeneralFormError(error.message + ': Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
                     setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
                     setSubmitting(false);
                     if (hasSetSubmittingLocal) {
@@ -1131,9 +1131,10 @@ function Form({
                             if (formInModalPopup) {
                                 setShowFormModalPopup(false);
                             }
+                            resetFormCompletely();
+                            clearCache();
                         }, msgTimeout);
-                        resetFormCompletely();
-                        clearCache();
+
                     } else {
                         setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message + ': Form submission failed. Please try again.');
                         setTimeout(() => {
