@@ -501,7 +501,7 @@ function Form({
                                 <input
                                     type={field.type}
                                     id={field.id}
-                                    name={field.httpName}
+                                    name={'hidden'}
                                     required={field.required}
                                     placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                                     disabled={submitting}
@@ -517,7 +517,7 @@ function Form({
                              <input
                                  type={field.type}
                                  id={field.id}
-                                 name={field.httpName}
+                                 name={'hidden'}
                                  required={field.required}
                                  placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                                  disabled={submitting}
@@ -536,7 +536,7 @@ function Form({
                                 {field.label+ (field.required ? '*' : '')}
                             </label>
                             <input
-                                type={ (field.type === 'password' && passwordsVisible) ? 'text' : field.type}
+                                type={ field.type}
                                 id={field.id}
                                 name={field.httpName}
                                 required={field.required}
@@ -571,16 +571,16 @@ function Form({
                             </label>
                             <div className="password-field-wrapper">
                                 <input
-                                    type={showPasswords ? "text" : "password"}
+                                    type={"text"}   //{showPasswords ? "text" : "password"}
                                     id={field.id}
-                                    name={field.httpName}
+                                    name={field.dontLetTheBrowserSaveField ?  'hidden' : field.httpName}
                                     required={field.required}
                                     placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                                     disabled={submitting}
                                     onChange={(e) => onChange(e, field)}
                                     autoComplete={field.dontLetTheBrowserSaveField ? "new-password" : ""}
                                     data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
-                                    className={`text-form-field`}
+                                    className={`text-form-field ${!showPasswords ? 'txtPassword' : ''}`}
                                     data-instance-id={field.instanceId || ''}
                                 />
                                 <button
@@ -596,16 +596,16 @@ function Form({
                     ) : (
                         <div className={`password-field-wrapper ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
                             <input
-                                type={showPasswords ? "text" : "password"}
+                                type={"text"} //{showPasswords ? "text" : "password"}
                                 id={field.id}
-                                name={field.httpName}
+                                name={field.dontLetTheBrowserSaveField ?  'hidden' : field.httpName}
                                 required={field.required}
                                 placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
                                 disabled={submitting}
                                 onChange={(e) => onChange(e, field)}
                                 autoComplete={field.dontLetTheBrowserSaveField ? "new-password" : ""}
                                 data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
-                                className={`text-form-field`}
+                                className={`text-form-field ${!showPasswords ? 'txtPassword' : ''}`}
                                 data-instance-id={field.instanceId || ''}
                             />
                             <button

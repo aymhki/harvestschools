@@ -46,6 +46,7 @@ function BookingManagement() {
             httpName: 'booking-username',
             labelOutside: true,
             labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
         },
         {
             id: bookingPasswordFieldId,
@@ -61,6 +62,7 @@ function BookingManagement() {
             httpName: 'booking-password',
             labelOutside: true,
             labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
         },
         {
             id: confirmBookingPasswordFieldId,
@@ -77,6 +79,7 @@ function BookingManagement() {
             mustMatchFieldWithId: 2,
             labelOutside: true,
             labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
         },
         {
             id: firstParentNameFieldId,
