@@ -21,6 +21,7 @@ function JobApplications() {
 
     const loadTableData = async () => {
         setIsLoading(true);
+        setJobApplications(null);
 
         try {
 
