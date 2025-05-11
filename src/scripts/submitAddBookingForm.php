@@ -154,35 +154,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             try {
                 if (!empty($createdStudentIds)) {
                     foreach ($createdStudentIds as $studentId) {
-                        $conn->query("DELETE FROM booking_students_linker WHERE student_id = $studentId");
-                        $conn->query("DELETE FROM booking_students WHERE id = $studentId");
+                        $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE student_id = ?");
+                        $stmt->bind_param("i", $studentId);
+                        $stmt->execute();
+
+                        $stmt = $conn->prepare("DELETE FROM booking_students WHERE id = ?");
+                        $stmt->bind_param("i", $studentId);
+                        $stmt->execute();
                     }
                 }
 
-                if ($firstParentId !== null) {
-                    $conn->query("DELETE FROM booking_parents_linker WHERE parent_id = $firstParentId");
-                    $conn->query("DELETE FROM booking_parents WHERE id = $firstParentId");
-                }
-
-                if ($secondParentId !== null) {
-                    $conn->query("DELETE FROM booking_parents_linker WHERE parent_id = $secondParentId");
-                    $conn->query("DELETE FROM booking_parents WHERE id = $secondParentId");
+                if ($bookingId !== null) {
+                    $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
+                    $stmt->bind_param("i", $bookingId);
+                    $stmt->execute();
                 }
 
                 if ($bookingId !== null) {
-                    $conn->query("DELETE FROM booking_extras WHERE booking_id = $bookingId");
-                    $conn->query("DELETE FROM bookings WHERE id = $bookingId");
+                    $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
+                    $stmt->bind_param("i", $bookingId);
+                    $stmt->execute();
+                }
+
+                if ($firstParentId !== null) {
+                    $stmt = $conn->prepare("DELETE FROM booking_parents WHERE id = ?");
+                    $stmt->bind_param("i", $firstParentId);
+                    $stmt->execute();
+                }
+
+                if ($secondParentId !== null) {
+                    $stmt = $conn->prepare("DELETE FROM booking_parents WHERE id = ?");
+                    $stmt->bind_param("i", $secondParentId);
+                    $stmt->execute();
+                }
+
+                if ($bookingId !== null) {
+                    $stmt = $conn->prepare("DELETE FROM bookings WHERE id = ?");
+                    $stmt->bind_param("i", $bookingId);
+                    $stmt->execute();
                 }
 
                 if ($authId !== null) {
-                    $conn->query("DELETE FROM booking_auth_credentials WHERE auth_id = $authId");
+                    $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
+                    $stmt->bind_param("i", $authId);
+                    $stmt->execute();
                 }
-
-                echo json_encode([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ]);
-
             } catch (Exception $cleanupError) {
                 echo json_encode([
                     'success' => false,
