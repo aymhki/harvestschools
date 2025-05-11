@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Database connection failed: ' . $conn->connect_error);
         }
 
-        $conn->begin_transaction();
+        $conn->autocommit(false);
 
         $formData = [];
         $studentSections = [];
@@ -125,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $studentId = $conn->insert_id;
                 $createdStudentIds[] = $studentId;
 
+                // Link student to booking
                 $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
                 $stmt->bind_param("ii", $bookingId, $studentId);
                 if (!$stmt->execute()) {
@@ -149,62 +150,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     } catch (Exception $e) {
         if ($conn !== null && !$conn->connect_error) {
-            $conn->rollback();
-
             try {
-                if (!empty($createdStudentIds)) {
-                    foreach ($createdStudentIds as $studentId) {
-                        $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE student_id = ?");
-                        $stmt->bind_param("i", $studentId);
-                        $stmt->execute();
+                if ($conn !== null && !$conn->connect_error) {
+                    $conn->rollback();
 
-                        $stmt = $conn->prepare("DELETE FROM booking_students WHERE id = ?");
-                        $stmt->bind_param("i", $studentId);
-                        $stmt->execute();
+
+                    if ($bookingId !== null) {
+                        $conn->query("DELETE FROM booking_extras WHERE booking_id = $bookingId");
+                    }
+
+                    if ($bookingId !== null) {
+                        $studentResult = $conn->query("SELECT student_id FROM booking_students_linker WHERE booking_id = $bookingId");
+                        if ($studentResult) {
+                            while ($row = $studentResult->fetch_assoc()) {
+                                $studentId = $row['student_id'];
+                                $conn->query("DELETE FROM booking_students WHERE id = $studentId");
+                            }
+                        }
+
+                        $conn->query("DELETE FROM booking_students_linker WHERE booking_id = $bookingId");
+                    }
+
+                    if ($bookingId !== null) {
+                        $parentResult = $conn->query("SELECT parent_id FROM booking_parents_linker WHERE booking_id = $bookingId");
+                        if ($parentResult) {
+                            while ($row = $parentResult->fetch_assoc()) {
+                                $parentId = $row['parent_id'];
+                                $conn->query("DELETE FROM booking_parents WHERE id = $parentId");
+                            }
+                        }
+
+                        $conn->query("DELETE FROM booking_parents_linker WHERE booking_id = $bookingId");
+                    }
+
+                    if ($bookingId !== null) {
+                        $conn->query("DELETE FROM bookings WHERE id = $bookingId");
+                    }
+
+                    if ($authId !== null) {
+                        $conn->query("DELETE FROM booking_auth_credentials WHERE auth_id = $authId");
                     }
                 }
 
-                if ($bookingId !== null) {
-                    $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
-                    $stmt->bind_param("i", $bookingId);
-                    $stmt->execute();
-                }
+                echo json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage() . ' (Manual cleanup performed)'
+                ]);
 
-                if ($bookingId !== null) {
-                    $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
-                    $stmt->bind_param("i", $bookingId);
-                    $stmt->execute();
-                }
-
-                if ($firstParentId !== null) {
-                    $stmt = $conn->prepare("DELETE FROM booking_parents WHERE id = ?");
-                    $stmt->bind_param("i", $firstParentId);
-                    $stmt->execute();
-                }
-
-                if ($secondParentId !== null) {
-                    $stmt = $conn->prepare("DELETE FROM booking_parents WHERE id = ?");
-                    $stmt->bind_param("i", $secondParentId);
-                    $stmt->execute();
-                }
-
-                if ($bookingId !== null) {
-                    $stmt = $conn->prepare("DELETE FROM bookings WHERE id = ?");
-                    $stmt->bind_param("i", $bookingId);
-                    $stmt->execute();
-                }
-
-                if ($authId !== null) {
-                    $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
-                    $stmt->bind_param("i", $authId);
-                    $stmt->execute();
-                }
             } catch (Exception $cleanupError) {
                 echo json_encode([
                     'success' => false,
-                    'message' => $e->getMessage() . $cleanupError->getMessage()
+                    'message' => $e->getMessage() . ' (Initial error). Additional error during cleanup: ' . $cleanupError->getMessage()
                 ]);
             }
+
         } else {
             echo json_encode([
                 'success' => false,
