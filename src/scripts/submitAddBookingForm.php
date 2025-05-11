@@ -160,12 +160,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Only attempt to rollback if we have a valid connection
         if ($conn !== null && !$conn->connect_error) {
             $conn->rollback();
-        }
 
-        echo json_encode([
-            'success' => false,
-            'message' => $e->getMessage()
-        ]);
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage() . ' (Transaction rolled back)'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     } finally {
         // Close the connection if it was successfully established
         if ($conn !== null && !$conn->connect_error) {
