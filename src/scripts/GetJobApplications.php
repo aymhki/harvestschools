@@ -1,10 +1,17 @@
 <?php
 header('Content-Type: application/json');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 $dbConfig = require 'dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
+
+// Add artificial delay for testing (remove in production)
+// sleep(1);
 
 try {
     $cookies = [];
@@ -18,6 +25,9 @@ try {
 
     $sessionId = $cookies['harvest_schools_session_id'];
 
+    // Log request start time (for debugging)
+    $startTime = microtime(true);
+
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
@@ -26,9 +36,17 @@ try {
     $permissionSql = "SELECT u.permission_level 
                      FROM admin_sessions s
                      JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
-                     WHERE s.id = '$sessionId'";
+                     WHERE s.id = ?";
 
-    $permissionResult = $conn->query($permissionSql);
+    $stmt = $conn->prepare($permissionSql);
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $conn->error, 500);
+    }
+
+    $stmt->bind_param("s", $sessionId);
+    $stmt->execute();
+    $permissionResult = $stmt->get_result();
+    $stmt->close();
 
     if ($permissionResult->num_rows == 0) {
         throw new Exception("Invalid session", 401);
@@ -36,16 +54,13 @@ try {
 
     $permissionRow = $permissionResult->fetch_assoc();
     $permissionLevels = explode(',', $permissionRow['permission_level']);
-
     $cleanPermissionLevels = array_map(function($level) {
         return intval(trim($level));
     }, $permissionLevels);
 
     $hasPermission = in_array(0, $cleanPermissionLevels);
-
     if (!$hasPermission) {
-        echo json_encode([]);
-        exit;
+        throw new Exception("Permission denied", 403);
     }
 
     $sql = "SELECT
@@ -90,14 +105,31 @@ try {
         }
     }
 
+    // Log execution time (for debugging)
+    $endTime = microtime(true);
+    $executionTime = ($endTime - $startTime) * 1000; // in milliseconds
+
+    // For debugging, you can add this info to the response
+    // $data['debug'] = ["execution_time_ms" => $executionTime];
+
     echo json_encode($data);
 
 } catch (Exception $e) {
-    if ($e->getCode() == 401) {
-        echo json_encode([]);
+    $statusCode = $e->getCode() ?: 500;
+    http_response_code($statusCode);
+
+    if ($statusCode == 401 || $statusCode == 403) {
+        // Return clear error for authentication/authorization issues
+        echo json_encode([
+            "error" => $e->getMessage(),
+            "code" => $statusCode
+        ]);
     } else {
-        http_response_code($e->getCode() ?: 500);
-        echo json_encode(["error" => $e->getMessage()]);
+        // Return error for other issues
+        echo json_encode([
+            "error" => $e->getMessage(),
+            "code" => $statusCode
+        ]);
     }
 } finally {
     if (isset($conn) && $conn->ping()) {
