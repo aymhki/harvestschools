@@ -1108,7 +1108,7 @@ function Form({
                 try {
                     await differentOnSubmitBehaviour(formData)
                 } catch (error) {
-                    setGeneralFormError(error.message + ': Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
+                    setGeneralFormError(error.message || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
                     setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
                     setSubmitting(false);
                     if (hasSetSubmittingLocal) {
