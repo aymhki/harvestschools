@@ -31,7 +31,6 @@ function JobApplications() {
                         setJobApplications(null)
                     } else {
                         setJobApplications(response.data);
-                        console.log("Response Data: "+response.data)
                     }
 
                     setIsLoading(false);
