@@ -9,15 +9,17 @@ $dbname = $dbConfig['db_name'];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
         $conn = new mysqli($servername, $username, $password, $dbname);
-
         if ($conn->connect_error) {
             throw new Exception('Database connection failed: ' . $conn->connect_error);
         }
 
+        // Start transaction
         $conn->begin_transaction();
+
         $formData = [];
         $studentSections = [];
 
+        // Process all form fields
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
                 $fieldId = substr($key, 6);
@@ -30,20 +32,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $instanceId = $_POST[$instanceKey];
                         if (strpos($instanceId, 'student-section') === 0) {
                             $sectionNumber = substr($instanceId, strrpos($instanceId, '_') + 1);
-
                             if (!isset($studentSections[$sectionNumber])) {
                                 $studentSections[$sectionNumber] = [];
                             }
-
                             $studentSections[$sectionNumber][$label] = $value;
                         }
                     } else {
+                        // Regular field
                         $formData[$label] = $value;
                     }
                 }
             }
         }
 
+        // Check if username already exists
         $bookingUsername = $formData['Booking Username'];
         $bookingPassword = $formData['Booking Password'];
 
@@ -56,9 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Username already exists. Please choose a different username.');
         }
 
-        $passwordHash = password_hash($bookingPassword, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO booking_auth_credentials (username, password_hash) VALUES (?, ?)");
-        $stmt->bind_param("ss", $bookingUsername, $passwordHash);
+        // Use SQL's SHA2() for password hashing (SHA-256)
+        $stmt = $conn->prepare("INSERT INTO booking_auth_credentials (username, password_hash) VALUES (?, SHA2(?, 256))");
+        $stmt->bind_param("ss", $bookingUsername, $bookingPassword);
 
         if (!$stmt->execute()) {
             throw new Exception('Failed to create authentication record: ' . $stmt->error);
@@ -66,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $authId = $conn->insert_id;
 
+        // Create booking record
         $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
         $stmt->bind_param("i", $authId);
 
@@ -75,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $bookingId = $conn->insert_id;
 
+        // Add first parent
         $firstParentName = $formData['First Parent Name'];
         $firstParentEmail = $formData['First Parent Email'];
         $firstParentPhone = $formData['First Parent Phone Number'];
@@ -83,12 +87,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("sss", $firstParentName, $firstParentEmail, $firstParentPhone);
 
         if (!$stmt->execute()) {
+            // Roll back user creation if parent creation fails
             throw new Exception('Failed to add first parent: ' . $stmt->error);
         }
 
         $firstParentId = $conn->insert_id;
+        $isPrimary = 1; // true
 
-        $isPrimary = 1;
         $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
         $stmt->bind_param("iii", $bookingId, $firstParentId, $isPrimary);
 
@@ -96,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to link first parent to booking: ' . $stmt->error);
         }
 
+        // Add second parent if provided
         if (!empty($formData['Second Parent Name'])) {
             $secondParentName = $formData['Second Parent Name'];
             $secondParentEmail = $formData['Second Parent Email'] ?? '';
@@ -109,8 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $secondParentId = $conn->insert_id;
+            $isPrimary = 0; // false
 
-            $isPrimary = 0;
             $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
             $stmt->bind_param("iii", $bookingId, $secondParentId, $isPrimary);
 
@@ -119,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
+        // Add students
         foreach ($studentSections as $studentData) {
             if (!empty($studentData['Student Name'])) {
                 $studentName = $studentData['Student Name'];
@@ -129,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bind_param("sss", $studentName, $schoolDivision, $grade);
 
                 if (!$stmt->execute()) {
+                    // Roll back parent creation if student creation fails
                     throw new Exception('Failed to add student: ' . $stmt->error);
                 }
 
@@ -143,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
+        // Create extras record
         $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id) VALUES (?)");
         $stmt->bind_param("i", $bookingId);
 
@@ -150,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to create extras record: ' . $stmt->error);
         }
 
+        // Commit the transaction if everything succeeded
         $conn->commit();
 
         echo json_encode([
@@ -159,6 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
     } catch (Exception $e) {
+        // Roll back the entire transaction if any part fails
         if (isset($conn) && $conn->connect_errno === 0) {
             $conn->rollback();
         }
@@ -167,6 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'success' => false,
             'message' => $e->getMessage()
         ]);
+
     } finally {
         if (isset($conn) && $conn->connect_errno === 0) {
             $conn->close();
