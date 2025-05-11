@@ -39,7 +39,7 @@ function JobApplications() {
             console.log(`Data fetch completed in ${endTime - startTime}ms`);
 
             // Ensure minimum loading time for better UX (optional)
-            const minLoadingTime = 500; // ms
+            const minLoadingTime = 0; // ms
             const remainingTime = Math.max(0, minLoadingTime - (endTime - startTime));
 
             setTimeout(() => {
