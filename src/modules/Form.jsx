@@ -7,6 +7,8 @@ import {createRef} from "react";
 import { v4 as uuidv4 } from 'uuid'; // Import the UUID library
 import {useSpring, animated} from "react-spring";
 import { useCallback } from 'react';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const getStorageKey = (formTitle, fieldId, fieldLabel) => {
     return `form_${formTitle}_${fieldLabel}_${fieldId}`;
@@ -95,7 +97,7 @@ function Form({
 
     const [sectionInstances, setSectionInstances] = useState({});
     const [nextIdCounter, setNextIdCounter] = useState(fields.length + 1);
-
+    const [showPasswords, setShowPasswords] = useState(false);
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
     const msgTimeout = 5000;
 
@@ -489,7 +491,7 @@ function Form({
                     {field.label+ (field.required ? '*' : '')}
                 </label>}
 
-                {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time' || field.type === 'password') && (
+                {(field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'number' || field.type === 'time') && (
                     field.dontLetTheBrowserSaveField ? (
                          (field.labelOutside && field.labelOnTop) ? (
                              <div className={`field-with-label-on-top ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
@@ -534,7 +536,7 @@ function Form({
                                 {field.label+ (field.required ? '*' : '')}
                             </label>
                             <input
-                                type={field.type}
+                                type={ (field.type === 'password' && passwordsVisible) ? 'text' : field.type}
                                 id={field.id}
                                 name={field.httpName}
                                 required={field.required}
@@ -547,7 +549,7 @@ function Form({
                         </div>
                         ) : (
                             <input
-                                type={field.type}
+                                type={ field.type}
                                 id={field.id}
                                 name={field.httpName}
                                 required={field.required}
@@ -558,6 +560,63 @@ function Form({
                                 data-instance-id={field.instanceId || ''}
                             />
                         )
+                    )
+                )}
+
+                {field.type === 'password' && (
+                    (field.labelOutside && field.labelOnTop) ? (
+                        <div className={`field-with-label-on-top ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                            <label htmlFor={field.id} className={"form-label-outside"}>
+                                {field.label + (field.required ? '*' : '')}
+                            </label>
+                            <div className="password-field-wrapper">
+                                <input
+                                    type={showPasswords ? "text" : "password"}
+                                    id={field.id}
+                                    name={field.httpName}
+                                    required={field.required}
+                                    placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                    disabled={submitting}
+                                    onChange={(e) => onChange(e, field)}
+                                    autoComplete={field.dontLetTheBrowserSaveField ? "new-password" : ""}
+                                    data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
+                                    className={`text-form-field`}
+                                    data-instance-id={field.instanceId || ''}
+                                />
+                                <button
+                                    type="button"
+                                    className="toggle-password-visibility"
+                                    onClick={() => setShowPasswords(!showPasswords)}
+                                    aria-label={showPasswords ? "Hide password" : "Show password"}
+                                >
+                                    {showPasswords ? <VisibilityIcon/> : <VisibilityOffIcon/> }
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={`password-field-wrapper ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}>
+                            <input
+                                type={showPasswords ? "text" : "password"}
+                                id={field.id}
+                                name={field.httpName}
+                                required={field.required}
+                                placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
+                                disabled={submitting}
+                                onChange={(e) => onChange(e, field)}
+                                autoComplete={field.dontLetTheBrowserSaveField ? "new-password" : ""}
+                                data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
+                                className={`text-form-field`}
+                                data-instance-id={field.instanceId || ''}
+                            />
+                            <button
+                                type="button"
+                                className="toggle-password-visibility"
+                                onClick={() => setShowPasswords(!showPasswords)}
+                                aria-label={showPasswords ? "Hide password" : "Show password"}
+                            >
+                                {showPasswords ? <VisibilityIcon/> : <VisibilityOffIcon/> }
+                            </button>
+                        </div>
                     )
                 )}
 
@@ -708,7 +767,7 @@ function Form({
                 )}
 
                 {field.type === 'radio' &&
-                    field.choices.map((choice, index) => (
+                    field.choices && field.choices.map((choice, index) => (
                         <label key={index}>
                             <input
                                 type="radio"
@@ -727,7 +786,7 @@ function Form({
                 }
 
                 {field.type === 'checkbox' &&
-                    field.choices.map((choice, index) => (
+                    field.choices && field.choices.map((choice, index) => (
                         <label key={index}>
                             <input
                                 type="checkbox"
@@ -1047,7 +1106,7 @@ function Form({
 
             if (hasDifferentOnSubmitBehaviour) {
                 try {
-                    await differentOnSubmitBehaviour(formData);
+                    await differentOnSubmitBehaviour(formData)
                 } catch (error) {
                     setGeneralFormError(error.message + ': Form submission failed. Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
                     setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
@@ -1150,7 +1209,10 @@ function Form({
                     {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                     {successMessage && <p className="success-message">{successMessage}</p>}
 
+                    {renderDynamicSectionButtons()}
+
                     <div className={`form-footer-buttons-wrapper ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
+
                         {hasDifferentSubmitButtonText ? (
                             lang === 'ar' ? (
                                 <button type={"submit"} disabled={submitting} className={"submit-button"}>
@@ -1181,7 +1243,6 @@ function Form({
                             ))
                         }
 
-                        {renderDynamicSectionButtons()}
                     </div>
                 </div>
             </form>

@@ -13,7 +13,6 @@
 
 .form-field-container {
 
-
 }
 
 .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
@@ -44,7 +43,6 @@
 
 .text-form-field:lang(ar), .textarea-form-field:lang(ar), .select-form-field:lang(ar), .radio-form-field:lang(ar), .checkbox-form-field:lang(ar), .file-form-field:lang(ar), .select-multiple-form-field:lang(ar), .file-form-field-styled:lang(ar), .form-title-section:lang(ar) {
     direction: rtl;
-
 }
 
 .text-form-field {
@@ -460,8 +458,17 @@
     width: calc(100%);
 }
 
+.field-with-label-on-top.full-width .password-field-wrapper .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 2.19rem);
+}
+
 .field-with-label-on-top.full-width-with-margin .text-form-field {
     width: calc(100%);
+}
+
+.field-with-label-on-top.full-width-with-margin .password-field-wrapper .text-form-field {
+    width: calc(100% - 3rem);
 }
 
 .field-with-label-on-top.two-thirds-width .text-form-field {
@@ -469,7 +476,7 @@
     width: calc(100% - 2.5rem);
 }
 
-.field-with-label-on-top.half-width .text-form-field  {
+.field-with-label-on-top.half-width .text-form-field {
     margin-right: 0;
     width: calc(100% - 2.2rem);
 }
@@ -485,6 +492,96 @@
     width: calc(100% - 1rem);
 }
 
+.password-field-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.password-field-wrapper.full-width {
+    width: 100%;
+}
+
+.password-field-wrapper.full-width-with-margin {
+    width: 100%;
+}
+
+.password-field-wrapper.two-thirds-width {
+    width: calc(66.66666666667%);
+}
+
+.password-field-wrapper.half-width {
+    width: calc(50%);;
+}
+
+.password-field-wrapper.third-width {
+    width: calc(33.33333333334%);
+}
+
+.password-field-wrapper.full-width .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 2.19rem);
+}
+
+.password-field-wrapper.full-width-with-margin .text-form-field {
+    width: calc(100% - 3.19rem);
+}
+
+.field-with-label-on-top.two-thirds-width .password-field-wrapper .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 3.3rem);
+}
+
+.password-field-wrapper.two-thirds-width .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 3.3rem);
+}
+
+.field-with-label-on-top.half-width .password-field-wrapper .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 3.3rem);
+}
+
+.password-field-wrapper.half-width .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 3.3rem);
+}
+
+.field-with-label-on-top.third-width .password-field-wrapper .text-form-field {
+    margin-right: 0;
+    width: calc(100% - 2.7rem);
+}
+
+.password-field-wrapper.third-width .text-form-field {
+    padding-right: 0;
+    margin-right: 0;
+    width: calc(100% - 2.7rem);
+}
+
+.toggle-password-visibility {
+    position: absolute;
+    top: 1.8rem;
+    right: 2rem;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    font-size: xx-large;
+    transform: scale(1.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    box-shadow: none;
+    color: #1f2152;
+}
+
+.toggle-password-visibility:hover {
+    opacity: 0.8;
+    color: #1f2152;
+    background: transparent;
+    backdrop-filter: none;
+}
 
 @media (max-width: 1600px) {
     .captcha-box {
@@ -546,6 +643,13 @@
 
 @media (max-width: 768px) {
 
+    .toggle-password-visibility {
+        font-size: x-large;
+        top: 1.3rem;
+        right: 2rem;
+        transform: scale(1.2);
+    }
+
     .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
         margin: 0.5rem;
     }
@@ -570,13 +674,49 @@
         width: calc(100%);
     }
 
-    .third-width,   .half-width,     .two-thirds-width {
+    .third-width,
+    .half-width,
+    .two-thirds-width {
         width: calc(100% - 1.5rem);
     }
 
     .field-with-label-on-top.two-thirds-width .text-form-field,     .field-with-label-on-top.third-width .text-form-field,     .field-with-label-on-top.half-width .text-form-field {
         margin: 0.5rem;
         width: calc(100% - 1.5rem);
+    }
+
+    .field-with-label-on-top.two-thirds-width .password-field-wrapper .text-form-field,     .field-with-label-on-top.half-width .password-field-wrapper .text-form-field {
+        margin: 0.5rem;
+        width: calc(100% - 2.19rem);
+    }
+
+    .field-with-label-on-top.third-width .password-field-wrapper .text-form-field {
+        margin: 0.5rem;
+        width: calc(100% - 1.7rem);
+    }
+
+    .field-with-label-on-top.full-width-with-margin .password-field-wrapper .text-form-field, .field-with-label-on-top.full-width .password-field-wrapper .text-form-field {
+        margin: 0.5rem;
+        width: calc(100% - 2.19rem);
+    }
+
+    .password-field-wrapper.full-width-with-margin .text-form-field, .password-field-wrapper.full-width  .text-form-field {
+        margin: 0.5rem;
+        width: calc(100% - 2.19rem);
+    }
+
+    .password-field-wrapper.half-width .text-form-field, .password-field-wrapper.two-thirds-width  .text-form-field {
+        margin: 0.5rem;
+        width: calc(100% - 2.19rem);
+    }
+
+    .password-field-wrapper.third-width  .text-form-field {
+        margin: 0.5rem;
+        width: calc(100% - 1.7rem);
+    }
+
+    .password-field-wrapper.half-width, .password-field-wrapper.two-thirds-width, .password-field-wrapper.third-width {
+        width: calc(100%);
     }
 
     .field-with-label-on-top.third-width .select-form-field {
@@ -706,4 +846,11 @@
         border: 0.1rem solid #ffffff;
     }
 
+    .toggle-password-visibility {
+        color: #ffffff
+    }
+
+    .toggle-password-visibility:hover {
+        color: #ffffff
+    }
 }

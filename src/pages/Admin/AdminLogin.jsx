@@ -147,6 +147,7 @@ function AdminLogin() {
                                             setValue: null,
                                             widthOfField: 1,
                                             httpName: 'username',
+
                                         },
                                         {
                                             id: passwordFieldId,
@@ -159,8 +160,8 @@ function AdminLogin() {
                                             widthOfField: 1,
                                             value: '',
                                             setValue: null,
-                                            httpName: 'password'
-                                        }
+                                            httpName: 'password',
+                                        },
                                     ]
                                   }
 
