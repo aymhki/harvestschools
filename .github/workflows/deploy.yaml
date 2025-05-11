@@ -1,17 +1,27 @@
 name: Deploy Vite React App to cPanel
-
 on:
   push:
     branches:
       - main
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Fetch the current and previous commit for comparison
+
+      - name: Check for changes in assets folder
+        id: check_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q "public/assets/"; then
+            echo "assets_changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in assets folder"
+          else
+            echo "assets_changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in assets folder"
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -34,6 +44,8 @@ jobs:
           server-dir: public_html/
           method: sync
           delete: false
+          exclude: |
+            **/assets/**  # Exclude assets directory, will be handled separately
 
       - name: Install lftp
         run: sudo apt-get install lftp
@@ -43,5 +55,7 @@ jobs:
           lftp -e "set ssl:verify-certificate no; put -O /public_html dist/index.html; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
 
       - name: Sync assets folder with lftp
+        if: steps.check_changes.outputs.assets_changed == 'true'
         run: |
+          echo "Syncing assets folder as changes were detected"
           lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=upload.log --parallel=2 dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
