@@ -69,4 +69,4 @@ jobs:
       - name: Sync scripts folder with lftp
         run: |
           echo "Syncing scripts folder to public_html/scripts"
-          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=scripts_upload.log --parallel=2 scripts /public_html/scripts; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=scripts_upload.log --parallel=2 ./scripts /public_html/scripts; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
