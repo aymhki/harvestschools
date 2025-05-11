@@ -254,20 +254,16 @@ function BookingManagement() {
             const result = await response.json();
 
             if (result.success) {
-                // Close modal and refresh booking list
-                // setShowAddBookingModal(false);
-                // setResetAddBookingModal(true);
+                setResetAddBookingModal(true)
+                setShowAddBookingModal(false);
                 // Refresh the bookings list
                 // You might need to implement a function to fetch bookings
                 // fetchBookings();
-                console.log("Successfully added booking.")
             } else {
-                // Show error message
-                alert('Error: ' + result.message);
+                throw new Error('Error: ' + result.message);
             }
         } catch (error) {
-            console.error("Error adding booking:", error);
-            alert("Failed to add booking. Please try again.");
+            throw new Error("Error adding booking:", error);
         } finally {
             setIsLoading(false);
         }
@@ -348,6 +344,7 @@ function BookingManagement() {
                               formInModalPopup={true}
                               setShowFormModalPopup={setShowAddBookingModal}
                               pedanticIds={false}
+                              formHasPasswordField={true}
                         />
                     </div>
 

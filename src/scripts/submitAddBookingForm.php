@@ -8,33 +8,26 @@ $dbname = $dbConfig['db_name'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
-        // Connect to database
         $conn = new mysqli($servername, $username, $password, $dbname);
 
         if ($conn->connect_error) {
             throw new Exception('Database connection failed: ' . $conn->connect_error);
         }
 
-        // Start transaction
         $conn->begin_transaction();
-
-        // Extract form data
         $formData = [];
         $studentSections = [];
 
-        // Process all form fields
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
-                $fieldId = substr($key, 6); // Remove 'field_' prefix
+                $fieldId = substr($key, 6);
                 $labelKey = 'label_' . $fieldId;
                 $instanceKey = 'instance_' . $fieldId;
 
                 if (isset($_POST[$labelKey])) {
                     $label = $_POST[$labelKey];
-
-                    // Check if this is part of a dynamic section (student)
                     if (isset($_POST[$instanceKey])) {
-                        $instanceId = $_POST[$instanceKey]; // e.g. "student-section_0"
+                        $instanceId = $_POST[$instanceKey];
                         if (strpos($instanceId, 'student-section') === 0) {
                             $sectionNumber = substr($instanceId, strrpos($instanceId, '_') + 1);
 
@@ -45,18 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $studentSections[$sectionNumber][$label] = $value;
                         }
                     } else {
-                        // Regular field
                         $formData[$label] = $value;
                     }
                 }
             }
         }
 
-        // 1. Create authentication record
         $bookingUsername = $formData['Booking Username'];
         $bookingPassword = $formData['Booking Password'];
 
-        // Check if username already exists
         $stmt = $conn->prepare("SELECT auth_id FROM booking_auth_credentials WHERE username = ?");
         $stmt->bind_param("s", $bookingUsername);
         $stmt->execute();
@@ -66,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Username already exists. Please choose a different username.');
         }
 
-        // Hash password and insert auth credentials
         $passwordHash = password_hash($bookingPassword, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO booking_auth_credentials (username, password_hash) VALUES (?, ?)");
         $stmt->bind_param("ss", $bookingUsername, $passwordHash);
@@ -77,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $authId = $conn->insert_id;
 
-        // 2. Create booking record
         $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
         $stmt->bind_param("i", $authId);
 
@@ -87,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $bookingId = $conn->insert_id;
 
-        // 3. Add first parent (required)
         $firstParentName = $formData['First Parent Name'];
         $firstParentEmail = $formData['First Parent Email'];
         $firstParentPhone = $formData['First Parent Phone Number'];
@@ -101,8 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $firstParentId = $conn->insert_id;
 
-        // Link first parent to booking as primary
-        $isPrimary = 1; // true
+        $isPrimary = 1;
         $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
         $stmt->bind_param("iii", $bookingId, $firstParentId, $isPrimary);
 
@@ -110,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to link first parent to booking: ' . $stmt->error);
         }
 
-        // 4. Add second parent if provided (optional)
         if (!empty($formData['Second Parent Name'])) {
             $secondParentName = $formData['Second Parent Name'];
             $secondParentEmail = $formData['Second Parent Email'] ?? '';
@@ -125,8 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $secondParentId = $conn->insert_id;
 
-            // Link second parent to booking (not primary)
-            $isPrimary = 0; // false
+            $isPrimary = 0;
             $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
             $stmt->bind_param("iii", $bookingId, $secondParentId, $isPrimary);
 
@@ -135,7 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // 5. Add students from dynamic sections
         foreach ($studentSections as $studentData) {
             if (!empty($studentData['Student Name'])) {
                 $studentName = $studentData['Student Name'];
@@ -151,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 $studentId = $conn->insert_id;
 
-                // Link student to booking
                 $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
                 $stmt->bind_param("ii", $bookingId, $studentId);
 
@@ -161,7 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // 6. Create empty extras record for future use
         $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id) VALUES (?)");
         $stmt->bind_param("i", $bookingId);
 
@@ -169,10 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Failed to create extras record: ' . $stmt->error);
         }
 
-        // Commit transaction
         $conn->commit();
 
-        // Return success response
         echo json_encode([
             'success' => true,
             'message' => 'Booking created successfully',
@@ -180,7 +159,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
     } catch (Exception $e) {
-        // Rollback transaction if an error occurred
         if (isset($conn) && $conn->connect_errno === 0) {
             $conn->rollback();
         }
@@ -190,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'message' => $e->getMessage()
         ]);
     } finally {
-        // Close database connection
         if (isset($conn) && $conn->connect_errno === 0) {
             $conn->close();
         }
@@ -201,3 +178,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'message' => 'Invalid request method'
     ]);
 }
+?>
