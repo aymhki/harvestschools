@@ -163,7 +163,7 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
         let filteredData = [...sortedData];
         for (let i = 0; i < tableData[0].length; i++) {
             if ( filterableColumns && filterableColumns.includes(tableData[0][i])) {
-               // filteredData = filteredData?.filter((row, rowIndex) => rowIndex === 0 || filterUniqueValuesDict[tableData[0][i]]?.checked[filterUniqueValuesDict[tableData[0][i]]?.uniqueValues?.indexOf(row[i])]);
+               filteredData = filteredData.filter((row, rowIndex) => rowIndex === 0 || filterUniqueValuesDict[tableData[0][i]].checked[filterUniqueValuesDict[tableData[0][i]].uniqueValues.indexOf(row[i])]);
             }
         }
         let hiddenColumnsData = filteredData.map(row => row.filter((cell, index) => !hiddenColumns.has(sortedData[0][index])));
