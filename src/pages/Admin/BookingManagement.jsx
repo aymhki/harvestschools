@@ -285,7 +285,7 @@ function BookingManagement() {
                 setRowIndexToDelete(null);
                 fetchBookings();
             } else {
-                // throw new Error(`${result.message}`);
+                throw new Error(`${result.message}`);
             }
         } catch (error) {
             setIsDeleting(false);
