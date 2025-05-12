@@ -129,7 +129,7 @@
     padding: 1rem;
     background-color: #ffffff;
     width: 50%;
-    min-height: 30%;
+    /*min-height: 30%;*/
     z-index: 1001;
 }
 
