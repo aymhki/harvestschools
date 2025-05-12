@@ -36,8 +36,8 @@ function AdminLogin() {
                 const sessionId = uuidv4();
                 const sessionExpiry = new Date();
                 sessionExpiry.setHours(sessionExpiry.getHours() + 1);
-                document.cookie = `harvest_schools_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
-                document.cookie = `harvest_schools_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
+                document.cookie = `harvest_schools_admin_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
+                document.cookie = `harvest_schools_admin_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
 
 
                 const sessionResponse = await axios.post('/scripts/createAdminSession.php', {
@@ -74,12 +74,12 @@ function AdminLogin() {
                 return acc;
             }, {});
 
-            const sessionId = cookies.harvest_schools_session_id;
-            const sessionTime = parseInt(cookies.harvest_schools_session_time, 10);
+            const sessionId = cookies.harvest_schools_admin_session_id;
+            const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
 
             if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
-                document.cookie = 'harvest_schools_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                document.cookie = 'harvest_schools_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 return;
             }
 

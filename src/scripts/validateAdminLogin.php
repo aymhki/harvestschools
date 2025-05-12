@@ -17,7 +17,7 @@ try {
     $user = $conn->real_escape_string($data['username']);
     $plainPassword = $conn->real_escape_string($data['password']);
 
-    $sql = "SELECT * FROM admin_users WHERE username = '$user' AND password = SHA2('$plainPassword', 256)";
+    $sql = "SELECT * FROM admin_users WHERE username = '$user' AND password_hash = SHA2('$plainPassword', 256)";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
