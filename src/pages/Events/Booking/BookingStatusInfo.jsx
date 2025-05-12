@@ -2,6 +2,7 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {checkBookingSession, getCookies} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
+import axios from "axios";
 
 function BookingStatusInfo() {
     const navigate = useNavigate();
@@ -21,13 +22,15 @@ function BookingStatusInfo() {
             const cookies = getCookies();
             const sessionId = cookies.harvest_schools_booking_session_id;
 
-            const response = await fetch('/scripts/getBookingBySession.php', {
-                sessionId: sessionId,
-                method: 'GET',
+            const response = await axios.post('/scripts/getBookingBySession.php', {
+                sessionId: sessionId
+            }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
+
+
 
             const result = await response.json();
 

@@ -11,7 +11,6 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    // Get session ID from the request
     if (!isset($_GET['session_id'])) {
         throw new Exception("Session ID is required", 400);
     }
