@@ -11,7 +11,6 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    // Check for session cookie
     $cookies = [];
     foreach ($_COOKIE as $key => $value) {
         $cookies[$key] = $value;
@@ -24,13 +23,11 @@ try {
     $sessionId = $cookies['harvest_schools_admin_session_id'];
     $startTime = microtime(true);
 
-    // Connect to database
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
     }
 
-    // Check permission level
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
                       JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
@@ -62,12 +59,11 @@ try {
         throw new Exception("Permission denied", 403);
     }
 
-    // Main query to get all booking data with student information as the primary focus
     $sql = "SELECT 
+                b.booking_id AS 'Booking ID',
                 s.name AS 'Student Name',
                 s.school_division AS 'School Division',
                 s.grade AS 'Grade', 
-                b.booking_id AS 'Booking ID',
                 ac.username AS 'Booking Username',
                 ac.password_hash AS 'Booking Password',
                 
@@ -76,17 +72,14 @@ try {
                 p1.email AS 'First Parent Email',
                 p1.phone_number AS 'First Parent Phone',
                 
-                -- Second parent information (if exists)
                 p2.name AS 'Second Parent Name',
                 p2.email AS 'Second Parent Email',
                 p2.phone_number AS 'Second Parent Phone',
                 
-                -- Extras information
                 e.cd_count AS 'CD Count',
                 e.additional_attendees AS 'Additional Attendees',
                 e.payment_status AS 'Payment Status',
                 
-                -- Creation dates
                 s.created_at AS 'Student Created',
                 b.created_at AS 'Booking Created'
             FROM booking_students s
@@ -119,7 +112,6 @@ try {
         throw new Exception("Query failed: " . $conn->error, 500);
     }
 
-    // Prepare data structure
     $data = [];
     $headers = [];
     $firstRow = true;
@@ -127,13 +119,11 @@ try {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             if ($firstRow) {
-                // Extract headers once from the first row
                 $headers = array_keys($row);
                 $data[] = $headers;
                 $firstRow = false;
             }
 
-            // Add row data
             $rowData = [];
             foreach ($headers as $header) {
                 $rowData[] = $row[$header];
@@ -141,7 +131,6 @@ try {
             $data[] = $rowData;
         }
     } else {
-        // No data found, but still return headers
         $headers = [
             'Student Name', 'School Division', 'Grade', 'Booking ID',
             'Booking Username', 'Booking Password', 'First Parent Name', 'First Parent Email', 'First Parent Phone',
