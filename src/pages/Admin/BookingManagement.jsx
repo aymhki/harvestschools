@@ -290,8 +290,8 @@ function BookingManagement() {
         } catch (error) {
             setIsDeleting(false);
             setRowIndexToDelete(null);
-            // console.error('Error deleting booking:', error.message);
-            // setDeleteError(error.message);
+            console.error('Error deleting booking:', error.message);
+            setDeleteError(error.message);
         } finally {
             setIsDeleting(false);
             setRowIndexToDelete(null);
@@ -500,12 +500,22 @@ function BookingManagement() {
                     <div className={"delete-booking-modal-content"}>
                         {oneStudentLeftForBookingId() ? (
                             <p>
-                                Are you sure you want to delete the booking record for <strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>?
-                                This is the only student left for this booking ID <strong>{allBookings[rowIndexToDelete][colIndexForBookingId]}</strong>, so the parents data as well as the authentication credentials will be deleted.
+                                Are you sure you want to delete the booking record for (allBookings ? (
+                                    <strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>?
+                            ) : (
+                                <strong>this student</strong>?
+                            ))
+                                This is the only student left for this booking ID (allBookings ? (
+                                <strong>{allBookings[rowIndexToDelete][colIndexForBookingId]}</strong>
+                                ) : (
+                                    <strong>this booking ID</strong>
+                                )), so the parents data as well as the authentication credentials will be deleted.
                             </p>
                         ) : (
                             <p>
-                                Are you sure you want to delete the booking record for <strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>?
+                                Are you sure you want to delete the booking record for (allBookings ? (<strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>?) : (
+                                    <strong>this student</strong>?
+                                ))
                             </p>
                         )}
                     </div>
