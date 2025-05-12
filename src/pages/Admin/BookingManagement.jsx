@@ -21,6 +21,7 @@ function BookingManagement() {
     const colIndexForBookingId = 0
     const colIndexForStudentId = 1
     const colIndexForStudentName = 2
+    const colIndexForBookingUsername = 5
 
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
@@ -264,6 +265,7 @@ function BookingManagement() {
             setIsDeleting(true);
             const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
             const studentId = allBookings[rowIndexToDelete][colIndexForStudentId];
+            const bookingAuthUsername = allBookings[rowIndexToDelete][colIndexForBookingUsername];
 
             const response = await fetch('/scripts/deleteBookingEntry.php', {
                 method: 'POST',
@@ -272,7 +274,8 @@ function BookingManagement() {
                 },
                 body: JSON.stringify({
                     studentId: studentId,
-                    bookingId: bookingId
+                    bookingId: bookingId,
+                    bookingAuthUsername: bookingAuthUsername
                 })
             });
 
