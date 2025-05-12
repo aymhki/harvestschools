@@ -45,6 +45,8 @@ function BookingDashboard() {
                 console.log(error.message);
                 setIsLoading(false);
                 navigate('/events/booking/');
+            } finally {
+                setIsLoading(false);
             }
         }
 
