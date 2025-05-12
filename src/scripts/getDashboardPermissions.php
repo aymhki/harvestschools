@@ -82,7 +82,7 @@ try {
     ]);
 } catch (Exception $e) {
     http_response_code($e->getCode() ?: 500);
-    echo json_encode(["error" => $e->getMessage()]);
+    echo json_encode(["message" => $e->getMessage()]);
 } finally {
     if (isset($conn) && $conn->ping()) {
         $conn->close();

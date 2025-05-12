@@ -147,8 +147,6 @@ function App() {
                         <Route path="/events/booking/extras" element={<BookingExtras />} />
                         <Route path="/events/booking/info" element={<BookingStatusInfo />} />
 
-
-
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/gallery/photos" element={<PhotosGallery />} />
                         <Route path="/gallery/videos" element={<VideosGallery />} />

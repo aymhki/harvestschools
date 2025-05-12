@@ -290,7 +290,7 @@ function BookingManagement() {
         } catch (error) {
             setIsDeleting(false);
             setRowIndexToDelete(null);
-            console.error('Error deleting booking:', error.message);
+            console.log('Error deleting booking:', error.message);
             setDeleteError(error.message);
         } finally {
             setIsDeleting(false);
@@ -367,6 +367,19 @@ function BookingManagement() {
     useEffect(() => {
         fetchBookings();
     }, []);
+
+    useEffect(() => {
+        if (showAddBookingModal || showDeleteBookingModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [showAddBookingModal, showDeleteBookingModal]);
+
 
     return (
         <>
