@@ -48,9 +48,9 @@ function BookingStatusInfo() {
 
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
-                throw new Error(error.response.data.message);
+                console.log(error.response.data.message);
             } else {
-                throw new Error(error.message);
+                console.log(error.message);
             }
         } finally {
             setIsLoading(false);
