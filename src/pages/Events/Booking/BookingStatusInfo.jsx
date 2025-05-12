@@ -22,6 +22,10 @@ function BookingStatusInfo() {
             const cookies = getCookies();
             const sessionId = cookies.harvest_schools_booking_session_id;
 
+            if (!sessionId) {
+                throw new Error('Session ID not found. Please log in again.');
+            }
+
             const response = await axios.post('/scripts/getBookingBySession.php', {
                 sessionId: sessionId
             }, {
