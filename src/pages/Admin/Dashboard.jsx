@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
+import {sessionDuration} from "../../services/Utils.jsx";
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ function Dashboard() {
             const sessionId = cookies.harvest_schools_admin_session_id;
             const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
 
-            if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
+            if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
                 document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 navigate('/admin/login');
@@ -57,7 +58,7 @@ function Dashboard() {
                 setIsLoading(false);
 
             } catch (error) {
-                console.log(error);
+                console.log(error.message);
                 setIsLoading(false);
                 navigate('/admin/login');
             }

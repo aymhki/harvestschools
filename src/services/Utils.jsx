@@ -1,6 +1,9 @@
 import axios from "axios";
 
 
+const sessionDurationInHours = 1;
+const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
+
 
 const checkAdminSession = async (
     navigate,
@@ -17,7 +20,7 @@ const checkAdminSession = async (
     const sessionId = cookies.harvest_schools_admin_session_id;
     const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
 
-    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
+    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
         document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         navigate('/admin/login');
@@ -54,9 +57,47 @@ const checkAdminSession = async (
         setIsLoading(false);
 
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
     }
 };
 
+const checkBookingSession = async (
+    navigate,
+    setIsLoading,
+) => {
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
 
-export {checkAdminSession}
+    const sessionId = cookies.harvest_schools_booking_session_id;
+    const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
+
+    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
+        document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        navigate('/admin/login');
+    }
+
+    try {
+        const response = await axios.post('/scripts/checkBookingSession.php', {
+            session_id: sessionId
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.data.success) {
+            navigate('/admin/login');
+        }
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+
+export {checkAdminSession, checkBookingSession, sessionDuration, sessionDurationInHours};
