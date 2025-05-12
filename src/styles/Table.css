@@ -91,7 +91,7 @@ tr:hover {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 0;
+    margin-bottom: 1rem;
     padding: 0;
 
 }
@@ -309,8 +309,8 @@ tr:hover {
     }
 
     .table-module-header-buttons-wrapper {
-        margin: 2rem;
         flex-wrap: wrap;
+        margin: 2rem 2rem 3.5rem 2rem;
     }
 
     .table-module-accordion-content {
