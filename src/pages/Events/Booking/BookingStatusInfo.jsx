@@ -148,15 +148,17 @@ function BookingStatusInfo() {
                 </h1>
 
                 <div className={'booking-info-page-form-wrapper'}>
-                    <Form mailTo={''}
-                          formTitle={'Booking Info'}
-                          sendPdf={false}
-                          lang={'en'}
-                          noInputFieldsCache={true}
-                          noCaptcha={true}
-                          fields={finalFormFields}
-                          formIsReadOnly={true}
-                    />
+                    {finalFormFields.length > 0 && (
+                        <Form mailTo={''}
+                              formTitle={'Booking Info'}
+                              sendPdf={false}
+                              lang={'en'}
+                              noInputFieldsCache={true}
+                              noCaptcha={true}
+                              fields={finalFormFields}
+                              formIsReadOnly={true}
+                        />
+                    )}
                 </div>
             </div>
         </>
