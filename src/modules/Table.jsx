@@ -4,7 +4,7 @@ import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
-function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, compact, allowHideColumns, defaultHiddenColumns, allowExport, exportFileName, filterableColumns, headerModuleElements, onDeleteEntry, allowDeleteEntryOption }) {
+function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, compact, allowHideColumns, defaultHiddenColumns, allowExport, exportFileName, filterableColumns, headerModuleElements, onDeleteEntry, allowDeleteEntryOption, columnsToWrap }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -303,9 +303,11 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center',
-                                                wordWrap: 'break-word',
-                                                wrap: 'break-word',
-                                                textWrap: 'wrap',
+
+                                                wordBreak: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                wrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
                                             }}>
                                                 <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                     {detectLink(cell)}{getSortIndicator(cellIndex)}
@@ -517,6 +519,7 @@ Table.propTypes = {
     headerModuleElements: PropTypes.array,
     onDeleteEntry: PropTypes.func,
     allowDeleteEntryOption: PropTypes.bool,
+    columnsToWrap: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Table;

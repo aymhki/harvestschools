@@ -335,6 +335,20 @@ function BookingManagement() {
                            console.log(rowIndex);
                        }}
                        allowDeleteEntryOption={true}
+                       columnsToWrap={
+                            [
+                                'School Division',
+                                'Grade',
+                                'Student Name',
+                                'Booking Username',
+                                'First Parent Name',
+                                'First Parent Email',
+                                'First Parent Phone Number',
+                                // 'Second Parent Name',
+                                // 'Second Parent Email',
+                                // 'Second Parent Phone Number',
+                            ]
+                       }
                 />
             </div>
 
@@ -376,6 +390,7 @@ function BookingManagement() {
                               setShowFormModalPopup={setShowAddBookingModal}
                               pedanticIds={false}
                               formHasPasswordField={true}
+
                         />
                     </div>
 
