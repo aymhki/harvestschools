@@ -11,11 +11,7 @@ const checkAdminSession = async (
     allowedPermission
 
 ) => {
-    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-        const [key, value] = cookie.trim().split('=');
-        acc[key] = value;
-        return acc;
-    }, {});
+    const cookies = getCookies()
 
     const sessionId = cookies.harvest_schools_admin_session_id;
     const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
@@ -66,11 +62,7 @@ const checkBookingSession = async (
     setIsLoading,
 ) => {
 
-    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-        const [key, value] = cookie.trim().split('=');
-        acc[key] = value;
-        return acc;
-    }, {});
+    const cookies = getCookies()
 
     const sessionId = cookies.harvest_schools_booking_session_id;
     const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
@@ -101,6 +93,13 @@ const checkBookingSession = async (
     }
 }
 
+function getCookies() {
+    return document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
+}
 
 
-export {checkAdminSession, checkBookingSession, sessionDuration, sessionDurationInHours};
+export {checkAdminSession, checkBookingSession, sessionDuration, sessionDurationInHours, getCookies};

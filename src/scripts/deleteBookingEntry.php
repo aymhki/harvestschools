@@ -21,8 +21,8 @@ try {
     }
 
     $data = json_decode(file_get_contents('php://input'), true);
-    if (!isset($data['studentId']) || !isset($data['bookingId'])) {
-        throw new Exception("Missing required parameters: studentId and bookingId", 400);
+    if (!isset($data['studentId']) || !isset($data['bookingId']) || !isset($data['bookingAuthUsername'])) {
+        throw new Exception("Missing required parameters: studentId, bookingId, and bookingAuthUsername", 400);
     }
 
     $studentId = (int)$data['studentId'];
