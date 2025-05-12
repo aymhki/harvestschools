@@ -256,9 +256,7 @@ function BookingManagement() {
             if (result.success) {
                 setResetAddBookingModal(true)
                 setShowAddBookingModal(false);
-                // Refresh the bookings list
-                // You might need to implement a function to fetch bookings
-                // fetchBookings();
+                fetchBookings();
             } else {
                 throw new Error(`${result.message}`);
             }
@@ -269,12 +267,38 @@ function BookingManagement() {
         }
     }
 
+    const fetchBookings = async () => {
+        try {
+            setIsLoading(true);
+
+            const response = await fetch('/scripts/getAllBookings.php', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setAllBookings(result.data);
+            } else {
+                console.log(result.message);
+            }
+
+        } catch (error) {
+            console.log(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
         // checkAdminSession(navigate, setIsLoading, 1);
     }, []);
 
     useEffect(() => {
-        setAllBookings(null);
+        fetchBookings();
     }, []);
 
     return (
