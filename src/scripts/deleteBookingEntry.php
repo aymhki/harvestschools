@@ -107,31 +107,7 @@ try {
         if ($isLastStudent) {
             // Case 2: Last student - Delete entire booking and all related data
 
-            // 1. Delete student linker records first
-            $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
-            $stmt->bind_param("i", $bookingId);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to delete student linkers: " . $stmt->error);
-            }
-            $stmt->close();
-
-            // 2. Delete the student record
-            $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
-            $stmt->bind_param("i", $studentId);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to delete student: " . $stmt->error);
-            }
-            $stmt->close();
-
-            // 3. Delete parent linker records
-            $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
-            $stmt->bind_param("i", $bookingId);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to delete parent linkers: " . $stmt->error);
-            }
-            $stmt->close();
-
-            // 4. Get parent IDs associated with this booking
+            // 1. Get parent IDs associated with this booking FIRST, before deleting links
             $stmt = $conn->prepare("SELECT parent_id FROM booking_parents_linker WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
             $stmt->execute();
@@ -142,7 +118,31 @@ try {
             }
             $stmt->close();
 
-            // 5. Delete parent records
+            // 2. Delete student linker records
+            $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
+            $stmt->bind_param("i", $bookingId);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to delete student linkers: " . $stmt->error);
+            }
+            $stmt->close();
+
+            // 3. Delete the student record
+            $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+            $stmt->bind_param("i", $studentId);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to delete student: " . $stmt->error);
+            }
+            $stmt->close();
+
+            // 4. Delete parent linker records AFTER retrieving parent IDs
+            $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
+            $stmt->bind_param("i", $bookingId);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to delete parent linkers: " . $stmt->error);
+            }
+            $stmt->close();
+
+            // 5. Delete parent records using the previously retrieved IDs
             foreach ($parentIds as $parentId) {
                 $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
                 $stmt->bind_param("i", $parentId);
