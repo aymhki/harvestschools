@@ -1,9 +1,9 @@
-import OptionsGrid from "../../modules/OptionsGrid.jsx";
+import OptionsGrid from "../../../modules/OptionsGrid.jsx";
 import '../../../styles/Events.css'
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import Spinner from "../../modules/Spinner.jsx";
+import Spinner from "../../../modules/Spinner.jsx";
 import {sessionDuration} from "../../../services/Utils.jsx";
 
 function BookingDashboard() {
