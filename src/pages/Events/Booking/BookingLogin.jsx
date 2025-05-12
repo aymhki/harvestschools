@@ -59,7 +59,11 @@ function BookingLogin() {
                 throw new Error('Login failed. Wrong Username or Password. Please try again');
             }
         } catch (error) {
-            throw new Error(error.message);
+            if (error.response && error.response.data && error.response.data.message) {
+                throw new Error(error.response.data.message);
+            } else {
+                throw new Error(error.message);
+            }
         }
     }
 
