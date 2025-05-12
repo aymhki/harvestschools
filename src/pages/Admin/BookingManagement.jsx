@@ -330,7 +330,13 @@ function BookingManagement() {
                            }}>
                                Add Booking
                            </button>
-                       )]}
+                       ),
+                       (
+                             <button key={2} onClick={fetchBookings} disabled={isLoading}>
+                                    {isLoading ? 'Loading...' : 'Reload Table Data'}
+                             </button>
+                       )
+                       ]}
                        onDeleteEntry={(rowIndex) => {
                            console.log(rowIndex);
                        }}
