@@ -69,7 +69,7 @@ try {
                 s.grade AS 'Grade', 
                 b.booking_id AS 'Booking ID',
                 ac.username AS 'Booking Username',
-                ac.password AS 'Booking Password',
+                ac.password_hash AS 'Booking Password',
                 
                 -- First parent information
                 p1.name AS 'First Parent Name',
