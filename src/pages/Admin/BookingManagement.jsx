@@ -285,13 +285,13 @@ function BookingManagement() {
                 setRowIndexToDelete(null);
                 fetchBookings();
             } else {
-                throw new Error(`${result.message}`);
+                // throw new Error(`${result.message}`);
             }
         } catch (error) {
             setIsDeleting(false);
             setRowIndexToDelete(null);
-            console.error('Error deleting booking:', error.message);
-            setDeleteError(error.message);
+            // console.error('Error deleting booking:', error.message);
+            // setDeleteError(error.message);
         } finally {
             setIsDeleting(false);
             setRowIndexToDelete(null);
@@ -521,7 +521,7 @@ function BookingManagement() {
                         <button className={"delete-booking-modal-confirm-button"} onClick={() => {
                             handleDeleteBooking();
                         }}>
-                            Delete
+                            {isDeleting ? 'Deleting...' : 'Delete'}
                         </button>
 
                     </div>
