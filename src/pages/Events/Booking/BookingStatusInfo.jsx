@@ -23,7 +23,7 @@ function BookingStatusInfo() {
             const sessionId = cookies.harvest_schools_booking_session_id;
 
             const response = await axios.post('/scripts/getBookingBySession.php', {
-                sessionId: sessionId
+                session_id: sessionId
             }, {
                 headers: {
                     'Content-Type': 'application/json'
