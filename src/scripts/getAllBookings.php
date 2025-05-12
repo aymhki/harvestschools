@@ -61,6 +61,7 @@ try {
 
     $sql = "SELECT 
                 b.booking_id AS 'Booking ID',
+                s.student_id AS 'Student ID',
                 s.name AS 'Student Name',
                 s.school_division AS 'School Division',
                 s.grade AS 'Grade', 
@@ -132,7 +133,7 @@ try {
         }
     } else {
         $headers = [
-            'Student Name', 'School Division', 'Grade', 'Booking ID',
+            'Booking ID', 'Student ID', 'Student Name', 'School Division', 'Grade',
             'Booking Username', 'Booking Password', 'First Parent Name', 'First Parent Email', 'First Parent Phone',
             'Second Parent Name', 'Second Parent Email', 'Second Parent Phone',
             'CD Count', 'Additional Attendees', 'Payment Status',
