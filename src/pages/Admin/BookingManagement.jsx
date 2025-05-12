@@ -337,19 +337,20 @@ function BookingManagement() {
                        allowDeleteEntryOption={true}
                        columnsToWrap={
                             [
-                                'School Division',
-                                'Grade',
-                                'Student Name',
-                                'Booking Username',
-                                'First Parent Name',
-                                'First Parent Email',
-                                'First Parent Phone',
-                                'CD Count',
-                                'Additional Attendees',
-                                'Payment Status',
-                                'Second Parent Name',
-                                'Second Parent Email',
-                                'Second Parent Phone',
+                                // 'Booking ID',
+                                // 'School Division',
+                                // 'Grade',
+                                // 'Student Name',
+                                // 'Booking Username',
+                                // 'First Parent Name',
+                                // 'First Parent Email',
+                                // 'First Parent Phone',
+                                // 'CD Count',
+                                // 'Additional Attendees',
+                                // 'Payment Status',
+                                // 'Second Parent Name',
+                                // 'Second Parent Email',
+                                // 'Second Parent Phone',
                             ]
                        }
                 />
