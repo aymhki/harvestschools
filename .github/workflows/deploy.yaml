@@ -49,13 +49,14 @@ jobs:
 
       - name: Sync assets folder with lftp (smart sync)
         run: |
-          echo "Syncing assets folder using smart comparison..."
+          echo "Syncing assets folder using size/checksum comparison..."
           lftp -e "set ssl:verify-certificate no; \
                   set mirror:use-pget-n 5; \
                   set mirror:parallel-transfer-count 2; \
                   set xfer:log 1; \
                   mirror -R --verbose --log=upload.log \
-                  --only-newer \
+                  --ignore-time \
+                  --size-only \
                   --parallel=2 \
                   dist/assets /public_html/assets; \
                   quit" \
