@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
-import {sessionDuration, sessionDurationInHours} from "../../../services/Utils.jsx";
+import {sessionDuration, sessionDurationInHours, getCookies} from "../../../services/Utils.jsx";
 
 function BookingLogin() {
     const navigate = useNavigate();
@@ -69,12 +69,7 @@ function BookingLogin() {
 
     useEffect(() => {
         const checkBookingSession = async () => {
-            const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-                const [key, value] = cookie.trim().split('=');
-                acc[key] = value;
-                return acc;
-            }, {});
-
+            const cookies = getCookies();
             const sessionId = cookies.harvest_schools_booking_session_id;
             const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
 

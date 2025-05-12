@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
-import {sessionDuration} from "../../../services/Utils.jsx";
+import {sessionDuration, getCookies} from "../../../services/Utils.jsx";
 
 function BookingDashboard() {
     const navigate = useNavigate();
@@ -12,11 +12,7 @@ function BookingDashboard() {
 
     useEffect(() => {
         const checkBookingSession = async () => {
-            const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-                const [key, value] = cookie.trim().split('=');
-                acc[key] = value;
-                return acc;
-            }, {});
+            const cookies = getCookies();
 
             const sessionId = cookies.harvest_schools_booking_session_id;
             const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
