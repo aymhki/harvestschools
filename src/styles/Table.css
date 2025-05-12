@@ -309,7 +309,7 @@ tr:hover {
 
     .table-module-header-buttons-wrapper {
         margin: 2rem;
-        overflow-x: auto;
+        overflow-x: scroll;
     }
 
     .table-module-accordion-content {
@@ -337,6 +337,7 @@ tr:hover {
 
     .table-module-header {
         padding-top: 0;
+        overflow-x: scroll;
     }
 
 }
