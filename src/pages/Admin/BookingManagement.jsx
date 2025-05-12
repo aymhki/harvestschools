@@ -311,12 +311,19 @@ function BookingManagement() {
                        compact={true}
                        allowHideColumns={true}
                        defaultHiddenColumns={
-                       []}
+                       [
+                           'Booking Password',
+                           'Student Created',
+                           'Booking Created',
+                       ]}
                        allowExport={true}
                        exportFileName={'bookings'}
                        sortConfigParam={{column: 0, direction: 'descending'}}
                        filterableColumns={
-                       []}
+                       [
+                           'School Division',
+                           'Grade',
+                       ]}
                        headerModuleElements={[(
                            <button key={1} onClick={() => {
                                 setShowAddBookingModal(true);
