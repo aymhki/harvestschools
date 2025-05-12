@@ -25,8 +25,8 @@
     align-items: center;
     width: 100%;
     position: absolute;
-    padding-top: 4rem;
-    margin-bottom: 2rem;
+    padding-top: 1rem;
+    /*margin-bottom: 2rem;*/
 }
 
 table {
