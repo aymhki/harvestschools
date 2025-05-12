@@ -129,7 +129,7 @@
     padding: 1rem;
     background-color: #ffffff;
     width: 50%;
-    min-height: 50%;
+    min-height: 30%;
     z-index: 1001;
 }
 
@@ -186,4 +186,9 @@
     .add-booking-modal-form-container {
         background-color: #242424;
     }
+
+    .delete-booking-modal-container {
+        background-color: #242424;
+    }
+
 }
