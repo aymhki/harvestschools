@@ -25,7 +25,7 @@
     align-items: center;
     width: 100%;
     position: absolute;
-    padding-top: 0rem;
+    padding-top: 1rem;
 }
 
 table {
@@ -310,7 +310,7 @@ tr:hover {
     .table-module-header-buttons-wrapper {
         flex-wrap: wrap;
         margin: 2rem 2rem 2rem 2rem;
-        padding: 5rem
+        overflow-x: auto;
     }
 
     .table-module-accordion-content {
