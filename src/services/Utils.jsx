@@ -14,12 +14,12 @@ const checkAdminSession = async (
         return acc;
     }, {});
 
-    const sessionId = cookies.harvest_schools_session_id;
-    const sessionTime = parseInt(cookies.harvest_schools_session_time, 10);
+    const sessionId = cookies.harvest_schools_admin_session_id;
+    const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
 
     if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
-        document.cookie = 'harvest_schools_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = 'harvest_schools_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         navigate('/admin/login');
     }
 

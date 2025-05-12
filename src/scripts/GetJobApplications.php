@@ -16,11 +16,11 @@ try {
         $cookies[$key] = $value;
     }
 
-    if (!isset($cookies['harvest_schools_session_id'])) {
+    if (!isset($cookies['harvest_schools_admin_session_id'])) {
         throw new Exception("Unauthorized: No session found", 401);
     }
 
-    $sessionId = $cookies['harvest_schools_session_id'];
+    $sessionId = $cookies['harvest_schools_admin_session_id'];
     $startTime = microtime(true);
 
     $conn = new mysqli($servername, $username, $password, $dbname);
