@@ -27,6 +27,7 @@ try {
 
     $studentId = (int)$data['studentId'];
     $bookingId = (int)$data['bookingId'];
+    $bookingAuthUsername = (string)$data['bookingAuthUsername'];
 
     $sessionId = $_COOKIE['harvest_schools_admin_session_id'];
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -98,6 +99,12 @@ try {
 
     try {
         if ($isLastStudent) {
+            $stmt = $conn->prepare("DELETE FROM booking_sessions WHERE username = ?");
+            $stmt->bind_param("s", $bookingAuthUsername);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to delete booking session: " . $stmt->error);
+            }
+            $stmt->close();
 
             $stmt = $conn->prepare("SELECT parent_id FROM booking_parents_linker WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
