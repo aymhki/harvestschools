@@ -36,7 +36,7 @@ function BookingStatusInfo() {
 
 
 
-            const result = await response.json();
+            const result = await response.data;
 
             if (result.success) {
                 console.log(result.bookingId);
