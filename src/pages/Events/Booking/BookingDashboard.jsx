@@ -71,7 +71,7 @@ function BookingDashboard() {
                                 descriptionInArabic: false
                             },
                             {
-                                title: "Booking Info & Status",
+                                title: "Booking Info",
                                 image: "/assets/images/EventsPages/BookingInfo1.png",
                                 description: "Check your booking status and info.",
                                 link: "/events/booking/info",
