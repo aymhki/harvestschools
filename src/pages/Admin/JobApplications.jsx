@@ -80,11 +80,11 @@ function JobApplications() {
                                    {isLoading ? 'Loading...' : 'Reload Table Data'}
                                </button>
                            ),
-                           lastUpdated && (
-                               <span key={2} className="last-updated">
-                                   Last updated: {lastUpdated}
-                               </span>
-                           )
+                           // lastUpdated && (
+                           //     <span key={2} className="last-updated">
+                           //         Last updated: {lastUpdated}
+                           //     </span>
+                           // )
                        ]}
                        sortConfigParam={{column: 0, direction: 'descending'}}
                        filterableColumns={
