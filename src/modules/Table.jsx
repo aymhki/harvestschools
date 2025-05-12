@@ -303,10 +303,13 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center',
+                                                wordWrap: 'break-word',
+                                                wrap: 'break-word',
+                                                textWrap: 'wrap',
                                             }}>
-                                                <h5 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                     {detectLink(cell)}{getSortIndicator(cellIndex)}
-                                                </h5>
+                                                </h3>
                                                 {(filterableColumns && finalTableData[0] &&
                                                         filterableColumns.includes(finalTableData[0][cellIndex])) &&
                                                     <FilterAltIcon onClick={() =>
