@@ -12,17 +12,14 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    // Check for admin session cookie
     if (!isset($_COOKIE['harvest_schools_admin_session_id'])) {
         throw new Exception("Unauthorized: No session found", 401);
     }
 
-    // Validate request method
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception("Invalid request method. Use POST.", 405);
     }
 
-    // Get student and booking IDs from POST data
     $data = json_decode(file_get_contents('php://input'), true);
     if (!isset($data['studentId']) || !isset($data['bookingId'])) {
         throw new Exception("Missing required parameters: studentId and bookingId", 400);
@@ -38,7 +35,6 @@ try {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
     }
 
-    // Verify admin permissions
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
                       JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
@@ -70,7 +66,6 @@ try {
         throw new Exception("Permission denied", 403);
     }
 
-    // Check if the student exists and belongs to the specified booking
     $studentCheckSql = "SELECT s.student_id 
                         FROM booking_students s 
                         JOIN booking_students_linker sl ON s.student_id = sl.student_id 
@@ -86,7 +81,6 @@ try {
     }
     $stmt->close();
 
-    // Check if this is the last student for this booking
     $countSql = "SELECT COUNT(*) as student_count 
                  FROM booking_students_linker 
                  WHERE booking_id = ?";
@@ -99,15 +93,12 @@ try {
     $isLastStudent = ($row['student_count'] <= 1);
     $stmt->close();
 
-    // Begin transaction
     $conn->autocommit(false);
     $conn->begin_transaction();
 
     try {
         if ($isLastStudent) {
-            // Case 2: Last student - Delete entire booking and all related data
 
-            // 1. Get parent IDs associated with this booking FIRST, before deleting links
             $stmt = $conn->prepare("SELECT parent_id FROM booking_parents_linker WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
             $stmt->execute();
@@ -118,7 +109,6 @@ try {
             }
             $stmt->close();
 
-            // 2. Delete student linker records
             $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
             if (!$stmt->execute()) {
@@ -126,7 +116,6 @@ try {
             }
             $stmt->close();
 
-            // 3. Delete the student record
             $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
             $stmt->bind_param("i", $studentId);
             if (!$stmt->execute()) {
@@ -134,7 +123,6 @@ try {
             }
             $stmt->close();
 
-            // 4. Delete parent linker records AFTER retrieving parent IDs
             $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
             if (!$stmt->execute()) {
@@ -142,7 +130,6 @@ try {
             }
             $stmt->close();
 
-            // 5. Delete parent records using the previously retrieved IDs
             foreach ($parentIds as $parentId) {
                 $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
                 $stmt->bind_param("i", $parentId);
@@ -152,7 +139,6 @@ try {
                 $stmt->close();
             }
 
-            // 6. Delete extras record
             $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
             if (!$stmt->execute()) {
@@ -160,7 +146,6 @@ try {
             }
             $stmt->close();
 
-            // 7. Get auth_id from booking
             $stmt = $conn->prepare("SELECT auth_id FROM bookings WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
             $stmt->execute();
@@ -169,7 +154,6 @@ try {
             $authId = $row['auth_id'];
             $stmt->close();
 
-            // 8. Delete booking record
             $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
             $stmt->bind_param("i", $bookingId);
             if (!$stmt->execute()) {
@@ -177,7 +161,6 @@ try {
             }
             $stmt->close();
 
-            // 9. Delete auth credentials
             $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
             $stmt->bind_param("i", $authId);
             if (!$stmt->execute()) {
@@ -187,9 +170,7 @@ try {
 
             $message = "Booking and all related data successfully deleted";
         } else {
-            // Case 1: Multiple students - Just delete the specific student
 
-            // 1. Delete the student linker record first
             $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE student_id = ? AND booking_id = ?");
             $stmt->bind_param("ii", $studentId, $bookingId);
             if (!$stmt->execute()) {
@@ -197,7 +178,6 @@ try {
             }
             $stmt->close();
 
-            // 2. Delete the student record
             $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
             $stmt->bind_param("i", $studentId);
             if (!$stmt->execute()) {
@@ -208,7 +188,6 @@ try {
             $message = "Student successfully deleted";
         }
 
-        // Commit the transaction if everything succeeded
         $conn->commit();
 
         echo json_encode([
@@ -218,7 +197,6 @@ try {
         ]);
 
     } catch (Exception $e) {
-        // Rollback transaction on error
         $conn->rollback();
         throw $e;
     } finally {
