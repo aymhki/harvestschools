@@ -11,11 +11,13 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    if (!isset($_GET['sessionId'])) {
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!isset($input['sessionId'])) {
         throw new Exception("Session ID is required", 400);
     }
 
-    $sessionId = $_GET['sessionId'];
+    $sessionId = $input['sessionId'];
     $startTime = microtime(true);
 
     // Connect to the database
