@@ -14,11 +14,22 @@ function BookingManagement() {
 
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
-
+    const [showDeleteBookingModal, setShowDeleteBookingModal] = useState(false);
+    const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState(null);
+    const colIndexForBookingId = 0
+    const colIndexForStudentId = 1
+    const colIndexForStudentName = 2
 
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
         transform: showAddBookingModal ? 'translateY(0)' : 'translateY(-100%)'
+    });
+
+    const animateDeleteBookingModal = useSpring({
+        opacity: showDeleteBookingModal ? 1 : 0,
+        transform: showDeleteBookingModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
     const bookingUsernameFieldId = 1
@@ -242,6 +253,62 @@ function BookingManagement() {
         setResetAddBookingModal(true);
     }
 
+    const handleCancelDeleteBookingModal = () => {
+        setShowDeleteBookingModal(false);
+        setRowIndexToDelete(null);
+    }
+
+    const handleDeleteBooking = async () => {
+        try {
+            setIsLoading(true);
+            setIsDeleting(true);
+            const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
+            const studentId = allBookings[rowIndexToDelete][colIndexForStudentId];
+
+            const response = await fetch('/scripts/deleteBookingEntry.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    studentId: studentId,
+                    bookingId: bookingId
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setShowDeleteBookingModal(false);
+                setIsDeleting(false);
+                setDeleteError(null);
+                setRowIndexToDelete(null);
+                fetchBookings();
+            } else {
+                throw new Error(`${result.message}`);
+            }
+        } catch (error) {
+            setIsDeleting(false);
+            setRowIndexToDelete(null);
+            console.error('Error deleting booking:', error.message);
+            setDeleteError(error.message);
+        } finally {
+            setIsDeleting(false);
+            setRowIndexToDelete(null);
+            setIsLoading(false);
+        }
+    };
+
+    const oneStudentLeftForBookingId = () => {
+        if (allBookings && allBookings[rowIndexToDelete]) {
+            const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
+            const studentCount = allBookings.filter(booking => booking[0] === bookingId).length;
+            return studentCount === 1;
+        } else {
+            return false;
+        }
+    }
+
     const handleAddBooking = async (formData) => {
         try {
             setIsLoading(true);
@@ -312,6 +379,8 @@ function BookingManagement() {
                        allowHideColumns={true}
                        defaultHiddenColumns={
                        [
+                            'Booking ID',
+                            'Student ID',
                            'Booking Password',
                            'Student Created',
                            'Booking Created',
@@ -338,13 +407,15 @@ function BookingManagement() {
                        )
                        ]}
                        onDeleteEntry={(rowIndex) => {
-                           console.log(rowIndex);
+                           setRowIndexToDelete(rowIndex);
+                           setShowDeleteBookingModal(true);
                        }}
                        allowDeleteEntryOption={true}
                        columnsToWrap={
                             [
                                 // 'Booking ID',
                                 // 'School Division',
+                                // 'Student ID',
                                 // 'Grade',
                                 // 'Student Name',
                                 // 'Booking Username',
@@ -412,8 +483,56 @@ function BookingManagement() {
                     </div>
                 </div>
             </animated.div>
+
+            <animated.div style={animateDeleteBookingModal} className={"delete-booking-modal"}>
+                <div className={"delete-booking-modal-overlay"} onClick={handleCancelDeleteBookingModal}/>
+
+                <div className={"delete-booking-modal-container"}>
+
+                    <div className={"delete-booking-modal-header"}>
+
+                        <h3>
+                            Delete Booking
+                        </h3>
+
+                    </div>
+
+                    <div className={"delete-booking-modal-content"}>
+                        {oneStudentLeftForBookingId() ? (
+                            <p>
+                                Are you sure you want to delete the booking record for <strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>?
+                                This is the only student left for this booking ID <strong>{allBookings[rowIndexToDelete][colIndexForBookingId]}</strong>, so the parents data as well as the authentication credentials will be deleted.
+                            </p>
+                        ) : (
+                            <p>
+                                Are you sure you want to delete the booking record for <strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>?
+                            </p>
+                        )}
+                    </div>
+
+                    <div className={"delete-booking-modal-footer"}>
+                        {deleteError && <p className={"delete-booking-modal-error"}>sss{deleteError}</p>}
+
+
+                        <button className={"delete-booking-modal-cancel-button"} onClick={handleCancelDeleteBookingModal}>
+                            Cancel
+                        </button>
+
+                        <button className={"delete-booking-modal-confirm-button"} onClick={() => {
+                            handleDeleteBooking();
+                        }}>
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+            </animated.div>
         </>
     );
 }
 
 export default BookingManagement;
+

@@ -98,6 +98,70 @@
     max-height: 80vh;
 }
 
+.delete-booking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+
+.delete-booking-modal-overlay {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+}
+
+.delete-booking-modal-container {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    width: 50%;
+    min-height: 50%;
+    z-index: 1001;
+}
+
+.delete-booking-modal-header {
+    margin: 0.5rem;
+}
+
+.delete-booking-modal-header h3,  .delete-booking-modal-header p {
+    margin: 0.5rem;
+}
+
+.delete-booking-modal-content {
+
+}
+
+.delete-booking-modal-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.delete-booking-modal-footer button {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    font-size: medium;
+}
+
 @media (max-width: 1600px) {
 
 }
