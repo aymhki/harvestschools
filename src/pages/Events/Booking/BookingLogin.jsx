@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
-import {sessionDuration} from "../../../services/Utils.jsx";
+import {sessionDuration, sessionDurationInHours} from "../../../services/Utils.jsx";
 
 function BookingLogin() {
     const navigate = useNavigate();
