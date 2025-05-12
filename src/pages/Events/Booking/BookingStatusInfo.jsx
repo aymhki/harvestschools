@@ -55,7 +55,7 @@ function BookingStatusInfo() {
                 let currentFormFields = [];
 
 
-                if (result.bookingId !== null && result.bookingId !== undefined && result.bookingId !== '' && result.bookingId.length > 0) {
+                if (result.bookingId !== null && result.bookingId !== undefined && result.bookingId !== '') {
                      bookingIdField = {
                         id: 1,
                         type: 'text',
@@ -95,7 +95,7 @@ function BookingStatusInfo() {
                     currentFormFields.push(userNameField);
                 }
 
-                if (result.detailedData.booking.auth_id !== null && result.detailedData.booking.auth_id !== undefined && result.detailedData.booking.auth_id !== '' && result.detailedData.booking.auth_id.length > 0) {
+                if (result.detailedData.booking.auth_id !== null && result.detailedData.booking.auth_id !== undefined && result.detailedData.booking.auth_id !== '') {
                     authIdField = {
                         id: 3,
                         type: 'text',
