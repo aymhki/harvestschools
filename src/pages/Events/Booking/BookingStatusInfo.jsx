@@ -48,78 +48,95 @@ function BookingStatusInfo() {
                 console.log(result.tabularData);
                 console.log(result.executionTime);
 
-                const bookingIdField = {
-                    id: 1,
-                    type: 'text',
-                    name: 'booking-id',
-                    label: 'Booking ID:',
-                    required: false,
-                    value: result.bookingId,
-                    setValue: null,
-                    widthOfField: 2,
-                    httpName: 'booking-id',
-                    labelOutside: true,
-                    labelOnTop: true,
-                    dontLetTheBrowserSaveField: true,
-                    readOnlyField: true,
+                let bookingIdField = null;
+                let userNameField = null;
+                let authIdField = null;
+                let bookingStatusField = null;
+                let currentFormFields = [];
+
+
+                if (result.bookingId !== null && result.bookingId !== undefined && result.bookingId !== '' && result.bookingId.length > 0) {
+                     bookingIdField = {
+                        id: 1,
+                        type: 'text',
+                        name: 'booking-id',
+                        label: 'Booking ID:',
+                        required: false,
+                        value: result.bookingId,
+                        setValue: null,
+                        widthOfField: 2,
+                        httpName: 'booking-id',
+                        labelOutside: true,
+                        labelOnTop: true,
+                        dontLetTheBrowserSaveField: true,
+                        readOnlyField: true,
+                    }
+
+                    currentFormFields.push(bookingIdField);
                 }
 
-                const userNameField = {
-                    id: 2,
-                    type: 'text',
-                    name: 'username',
-                    label: 'Username:',
-                    required: false,
-                    value: result.bookingUsername,
-                    setValue: null,
-                    widthOfField: 2,
-                    httpName: 'username',
-                    labelOutside: true,
-                    labelOnTop: true,
-                    dontLetTheBrowserSaveField: true,
-                    readOnlyField: true,
+                if (result.bookingUsername !== null && result.bookingUsername !== undefined && result.bookingUsername !== '' && result.bookingUsername.length > 0) {
+                    userNameField = {
+                        id: 2,
+                        type: 'text',
+                        name: 'username',
+                        label: 'Username:',
+                        required: false,
+                        value: result.bookingUsername,
+                        setValue: null,
+                        widthOfField: 2,
+                        httpName: 'username',
+                        labelOutside: true,
+                        labelOnTop: true,
+                        dontLetTheBrowserSaveField: true,
+                        readOnlyField: true,
+                    }
+
+                    currentFormFields.push(userNameField);
                 }
 
-                const authIdField = {
-                    id: 3,
-                    type: 'text',
-                    name: 'auth-id',
-                    label: 'Auth ID:',
-                    required: false,
-                    value: result.sessionId,
-                    setValue: null,
-                    widthOfField: 2,
-                    httpName: 'auth-id',
-                    labelOutside: true,
-                    labelOnTop: true,
-                    dontLetTheBrowserSaveField: true,
-                    readOnlyField: true,
+                if (result.detailedData.booking.auth_id !== null && result.detailedData.booking.auth_id !== undefined && result.detailedData.booking.auth_id !== '' && result.detailedData.booking.auth_id.length > 0) {
+                    authIdField = {
+                        id: 3,
+                        type: 'text',
+                        name: 'auth-id',
+                        label: 'Auth ID:',
+                        required: false,
+                        value: result.detailedData.booking.auth_id,
+                        setValue: null,
+                        widthOfField: 2,
+                        httpName: 'auth-id',
+                        labelOutside: true,
+                        labelOnTop: true,
+                        dontLetTheBrowserSaveField: true,
+                        readOnlyField: true,
+                    }
+
+                    currentFormFields.push(authIdField);
                 }
 
-                const bookingStatusField = {
-                    id: 4,
-                    type: 'text',
-                    name: 'booking-status',
-                    label: 'Booking Status:',
-                    required: false,
-                    value: result.detailedData.booking.status,
-                    setValue: null,
-                    widthOfField: 2,
-                    httpName: 'booking-status',
-                    labelOutside: true,
-                    labelOnTop: true,
-                    dontLetTheBrowserSaveField: true,
-                    readOnlyField: true,
+                if (result.detailedData.booking.status !== null && result.detailedData.booking.status !== undefined && result.detailedData.booking.status !== '' && result.detailedData.booking.status.length > 0) {
+                    bookingStatusField = {
+                        id: 4,
+                        type: 'text',
+                        name: 'booking-status',
+                        label: 'Booking Status:',
+                        required: false,
+                        value: result.detailedData.booking.status,
+                        setValue: null,
+                        widthOfField: 2,
+                        httpName: 'booking-status',
+                        labelOutside: true,
+                        labelOnTop: true,
+                        dontLetTheBrowserSaveField: true,
+                        readOnlyField: true,
+                    }
 
+                    currentFormFields.push(bookingStatusField);
                 }
 
 
-                setFinalFormFields([
-                    bookingIdField,
-                    userNameField,
-                    authIdField,
-                    bookingStatusField,
-                ])
+                setFinalFormFields(currentFormFields);
 
             } else {
                 throw new Error(result.message);
