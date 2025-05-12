@@ -89,6 +89,10 @@
     flex-direction: column;
 }
 
+.booking-info-page-form-wrapper {
+    width: 80%;
+}
+
 
 @media (max-width: 1600px) {
 

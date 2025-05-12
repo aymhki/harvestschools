@@ -153,6 +153,7 @@ function BookingLogin() {
                                           widthOfField: 1,
                                           httpName: 'username',
 
+
                                       },
                                       {
                                           id: passwordFieldId,

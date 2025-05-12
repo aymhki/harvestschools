@@ -588,6 +588,16 @@
     -webkit-text-security: disc;
 }
 
+.read-only-field {
+    pointer-events: none;
+    /*background-color: #f0f0f0;*/
+    /*color: #1f2152;*/
+    background: #ccc;
+    color: #000000;
+    border-color: #000000
+
+}
+
 @media (max-width: 1600px) {
     .captcha-box {
         letter-spacing: 2rem;
@@ -686,7 +696,7 @@
     }
 
     .field-with-label-on-top.two-thirds-width .text-form-field,     .field-with-label-on-top.third-width .text-form-field,     .field-with-label-on-top.half-width .text-form-field {
-        margin: 0.5rem;
+        margin: 0.3rem;
         width: calc(100% - 1.5rem);
     }
 
@@ -857,5 +867,11 @@
 
     .toggle-password-visibility:hover {
         color: #ffffff
+    }
+
+    .read-only-field {
+        background: #454545;
+        color: #ffffff;
+        border-color: #ffffff
     }
 }
