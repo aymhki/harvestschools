@@ -96,7 +96,7 @@ function AdminLogin() {
                     navigate('/admin/dashboard');
                 }
             } catch (error) {
-                console.log(error);
+                console.log(error.message);
             }
         };
 

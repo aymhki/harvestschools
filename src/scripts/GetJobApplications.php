@@ -111,12 +111,12 @@ try {
 
     if ($statusCode == 401 || $statusCode == 403) {
         echo json_encode([
-            "error" => $e->getMessage(),
+            "message" => $e->getMessage(),
             "code" => $statusCode
         ]);
     } else {
         echo json_encode([
-            "error" => $e->getMessage(),
+            "message" => $e->getMessage(),
             "code" => $statusCode
         ]);
     }

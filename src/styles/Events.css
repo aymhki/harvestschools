@@ -26,3 +26,85 @@
 .download-calendar-button {
 
 }
+
+.booking-login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vw;
+    background: radial-gradient(circle, #ffffff, #1a2a6c);
+}
+
+.booking-login-page-form-controller {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+.booking-login-form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50vw;
+    height: 60vh;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    will-change: filter;
+    transition: filter 0.5s;
+    min-height: 35rem;
+}
+
+.booking-login-form-wrapper:hover {
+    filter: drop-shadow(0 0 0.5rem #1f2152);
+}
+
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1440px) {
+
+}
+
+@media (max-width: 1200px) {
+
+    .booking-login-form-wrapper {
+        width: 70vw;
+        height: 60vh;
+    }
+
+}
+
+@media (max-width: 1024px) {
+
+}
+
+@media (max-width: 768px) {
+    .booking-login-page {
+
+    }
+
+    .booking-login-form-wrapper {
+        width: 90vw;
+        height: 60vh;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .booking-login-page {
+        background: radial-gradient(circle, #ffffff, #0f0f0f) ;
+    }
+
+    .booking-login-form-wrapper {
+        background-color: #242424;
+    }
+
+    .booking-login-form-wrapper:hover {
+        filter: drop-shadow(0 0 0.5rem #ffffff);
+    }
+}

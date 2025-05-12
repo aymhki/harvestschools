@@ -40,7 +40,7 @@ function JobApplications() {
             setLastUpdated(new Date().toLocaleTimeString());
 
         } catch (error) {
-            console.error("Error fetching job applications:", error);
+            console.log("Error fetching job applications:", error);
             setIsLoading(false);
             setJobApplications(null);
         }
