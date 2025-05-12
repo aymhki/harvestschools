@@ -5,6 +5,8 @@ import axios from "axios";
 import {v4 as uuidv4} from "uuid";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
+import '../../../styles/Events.css'
+import {sessionDuration} from "../../../services/Utils.jsx";
 
 function BookingLogin() {
     const navigate = useNavigate();
@@ -35,7 +37,7 @@ function BookingLogin() {
             if (response.data.success) {
                 const sessionId = uuidv4();
                 const sessionExpiry = new Date();
-                sessionExpiry.setHours(sessionExpiry.getHours() + 1);
+                sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
                 document.cookie = `harvest_schools_booking_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
                 document.cookie = `harvest_schools_booking_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
 
@@ -72,7 +74,7 @@ function BookingLogin() {
             const sessionId = cookies.harvest_schools_booking_session_id;
             const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
 
-            if (!sessionId || !sessionTime || (Date.now() - sessionTime) > 3600000) {
+            if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
                 document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 return;
