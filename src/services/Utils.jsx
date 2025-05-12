@@ -54,10 +54,10 @@ const checkAdminSession = async (
             return;
         }
 
-        setIsLoading(false);
-
     } catch (error) {
         console.log(error.message);
+    } finally {
+        setIsLoading(false);
     }
 };
 
@@ -65,6 +65,7 @@ const checkBookingSession = async (
     navigate,
     setIsLoading,
 ) => {
+
     const cookies = document.cookie.split(';').reduce((acc, cookie) => {
         const [key, value] = cookie.trim().split('=');
         acc[key] = value;
@@ -77,7 +78,7 @@ const checkBookingSession = async (
     if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
         document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        navigate('/admin/login');
+        navigate('/events/booking');
     }
 
     try {
@@ -90,11 +91,13 @@ const checkBookingSession = async (
         });
 
         if (!response.data.success) {
-            navigate('/admin/login');
+            navigate('/events/booking');
         }
 
     } catch (error) {
         console.log(error.message);
+    } finally {
+        setIsLoading(false);
     }
 }
 

@@ -62,7 +62,13 @@
     filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
-
+.booking-extras-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vw;
+}
 
 
 @media (max-width: 1600px) {
