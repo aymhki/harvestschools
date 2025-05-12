@@ -343,10 +343,13 @@ function BookingManagement() {
                                 'Booking Username',
                                 'First Parent Name',
                                 'First Parent Email',
-                                'First Parent Phone Number',
-                                // 'Second Parent Name',
-                                // 'Second Parent Email',
-                                // 'Second Parent Phone Number',
+                                'First Parent Phone',
+                                'CD Count',
+                                'Additional Attendees',
+                                'Payment Status',
+                                'Second Parent Name',
+                                'Second Parent Email',
+                                'Second Parent Phone',
                             ]
                        }
                 />
