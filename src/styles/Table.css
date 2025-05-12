@@ -310,6 +310,7 @@ tr:hover {
 
     .table-module-header-buttons-wrapper {
         margin: 2rem;
+        flex-wrap: wrap;
     }
 
     .table-module-accordion-content {
