@@ -3,10 +3,12 @@ import {useEffect, useState} from "react";
 import {checkBookingSession, getCookies} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 import axios from "axios";
+import Form from "../../../modules/Form.jsx";
 
 function BookingStatusInfo() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [finalFormFields, setFinalFormFields] = useState([]);
 
     useEffect(() => {
         checkBookingSession(navigate, setIsLoading).then(
@@ -46,6 +48,79 @@ function BookingStatusInfo() {
                 console.log(result.tabularData);
                 console.log(result.executionTime);
 
+                const bookingIdField = {
+                    id: 1,
+                    type: 'text',
+                    name: 'booking-id',
+                    label: 'Booking ID:',
+                    required: false,
+                    value: result.bookingId,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'booking-id',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+                }
+
+                const userNameField = {
+                    id: 2,
+                    type: 'text',
+                    name: 'username',
+                    label: 'Username:',
+                    required: false,
+                    value: result.bookingUsername,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'username',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+                }
+
+                const authIdField = {
+                    id: 3,
+                    type: 'text',
+                    name: 'auth-id',
+                    label: 'Auth ID:',
+                    required: false,
+                    value: result.sessionId,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'auth-id',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+                }
+
+                const bookingStatusField = {
+                    id: 4,
+                    type: 'text',
+                    name: 'booking-status',
+                    label: 'Booking Status:',
+                    required: false,
+                    value: result.detailedData.booking.status,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'booking-status',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+
+                }
+
+
+                setFinalFormFields([
+                    bookingIdField,
+                    userNameField,
+                    authIdField,
+                    bookingStatusField,
+                ])
+
             } else {
                 throw new Error(result.message);
             }
@@ -71,9 +146,18 @@ function BookingStatusInfo() {
                 <h1>
                     Booking Info
                 </h1>
-                <p>
-                    This page is under construction.
-                </p>
+
+                <div className={'booking-info-page-form-wrapper'}>
+                    <Form mailTo={''}
+                          formTitle={'Booking Info'}
+                          sendPdf={false}
+                          lang={'en'}
+                          noInputFieldsCache={true}
+                          noCaptcha={true}
+                          fields={finalFormFields}
+                          formIsReadOnly={true}
+                    />
+                </div>
             </div>
         </>
     );

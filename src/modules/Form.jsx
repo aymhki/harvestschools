@@ -72,7 +72,8 @@ function Form({
                   dynamicSections = [],
                   pedanticIds,
                     formInModalPopup,
-                    setShowFormModalPopup
+                    setShowFormModalPopup,
+                  formIsReadOnly
               }) {
 
     const [submitting, setSubmitting] = useState(false); //disable fields when submitting
@@ -504,12 +505,15 @@ function Form({
                                     name={'hidden'}
                                     required={field.required}
                                     placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                    disabled={submitting}
+                                    disabled={submitting || field.readOnlyField}
                                     onChange={(e) => onChange(e, field)}
                                     autoComplete="new-password"
                                     data-lpignore="true"
-                                    className={`text-form-field`}
+                                    readOnly={field.readOnlyField ? true : false}
+
+                                    className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
+                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                                 />
                              </div>
 
@@ -520,12 +524,14 @@ function Form({
                                  name={'hidden'}
                                  required={field.required}
                                  placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                 disabled={submitting}
+                                 disabled={submitting || field.readOnlyField}
                                  onChange={(e) => onChange(e, field)}
                                  autoComplete="new-password"
                                  data-lpignore="true"
-                                 className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                 readOnly={field.readOnlyField ? true : false}
+                                 className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}  ${field.readOnlyField ? 'read-only-field' : ''}`}
                                  data-instance-id={field.instanceId || ''}
+                                 value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                              />
                          )
 
@@ -541,10 +547,12 @@ function Form({
                                 name={field.httpName}
                                 required={field.required}
                                 placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                disabled={submitting}
+                                disabled={submitting || field.readOnlyField}
                                 onChange={(e) => onChange(e, field)}
-                                className={`text-form-field`}
+                                readOnly={field.readOnlyField ? true : false}
+                                className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
+                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                             />
                         </div>
                         ) : (
@@ -554,10 +562,12 @@ function Form({
                                 name={field.httpName}
                                 required={field.required}
                                 placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                disabled={submitting}
+                                disabled={submitting || field.readOnlyField}
                                 onChange={(e) => onChange(e, field)}
-                                className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                                readOnly={field.readOnlyField ? true : false}
+                                className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
+                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                             />
                         )
                     )
@@ -576,12 +586,14 @@ function Form({
                                     name={field.dontLetTheBrowserSaveField ?  'hidden' : field.httpName}
                                     required={field.required}
                                     placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                    disabled={submitting}
+                                    disabled={submitting || field.readOnlyField}
                                     onChange={(e) => onChange(e, field)}
                                     autoComplete={field.dontLetTheBrowserSaveField ? "new-password" : ""}
                                     data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
-                                    className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''}`}
+                                    className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
+                                    readOnly={field.readOnlyField ? true : false}
+                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                                 />
                                 <button
                                     type="button"
@@ -601,12 +613,14 @@ function Form({
                                 name={field.dontLetTheBrowserSaveField ?  'hidden' : field.httpName}
                                 required={field.required}
                                 placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                                disabled={submitting}
+                                disabled={submitting || field.readOnlyField}
+                                readOnly={field.readOnlyField ? true : false}
                                 onChange={(e) => onChange(e, field)}
                                 autoComplete={field.dontLetTheBrowserSaveField ? "new-password" : ""}
                                 data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
-                                className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''}`}
+                                className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
+                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                             />
                             <button
                                 type="button"
@@ -632,7 +646,7 @@ function Form({
                                     name={field.httpName}
                                     required={field.required}
                                     placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
-                                    disabled={submitting}
+                                    disabled={submitting || field.readOnlyField}
                                     readOnly={true}
                                     onChange={(e) => {
                                         onChange(e, field);
@@ -647,7 +661,7 @@ function Form({
                                             setSelectedDateError('');
                                         }
                                     }}
-                                    className={`text-form-field`}
+                                    className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
                                 />
                         </div>
@@ -658,7 +672,7 @@ function Form({
                             name={field.httpName}
                             required={field.required}
                             placeholder={`${field.placeholder ? field.placeholder+' (YYYY-MM-DD)' : field.label+' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
-                            disabled={submitting}
+                            disabled={submitting || field.readOnlyField}
                             readOnly={true}
                             onChange={(e) => {
                                 onChange(e, field);
@@ -673,8 +687,9 @@ function Form({
                                     setSelectedDateError('');
                                 }
                             }}
-                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
+                            className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                         />
                     )
                 )}
@@ -691,10 +706,12 @@ function Form({
                             name={field.httpName}
                             required={field.required}
                             placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                            disabled={submitting}
+                            disabled={submitting || field.readOnlyField}
+                            readOnly={field.readOnlyField ? true : false}
                             onChange={(e) => onChange(e, field)}
-                            className={`textarea-form-field`}
+                            className={`textarea-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                         />
 
                     </div>
@@ -705,10 +722,12 @@ function Form({
                         name={field.httpName}
                         required={field.required}
                         placeholder={`${field.placeholder ? field.placeholder : field.label}${field.required ? '*' : ''}`}
-                        disabled={submitting}
+                        disabled={submitting || field.readOnlyField}
+                        readOnly={field.readOnlyField ? true : false}
                         onChange={(e) => onChange(e, field)}
-                        className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''}`}
+                        className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                         data-instance-id={field.instanceId || ''}
+                        value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                     />
                 )
                 )}
@@ -725,16 +744,17 @@ function Form({
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            disabled={submitting}
+                            disabled={submitting || field.readOnlyField}
                             className={
                                 field.multiple ? (
-                                        `select-multiple-form-field`
+                                        `select-multiple-form-field ${field.readOnlyField ? 'read-only-field' : ''}`
                                     ) : (
-                                        `select-form-field`
+                                        `select-form-field ${field.readOnlyField ? 'read-only-field' : ''}`
                                 )
                             }
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                         >
                             {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
                             {field.choices.map((choice, index) => (
@@ -748,15 +768,16 @@ function Form({
                             id={field.id}
                             name={field.httpName}
                             required={field.required}
-                            disabled={submitting}
+                            disabled={submitting || field.readOnlyField}
                             className={
                                 field.multiple ? (
-                                        `select-multiple-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`
+                                        `select-multiple-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`
                                     ) :
-                                    (`select-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`)
+                                    (`select-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`)
                             }
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
                         >
                             {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
                             {field.choices && field.choices.map((choice, index) => (
@@ -1206,7 +1227,8 @@ function Form({
                     </>
                 )}
 
-                <div className={`form-footer ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
+                {!formIsReadOnly && (
+                    <div className={`form-footer ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
                     {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                     {successMessage && <p className="success-message">{successMessage}</p>}
 
@@ -1246,6 +1268,7 @@ function Form({
 
                     </div>
                 </div>
+                )}
             </form>
 
             <animated.div style={animateDateModal} className={"form-select-date-modal"}>
@@ -1355,6 +1378,7 @@ Form.propTypes = {
         mustMatchFieldWithId: PropTypes.number,
         mustNotMatchFieldWithId: PropTypes.number,
         labelOnTop: PropTypes.bool,
+        readOnlyField: PropTypes.bool,
 
         rules: PropTypes.arrayOf(PropTypes.shape({
             value: PropTypes.string.isRequired,
@@ -1377,6 +1401,7 @@ Form.propTypes = {
                 mustMatchFieldWithId: PropTypes.number,
                 mustNotMatchFieldWithId: PropTypes.number,
                 labelOnTop: PropTypes.bool,
+                readOnlyField: PropTypes.bool,
 
                 rules: PropTypes.arrayOf(PropTypes.shape({
                     value: PropTypes.string.isRequired,
@@ -1397,7 +1422,8 @@ Form.propTypes = {
                         placeholder: PropTypes.string,
                         dontLetTheBrowserSaveField: PropTypes.bool,
                         multiple: PropTypes.bool,
-                        labelOnTop: PropTypes.bool
+                        labelOnTop: PropTypes.bool,
+                        readOnlyField: PropTypes.bool,
                     }))
                 }))
             }))
@@ -1435,7 +1461,9 @@ Form.propTypes = {
     })),
     pedanticIds: PropTypes.bool,
     formInModalPopup: PropTypes.bool,
-    setShowFormModalPopup: PropTypes.func
+    setShowFormModalPopup: PropTypes.func,
+    formIsReadOnly: PropTypes.bool,
+
 };
 
 export default Form;
