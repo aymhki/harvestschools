@@ -304,9 +304,9 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center',
                                             }}>
-                                                <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                <h5 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                     {detectLink(cell)}{getSortIndicator(cellIndex)}
-                                                </h3>
+                                                </h5>
                                                 {(filterableColumns && finalTableData[0] &&
                                                         filterableColumns.includes(finalTableData[0][cellIndex])) &&
                                                     <FilterAltIcon onClick={() =>
