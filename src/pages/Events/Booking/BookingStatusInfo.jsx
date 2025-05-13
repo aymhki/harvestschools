@@ -427,7 +427,7 @@ function BookingStatusInfo() {
                             name: 'extra-updated-at',
                             label: 'Last Updated At:',
                             required: false,
-                            value: Date(result.detailedData.extras.updated_at).toLocaleString(),
+                            value: Date(result.detailedData.extras.updated_at),
                             setValue: null,
                             widthOfField: 2,
                             httpName: 'extra-updated-at',
