@@ -55,12 +55,17 @@ function BookingStatusInfo() {
                 let bookingStatusField = null;
                 let currentFormFields = [];
                 let numParents = null;
+                let numStudents = null;
 
                 if (result.detailedData && result.detailedData.parents) {
                     numParents = result.detailedData.parents.length;
                 }
 
-                if (result.bookingId !== null && result.bookingId !== undefined && result.bookingId !== '') {
+                if (result.detailedData && result.detailedData.students) {
+                    numStudents = result.detailedData.students.length;
+                }
+
+                if (result.bookingId) {
                      bookingIdField = {
                         id: 1,
                         type: 'text',
@@ -80,7 +85,7 @@ function BookingStatusInfo() {
                     currentFormFields.push(bookingIdField);
                 }
 
-                if (result.bookingUsername !== null && result.bookingUsername !== undefined && result.bookingUsername !== '' && result.bookingUsername.length > 0) {
+                if (result.bookingUsername) {
                     userNameField = {
                         id: 2,
                         type: 'text',
@@ -100,7 +105,7 @@ function BookingStatusInfo() {
                     currentFormFields.push(userNameField);
                 }
 
-                if (result.detailedData.booking.password_hash !== null && result.detailedData.booking.password_hash !== undefined && result.detailedData.booking.password_hash !== '' && result.detailedData.booking.password_hash.length > 0) {
+                if (result.detailedData.booking.password_hash) {
                     authIdField = {
                         id: 3,
                         type: 'text',
@@ -120,7 +125,7 @@ function BookingStatusInfo() {
                     currentFormFields.push(authIdField);
                 }
 
-                if (result.detailedData.booking.status !== null && result.detailedData.booking.status !== undefined && result.detailedData.booking.status !== '' && result.detailedData.booking.status.length > 0) {
+                if (result.detailedData.booking.status) {
                     bookingStatusField = {
                         id: 4,
                         type: 'text',
@@ -140,7 +145,7 @@ function BookingStatusInfo() {
                     currentFormFields.push(bookingStatusField);
                 }
 
-                if (numParents !== null && numParents !== undefined && numParents > 0) {
+                if (numParents) {
                    for (let i = 0; i < numParents; i++ ) {
                        currentFormFields.push({
                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
@@ -153,71 +158,267 @@ function BookingStatusInfo() {
 
                        })
 
-                       currentFormFields.push({
-                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
-                           type: 'text',
-                           name: 'parent-id',
-                           label: 'Parent Id: ',
-                           required: false,
-                           value: result.detailedData.parents[i].parent_id,
-                           setValue: null,
-                           widthOfField: 2,
-                           httpName: 'parent-id',
-                           labelOutside: true,
-                           labelOnTop: true,
-                           dontLetTheBrowserSaveField: true,
-                           readOnlyField: true,
-                       })
+                       if (result.detailedData.parents[i].parent_id) {
+                           currentFormFields.push({
+                               id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                               type: 'text',
+                               name: 'parent-id',
+                               label: 'Parent Id: ',
+                               required: false,
+                               value: result.detailedData.parents[i].parent_id,
+                               setValue: null,
+                               widthOfField: 2,
+                               httpName: 'parent-id',
+                               labelOutside: true,
+                               labelOnTop: true,
+                               dontLetTheBrowserSaveField: true,
+                               readOnlyField: true,
+                           })
+                       }
 
-                       currentFormFields.push({
-                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
-                           type: 'text',
-                           name: 'parent-name',
-                           label: 'Parent Name: ',
-                           required: false,
-                           value: result.detailedData.parents[i].name,
-                           setValue: null,
-                           widthOfField: 2,
-                           httpName: 'parent-name',
-                           labelOutside: true,
-                           labelOnTop: true,
-                           dontLetTheBrowserSaveField: true,
-                           readOnlyField: true,
-                       })
+                          if (result.detailedData.parents[i].name) {
+                              currentFormFields.push({
+                                  id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                                  type: 'text',
+                                  name: 'parent-name',
+                                  label: 'Parent Name: ',
+                                  required: false,
+                                  value: result.detailedData.parents[i].name,
+                                  setValue: null,
+                                  widthOfField: 2,
+                                  httpName: 'parent-name',
+                                  labelOutside: true,
+                                  labelOnTop: true,
+                                  dontLetTheBrowserSaveField: true,
+                                  readOnlyField: true,
+                              })
+                          }
 
-                       currentFormFields.push({
-                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
-                           type: 'text',
-                           name: 'parent-email',
-                           label: 'Parent Email: ',
-                           required: false,
-                           value: result.detailedData.parents[i].email,
-                           setValue: null,
-                           widthOfField: 2,
-                           httpName: 'parent-email',
-                           labelOutside: true,
-                           labelOnTop: true,
-                           dontLetTheBrowserSaveField: true,
-                           readOnlyField: true,
-                       })
+                     if (result.detailedData.parents[i].email) {
+                         currentFormFields.push({
+                             id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                             type: 'text',
+                             name: 'parent-email',
+                             label: 'Parent Email: ',
+                             required: false,
+                             value: result.detailedData.parents[i].email,
+                             setValue: null,
+                             widthOfField: 2,
+                             httpName: 'parent-email',
+                             labelOutside: true,
+                             labelOnTop: true,
+                             dontLetTheBrowserSaveField: true,
+                             readOnlyField: true,
+                         })
+                     }
 
 
-                       currentFormFields.push({
-                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
-                           type: 'text',
-                           name: 'parent-phone',
-                           label: 'Parent Phone: ',
-                           required: false,
-                           value: result.detailedData.parents[i].phone_number,
-                           setValue: null,
-                           widthOfField: 2,
-                           httpName: 'parent-phone',
-                           labelOutside: true,
-                           labelOnTop: true,
-                           dontLetTheBrowserSaveField: true,
-                           readOnlyField: true,
-                       })
+                     if(result.detailedData.parents[i].phone_number) {
+                         currentFormFields.push({
+                             id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                             type: 'text',
+                             name: 'parent-phone',
+                             label: 'Parent Phone: ',
+                             required: false,
+                             value: result.detailedData.parents[i].phone_number,
+                             setValue: null,
+                             widthOfField: 2,
+                             httpName: 'parent-phone',
+                             labelOutside: true,
+                             labelOnTop: true,
+                             dontLetTheBrowserSaveField: true,
+                             readOnlyField: true,
+                         })
+                     }
                    }
+                }
+
+                if (numStudents) {
+                    for (let i = 0; i < numStudents; i++ ) {
+                        currentFormFields.push({
+                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                            type: 'section',
+                            name: 'new-student',
+                            label: 'Student: ' + (i+1),
+                            required: true,
+                            widthOfField: 1,
+                            httpName: 'new-student',
+
+                        })
+
+                        if (result.detailedData.students[i].student_id) {
+                            currentFormFields.push({
+                                id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                                type: 'text',
+                                name: 'student-id',
+                                label: 'Student Id: ',
+                                required: false,
+                                value: result.detailedData.students[i].student_id,
+                                setValue: null,
+                                widthOfField: 2,
+                                httpName: 'student-id',
+                                labelOutside: true,
+                                labelOnTop: true,
+                                dontLetTheBrowserSaveField: true,
+                                readOnlyField: true,
+                            })
+                        }
+
+                        if (result.detailedData.students[i].name) {
+                            currentFormFields.push({
+                                id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                                type: 'text',
+                                name: 'student-name',
+                                label: 'Student Name:',
+                                required: false,
+                                value: result.detailedData.students[i].name,
+                                setValue: null,
+                                widthOfField: 2,
+                                httpName: 'student-name',
+                                labelOutside: true,
+                                labelOnTop: true,
+                                dontLetTheBrowserSaveField: true,
+                                readOnlyField: true,
+                            })
+                        }
+
+                        if (result.detailedData.students[i].grade) {
+                            currentFormFields.push({
+                                id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                                type: 'text',
+                                name: 'student-grade',
+                                label: 'Student Grade:',
+                                required: false,
+                                value: result.detailedData.students[i].grade,
+                                setValue: null,
+                                widthOfField: 2,
+                                httpName: 'student-grade',
+                                labelOutside: true,
+                                labelOnTop: true,
+                                dontLetTheBrowserSaveField: true,
+                                readOnlyField: true,
+                            })
+                        }
+
+                        if (result.detailedData.students[i].school_division) {
+                            currentFormFields.push({
+                                id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                                type: 'text',
+                                name: 'student-school-division',
+                                label: 'Student School Division:',
+                                required: false,
+                                value: result.detailedData.students[i].school_division,
+                                setValue: null,
+                                widthOfField: 2,
+                                httpName: 'student-school-division',
+                                labelOutside: true,
+                                labelOnTop: true,
+                                dontLetTheBrowserSaveField: true,
+                                readOnlyField: true,
+                            })
+                        }
+                    }
+                }
+
+                if (result.detailedData.extras) {
+                    // additional_attendees
+                    //     :
+                    //     0
+                    // cd_count
+                    //     :
+                    //     0
+                    // extra_id
+                    //     :
+                    //     13
+                    // payment_status
+                    //     :
+                    //     "Not Signed Up"
+                    // updated_at
+                    //     :
+                    //     "2025-05-12 13:05:10"
+
+                    currentFormFields.push({
+                        id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                        type: 'section',
+                        name: 'extras',
+                        label: 'Extras',
+                        required: true,
+                        widthOfField: 1,
+                        httpName: 'extras',
+
+                    })
+
+                    if (result.detailedData.extras.extra_id) {
+                        currentFormFields.push({
+                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                            type: 'text',
+                            name: 'extra-id',
+                            label: 'Extra Booking Id:',
+                            required: false,
+                            value: result.detailedData.extras.extra_id,
+                            setValue: null,
+                            widthOfField: 2,
+                            httpName: 'extra-id',
+                            labelOutside: true,
+                            labelOnTop: true,
+                            dontLetTheBrowserSaveField: true,
+                            readOnlyField: true,
+                        })
+                    }
+
+                    if (result.detailedData.extras.payment_status) {
+                        currentFormFields.push({
+                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                            type: 'text',
+                            name: 'extra-payment-status',
+                            label: 'Extras Payment Status:',
+                            required: false,
+                            value: result.detailedData.extras.payment_status,
+                            setValue: null,
+                            widthOfField: 2,
+                            httpName: 'extra-payment-status',
+                            labelOutside: true,
+                            labelOnTop: true,
+                            dontLetTheBrowserSaveField: true,
+                            readOnlyField: true,
+                        })
+                    }
+
+                    if (result.detailedData.extras.additional_attendees) {
+                        currentFormFields.push({
+                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                            type: 'text',
+                            name: 'extra-additional-attendees',
+                            label: 'Requested Additional Attendees:',
+                            required: false,
+                            value: result.detailedData.extras.additional_attendees,
+                            setValue: null,
+                            widthOfField: 2,
+                            httpName: 'extra-additional-attendees',
+                            labelOutside: true,
+                            labelOnTop: true,
+                            dontLetTheBrowserSaveField: true,
+                            readOnlyField: true,
+                        })
+                    }
+
+                    if (result.detailedData.extras.cd_count) {
+                        currentFormFields.push({
+                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                            type: 'text',
+                            name: 'extra-cd-count',
+                            label: 'Requested After Part CD(s):',
+                            required: false,
+                            value: result.detailedData.extras.cd_count,
+                            setValue: null,
+                            widthOfField: 2,
+                            httpName: 'extra-cd-count',
+                            labelOutside: true,
+                            labelOnTop: true,
+                            dontLetTheBrowserSaveField: true,
+                            readOnlyField: true,
+                        })
+                    }
                 }
 
                 setFinalFormFields(currentFormFields);

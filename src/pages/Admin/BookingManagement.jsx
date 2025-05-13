@@ -236,7 +236,7 @@ function BookingManagement() {
             type: 'select',
             name: 'student-grade',
             label: 'Student Grade',
-            choices: ['PlaySchool', 'KG 1', 'KG 2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
             required: true,
             placeholder: 'Student Grade',
             errorMsg: 'Please enter the student grade',
