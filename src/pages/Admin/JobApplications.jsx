@@ -87,21 +87,21 @@ function JobApplications() {
                            // )
                        ]}
                        sortConfigParam={{column: 0, direction: 'descending'}}
-                       filterableColumns={{
-
-                               'Date of Birth': 'Date',
-                               'Application Time': 'Date',
-                               'Gender': 'Text',
-                               'Address District': 'Text',
-                               'Position Applying For': 'Text',
-                               'Position Applying For Specialty': 'Text',
-                               'High School System': 'Text',
-                               'High School Graduation Date': 'Date',
-                               'Institution Major': 'Text',
-                               'Institution Graduation Date': 'Date',
-                               'Years of Experience': 'Text',
-
-                       }}
+                       filterableColumns={
+                           [
+                               'Date of Birth',
+                               'Application Time',
+                               'Gender',
+                               'Address District',
+                               'Position Applying For',
+                               'Position Applying For Specialty',
+                               'High School System',
+                               'High School Graduation Date',
+                               'Institution Major',
+                               'Institution Graduation Date',
+                               'Years of Experience',
+                           ]
+                       }
                 />
             </div>
         </>
