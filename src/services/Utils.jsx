@@ -103,14 +103,9 @@ function getCookies() {
 
 // Function to convert Pacific Time to local time and format it
 const formatDateFromPacific = (pacificTimeString) => {
-    // Parse the input date string (assuming format: "YYYY-MM-DD HH:MM:SS")
     const [datePart, timePart] = pacificTimeString.split(' ');
+    const pacificDate = new Date(`${datePart}T${timePart}-07:00`);
 
-    // Create a date object with the Pacific time
-    // Note: We need to specify Pacific time zone
-    const pacificDate = new Date(`${datePart}T${timePart}-07:00`); // -07:00 for Pacific Daylight Time
-
-    // Format options for displaying the date in local time
     const options = {
         weekday: 'long',
         year: 'numeric',
@@ -122,7 +117,6 @@ const formatDateFromPacific = (pacificTimeString) => {
         hour12: true
     };
 
-    // Convert to local time with the specified format
     return pacificDate.toLocaleString(undefined, options);
 };
 
