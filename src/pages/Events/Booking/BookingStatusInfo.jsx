@@ -384,7 +384,7 @@ function BookingStatusInfo() {
                         })
                     }
 
-                    if (result.detailedData.extras.additional_attendees) {
+                    if (result.detailedData.extras.additional_attendees >= 0) {
                         currentFormFields.push({
                             id: (currentFormFields[currentFormFields.length - 1].id + 1),
                             type: 'text',
@@ -402,7 +402,7 @@ function BookingStatusInfo() {
                         })
                     }
 
-                    if (result.detailedData.extras.cd_count) {
+                    if (result.detailedData.extras.cd_count >= 0) {
                         currentFormFields.push({
                             id: (currentFormFields[currentFormFields.length - 1].id + 1),
                             type: 'text',
@@ -413,6 +413,24 @@ function BookingStatusInfo() {
                             setValue: null,
                             widthOfField: 2,
                             httpName: 'extra-cd-count',
+                            labelOutside: true,
+                            labelOnTop: true,
+                            dontLetTheBrowserSaveField: true,
+                            readOnlyField: true,
+                        })
+                    }
+
+                    if (result.detailedData.extras.updated_at) {
+                        currentFormFields.push({
+                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                            type: 'text',
+                            name: 'extra-updated-at',
+                            label: 'Last Updated At:',
+                            required: false,
+                            value: Date(result.detailedData.extras.updated_at).toLocaleString(),
+                            setValue: null,
+                            widthOfField: 2,
+                            httpName: 'extra-updated-at',
                             labelOutside: true,
                             labelOnTop: true,
                             dontLetTheBrowserSaveField: true,
