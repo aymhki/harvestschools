@@ -4,6 +4,7 @@ import {checkBookingSession, getCookies} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 import axios from "axios";
 import Form from "../../../modules/Form.jsx";
+import vacancies from "../../Vacancies.jsx";
 
 function BookingStatusInfo() {
     const navigate = useNavigate();
@@ -53,7 +54,11 @@ function BookingStatusInfo() {
                 let authIdField = null;
                 let bookingStatusField = null;
                 let currentFormFields = [];
+                let numParents = null;
 
+                if (result.detailedData && result.detailedData.parents) {
+                    numParents = result.detailedData.parents.length;
+                }
 
                 if (result.bookingId !== null && result.bookingId !== undefined && result.bookingId !== '') {
                      bookingIdField = {
@@ -95,14 +100,14 @@ function BookingStatusInfo() {
                     currentFormFields.push(userNameField);
                 }
 
-                if (result.detailedData.booking.auth_id !== null && result.detailedData.booking.auth_id !== undefined && result.detailedData.booking.auth_id !== '') {
+                if (result.detailedData.booking.password_hash !== null && result.detailedData.booking.password_hash !== undefined && result.detailedData.booking.password_hash !== '' && result.detailedData.booking.password_hash.length > 0) {
                     authIdField = {
                         id: 3,
                         type: 'text',
                         name: 'auth-id',
                         label: 'Auth ID:',
                         required: false,
-                        value: result.detailedData.booking.auth_id,
+                        value: result.detailedData.booking.password_hash,
                         setValue: null,
                         widthOfField: 2,
                         httpName: 'auth-id',
@@ -135,6 +140,38 @@ function BookingStatusInfo() {
                     currentFormFields.push(bookingStatusField);
                 }
 
+                if (numParents !== null && numParents !== undefined && numParents > 0) {
+                   for (let i = 0; i < numParents; i++ ) {
+                       currentFormFields.push({
+                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                           type: 'section',
+                           name: 'new-parent',
+                           label: 'Parent: ' + (i+1),
+                           required: true,
+                           widthOfField: 1,
+                           httpName: 'new-parent',
+
+                       })
+
+                       currentFormFields.push({
+                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                           type: 'text',
+                           name: 'parent-name',
+                           label: 'Parent Name: ',
+                           required: false,
+                           value: result.detailedData.parents[i].name,
+                           setValue: null,
+                           widthOfField: 2,
+                            httpName: 'parent-name',
+                            labelOutside: true,
+                            labelOnTop: true,
+                            dontLetTheBrowserSaveField: true,
+                            readOnlyField: true,
+                       })
+
+
+                   }
+                }
 
                 setFinalFormFields(currentFormFields);
 
