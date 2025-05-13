@@ -1,4 +1,5 @@
 import axios from "axios";
+import {useCallback} from "react";
 
 
 const sessionDurationInHours = 1;
@@ -120,4 +121,43 @@ const formatDateFromPacific = (pacificTimeString) => {
     return pacificDate.toLocaleString(undefined, options);
 };
 
-export {checkAdminSession, checkBookingSession, sessionDuration, sessionDurationInHours, getCookies, formatDateFromPacific};
+const getStorageKey = (formTitle, fieldId, fieldLabel) => {
+    return `form_${formTitle}_${fieldLabel}_${fieldId}`;
+};
+
+const useFormCache = (formTitle, fields) => {
+
+    const loadCachedValues = useCallback(() => {
+        const cachedValues = {};
+        fields.forEach(field => {
+            const storageKey = getStorageKey(formTitle, field.id, field.label);
+            const cachedValue = localStorage.getItem(storageKey);
+            if (cachedValue !== null) {
+                cachedValues[field.id] = cachedValue;
+            }
+        });
+        return cachedValues;
+    }, [fields, formTitle]);
+
+
+    const saveToCache = useCallback((field, value) => {
+        const storageKey = getStorageKey(formTitle, field.id, field.label);
+        if (value) {
+            localStorage.setItem(storageKey, value);
+        } else {
+            localStorage.removeItem(storageKey);
+        }
+    }, [formTitle]);
+
+    const clearCache = useCallback(() => {
+        fields.forEach(field => {
+            const storageKey = getStorageKey(formTitle, field.id, field.label);
+            localStorage.removeItem(storageKey);
+        });
+    }, [fields, formTitle]);
+
+    return { loadCachedValues, saveToCache, clearCache };
+};
+
+
+export {checkAdminSession, checkBookingSession, sessionDuration, sessionDurationInHours, getCookies, formatDateFromPacific, useFormCache, getStorageKey};
