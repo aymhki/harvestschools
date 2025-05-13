@@ -217,8 +217,6 @@ function BookingStatusInfo() {
                            dontLetTheBrowserSaveField: true,
                            readOnlyField: true,
                        })
-
-
                    }
                 }
 
