@@ -156,17 +156,66 @@ function BookingStatusInfo() {
                        currentFormFields.push({
                            id: (currentFormFields[currentFormFields.length - 1].id + 1),
                            type: 'text',
+                           name: 'parent-id',
+                           label: 'Parent Id: ',
+                           required: false,
+                           value: result.detailedData.parents[i].parent_id,
+                           setValue: null,
+                           widthOfField: 2,
+                           httpName: 'parent-id',
+                           labelOutside: true,
+                           labelOnTop: true,
+                           dontLetTheBrowserSaveField: true,
+                           readOnlyField: true,
+                       })
+
+                       currentFormFields.push({
+                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                           type: 'text',
                            name: 'parent-name',
                            label: 'Parent Name: ',
                            required: false,
                            value: result.detailedData.parents[i].name,
                            setValue: null,
                            widthOfField: 2,
-                            httpName: 'parent-name',
-                            labelOutside: true,
-                            labelOnTop: true,
-                            dontLetTheBrowserSaveField: true,
-                            readOnlyField: true,
+                           httpName: 'parent-name',
+                           labelOutside: true,
+                           labelOnTop: true,
+                           dontLetTheBrowserSaveField: true,
+                           readOnlyField: true,
+                       })
+
+                       currentFormFields.push({
+                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                           type: 'text',
+                           name: 'parent-email',
+                           label: 'Parent Email: ',
+                           required: false,
+                           value: result.detailedData.parents[i].email,
+                           setValue: null,
+                           widthOfField: 2,
+                           httpName: 'parent-email',
+                           labelOutside: true,
+                           labelOnTop: true,
+                           dontLetTheBrowserSaveField: true,
+                           readOnlyField: true,
+                       })
+
+
+                       currentFormFields.push({
+                           id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                           type: 'text',
+                           name: 'parent-phone',
+                           label: 'Parent Phone: ',
+                           required: false,
+                           value: result.detailedData.parents[i].phone_number,
+                           setValue: null,
+                           widthOfField: 2,
+                           httpName: 'parent-phone',
+                           labelOutside: true,
+                           labelOnTop: true,
+                           dontLetTheBrowserSaveField: true,
+                           readOnlyField: true,
                        })
 
 
