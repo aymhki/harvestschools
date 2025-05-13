@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {checkBookingSession, getCookies} from "../../../services/Utils.jsx";
+import {checkBookingSession, getCookies, formatDateFromPacific} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 import axios from "axios";
 import Form from "../../../modules/Form.jsx";
@@ -427,7 +427,7 @@ function BookingStatusInfo() {
                             name: 'extra-updated-at',
                             label: 'Last Updated At:',
                             required: false,
-                            value: Date(result.detailedData.extras.updated_at),
+                            value: formatDateFromPacific(result.detailedData.extras.updated_at),
                             setValue: null,
                             widthOfField: 2,
                             httpName: 'extra-updated-at',
@@ -463,11 +463,13 @@ function BookingStatusInfo() {
             {isLoading && (<Spinner/>)}
 
             <div className={'booking-info-page'}>
-                <h1>
-                    Booking Info
-                </h1>
+
 
                 <container className={"extreme-padding-container"}>
+                    <h1>
+                        Booking Info
+                    </h1>
+
                     {finalFormFields.length > 0 && (
                         <Form mailTo={''}
                               formTitle={'Booking Info'}
