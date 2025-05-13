@@ -467,7 +467,7 @@ function BookingStatusInfo() {
                     Booking Info
                 </h1>
 
-                <div className={'booking-info-page-form-wrapper'}>
+                <container className={"extreme-padding-container"}>
                     {finalFormFields.length > 0 && (
                         <Form mailTo={''}
                               formTitle={'Booking Info'}
@@ -479,7 +479,8 @@ function BookingStatusInfo() {
                               formIsReadOnly={true}
                         />
                     )}
-                </div>
+                </container>
+
             </div>
         </>
     );

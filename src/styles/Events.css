@@ -82,16 +82,11 @@
 
 .booking-info-page {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    min-width: 100vw;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.booking-info-page-form-wrapper {
-    width: 80%;
-}
 
 
 @media (max-width: 1600px) {
