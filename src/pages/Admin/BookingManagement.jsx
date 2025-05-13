@@ -11,7 +11,6 @@ function BookingManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [allBookings, setAllBookings] = useState(null);
-
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
     const [showDeleteBookingModal, setShowDeleteBookingModal] = useState(false);
@@ -364,11 +363,11 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-        checkAdminSession(navigate, setIsLoading, 1);
-    }, []);
-
-    useEffect(() => {
-        fetchBookings();
+        checkAdminSession(navigate, setIsLoading, 1).then(
+            () => {
+                fetchBookings();
+            }
+        )
     }, []);
 
     useEffect(() => {
@@ -382,7 +381,6 @@ function BookingManagement() {
             document.body.style.overflow = '';
         };
     }, [showAddBookingModal, showDeleteBookingModal]);
-
 
     return (
         <>
@@ -405,10 +403,10 @@ function BookingManagement() {
                        exportFileName={'bookings'}
                        sortConfigParam={{column: 0, direction: 'descending'}}
                        filterableColumns={
-                       [
-                           'School Division',
-                           'Grade',
-                       ]}
+                           {
+                           'School Division': 'Text',
+                           'Grade': 'Text'
+                       }}
                        headerModuleElements={[(
                            <button key={1} onClick={() => {
                                 setShowAddBookingModal(true);

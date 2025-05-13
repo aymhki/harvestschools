@@ -4,49 +4,13 @@ import {Fragment} from "react";
 import '../styles/Form.css'
 import jsPDF from 'jspdf';
 import {createRef} from "react";
-import { v4 as uuidv4 } from 'uuid'; // Import the UUID library
+import { v4 as uuidv4 } from 'uuid';
 import {useSpring, animated} from "react-spring";
 import { useCallback } from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import {useFormCache} from "../services/Utils.jsx";
 
-const getStorageKey = (formTitle, fieldId, fieldLabel) => {
-    return `form_${formTitle}_${fieldLabel}_${fieldId}`;
-};
-
-const useFormCache = (formTitle, fields) => {
-
-    const loadCachedValues = useCallback(() => {
-        const cachedValues = {};
-        fields.forEach(field => {
-            const storageKey = getStorageKey(formTitle, field.id, field.label);
-            const cachedValue = localStorage.getItem(storageKey);
-            if (cachedValue !== null) {
-                cachedValues[field.id] = cachedValue;
-            }
-        });
-        return cachedValues;
-    }, [fields, formTitle]);
-
-
-    const saveToCache = useCallback((field, value) => {
-        const storageKey = getStorageKey(formTitle, field.id, field.label);
-        if (value) {
-            localStorage.setItem(storageKey, value);
-        } else {
-            localStorage.removeItem(storageKey);
-        }
-    }, [formTitle]);
-
-    const clearCache = useCallback(() => {
-        fields.forEach(field => {
-            const storageKey = getStorageKey(formTitle, field.id, field.label);
-            localStorage.removeItem(storageKey);
-        });
-    }, [fields, formTitle]);
-
-    return { loadCachedValues, saveToCache, clearCache };
-};
 
 function Form({
                   fields,
