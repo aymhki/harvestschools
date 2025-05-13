@@ -245,70 +245,6 @@ tr:hover {
     filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
-.table-module-advanced-filter {
-    margin-top: 1rem;
-}
-
-.table-module-filter-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.table-module-filter-controls select,
-.table-module-number-input,
-.table-module-date-picker {
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 0.1rem solid #1f2152;
-    font-family: 'Futura', sans-serif;
-    font-size: 1rem;
-}
-
-.table-module-filter-buttons {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.apply-filter {
-    background-color: #1f2152;
-    color: white;
-}
-
-.clear-filter {
-    background-color: #f0f0f0;
-}
-
-.active-filter {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background-color: #f0f0f0;
-    border-radius: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.table-module-filter-tabs {
-    display: flex;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #ccc;
-}
-
-.table-module-filter-tabs button {
-    padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: normal;
-}
-
-.table-module-filter-tabs button.active {
-    font-weight: bold;
-    border-bottom: 2px solid #1f2152;
-}
-
 @media  (max-width: 1600px) {
 
 }
@@ -477,24 +413,5 @@ tr:hover {
 
     .table-module-filter-search-input-field:hover {
         filter: drop-shadow(0 0 0.5rem white);
-    }
-
-    .table-module-filter-controls select,
-    .table-module-number-input,
-    .table-module-date-picker {
-        background-color: #333;
-        color: white;
-        border-color: white;
-    }
-
-    .active-filter,
-    .table-module-filter-tabs button.active {
-        background-color: #444;
-        border-color: white;
-    }
-
-    .clear-filter {
-        background-color: #555;
-        color: white;
     }
 }
