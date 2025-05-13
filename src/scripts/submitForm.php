@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
-                $fieldId = substr($key, 6); // Remove 'field_' prefix to get the original ID
+                $fieldId = substr($key, 6);
                 $labelKey = 'label_' . $fieldId;
                 if (isset($_POST[$labelKey]) ) {
                     $label = $_POST[$labelKey];
@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     $targetFile = $targetDir . $uniqueFileName;
 
-                    // Create the uploads directory if it doesn't exist
                     if (!file_exists($targetDir)) {
                         mkdir($targetDir, 0777, true);
                     }

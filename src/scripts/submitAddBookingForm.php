@@ -17,16 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $extrasId = null;
 
     try {
-        // Connect to database
         $conn = new mysqli($servername, $username, $password, $dbname);
         if ($conn->connect_error) {
             throw new Exception('Database connection failed: ' . $conn->connect_error);
         }
 
-        // Disable autocommit to manage transactions manually
         $conn->autocommit(false);
 
-        // Parse form data
         $formData = [];
         $studentSections = [];
         foreach ($_POST as $key => $value) {
@@ -52,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Transaction 1: Create auth credentials
         $bookingUsername = $formData['Booking Username'];
         $bookingPassword = $formData['Booking Password'];
 
@@ -72,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $authId = $conn->insert_id;
         $conn->commit();
 
-        // Transaction 2: Create booking record
         try {
             $conn->begin_transaction();
             $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
@@ -84,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->commit();
         } catch (Exception $e) {
             $conn->rollback();
-            // Manual deletion for auth credentials
             if ($authId) {
                 $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
                 $stmt->bind_param("i", $authId);
@@ -93,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception($e->getMessage());
         }
 
-        // Transaction 3: Create first parent
         try {
             $conn->begin_transaction();
             $firstParentName = $formData['First Parent Name'];
@@ -109,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->commit();
         } catch (Exception $e) {
             $conn->rollback();
-            // Manual deletion for booking and auth records
             if ($bookingId) {
                 $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
                 $stmt->bind_param("i", $bookingId);
@@ -123,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception($e->getMessage());
         }
 
-        // Transaction 4: Link first parent to booking
         try {
             $conn->begin_transaction();
             $isPrimary = 1;
@@ -135,7 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->commit();
         } catch (Exception $e) {
             $conn->rollback();
-            // Manual deletion for parent, booking, and auth
             if ($firstParentId) {
                 $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
                 $stmt->bind_param("i", $firstParentId);
@@ -154,7 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception($e->getMessage());
         }
 
-        // Transaction 5: Create second parent if provided
         if (!empty($formData['Second Parent Name'])) {
             try {
                 $conn->begin_transaction();
@@ -171,12 +160,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $conn->commit();
             } catch (Exception $e) {
                 $conn->rollback();
-                // Do not need to delete first parent link as it was successful
                 cleanupAllRecords($conn, $firstParentId, null, $bookingId, $authId, []);
                 throw new Exception($e->getMessage());
             }
 
-            // Transaction 6: Link second parent to booking
             try {
                 $conn->begin_transaction();
                 $isPrimary = 0;
@@ -188,7 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $conn->commit();
             } catch (Exception $e) {
                 $conn->rollback();
-                // Delete second parent and all previous entries
                 if ($secondParentId) {
                     $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
                     $stmt->bind_param("i", $secondParentId);
@@ -199,7 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Transaction 7: Create students
         foreach ($studentSections as $index => $studentData) {
             if (!empty($studentData['Student Name'])) {
                 try {
@@ -218,7 +203,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $conn->commit();
                 } catch (Exception $e) {
                     $conn->rollback();
-                    // Delete all students added so far
                     foreach ($studentIds as $id) {
                         $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
                         $stmt->bind_param("i", $id);
@@ -228,7 +212,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception($e->getMessage());
                 }
 
-                // Transaction 8: Link student to booking
                 try {
                     $conn->begin_transaction();
                     $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
@@ -239,7 +222,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $conn->commit();
                 } catch (Exception $e) {
                     $conn->rollback();
-                    // Delete the student that failed to link and all students added before
                     foreach ($studentIds as $id) {
                         $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
                         $stmt->bind_param("i", $id);
@@ -251,7 +233,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Transaction 9: Create extras record
         try {
             $conn->begin_transaction();
             $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id) VALUES (?)");
@@ -263,7 +244,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->commit();
         } catch (Exception $e) {
             $conn->rollback();
-            // Delete all students
             foreach ($studentIds as $id) {
                 $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE student_id = ?");
                 $stmt->bind_param("i", $id);
@@ -277,7 +257,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception($e->getMessage());
         }
 
-        // Everything succeeded
         echo json_encode([
             'success' => true,
             'message' => 'Booking created successfully',
@@ -301,19 +280,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
 }
 
-/**
- * Helper function to clean up all records in case of an error
- * Deletes records in the correct order to respect foreign key constraints
- */
+
 function cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, $studentIds) {
-    // Delete from booking_parents_linker first
     if ($bookingId) {
         $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
         $stmt->execute();
     }
 
-    // Delete parents
     if ($firstParentId) {
         $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
         $stmt->bind_param("i", $firstParentId);
@@ -326,35 +300,30 @@ function cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $
         $stmt->execute();
     }
 
-    // Delete from booking_students_linker first
     if ($bookingId) {
         $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
         $stmt->execute();
     }
 
-    // Delete students
     foreach ($studentIds as $studentId) {
         $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
         $stmt->bind_param("i", $studentId);
         $stmt->execute();
     }
 
-    // Delete extras
     if ($bookingId) {
         $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
         $stmt->execute();
     }
 
-    // Delete booking
     if ($bookingId) {
         $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
         $stmt->execute();
     }
 
-    // Delete auth credentials
     if ($authId) {
         $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
         $stmt->bind_param("i", $authId);

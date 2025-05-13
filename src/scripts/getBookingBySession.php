@@ -20,13 +20,11 @@ try {
     $sessionId = $input['sessionId'];
     $startTime = microtime(true);
 
-    // Connect to the database
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
     }
 
-    // Step 1: Get username from session ID
     $sessionSql = "SELECT username FROM booking_sessions WHERE id = ?";
     $stmt = $conn->prepare($sessionSql);
     if (!$stmt) {
@@ -45,7 +43,6 @@ try {
     $sessionRow = $sessionResult->fetch_assoc();
     $bookingUsername = $sessionRow['username'];
 
-    // Step 2: Get booking ID from username
     $bookingSql = "SELECT b.booking_id 
                    FROM bookings b
                    JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
@@ -67,9 +64,7 @@ try {
     $bookingRow = $bookingResult->fetch_assoc();
     $bookingId = $bookingRow['booking_id'];
 
-    // Step 3: Get all detailed information for the booking
 
-    // A. Get booking details and auth credentials
     $bookingDetailsSql = "SELECT 
                             b.booking_id,
                             b.auth_id,
@@ -99,7 +94,6 @@ try {
 
     $bookingDetails = $bookingDetailsResult->fetch_assoc();
 
-    // B. Get booking extras
     $extrasSql = "SELECT 
                     extra_id,
                     cd_count,
@@ -118,7 +112,6 @@ try {
 
     $extras = $extrasResult->num_rows > 0 ? $extrasResult->fetch_assoc() : null;
 
-    // C. Get parents information
     $parentsSql = "SELECT 
                      p.*,
                      pl.is_primary
@@ -138,7 +131,6 @@ try {
         $parents[] = $parent;
     }
 
-    // D. Get students information
     $studentsSql = "SELECT 
                      s.*
                    FROM booking_students s
@@ -156,7 +148,6 @@ try {
         $students[] = $student;
     }
 
-    // Format 1: All data in one object grouped by booking
     $bookingData = [
         'booking' => $bookingDetails,
         'extras' => $extras,
@@ -164,7 +155,6 @@ try {
         'students' => $students
     ];
 
-    // Format 2: Similar to getAllBookings with one row per student
     $tabularData = [];
     $tabularHeaders = [
         'Booking ID', 'Student ID', 'Student Name', 'School Division', 'Grade',
@@ -176,7 +166,6 @@ try {
 
     $tabularData[] = $tabularHeaders;
 
-    // Extract first parent (is_primary = 1) and second parent (is_primary = 0)
     $firstParent = null;
     $secondParent = null;
 
@@ -190,28 +179,28 @@ try {
 
     foreach ($students as $student) {
         $row = [
-            $bookingId, // Booking ID
-            $student['student_id'], // Student ID
-            $student['name'], // Student Name
-            $student['school_division'], // School Division
-            $student['grade'], // Grade
-            $bookingDetails['username'], // Booking Username
-            $bookingDetails['password_hash'], // Booking Password
-            $firstParent ? $firstParent['name'] : null, // First Parent Name
-            $firstParent ? $firstParent['email'] : null, // First Parent Email
-            $firstParent ? $firstParent['phone_number'] : null, // First Parent Phone
-            $secondParent ? $secondParent['name'] : null, // Second Parent Name
-            $secondParent ? $secondParent['email'] : null, // Second Parent Email
-            $secondParent ? $secondParent['phone_number'] : null, // Second Parent Phone
-            $extras ? $extras['cd_count'] : 0, // CD Count
-            $extras ? $extras['additional_attendees'] : 0, // Additional Attendees
-            $extras ? $extras['payment_status'] : 'Not Signed Up', // Payment Status
-            $bookingDetails['booking_date'], // Booking Date
-            $bookingDetails['booking_time'], // Booking Time
-            $bookingDetails['status'], // Status
-            $bookingDetails['notes'], // Notes
-            $student['created_at'], // Student Created
-            $bookingDetails['booking_created_at'] // Booking Created
+            $bookingId,
+            $student['student_id'],
+            $student['name'],
+            $student['school_division'],
+            $student['grade'],
+            $bookingDetails['username'],
+            $bookingDetails['password_hash'],
+            $firstParent ? $firstParent['name'] : null,
+            $firstParent ? $firstParent['email'] : null,
+            $firstParent ? $firstParent['phone_number'] : null,
+            $secondParent ? $secondParent['name'] : null,
+            $secondParent ? $secondParent['email'] : null,
+            $secondParent ? $secondParent['phone_number'] : null,
+            $extras ? $extras['cd_count'] : 0,
+            $extras ? $extras['additional_attendees'] : 0,
+            $extras ? $extras['payment_status'] : 'Not Signed Up',
+            $bookingDetails['booking_date'],
+            $bookingDetails['booking_time'],
+            $bookingDetails['status'],
+            $bookingDetails['notes'],
+            $student['created_at'],
+            $bookingDetails['booking_created_at']
         ];
 
         $tabularData[] = $row;

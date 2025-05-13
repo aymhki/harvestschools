@@ -42,12 +42,12 @@ function BookingStatusInfo() {
             const result = await response.data;
 
             if (result.success) {
-                console.log(result.bookingId);
-                console.log(result.bookingUsername);
-                console.log(result.sessionId);
-                console.log(result.detailedData);
-                console.log(result.tabularData);
-                console.log(result.executionTime);
+                // console.log(result.bookingId);
+                // console.log(result.bookingUsername);
+                // console.log(result.sessionId);
+                // console.log(result.detailedData);
+                // console.log(result.tabularData);
+                // console.log(result.executionTime);
 
                 let bookingIdField = null;
                 let userNameField = null;
