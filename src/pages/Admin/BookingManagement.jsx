@@ -221,7 +221,7 @@ function BookingManagement() {
             type: 'select',
             name: 'student-school-division',
             label: 'Student School Division',
-            choices: ['IGCSE', 'American', 'National', 'Other'],
+            choices: ['IGCSE', 'American', 'National', 'Kindergarten'],
             required: true,
             placeholder: 'Student School Division',
             errorMsg: 'Please enter the student school division',
