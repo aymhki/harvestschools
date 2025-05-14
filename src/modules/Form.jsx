@@ -1079,9 +1079,9 @@ function Form({
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        console.log(dynamicFields)
-        console.log(sectionInstances)
-        return;
+        // console.log(dynamicFields)
+        // console.log(sectionInstances)
+        // return;
 
         if (pedanticIds) {
             const idMap = {};
