@@ -457,12 +457,28 @@ function Form({
             const updatedInstances = [...currentSectionState.instances];
             updatedInstances.splice(instanceIndex, 1);
 
+            // Calculate the new nextInsertPosition
+            let newNextInsertPosition;
+
+            if (updatedInstances.length === 0) {
+                // If no instances remain, reset to the original starting position
+                newNextInsertPosition = dynamicSections.find(section => section.sectionId === sectionId).startAddingFieldsFromId
+            } else {
+                // Find the last instance and calculate position after its last field
+                const lastInstance = updatedInstances[updatedInstances.length - 1];
+                const lastFieldId = Math.max(...lastInstance.fieldIds);
+                const lastFieldIndex = updatedDynamicFields.findIndex(field => field.id === lastFieldId);
+                newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : updatedDynamicFields.length;
+            }
+
             return {
                 ...prevState,
                 [sectionId]: {
                     ...currentSectionState,
                     count: currentSectionState.count - 1,
                     instances: updatedInstances,
+                    nextInsertPosition: newNextInsertPosition
+
                 }
             };
         });
@@ -1063,9 +1079,9 @@ function Form({
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        // console.log(dynamicFields)
-        // console.log(sectionInstances)
-        // return;
+        console.log(dynamicFields)
+        console.log(sectionInstances)
+        return;
 
         if (pedanticIds) {
             const idMap = {};
