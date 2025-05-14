@@ -64,6 +64,7 @@ function Form({
     const [nextIdCounter, setNextIdCounter] = useState(fields.length + 1);
     const [showPasswords, setShowPasswords] = useState(false);
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
+    const [prefilledInitialized, setPrefilledInitialized] = useState(false);
     const msgTimeout = 5000;
 
     useEffect(() => {
@@ -89,6 +90,105 @@ function Form({
         });
         setRefs(newRefs);
     }, [dynamicFields]);
+
+    // Add this useEffect to initialize prefilled sections after the initial sectionInstances are set
+    useEffect(() => {
+        // If section instances are initialized but prefilled sections are not yet initialized
+        if (Object.keys(sectionInstances).length > 0 && !prefilledInitialized) {
+            let tempNextIdCounter = nextIdCounter;
+            let tempDynamicFields = [...dynamicFields];
+            let tempSectionInstances = {...sectionInstances};
+            let tempRefs = {...refs};
+
+            dynamicSections.forEach(section => {
+                if (section.existingFilledSectionInstances && section.existingFilledSectionInstances.length > 0) {
+                    const sectionId = section.sectionId;
+
+                    section.existingFilledSectionInstances.forEach(prefilledFields => {
+                        const currentSectionState = tempSectionInstances[sectionId];
+
+                        // Check if we can add more instances
+                        if (section.maxSectionInstancesToAdd !== -1 &&
+                            currentSectionState.count >= section.maxSectionInstancesToAdd) {
+                            return;
+                        }
+
+                        const instanceId = `${sectionId}_${currentSectionState.count}`;
+
+                        // Find insertion index
+                        let insertionIndex;
+                        if (currentSectionState.instances.length === 0) {
+                            // First instance - find the starting field ID
+                            const startFieldIndex = tempDynamicFields.findIndex(
+                                field => field.id === section.startAddingFieldsFromId
+                            );
+                            insertionIndex = startFieldIndex !== -1 ? startFieldIndex + 1 : tempDynamicFields.length;
+                        } else {
+                            // Use the next insertion position
+                            insertionIndex = currentSectionState.nextInsertPosition;
+                        }
+
+                        // Create new fields with proper IDs and instanceId
+                        const newFields = prefilledFields.map((field, index) => {
+                            const newId = tempNextIdCounter++;
+                            return {
+                                ...field,
+                                id: newId,
+                                originalId: field.id || newId,
+                                instanceId: instanceId
+                            };
+                        });
+
+                        // Add control field
+                        const controlFieldId = tempNextIdCounter++;
+                        const controlField = {
+                            id: controlFieldId,
+                            type: 'control',
+                            instanceId: instanceId,
+                            sectionId: sectionId,
+                            isControl: true,
+                            httpName: `control_${instanceId}`,
+                            label: `Control ${instanceId}`
+                        };
+
+                        const allNewFields = [...newFields, controlField];
+
+                        // Add fields to dynamic fields
+                        tempDynamicFields.splice(insertionIndex, 0, ...allNewFields);
+
+                        // Create refs for new fields
+                        allNewFields.forEach(field => {
+                            tempRefs[field.id] = createRef();
+                        });
+
+                        // Update section instance state
+                        const newInstance = {
+                            instanceId,
+                            fieldIds: allNewFields.map(field => field.id),
+                            insertedAtIndex: insertionIndex
+                        };
+
+                        tempSectionInstances = {
+                            ...tempSectionInstances,
+                            [sectionId]: {
+                                count: currentSectionState.count + 1,
+                                instances: [...currentSectionState.instances, newInstance],
+                                nextInsertPosition: insertionIndex + allNewFields.length
+                            }
+                        };
+                    });
+                }
+            });
+
+            // Apply all changes at once
+            setNextIdCounter(tempNextIdCounter);
+            setDynamicFields(tempDynamicFields);
+            setSectionInstances(tempSectionInstances);
+            setRefs(tempRefs);
+            setPrefilledInitialized(true);
+        }
+    }, [sectionInstances, prefilledInitialized, dynamicSections, dynamicFields, nextIdCounter, refs]);
+
 
     const processFieldRules = useCallback((currentFields, field, value) => {
         if (field.rules) {
@@ -183,6 +283,7 @@ function Form({
         setCaptchaValue(generateCaptcha());
         setEnteredCaptcha('');
 
+
         setSectionInstances(prevState => {
             const resetState = {};
 
@@ -196,7 +297,7 @@ function Form({
 
             return resetState;
         });
-
+        setPrefilledInitialized(false);
         setNextIdCounter(fields.length + 1);
         setGeneralFormError('');
         setSuccessMessage('');
@@ -474,10 +575,10 @@ function Form({
                                     autoComplete="new-password"
                                     data-lpignore="true"
                                     readOnly={field.readOnlyField ? true : false}
-
                                     className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
-                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                                 />
                              </div>
 
@@ -495,7 +596,8 @@ function Form({
                                  readOnly={field.readOnlyField ? true : false}
                                  className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}  ${field.readOnlyField ? 'read-only-field' : ''}`}
                                  data-instance-id={field.instanceId || ''}
-                                 value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                                 value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                              />
                          )
 
@@ -516,7 +618,8 @@ function Form({
                                 readOnly={field.readOnlyField ? true : false}
                                 className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
-                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                             />
                         </div>
                         ) : (
@@ -531,7 +634,8 @@ function Form({
                                 readOnly={field.readOnlyField ? true : false}
                                 className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
-                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                             />
                         )
                     )
@@ -557,7 +661,8 @@ function Form({
                                     className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
                                     readOnly={field.readOnlyField ? true : false}
-                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                                 />
                                 <button
                                     type="button"
@@ -584,7 +689,8 @@ function Form({
                                 data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
                                 className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
-                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                             />
                             <button
                                 type="button"
@@ -627,6 +733,8 @@ function Form({
                                     }}
                                     className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
+                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                                 />
                         </div>
                     ) : (
@@ -653,7 +761,8 @@ function Form({
                             }}
                             className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                         />
                     )
                 )}
@@ -675,7 +784,8 @@ function Form({
                             onChange={(e) => onChange(e, field)}
                             className={`textarea-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                         />
 
                     </div>
@@ -691,7 +801,8 @@ function Form({
                         onChange={(e) => onChange(e, field)}
                         className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                         data-instance-id={field.instanceId || ''}
-                        value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                        value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                        defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                     />
                 )
                 )}
@@ -718,7 +829,9 @@ function Form({
                             }
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+
                         >
                             {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
                             {field.choices.map((choice, index) => (
@@ -741,7 +854,8 @@ function Form({
                             }
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : null}
+                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                         >
                             {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
                             {field.choices && field.choices.map((choice, index) => (
@@ -764,6 +878,7 @@ function Form({
                                 className={`radio-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                                 onChange={(e) => onChange(e, field)}
                                 data-instance-id={field.instanceId || ''}
+                                defaultChecked={ (!field.readOnlyField && field.defaultValue) ? field.defaultValue === choice : false}
                             />
                             {choice}
                         </label>
@@ -783,6 +898,7 @@ function Form({
                                 className={`checkbox-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}`}
                                 onChange={(e) => onChange(e, field)}
                                 data-instance-id={field.instanceId || ''}
+                                defaultChecked={ (!field.readOnlyField && field.defaultValue) ? field.defaultValue === choice : false}
                             />
                             {choice}
                         </label>
@@ -947,7 +1063,9 @@ function Form({
 
     const onSubmit = async (e) => {
         e.preventDefault();
-
+        // console.log(dynamicFields)
+        // console.log(sectionInstances)
+        // return;
 
         if (pedanticIds) {
             const idMap = {};
@@ -1031,6 +1149,9 @@ function Form({
                 }
             }
         }
+
+        console.log(dynamicFields)
+        console.log(sectionInstances)
 
         setSubmitting(true);
 
@@ -1343,6 +1464,7 @@ Form.propTypes = {
         mustNotMatchFieldWithId: PropTypes.number,
         labelOnTop: PropTypes.bool,
         readOnlyField: PropTypes.bool,
+        defaultValue: PropTypes.string,
 
         rules: PropTypes.arrayOf(PropTypes.shape({
             value: PropTypes.string.isRequired,
@@ -1366,6 +1488,7 @@ Form.propTypes = {
                 mustNotMatchFieldWithId: PropTypes.number,
                 labelOnTop: PropTypes.bool,
                 readOnlyField: PropTypes.bool,
+                defaultValue: PropTypes.string,
 
                 rules: PropTypes.arrayOf(PropTypes.shape({
                     value: PropTypes.string.isRequired,
@@ -1388,6 +1511,7 @@ Form.propTypes = {
                         multiple: PropTypes.bool,
                         labelOnTop: PropTypes.bool,
                         readOnlyField: PropTypes.bool,
+                        defaultValue: PropTypes.string,
                     }))
                 }))
             }))
@@ -1422,11 +1546,15 @@ Form.propTypes = {
         sectionId: PropTypes.string.isRequired,
         sectionTitle: PropTypes.string.isRequired,
         minimumSectionInstancesForValidSubmission: PropTypes.number.isRequired,
+        existingFilledSectionInstances: PropTypes.arrayOf(
+            PropTypes.arrayOf(PropTypes.object)
+        )
     })),
     pedanticIds: PropTypes.bool,
     formInModalPopup: PropTypes.bool,
     setShowFormModalPopup: PropTypes.func,
     formIsReadOnly: PropTypes.bool,
+
 
 };
 
