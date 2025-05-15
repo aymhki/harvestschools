@@ -11,13 +11,22 @@ function BookingManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [allBookings, setAllBookings] = useState(null);
-
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
     const [showDeleteBookingModal, setShowDeleteBookingModal] = useState(false);
     const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(null);
+
+    const bookingUsernameFieldId = 1
+    const bookingPasswordFieldId = 2
+    const confirmBookingPasswordFieldId = 3
+    const firstParentNameFieldId = 4
+    const firstParentEmailFieldId = 5
+    const firstParentPhoneNumberFieldId = 6
+    const secondParentNameFieldId = 7
+    const secondParentEmailFieldId = 8
+    const secondParentPhoneNumberFieldId = 9
     const colIndexForBookingId = 0
     const colIndexForStudentId = 1
     const colIndexForStudentName = 2
@@ -32,16 +41,6 @@ function BookingManagement() {
         opacity: showDeleteBookingModal ? 1 : 0,
         transform: showDeleteBookingModal ? 'translateY(0)' : 'translateY(-100%)'
     });
-
-    const bookingUsernameFieldId = 1
-    const bookingPasswordFieldId = 2
-    const confirmBookingPasswordFieldId = 3
-    const firstParentNameFieldId = 4
-    const firstParentEmailFieldId = 5
-    const firstParentPhoneNumberFieldId = 6
-    const secondParentNameFieldId = 7
-    const secondParentEmailFieldId = 8
-    const secondParentPhoneNumberFieldId = 9
 
     const addBookingModalCoreFormFields = [
         {
@@ -365,11 +364,11 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-       checkAdminSession(navigate, setIsLoading, 1);
-    }, []);
-
-    useEffect(() => {
-        fetchBookings();
+       checkAdminSession(navigate, setIsLoading, 1).then(
+           () => {
+               fetchBookings();
+           }
+       )
     }, []);
 
     useEffect(() => {
@@ -383,7 +382,6 @@ function BookingManagement() {
             document.body.style.overflow = '';
         };
     }, [showAddBookingModal, showDeleteBookingModal]);
-
 
     return (
         <>
@@ -482,149 +480,12 @@ function BookingManagement() {
                                       sectionId: "student-section",
                                       minimumSectionInstancesForValidSubmission: 1,
                                       sectionTitle: "New Student",
-                                      existingFilledSectionInstances: [
-                                          [
-                                              {
-                                                  id: 10,
-                                                  type: 'section',
-                                                  name: 'student-section',
-                                                  label: 'New Student',
-                                                  required: true,
-                                                  placeholder: 'Student Section',
-                                                  errorMsg: '',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 1,
-                                                  httpName: 'student-section',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                              },
-                                              {
-                                                  id: 11,
-                                                  type: 'text',
-                                                  name: 'student-name',
-                                                  label: 'Student Name',
-                                                  required: true,
-                                                  placeholder: 'Student Name',
-                                                  errorMsg: 'Please enter the student name',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 3,
-                                                  httpName: 'student-name',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                                  defaultValue: 'Wtv'
-                                              },
-                                              {
-                                                    id: 12,
-                                                  type: 'select',
-                                                  name: 'student-school-division',
-                                                  label: 'Student School Division',
-                                                  choices: ['IGCSE', 'American', 'National', 'Kindergarten'],
-                                                  required: true,
-                                                  placeholder: 'Student School Division',
-                                                  errorMsg: 'Please enter the student school division',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 3,
-                                                  httpName: 'student-school-division',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                                  defaultValue: 'IGCSE',
-                                              },
-                                              {
-                                                    id: 13,
-                                                  type: 'select',
-                                                  name: 'student-grade',
-                                                  label: 'Student Grade',
-                                                  choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-                                                  required: true,
-                                                  placeholder: 'Student Grade',
-                                                  errorMsg: 'Please enter the student grade',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 3,
-                                                  httpName: 'student-grade',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                                  defaultValue: 'Grade 1',
-                                              },
-                                          ],
-                                          [
-                                              {
-                                                  id: 14,
-                                                  type: 'section',
-                                                  name: 'student-section',
-                                                  label: 'New Student',
-                                                  required: true,
-                                                  placeholder: 'Student Section',
-                                                  errorMsg: '',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 1,
-                                                  httpName: 'student-section',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                              },
-                                              {
-                                                  id: 15,
-                                                  type: 'text',
-                                                  name: 'student-name',
-                                                  label: 'Student Name',
-                                                  required: true,
-                                                  placeholder: 'Student Name',
-                                                  errorMsg: 'Please enter the student name',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 3,
-                                                  httpName: 'student-name',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                                  defaultValue: 'Nah'
-                                              },
-                                              {
-                                                  id: 16,
-                                                  type: 'select',
-                                                  name: 'student-school-division',
-                                                  label: 'Student School Division',
-                                                  choices: ['IGCSE', 'American', 'National', 'Kindergarten'],
-                                                  required: true,
-                                                  placeholder: 'Student School Division',
-                                                  errorMsg: 'Please enter the student school division',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 3,
-                                                  httpName: 'student-school-division',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                                  defaultValue: 'Kindergarten',
-                                              },
-                                              {
-                                                  id: 17,
-                                                  type: 'select',
-                                                  name: 'student-grade',
-                                                  label: 'Student Grade',
-                                                  choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-                                                  required: true,
-                                                  placeholder: 'Student Grade',
-                                                  errorMsg: 'Please enter the student grade',
-                                                  value: '',
-                                                  setValue: null,
-                                                  widthOfField: 3,
-                                                  httpName: 'student-grade',
-                                                  labelOutside: true,
-                                                  labelOnTop: true,
-                                                  defaultValue: 'PlaySchool',
-                                              },
-                                          ]
-                                      ]
                                   }
                               ]}
                               formInModalPopup={true}
                               setShowFormModalPopup={setShowAddBookingModal}
                               pedanticIds={true}
                               formHasPasswordField={true}
-
                         />
                     </div>
 
