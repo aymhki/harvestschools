@@ -287,7 +287,7 @@ function Form({
             return resetState;
         });
         setPrefilledInitialized(false);
-        setNextIdCounter(startAddingFieldsFromId);
+        setNextIdCounter(fields.length + 1);
         setGeneralFormError('');
         setSuccessMessage('');
 
