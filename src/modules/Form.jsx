@@ -40,13 +40,13 @@ function Form({
                   formIsReadOnly
               }) {
 
-    const [submitting, setSubmitting] = useState(false); //disable fields when submitting
-    const [generalFormError, setGeneralFormError] = useState(''); //general form error message
-    const [successMessage, setSuccessMessage] = useState(''); //success message
-    const [dynamicFields, setDynamicFields] = useState(fields); // Store dynamic fields based on rules
-    const captchaMaxLength = easySimpleCaptcha ? 4 : 7; // Maximum length of captcha
+    const [submitting, setSubmitting] = useState(false);
+    const [generalFormError, setGeneralFormError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [dynamicFields, setDynamicFields] = useState(fields);
+    const captchaMaxLength = easySimpleCaptcha ? 4 : 7;
     const characters = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghkmnopqrstuvwxyz0123456789@#$%&';
-    const [refs, setRefs] = useState({}); // Store references to form fields
+    const [refs, setRefs] = useState({});
     const [fileInputs, setFileInputs] = useState({});
     const [showSelectDateModal, setShowSelectDateModal] = useState(false);
     const [selectedDateDay, setSelectedDateDay] = useState('');
@@ -91,9 +91,7 @@ function Form({
         setRefs(newRefs);
     }, [dynamicFields]);
 
-    // Add this useEffect to initialize prefilled sections after the initial sectionInstances are set
     useEffect(() => {
-        // If section instances are initialized but prefilled sections are not yet initialized
         if (Object.keys(sectionInstances).length > 0 && !prefilledInitialized) {
             let tempNextIdCounter = nextIdCounter;
             let tempDynamicFields = [...dynamicFields];
@@ -107,7 +105,6 @@ function Form({
                     section.existingFilledSectionInstances.forEach(prefilledFields => {
                         const currentSectionState = tempSectionInstances[sectionId];
 
-                        // Check if we can add more instances
                         if (section.maxSectionInstancesToAdd !== -1 &&
                             currentSectionState.count >= section.maxSectionInstancesToAdd) {
                             return;
@@ -115,20 +112,16 @@ function Form({
 
                         const instanceId = `${sectionId}_${currentSectionState.count}`;
 
-                        // Find insertion index
                         let insertionIndex;
                         if (currentSectionState.instances.length === 0) {
-                            // First instance - find the starting field ID
                             const startFieldIndex = tempDynamicFields.findIndex(
                                 field => field.id === section.startAddingFieldsFromId
                             );
                             insertionIndex = startFieldIndex !== -1 ? startFieldIndex + 1 : tempDynamicFields.length;
                         } else {
-                            // Use the next insertion position
                             insertionIndex = currentSectionState.nextInsertPosition;
                         }
 
-                        // Create new fields with proper IDs and instanceId
                         const newFields = prefilledFields.map((field, index) => {
                             const newId = tempNextIdCounter++;
                             return {
@@ -139,7 +132,6 @@ function Form({
                             };
                         });
 
-                        // Add control field
                         const controlFieldId = tempNextIdCounter++;
                         const controlField = {
                             id: controlFieldId,
@@ -153,20 +145,18 @@ function Form({
 
                         const allNewFields = [...newFields, controlField];
 
-                        // Add fields to dynamic fields
                         tempDynamicFields.splice(insertionIndex, 0, ...allNewFields);
 
-                        // Create refs for new fields
                         allNewFields.forEach(field => {
                             tempRefs[field.id] = createRef();
                         });
 
-                        // Update section instance state
                         const newInstance = {
                             instanceId,
                             fieldIds: allNewFields.map(field => field.id),
                             insertedAtIndex: insertionIndex
                         };
+
 
                         tempSectionInstances = {
                             ...tempSectionInstances,
@@ -180,7 +170,6 @@ function Form({
                 }
             });
 
-            // Apply all changes at once
             setNextIdCounter(tempNextIdCounter);
             setDynamicFields(tempDynamicFields);
             setSectionInstances(tempSectionInstances);
@@ -298,7 +287,7 @@ function Form({
             return resetState;
         });
         setPrefilledInitialized(false);
-        setNextIdCounter(fields.length + 1);
+        setNextIdCounter(startAddingFieldsFromId);
         setGeneralFormError('');
         setSuccessMessage('');
 
@@ -457,14 +446,11 @@ function Form({
             const updatedInstances = [...currentSectionState.instances];
             updatedInstances.splice(instanceIndex, 1);
 
-            // Calculate the new nextInsertPosition
             let newNextInsertPosition;
 
             if (updatedInstances.length === 0) {
-                // If no instances remain, reset to the original starting position
                 newNextInsertPosition = dynamicSections.find(section => section.sectionId === sectionId).startAddingFieldsFromId
             } else {
-                // Find the last instance and calculate position after its last field
                 const lastInstance = updatedInstances[updatedInstances.length - 1];
                 const lastFieldId = Math.max(...lastInstance.fieldIds);
                 const lastFieldIndex = updatedDynamicFields.findIndex(field => field.id === lastFieldId);
@@ -1079,9 +1065,10 @@ function Form({
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        // console.log(dynamicFields)
-        // console.log(sectionInstances)
-        // return;
+        console.log(dynamicFields)
+        console.log(sectionInstances)
+        console.log(dynamicSections)
+        return;
 
         if (pedanticIds) {
             const idMap = {};
@@ -1165,9 +1152,6 @@ function Form({
                 }
             }
         }
-
-        console.log(dynamicFields)
-        console.log(sectionInstances)
 
         setSubmitting(true);
 

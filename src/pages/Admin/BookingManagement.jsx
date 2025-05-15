@@ -621,7 +621,7 @@ function BookingManagement() {
                               ]}
                               formInModalPopup={true}
                               setShowFormModalPopup={setShowAddBookingModal}
-                              pedanticIds={false}
+                              pedanticIds={true}
                               formHasPasswordField={true}
 
                         />
