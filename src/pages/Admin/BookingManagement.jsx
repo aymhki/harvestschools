@@ -298,6 +298,7 @@ function BookingManagement() {
         } finally {
             setIsDeleting(false);
             setRowIndexToDelete(null);
+            setShowDeleteBookingModal(false);
             setIsLoading(false);
         }
     };
