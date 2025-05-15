@@ -167,7 +167,7 @@ button {
 }
 
 button:hover {
-    filter: drop-shadow(0 0 2em #1f2152);
+    filter: drop-shadow(0 0 0.5rem #1f2152);
     background-color: #1f2152;
     color: #ffffff;
 }

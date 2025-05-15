@@ -4,7 +4,25 @@ import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
-function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, compact, allowHideColumns, defaultHiddenColumns, allowExport, exportFileName, filterableColumns, headerModuleElements, onDeleteEntry, allowDeleteEntryOption, columnsToWrap }) {
+function Table({
+                   tableHeader,
+                   tableData,
+                   numCols,
+                   sortConfigParam,
+                   scrollable,
+                   compact,
+                   allowHideColumns,
+                   defaultHiddenColumns,
+                   allowExport,
+                   exportFileName,
+                   filterableColumns,
+                   headerModuleElements,
+                   onDeleteEntry,
+                   allowDeleteEntryOption,
+                   columnsToWrap,
+                   allowEditEntryOption,
+                   onEditEntry,
+}) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -365,6 +383,36 @@ function Table({ tableHeader, tableData, numCols, sortConfigParam, scrollable, c
                                 )}
                             </td>
                         ))}
+
+                        {allowEditEntryOption && onEditEntry && rowIndex === 0 && (
+                            <td style={{ textAlign: 'center' }}>
+                               <h3 className={"compact-table-header-text"}>
+                                    Edit
+                                </h3>
+                            </td>
+                        )}
+
+
+                        {allowEditEntryOption && onEditEntry && rowIndex !== 0 && (
+                            <td style={{ textAlign: 'center' }}>
+                                <button
+                                    onClick={() => onEditEntry(rowIndex)}
+                                    aria-label="Edit row"
+                                >
+                                    Edit
+                                </button>
+                            </td>
+                        )}
+
+                        {allowDeleteEntryOption && onDeleteEntry && rowIndex === 0 && (
+                            <td style={{ textAlign: 'center' }}>
+                                 <h3 className={"compact-table-header-text"}>
+                                    Delete
+                                </h3>
+                            </td>
+                        )}
+
+
                         {allowDeleteEntryOption && onDeleteEntry && rowIndex !== 0 && (
                             <td style={{ textAlign: 'center' }}>
                                 <button
@@ -520,6 +568,8 @@ Table.propTypes = {
     onDeleteEntry: PropTypes.func,
     allowDeleteEntryOption: PropTypes.bool,
     columnsToWrap: PropTypes.arrayOf(PropTypes.string),
+    allowEditEntryOption: PropTypes.bool,
+    onEditEntry: PropTypes.func,
 };
 
 export default Table;

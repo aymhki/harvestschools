@@ -49,13 +49,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 50vw;
-    height: 60vh;
+    width: 35vw;
+    height: 45vh;
     background-color: #ffffff;
     border-radius: 1rem;
     will-change: filter;
     transition: filter 0.5s;
-    min-height: 35rem;
+    min-height: 20rem;
 }
 
 .booking-login-form-wrapper:hover {
@@ -100,8 +100,8 @@
 @media (max-width: 1200px) {
 
     .booking-login-form-wrapper {
-        width: 70vw;
-        height: 60vh;
+        width: 40vw;
+        height: 40vh;
     }
 
 }
@@ -117,7 +117,7 @@
 
     .booking-login-form-wrapper {
         width: 90vw;
-        height: 60vh;
+        height: 20vh;
     }
 }
 
