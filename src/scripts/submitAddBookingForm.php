@@ -31,21 +31,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $fieldId = substr($key, 6);
                 $labelKey = 'label_' . $fieldId;
                 $instanceKey = 'instance_' . $fieldId;
+
                 if (isset($_POST[$labelKey])) {
                     $label = $_POST[$labelKey];
+
                     if (isset($_POST[$instanceKey])) {
                         $instanceId = $_POST[$instanceKey];
+
                         if (strpos($instanceId, 'student-section') === 0) {
-                            $sectionNumber = substr($instanceId, strrpos($instanceId, '_') + 1);
-                            if (!isset($studentSections[$sectionNumber])) {
-                                $studentSections[$sectionNumber] = [];
+                            // Use the complete instanceId as the key instead of just the number
+                            // This prevents issues with non-sequential section numbering
+                            if (!isset($studentSections[$instanceId])) {
+                                $studentSections[$instanceId] = [];
                             }
-                            $studentSections[$sectionNumber][$label] = $value;
+                            $studentSections[$instanceId][$label] = $value;
                         }
-                    } else {
-                        $formData[$label] = $value;
                     }
                 }
+            }
+        }
+
+        $processedStudents = [];
+        foreach ($studentSections as $sectionData) {
+            if (!empty($sectionData['Student Name'])) {
+                $processedStudents[] = $sectionData;
             }
         }
 
@@ -185,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        foreach ($studentSections as $index => $studentData) {
+        foreach ($processedStudents as $index => $studentData) {
             if (!empty($studentData['Student Name'])) {
                 try {
                     $conn->begin_transaction();
