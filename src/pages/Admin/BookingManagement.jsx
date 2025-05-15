@@ -365,7 +365,7 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-        checkAdminSession(navigate, setIsLoading, 1);
+       checkAdminSession(navigate, setIsLoading, 1);
     }, []);
 
     useEffect(() => {
