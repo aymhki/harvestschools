@@ -127,7 +127,7 @@ function BookingLogin() {
                               lang={'en'}
                               captchaLength={1}
                               noInputFieldsCache={true}
-                              noCaptcha={false}
+                              noCaptcha={true}
                               hasDifferentOnSubmitBehaviour={true}
                               differentOnSubmitBehaviour={handleBookingLogin}
                               hasDifferentSubmitButtonText={true}

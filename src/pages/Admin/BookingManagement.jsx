@@ -10,6 +10,11 @@ import '../../styles/Dashboard.css';
 function BookingManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    // const [allBookings, setAllBookings] = useState([
+    //     ['Booking ID', 'Student ID', 'Booking Username', 'Booking Password', 'Student Created', 'Booking Created', 'School Division', 'Grade', 'Student Name', 'First Parent Name', 'First Parent Email', 'First Parent Phone Number', 'CD Count', 'Additional Attendees', 'Payment Status', 'Second Parent Name', 'Second Parent Email', 'Second Parent Phone Number'],
+    //     ['1', '1', 'testuser', 'testpassword', '2023-01-01', '2023-01-01', 'IGCSE', 'Grade 10', 'John Doe', 'Jane Doe', '0', '', '1234567890', '2', 'None', 'Paid', 'John Doe Sr.', ''],
+    // ]);
+
     const [allBookings, setAllBookings] = useState(null);
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
@@ -302,6 +307,10 @@ function BookingManagement() {
         }
     };
 
+    const handleEditBooking = async (rowIndex) => {
+
+    }
+
     const oneStudentLeftForBookingId = () => {
         if (allBookings && allBookings[rowIndexToDelete]) {
             const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
@@ -445,6 +454,10 @@ function BookingManagement() {
                                 // 'Second Parent Phone',
                             ]
                        }
+                       allowEditEntryOption={true}
+                       onEditEntry={(rowIndex) => {
+                            handleEditBooking(rowIndex);
+                       }}
                 />
             </div>
 
@@ -486,6 +499,9 @@ function BookingManagement() {
                               setShowFormModalPopup={setShowAddBookingModal}
                               pedanticIds={true}
                               formHasPasswordField={true}
+                              footerButtonsSpaceBetween={true}
+                              switchFooterButtonsOrder={true}
+
                         />
                     </div>
 

@@ -22,7 +22,7 @@
     align-items: center;
     justify-content: center;
     width: 50vw;
-    height: 60vh;
+    height: 40vh;
     background-color: #ffffff;
     border-radius: 1rem;
     will-change: filter;
@@ -48,7 +48,7 @@
 
     .admin-login-form-wrapper {
         width: 70vw;
-        height: 60vh;
+        height: 40vh;
     }
 
 }
@@ -67,7 +67,7 @@
 
     .admin-login-form-wrapper {
         width: 90vw;
-        height: 60vh;
+        height: 50vh;
     }
 }
 

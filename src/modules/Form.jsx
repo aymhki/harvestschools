@@ -37,7 +37,9 @@ function Form({
                   pedanticIds,
                     formInModalPopup,
                     setShowFormModalPopup,
-                  formIsReadOnly
+                  formIsReadOnly,
+                footerButtonsSpaceBetween,
+                  switchFooterButtonsOrder
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -1135,9 +1137,9 @@ function Form({
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        console.log(dynamicFields)
-        console.log(sectionInstances)
-        console.log(dynamicSections)
+        // console.log(dynamicFields)
+        // console.log(sectionInstances)
+        // console.log(dynamicSections)
         //return;
 
         if (pedanticIds) {
@@ -1383,43 +1385,80 @@ function Form({
                 )}
 
                 {!formIsReadOnly && (
-                    <div className={`form-footer ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
+                    <div className={`form-footer ${centerSubmitButton ? 'center-buttons' : footerButtonsSpaceBetween ? '' : ''}`}>
                     {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                     {successMessage && <p className="success-message">{successMessage}</p>}
 
                     {renderDynamicSectionButtons()}
 
-                    <div className={`form-footer-buttons-wrapper ${centerSubmitButton ? 'center-buttons' : 'left-buttons'}`}>
+                    <div className={`form-footer-buttons-wrapper ${centerSubmitButton ? 'center-buttons' : footerButtonsSpaceBetween ? '' : 'left-buttons'}`}>
 
-                        {hasDifferentSubmitButtonText ? (
-                            lang === 'ar' ? (
-                                <button type={"submit"} disabled={submitting} className={"submit-button"}>
-                                    {submitting ? differentSubmitButtonText[3] : differentSubmitButtonText[2]}
-                                </button>
-                            ) : (
-                                <button type={"submit"} disabled={submitting} className={"submit-button"}>
-                                    {submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]}
-                                </button>
-                            )
+                        { switchFooterButtonsOrder ? (
+                            <>
+                                { !noClearOption && (
+                                    lang === 'ar' ? (
+                                        <button type="reset" disabled={submitting}
+                                                className="reset-button">مسح</button>
+                                    ) : (
+                                        <button type="reset" disabled={submitting}
+                                                className="reset-button">Clear</button>
+                                    ))
+                                }
+
+                                {hasDifferentSubmitButtonText ? (
+                                    lang === 'ar' ? (
+                                        <button type={"submit"} disabled={submitting} className={"submit-button"}>
+                                            {submitting ? differentSubmitButtonText[3] : differentSubmitButtonText[2]}
+                                        </button>
+                                    ) : (
+                                        <button type={"submit"} disabled={submitting} className={"submit-button"}>
+                                            {submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]}
+                                        </button>
+                                    )
+                                ) : (
+                                    lang === 'ar' ? (
+                                        <button type="submit" disabled={submitting}
+                                                className="submit-button">{submitting ? 'جاري الارسال...' : 'ارسال'}</button>
+                                    ) : (
+                                        <button type="submit" disabled={submitting}
+                                                className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
+                                    )
+                                )}
+                            </>
                         ) : (
-                            lang === 'ar' ? (
-                                <button type="submit" disabled={submitting}
-                                        className="submit-button">{submitting ? 'جاري الارسال...' : 'ارسال'}</button>
-                            ) : (
-                                <button type="submit" disabled={submitting}
-                                        className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
-                            )
+                            <>
+                                {hasDifferentSubmitButtonText ? (
+                                    lang === 'ar' ? (
+                                        <button type={"submit"} disabled={submitting} className={"submit-button"}>
+                                            {submitting ? differentSubmitButtonText[3] : differentSubmitButtonText[2]}
+                                        </button>
+                                    ) : (
+                                        <button type={"submit"} disabled={submitting} className={"submit-button"}>
+                                            {submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]}
+                                        </button>
+                                    )
+                                ) : (
+                                    lang === 'ar' ? (
+                                        <button type="submit" disabled={submitting}
+                                                className="submit-button">{submitting ? 'جاري الارسال...' : 'ارسال'}</button>
+                                    ) : (
+                                        <button type="submit" disabled={submitting}
+                                                className="submit-button">{submitting ? 'Submitting...' : 'Submit'}</button>
+                                    )
+                                )}
+
+                                { !noClearOption && (
+                                    lang === 'ar' ? (
+                                        <button type="reset" disabled={submitting}
+                                                className="reset-button">مسح</button>
+                                    ) : (
+                                        <button type="reset" disabled={submitting}
+                                                className="reset-button">Clear</button>
+                                    ))
+                                }
+                            </>
                         )}
 
-                        { !noClearOption && (
-                            lang === 'ar' ? (
-                                <button type="reset" disabled={submitting}
-                                        className="reset-button">مسح</button>
-                            ) : (
-                                <button type="reset" disabled={submitting}
-                                        className="reset-button">Clear</button>
-                            ))
-                        }
 
                     </div>
                 </div>
@@ -1624,6 +1663,8 @@ Form.propTypes = {
     formInModalPopup: PropTypes.bool,
     setShowFormModalPopup: PropTypes.func,
     formIsReadOnly: PropTypes.bool,
+    footerButtonsSpaceBetween: PropTypes.bool,
+    switchFooterButtonsOrder: PropTypes.bool,
 
 
 };

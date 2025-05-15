@@ -163,6 +163,7 @@
 .form-footer-buttons-wrapper {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
     width: 100%;
 }
 
@@ -174,6 +175,14 @@
 .left-buttons {
     align-items: start;
     justify-content: start;
+}
+
+.dynamic-section-button-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .general-form-error {
@@ -598,6 +607,51 @@
 
 }
 
+
+.dynamic-section-instance {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: start;
+    width: 100%;
+    height: 100%;
+}
+
+.dynamic-section-control {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: end;
+    width: 100%;
+    height: 100%;
+}
+
+.remove-section-button {
+    background-color: #ffffff;
+    color: #c94349;
+    padding: 1rem 1rem 1rem 1rem;
+    font-size: large;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.5rem #c94349;
+}
+
+.remove-section-button:hover {
+    background-color: #c94349;
+    color: #ffffff;
+    filter: drop-shadow(0 0 1em #c94349);
+
+}
+
+.add-section-button {
+    padding: 1rem 1rem 1rem 1rem;
+    font-size: large;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+
+
 @media (max-width: 1600px) {
     .captcha-box {
         letter-spacing: 2rem;
@@ -809,6 +863,16 @@
     .form-select-date-modal-container {
         width: 90%;
     }
+
+    .remove-section-button {
+        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+        font-size: medium;
+    }
+
+    .add-section-button {
+        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+        font-size: medium;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -873,5 +937,17 @@
         background: #454545;
         color: #ffffff;
         border-color: #ffffff
+    }
+
+    .remove-section-button {
+        background-color: #c94349;
+        color: #ffffff;
+        box-shadow: 0 0 0.5rem #ffffff;
+    }
+
+    .remove-section-button:hover {
+        background-color: #454545;
+        color: #ffffff;
+        filter: drop-shadow(0 0 1em #ffffff);
     }
 }
