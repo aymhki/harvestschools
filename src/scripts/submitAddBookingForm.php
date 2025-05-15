@@ -9,21 +9,23 @@ $dbname = $dbConfig['db_name'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn = null;
-    $authId = null;
-    $bookingId = null;
-    $firstParentId = null;
-    $secondParentId = null;
-    $studentIds = [];
-    $extrasId = null;
+    $data = [
+        'authId' => null,
+        'bookingId' => null,
+        'firstParentId' => null,
+        'secondParentId' => null,
+        'studentIds' => [],
+        'extrasId' => null
+    ];
 
     try {
+        // Initialize database connection
         $conn = new mysqli($servername, $username, $password, $dbname);
         if ($conn->connect_error) {
             throw new Exception('Database connection failed: ' . $conn->connect_error);
         }
 
-        $conn->autocommit(false);
-
+        // Process form data
         $formData = [];
         $studentSections = [];
         foreach ($_POST as $key => $value) {
@@ -49,9 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        // Start a single transaction for the entire process
+        $conn->autocommit(false);
+
+        // 1. Insert auth credentials
         $bookingUsername = $formData['Booking Username'];
         $bookingPassword = $formData['Booking Password'];
 
+        // Check if username already exists
         $stmt = $conn->prepare("SELECT auth_id FROM booking_auth_credentials WHERE username = ?");
         $stmt->bind_param("s", $bookingUsername);
         $stmt->execute();
@@ -60,211 +67,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception('Username already exists. Please choose a different username.');
         }
 
+        // Insert auth credentials
         $stmt = $conn->prepare("INSERT INTO booking_auth_credentials (username, password_hash) VALUES (?, SHA2(?, 256))");
         $stmt->bind_param("ss", $bookingUsername, $bookingPassword);
         if (!$stmt->execute()) {
             throw new Exception('Failed to create authentication record: ' . $stmt->error);
         }
-        $authId = $conn->insert_id;
-        $conn->commit();
+        $data['authId'] = $conn->insert_id;
 
-        try {
-            $conn->begin_transaction();
-            $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
-            $stmt->bind_param("i", $authId);
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to create booking record: ' . $stmt->error);
-            }
-            $bookingId = $conn->insert_id;
-            $conn->commit();
-        } catch (Exception $e) {
-            $conn->rollback();
-            if ($authId) {
-                $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
-                $stmt->bind_param("i", $authId);
-                $stmt->execute();
-            }
-            throw new Exception($e->getMessage());
+        // 2. Insert booking
+        $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
+        $stmt->bind_param("i", $data['authId']);
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to create booking record: ' . $stmt->error);
+        }
+        $data['bookingId'] = $conn->insert_id;
+
+        // 3. Insert first parent
+        $firstParentName = $formData['First Parent Name'];
+        $firstParentEmail = $formData['First Parent Email'];
+        $firstParentPhone = $formData['First Parent Phone Number'];
+
+        $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $firstParentName, $firstParentEmail, $firstParentPhone);
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to add first parent: ' . $stmt->error);
+        }
+        $data['firstParentId'] = $conn->insert_id;
+
+        // 4. Link first parent to booking
+        $isPrimary = 1;
+        $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $data['bookingId'], $data['firstParentId'], $isPrimary);
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to link first parent to booking: ' . $stmt->error);
         }
 
-        try {
-            $conn->begin_transaction();
-            $firstParentName = $formData['First Parent Name'];
-            $firstParentEmail = $formData['First Parent Email'];
-            $firstParentPhone = $formData['First Parent Phone Number'];
+        // 5. Insert second parent if provided
+        if (!empty($formData['Second Parent Name'])) {
+            $secondParentName = $formData['Second Parent Name'];
+            $secondParentEmail = $formData['Second Parent Email'] ?? '';
+            $secondParentPhone = $formData['Second Parent Phone Number'] ?? '';
 
             $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $firstParentName, $firstParentEmail, $firstParentPhone);
+            $stmt->bind_param("sss", $secondParentName, $secondParentEmail, $secondParentPhone);
             if (!$stmt->execute()) {
-                throw new Exception('Failed to add first parent: ' . $stmt->error);
+                throw new Exception('Failed to add second parent: ' . $stmt->error);
             }
-            $firstParentId = $conn->insert_id;
-            $conn->commit();
-        } catch (Exception $e) {
-            $conn->rollback();
-            if ($bookingId) {
-                $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
-                $stmt->bind_param("i", $bookingId);
-                $stmt->execute();
-            }
-            if ($authId) {
-                $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
-                $stmt->bind_param("i", $authId);
-                $stmt->execute();
-            }
-            throw new Exception($e->getMessage());
-        }
+            $data['secondParentId'] = $conn->insert_id;
 
-        try {
-            $conn->begin_transaction();
-            $isPrimary = 1;
+            // 6. Link second parent to booking
+            $isPrimary = 0;
             $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
-            $stmt->bind_param("iii", $bookingId, $firstParentId, $isPrimary);
+            $stmt->bind_param("iii", $data['bookingId'], $data['secondParentId'], $isPrimary);
             if (!$stmt->execute()) {
-                throw new Exception('Failed to link first parent to booking: ' . $stmt->error);
-            }
-            $conn->commit();
-        } catch (Exception $e) {
-            $conn->rollback();
-            if ($firstParentId) {
-                $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
-                $stmt->bind_param("i", $firstParentId);
-                $stmt->execute();
-            }
-            if ($bookingId) {
-                $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
-                $stmt->bind_param("i", $bookingId);
-                $stmt->execute();
-            }
-            if ($authId) {
-                $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
-                $stmt->bind_param("i", $authId);
-                $stmt->execute();
-            }
-            throw new Exception($e->getMessage());
-        }
-
-        if (!empty($formData['Second Parent Name'])) {
-            try {
-                $conn->begin_transaction();
-                $secondParentName = $formData['Second Parent Name'];
-                $secondParentEmail = $formData['Second Parent Email'] ?? '';
-                $secondParentPhone = $formData['Second Parent Phone Number'] ?? '';
-
-                $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $secondParentName, $secondParentEmail, $secondParentPhone);
-                if (!$stmt->execute()) {
-                    throw new Exception('Failed to add second parent: ' . $stmt->error);
-                }
-                $secondParentId = $conn->insert_id;
-                $conn->commit();
-            } catch (Exception $e) {
-                $conn->rollback();
-                cleanupAllRecords($conn, $firstParentId, null, $bookingId, $authId, []);
-                throw new Exception($e->getMessage());
-            }
-
-            try {
-                $conn->begin_transaction();
-                $isPrimary = 0;
-                $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
-                $stmt->bind_param("iii", $bookingId, $secondParentId, $isPrimary);
-                if (!$stmt->execute()) {
-                    throw new Exception('Failed to link second parent to booking: ' . $stmt->error);
-                }
-                $conn->commit();
-            } catch (Exception $e) {
-                $conn->rollback();
-                if ($secondParentId) {
-                    $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
-                    $stmt->bind_param("i", $secondParentId);
-                    $stmt->execute();
-                }
-                cleanupAllRecords($conn, $firstParentId, null, $bookingId, $authId, []);
-                throw new Exception($e->getMessage());
+                throw new Exception('Failed to link second parent to booking: ' . $stmt->error);
             }
         }
 
+        // 7. Insert students
         foreach ($studentSections as $index => $studentData) {
             if (!empty($studentData['Student Name'])) {
-                try {
-                    $conn->begin_transaction();
-                    $studentName = $studentData['Student Name'];
-                    $schoolDivision = $studentData['Student School Division'] ?? 'Other';
-                    $grade = $studentData['Student Grade'] ?? '';
+                $studentName = $studentData['Student Name'];
+                $schoolDivision = $studentData['Student School Division'] ?? 'Other';
+                $grade = $studentData['Student Grade'] ?? '';
 
-                    $stmt = $conn->prepare("INSERT INTO booking_students (name, school_division, grade) VALUES (?, ?, ?)");
-                    $stmt->bind_param("sss", $studentName, $schoolDivision, $grade);
-                    if (!$stmt->execute()) {
-                        throw new Exception('Failed to add student #' . ($index + 1) . ': ' . $stmt->error);
-                    }
-                    $studentId = $conn->insert_id;
-                    $studentIds[] = $studentId;
-                    $conn->commit();
-                } catch (Exception $e) {
-                    $conn->rollback();
-                    foreach ($studentIds as $id) {
-                        $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
-                        $stmt->bind_param("i", $id);
-                        $stmt->execute();
-                    }
-                    cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, []);
-                    throw new Exception($e->getMessage());
+                $stmt = $conn->prepare("INSERT INTO booking_students (name, school_division, grade) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $studentName, $schoolDivision, $grade);
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to add student #' . ($index + 1) . ': ' . $stmt->error);
                 }
+                $studentId = $conn->insert_id;
+                $data['studentIds'][] = $studentId;
 
-                try {
-                    $conn->begin_transaction();
-                    $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
-                    $stmt->bind_param("ii", $bookingId, $studentId);
-                    if (!$stmt->execute()) {
-                        throw new Exception('Failed to link student #' . ($index + 1) . ' to booking: ' . $stmt->error);
-                    }
-                    $conn->commit();
-                } catch (Exception $e) {
-                    $conn->rollback();
-                    foreach ($studentIds as $id) {
-                        $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
-                        $stmt->bind_param("i", $id);
-                        $stmt->execute();
-                    }
-                    cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, []);
-                    throw new Exception($e->getMessage());
+                // 8. Link student to booking
+                $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
+                $stmt->bind_param("ii", $data['bookingId'], $studentId);
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to link student #' . ($index + 1) . ' to booking: ' . $stmt->error);
                 }
             }
         }
 
-        try {
-            $conn->begin_transaction();
-            $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id) VALUES (?)");
-            $stmt->bind_param("i", $bookingId);
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to create extras record: ' . $stmt->error);
-            }
-            $extrasId = $conn->insert_id;
-            $conn->commit();
-        } catch (Exception $e) {
-            $conn->rollback();
-            foreach ($studentIds as $id) {
-                $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE student_id = ?");
-                $stmt->bind_param("i", $id);
-                $stmt->execute();
-
-                $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
-                $stmt->bind_param("i", $id);
-                $stmt->execute();
-            }
-
-            cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, $studentIds);
-            throw new Exception($e->getMessage());
+        // 9. Insert extras
+        $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id) VALUES (?)");
+        $stmt->bind_param("i", $data['bookingId']);
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to create extras record: ' . $stmt->error);
         }
+        $data['extrasId'] = $conn->insert_id;
+
+        // If everything is successful, commit the transaction
+        $conn->commit();
 
         echo json_encode([
             'success' => true,
             'message' => 'Booking created successfully',
-            'booking_id' => $bookingId
+            'booking_id' => $data['bookingId']
         ]);
 
     } catch (Exception $e) {
+        // If any error occurs, rollback all changes
+        if ($conn !== null && !$conn->connect_error) {
+            performRollback($conn, $data);
+        }
+
         echo json_encode([
             'success' => false,
             'message' => $e->getMessage()
@@ -281,64 +188,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
 }
 
-
-function cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, $studentIds) {
+/**
+ * Performs a complete rollback of all inserted records in the correct order
+ * to respect foreign key constraints
+ *
+ * @param mysqli $conn Database connection
+ * @param array $data Array containing all inserted IDs
+ */
+function performRollback($conn, $data) {
     try {
         $conn->begin_transaction();
 
-        if ($bookingId) {
-            $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
-            $stmt->bind_param("i", $bookingId);
+        // 1. First delete the extras (depends on booking)
+        if ($data['extrasId']) {
+            $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
+            $stmt->bind_param("i", $data['bookingId']);
             $stmt->execute();
         }
 
-        if ($firstParentId) {
-            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
-            $stmt->bind_param("i", $firstParentId);
-            $stmt->execute();
-        }
-
-        if ($secondParentId) {
-            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
-            $stmt->bind_param("i", $secondParentId);
-            $stmt->execute();
-        }
-
-        if ($bookingId) {
+        // 2. Delete student linkers (depends on booking and students)
+        if ($data['bookingId']) {
             $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
-            $stmt->bind_param("i", $bookingId);
+            $stmt->bind_param("i", $data['bookingId']);
             $stmt->execute();
         }
 
-        foreach ($studentIds as $studentId) {
+        // 3. Delete students
+        foreach ($data['studentIds'] as $studentId) {
             $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
             $stmt->bind_param("i", $studentId);
             $stmt->execute();
         }
 
-        if ($bookingId) {
-            $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
-            $stmt->bind_param("i", $bookingId);
+        // 4. Delete parent linkers (depends on booking and parents)
+        if ($data['bookingId']) {
+            $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
+            $stmt->bind_param("i", $data['bookingId']);
             $stmt->execute();
         }
 
-        if ($bookingId) {
+        // 5. Delete parents
+        if ($data['firstParentId']) {
+            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+            $stmt->bind_param("i", $data['firstParentId']);
+            $stmt->execute();
+        }
+
+        if ($data['secondParentId']) {
+            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+            $stmt->bind_param("i", $data['secondParentId']);
+            $stmt->execute();
+        }
+
+        // 6. Delete booking (depends on auth)
+        if ($data['bookingId']) {
             $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
-            $stmt->bind_param("i", $bookingId);
+            $stmt->bind_param("i", $data['bookingId']);
             $stmt->execute();
         }
 
-        if ($authId) {
+        // 7. Delete auth credentials
+        if ($data['authId']) {
             $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
-            $stmt->bind_param("i", $authId);
+            $stmt->bind_param("i", $data['authId']);
             $stmt->execute();
         }
 
         $conn->commit();
-        return true;
     } catch (Exception $e) {
-        $conn->rollback();
-        return false;
+        // If rollback fails, attempt one more time
+        try {
+            $conn->rollback();
+            performFinalCleanup($conn, $data);
+        } catch (Exception $innerEx) {
+            // At this point there's not much we can do
+            // Log the error or notify administrator
+            error_log("Critical error during rollback: " . $innerEx->getMessage());
+        }
+    }
+}
+
+/**
+ * Last resort cleanup function that tries individual deletions
+ * without transaction to clean up any remaining records
+ *
+ * @param mysqli $conn Database connection
+ * @param array $data Array containing all inserted IDs
+ */
+function performFinalCleanup($conn, $data) {
+    // Try to delete everything individually as a last resort
+    try {
+        if ($data['bookingId']) {
+            $conn->query("DELETE FROM booking_extras WHERE booking_id = {$data['bookingId']}");
+            $conn->query("DELETE FROM booking_students_linker WHERE booking_id = {$data['bookingId']}");
+            $conn->query("DELETE FROM booking_parents_linker WHERE booking_id = {$data['bookingId']}");
+            $conn->query("DELETE FROM bookings WHERE booking_id = {$data['bookingId']}");
+        }
+
+        foreach ($data['studentIds'] as $studentId) {
+            $conn->query("DELETE FROM booking_students WHERE student_id = $studentId");
+        }
+
+        if ($data['firstParentId']) {
+            $conn->query("DELETE FROM booking_parents WHERE parent_id = {$data['firstParentId']}");
+        }
+
+        if ($data['secondParentId']) {
+            $conn->query("DELETE FROM booking_parents WHERE parent_id = {$data['secondParentId']}");
+        }
+
+        if ($data['authId']) {
+            $conn->query("DELETE FROM booking_auth_credentials WHERE auth_id = {$data['authId']}");
+        }
+    } catch (Exception $e) {
+        error_log("Final cleanup failed: " . $e->getMessage());
     }
 }
 ?>

@@ -1,7 +1,7 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
 CREATE TABLE `admin_sessions` (
-                                  `id` text NOT NULL,
+                                  `id` char(255) NOT NULL,
                                   `username` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -293,7 +293,8 @@ $$
 DELIMITER ;
 
 ALTER TABLE `admin_sessions`
-    ADD KEY `fk_admin_username_from_admin_sessions` (`username`);
+    ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_admin_username_from_admin_sessions` (`username`);
 
 ALTER TABLE `admin_users`
     ADD PRIMARY KEY (`id`),
