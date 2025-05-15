@@ -352,6 +352,7 @@ function Form({
     };
 
 // Inside the Form component, modify the addSectionInstance function
+
     const addSectionInstance = (sectionId) => {
         setSectionInstances(prevState => {
             const section = dynamicSections.find(s => s.sectionId === sectionId);
@@ -363,11 +364,14 @@ function Form({
                 return prevState;
             }
 
-            const instanceId = `${sectionId}_${currentSectionState.count}`;
+            // Generate a new instance ID based on the current number of instances
+            // This ensures we don't have duplicate IDs after removals
+            const instanceId = `${sectionId}_${currentSectionState.instances.length}`;
             const insertionIndex = findInsertionIndex(sectionId);
+
             if (insertionIndex === -1) return prevState;
 
-            // Assign temporary IDs first
+            // Create new fields with proper IDs and instanceId
             const newFields = section.fieldsToAdd.map((field, index) => {
                 return {
                     ...field,
@@ -403,27 +407,23 @@ function Form({
             });
 
             // Update refs with new IDs
-            const newRefs = {};
+            const newRefs = {...refs};
             normalizedFields.forEach(field => {
-                // If we have an existing ref for this field (using old ID), transfer it
-                if (idMap[field.id] && refs[idMap[field.id]]) {
-                    newRefs[field.id] = refs[idMap[field.id]];
-                } else {
+                // If this is one of our new fields or the ID changed
+                if (allNewFields.some(newField => newField.id === field.id) || idMap[field.id]) {
                     newRefs[field.id] = createRef();
                 }
             });
 
             setRefs(newRefs);
             setDynamicFields(normalizedFields);
-
-            // Update nextIdCounter to be max ID + 1
             setNextIdCounter(normalizedFields.length + 1);
 
-            // Update section instances with the new field IDs
-            const updatedInstances = [...currentSectionState.instances];
-            updatedInstances.forEach(instance => {
-                instance.fieldIds = instance.fieldIds.map(id => idMap[id] || id);
-            });
+            // Update existing instances with new field IDs
+            const updatedInstances = currentSectionState.instances.map(instance => ({
+                ...instance,
+                fieldIds: instance.fieldIds.map(id => idMap[id] || id)
+            }));
 
             // Add the new instance with correct field IDs
             const newInstanceFieldIds = allNewFields.map(field =>
@@ -433,7 +433,8 @@ function Form({
             return {
                 ...prevState,
                 [sectionId]: {
-                    count: currentSectionState.count + 1,
+                    // Increment count properly
+                    count: currentSectionState.instances.length + 1,
                     instances: [
                         ...updatedInstances,
                         {
@@ -462,11 +463,13 @@ function Form({
 
             const instanceToRemove = currentSectionState.instances[instanceIndex];
             const fieldsToRemove = instanceToRemove.fieldIds;
+
+            // Remove the fields
             const updatedDynamicFields = dynamicFields.filter(
                 field => !fieldsToRemove.includes(field.id)
             );
 
-            // After removing fields, normalize all IDs to match their position
+            // Normalize field IDs
             const idMap = {};
             const normalizedFields = updatedDynamicFields.map((field, index) => {
                 const newId = index + 1;
@@ -477,7 +480,7 @@ function Form({
                 return field;
             });
 
-            // Update refs with new IDs
+            // Update refs
             const newRefs = {};
             normalizedFields.forEach(field => {
                 if (refs[field.id]) {
@@ -489,22 +492,53 @@ function Form({
 
             setRefs(newRefs);
             setDynamicFields(normalizedFields);
-
-            // Update nextIdCounter to be max ID + 1
             setNextIdCounter(normalizedFields.length + 1);
 
-            const updatedInstances = currentSectionState.instances
-                .filter((_, idx) => idx !== instanceIndex)
-                .map(instance => ({
-                    ...instance,
-                    fieldIds: instance.fieldIds
-                        .filter(id => !fieldsToRemove.includes(id))
-                        .map(id => idMap[id] || id)
-                }));
+            // Create a new array of instances without the removed one
+            let updatedInstances = [...currentSectionState.instances];
+            updatedInstances.splice(instanceIndex, 1);
 
+            // Update the remaining instances
+            updatedInstances = updatedInstances.map((instance, index) => {
+                // Update instance IDs to be sequential (preventing duplicates)
+                const newInstanceId = `${sectionId}_${index}`;
+
+                // Find all fields belonging to this instance and update their instanceId
+                normalizedFields.forEach(field => {
+                    if (field.instanceId === instance.instanceId) {
+                        field.instanceId = newInstanceId;
+                    }
+                });
+
+                // Update field IDs in the instance to match the new field IDs
+                const updatedFieldIds = instance.fieldIds
+                    .filter(id => !fieldsToRemove.includes(id))
+                    .map(id => idMap[id] || id);
+
+                // Calculate the new insertion index (accounting for removed fields)
+                const removedFieldsBeforeThisInstance =
+                    instanceToRemove.insertedAtIndex < instance.insertedAtIndex ?
+                        fieldsToRemove.length : 0;
+
+                return {
+                    ...instance,
+                    instanceId: newInstanceId,
+                    fieldIds: updatedFieldIds,
+                    insertedAtIndex: instance.insertedAtIndex - removedFieldsBeforeThisInstance
+                };
+            });
+
+            // Calculate new nextInsertPosition
             let newNextInsertPosition;
             if (updatedInstances.length === 0) {
-                newNextInsertPosition = dynamicSections.find(section => section.sectionId === sectionId).startAddingFieldsFromId;
+                const startField = dynamicSections.find(section => section.sectionId === sectionId);
+                newNextInsertPosition = normalizedFields.findIndex(
+                    field => field.id === startField.startAddingFieldsFromId
+                ) + 1;
+
+                if (newNextInsertPosition <= 0) {
+                    newNextInsertPosition = normalizedFields.length;
+                }
             } else {
                 const lastInstance = updatedInstances[updatedInstances.length - 1];
                 const lastFieldId = Math.max(...lastInstance.fieldIds);
@@ -516,7 +550,7 @@ function Form({
                 ...prevState,
                 [sectionId]: {
                     ...currentSectionState,
-                    count: currentSectionState.count - 1,
+                    count: updatedInstances.length, // Set count to actual number of instances
                     instances: updatedInstances,
                     nextInsertPosition: newNextInsertPosition
                 }
