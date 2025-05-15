@@ -253,7 +253,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->bind_param("i", $id);
                 $stmt->execute();
             }
-            cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, []);
+
+            cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, $studentIds);
             throw new Exception($e->getMessage());
         }
 
@@ -282,52 +283,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 function cleanupAllRecords($conn, $firstParentId, $secondParentId, $bookingId, $authId, $studentIds) {
-    if ($bookingId) {
-        $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
-        $stmt->bind_param("i", $bookingId);
-        $stmt->execute();
-    }
+    try {
+        $conn->begin_transaction();
 
-    if ($firstParentId) {
-        $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
-        $stmt->bind_param("i", $firstParentId);
-        $stmt->execute();
-    }
+        if ($bookingId) {
+            $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
+            $stmt->bind_param("i", $bookingId);
+            $stmt->execute();
+        }
 
-    if ($secondParentId) {
-        $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
-        $stmt->bind_param("i", $secondParentId);
-        $stmt->execute();
-    }
+        if ($firstParentId) {
+            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+            $stmt->bind_param("i", $firstParentId);
+            $stmt->execute();
+        }
 
-    if ($bookingId) {
-        $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
-        $stmt->bind_param("i", $bookingId);
-        $stmt->execute();
-    }
+        if ($secondParentId) {
+            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+            $stmt->bind_param("i", $secondParentId);
+            $stmt->execute();
+        }
 
-    foreach ($studentIds as $studentId) {
-        $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
-        $stmt->bind_param("i", $studentId);
-        $stmt->execute();
-    }
+        if ($bookingId) {
+            $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
+            $stmt->bind_param("i", $bookingId);
+            $stmt->execute();
+        }
 
-    if ($bookingId) {
-        $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
-        $stmt->bind_param("i", $bookingId);
-        $stmt->execute();
-    }
+        foreach ($studentIds as $studentId) {
+            $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+            $stmt->bind_param("i", $studentId);
+            $stmt->execute();
+        }
 
-    if ($bookingId) {
-        $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
-        $stmt->bind_param("i", $bookingId);
-        $stmt->execute();
-    }
+        if ($bookingId) {
+            $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
+            $stmt->bind_param("i", $bookingId);
+            $stmt->execute();
+        }
 
-    if ($authId) {
-        $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
-        $stmt->bind_param("i", $authId);
-        $stmt->execute();
+        if ($bookingId) {
+            $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
+            $stmt->bind_param("i", $bookingId);
+            $stmt->execute();
+        }
+
+        if ($authId) {
+            $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
+            $stmt->bind_param("i", $authId);
+            $stmt->execute();
+        }
+
+        $conn->commit();
+        return true;
+    } catch (Exception $e) {
+        $conn->rollback();
+        return false;
     }
 }
 ?>
