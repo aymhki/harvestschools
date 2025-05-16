@@ -21,7 +21,7 @@ function Table({
                    allowDeleteEntryOption,
                    columnsToWrap,
                    allowEditEntryOption,
-                   onEditEntry,
+                   onEditEntryOption,
 }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
@@ -384,7 +384,7 @@ function Table({
                             </td>
                         ))}
 
-                        {allowEditEntryOption && onEditEntry && rowIndex === 0 && (
+                        {allowEditEntryOption && onEditEntryOption && rowIndex === 0 && (
                             <td style={{ textAlign: 'center' }}>
                                <h3 className={"compact-table-header-text"}>
                                     Edit
@@ -393,10 +393,10 @@ function Table({
                         )}
 
 
-                        {allowEditEntryOption && onEditEntry && rowIndex !== 0 && (
+                        {allowEditEntryOption && onEditEntryOption && rowIndex !== 0 && (
                             <td style={{ textAlign: 'center' }}>
                                 <button
-                                    onClick={() => onEditEntry(rowIndex)}
+                                    onClick={() => onEditEntryOption(rowIndex)}
                                     aria-label="Edit row"
                                 >
                                     Edit
@@ -569,7 +569,7 @@ Table.propTypes = {
     allowDeleteEntryOption: PropTypes.bool,
     columnsToWrap: PropTypes.arrayOf(PropTypes.string),
     allowEditEntryOption: PropTypes.bool,
-    onEditEntry: PropTypes.func,
+    onEditEntryOption: PropTypes.func,
 };
 
 export default Table;
