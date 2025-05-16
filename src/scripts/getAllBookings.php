@@ -71,15 +71,15 @@ try {
                 ac.username AS 'Booking Username',
                 ac.password_hash AS 'Booking Password',
                 
-                GROUP_CONCAT( s.student_id ORDER BY s.student_id SEPARATOR ', ') AS 'Student IDs',
-                GROUP_CONCAT( s.name ORDER BY s.student_id SEPARATOR ', ') AS 'Student Names',
-                GROUP_CONCAT( s.school_division ORDER BY s.student_id SEPARATOR ', ') AS 'School Divisions',
-                GROUP_CONCAT( s.grade ORDER BY s.student_id SEPARATOR ', ') AS 'Grades',
-                GROUP_CONCAT( s.created_at ORDER BY s.student_id SEPARATOR ', ') AS 'Students Created',
+                GROUP_CONCAT(DISTINCT s.student_id ORDER BY s.student_id SEPARATOR ', ') AS 'Student IDs',
+                GROUP_CONCAT(DISTINCT s.name ORDER BY s.student_id SEPARATOR ', ') AS 'Student Names',
+                GROUP_CONCAT(DISTINCT s.school_division ORDER BY s.student_id SEPARATOR ', ') AS 'School Divisions',
+                GROUP_CONCAT(DISTINCT s.grade ORDER BY s.student_id SEPARATOR ', ') AS 'Grades',
+                GROUP_CONCAT(DISTINCT s.created_at ORDER BY s.student_id SEPARATOR ', ') AS 'Students Created',
                 
-                GROUP_CONCAT( p.name ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Names',
-                GROUP_CONCAT( p.email ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Emails',
-                GROUP_CONCAT( p.phone_number ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Phones',
+                GROUP_CONCAT(DISTINCT p.name ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Names',
+                GROUP_CONCAT(DISTINCT p.email ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Emails',
+                GROUP_CONCAT(DISTINCT p.phone_number ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Phones',
                 
                 e.cd_count AS 'CD Count',
                 e.additional_attendees AS 'Additional Attendees',
