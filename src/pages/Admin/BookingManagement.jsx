@@ -433,11 +433,11 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-       // checkAdminSession(navigate, setIsLoading, 1).then(
-       //     () => {
-       //         fetchBookings();
-       //     }
-       // )
+       checkAdminSession(navigate, setIsLoading, 1).then(
+           () => {
+               fetchBookings();
+           }
+       )
     }, []);
 
     useEffect(() => {
