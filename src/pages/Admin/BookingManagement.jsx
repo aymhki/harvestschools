@@ -419,9 +419,9 @@ function BookingManagement() {
             console.log(response);
 
             if (response.data.success) {
-                setAllBookings(response.data);
+                setAllBookings(response.data.data);
             } else {
-                console.log(response.message);
+                setAllBookings(null);
             }
 
         } catch (error) {
