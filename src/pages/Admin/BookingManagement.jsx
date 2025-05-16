@@ -33,9 +33,6 @@ function BookingManagement() {
     const secondParentEmailFieldId = 8
     const secondParentPhoneNumberFieldId = 9
     const colIndexForBookingId = 0
-    const colIndexForStudentId = 1
-    const colIndexForStudentName = 2
-    const colIndexForBookingUsername = 5
 
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
@@ -268,8 +265,6 @@ function BookingManagement() {
             setIsLoading(true);
             setIsDeleting(true);
             const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
-            const studentId = allBookings[rowIndexToDelete][colIndexForStudentId];
-            const bookingAuthUsername = allBookings[rowIndexToDelete][colIndexForBookingUsername];
 
             const response = await fetch('/scripts/deleteBookingEntry.php', {
                 method: 'POST',
@@ -277,9 +272,7 @@ function BookingManagement() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    studentId: studentId,
                     bookingId: bookingId,
-                    bookingAuthUsername: bookingAuthUsername
                 })
             });
 
@@ -309,16 +302,6 @@ function BookingManagement() {
 
     const handleEditBooking = async (rowIndex) => {
 
-    }
-
-    const oneStudentLeftForBookingId = () => {
-        if (allBookings && allBookings[rowIndexToDelete]) {
-            const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
-            const studentCount = allBookings.filter(booking => booking[0] === bookingId).length;
-            return studentCount === 1;
-        } else {
-            return false;
-        }
     }
 
     const handleAddBooking = async (formData) => {
@@ -531,31 +514,14 @@ function BookingManagement() {
                     </div>
 
                     <div className={"delete-booking-modal-content"}>
-                        {oneStudentLeftForBookingId() ? (
                             <p>
-                                Are you sure you want to delete the booking record for{' '}
-                                {allBookings && rowIndexToDelete !== null ? (
-                                    <strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>
-                                ) : (
-                                    <strong>this student</strong>
-                                )}?
-                                This is the only student left for this booking ID{' '}
+                                Are you sure you want to delete this booking ID{' '}
                                 {allBookings && rowIndexToDelete !== null ? (
                                     <strong>{allBookings[rowIndexToDelete][colIndexForBookingId]}</strong>
                                 ) : (
                                     <strong>this booking ID</strong>
-                                )}, so the parents data as well as the authentication credentials will be deleted.
+                                )}, all the students, parents, authentication credentials data will be deleted.
                             </p>
-                        ) : (
-                            <p>
-                                Are you sure you want to delete the booking record for{' '}
-                                {allBookings && rowIndexToDelete !== null ? (
-                                    <strong>{allBookings[rowIndexToDelete][colIndexForStudentName]}</strong>
-                                ) : (
-                                    <strong>this student</strong>
-                                )}?
-                            </p>
-                        )}
                     </div>
 
                     <div className={"delete-booking-modal-footer"}>
