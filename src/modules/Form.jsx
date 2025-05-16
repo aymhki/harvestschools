@@ -426,6 +426,11 @@ function Form({
                 idMap[field.id] || field.id
             );
 
+            console.log(newInstanceFieldIds);
+            console.log(allNewFields);
+            console.log(dynamicFields)
+            console.log(updatedInstances);
+
             return {
                 ...prevState,
                 [sectionId]: {
@@ -626,7 +631,7 @@ function Form({
         }
 
         return (
-            <Fragment key={field.id}>
+            <Fragment key={`${field.id}-${field.instanceId || 'base'}`}>
                 { (field.labelOutside && !field.labelOnTop) && <label htmlFor={field.id} className={ "form-label-outside"}>
                     {field.label+ (field.required ? '*' : '')}
                 </label>}
@@ -744,7 +749,7 @@ function Form({
                                     onClick={() => setShowPasswords(!showPasswords)}
                                     aria-label={showPasswords ? "Hide password" : "Show password"}
                                 >
-                                    {showPasswords ? <VisibilityIcon/> : <VisibilityOffIcon/> }
+                                    {showPasswords ? <VisibilityOffIcon/> :  <VisibilityIcon/>}
                                 </button>
                             </div>
                         </div>
@@ -772,7 +777,7 @@ function Form({
                                 onClick={() => setShowPasswords(!showPasswords)}
                                 aria-label={showPasswords ? "Hide password" : "Show password"}
                             >
-                                {showPasswords ? <VisibilityIcon/> : <VisibilityOffIcon/> }
+                                {showPasswords ? <VisibilityOffIcon/> : <VisibilityIcon/> }
                             </button>
                         </div>
                     )
@@ -1137,10 +1142,10 @@ function Form({
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        // console.log(dynamicFields)
-        // console.log(sectionInstances)
-        // console.log(dynamicSections)
-        //return;
+        console.log(dynamicFields)
+        console.log(sectionInstances)
+        console.log(dynamicSections)
+        return;
 
         if (pedanticIds) {
             const idMap = {};

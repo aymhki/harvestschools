@@ -10,10 +10,6 @@ import '../../styles/Dashboard.css';
 function BookingManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    // const [allBookings, setAllBookings] = useState([
-    //     ['Booking ID', 'Student ID', 'Booking Username', 'Booking Password', 'Student Created', 'Booking Created', 'School Division', 'Grade', 'Student Name', 'First Parent Name', 'First Parent Email', 'First Parent Phone Number', 'CD Count', 'Additional Attendees', 'Payment Status', 'Second Parent Name', 'Second Parent Email', 'Second Parent Phone Number'],
-    //     ['1', '1', 'testuser', 'testpassword', '2023-01-01', '2023-01-01', 'IGCSE', 'Grade 10', 'John Doe', 'Jane Doe', '0', '', '1234567890', '2', 'None', 'Paid', 'John Doe Sr.', ''],
-    // ]);
 
     const [allBookings, setAllBookings] = useState(null);
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
@@ -22,6 +18,12 @@ function BookingManagement() {
     const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(null);
+
+    const [showEditBookingModal, setShowEditBookingModal] = useState(false);
+    const [editBookingModalPreFilledCoreFields, setEditBookingModalPreFilledCoreFields] = useState(null);
+    const [editBookingModalPreFilledExistingSections, setEditBookingModalPreFilledExistingSections] = useState(null);
+    const [resetEditBookingModal, setResetEditBookingModal] = useState(false);
+
 
     const bookingUsernameFieldId = 1
     const bookingPasswordFieldId = 2
@@ -32,6 +34,9 @@ function BookingManagement() {
     const secondParentNameFieldId = 7
     const secondParentEmailFieldId = 8
     const secondParentPhoneNumberFieldId = 9
+    const additionalAttendeesFieldId = 10
+    const cdCountFieldId = 11
+    const extrasPaymentStatusFieldId = 12 // 'Not Signed Up','Signed Up, pending payment','Confirmed'
     const colIndexForBookingId = 0
 
     const animateAddBookingModal = useSpring({
@@ -42,6 +47,11 @@ function BookingManagement() {
     const animateDeleteBookingModal = useSpring({
         opacity: showDeleteBookingModal ? 1 : 0,
         transform: showDeleteBookingModal ? 'translateY(0)' : 'translateY(-100%)'
+    });
+
+    const animateEditBookingModal = useSpring({
+        opacity: showEditBookingModal ? 1 : 0,
+        transform: showEditBookingModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
     const addBookingModalCoreFormFields = [
@@ -186,7 +196,59 @@ function BookingManagement() {
             mustNotMatchFieldWithId: firstParentPhoneNumberFieldId,
             labelOutside: true,
             labelOnTop: true,
-        }
+        },
+        {
+            id: additionalAttendeesFieldId,
+            type: 'number',
+            name: 'additional-attendees',
+            label: 'Additional Attendees',
+            required: false,
+            placeholder: 'Additional Attendees',
+            errorMsg: 'Please enter the additional attendees',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'additional-attendees',
+            labelOutside: true,
+            labelOnTop: true,
+            defaultValue: '0',
+        },
+        {
+            id: cdCountFieldId,
+            type: 'number',
+            name: 'cd-count',
+            label: 'CD Count',
+            required: false,
+            placeholder: 'CD Count',
+            errorMsg: 'Please enter the CD count',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'cd-count',
+            labelOutside: true,
+            labelOnTop: true,
+            defaultValue: '0',
+        },
+        {
+            id: extrasPaymentStatusFieldId,
+            type: 'select',
+            name: 'extras-payment-status',
+            label: 'Extras Payment Status',
+            choices:
+                [
+                   'Not Signed Up', 'Signed Up, pending payment', 'Confirmed'
+                ],
+            required: false,
+            placeholder: 'Extras Payment Status',
+            errorMsg: 'Please enter the extras payment status',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'extras-payment-status',
+            labelOutside: true,
+            labelOnTop: true,
+            defaultValue: 'Not Signed Up',
+        },
     ]
 
     const studentSectionFields = [
@@ -255,9 +317,29 @@ function BookingManagement() {
         setResetAddBookingModal(true);
     }
 
-    const handleCancelDeleteBookingModal = () => {
-        setShowDeleteBookingModal(false);
-        setRowIndexToDelete(null);
+    const handleAddBooking = async (formData) => {
+        try {
+            setIsLoading(true);
+
+            const response = await fetch('/scripts/submitAddBookingForm.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setResetAddBookingModal(true)
+                setShowAddBookingModal(false);
+                fetchBookings();
+            } else {
+                throw new Error(`${result.message}`);
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const handleDeleteBooking = async () => {
@@ -287,6 +369,7 @@ function BookingManagement() {
             } else {
                 throw new Error(`${result.message}`);
             }
+
         } catch (error) {
             setIsDeleting(false);
             setRowIndexToDelete(null);
@@ -300,33 +383,27 @@ function BookingManagement() {
         }
     };
 
-    const handleEditBooking = async (rowIndex) => {
+    const handleCancelDeleteBookingModal = () => {
+        setShowDeleteBookingModal(false);
+        setRowIndexToDelete(null);
+    }
+
+    const handleEditBookingModalInitialization = async (rowIndex) => {
+        setShowEditBookingModal(true);
+
 
     }
 
-    const handleAddBooking = async (formData) => {
-        try {
-            setIsLoading(true);
 
-            const response = await fetch('/scripts/submitAddBookingForm.php', {
-                method: 'POST',
-                body: formData
-            });
 
-            const result = await response.json();
+    const handleEditBooking = async (formData) => {
 
-            if (result.success) {
-                setResetAddBookingModal(true)
-                setShowAddBookingModal(false);
-                fetchBookings();
-            } else {
-                throw new Error(`${result.message}`);
-            }
-        } catch (error) {
-            throw new Error(error.message);
-        } finally {
-            setIsLoading(false);
-        }
+    }
+
+    const handleCancelEditBookingModal = () => {
+        setShowEditBookingModal(false);
+        setEditBookingModalPreFilledCoreFields(null);
+        setEditBookingModalPreFilledExistingSections(null);
     }
 
     const fetchBookings = async () => {
@@ -356,11 +433,11 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-       checkAdminSession(navigate, setIsLoading, 1).then(
-           () => {
-               fetchBookings();
-           }
-       )
+       // checkAdminSession(navigate, setIsLoading, 1).then(
+       //     () => {
+       //         fetchBookings();
+       //     }
+       // )
     }, []);
 
     useEffect(() => {
@@ -386,6 +463,7 @@ function BookingManagement() {
                        allowHideColumns={true}
                        defaultHiddenColumns={
                        [
+                           'Booking Status',
                            'Booking Password',
                            'Student Created',
                            'Booking Created',
@@ -441,8 +519,8 @@ function BookingManagement() {
                             ]
                        }
                        allowEditEntryOption={true}
-                       onEditEntry={(rowIndex) => {
-                            handleEditBooking(rowIndex);
+                       onEditEntryOption={(rowIndex) => {
+                            handleEditBookingModalInitialization(rowIndex);
                        }}
                 />
             </div>
@@ -520,7 +598,7 @@ function BookingManagement() {
                                     <strong>{allBookings[rowIndexToDelete][colIndexForBookingId]}</strong>
                                 ) : (
                                     <strong>this booking ID</strong>
-                                )}, all the students, parents, authentication credentials data will be deleted.
+                                )}, all the student(s), parent(s), authentication credentials data will be deleted.
                             </p>
                     </div>
 
@@ -542,6 +620,70 @@ function BookingManagement() {
 
                 </div>
 
+
+            </animated.div>
+
+            <animated.div style={animateEditBookingModal} className={"edit-booking-modal"}>
+                <div className={"edit-booking-modal-overlay"} onClick={() => {
+                    handleCancelEditBookingModal();
+                }}/>
+
+                <div className={"edit-booking-modal-container"}>
+                    <div className={"edit-booking-modal-header"}>
+                        <h3>
+                            Edit Booking
+                        </h3>
+                    </div>
+
+                    <div className={"edit-booking-modal-content"}>
+                        {editBookingModalPreFilledCoreFields && editBookingModalPreFilledExistingSections && (
+                            <Form fields={editBookingModalCoreFormFields}
+                                  mailTo={''}
+                                  sendPdf={false}
+                                  formTitle={"Edit Booking Modal Form"}
+                                  lang={"en"}
+                                  captchaLength={1}
+                                  noInputFieldsCache={true}
+                                  noCaptcha={true}
+                                  hasDifferentOnSubmitBehaviour={true}
+                                  differentOnSubmitBehaviour={handleEditBooking}
+                                  hasDifferentSubmitButtonText={true}
+                                  differentSubmitButtonText={[
+                                      "Save", "Saving...", "تعديل", "جاري التعديل..."
+                                  ]}
+                                  dynamicSections={[
+                                      {
+                                          addButtonText: "Add Student",
+                                          removeButtonText: "Remove Student",
+                                          startAddingFieldsFromId: 9,
+                                          fieldsToAdd: studentSectionFields,
+                                          maxSectionInstancesToAdd: 5,
+                                          sectionId: "student-section",
+                                          minimumSectionInstancesForValidSubmission: 1,
+                                          sectionTitle: "New Student",
+                                          existingFilledSectionInstances: editBookingModalPreFilledExistingSections,
+                                      }
+                                  ]}
+                                  formInModalPopup={true}
+                                  setShowFormModalPopup={setShowEditBookingModal}
+                                  pedanticIds={false}
+                                  formHasPasswordField={true}
+                                  footerButtonsSpaceBetween={true}
+                                  switchFooterButtonsOrder={true}
+                                  resetFormFromParent={resetEditBookingModal}
+                                  setResetForFromParent={setResetEditBookingModal}
+                            />
+                        )}
+                    </div>
+
+                    <div className={"edit-booking-modal-footer"}>
+                        <button className={"edit-booking-modal-cancel-button"} onClick={() => {
+                            handleCancelEditBookingModal();
+                        }}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
 
             </animated.div>
         </>
