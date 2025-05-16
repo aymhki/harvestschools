@@ -6,6 +6,7 @@ import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import '../../styles/Dashboard.css';
+import axios from "axios";
 
 function BookingManagement() {
     const navigate = useNavigate();
@@ -407,22 +408,24 @@ function BookingManagement() {
         try {
             setIsLoading(true);
 
-            const response = await fetch('/scripts/getAllBookings.php', {
-                method: 'GET',
+            const response = await axios.get(`/scripts/getAllBookings.php`, {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    'Expires': '0',
                 }
             });
 
-            const result = await response.json();
+            console.log(response);
 
-            if (result.success) {
-                setAllBookings(result.data);
+            if (response.data.success) {
+                setAllBookings(response.data);
             } else {
-                console.log(result.message);
+                console.log(response.message);
             }
 
         } catch (error) {
+
             if (error.response && error.response.data && error.response.data.message && error.response.data.code) {
                 console.log(error.response.data.message);
 
