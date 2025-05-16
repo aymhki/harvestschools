@@ -1145,7 +1145,7 @@ function Form({
         console.log(dynamicFields)
         console.log(sectionInstances)
         console.log(dynamicSections)
-        return;
+        //return;
 
         if (pedanticIds) {
             const idMap = {};
