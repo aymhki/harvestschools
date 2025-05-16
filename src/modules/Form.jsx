@@ -426,10 +426,6 @@ function Form({
                 idMap[field.id] || field.id
             );
 
-            console.log(newInstanceFieldIds);
-            console.log(allNewFields);
-            console.log(dynamicFields)
-            console.log(updatedInstances);
 
             return {
                 ...prevState,
@@ -1142,10 +1138,6 @@ function Form({
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        console.log(dynamicFields)
-        console.log(sectionInstances)
-        console.log(dynamicSections)
-        //return;
 
         if (pedanticIds) {
             const idMap = {};
@@ -1170,7 +1162,6 @@ function Form({
                 });
             }
         }
-
 
         if (submitting) { return; }
 
