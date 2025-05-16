@@ -9,14 +9,20 @@
 
 .table-module-table {
     width: 100%;
-    margin: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
 }
 
 .table-module-table-scrollable {
     width: 100%;
     table-layout: auto;
     overflow-x: auto;
-    margin: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
 }
 
 .table-module-header {
@@ -27,7 +33,10 @@
     left: 0;
     right: 0;
     z-index: 10;
-    padding: 3.5rem 0;
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+    padding-left: 0;
+    padding-right: 0;
     align-content: center;
     justify-content: center;
     align-items: center;
@@ -323,6 +332,11 @@ tr:hover {
 
     .table-module-table-scrollable {
         margin: 0.5rem;
+    }
+
+    .table-module-header {
+        padding-top: 3rem;
+        padding-bottom: 1rem;
     }
 }
 
