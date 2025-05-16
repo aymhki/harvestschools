@@ -9,10 +9,6 @@
 
 .table-module-table {
     width: 100%;
-    margin-top: 0;
-    margin-bottom: 2rem;
-    margin-left: 2rem;
-    margin-right: 2rem;
 }
 
 .table-module-table-scrollable {
@@ -327,7 +323,7 @@ tr:hover {
     }
 
     .table-module-table {
-        /*margin: 0.5rem;*/
+
     }
 
     .table-module-table-scrollable {
