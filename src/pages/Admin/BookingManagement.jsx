@@ -403,11 +403,14 @@ function BookingManagement() {
                        allowHideColumns={true}
                        defaultHiddenColumns={
                        [
-                            'Booking ID',
-                            'Student ID',
                            'Booking Password',
                            'Student Created',
                            'Booking Created',
+                           'Booking Date',
+                           'Booking Time',
+                           'Booking Notes',
+                           'Students Created',
+
                        ]}
                        allowExport={true}
                        exportFileName={'bookings'}

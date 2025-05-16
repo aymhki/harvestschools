@@ -176,25 +176,20 @@ $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
-
 try {
     $cookies = [];
     foreach ($_COOKIE as $key => $value) {
         $cookies[$key] = $value;
     }
-
     if (!isset($cookies['harvest_schools_admin_session_id'])) {
         throw new Exception("Unauthorized: No session found", 401);
     }
-
     $sessionId = $cookies['harvest_schools_admin_session_id'];
     $startTime = microtime(true);
-
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
     }
-
     // Verify admin permissions
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
@@ -204,28 +199,23 @@ try {
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error, 500);
     }
-
     $stmt->bind_param("s", $sessionId);
     $stmt->execute();
     $permissionResult = $stmt->get_result();
     $stmt->close();
-
     if ($permissionResult->num_rows == 0) {
         throw new Exception("Invalid session", 401);
     }
-
     $permissionRow = $permissionResult->fetch_assoc();
     $permissionLevels = explode(',', $permissionRow['permission_level']);
     $cleanPermissionLevels = array_map(function($level) {
         return intval(trim($level));
     }, $permissionLevels);
-
     $hasPermission = in_array(1, $cleanPermissionLevels);
     if (!$hasPermission) {
         throw new Exception("Permission denied", 403);
     }
-
-    // Modified SQL to get all booking information with GROUP_CONCAT for related students and parents
+    // Modified SQL to get all booking information with combined parent columns
     $sql = "SELECT 
                 b.booking_id AS 'Booking ID',
                 b.created_at AS 'Booking Created',
@@ -243,18 +233,15 @@ try {
                 GROUP_CONCAT(DISTINCT s.grade ORDER BY s.student_id SEPARATOR ', ') AS 'Grades',
                 GROUP_CONCAT(DISTINCT s.created_at ORDER BY s.student_id SEPARATOR ', ') AS 'Students Created',
                 
-                -- Parents information (grouped)
-                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 1 THEN p.name ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Primary Parent Names',
-                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 0 THEN p.name ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Secondary Parent Names',
-                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 1 THEN p.email ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Primary Parent Emails',
-                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 0 THEN p.email ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Secondary Parent Emails',
-                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 1 THEN p.phone_number ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Primary Parent Phones',
-                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 0 THEN p.phone_number ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Secondary Parent Phones',
+                -- Parents information (combined into single columns)
+                GROUP_CONCAT(DISTINCT p.name ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Names',
+                GROUP_CONCAT(DISTINCT p.email ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Emails',
+                GROUP_CONCAT(DISTINCT p.phone_number ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Phones',
                 
                 -- Extras information
                 e.cd_count AS 'CD Count',
                 e.additional_attendees AS 'Additional Attendees',
-                e.payment_status AS 'Payment Status'
+                e.payment_status AS 'Extras Payment Status'
                 
             FROM bookings b
             JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
@@ -266,16 +253,13 @@ try {
             
             GROUP BY b.booking_id
             ORDER BY b.booking_id";
-
     $result = $conn->query($sql);
     if (!$result) {
         throw new Exception("Query failed: " . $conn->error, 500);
     }
-
     $data = [];
     $headers = [];
     $firstRow = true;
-
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             if ($firstRow) {
@@ -283,7 +267,6 @@ try {
                 $data[] = $headers;
                 $firstRow = false;
             }
-
             $rowData = [];
             foreach ($headers as $header) {
                 // Clean up empty values to avoid ", , ," patterns
@@ -302,7 +285,6 @@ try {
                     }
                 }
             }
-
             $data[] = $rowData;
         }
     } else {
@@ -311,23 +293,18 @@ try {
             'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
             'Booking Username', 'Booking Password', 'Student IDs', 'Student Names',
             'School Divisions', 'Grades', 'Students Created',
-            'Primary Parent Names', 'Secondary Parent Names',
-            'Primary Parent Emails', 'Secondary Parent Emails',
-            'Primary Parent Phones', 'Secondary Parent Phones',
-            'CD Count', 'Additional Attendees', 'Payment Status'
+            'Parent Names', 'Parent Emails', 'Parent Phones',
+            'CD Count', 'Additional Attendees', 'Extras Payment Status'
         ];
         $data[] = $headers;
     }
-
     $endTime = microtime(true);
     $executionTime = ($endTime - $startTime) * 1000;
-
     echo json_encode([
         'success' => true,
         'data' => $data,
         'executionTime' => $executionTime
     ]);
-
 } catch (Exception $e) {
     $statusCode = $e->getCode() ?: 500;
     http_response_code($statusCode);
