@@ -324,9 +324,9 @@ function Table({
                 </div>
             </div>
             <table className={`${scrollable ? 'table-module-table-scrollable' : 'table-module-table'}`}
-                   style={{
-                       marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
-                   }}
+                   // style={{
+                   //     marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
+                   // }}
             >
                 <tbody>
                 {tableHeader &&
