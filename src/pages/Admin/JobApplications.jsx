@@ -22,7 +22,7 @@ function JobApplications() {
         const timestamp = new Date().getTime();
 
         try {
-            const response = await axios.get(`/scripts/GetJobApplications.php?_=${timestamp}`, {
+            const response = await axios.get(`/scripts/getJobApplications.php?_=${timestamp}`, {
                 headers: {
                     'Cache-Control': 'no-cache',
                     'Pragma': 'no-cache',
@@ -40,7 +40,22 @@ function JobApplications() {
             setLastUpdated(new Date().toLocaleTimeString());
 
         } catch (error) {
-            console.log("Error fetching job applications:", error);
+
+            if (error.response && error.response.data && error.response.data.message && error.response.data.code) {
+                console.log(error.response.data.message);
+
+                if (error.response.data.code === 401 || error.response.data.code === 403) {
+                    navigate('/admin/login');
+                }
+
+            } else {
+                console.log(error.message);
+
+                if (error.status === 401 || error.status === 403 || error.code === 401 || error.code === 403) {
+                    navigate('/admin/login');
+                }
+            }
+
             setIsLoading(false);
             setJobApplications(null);
         }

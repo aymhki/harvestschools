@@ -423,7 +423,21 @@ function BookingManagement() {
             }
 
         } catch (error) {
-            console.log(error.message);
+            if (error.response && error.response.data && error.response.data.message && error.response.data.code) {
+                console.log(error.response.data.message);
+
+                if (error.response.data.code === 401 || error.response.data.code === 403) {
+                    navigate('/admin/login');
+                }
+
+            } else {
+                console.log(error.message);
+
+                if (error.status === 401 || error.status === 403 || error.code === 401 || error.code === 403) {
+                    navigate('/admin/login');
+                }
+            }
+
         } finally {
             setIsLoading(false);
         }
