@@ -384,7 +384,7 @@ function Form({
 
     const addSectionInstance = (sectionId) => {
 
-        const formValues = captureFormValues();
+        // const formValues = captureFormValues();
 
         setSectionInstances(prevState => {
             const section = dynamicSections.find(s => s.sectionId === sectionId);
@@ -454,7 +454,7 @@ function Form({
                 idMap[field.id] || field.id
             );
 
-            restoreFormValues(formValues, idMap);
+            // restoreFormValues(formValues, idMap);
 
             return {
                 ...prevState,
@@ -476,7 +476,7 @@ function Form({
 
     const removeSectionInstance = (sectionId, instanceId) => {
 
-        const formValues = captureFormValues();
+        // const formValues = captureFormValues();
 
         setSectionInstances(prevState => {
             const currentSectionState = {...prevState[sectionId]};
@@ -563,7 +563,7 @@ function Form({
                 newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : normalizedFields.length;
             }
 
-            restoreFormValues(formValues, idMap);
+            // restoreFormValues(formValues, idMap);
 
             return {
                 ...prevState,
