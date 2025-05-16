@@ -396,7 +396,6 @@ function BookingManagement() {
         const studentNames = allBookings[rowIndex][9];
         const studentSchoolDivisions = allBookings[rowIndex][10];
         const studentGrades = allBookings[rowIndex][11];
-        const studentsCreated = allBookings[rowIndex][12];
         const parentNames = allBookings[rowIndex][13];
         const parentEmails = allBookings[rowIndex][14];
         const parentPhones = allBookings[rowIndex][15];
@@ -411,16 +410,8 @@ function BookingManagement() {
         const parentNamesArray = parentNames.split(', ');
         const parentEmailsArray = parentEmails.split(', ');
         const parentPhonesArray = parentPhones.split(', ');
+        const studentIdsArray = studentIds.split(', ');
 
-        console.log('studentNamesArray', studentNamesArray);
-        console.log('studentSchoolDivisionsArray', studentSchoolDivisionsArray);
-        console.log('studentGradesArray', studentGradesArray);
-        console.log('parentNamesArray', parentNamesArray);
-        console.log('parentEmailsArray', parentEmailsArray);
-        console.log('parentPhonesArray', parentPhonesArray);
-
-
-        // first take the original add booking modal core fields and add the values above as field.defaultValue
         const editBookingModalCoreFields = addBookingModalCoreFormFields.map((field) => {
             if (field.id === bookingUsernameFieldId) {
                 field.defaultValue = bookingUsername;
@@ -459,24 +450,22 @@ function BookingManagement() {
 
         const editBookingModalStudentSectionFields = studentSectionFields.map((field) => {
             if (field.name === 'student-section') {
-                field.defaultValue = studentIds.split(', ');
+                field.defaultValue = studentIds;
             } else if (field.name === 'student-name') {
-                field.defaultValue = studentNamesArray;
+                field.defaultValue = studentNames;
             } else if (field.name === 'student-school-division') {
-                field.defaultValue = studentSchoolDivisionsArray;
+                field.defaultValue = studentSchoolDivisions;
             } else if (field.name === 'student-grade') {
-                field.defaultValue = studentGradesArray;
+                field.defaultValue = studentGrades;
             }
             return field;
         })
 
-        console.log('editBookingModalStudentSectionFields', editBookingModalStudentSectionFields);
-
         const editBookingModalStudentSectionInstances = [];
-        for (let i = 0; i < studentIds.split(', ').length; i++) {
+        for (let i = 0; i < studentIdsArray.length; i++) {
             const editBookingModalStudentSectionInstance = editBookingModalStudentSectionFields.map((field) => {
                 if (field.name === 'student-section') {
-                    field.defaultValue = studentIds.split(', ')[i];
+                    field.defaultValue = studentIdsArray[i];
                 } else if (field.name === 'student-name') {
                     field.defaultValue = studentNamesArray[i];
                 } else if (field.name === 'student-school-division') {
@@ -488,8 +477,6 @@ function BookingManagement() {
             })
             editBookingModalStudentSectionInstances.push(editBookingModalStudentSectionInstance);
         }
-
-        console.log('editBookingModalStudentSectionInstances', editBookingModalStudentSectionInstances);
 
         setEditBookingModalPreFilledExistingSections(editBookingModalStudentSectionInstances);
     }
