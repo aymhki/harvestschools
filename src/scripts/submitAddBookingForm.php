@@ -140,10 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $additionalAttendees = $formData['Additional Attendees'] ?? 0;
         $paymentStatus = $formData['Extras Payment Status'] ?? 'Not Signed Up';
 
-        if ($paymentStatus === 'Signed Up, pending payment') {
-            $paymentStatus = 'Signed Up pending payment';
-        }
-
         $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id, cd_count, additional_attendees, payment_status) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("iiis", $data['bookingId'], $cdCount, $additionalAttendees, $paymentStatus);
 
