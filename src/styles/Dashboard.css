@@ -32,7 +32,7 @@
 }
 
 
-.add-booking-modal {
+.add-booking-modal, .edit-booking-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -45,7 +45,7 @@
     z-index: 1000;
 }
 
-.add-booking-modal-form-overlay {
+.add-booking-modal-form-overlay, .edit-booking-modal-form-overlay {
     position: absolute;
     width: 100vw;
     height: 100vh;
@@ -57,7 +57,7 @@
 }
 
 
-.add-booking-modal-form-container {
+.add-booking-modal-form-container, .edit-booking-modal-form-container {
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
@@ -67,15 +67,15 @@
     z-index: 1001;
 }
 
-.add-booking-modal-form-header {
+.add-booking-modal-form-header, .edit-booking-modal-form-header {
     margin: 0.5rem;
 }
 
-.add-booking-modal-form-header h3,  .add-booking-modal-form-header p {
+.add-booking-modal-form-header h3,  .add-booking-modal-form-header p,  .edit-booking-modal-form-header h3,  .edit-booking-modal-form-header p {
     margin: 0.5rem;
 }
 
-.add-booking-modal-form-footer {
+.add-booking-modal-form-footer, .edit-booking-modal-form-footer {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -87,14 +87,14 @@
 
 }
 
-.add-booking-modal-form-footer button {
+.add-booking-modal-form-footer button, .edit-booking-modal-form-footer button {
     /*margin: 0.5rem;*/
     /*padding: 0.5rem;*/
     /*font-size: large;*/
 }
 
 
-.add-booking-modal-content {
+.add-booking-modal-content, .edit-booking-modal-content {
     overflow-y: scroll;
     max-height: 80vh;
 }
@@ -172,7 +172,7 @@
 }
 
 @media (max-width: 1024px) {
-    .add-booking-modal-form-container {
+    .add-booking-modal-form-container, .edit-booking-modal-form-container {
         width: 90%;
         min-height: 90%;
     }
@@ -184,7 +184,7 @@
 
 @media (prefers-color-scheme: dark) {
 
-    .add-booking-modal-form-container {
+    .add-booking-modal-form-container, .edit-booking-modal-form-container {
         background-color: #242424;
     }
 
