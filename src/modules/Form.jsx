@@ -357,7 +357,35 @@ function Form({
         return lastFieldIndex !== -1 ? lastFieldIndex + 1 : dynamicFields.length;
     };
 
+    const captureFormValues = () => {
+        const values = {};
+        dynamicFields.forEach(field => {
+            if (field.type !== 'section' && field.type !== 'button' && field.type !== 'control') {
+                const element = document.getElementById(field.id);
+                if (element) {
+                    values[field.id] = element.value;
+                }
+            }
+        });
+        return values;
+    };
+
+    const restoreFormValues = (values, idMap = {}) => {
+        setTimeout(() => {
+            Object.entries(values).forEach(([oldId, value]) => {
+                const newId = idMap[oldId] || oldId;
+                const element = document.getElementById(newId);
+                if (element && value) {
+                    element.value = value;
+                }
+            });
+        }, 0);
+    };
+
     const addSectionInstance = (sectionId) => {
+
+        const formValues = captureFormValues();
+
         setSectionInstances(prevState => {
             const section = dynamicSections.find(s => s.sectionId === sectionId);
             if (!section) return prevState;
@@ -426,6 +454,7 @@ function Form({
                 idMap[field.id] || field.id
             );
 
+            restoreFormValues(formValues, idMap);
 
             return {
                 ...prevState,
@@ -446,6 +475,9 @@ function Form({
     };
 
     const removeSectionInstance = (sectionId, instanceId) => {
+
+        const formValues = captureFormValues();
+
         setSectionInstances(prevState => {
             const currentSectionState = {...prevState[sectionId]};
             if (!currentSectionState) return prevState;
@@ -530,6 +562,8 @@ function Form({
                 const lastFieldIndex = normalizedFields.findIndex(field => field.id === lastFieldId);
                 newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : normalizedFields.length;
             }
+
+            restoreFormValues(formValues, idMap);
 
             return {
                 ...prevState,
