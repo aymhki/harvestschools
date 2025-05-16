@@ -390,7 +390,7 @@ function BookingManagement() {
 
     const handleEditBookingModalInitialization = async (rowIndex) => {
         setShowEditBookingModal(true);
-
+        //['Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes', 'Booking Username', 'Booking Password', 'Student IDs', 'Student Names', 'School Divisions', 'Grades', 'Students Created', 'Parent Names', 'Parent Emails', 'Parent Phones', 'CD Count', 'Additional Attendees', 'Booking Extras Status']
 
     }
 
@@ -415,8 +415,6 @@ function BookingManagement() {
                     'Expires': '0',
                 }
             });
-
-            console.log(response);
 
             if (response.data.success) {
                 setAllBookings(response.data.data);
