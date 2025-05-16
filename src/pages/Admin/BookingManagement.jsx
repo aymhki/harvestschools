@@ -24,20 +24,19 @@ function BookingManagement() {
     const [editBookingModalPreFilledExistingSections, setEditBookingModalPreFilledExistingSections] = useState(null);
     const [resetEditBookingModal, setResetEditBookingModal] = useState(false);
 
-
-    const bookingUsernameFieldId = 1
-    const bookingPasswordFieldId = 2
-    const confirmBookingPasswordFieldId = 3
-    const firstParentNameFieldId = 4
-    const firstParentEmailFieldId = 5
-    const firstParentPhoneNumberFieldId = 6
-    const secondParentNameFieldId = 7
-    const secondParentEmailFieldId = 8
-    const secondParentPhoneNumberFieldId = 9
-    const additionalAttendeesFieldId = 10
-    const cdCountFieldId = 11
-    const extrasPaymentStatusFieldId = 12 // 'Not Signed Up','Signed Up, pending payment','Confirmed'
-    const colIndexForBookingId = 0
+    const bookingUsernameFieldId = 1;
+    const bookingPasswordFieldId = 2;
+    const confirmBookingPasswordFieldId = 3;
+    const firstParentNameFieldId = 4;
+    const firstParentEmailFieldId = 5;
+    const firstParentPhoneNumberFieldId = 6;
+    const secondParentNameFieldId = 7;
+    const secondParentEmailFieldId = 8;
+    const secondParentPhoneNumberFieldId = 9;
+    const additionalAttendeesFieldId = 10;
+    const cdCountFieldId = 11;
+    const extrasPaymentStatusFieldId = 12; // 'Not Signed Up','Signed Up, pending payment','Confirmed'
+    const colIndexForBookingId = 0;
 
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
@@ -315,7 +314,7 @@ function BookingManagement() {
     const cancelAddBookingModal = () => {
         setShowAddBookingModal(false);
         setResetAddBookingModal(true);
-    }
+    };
 
     const handleAddBooking = async (formData) => {
         try {
@@ -393,8 +392,6 @@ function BookingManagement() {
 
 
     }
-
-
 
     const handleEditBooking = async (formData) => {
 
@@ -533,7 +530,6 @@ function BookingManagement() {
                             Add A New Booking
                         </h3>
                     </div>
-
                     <div className={"add-booking-modal-content"}>
                         <Form fields={addBookingModalCoreFormFields}
                               mailTo={''}
@@ -691,4 +687,3 @@ function BookingManagement() {
 }
 
 export default BookingManagement;
-
