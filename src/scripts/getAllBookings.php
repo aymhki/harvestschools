@@ -8,164 +8,176 @@ $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
-
 try {
     $cookies = [];
-
     foreach ($_COOKIE as $key => $value) {
         $cookies[$key] = $value;
     }
-
     if (!isset($cookies['harvest_schools_admin_session_id'])) {
         throw new Exception("Unauthorized: No session found", 401);
     }
-
     $sessionId = $cookies['harvest_schools_admin_session_id'];
     $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
-
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
     }
-
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
                       JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
                       WHERE s.id = ?";
-
     $stmt = $conn->prepare($permissionSql);
-
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error, 500);
     }
-
     $stmt->bind_param("s", $sessionId);
     $stmt->execute();
     $permissionResult = $stmt->get_result();
     $stmt->close();
-
     if ($permissionResult->num_rows == 0) {
         throw new Exception("Invalid session", 401);
     }
-
     $permissionRow = $permissionResult->fetch_assoc();
     $permissionLevels = explode(',', $permissionRow['permission_level']);
-
     $cleanPermissionLevels = array_map(function($level) {
         return intval(trim($level));
     }, $permissionLevels);
-
     $hasPermission = in_array(1, $cleanPermissionLevels);
-
     if (!$hasPermission) {
         throw new Exception("Permission denied", 403);
     }
 
-    $sql = "SELECT 
-                b.booking_id AS 'Booking ID',
-                b.created_at AS 'Booking Created',
-                b.booking_date AS 'Booking Date',
-                b.booking_time AS 'Booking Time',
-                b.status AS 'Booking Status',
-                b.notes AS 'Booking Notes',
-                ac.username AS 'Booking Username',
-                ac.password_hash AS 'Booking Password',
-                
-                GROUP_CONCAT(DISTINCT s.student_id ORDER BY s.student_id SEPARATOR ', ') AS 'Student IDs',
-                GROUP_CONCAT(DISTINCT s.name ORDER BY s.student_id SEPARATOR ', ') AS 'Student Names',
-                GROUP_CONCAT(DISTINCT s.school_division ORDER BY s.student_id SEPARATOR ', ') AS 'School Divisions',
-                GROUP_CONCAT(DISTINCT s.grade ORDER BY s.student_id SEPARATOR ', ') AS 'Grades',
-                GROUP_CONCAT(DISTINCT s.created_at ORDER BY s.student_id SEPARATOR ', ') AS 'Students Created',
-                
-                GROUP_CONCAT(DISTINCT p.name ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Names',
-                GROUP_CONCAT(DISTINCT p.email ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Emails',
-                GROUP_CONCAT(DISTINCT p.phone_number ORDER BY p.parent_id SEPARATOR ', ') AS 'Parent Phones',
-                
-                e.cd_count AS 'CD Count',
-                e.additional_attendees AS 'Additional Attendees',
-                e.payment_status AS 'Booking Extras Status'
-                
+    // First get all bookings
+    $bookingsSql = "SELECT 
+                b.booking_id,
+                b.created_at AS booking_created,
+                b.booking_date,
+                b.booking_time,
+                b.status,
+                b.notes,
+                ac.username,
+                ac.password_hash,
+                e.cd_count,
+                e.additional_attendees,
+                e.payment_status
             FROM bookings b
             JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
-            LEFT JOIN booking_students_linker sl ON b.booking_id = sl.booking_id
-            LEFT JOIN booking_students s ON sl.student_id = s.student_id
-            LEFT JOIN booking_parents_linker pl ON b.booking_id = pl.booking_id
-            LEFT JOIN booking_parents p ON pl.parent_id = p.parent_id
             LEFT JOIN booking_extras e ON b.booking_id = e.booking_id
-            
-            GROUP BY b.booking_id
             ORDER BY b.booking_id";
 
-    $result = $conn->query($sql);
-
-    if (!$result) {
+    $bookingsResult = $conn->query($bookingsSql);
+    if (!$bookingsResult) {
         throw new Exception("Query failed: " . $conn->error, 500);
     }
 
     $data = [];
-    $headers = [];
-    $firstRow = true;
+    $headers = [
+        'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
+        'Booking Username', 'Booking Password', 'Student IDs', 'Student Names',
+        'School Divisions', 'Grades', 'Students Created',
+        'Parent Names', 'Parent Emails', 'Parent Phones',
+        'CD Count', 'Additional Attendees', 'Booking Extras Status'
+    ];
+    $data[] = $headers;
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
+    while ($booking = $bookingsResult->fetch_assoc()) {
+        // Get students for this booking
+        $studentsSql = "SELECT s.student_id, s.name, s.school_division, s.grade, s.created_at
+                       FROM booking_students s
+                       JOIN booking_students_linker sl ON s.student_id = sl.student_id
+                       WHERE sl.booking_id = ?
+                       ORDER BY s.student_id";
 
-            if ($firstRow) {
-                $headers = array_keys($row);
-                $data[] = $headers;
-                $firstRow = false;
-            }
+        $stmtStudents = $conn->prepare($studentsSql);
+        $stmtStudents->bind_param("i", $booking['booking_id']);
+        $stmtStudents->execute();
+        $studentsResult = $stmtStudents->get_result();
 
-            $rowData = [];
+        $studentIds = [];
+        $studentNames = [];
+        $schoolDivisions = [];
+        $grades = [];
+        $studentsCreated = [];
 
-            foreach ($headers as $header) {
-                if ($row[$header] === null || $row[$header] === '') {
-                    $rowData[] = '';
-                } else {
-                    if (strpos($header, 'Parent') !== false && strpos($row[$header], ', , ') !== false) {
-                        $values = explode(', ', $row[$header]);
-                        $values = array_filter($values, function($value) {
-                            return $value !== null && $value !== '';
-                        });
-                        $rowData[] = implode(', ', $values);
-                    } else {
-                        $rowData[] = $row[$header];
-                    }
-                }
-            }
-
-            $data[] = $rowData;
+        while ($student = $studentsResult->fetch_assoc()) {
+            $studentIds[] = $student['student_id'];
+            $studentNames[] = $student['name'];
+            $schoolDivisions[] = $student['school_division'];
+            $grades[] = $student['grade'];
+            $studentsCreated[] = $student['created_at'];
         }
-    } else {
-        $headers = [
-            'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
-            'Booking Username', 'Booking Password', 'Student IDs', 'Student Names',
-            'School Divisions', 'Grades', 'Students Created',
-            'Parent Names', 'Parent Emails', 'Parent Phones',
-            'CD Count', 'Additional Attendees', 'Booking Extras Status'
+        $stmtStudents->close();
+
+        // Get parents for this booking
+        $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number
+                      FROM booking_parents p
+                      JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
+                      WHERE pl.booking_id = ?
+                      ORDER BY p.parent_id";
+
+        $stmtParents = $conn->prepare($parentsSql);
+        $stmtParents->bind_param("i", $booking['booking_id']);
+        $stmtParents->execute();
+        $parentsResult = $stmtParents->get_result();
+
+        $parentNames = [];
+        $parentEmails = [];
+        $parentPhones = [];
+
+        while ($parent = $parentsResult->fetch_assoc()) {
+            // Only add non-empty values
+            if (!empty($parent['name'])) {
+                $parentNames[] = $parent['name'];
+            }
+            if (!empty($parent['email'])) {
+                $parentEmails[] = $parent['email'];
+            }
+            if (!empty($parent['phone_number'])) {
+                $parentPhones[] = $parent['phone_number'];
+            }
+        }
+        $stmtParents->close();
+
+        $rowData = [
+            $booking['booking_id'],
+            $booking['booking_created'],
+            $booking['booking_date'],
+            $booking['booking_time'],
+            $booking['status'],
+            $booking['notes'],
+            $booking['username'],
+            $booking['password_hash'],
+            implode(', ', $studentIds),
+            implode(', ', $studentNames),
+            implode(', ', $schoolDivisions),
+            implode(', ', $grades),
+            implode(', ', $studentsCreated),
+            implode(', ', $parentNames),
+            implode(', ', $parentEmails),
+            implode(', ', $parentPhones),
+            $booking['cd_count'],
+            $booking['additional_attendees'],
+            $booking['payment_status']
         ];
 
-        $data[] = $headers;
+        $data[] = $rowData;
     }
 
     $endTime = microtime(true);
     $executionTime = ($endTime - $startTime) * 1000;
-
     echo json_encode([
         'success' => true,
         'data' => $data,
         'executionTime' => $executionTime
     ]);
-
 } catch (Exception $e) {
     $statusCode = $e->getCode() ?: 500;
     http_response_code($statusCode);
-
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage(),
         'code' => $statusCode
     ]);
-
 } finally {
     if (isset($conn) && $conn->ping()) {
         $conn->close();
