@@ -633,7 +633,7 @@ function BookingManagement() {
 
                     <div className={"edit-booking-modal-content"}>
                         {editBookingModalPreFilledCoreFields && editBookingModalPreFilledExistingSections && (
-                            <Form fields={editBookingModalCoreFormFields}
+                            <Form fields={editBookingModalPreFilledCoreFields}
                                   mailTo={''}
                                   sendPdf={false}
                                   formTitle={"Edit Booking Modal Form"}
