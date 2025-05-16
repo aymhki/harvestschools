@@ -440,7 +440,10 @@ function BookingManagement() {
                 if (parentPhonesArray[1]) {
                     field.defaultValue = parentPhonesArray[1];
                 }
+            } else if (field.id === bookingPasswordFieldId || field.id === confirmBookingPasswordFieldId) {
+                field.required = false;
             }
+
             return field;
         });
 
@@ -476,9 +479,9 @@ function BookingManagement() {
             editBookingModalStudentSectionInstances.push(editBookingModalStudentSectionInstance);
         }
 
+        console.log('editBookingModalStudentSectionInstances', editBookingModalStudentSectionInstances);
+
         setEditBookingModalPreFilledExistingSections(editBookingModalStudentSectionInstances);
-
-
     }
 
     const handleEditBooking = async (formData) => {
