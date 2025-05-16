@@ -176,29 +176,31 @@ $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
+
 try {
     $cookies = [];
     foreach ($_COOKIE as $key => $value) {
         $cookies[$key] = $value;
     }
+
     if (!isset($cookies['harvest_schools_admin_session_id'])) {
         throw new Exception("Unauthorized: No session found", 401);
     }
+
     $sessionId = $cookies['harvest_schools_admin_session_id'];
     $startTime = microtime(true);
-    $conn = new mysqli($servername, $username, $password, $dbname);
 
+    $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error, 500);
     }
 
+    // Verify admin permissions
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
                       JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
                       WHERE s.id = ?";
-
     $stmt = $conn->prepare($permissionSql);
-
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error, 500);
     }
@@ -219,69 +221,50 @@ try {
     }, $permissionLevels);
 
     $hasPermission = in_array(1, $cleanPermissionLevels);
-
     if (!$hasPermission) {
         throw new Exception("Permission denied", 403);
     }
 
-    // Modified SQL query to group by booking_id with aggregated student and parent information
+    // Modified SQL to get all booking information with GROUP_CONCAT for related students and parents
     $sql = "SELECT 
                 b.booking_id AS 'Booking ID',
+                b.created_at AS 'Booking Created',
+                b.booking_date AS 'Booking Date',
+                b.booking_time AS 'Booking Time',
+                b.status AS 'Booking Status',
+                b.notes AS 'Booking Notes',
                 ac.username AS 'Booking Username',
                 ac.password_hash AS 'Booking Password',
                 
-                -- Aggregate student information
+                -- Students information (grouped)
                 GROUP_CONCAT(DISTINCT s.student_id ORDER BY s.student_id SEPARATOR ', ') AS 'Student IDs',
-                GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ', ') AS 'Student Names',
-                GROUP_CONCAT(DISTINCT CONCAT(s.school_division, ': ', s.grade) ORDER BY s.name SEPARATOR ', ') AS 'School Divisions & Grades',
+                GROUP_CONCAT(DISTINCT s.name ORDER BY s.student_id SEPARATOR ', ') AS 'Student Names',
+                GROUP_CONCAT(DISTINCT s.school_division ORDER BY s.student_id SEPARATOR ', ') AS 'School Divisions',
+                GROUP_CONCAT(DISTINCT s.grade ORDER BY s.student_id SEPARATOR ', ') AS 'Grades',
+                GROUP_CONCAT(DISTINCT s.created_at ORDER BY s.student_id SEPARATOR ', ') AS 'Students Created',
                 
-                -- First parent information (primary parent)
-                MAX(p1.name) AS 'First Parent Name',
-                MAX(p1.email) AS 'First Parent Email',
-                MAX(p1.phone_number) AS 'First Parent Phone',
+                -- Parents information (grouped)
+                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 1 THEN p.name ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Primary Parent Names',
+                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 0 THEN p.name ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Secondary Parent Names',
+                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 1 THEN p.email ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Primary Parent Emails',
+                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 0 THEN p.email ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Secondary Parent Emails',
+                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 1 THEN p.phone_number ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Primary Parent Phones',
+                GROUP_CONCAT(DISTINCT CASE WHEN pl.is_primary = 0 THEN p.phone_number ELSE NULL END ORDER BY p.parent_id SEPARATOR ', ') AS 'Secondary Parent Phones',
                 
-                -- Second parent information (non-primary parent)
-                GROUP_CONCAT(DISTINCT CASE WHEN p2.name IS NOT NULL THEN p2.name ELSE NULL END SEPARATOR ', ') AS 'Second Parent Name',
-                GROUP_CONCAT(DISTINCT CASE WHEN p2.email IS NOT NULL THEN p2.email ELSE NULL END SEPARATOR ', ') AS 'Second Parent Email',
-                GROUP_CONCAT(DISTINCT CASE WHEN p2.phone_number IS NOT NULL THEN p2.phone_number ELSE NULL END SEPARATOR ', ') AS 'Second Parent Phone',
-                
-                -- Booking details
-                MAX(e.cd_count) AS 'CD Count',
-                MAX(e.additional_attendees) AS 'Additional Attendees',
-                MAX(e.payment_status) AS 'Payment Status',
-                MAX(b.booking_date) AS 'Booking Date',
-                MAX(b.booking_time) AS 'Booking Time',
-                MAX(b.status) AS 'Booking Status',
-                MAX(b.notes) AS 'Booking Notes',
-                
-                -- Timestamps
-                MIN(s.created_at) AS 'First Student Created',
-                b.created_at AS 'Booking Created',
-                b.updated_at AS 'Booking Updated'
+                -- Extras information
+                e.cd_count AS 'CD Count',
+                e.additional_attendees AS 'Additional Attendees',
+                e.payment_status AS 'Payment Status'
                 
             FROM bookings b
             JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
             LEFT JOIN booking_students_linker sl ON b.booking_id = sl.booking_id
             LEFT JOIN booking_students s ON sl.student_id = s.student_id
+            LEFT JOIN booking_parents_linker pl ON b.booking_id = pl.booking_id
+            LEFT JOIN booking_parents p ON pl.parent_id = p.parent_id
             LEFT JOIN booking_extras e ON b.booking_id = e.booking_id
             
-            -- Join to get first parent (is_primary = 1)
-            LEFT JOIN (
-                SELECT pl.booking_id, p.parent_id, p.name, p.email, p.phone_number
-                FROM booking_parents p
-                JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
-                WHERE pl.is_primary = 1
-            ) AS p1 ON b.booking_id = p1.booking_id
-            
-            -- Join to get second parent (is_primary = 0)
-            LEFT JOIN (
-                SELECT pl.booking_id, p.parent_id, p.name, p.email, p.phone_number
-                FROM booking_parents p
-                JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
-                WHERE pl.is_primary = 0
-            ) AS p2 ON b.booking_id = p2.booking_id
-            
-            GROUP BY b.booking_id, ac.username, ac.password_hash, b.created_at, b.updated_at
+            GROUP BY b.booking_id
             ORDER BY b.booking_id";
 
     $result = $conn->query($sql);
@@ -300,21 +283,38 @@ try {
                 $data[] = $headers;
                 $firstRow = false;
             }
+
             $rowData = [];
             foreach ($headers as $header) {
-                $rowData[] = $row[$header];
+                // Clean up empty values to avoid ", , ," patterns
+                if ($row[$header] === null || $row[$header] === '') {
+                    $rowData[] = '';
+                } else {
+                    // Remove empty entries from comma-separated lists
+                    if (strpos($header, 'Parent') !== false && strpos($row[$header], ', , ') !== false) {
+                        $values = explode(', ', $row[$header]);
+                        $values = array_filter($values, function($value) {
+                            return $value !== null && $value !== '';
+                        });
+                        $rowData[] = implode(', ', $values);
+                    } else {
+                        $rowData[] = $row[$header];
+                    }
+                }
             }
+
             $data[] = $rowData;
         }
     } else {
+        // If no data, provide headers
         $headers = [
-            'Booking ID', 'Booking Username', 'Booking Password',
-            'Student IDs', 'Student Names', 'School Divisions & Grades',
-            'First Parent Name', 'First Parent Email', 'First Parent Phone',
-            'Second Parent Name', 'Second Parent Email', 'Second Parent Phone',
-            'CD Count', 'Additional Attendees', 'Payment Status',
-            'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
-            'First Student Created', 'Booking Created', 'Booking Updated'
+            'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
+            'Booking Username', 'Booking Password', 'Student IDs', 'Student Names',
+            'School Divisions', 'Grades', 'Students Created',
+            'Primary Parent Names', 'Secondary Parent Names',
+            'Primary Parent Emails', 'Secondary Parent Emails',
+            'Primary Parent Phones', 'Secondary Parent Phones',
+            'CD Count', 'Additional Attendees', 'Payment Status'
         ];
         $data[] = $headers;
     }
@@ -327,6 +327,7 @@ try {
         'data' => $data,
         'executionTime' => $executionTime
     ]);
+
 } catch (Exception $e) {
     $statusCode = $e->getCode() ?: 500;
     http_response_code($statusCode);
