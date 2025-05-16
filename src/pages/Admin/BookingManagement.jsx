@@ -389,8 +389,7 @@ function BookingManagement() {
     }
 
     const handleEditBookingModalInitialization = async (rowIndex) => {
-        setShowEditBookingModal(true);
-        //['Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes', 'Booking Username', 'Booking Password', 'Student IDs', 'Student Names', 'School Divisions', 'Grades', 'Students Created', 'Parent Names', 'Parent Emails', 'Parent Phones', 'CD Count', 'Additional Attendees', 'Booking Extras Status']
+
         const bookingUsername = allBookings[rowIndex][6];
         const studentIds = allBookings[rowIndex][8];
         const studentNames = allBookings[rowIndex][9];
@@ -402,11 +401,9 @@ function BookingManagement() {
         const cdCount = allBookings[rowIndex][16];
         const additionalAttendees = allBookings[rowIndex][17];
         const bookingExtrasStatus = allBookings[rowIndex][18];
-
         const studentNamesArray = studentNames.split(', ');
         const studentSchoolDivisionsArray = studentSchoolDivisions.split(', ');
         const studentGradesArray = studentGrades.split(', ');
-
         const parentNamesArray = parentNames.split(', ');
         const parentEmailsArray = parentEmails.split(', ');
         const parentPhonesArray = parentPhones.split(', ');
@@ -462,27 +459,33 @@ function BookingManagement() {
         })
 
         const editBookingModalStudentSectionInstances = [];
+
         for (let i = 0; i < studentIdsArray.length; i++) {
             const editBookingModalStudentSectionInstance = editBookingModalStudentSectionFields.map((field) => {
-                if (field.name === 'student-section') {
-                    field.defaultValue = studentIdsArray[i];
-                } else if (field.name === 'student-name') {
-                    field.defaultValue = studentNamesArray[i];
-                } else if (field.name === 'student-school-division') {
-                    field.defaultValue = studentSchoolDivisionsArray[i];
-                } else if (field.name === 'student-grade') {
-                    field.defaultValue = studentGradesArray[i];
+                const newField = {...field};
+
+                if (newField.name === 'student-section') {
+                    newField.defaultValue = studentIdsArray[i];
+                } else if (newField.name === 'student-name') {
+                    newField.defaultValue = studentNamesArray[i];
+                } else if (newField.name === 'student-school-division') {
+                    newField.defaultValue = studentSchoolDivisionsArray[i];
+                } else if (newField.name === 'student-grade') {
+                    newField.defaultValue = studentGradesArray[i];
                 }
-                return field;
-            })
+
+                return newField;
+            });
+
             editBookingModalStudentSectionInstances.push(editBookingModalStudentSectionInstance);
         }
 
         setEditBookingModalPreFilledExistingSections(editBookingModalStudentSectionInstances);
+
+        setShowEditBookingModal(true);
     }
 
     const handleEditBooking = async (formData) => {
-
     }
 
     const handleCancelEditBookingModal = () => {
