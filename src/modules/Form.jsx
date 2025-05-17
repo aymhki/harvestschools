@@ -67,6 +67,7 @@ function Form({
     const [showPasswords, setShowPasswords] = useState(false);
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
     const [prefilledInitialized, setPrefilledInitialized] = useState(false);
+    const [fieldValues, setFieldValues] = useState({});
     const msgTimeout = 5000;
 
     useEffect(() => {
@@ -357,7 +358,6 @@ function Form({
         return lastFieldIndex !== -1 ? lastFieldIndex + 1 : dynamicFields.length;
     };
 
-
     const addSectionInstance = (sectionId) => {
 
         setSectionInstances(prevState => {
@@ -585,6 +585,41 @@ function Form({
         );
     };
 
+    // const onChange = (e, field) => {
+    //     const maxSizeInBytes = 2 * 1024 * 1024;
+    //     const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
+    //
+    //     if (field.type === 'file' && e.target.files[0].size > maxSizeInBytes) {
+    //         e.target.setCustomValidity('File size must be less than 2MB');
+    //     } else if (field.type === 'file' && !field.allowedFileTypes.includes(e.target.files[0].type)) {
+    //         e.target.setCustomValidity(`File type must be one of the following: ${field.allowedFileTypes.join(', ')}`);
+    //     } else if (field.type === 'file') {
+    //         const file = e.target.files[0];
+    //         e.target.setCustomValidity('');
+    //         setGeneralFormError('');
+    //         setSuccessMessage('');
+    //         setFileInputs(prev => ({...prev, [field.id]: file}));
+    //         field.file = file;
+    //     } else {
+    //         if (field.regex && !new RegExp(field.regex).test(value)) {
+    //             e.target.setCustomValidity(field.errorMsg);
+    //             e.target.reportValidity();
+    //         } else  {
+    //             e.target.setCustomValidity('');
+    //             setGeneralFormError('');
+    //             setSuccessMessage('');
+    //             field.value = value;
+    //
+    //             if(!noInputFieldsCache) {
+    //                 saveToCache(field, value);
+    //             }
+    //         }
+    //
+    //         const newFields = processFieldRules(dynamicFields, field, value);
+    //         setDynamicFields(newFields);
+    //     }
+    // }
+
     const onChange = (e, field) => {
         const maxSizeInBytes = 2 * 1024 * 1024;
         const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
@@ -604,10 +639,18 @@ function Form({
             if (field.regex && !new RegExp(field.regex).test(value)) {
                 e.target.setCustomValidity(field.errorMsg);
                 e.target.reportValidity();
-            } else  {
+            } else {
                 e.target.setCustomValidity('');
                 setGeneralFormError('');
                 setSuccessMessage('');
+
+                // Store the value in fieldValues state with both ID and original ID if available
+                setFieldValues(prev => ({
+                    ...prev,
+                    [field.id]: value,
+                    ...(field.originalId ? { [field.originalId]: value } : {})
+                }));
+
                 field.value = value;
 
                 if(!noInputFieldsCache) {
@@ -655,7 +698,9 @@ function Form({
                                     readOnly={field.readOnlyField ? true : false}
                                     className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
-                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                    value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                            field.defaultValue}
                                     defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                                 />
                              </div>
@@ -674,7 +719,9 @@ function Form({
                                  readOnly={field.readOnlyField ? true : false}
                                  className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}  ${field.readOnlyField ? 'read-only-field' : ''}`}
                                  data-instance-id={field.instanceId || ''}
-                                 value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                 value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                     fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                         field.defaultValue}
                                  defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                              />
                          )
@@ -696,7 +743,9 @@ function Form({
                                 readOnly={field.readOnlyField ? true : false}
                                 className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
-                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                        field.defaultValue}
                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                             />
                         </div>
@@ -712,7 +761,9 @@ function Form({
                                 readOnly={field.readOnlyField ? true : false}
                                 className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
-                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                        field.defaultValue}
                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                             />
                         )
@@ -739,7 +790,9 @@ function Form({
                                     className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
                                     readOnly={field.readOnlyField ? true : false}
-                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                    value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                            field.defaultValue}
                                     defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                                 />
                                 <button
@@ -767,7 +820,9 @@ function Form({
                                 data-lpignore={field.dontLetTheBrowserSaveField ? "true" : ""}
                                 className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
-                                value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                        field.defaultValue}
                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                             />
                             <button
@@ -811,7 +866,9 @@ function Form({
                                     }}
                                     className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
-                                    value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                                    value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                            field.defaultValue}
                                     defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                                 />
                         </div>
@@ -839,7 +896,9 @@ function Form({
                             }}
                             className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                    field.defaultValue}
                             defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                         />
                     )
@@ -862,7 +921,9 @@ function Form({
                             onChange={(e) => onChange(e, field)}
                             className={`textarea-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                    field.defaultValue}
                             defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                         />
 
@@ -879,7 +940,9 @@ function Form({
                         onChange={(e) => onChange(e, field)}
                         className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                         data-instance-id={field.instanceId || ''}
-                        value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                        value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                            fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                field.defaultValue}
                         defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                     />
                 )
@@ -907,7 +970,9 @@ function Form({
                             }
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                    field.defaultValue}
                             defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
 
                         >
@@ -932,7 +997,9 @@ function Form({
                             }
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
-                            value={(field.readOnlyField && field.value && field.value !== '' ) ?  field.value : undefined}
+                            value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
+                                    field.defaultValue}
                             defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
                         >
                             {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
