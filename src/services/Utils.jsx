@@ -29,21 +29,22 @@ const fetchBookingsRequest = async (navigate) => {
         const response = await fetch(getAllBookingsEndpoint, {
             method: 'GET',  headers: {'Cache-Control': 'no-cache',  'Pragma': 'no-cache',  'Expires': '0'}});
 
-        console.log(response);
+        const result = await response.json();
 
-        if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
-                navigate(adminLoginPageUrl);
-            }
-        } else {
-            const result = await response.json();
-
-            if (result && result.success) {
+        if (result) {
+            if (result.success) {
                 return result.data;
+            } else {
+                if (result.code === 401 || result.code === 403) {
+                    navigate(adminLoginPageUrl);
+                } else {
+                    console.log(result.message);
+                }
             }
         }
+
     } catch (error) {
-        //console.log(error.message);
+        console.log(error.message);
     }
 
     return null;
