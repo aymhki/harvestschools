@@ -276,6 +276,8 @@ function Form({
         setEnteredCaptcha('');
 
 
+        setFieldValues({});
+
         setSectionInstances(prevState => {
             const resetState = {};
 
