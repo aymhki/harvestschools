@@ -10,7 +10,7 @@ import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
-import '../../styles/Dashboard.css';
+import '../../styles/AdminDashboard.css';
 
 function BookingManagement() {
     const navigate = useNavigate();
