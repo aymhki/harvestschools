@@ -32,6 +32,7 @@ const fetchBookingsRequest = async (navigate) => {
         })
         .catch(
             (error) => {
+                console.log(error);
                 if (error.response && (error.response.status === 401 || error.response.status === 403)) {
                     navigate(adminLoginPageUrl);
                 } else {
