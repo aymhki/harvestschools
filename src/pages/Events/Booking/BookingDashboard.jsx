@@ -3,20 +3,24 @@ import '../../../styles/Events.css'
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
-import {checkBookingSessionFromBookingDashboard} from "../../../services/Utils.jsx";
+import {checkBookingSessionFromBookingDashboard, resetSession, bookingLoginPageUrl} from "../../../services/Utils.jsx";
 
 function BookingDashboard() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
+    useEffect(async () => {
         setIsLoading(true);
-        checkBookingSessionFromBookingDashboard()
-        .finally(
-            () => {
-                setIsLoading(false);
-            }
-        )
+
+        try {
+            await checkBookingSessionFromBookingDashboard()
+        } catch (error) {
+            console.log(error.message);
+            navigate(bookingLoginPageUrl);
+        } finally {
+            setIsLoading(false);
+        }
+
     }, []);
 
     return (
@@ -59,9 +63,8 @@ function BookingDashboard() {
                         divElements={[(
                             <div className={"booking-dashboard-page-footer"} key={1}>
                                 <button onClick={() => {
-                                    document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                                    document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                                    navigate('/events/booking');
+                                    resetSession('harvest_schools_booking');
+                                    navigate(bookingLoginPageUrl);
                                 }}>Logout</button>
                             </div>
                         )]}
