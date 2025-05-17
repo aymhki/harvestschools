@@ -101,7 +101,7 @@ function Table({
                     const columnName = tableData[0][i];
                     if (filterableColumns.includes(columnName)) {
                         const uniqueValues = [...new Set(
-                            tableData.slice(startIndex)
+                            tableData?.slice(startIndex)
                                 .map(row => row[i])
                                 .filter(value => value !== undefined && value !== null)
                         )];
@@ -223,10 +223,10 @@ function Table({
             }
         }
 
-        const newRowMapping = filteredDataWithIndices.map(item => item.originalIndex);
+        const newRowMapping = filteredDataWithIndices?.map(item => item.originalIndex);
         setRowMapping(newRowMapping);
 
-        const filteredData = filteredDataWithIndices.map(item =>
+        const filteredData = filteredDataWithIndices?.map(item =>
             item.row.filter((cell, colIndex) =>
                 !hiddenColumns.has(sortedData[0][colIndex])
             )
