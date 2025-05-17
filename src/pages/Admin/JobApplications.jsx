@@ -8,12 +8,18 @@ import {checkAdminSession} from "../../services/Utils.jsx";
 
 function JobApplications() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [jobApplications, setJobApplications] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
-        checkAdminSession(navigate, setIsLoading, 0);
+        setIsLoading(true);
+        checkAdminSession(navigate, 0)
+        .finally(
+            () => {
+                setIsLoading(false)
+            }
+        )
     }, []);
 
     const loadTableData = async () => {

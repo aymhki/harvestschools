@@ -1,5 +1,5 @@
 import '../../styles/StudentsLife.css'
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function StudentsUnion() {
     return (
@@ -15,7 +15,7 @@ function StudentsUnion() {
                 <meta name="googlebot" content="index, follow"/>
             </Helmet>
 
-            <container className={"extreme-padding-container"}>
+            <div className={"extreme-padding-container"}>
 
                 <h1>
                     Students Union
@@ -139,7 +139,7 @@ function StudentsUnion() {
                 <p>
                     This page was last updated in June 7, 2019.
                 </p>
-            </container>
+            </div>
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import '../../styles/MoreInfo.css'
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function FAQs() {
   return (
@@ -15,7 +15,7 @@ function FAQs() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <container className="extreme-padding-container">
+        <div className="extreme-padding-container">
             <h1>FAQs</h1>
 
             <p>
@@ -267,7 +267,7 @@ function FAQs() {
             </div>
 
 
-        </container>
+        </div>
     </div>
   );
 }

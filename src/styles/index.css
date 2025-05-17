@@ -17,8 +17,8 @@
 
 @font-face {
     font-family: 'American Typewriter';
-    src: url('../../public/assets/fonts/American Typewriter/American Typewriter ITCW01 Lt.woff2') format('woff2'),
-        url('../../public/assets/fonts/American Typewriter/American Typewriter ITCW01 Lt.woff') format('woff');
+    src: url('../../public/assets/fonts/American Typewriter/American Typewriter.woff2') format('woff2'),
+        url('../../public/assets/fonts/American Typewriter/American Typewriter.woff') format('woff');
     font-weight: auto;
     font-style: auto;
 }

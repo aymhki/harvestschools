@@ -5,10 +5,10 @@ import {useNavigate} from "react-router-dom";
 
 function BookingExtras() {
     const navigate = useNavigate();
-   const [isLoading, setIsLoading] = useState(true);
+   const [isLoading, setIsLoading] = useState(false);
 
    useEffect(() => {
-       checkBookingSession(navigate, setIsLoading);
+       checkBookingSession(navigate);
    }, [])
 
     return (

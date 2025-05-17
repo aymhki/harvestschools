@@ -1,6 +1,7 @@
 import '../../styles/Events.css'
 import Table from "../../modules/Table.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function KgCalendar() {
   return (
@@ -16,7 +17,7 @@ function KgCalendar() {
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
-          <container className={"extreme-padding-container"}>
+          <div className={"extreme-padding-container"}>
               <h1>KG Calendar</h1>
               <h2>
                   Online View
@@ -65,7 +66,7 @@ function KgCalendar() {
                   </button>
               </div>
 
-          </container>
+          </div>
       </div>
   );
 }

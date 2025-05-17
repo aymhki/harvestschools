@@ -1,6 +1,6 @@
 import '../../styles/MoreInfo.css'
 import Table from "../../modules/Table.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function MinimumStageAge() {
   return (
@@ -16,7 +16,7 @@ function MinimumStageAge() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <container className={"extreme-padding-container"}>
+        <div className={"extreme-padding-container"}>
             <h1>Minimum Stage Age</h1>
             <p>
                 Please Note,
@@ -65,7 +65,7 @@ function MinimumStageAge() {
             <p>
                 Note: This page was last updated on January 02, 2023
             </p>
-        </container>
+        </div>
     </div>
   );
 }

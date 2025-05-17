@@ -1,6 +1,7 @@
 import '../../styles/Events.css'
 import Table from "../../modules/Table.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function BritishCalendar() {
   return (
@@ -15,7 +16,7 @@ function BritishCalendar() {
               <meta name="robots" content="index, follow"/>
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
-          <container className={"extreme-padding-container"}>
+          <div className={"extreme-padding-container"}>
               <h1>British Calendar</h1>
 
               <h2>
@@ -64,7 +65,7 @@ function BritishCalendar() {
               </div>
 
 
-          </container>
+          </div>
       </div>
   );
 }

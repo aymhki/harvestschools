@@ -1,5 +1,6 @@
 import '../../../styles/MoreInfo.css'
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 function Covid19ArabicRead() {
   return (
     <div className={"covid-19-arabic-read-page"}>
@@ -14,7 +15,7 @@ function Covid19ArabicRead() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <container className={"extreme-padding-container"}>
+        <div className={"extreme-padding-container"}>
             <h2 lang={"ar"} className={"covid-19-arabic-read-page-title"}>
                 سعادتنا تتجدد بلقاء أبنائنا الطلبة
             </h2>
@@ -685,7 +686,7 @@ function Covid19ArabicRead() {
                 </li>
             </ul>
 
-        </container>
+        </div>
     </div>
   );
 }

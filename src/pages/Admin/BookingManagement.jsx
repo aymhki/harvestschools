@@ -1,6 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {checkAdminSession} from "../../services/Utils.jsx";
+import {
+    checkAdminSession,
+    fetchBookingsRequest,
+    handleAddBookingRequest,
+    handleDeleteBookingRequest
+} from "../../services/Utils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
@@ -322,69 +327,43 @@ function BookingManagement() {
     };
 
     const handleAddBooking = async (formData) => {
-        try {
-            setIsLoading(true);
-
-            const response = await fetch('/scripts/submitAddBookingForm.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                setResetAddBookingModal(true)
-                setShowAddBookingModal(false);
-                fetchBookings();
-            } else {
-                throw new Error(`${result.message}`);
-            }
-        } catch (error) {
-            throw new Error(error.message);
-        } finally {
+        setIsLoading(true);
+        handleAddBookingRequest(formData, () => {
+            setResetAddBookingModal(true)
+            setShowAddBookingModal(false);
+            fetchBookings();
+        }).finally(() => {
             setIsLoading(false);
-        }
+        })
     }
 
     const handleDeleteBooking = async () => {
-        try {
-            setIsLoading(true);
-            setIsDeleting(true);
-            const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
+        setIsLoading(true);
+        setIsDeleting(true);
+        const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
 
-            const response = await fetch('/scripts/deleteBookingEntry.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    bookingId: bookingId,
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                setShowDeleteBookingModal(false);
-                setIsDeleting(false);
-                setDeleteError(null);
-                setRowIndexToDelete(null);
-                fetchBookings();
-            } else {
-                throw new Error(`${result.message}`);
-            }
-
-        } catch (error) {
+        handleDeleteBookingRequest(bookingId, () => {
+            setShowDeleteBookingModal(false);
             setIsDeleting(false);
-            setRowIndexToDelete(null);
-            console.log('Error deleting booking:', error.message);
-            setDeleteError(error.message);
-        } finally {
-            setIsDeleting(false);
+            setDeleteError(null);
             setRowIndexToDelete(null);
             setShowDeleteBookingModal(false);
-            setIsLoading(false);
-        }
+            fetchBookings();
+        })
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.message) {
+                setDeleteError(error.response.data.message);
+            } else {
+                setDeleteError('An error occurred while deleting the booking.');
+            }
+        })
+        .finally(
+            () => {
+                setIsDeleting(false);
+                setRowIndexToDelete(null);
+                setIsLoading(false);
+            }
+        )
     };
 
     const handleCancelDeleteBookingModal = () => {
@@ -507,55 +486,26 @@ function BookingManagement() {
     }
 
     const fetchBookings = async () => {
-        try {
-            setIsLoading(true);
-
-            const response = await axios.get(`/scripts/getAllBookings.php`, {
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    'Expires': '0',
-                }
-            });
-
-            if (response.data.success) {
-                setAllBookings(response.data.data);
-            } else {
-                setAllBookings(null);
-            }
-
-        } catch (error) {
-
-            if (error.response && error.response.data && error.response.data.message && error.response.data.code) {
-                console.log(error.response.data.message);
-
-                if (error.response.data.code === 401 || error.response.data.code === 403) {
-                    navigate('/admin/login');
-                }
-
-            } else {
-                console.log(error.message);
-
-                if (error.status === 401 || error.status === 403 || error.code === 401 || error.code === 403) {
-                    navigate('/admin/login');
-                }
-            }
-
-        } finally {
-            setIsLoading(false);
-        }
+        setAllBookings( fetchBookingsRequest() );
     }
 
     useEffect(() => {
-       checkAdminSession(navigate, setIsLoading, 1).then(
+        setIsLoading(true);
+       checkAdminSession(navigate, 1)
+       .then(
            () => {
                fetchBookings();
+           }
+       )
+       .finally(
+           () => {
+               setIsLoading(false);
            }
        )
     }, []);
 
     useEffect(() => {
-        if (showAddBookingModal || showDeleteBookingModal) {
+        if (showAddBookingModal || showDeleteBookingModal || showEditBookingModal) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
@@ -564,7 +514,7 @@ function BookingManagement() {
         return () => {
             document.body.style.overflow = '';
         };
-    }, [showAddBookingModal, showDeleteBookingModal]);
+    }, [showAddBookingModal, showDeleteBookingModal, showEditBookingModal]);
 
     return (
         <>

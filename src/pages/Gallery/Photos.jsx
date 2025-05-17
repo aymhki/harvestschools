@@ -1,6 +1,7 @@
 import '../../styles/Gallery.css';
 import PhotoCollage from "../../modules/PhotoCollage.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 function Photos() {
   return (
     <div className="gallery-photos-page">
@@ -15,7 +16,7 @@ function Photos() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-      <container className="extreme-padding-container">
+      <div className="extreme-padding-container">
 
         <h1>Photos</h1>
 
@@ -1256,7 +1257,7 @@ function Photos() {
               ]} />
 
         </div>
-      </container>
+      </div>
     </div>
   );
 }

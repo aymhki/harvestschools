@@ -1,6 +1,7 @@
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import '../../styles/Admission.css'
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function OutsideEgyptRequirements() {
   return (
@@ -47,7 +48,7 @@ function OutsideEgyptRequirements() {
               )]}
           />
 
-          <container className="extreme-padding-container">
+          <div className="extreme-padding-container">
               <h1>From KG 1</h1>
               <div className="admission-requirements-list-container">
 
@@ -226,7 +227,7 @@ function OutsideEgyptRequirements() {
                       </ul>
                   </div>
               </div>
-          </container>
+          </div>
       </div>
   );
 }

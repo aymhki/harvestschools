@@ -1,6 +1,6 @@
 import PhotoSlider from "../modules/PhotoSlider.jsx";
 import '../styles/Home.css';
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
 import LoadingSpinner from "../modules/LoadingSpinner.jsx";

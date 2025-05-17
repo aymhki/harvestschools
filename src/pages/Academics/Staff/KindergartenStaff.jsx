@@ -1,6 +1,7 @@
 import '../../../styles/Academics.css';
 import Table from "../../../modules/Table.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function KindergartenStaff() {
   return (
@@ -16,7 +17,7 @@ function KindergartenStaff() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <container className={"extreme-padding-container"}>
+        <div className={"extreme-padding-container"}>
 
             <p>
                 Head of Department: Ms. Shimaa Ahmed Khalil
@@ -49,7 +50,7 @@ function KindergartenStaff() {
             <p>
                 This page was last updated on June 20, 2021
             </p>
-        </container>
+        </div>
     </div>
   );
 }

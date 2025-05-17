@@ -1,5 +1,5 @@
 import '../../styles/Gallery.css'
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function Videos() {
   return (
@@ -15,7 +15,7 @@ function Videos() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <container className={'extreme-padding-container'}>
+        <div className={'extreme-padding-container'}>
             <h1>
                 Videos
             </h1>
@@ -118,7 +118,7 @@ function Videos() {
                 </h2>
             </div>
 
-        </container>
+        </div>
     </div>
   );
 }

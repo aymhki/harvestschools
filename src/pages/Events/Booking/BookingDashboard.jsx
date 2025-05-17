@@ -1,52 +1,22 @@
 import OptionsGrid from "../../../modules/OptionsGrid.jsx";
 import '../../../styles/Events.css'
 import {useEffect, useState} from "react";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
-import {sessionDuration, getCookies} from "../../../services/Utils.jsx";
+import {checkBookingSessionFromBookingDashboard} from "../../../services/Utils.jsx";
 
 function BookingDashboard() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        const checkBookingSession = async () => {
-            const cookies = getCookies();
-
-            const sessionId = cookies.harvest_schools_booking_session_id;
-            const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
-
-            if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
-                document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                navigate('/events/booking/');
-                return;
-            }
-
-            try {
-                const sessionResponse = await axios.post('/scripts/checkBookingSession.php', {
-                    session_id: sessionId
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!sessionResponse.data.success) {
-                    navigate('/events/booking/');
-                }
-
-            } catch (error) {
-                console.log(error.message);
-                setIsLoading(false);
-                navigate('/events/booking/');
-            } finally {
+        setIsLoading(true);
+        checkBookingSessionFromBookingDashboard()
+        .finally(
+            () => {
                 setIsLoading(false);
             }
-        }
-
-        checkBookingSession();
+        )
     }, []);
 
     return (

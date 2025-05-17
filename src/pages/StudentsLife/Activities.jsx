@@ -2,7 +2,8 @@ import '../../styles/StudentsLife.css'
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import Table from "../../modules/Table.jsx";
 import Form from "../../modules/Form.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 function Activities() {
   return (
     <div className={'students-life-activities-page'}>
@@ -36,7 +37,7 @@ function Activities() {
                                    noParallax={false}
             />
 
-        <container className={'extreme-padding-container'}>
+        <div className={'extreme-padding-container'}>
             <Table tableData={[
                 ['Sports', 'Days', 'Times'],
                 ['Swimming', 'Friday, Saturday', '10:00 AM - 11:30 AM'],
@@ -58,7 +59,7 @@ function Activities() {
             ]} captchaLength={1}/>
 
 
-        </container>
+        </div>
 
     </div>
   );

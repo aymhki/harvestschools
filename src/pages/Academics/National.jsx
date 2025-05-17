@@ -2,7 +2,8 @@ import '../../styles/Academics.css';
 import Table from '../../modules/Table';
 import PhotoCollage from '../../modules/PhotoCollage';
 import {useNavigate} from "react-router-dom";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function National() {
 
@@ -107,73 +108,73 @@ function National() {
         </div>
 
         <div className="national-academics-vision-and-mission">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Our Vision:</h1>
                 <p>Is to invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.</p>
 
                 <h1>Our Mission:</h1>
                 <p>Is to invest in the skills of educators and administrative calibers to provide an inspirational environment made fit to qualify students to be part of a gleaming future placing technology in its best use to activate the most effective educational system.</p>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-grades-and-break-times-table-container">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <Table tableData={tableData} numCols={2}/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-safe-environment">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
             <h1>Safe Environment</h1>
             <img src={'../assets/images/AcademicsPages/SafeEnvironment.jpg'} alt="Safe Environment" className="national-academics-page-safe-environment-image"/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-preparation-to-the-new-academic-year-images-section">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Preparation To The New Academic Year</h1>
                 <PhotoCollage photos={preparationToTheNewAcademicYearPhotos}
                               title="Preparation To The New Academic Year" type="collage"
                               collagePreview={preparationToTheNewAcademicYearCollagePreview}/>
 
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-science-labs-images-section">
 
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Science Labs</h1>
                 <PhotoCollage photos={scienceLabsPhotos} title="Science Labs" type="collage"
                               collagePreview={scienceLabsCollagePreview}/>
 
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-english-syllabus">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>New English Syllabus</h1>
                 <img src={'../assets/images/AcademicsPages/WORLDBooks.png'} alt="New English Syllabus"
                      className="national-academics-page-english-syllabus-image"/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-science-syllabus">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
             <h1>New Science Syllabus</h1>
             <img src={'../assets/images/AcademicsPages/RichmondScienceBooks.png'} alt="New Science Syllabus" className="national-academics-page-science-syllabus-image"/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-extra-worksheets-syllabus">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Extra Worksheets</h1>
                 <img src={'../assets/images/AcademicsPages/Booklet.png'} alt="Extra Worksheets"
                      className="national-academics-page-extra-worksheets-image"/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-quran-syllabus">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Quran Syllabus</h1>
                 <iframe className="national-academics-page-quran-syllabus-video"
                         src="https://www.youtube-nocookie.com/embed/eCiGLdBqHpA?si=YVck_mUlGvxNXtSh"
@@ -182,11 +183,11 @@ function National() {
                         loading={"lazy"}
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-math-junior-one">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Math (Junior 1)</h1>
                 <iframe className="national-academics-page-math-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/NoHx7-DK4NU?si=QQ6u6r30BxX7mls_"
@@ -195,11 +196,11 @@ function National() {
                         loading={"lazy"}
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-english-junior-one">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>English (Junior 1)</h1>
                 <iframe className="national-academics-page-english-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/W-xeX1XFDkY?si=ZvayNB-C2_a0Js4Z"
@@ -208,11 +209,11 @@ function National() {
                         loading={"lazy"}
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-english-junior-six">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>English (Junior 6)</h1>
                 <iframe className="national-academics-page-english-junior-six-video"
                         src="https://www.youtube-nocookie.com/embed/r-KQ7RzYDH8?si=e6uxAqgPX2W1cSkg"
@@ -221,11 +222,11 @@ function National() {
                         loading={"lazy"}
                         allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-french-junior-one">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>French (Junior 1)</h1>
                 <iframe className="national-academics-page-french-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/XwAGJNs6gTU?si=Jtejjsfl0jxnrWFA"
@@ -234,11 +235,11 @@ function National() {
                         loading={"lazy"}
                         allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-arabic-junior-one">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Arabic (Junior 1)</h1>
                 <iframe className="national-academics-page-arabic-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/J48T7RuyNcw?si=HZH95R3FFABrkmh8"
@@ -247,11 +248,11 @@ function National() {
                         loading={"lazy"}
                         allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-science-middle-two">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Science (Middle 2)</h1>
                 <iframe className="national-academics-page-science-middle-two-video"
                         src="https://www.youtube-nocookie.com/embed/6zJYZw0AA2U?si=eDD5eDcxzNaX_aYU"
@@ -260,18 +261,18 @@ function National() {
                         loading={"lazy"}
                         allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
-            </container>
+            </div>
         </div>
 
         <div className="national-academics-page-covid-19-policy">
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <h1>Precautions For Covid-19</h1>
                 <p>Follow our guide for safety environment during School day.</p>
                 <button onClick={() => navigate('/covid-19')}
                         className="national-academics-page-covid-19-policy-button">
                     Learn More
                 </button>
-            </container>
+            </div>
         </div>
 
     </div>

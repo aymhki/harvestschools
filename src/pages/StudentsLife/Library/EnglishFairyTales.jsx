@@ -1,7 +1,7 @@
 import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function EnglishFairyTales() {
   return (
@@ -17,7 +17,7 @@ function EnglishFairyTales() {
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
-          <container className={"extreme-padding-container"}>
+          <div className={"extreme-padding-container"}>
               <h1>English Fairy Tails</h1>
 
               <Table tableData={
@@ -128,7 +128,7 @@ function EnglishFairyTales() {
               }  captchaLength={1}/>
 
 
-          </container>
+          </div>
       </div>
   );
 }
