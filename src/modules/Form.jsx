@@ -357,7 +357,21 @@ function Form({
         return lastFieldIndex !== -1 ? lastFieldIndex + 1 : dynamicFields.length;
     };
 
+    const collectFieldValues = () => {
+        const values = {};
+        dynamicFields.forEach(field => {
+            if (field.type !== 'section' && field.type !== 'button' && field.type !== 'control') {
+                const element = document.getElementById(field.id);
+                if (element) {
+                    values[field.id] = element.value;
+                }
+            }
+        });
+        return values;
+    };
+
     const addSectionInstance = (sectionId) => {
+        const currentValues = collectFieldValues();
 
         setSectionInstances(prevState => {
             const section = dynamicSections.find(s => s.sectionId === sectionId);
@@ -427,6 +441,15 @@ function Form({
                 idMap[field.id] || field.id
             );
 
+            setTimeout(() => {
+                Object.keys(currentValues).forEach(fieldId => {
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        element.value = currentValues[fieldId];
+                    }
+                });
+            }, 0);
+
 
             return {
                 ...prevState,
@@ -447,6 +470,7 @@ function Form({
     };
 
     const removeSectionInstance = (sectionId, instanceId) => {
+        const currentValues = collectFieldValues();
 
         setSectionInstances(prevState => {
             const currentSectionState = {...prevState[sectionId]};
@@ -532,6 +556,18 @@ function Form({
                 const lastFieldIndex = normalizedFields.findIndex(field => field.id === lastFieldId);
                 newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : normalizedFields.length;
             }
+
+            setTimeout(() => {
+                Object.keys(currentValues).forEach(fieldId => {
+                    if (!fieldsToRemove.includes(parseInt(fieldId))) {
+                        const newId = idMap[fieldId] || fieldId;
+                        const element = document.getElementById(newId);
+                        if (element) {
+                            element.value = currentValues[fieldId];
+                        }
+                    }
+                });
+            }, 0);
 
             return {
                 ...prevState,
