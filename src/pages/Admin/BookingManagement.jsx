@@ -36,7 +36,7 @@ function BookingManagement() {
     const secondParentPhoneNumberFieldId = 9;
     const additionalAttendeesFieldId = 10;
     const cdCountFieldId = 11;
-    const extrasPaymentStatusFieldId = 12; // 'Not Signed Up','Signed Up, pending payment','Confirmed'
+    const extrasPaymentStatusFieldId = 12;
     const colIndexForBookingId = 0;
 
     const animateAddBookingModal = useSpring({
@@ -211,7 +211,7 @@ function BookingManagement() {
             httpName: 'additional-attendees',
             labelOutside: true,
             labelOnTop: true,
-            // defaultValue: '0',
+            defaultValue: '0',
         },
         {
             id: cdCountFieldId,
@@ -227,7 +227,7 @@ function BookingManagement() {
             httpName: 'cd-count',
             labelOutside: true,
             labelOnTop: true,
-            // defaultValue: '0',
+            defaultValue: '0',
         },
         {
             id: extrasPaymentStatusFieldId,
@@ -247,7 +247,7 @@ function BookingManagement() {
             httpName: 'extras-payment-status',
             labelOutside: true,
             labelOnTop: true,
-            // defaultValue: 'Not Signed Up',
+            defaultValue: 'Not Signed Up',
         },
     ]
 
