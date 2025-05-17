@@ -5,6 +5,7 @@ import {v4 as uuidv4} from "uuid";
 
 const sessionDurationInHours = 1;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
+const msgTimeout = 5000;
 const bookingLoginPageUrl = '/events/booking';
 const bookingDashboardPageUrl = '/events/booking/dashboard';
 const adminLoginPageUrl = '/admin/login';
@@ -55,24 +56,28 @@ const fetchBookingsRequest = async (navigate) => {
     return null;
 }
 
-const handleDeleteBookingRequest = async (
-    bookingId,
-    whatToDoOnSuccess
-) => {
+const handleDeleteBookingRequest = async (bookingId) => {
     try {
-        const response = await axios.post(deleteBookingEntryEndpoint, {
-            bookingId: bookingId,
-        }, {
-            headers: {'Content-Type': 'application/json'}
+        const sessionId = validateAdminSessionLocally();
+        if (!sessionId) {
+            return 'Session expired'
+        }
+
+        const response = await fetch(deleteBookingEntryEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({bookingId: bookingId})
         });
 
-        if (response.data.success) {
-            whatToDoOnSuccess()
+        const result = await response.json();
+
+        if (result.success) {
+            return result;
         } else {
-            throw new Error(`${response.data.message}`);
+            return result.message;
         }
+
     } catch (error) {
-        throw new Error(error.message);
+        return error.message;
     }
 }
 
@@ -412,6 +417,7 @@ export {
     checkBookingSession,
     sessionDuration,
     sessionDurationInHours,
+    msgTimeout,
     getCookies,
     formatDateFromPacific,
     useFormCache,

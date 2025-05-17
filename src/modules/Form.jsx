@@ -10,7 +10,7 @@ import { useCallback } from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {useFormCache} from "../services/Utils.jsx";
-
+import {msgTimeout} from "../services/Utils.jsx";
 
 function Form({
                   fields,
@@ -68,7 +68,7 @@ function Form({
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
     const [prefilledInitialized, setPrefilledInitialized] = useState(false);
     const [fieldValues, setFieldValues] = useState({});
-    const msgTimeout = 5000;
+
 
     useEffect(() => {
         const initialSectionInstances = {};
