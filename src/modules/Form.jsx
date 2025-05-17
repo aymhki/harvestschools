@@ -393,7 +393,6 @@ function Form({
                 label: `Control ${instanceId}`
             };
 
-            // Keep track of the newly added field IDs
             const allNewFieldIds = new Set([
                 ...newFields.map(f => f.id),
                 controlField.id
@@ -413,25 +412,17 @@ function Form({
                 return field;
             });
 
-            // Update fieldValues state to maintain values after ID changes
             const updatedFieldValues = {...fieldValues};
 
-            // First, store the current values for all existing fields
             const existingFieldValues = {...fieldValues};
 
-            // Clear out the values for newly added fields to prevent value transfer
-            // and update the mapping for existing fields
             normalizedFields.forEach(field => {
                 const oldId = Object.entries(idMap).find(([_, newId]) => newId === field.id)?.[0];
 
-                // If this is a newly added field (by checking the original IDs we tracked)
                 if (allNewFieldIds.has(parseInt(oldId))) {
-                    // Don't transfer values to new fields
                     delete updatedFieldValues[field.id];
                 }
-                // If this is an existing field that got remapped
                 else if (oldId && existingFieldValues[oldId] !== undefined) {
-                    // Transfer the value from the old ID to the new ID
                     updatedFieldValues[field.id] = existingFieldValues[oldId];
                 }
             });
@@ -490,7 +481,6 @@ function Form({
             const instanceToRemove = currentSectionState.instances[instanceIndex];
             const fieldsToRemove = instanceToRemove.fieldIds;
 
-            // Store the current field values before removing fields
             const existingFieldValues = {...fieldValues};
 
             const updatedDynamicFields = dynamicFields.filter(
@@ -507,10 +497,8 @@ function Form({
                 return field;
             });
 
-            // Update fieldValues state carefully
             const updatedFieldValues = {};
             normalizedFields.forEach(field => {
-                // Find the old ID for this field
                 const oldId = field.id in idMap ? field.id :
                     Object.entries(idMap).find(([_, newId]) => newId === field.id)?.[0];
 
@@ -654,7 +642,6 @@ function Form({
                 setGeneralFormError('');
                 setSuccessMessage('');
 
-                // Store the value in fieldValues state with both ID and original ID if available
                 setFieldValues(prev => ({
                     ...prev,
                     [field.id]: value,
@@ -810,6 +797,7 @@ function Form({
                                     className="toggle-password-visibility"
                                     onClick={() => setShowPasswords(!showPasswords)}
                                     aria-label={showPasswords ? "Hide password" : "Show password"}
+                                    tabIndex="-1"
                                 >
                                     {showPasswords ? <VisibilityOffIcon/> :  <VisibilityIcon/>}
                                 </button>
@@ -840,6 +828,7 @@ function Form({
                                 className="toggle-password-visibility"
                                 onClick={() => setShowPasswords(!showPasswords)}
                                 aria-label={showPasswords ? "Hide password" : "Show password"}
+                                tabIndex="-1"
                             >
                                 {showPasswords ? <VisibilityOffIcon/> : <VisibilityIcon/> }
                             </button>
