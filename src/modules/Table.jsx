@@ -50,7 +50,7 @@ function Table({
             return [];
         }
 
-        const withIndices = tableData.map((row, index) => ({ row, originalIndex: index }));
+        const withIndices = tableData?.map((row, index) => ({ row, originalIndex: index }));
         const startIndex = tableHeader ? 2 : 1;
 
         if (sortConfig.column === null || sortConfig.direction === 'neutral') {
@@ -78,8 +78,8 @@ function Table({
             return 0;
         };
 
-        const headerRows = withIndices.slice(0, startIndex);
-        const dataRows = withIndices.slice(startIndex).sort(compare);
+        const headerRows = withIndices?.slice(0, startIndex);
+        const dataRows = withIndices?.slice(startIndex).sort(compare);
 
         return [...headerRows, ...dataRows];
     }, [tableData, sortConfig, tableHeader]);
