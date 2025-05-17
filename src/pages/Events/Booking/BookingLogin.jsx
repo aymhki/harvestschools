@@ -19,7 +19,7 @@ function BookingLogin() {
         try {
             const result = await validateBookingLogin(formData, usernameFieldId, passwordFieldId, navigate);
 
-            if (!result.success) {
+            if (result && !result.success) {
                 throw new Error(result.message);
             }
         } catch (error) {
@@ -33,7 +33,7 @@ function BookingLogin() {
         try {
             const result = await checkBookingSessionFromBookingLogin(navigate);
 
-            if (!result.success && result.message) {
+            if (result && !result.success && result.message) {
                 throw new Error(result.message);
             }
         } catch (error) {
