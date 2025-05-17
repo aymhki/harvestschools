@@ -34,6 +34,11 @@ const checkAdminSession = async (
 
         if (!response.data.success) {
             navigate('/admin/login');
+        } else {
+            const sessionExpiry = new Date();
+            sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
+            document.cookie = `harvest_schools_admin_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
+            document.cookie = `harvest_schools_admin_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
         }
 
 
@@ -85,6 +90,11 @@ const checkBookingSession = async (
 
         if (!response.data.success) {
             navigate('/events/booking');
+        } else {
+            const sessionExpiry = new Date();
+            sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
+            document.cookie = `harvest_schools_booking_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
+            document.cookie = `harvest_schools_booking_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
         }
 
     } catch (error) {
@@ -102,7 +112,6 @@ function getCookies() {
     }, {});
 }
 
-// Function to convert Pacific Time to local time and format it
 const formatDateFromPacific = (pacificTimeString) => {
     const [datePart, timePart] = pacificTimeString.split(' ');
     const pacificDate = new Date(`${datePart}T${timePart}-07:00`);

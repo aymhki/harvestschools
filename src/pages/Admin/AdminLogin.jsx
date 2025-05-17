@@ -95,15 +95,17 @@ function AdminLogin() {
 
                 if (response.data.success) {
                     navigate('/admin/dashboard');
+                    const sessionExpiry = new Date();
+                    sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
+                    document.cookie = `harvest_schools_admin_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
+                    document.cookie = `harvest_schools_admin_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
                 }
             } catch (error) {
                 console.log(error.message);
             }
         };
 
-        checkAdminSession().then(() =>
-            console.log('Session checked')
-        );
+        checkAdminSession();
     }, []);
 
 
