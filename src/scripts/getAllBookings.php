@@ -14,13 +14,24 @@ try {
         $cookies[$key] = $value;
     }
     if (!isset($cookies['harvest_schools_admin_session_id'])) {
-        throw new Exception("Unauthorized: No session found", 401);
+        // Don't throw exception, just set error info
+        echo json_encode([
+            'success' => false,
+            'message' => "Unauthorized: No session found",
+            'code' => 401
+        ]);
+        exit;
     }
     $sessionId = $cookies['harvest_schools_admin_session_id'];
     $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error, 500);
+        echo json_encode([
+            'success' => false,
+            'message' => "Connection failed: " . $conn->connect_error,
+            'code' => 500
+        ]);
+        exit;
     }
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
@@ -28,14 +39,24 @@ try {
                       WHERE s.id = ?";
     $stmt = $conn->prepare($permissionSql);
     if (!$stmt) {
-        throw new Exception("Prepare failed: " . $conn->error, 500);
+        echo json_encode([
+            'success' => false,
+            'message' => "Prepare failed: " . $conn->error,
+            'code' => 500
+        ]);
+        exit;
     }
     $stmt->bind_param("s", $sessionId);
     $stmt->execute();
     $permissionResult = $stmt->get_result();
     $stmt->close();
     if ($permissionResult->num_rows == 0) {
-        throw new Exception("Invalid session", 401);
+        echo json_encode([
+            'success' => false,
+            'message' => "Invalid session",
+            'code' => 401
+        ]);
+        exit;
     }
     $permissionRow = $permissionResult->fetch_assoc();
     $permissionLevels = explode(',', $permissionRow['permission_level']);
@@ -44,7 +65,12 @@ try {
     }, $permissionLevels);
     $hasPermission = in_array(1, $cleanPermissionLevels);
     if (!$hasPermission) {
-        throw new Exception("Permission denied", 403);
+        echo json_encode([
+            'success' => false,
+            'message' => "Permission denied",
+            'code' => 403
+        ]);
+        exit;
     }
 
     $bookingsSql = "SELECT 
@@ -66,7 +92,12 @@ try {
 
     $bookingsResult = $conn->query($bookingsSql);
     if (!$bookingsResult) {
-        throw new Exception("Query failed: " . $conn->error, 500);
+        echo json_encode([
+            'success' => false,
+            'message' => "Query failed: " . $conn->error,
+            'code' => 500
+        ]);
+        exit;
     }
 
     $data = [];
@@ -122,7 +153,6 @@ try {
         $parentPhones = [];
 
         while ($parent = $parentsResult->fetch_assoc()) {
-            // Only add non-empty values
             if (!empty($parent['name'])) {
                 $parentNames[] = $parent['name'];
             }
@@ -168,8 +198,8 @@ try {
         'executionTime' => $executionTime
     ]);
 } catch (Exception $e) {
+
     $statusCode = $e->getCode() ?: 500;
-    http_response_code($statusCode);
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage(),
