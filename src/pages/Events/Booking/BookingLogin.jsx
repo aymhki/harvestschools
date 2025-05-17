@@ -14,11 +14,31 @@ function BookingLogin() {
 
     const handleBookingLogin = async (formData) => {
         if (submittingLocal) {return;}
-        validateBookingLogin(formData, usernameFieldId, passwordFieldId, navigate);
+        setSubmittingLocal(true);
+
+        try {
+            const result = await validateBookingLogin(formData, usernameFieldId, passwordFieldId, navigate);
+
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        } finally {
+            setSubmittingLocal(false);
+        }
     }
 
-    useEffect(() => {
-        checkBookingSessionFromBookingLogin(navigate);
+    useEffect(async () => {
+        try {
+            const result = await checkBookingSessionFromBookingLogin(navigate);
+
+            if (!result.success && result.message) {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
     }, [])
 
     return (

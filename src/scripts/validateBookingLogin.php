@@ -8,36 +8,65 @@ $dbname = $dbConfig['db_name'];
 
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);
+
     if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error, 500);
+        echo json_encode([
+            "success" => false,
+            "message" => "Connection failed: " . $conn->connect_error,
+            "code" => 500
+        ]);
+        exit;
     }
+
     $data = json_decode(file_get_contents('php://input'), true);
+
     if (!isset($data['username']) || !isset($data['password'])) {
-        throw new Exception("Bad Request: Missing username or password", 405);
+        echo json_encode([
+            "success" => false,
+            "message" => "Bad Request: Missing username or password",
+            "code" => 400
+        ]);
+        exit;
     }
+
     $user = $conn->real_escape_string($data['username']);
     $plainPassword = $conn->real_escape_string($data['password']);
-
     $sql = "SELECT * FROM booking_auth_credentials WHERE username = '$user' AND password_hash = SHA2('$plainPassword', 256)";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        echo json_encode(["success" => true]);
+        echo json_encode([
+            "success" => true,
+            "message" => "Login successful",
+            "code" => 200
+        ]);
     } else {
         $userCheckSql = "SELECT * FROM booking_auth_credentials WHERE username = '$user'";
         $userResult = $conn->query($userCheckSql);
 
         if ($userResult->num_rows > 0) {
-            throw new Exception("Incorrect password", 401);
+            echo json_encode([
+                "success" => false,
+                "message" => "Incorrect password",
+                "code" => 401
+            ]);
+            exit;
         } else {
-            throw new Exception("Username not found", 404);
+            echo json_encode([
+                "success" => false,
+                "message" => "Username not found",
+                "code" => 404
+            ]);
+            exit;
         }
     }
 } catch (Exception $e) {
-    http_response_code($e->getCode());
-    echo json_encode(["message" => $e->getMessage()]);
+    echo json_encode([
+        "success" => false,
+        "message" => $e->getMessage(),
+        "code" => $e->getCode() ?: 500
+    ]);
 } finally {
     $conn->close();
 }
-
 ?>
