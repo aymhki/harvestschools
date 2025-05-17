@@ -24,12 +24,6 @@ const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
 const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
 const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 
-axios.interceptors.response.use(
-    response => response,
-    error => {
-        return Promise.reject(error);
-    }
-);
 
 const fetchBookingsRequest = async (navigate) => {
     try {

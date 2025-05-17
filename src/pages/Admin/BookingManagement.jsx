@@ -489,9 +489,7 @@ function BookingManagement() {
         setIsLoading(true);
         try {
             const response = await fetchBookingsRequest(navigate);
-            if (response) {
-                setAllBookings(response);
-            }
+            setAllBookings(response);
         } catch (error) {
             //console.log(error.message);
         } finally {
