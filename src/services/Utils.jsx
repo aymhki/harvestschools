@@ -32,7 +32,7 @@ const fetchBookingsRequest = async (navigate) => {
             headers: {'Cache-Control': 'no-cache', 'Pragma': 'no-cache', 'Expires': '0',}
         });
 
-        if (response.data.success) {
+        if (response.data && response.data.success) {
             return response.data.data;
         } else {
             return null;
