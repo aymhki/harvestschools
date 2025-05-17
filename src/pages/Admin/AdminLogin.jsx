@@ -6,9 +6,6 @@ import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Form from '../../modules/Form.jsx'
 import {
-    sessionDuration,
-    sessionDurationInHours,
-    getCookies,
     checkAdminSessionFromAdminLogin,
     validateAdminLogin
 } from "../../services/Utils.jsx";

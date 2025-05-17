@@ -3,7 +3,7 @@ import {useCallback} from "react";
 import {v4 as uuidv4} from "uuid";
 
 
-const sessionDurationInHours = 1;
+const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
 const bookingLoginPageUrl = '/events/booking';
@@ -17,6 +17,7 @@ const validateBookingLoginEndpoint = '/scripts/validateBookingLogin.php';
 const createBookingSessionEndpoint = '/scripts/createBookingSession.php';
 const deleteBookingEntryEndpoint = '/scripts/deleteBookingEntry.php';
 const submitAddBookingFormEndpoint = '/scripts/submitAddBookingForm.php';
+const getBookingInfoBySessionEndpoint = '/scripts/getBookingBySession.php'
 
 const createAdminSessionEndpoint = '/scripts/createAdminSession.php';
 const validateAdminSessionEndpoint = '/scripts/checkAdminSession.php';
@@ -24,6 +25,7 @@ const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
 
 const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
 const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
+const submitFormEndpoint = '/scripts/submitForm.php';
 
 const fetchBookingsRequest = async (navigate) => {
     try {
@@ -97,7 +99,7 @@ const checkBookingSessionFromBookingDashboard = async (navigate) => {
 
         const result = await response.json();
 
-        if (!result.success) {
+        if (result && !result.success) {
             navigate(bookingLoginPageUrl);
         }
 
@@ -461,6 +463,8 @@ export {
     createBookingSessionEndpoint,
     deleteBookingEntryEndpoint,
     submitAddBookingFormEndpoint,
+    getBookingInfoBySessionEndpoint,
+    submitFormEndpoint,
     bookingLoginPageUrl,
     bookingDashboardPageUrl,
     adminLoginPageUrl,
