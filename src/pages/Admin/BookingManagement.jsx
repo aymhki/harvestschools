@@ -486,7 +486,9 @@ function BookingManagement() {
     }
 
     const fetchBookings = async () => {
+        console.log(fetchBookings());
         setAllBookings( fetchBookingsRequest() );
+
     }
 
     useEffect(() => {
