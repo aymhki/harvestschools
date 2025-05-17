@@ -137,45 +137,51 @@ const validateBookingLogin = async (formData, usernameFieldId, passwordFieldId, 
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
 
     try {
-        const response = await axios.post(validateBookingLoginEndpoint,
-            {username, password}, {headers: {'Content-Type': 'application/json'}});
+        const response = await fetch(validateBookingLoginEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({username, password})
+        });
 
-        if (response.data.success) {
-            const sessionResponse = await axios.post(createBookingSessionEndpoint, {
-                username: username,
-                session_id: createSessions('harvest_schools_booking')
-            }, {headers: {'Content-Type': 'application/json'}});
+        const result = await response.json();
 
-            if (sessionResponse.data.success) {
+        if (result.success) {
+            const sessionResponse = await fetch(createBookingSessionEndpoint, {
+                method: 'POST',
+                body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_booking')})
+            });
+
+            const sessionResult = await sessionResponse.json();
+
+            if (sessionResult.success) {
                 navigate(bookingDashboardPageUrl);
             } else {
-                throw new Error('Session creation failed. Please try again');
+                return sessionResult;
             }
         } else {
-            throw new Error('Login failed. Wrong Username or Password. Please try again');
+            return result;
         }
     } catch (error) {
-        if (error.response && error.response.data && error.response.data.message) {
-            throw new Error(error.response.data.message);
-        } else {
-            throw new Error(error.message);
-        }
+        return error.message;
     }
 }
 
 const checkBookingSessionFromBookingLogin = async (navigate) => {
     const sessionId = validateBookingSessionLocally();
-    if (!sessionId ) {return;}
+    if (!sessionId) {return;}
 
     try {
-        const response = await axios.post(checkBookingSessionEndpoint,
-            {session_id: sessionId}, {headers: {'Content-Type': 'application/json'}});
+        const response = await fetch(checkBookingSessionEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
 
-        if (response.data.success) {
+        const result = await response.json();
+
+        if (result.success) {
             navigate(bookingDashboardPageUrl);
         }
     } catch (error) {
-        console.log(error.message);
+        return error.message;
     }
 }
 
