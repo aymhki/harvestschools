@@ -323,18 +323,29 @@ function BookingManagement() {
 
     const handleAddBooking = async (formData) => {
         setIsLoading(true);
-        handleAddBookingRequest(formData, () => {
-            setResetAddBookingModal(true)
-            setShowAddBookingModal(false);
-            fetchBookings();
-        }).finally(() => {
+
+        try {
+            const result = await handleAddBookingRequest(formData);
+
+            if (result.success) {
+                setResetAddBookingModal(true)
+                setShowAddBookingModal(false);
+                fetchBookings();
+            } else {
+                throw new Error(result || 'An error occurred while adding the booking.');
+            }
+
+        } catch (error) {
+            throw new Error(error.message || 'An error occurred while adding the booking.');
+        } finally {
             setIsLoading(false);
-        })
+        }
+
     }
 
     const handleDeleteBooking = async () => {
         if (rowIndexToDelete === null) {
-            // setShowDeleteBookingModal(false);
+            setDeleteError('Please select a booking to delete.');
             return;
         }
 

@@ -106,18 +106,28 @@ const checkBookingSessionFromBookingDashboard = async (navigate) => {
     }
 }
 
-const handleAddBookingRequest = async (formData, whatToDoOnSuccess) => {
+const handleAddBookingRequest = async (formData) => {
     try {
-        const response = await axios.post(submitAddBookingFormEndpoint,
-            formData, {headers: {'Content-Type': 'multipart/form-data'}});
+        const sessionId = validateAdminSessionLocally();
 
-        if (response.data.success) {
-            whatToDoOnSuccess();
+        if (!sessionId) {
+            return 'Session expired';
+        }
+
+        const response = await fetch(submitAddBookingFormEndpoint, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            return result;
         } else {
-            throw new Error(`${response.data.message}`);
+            return `${result.message}`;
         }
     } catch (error) {
-        throw new Error(error.message);
+        return error.message;
     }
 }
 
