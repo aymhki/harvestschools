@@ -487,7 +487,7 @@ function BookingManagement() {
 
     const fetchBookings = async () => {
         setIsLoading(true);
-        await fetchBookingsRequest()
+        await fetchBookingsRequest(navigate)
         .then(
             (response) => {
                 setAllBookings( response );
