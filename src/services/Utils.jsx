@@ -85,25 +85,23 @@ const checkBookingSessionFromBookingDashboard = async (navigate) => {
     const sessionId = validateBookingSessionLocally();
 
     if (!sessionId) {
-        navigate(bookingLoginPageUrl,);
+        navigate(bookingLoginPageUrl);
         return;
     }
 
     try {
-        const sessionResponse = await axios.post(checkBookingSessionEndpoint, {
-            session_id: sessionId
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const response = await fetch(checkBookingSessionEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
         });
 
-        if (!sessionResponse.data.success) {
+        const result = await response.json();
+
+        if (!result.success) {
             navigate(bookingLoginPageUrl);
         }
 
     } catch (error) {
-        console.log(error.message);
         navigate(bookingLoginPageUrl);
     }
 }
@@ -430,5 +428,25 @@ export {
     handleAddBookingRequest,
     checkBookingSessionFromBookingDashboard,
     handleDeleteBookingRequest,
-    fetchBookingsRequest
+    fetchBookingsRequest,
+    validateAdminSessionLocally,
+    validateBookingSessionLocally,
+    createSessions,
+    extendSession,
+    resetSession,
+    createAdminSessionEndpoint,
+    validateAdminSessionEndpoint,
+    validateAdminLoginEndpoint,
+    getDashboardPermissionsEndpoint,
+    getUserPermissionsEndpoint,
+    checkBookingSessionEndpoint,
+    getAllBookingsEndpoint,
+    validateBookingLoginEndpoint,
+    createBookingSessionEndpoint,
+    deleteBookingEntryEndpoint,
+    submitAddBookingFormEndpoint,
+    bookingLoginPageUrl,
+    bookingDashboardPageUrl,
+    adminLoginPageUrl,
+    adminDashboardPageUrl
 };
