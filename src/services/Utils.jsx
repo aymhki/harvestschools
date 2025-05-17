@@ -26,19 +26,24 @@ const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 
 const fetchBookingsRequest = async (navigate) => {
     try {
-        const response = await fetch(getAllBookingsEndpoint, {
-            method: 'GET',  headers: {'Cache-Control': 'no-cache',  'Pragma': 'no-cache',  'Expires': '0'}});
+        const sessionId = validateAdminSessionLocally();
 
+        if (!sessionId) {
+            navigate(adminLoginPageUrl);
+            return;
+        }
+
+        const response = await fetch(getAllBookingsEndpoint, {method: 'GET'});
         const result = await response.json();
 
         if (result) {
             if (result.success) {
                 return result.data;
             } else {
+                console.log(result.message);
+
                 if (result.code === 401 || result.code === 403) {
                     navigate(adminLoginPageUrl);
-                } else {
-                    console.log(result.message);
                 }
             }
         }
