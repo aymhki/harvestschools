@@ -359,7 +359,6 @@ function Form({
     };
 
     const addSectionInstance = (sectionId) => {
-
         setSectionInstances(prevState => {
             const section = dynamicSections.find(s => s.sectionId === sectionId);
             if (!section) return prevState;
@@ -408,6 +407,15 @@ function Form({
                 return field;
             });
 
+            // Update fieldValues state to maintain values after ID changes
+            const updatedFieldValues = {...fieldValues};
+            Object.entries(idMap).forEach(([oldId, newId]) => {
+                if (updatedFieldValues[oldId] !== undefined) {
+                    updatedFieldValues[newId] = updatedFieldValues[oldId];
+                }
+            });
+            setFieldValues(updatedFieldValues);
+
             const newRefs = {...refs};
             normalizedFields.forEach(field => {
                 if (allNewFields.some(newField => newField.id === field.id) || idMap[field.id]) {
@@ -428,7 +436,6 @@ function Form({
                 idMap[field.id] || field.id
             );
 
-
             return {
                 ...prevState,
                 [sectionId]: {
@@ -448,7 +455,6 @@ function Form({
     };
 
     const removeSectionInstance = (sectionId, instanceId) => {
-
         setSectionInstances(prevState => {
             const currentSectionState = {...prevState[sectionId]};
             if (!currentSectionState) return prevState;
@@ -475,6 +481,15 @@ function Form({
                 }
                 return field;
             });
+
+            // Update fieldValues state to maintain values after ID changes
+            const updatedFieldValues = {...fieldValues};
+            Object.entries(idMap).forEach(([oldId, newId]) => {
+                if (updatedFieldValues[oldId] !== undefined) {
+                    updatedFieldValues[newId] = updatedFieldValues[oldId];
+                }
+            });
+            setFieldValues(updatedFieldValues);
 
             const newRefs = {};
             normalizedFields.forEach(field => {
@@ -584,41 +599,6 @@ function Form({
             </div>
         );
     };
-
-    // const onChange = (e, field) => {
-    //     const maxSizeInBytes = 2 * 1024 * 1024;
-    //     const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
-    //
-    //     if (field.type === 'file' && e.target.files[0].size > maxSizeInBytes) {
-    //         e.target.setCustomValidity('File size must be less than 2MB');
-    //     } else if (field.type === 'file' && !field.allowedFileTypes.includes(e.target.files[0].type)) {
-    //         e.target.setCustomValidity(`File type must be one of the following: ${field.allowedFileTypes.join(', ')}`);
-    //     } else if (field.type === 'file') {
-    //         const file = e.target.files[0];
-    //         e.target.setCustomValidity('');
-    //         setGeneralFormError('');
-    //         setSuccessMessage('');
-    //         setFileInputs(prev => ({...prev, [field.id]: file}));
-    //         field.file = file;
-    //     } else {
-    //         if (field.regex && !new RegExp(field.regex).test(value)) {
-    //             e.target.setCustomValidity(field.errorMsg);
-    //             e.target.reportValidity();
-    //         } else  {
-    //             e.target.setCustomValidity('');
-    //             setGeneralFormError('');
-    //             setSuccessMessage('');
-    //             field.value = value;
-    //
-    //             if(!noInputFieldsCache) {
-    //                 saveToCache(field, value);
-    //             }
-    //         }
-    //
-    //         const newFields = processFieldRules(dynamicFields, field, value);
-    //         setDynamicFields(newFields);
-    //     }
-    // }
 
     const onChange = (e, field) => {
         const maxSizeInBytes = 2 * 1024 * 1024;
