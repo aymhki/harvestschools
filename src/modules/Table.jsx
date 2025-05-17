@@ -85,7 +85,7 @@ function Table({
     }, [tableData, sortConfig, tableHeader]);
 
     const sortedData = useMemo(() => {
-        return sortedDataWithIndices.map(item => item.row);
+        return sortedDataWithIndices?.map(item => item.row);
     }, [sortedDataWithIndices]);
 
     const getFilterUniqueValuesDict = useCallback(() => {
