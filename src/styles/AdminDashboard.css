@@ -130,7 +130,6 @@
     padding: 1rem;
     background-color: #ffffff;
     width: 50%;
-    /*min-height: 30%;*/
     z-index: 1001;
 }
 
@@ -181,7 +180,6 @@
 @media (max-width: 768px) {
     .delete-booking-modal-container {
         width: 90%;
-        min-height: 50%;
     }
 }
 

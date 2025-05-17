@@ -1,17 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {
-    checkAdminSession,
-    fetchBookingsRequest,
-    handleAddBookingRequest,
-    handleDeleteBookingRequest
-} from "../../services/Utils.jsx";
+import {checkAdminSession, fetchBookingsRequest, handleAddBookingRequest, handleDeleteBookingRequest, msgTimeout} from "../../services/Utils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import '../../styles/AdminDashboard.css';
-import {msgTimeout} from "../../services/Utils.jsx";
 
 function BookingManagement() {
     const navigate = useNavigate();
@@ -339,8 +333,14 @@ function BookingManagement() {
     }
 
     const handleDeleteBooking = async () => {
+        if (rowIndexToDelete === null) {
+            // setShowDeleteBookingModal(false);
+            return;
+        }
+
         setIsLoading(true);
         setIsDeleting(true);
+
         const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
 
         try {
@@ -360,8 +360,9 @@ function BookingManagement() {
             setTimeout(() => {setDeleteError(null);}, msgTimeout);
         } finally {
             setIsDeleting(false);
-            setRowIndexToDelete(null);
             setIsLoading(false);
+            // setRowIndexToDelete(null);
+            // setShowDeleteBookingModal(false);
         }
     };
 
@@ -675,7 +676,7 @@ function BookingManagement() {
                     </div>
 
                     <div className={"delete-booking-modal-footer"}>
-                        {deleteError && <p className={"delete-booking-modal-error"}>sss{deleteError}</p>}
+                        {deleteError && <p className={"delete-booking-modal-error"}>{deleteError}</p>}
 
 
                         <button className={"delete-booking-modal-cancel-button"} onClick={handleCancelDeleteBookingModal}>
