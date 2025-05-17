@@ -8,13 +8,15 @@ $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
+
 try {
     $cookies = [];
+
     foreach ($_COOKIE as $key => $value) {
         $cookies[$key] = $value;
     }
+
     if (!isset($cookies['harvest_schools_admin_session_id'])) {
-        // Don't throw exception, just set error info
         echo json_encode([
             'success' => false,
             'message' => "Unauthorized: No session found",
@@ -22,9 +24,11 @@ try {
         ]);
         exit;
     }
+
     $sessionId = $cookies['harvest_schools_admin_session_id'];
     $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
+
     if ($conn->connect_error) {
         echo json_encode([
             'success' => false,
@@ -37,7 +41,9 @@ try {
                       FROM admin_sessions s
                       JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
                       WHERE s.id = ?";
+
     $stmt = $conn->prepare($permissionSql);
+
     if (!$stmt) {
         echo json_encode([
             'success' => false,
@@ -46,10 +52,12 @@ try {
         ]);
         exit;
     }
+
     $stmt->bind_param("s", $sessionId);
     $stmt->execute();
     $permissionResult = $stmt->get_result();
     $stmt->close();
+
     if ($permissionResult->num_rows == 0) {
         echo json_encode([
             'success' => false,
@@ -58,12 +66,12 @@ try {
         ]);
         exit;
     }
+
     $permissionRow = $permissionResult->fetch_assoc();
     $permissionLevels = explode(',', $permissionRow['permission_level']);
-    $cleanPermissionLevels = array_map(function($level) {
-        return intval(trim($level));
-    }, $permissionLevels);
+    $cleanPermissionLevels = array_map(function($level) {return intval(trim($level));}, $permissionLevels);
     $hasPermission = in_array(1, $cleanPermissionLevels);
+
     if (!$hasPermission) {
         echo json_encode([
             'success' => false,
@@ -135,6 +143,7 @@ try {
             $grades[] = $student['grade'];
             $studentsCreated[] = $student['created_at'];
         }
+
         $stmtStudents->close();
 
         $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number
@@ -147,7 +156,6 @@ try {
         $stmtParents->bind_param("i", $booking['booking_id']);
         $stmtParents->execute();
         $parentsResult = $stmtParents->get_result();
-
         $parentNames = [];
         $parentEmails = [];
         $parentPhones = [];
@@ -163,6 +171,7 @@ try {
                 $parentPhones[] = $parent['phone_number'];
             }
         }
+
         $stmtParents->close();
 
         $rowData = [
@@ -192,11 +201,13 @@ try {
 
     $endTime = microtime(true);
     $executionTime = ($endTime - $startTime) * 1000;
+
     echo json_encode([
         'success' => true,
         'data' => $data,
         'executionTime' => $executionTime
     ]);
+
 } catch (Exception $e) {
 
     $statusCode = $e->getCode() ?: 500;
@@ -205,9 +216,12 @@ try {
         'message' => $e->getMessage(),
         'code' => $statusCode
     ]);
+
 } finally {
+
     if (isset($conn) && $conn->ping()) {
         $conn->close();
     }
+
 }
 ?>
