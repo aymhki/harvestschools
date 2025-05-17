@@ -1,11 +1,11 @@
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
-import '../../styles/Dashboard.css';
+import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import {checkAdminSessionFromAdminDashboard} from "../../services/Utils.jsx";
 
-function Dashboard() {
+function AdminDashboard() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [dashboardOptions, setDashboardOptions] = useState([]);
@@ -48,4 +48,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
+export default AdminDashboard;

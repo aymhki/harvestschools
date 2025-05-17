@@ -15,7 +15,7 @@ const MoreInfo = lazy(() => import("../pages/FAQs/MoreInfo.jsx"));
 
 // Admin pages
 const AdminLogin = lazy(() => import("../pages/Admin/AdminLogin.jsx"));
-const Dashboard = lazy(() => import("../pages/Admin/Dashboard.jsx"));
+const Dashboard = lazy(() => import("../pages/Admin/./AdminDashboard"));
 const JobApplications = lazy(() => import("../pages/Admin/JobApplications.jsx"));
 const BookingManagement = lazy(() => import("../pages/Admin/BookingManagement.jsx"));
 

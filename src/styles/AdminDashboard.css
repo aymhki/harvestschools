@@ -179,7 +179,10 @@
 }
 
 @media (max-width: 768px) {
-
+    .delete-booking-modal-container {
+        width: 90%;
+        min-height: 90%;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
