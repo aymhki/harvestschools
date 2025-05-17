@@ -47,7 +47,6 @@ try {
         throw new Exception("Permission denied", 403);
     }
 
-    // First get all bookings
     $bookingsSql = "SELECT 
                 b.booking_id,
                 b.created_at AS booking_created,
@@ -81,7 +80,6 @@ try {
     $data[] = $headers;
 
     while ($booking = $bookingsResult->fetch_assoc()) {
-        // Get students for this booking
         $studentsSql = "SELECT s.student_id, s.name, s.school_division, s.grade, s.created_at
                        FROM booking_students s
                        JOIN booking_students_linker sl ON s.student_id = sl.student_id
@@ -108,7 +106,6 @@ try {
         }
         $stmtStudents->close();
 
-        // Get parents for this booking
         $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number
                       FROM booking_parents p
                       JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id

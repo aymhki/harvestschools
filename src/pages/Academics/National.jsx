@@ -220,7 +220,7 @@ function National() {
                         title="jr6 english"
                         frameBorder={0}
                         loading={"lazy"}
-                        allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allow="clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
             </div>
         </div>
@@ -233,7 +233,7 @@ function National() {
                         title="Fr jr 1"
                         frameBorder={0}
                         loading={"lazy"}
-                        allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allow="clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
             </div>
         </div>
@@ -246,7 +246,7 @@ function National() {
                         title="حرف الألف أ"
                         frameBorder={0}
                         loading={"lazy"}
-                        allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allow="clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
             </div>
         </div>
@@ -259,7 +259,7 @@ function National() {
                         title="Science m2"
                         frameBorder={0}
                         loading={"lazy"}
-                        allow="accelometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allow="clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen/>
             </div>
         </div>
