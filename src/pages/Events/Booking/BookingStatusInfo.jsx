@@ -4,7 +4,6 @@ import {checkBookingSession, getCookies, formatDateFromPacific} from "../../../s
 import Spinner from "../../../modules/Spinner.jsx";
 import axios from "axios";
 import Form from "../../../modules/Form.jsx";
-import vacancies from "../../Vacancies.jsx";
 
 function BookingStatusInfo() {
     const navigate = useNavigate();
@@ -12,7 +11,8 @@ function BookingStatusInfo() {
     const [finalFormFields, setFinalFormFields] = useState([]);
 
     useEffect(() => {
-        checkBookingSession(navigate, setIsLoading).then(
+        checkBookingSession(navigate)
+        .then(
             () => {
                 fetchBookingBySessionId();
             }
@@ -36,8 +36,6 @@ function BookingStatusInfo() {
                     'Content-Type': 'application/json'
                 }
             });
-
-
 
             const result = await response.data;
 
@@ -465,7 +463,7 @@ function BookingStatusInfo() {
             <div className={'booking-info-page'}>
 
 
-                <container className={"extreme-padding-container"}>
+                <div className={"extreme-padding-container"}>
                     <h1>
                         Booking Info
                     </h1>
@@ -481,7 +479,7 @@ function BookingStatusInfo() {
                               formIsReadOnly={true}
                         />
                     )}
-                </container>
+                </div>
 
             </div>
         </>

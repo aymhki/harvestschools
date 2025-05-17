@@ -1,7 +1,7 @@
 import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 
 function ArabicGeneral() {
@@ -18,7 +18,7 @@ function ArabicGeneral() {
                 <meta name="googlebot" content="index, follow"/>
             </Helmet>
 
-            <container className={"extreme-padding-container"} lang={'ar'}>
+            <div className={"extreme-padding-container"} lang={'ar'}>
                 <h1>
                     عامة
                 </h1>
@@ -199,7 +199,7 @@ function ArabicGeneral() {
 
                       lang={"ar"}  captchaLength={1}/>
 
-            </container>
+            </div>
         </div>
 );
 }

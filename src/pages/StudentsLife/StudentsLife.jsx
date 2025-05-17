@@ -1,6 +1,6 @@
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
 import '../../styles/StudentsLife.css';
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function StudentsLife() {
 

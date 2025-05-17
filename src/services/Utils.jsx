@@ -1,16 +1,357 @@
 import axios from "axios";
 import {useCallback} from "react";
+import {v4 as uuidv4} from "uuid";
 
 
 const sessionDurationInHours = 1;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 
+const fetchBookingsRequest = async (
+    navigate
+) => {
+    try {
+        const response = await axios.get(`/scripts/getAllBookings.php`, {
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+            }
+        });
+
+        if (response.data.success) {
+            return response.data.data;
+        } else {
+            return null;
+        }
+
+    } catch (error) {
+
+        if (error.response && error.response.data && error.response.data.message && error.response.data.code) {
+            console.log(error.response.data.message);
+
+            if (error.response.data.code === 401 || error.response.data.code === 403) {
+                navigate('/admin/login');
+            }
+
+        } else {
+            console.log(error.message);
+
+            if (error.status === 401 || error.status === 403 || error.code === 401 || error.code === 403) {
+                navigate('/admin/login');
+            }
+        }
+    }
+}
+
+const handleDeleteBookingRequest = async (
+    bookingId,
+    whatToDoOnSuccess
+) => {
+    try {
+        const response = await fetch('/scripts/deleteBookingEntry.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                bookingId: bookingId,
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            whatToDoOnSuccess()
+        } else {
+            throw new Error(`${result.message}`);
+        }
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const checkBookingSessionFromBookingDashboard = async (
+    navigate
+) => {
+    const cookies = getCookies();
+
+    const sessionId = cookies.harvest_schools_booking_session_id;
+    const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
+
+    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
+        document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        navigate('/events/booking/');
+        return;
+    }
+
+    try {
+        const sessionResponse = await axios.post('/scripts/checkBookingSession.php', {
+            session_id: sessionId
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!sessionResponse.data.success) {
+            navigate('/events/booking/');
+        }
+
+    } catch (error) {
+        console.log(error.message);
+        navigate('/events/booking/');
+    }
+}
+
+const handleAddBookingRequest = async (
+    formData, whatToDoOnSuccess
+) => {
+    try {
+        const response = await fetch('/scripts/submitAddBookingForm.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            whatToDoOnSuccess();
+        } else {
+            throw new Error(`${result.message}`);
+        }
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const validateBookingLogin = async (
+    formData,
+    usernameFieldId,
+    passwordFieldId,
+    navigate
+) => {
+    const formDataEntries = Array.from(formData.entries());
+    const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
+    const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
+
+    try {
+        const response = await axios.post('/scripts/validateBookingLogin.php', {
+            username,
+            password
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.data.success) {
+            const sessionId = uuidv4();
+            const sessionExpiry = new Date();
+            sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
+            document.cookie = `harvest_schools_booking_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
+            document.cookie = `harvest_schools_booking_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
+
+            const sessionResponse = await axios.post('/scripts/createBookingSession.php', {
+                username: username,
+                session_id: sessionId
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (sessionResponse.data.success) {
+                navigate('/events/booking/dashboard');
+            } else {
+                throw new Error('Session creation failed. Please try again');
+            }
+        } else {
+            throw new Error('Login failed. Wrong Username or Password. Please try again');
+        }
+    } catch (error) {
+        if (error.response && error.response.data && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error(error.message);
+        }
+    }
+}
+
+const checkBookingSessionFromBookingLogin = async (
+    navigate
+) => {
+    const cookies = getCookies();
+    const sessionId = cookies.harvest_schools_booking_session_id;
+    const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
+
+    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
+        document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        return;
+    }
+
+    try {
+        const response = await axios.post('/scripts/checkBookingSession.php', {
+            session_id: sessionId
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.data.success) {
+            navigate('/events/booking/dashboard');
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const checkAdminSessionFromAdminDashboard = async (
+    navigate,
+    setDashboardOptions
+) => {
+    const cookies = getCookies();
+
+    const sessionId = cookies.harvest_schools_admin_session_id;
+    const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
+
+    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
+        document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        navigate('/admin/login');
+        return;
+    }
+
+    try {
+        const sessionResponse = await axios.post('/scripts/checkAdminSession.php', {
+            session_id: sessionId
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!sessionResponse.data.success) {
+            navigate('/admin/login');
+            return;
+        }
+
+        const permissionsResponse = await axios.post('/scripts/getDashboardPermissions.php', {
+            session_id: sessionId
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (permissionsResponse.data.success) {
+            setDashboardOptions(permissionsResponse.data.dashboardOptions);
+        }
+
+
+    } catch (error) {
+        console.log(error.message);
+        navigate('/admin/login');
+    }
+};
+
+const validateAdminLogin = async  (
+    formData,
+    usernameFieldId,
+    passwordFieldId,
+    navigate
+) => {
+    const formDataEntries = Array.from(formData.entries());
+    const username = formDataEntries.find(entry => entry[0] ===  ('field_' + usernameFieldId) )[1];
+    const password = formDataEntries.find(entry => entry[0] ===  ('field_' + passwordFieldId) )[1];
+
+    try {
+        const response = await axios.post('/scripts/validateAdminLogin.php', {
+            username,
+            password
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.data.success) {
+            const sessionId = uuidv4();
+            const sessionExpiry = new Date();
+            sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
+            document.cookie = `harvest_schools_admin_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
+            document.cookie = `harvest_schools_admin_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
+
+
+            const sessionResponse = await axios.post('/scripts/createAdminSession.php', {
+                username: username,
+                session_id: sessionId
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (sessionResponse.data.success) {
+                navigate('/admin/dashboard');
+            } else {
+                throw new Error('Session creation failed. Please try again');
+            }
+
+        } else {
+            throw new Error('Login failed. Wrong Username or Password. Please try again');
+        }
+
+    } catch (error) {
+        if (error.response && error.response.data && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error(error.message);
+        }
+    }
+}
+
+const checkAdminSessionFromAdminLogin = async (
+    navigate
+) => {
+    const cookies = getCookies()
+
+    const sessionId = cookies.harvest_schools_admin_session_id;
+    const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
+
+    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
+        document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        return;
+    }
+
+    try {
+        const response = await axios.post('/scripts/checkAdminSession.php', {
+            session_id: sessionId
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.data.success) {
+            navigate('/admin/dashboard');
+            const sessionExpiry = new Date();
+            sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
+            document.cookie = `harvest_schools_admin_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
+            document.cookie = `harvest_schools_admin_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
 const checkAdminSession = async (
     navigate,
-    setIsLoading,
     allowedPermission
-
 ) => {
     const cookies = getCookies()
 
@@ -58,14 +399,11 @@ const checkAdminSession = async (
 
     } catch (error) {
         console.log(error.message);
-    } finally {
-        setIsLoading(false);
     }
 };
 
 const checkBookingSession = async (
-    navigate,
-    setIsLoading,
+    navigate
 ) => {
 
     const cookies = getCookies()
@@ -99,8 +437,6 @@ const checkBookingSession = async (
 
     } catch (error) {
         console.log(error.message);
-    } finally {
-        setIsLoading(false);
     }
 }
 
@@ -112,7 +448,9 @@ function getCookies() {
     }, {});
 }
 
-const formatDateFromPacific = (pacificTimeString) => {
+const formatDateFromPacific = (
+    pacificTimeString
+) => {
     const [datePart, timePart] = pacificTimeString.split(' ');
     const pacificDate = new Date(`${datePart}T${timePart}-07:00`);
 
@@ -130,11 +468,18 @@ const formatDateFromPacific = (pacificTimeString) => {
     return pacificDate.toLocaleString(undefined, options);
 };
 
-const getStorageKey = (formTitle, fieldId, fieldLabel) => {
+const getStorageKey = (
+    formTitle,
+    fieldId,
+    fieldLabel
+) => {
     return `form_${formTitle}_${fieldLabel}_${fieldId}`;
 };
 
-const useFormCache = (formTitle, fields) => {
+const useFormCache = (
+    formTitle,
+    fields
+) => {
 
     const loadCachedValues = useCallback(() => {
         const cachedValues = {};
@@ -168,5 +513,22 @@ const useFormCache = (formTitle, fields) => {
     return { loadCachedValues, saveToCache, clearCache };
 };
 
-
-export {checkAdminSession, checkBookingSession, sessionDuration, sessionDurationInHours, getCookies, formatDateFromPacific, useFormCache, getStorageKey};
+export {
+    checkAdminSession,
+    checkBookingSession,
+    sessionDuration,
+    sessionDurationInHours,
+    getCookies,
+    formatDateFromPacific,
+    useFormCache,
+    getStorageKey,
+    checkAdminSessionFromAdminLogin,
+    validateAdminLogin,
+    checkAdminSessionFromAdminDashboard,
+    checkBookingSessionFromBookingLogin,
+    validateBookingLogin,
+    handleAddBookingRequest,
+    checkBookingSessionFromBookingDashboard,
+    handleDeleteBookingRequest,
+    fetchBookingsRequest
+};

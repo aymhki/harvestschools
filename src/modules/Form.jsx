@@ -698,11 +698,9 @@ function Form({
                                     className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
                                     value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                            field.defaultValue}
-                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : undefined}
-                                    min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
-                                    max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
+                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
+                                    min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : ''}
+                                    max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : ''}
                                 />
                              </div>
 
@@ -721,11 +719,9 @@ function Form({
                                  className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'}  ${field.readOnlyField ? 'read-only-field' : ''}`}
                                  data-instance-id={field.instanceId || ''}
                                  value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                     fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                         field.defaultValue}
-                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : undefined}
-                                 min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
-                                 max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
+                                     fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
+                                 min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : ''}
+                                 max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : ''}
                              />
                          )
 
@@ -747,11 +743,9 @@ function Form({
                                 className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
                                 value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                        field.defaultValue}
-                                defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
-                                min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
-                                max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
+                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
+                                min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : ''}
+                                max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : ''}
                             />
                         </div>
                         ) : (
@@ -767,11 +761,9 @@ function Form({
                                 className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
                                 value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                        field.defaultValue}
-                                defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
-                                min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
-                                max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
+                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
+                                min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : ''}
+                                max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : ''}
                             />
                         )
                     )
@@ -798,9 +790,7 @@ function Form({
                                     data-instance-id={field.instanceId || ''}
                                     readOnly={field.readOnlyField ? true : false}
                                     value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                            field.defaultValue}
-                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
                                 />
                                 <button
                                     type="button"
@@ -829,9 +819,7 @@ function Form({
                                 className={`text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                                 data-instance-id={field.instanceId || ''}
                                 value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                        field.defaultValue}
-                                defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                    fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
                             />
                             <button
                                 type="button"
@@ -871,14 +859,16 @@ function Form({
                                             setSelectedDateDay('');
                                             setSelectedDateYear('');
                                             setSelectedDateError('');
+                                            setFieldValues(prev => ({
+                                                ...prev,
+                                                [selectedDateFieldID]: '',
+                                            }));
                                         }
                                     }}
                                     className={`text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                                     data-instance-id={field.instanceId || ''}
                                     value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                            field.defaultValue}
-                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                        fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
                                 />
                         </div>
                     ) : (
@@ -901,14 +891,16 @@ function Form({
                                     setSelectedDateDay('');
                                     setSelectedDateYear('');
                                     setSelectedDateError('');
+                                    setFieldValues(prev => ({
+                                        ...prev,
+                                        [selectedDateFieldID]: '',
+                                    }));
                                 }
                             }}
                             className={`text-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
                             value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                    field.defaultValue}
-                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
                         />
                     )
                 )}
@@ -931,9 +923,7 @@ function Form({
                             className={`textarea-form-field ${field.readOnlyField ? 'read-only-field' : ''}`}
                             data-instance-id={field.instanceId || ''}
                             value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                    field.defaultValue}
-                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
                         />
 
                     </div>
@@ -950,9 +940,7 @@ function Form({
                         className={`textarea-form-field ${field.widthOfField === 1 ? (fullMarginField ? 'full-width-with-margin' : 'full-width') : field.widthOfField === 1.5 ? 'two-thirds-width' : field.widthOfField === 2 ? 'half-width' : 'third-width'} ${field.large ? 'large-height-textarea' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
                         data-instance-id={field.instanceId || ''}
                         value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                            fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                field.defaultValue}
-                        defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                            fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
                     />
                 )
                 )}
@@ -980,9 +968,7 @@ function Form({
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
                             value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                    field.defaultValue}
-                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
 
                         >
                             {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
@@ -1007,9 +993,7 @@ function Form({
                             onChange={(e) => onChange(e, field)}
                             data-instance-id={field.instanceId || ''}
                             value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
-                                fieldValues[field.id] !== undefined ? fieldValues[field.id] :
-                                    field.defaultValue}
-                            defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
                         >
                             {(!field.multiple) && <option value="">{`${field.label}${field.required ? '*' : ''}`}</option>}
                             {field.choices && field.choices.map((choice, index) => (
@@ -1205,6 +1189,15 @@ function Form({
         setSelectedDateMonth(month);
         setSelectedDateYear(year);
         document.getElementById(selectedDateFieldID).value = `${year}-${month}-${day}`;
+
+
+
+        setFieldValues(prev => ({
+            ...prev,
+            [selectedDateFieldID]: `${year}-${month}-${day}`,
+        }));
+
+
         setSelectedDateMonth('');
         setSelectedDateDay('');
         setSelectedDateYear('');
@@ -1547,6 +1540,10 @@ function Form({
                     setSelectedDateDay('');
                     setSelectedDateYear('');
                     setSelectedDateError('');
+                    setFieldValues(prev => ({
+                        ...prev,
+                        [selectedDateFieldID]: '',
+                    }));
                 }}/>
 
                 <div className={"form-select-date-modal-container"}>
@@ -1611,6 +1608,10 @@ function Form({
                             setSelectedDateYear('');
                             setSelectedDateError('');
                             document.getElementById(selectedDateFieldID).value = '';
+                            setFieldValues(prev => ({
+                                ...prev,
+                                [selectedDateFieldID]: '',
+                            }));
                         }}>
                             {lang === 'ar' ? 'إلغاء' : 'Cancel'}
                         </button>

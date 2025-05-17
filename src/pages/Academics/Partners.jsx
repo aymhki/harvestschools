@@ -1,5 +1,6 @@
 import '../../styles/Academics.css';
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function Partners() {
   return (
@@ -15,7 +16,7 @@ function Partners() {
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
-          <container className="extreme-padding-container">
+          <div className="extreme-padding-container">
 
               <img src={'../../assets/images/AcademicsPages/Partners1.png'}/>
 
@@ -56,7 +57,7 @@ function Partners() {
                   The program was invented to capitalize on the first 12 years of children’s lives, when 75% of brain development takes place.
                   Learning mental arithmetic in UCMAS is more than improving the speed and accuracy of calculations. For example, adding 10-digit numbers within a few seconds is already an amazing accomplishment for most young children. However, there is more to this because when the children are learning UCMAS Mental Arithmetic, they are actually also undergoing the process developing other aspects of the mind. When the children have acquired an astonishing calculation speed, it is actually only the end result of having developed the following mental abilities: Concentration – Observation – Visualization – Imagination – Memory – Speed – Accuracy – Creativity – Self-confidence.
               </p>
-          </container>
+          </div>
 
       </div>
   );

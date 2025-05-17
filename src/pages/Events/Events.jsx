@@ -1,6 +1,7 @@
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
 import '../../styles/Events.css';
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function Events() {
 

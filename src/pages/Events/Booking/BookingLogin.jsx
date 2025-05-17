@@ -1,12 +1,10 @@
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import axios from "axios";
-import {v4 as uuidv4} from "uuid";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
-import {sessionDuration, sessionDurationInHours, getCookies} from "../../../services/Utils.jsx";
+import {checkBookingSessionFromBookingLogin, validateBookingLogin} from "../../../services/Utils.jsx";
 
 function BookingLogin() {
     const navigate = useNavigate();
@@ -15,90 +13,12 @@ function BookingLogin() {
     const passwordFieldId = 2
 
     const handleBookingLogin = async (formData) => {
-
-        if (submittingLocal) {
-            return;
-        }
-
-        const formDataEntries = Array.from(formData.entries());
-        const username = formDataEntries.find(entry => entry[0] ===  ('field_' + usernameFieldId) )[1];
-        const password = formDataEntries.find(entry => entry[0] ===  ('field_' + passwordFieldId) )[1];
-
-        try {
-            const response = await axios.post('/scripts/validateBookingLogin.php', {
-                username,
-                password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.data.success) {
-                const sessionId = uuidv4();
-                const sessionExpiry = new Date();
-                sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
-                document.cookie = `harvest_schools_booking_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
-                document.cookie = `harvest_schools_booking_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
-
-                const sessionResponse = await axios.post('/scripts/createBookingSession.php', {
-                    username: username,
-                    session_id: sessionId
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (sessionResponse.data.success) {
-                    navigate('/events/booking/dashboard');
-                } else {
-                    throw new Error('Session creation failed. Please try again');
-                }
-            } else {
-                throw new Error('Login failed. Wrong Username or Password. Please try again');
-            }
-        } catch (error) {
-            if (error.response && error.response.data && error.response.data.message) {
-                throw new Error(error.response.data.message);
-            } else {
-                throw new Error(error.message);
-            }
-        }
+        if (submittingLocal) {return;}
+        validateBookingLogin(formData, usernameFieldId, passwordFieldId, navigate);
     }
 
     useEffect(() => {
-        const checkBookingSession = async () => {
-            const cookies = getCookies();
-            const sessionId = cookies.harvest_schools_booking_session_id;
-            const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
-
-            if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
-                document.cookie = 'harvest_schools_booking_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                document.cookie = 'harvest_schools_booking_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                return;
-            }
-
-            try {
-                const response = await axios.post('/scripts/checkBookingSession.php', {
-                    session_id: sessionId
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.data.success) {
-                    navigate('/events/booking/dashboard');
-                }
-            } catch (error) {
-                console.log(error.message);
-            }
-        }
-
-        checkBookingSession().then(() => {
-            console.log('Session checked')
-        })
+        checkBookingSessionFromBookingLogin(navigate);
     }, [])
 
     return (

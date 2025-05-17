@@ -1,7 +1,7 @@
 import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function ArabicStories() {
   return (
@@ -17,7 +17,7 @@ function ArabicStories() {
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
-          <container className={"extreme-padding-container"} lang={'ar'}>
+          <div className={"extreme-padding-container"} lang={'ar'}>
               <h1 lang={'ar'}>
                   روايات
               </h1>
@@ -198,7 +198,7 @@ function ArabicStories() {
 
               lang={"ar"}  captchaLength={1}/>
 
-          </container>
+          </div>
     </div>
   );
 }

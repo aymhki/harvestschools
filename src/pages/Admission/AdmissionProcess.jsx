@@ -1,6 +1,7 @@
 import '../../styles/Admission.css';
 import {useNavigate} from "react-router-dom";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function AdmissionProcess() {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ function AdmissionProcess() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <container className="extreme-padding-container">
+        <div className="extreme-padding-container">
             <img src={'/assets/images/AdmissionPages/AdmissionProcess.png'} className={"admission-process-image"}
                  alt="Admission Process"/>
 
@@ -68,7 +69,7 @@ function AdmissionProcess() {
                 </div>
             </div>
 
-        </container>
+        </div>
 
 
     </div>

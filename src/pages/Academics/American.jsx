@@ -1,6 +1,7 @@
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import '../../styles/Academics.css';
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 function American() {
   return (
       <div className={"american-academics-page"}>
@@ -21,7 +22,7 @@ function American() {
                                  imageAlt={"American Academics Page Header Opening Quote"}/>
 
 
-          <container className={"standard-padding-container"}>
+          <div className={"standard-padding-container"}>
               <p>
                   Welcome to our Harvest International School Website! We hope you will find the information you're
                   looking for on this page. We also have an active HIS Facebook page account where you will find
@@ -36,12 +37,12 @@ function American() {
                   through this ever changing world.
               </p>
 
-          </container>
+          </div>
 
           <ParallaxScrollSection
               backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageMiddle1.jpg"}/>
 
-          <container className={"standard-padding-container"}>
+          <div className={"standard-padding-container"}>
               <p>
                   In the Upper School, students take great pride in challenging themselves and supporting one another academically while also developing and deepening their values and interests in and beyond the classroom.
               </p>
@@ -53,11 +54,11 @@ function American() {
               <p>
                   It is our aim to remain focused on Egyptian values while equipping our students with both a passion for learning and the ambition to make a difference to the local and global communities.
               </p>
-          </container>
+          </div>
 
           <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageMiddle2.jpg"}/>
 
-            <container className={"standard-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <p>
                     Our school is made up of outstanding students across all grades. Our faculty and staff are dedicated, caring professionals, who love and support one an other as both, friends and colleagues. HIS is also very lucky to have a group of parents who are an open, approachable, creative, dedicated, and committed to working together toward the success of their children at HIS.
                 </p>
@@ -65,7 +66,7 @@ function American() {
                 <p>
                     Students in our Lower School enjoy an environment in which they are encouraged by their teachers to explore new academic and social frontiers in a safe environment. Middle School students gain healthy confidence and character as they boldly expand their learning with elective courses in preparation for the Upper School.
                 </p>
-            </container>
+            </div>
 
             <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageFooter.jpg"} text={"- Ms. Salma Ehab, American School Principal"} darken={true} image={"../../assets/images/AcademicsPages/ClosingQuote.png"} imageAlt={"American Academics Page Footer Closing Quote"}/>
 

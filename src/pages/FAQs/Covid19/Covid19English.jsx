@@ -1,5 +1,5 @@
 import FullPageOptionsSelector from "../../../modules/FullPageOptionsSelector.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function Covid19English() {
     const left = {

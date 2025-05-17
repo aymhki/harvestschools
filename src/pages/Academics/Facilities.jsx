@@ -1,6 +1,7 @@
 import '../../styles/Academics.css'
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
+
 
 function Facilities() {
     return (
@@ -15,7 +16,7 @@ function Facilities() {
                 <meta name="robots" content="index, follow"/>
                 <meta name="googlebot" content="index, follow"/>
             </Helmet>
-            <container className={"extreme-padding-container"}>
+            <div className={"extreme-padding-container"}>
                 <h1>Facilities</h1>
 
                 <div className="facilities-show-case-grid">
@@ -38,7 +39,7 @@ function Facilities() {
 
 
 
-            </container>
+            </div>
 
             <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/ComputerLab.jpg"} title={"Computer Lab Policy"} darken={true}
                                    divElements={[

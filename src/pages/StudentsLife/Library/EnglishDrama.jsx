@@ -1,7 +1,7 @@
 import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 function EnglishDrama() {
   return (
@@ -16,7 +16,7 @@ function EnglishDrama() {
             <meta name="robots" content="index, follow"/>
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
-        <container className={"extreme-padding-container"}>
+        <div className={"extreme-padding-container"}>
             <h1>English Drama</h1>
 
             <Table tableData={
@@ -186,7 +186,7 @@ function EnglishDrama() {
                     },
                 ]
             }  captchaLength={1}/>
-        </container>
+        </div>
     </div>
   );
 }

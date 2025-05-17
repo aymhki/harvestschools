@@ -1,4 +1,4 @@
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 import '../styles/Vacancies.css'
 import Form from "../modules/Form";
 
@@ -18,7 +18,8 @@ function Vacancies() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <container className={"extreme-padding-container"}>
+
+        <div className={"extreme-padding-container"}>
 
 
           <h1>Vacancies</h1>
@@ -41,7 +42,8 @@ function Vacancies() {
                 Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type "N/A."
             </p>
 
-            <Form sendPdf={false} formTitle={'Job Application Submission'} mailTo={'info@harvestschools.com'} fields={[
+            <Form sendPdf={false} formTitle={'Job Application Submission'} mailTo={'info@harvestschools.com'}
+                  fields={[
                 {
                     id: 1,
                     type: 'text',
@@ -80,8 +82,6 @@ function Vacancies() {
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'dob',
-                    regex: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/
-
                 },
                 {
                     id: 4,
@@ -279,7 +279,6 @@ function Vacancies() {
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'high-school-finish-date',
-                    regex: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/
 
                 },
                 {
@@ -321,7 +320,6 @@ function Vacancies() {
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'graduation-date',
-                    regex: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/
 
                 },
                 {
@@ -377,6 +375,7 @@ function Vacancies() {
                     setValue: null,
                     widthOfField: 1,
                     large: true,
+                    httpName: 'about'
                 },
                 {
                     id: 25,
@@ -445,6 +444,7 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     widthOfField: 3,
+                    httpName: 'personal-photo',
                 },
                 {
                     id: 30,
@@ -517,9 +517,11 @@ function Vacancies() {
                     httpName: 'attachment-5',
                 }
 
-            ]} captchaLength={1} />
+            ]} captchaLength={1}
+                lang={'en'}
+            />
 
-        </container>
+        </div>
     </div>
       </>
   );
