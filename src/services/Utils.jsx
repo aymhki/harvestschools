@@ -24,7 +24,12 @@ const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
 const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
 const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 
-
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        return Promise.reject(error);
+    }
+);
 
 const fetchBookingsRequest = async (navigate) => {
     try {
@@ -42,7 +47,7 @@ const fetchBookingsRequest = async (navigate) => {
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
             navigate(adminLoginPageUrl);
         } else {
-           // console.log(error.message);
+           console.log(error.message);
         }
 
         return null;
