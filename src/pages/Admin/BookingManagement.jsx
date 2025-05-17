@@ -351,7 +351,6 @@ function BookingManagement() {
 
         setIsLoading(true);
         setIsDeleting(true);
-
         const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
 
         try {
@@ -360,6 +359,7 @@ function BookingManagement() {
             if (response.success) {
                 setShowDeleteBookingModal(false);
                 setDeleteError(null);
+                setRowIndexToDelete(null);
                 setShowDeleteBookingModal(false);
                 fetchBookings();
             } else {
@@ -372,7 +372,6 @@ function BookingManagement() {
         } finally {
             setIsDeleting(false);
             setIsLoading(false);
-            // setRowIndexToDelete(null);
             // setShowDeleteBookingModal(false);
         }
     };
