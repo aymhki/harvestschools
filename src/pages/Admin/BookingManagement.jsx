@@ -487,22 +487,16 @@ function BookingManagement() {
 
     const fetchBookings = async () => {
         setIsLoading(true);
-        await fetchBookingsRequest(navigate)
-        .then(
-            (response) => {
-                setAllBookings( response );
+        try {
+            const response = await fetchBookingsRequest(navigate);
+            if (response) {
+                setAllBookings(response);
             }
-        )
-        .catch(
-            (error) => {
-                console.log(error.message);
-            }
-        )
-        .finally(
-    () => {
-                setIsLoading(false);
-            }
-        )
+        } catch (error) {
+            console.log(error.message);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
