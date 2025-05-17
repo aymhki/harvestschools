@@ -678,7 +678,7 @@ function BookingManagement() {
                     <div className={"delete-booking-modal-content"}>
                             <p>
                                 Are you sure you want to delete this booking ID{' '}
-                                {allBookings && rowIndexToDelete !== null ? (
+                                {(allBookings && rowIndexToDelete !== null && allBookings[rowIndexToDelete]) ? (
                                     <strong>{allBookings[rowIndexToDelete][colIndexForBookingId]}</strong>
                                 ) : (
                                     <strong>this booking ID</strong>
