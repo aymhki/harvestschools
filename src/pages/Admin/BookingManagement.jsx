@@ -673,10 +673,12 @@ function BookingManagement() {
                                     <strong>this booking ID</strong>
                                 )}, all the student(s), parent(s), authentication credentials data will be deleted.
                             </p>
+
+                        {deleteError && <br><p className={"delete-booking-modal-error"}>{deleteError}</p></br>}
                     </div>
 
                     <div className={"delete-booking-modal-footer"}>
-                        {deleteError && <p className={"delete-booking-modal-error"}>{deleteError}</p>}
+
 
 
                         <button className={"delete-booking-modal-cancel-button"} onClick={handleCancelDeleteBookingModal}>
@@ -688,6 +690,7 @@ function BookingManagement() {
                         }}>
                             {isDeleting ? 'Deleting...' : 'Delete'}
                         </button>
+
 
                     </div>
 
