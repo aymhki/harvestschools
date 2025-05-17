@@ -495,15 +495,11 @@ function BookingManagement() {
         )
         .catch(
             (error) => {
-                if (error.response && error.response.data && error.response.data.message) {
-                    console.log(error.response.data.message);
-                } else {
-                    console.log('An error occurred while fetching the bookings.');
-                }
+                console.log(error.message);
             }
         )
         .finally(
-            () => {
+    () => {
                 setIsLoading(false);
             }
         )
