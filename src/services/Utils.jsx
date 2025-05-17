@@ -48,22 +48,18 @@ const handleDeleteBookingRequest = async (
     whatToDoOnSuccess
 ) => {
     try {
-        const response = await fetch('/scripts/deleteBookingEntry.php', {
-            method: 'POST',
+        const response = await axios.post('/scripts/deleteBookingEntry.php', {
+            bookingId: bookingId,
+        }, {
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                bookingId: bookingId,
-            })
+            }
         });
 
-        const result = await response.json();
-
-        if (result.success) {
+        if (response.data.success) {
             whatToDoOnSuccess()
         } else {
-            throw new Error(`${result.message}`);
+            throw new Error(`${response.data.message}`);
         }
 
     } catch (error) {
@@ -109,17 +105,19 @@ const handleAddBookingRequest = async (
     formData, whatToDoOnSuccess
 ) => {
     try {
-        const response = await fetch('/scripts/submitAddBookingForm.php', {
-            method: 'POST',
-            body: formData
-        });
+        const response = await axios.post('/scripts/submitAddBookingForm.php',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        );
 
-        const result = await response.json();
-
-        if (result.success) {
+        if (response.data.success) {
             whatToDoOnSuccess();
         } else {
-            throw new Error(`${result.message}`);
+            throw new Error(`${response.data.message}`);
         }
     } catch (error) {
         throw new Error(error.message);
