@@ -18,8 +18,6 @@ const fetchBookingsRequest = async (navigate) => {
         });
 
         if (response.data.success) {
-            console.log(response);
-            console.log(response.data.data);
             return response.data.data;
         } else {
             return null;

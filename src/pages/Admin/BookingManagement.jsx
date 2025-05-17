@@ -486,7 +486,12 @@ function BookingManagement() {
     }
 
     const fetchBookings = async () => {
-        setAllBookings( fetchBookingsRequest() );
+        await fetchBookingsRequest().then(
+            (response) => {
+                console.log(response);
+                setAllBookings( response );
+            }
+        )
     }
 
     useEffect(() => {
