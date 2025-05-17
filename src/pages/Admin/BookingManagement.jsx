@@ -11,7 +11,6 @@ import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import '../../styles/Dashboard.css';
-import axios from "axios";
 
 function BookingManagement() {
     const navigate = useNavigate();
@@ -477,6 +476,7 @@ function BookingManagement() {
         //         'Parent Names', 'Parent Emails', 'Parent Phones',
         //         'CD Count', 'Additional Attendees', 'Booking Extras Status'
         // ];
+        console.log(formData);
     }
 
     const handleCancelEditBookingModal = () => {
@@ -491,6 +491,15 @@ function BookingManagement() {
         .then(
             (response) => {
                 setAllBookings( response );
+            }
+        )
+        .catch(
+            (error) => {
+                if (error.response && error.response.data && error.response.data.message) {
+                    console.log(error.response.data.message);
+                } else {
+                    console.log('An error occurred while fetching the bookings.');
+                }
             }
         )
         .finally(
