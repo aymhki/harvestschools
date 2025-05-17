@@ -18,6 +18,7 @@ const fetchBookingsRequest = async (navigate) => {
         });
 
         if (response.data.success) {
+            console.log(response);
             return response.data.data;
         } else {
             return null;
