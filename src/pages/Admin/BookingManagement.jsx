@@ -11,9 +11,11 @@ import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import '../../styles/AdminDashboard.css';
+import {msgTimeout} from "../../services/Utils.jsx";
 
 function BookingManagement() {
     const navigate = useNavigate();
+
     const [isLoading, setIsLoading] = useState(false);
 
     const [allBookings, setAllBookings] = useState(null);
@@ -341,28 +343,26 @@ function BookingManagement() {
         setIsDeleting(true);
         const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
 
-        handleDeleteBookingRequest(bookingId, () => {
-            setShowDeleteBookingModal(false);
-            setIsDeleting(false);
-            setDeleteError(null);
-            setRowIndexToDelete(null);
-            setShowDeleteBookingModal(false);
-            fetchBookings();
-        })
-        .catch((error) => {
-            if (error.response && error.response.data && error.response.data.message) {
-                setDeleteError(error.response.data.message);
+        try {
+            const response = await handleDeleteBookingRequest(bookingId);
+
+            if (response.success) {
+                setShowDeleteBookingModal(false);
+                setDeleteError(null);
+                setShowDeleteBookingModal(false);
+                fetchBookings();
             } else {
-                setDeleteError('An error occurred while deleting the booking.');
+                setDeleteError(response || 'An error occurred while deleting the booking.');
+                setTimeout(() => {setDeleteError(null);}, msgTimeout);
             }
-        })
-        .finally(
-            () => {
-                setIsDeleting(false);
-                setRowIndexToDelete(null);
-                setIsLoading(false);
-            }
-        )
+        } catch(error) {
+            setDeleteError(error.message || 'An error occurred while deleting the booking.');
+            setTimeout(() => {setDeleteError(null);}, msgTimeout);
+        } finally {
+            setIsDeleting(false);
+            setRowIndexToDelete(null);
+            setIsLoading(false);
+        }
     };
 
     const handleCancelDeleteBookingModal = () => {
@@ -492,11 +492,10 @@ function BookingManagement() {
             const newBookings = await fetchBookingsRequest(navigate);
             setAllBookings(newBookings);
         } catch (error) {
-            console.log(error.message);
+            console.log(error.message || 'An error occurred while fetching the bookings.');
         } finally {
             setIsLoading(false);
         }
-
     }
 
     useEffect(() => {
