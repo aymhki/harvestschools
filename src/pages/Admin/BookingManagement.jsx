@@ -654,7 +654,7 @@ function BookingManagement() {
             <animated.div style={animateDeleteBookingModal} className={"delete-booking-modal"}>
                 <div className={"delete-booking-modal-overlay"} onClick={handleCancelDeleteBookingModal}/>
 
-                <div className={"delete-booking-modal-container"}>
+                < className={"delete-booking-modal-container"}>
 
                     <div className={"delete-booking-modal-header"}>
 
@@ -674,7 +674,12 @@ function BookingManagement() {
                                 )}, all the student(s), parent(s), authentication credentials data will be deleted.
                             </p>
 
-                        {deleteError && <br><p className={"delete-booking-modal-error"}>{deleteError}</p></br>}
+                        {deleteError && (
+                            <>
+                                <br/>
+                                <p className={"delete-booking-modal-error"}>{deleteError}</p>
+                            </>
+                        )}
                     </div>
 
                     <div className={"delete-booking-modal-footer"}>
