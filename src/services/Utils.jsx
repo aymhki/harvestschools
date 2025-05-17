@@ -27,25 +27,27 @@ const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 
 
 const fetchBookingsRequest = async (navigate) => {
+    try {
         const response = await axios.get(getAllBookingsEndpoint, {
-            headers: {'Cache-Control': 'no-cache', 'Pragma': 'no-cache', 'Expires': '0',}
-        })
-        .catch(
-            (error) => {
-                console.log(error);
-                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                    navigate(adminLoginPageUrl);
-                } else {
-                    console.log(error.message);
-                }
-            }
-        )
+            headers: {'Cache-Control': 'no-cache', 'Pragma': 'no-cache', 'Expires': '0'}
+        });
 
         if (response.data && response.data.success) {
             return response.data.data;
         } else {
             return null;
         }
+    } catch (error) {
+        console.log(error);
+
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            navigate(adminLoginPageUrl);
+        } else {
+            console.log(error.message);
+        }
+
+        return null;
+    }
 }
 
 const handleDeleteBookingRequest = async (
