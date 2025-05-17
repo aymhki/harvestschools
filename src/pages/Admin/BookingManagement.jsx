@@ -212,6 +212,8 @@ function BookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             defaultValue: '0',
+            minimumValue: '0',
+            maximumValue: '10',
         },
         {
             id: cdCountFieldId,
@@ -228,6 +230,8 @@ function BookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             defaultValue: '0',
+            minimumValue: '0',
+            maximumValue: '10',
         },
         {
             id: extrasPaymentStatusFieldId,

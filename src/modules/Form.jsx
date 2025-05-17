@@ -698,7 +698,9 @@ function Form({
                                     value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
                                         fieldValues[field.id] !== undefined ? fieldValues[field.id] :
                                             field.defaultValue}
-                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                    defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : undefined}
+                                    min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
+                                    max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
                                 />
                              </div>
 
@@ -719,7 +721,9 @@ function Form({
                                  value={(field.readOnlyField && field.value && field.value !== '') ? field.value :
                                      fieldValues[field.id] !== undefined ? fieldValues[field.id] :
                                          field.defaultValue}
-                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : undefined}
+                                 min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
+                                 max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
                              />
                          )
 
@@ -744,6 +748,8 @@ function Form({
                                     fieldValues[field.id] !== undefined ? fieldValues[field.id] :
                                         field.defaultValue}
                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
+                                max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
                             />
                         </div>
                         ) : (
@@ -762,6 +768,8 @@ function Form({
                                     fieldValues[field.id] !== undefined ? fieldValues[field.id] :
                                         field.defaultValue}
                                 defaultValue={ (!field.readOnlyField && field.defaultValue ) ?  field.defaultValue : null}
+                                min={(field.type === 'number' && field.minimumValue) ? field.minimumValue : undefined}
+                                max={(field.type === 'number' && field.maximumValue) ? field.maximumValue : undefined}
                             />
                         )
                     )
@@ -1639,6 +1647,8 @@ Form.propTypes = {
         labelOnTop: PropTypes.bool,
         readOnlyField: PropTypes.bool,
         defaultValue: PropTypes.string,
+        minimumValue: PropTypes.string,
+        maximumValue: PropTypes.string,
 
         rules: PropTypes.arrayOf(PropTypes.shape({
             value: PropTypes.string.isRequired,
@@ -1663,6 +1673,8 @@ Form.propTypes = {
                 labelOnTop: PropTypes.bool,
                 readOnlyField: PropTypes.bool,
                 defaultValue: PropTypes.string,
+                minimumValue: PropTypes.string,
+                maximumValue: PropTypes.string,
 
                 rules: PropTypes.arrayOf(PropTypes.shape({
                     value: PropTypes.string.isRequired,
@@ -1686,6 +1698,8 @@ Form.propTypes = {
                         labelOnTop: PropTypes.bool,
                         readOnlyField: PropTypes.bool,
                         defaultValue: PropTypes.string,
+                        minimumValue: PropTypes.string,
+                        maximumValue: PropTypes.string,
                     }))
                 }))
             }))
