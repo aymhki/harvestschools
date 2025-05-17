@@ -8,6 +8,7 @@ const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 
 const fetchBookingsRequest = async (navigate) => {
     try {
+
         const response = await axios.get(`/scripts/getAllBookings.php`, {
             headers: {
                 'Cache-Control': 'no-cache',
@@ -23,6 +24,7 @@ const fetchBookingsRequest = async (navigate) => {
         }
 
     } catch (error) {
+
         if (error.response && error.response.data && error.response.data.message && error.response.data.code) {
             console.log(error.response.data.message);
 
@@ -36,8 +38,9 @@ const fetchBookingsRequest = async (navigate) => {
                 navigate('/admin/login');
             }
         }
-        // Add this to return a value when an error occurs
-        return null; // or return an error object like { error: error.message }
+
+        return null;
+
     }
 }
 
