@@ -211,7 +211,7 @@ function BookingManagement() {
             httpName: 'additional-attendees',
             labelOutside: true,
             labelOnTop: true,
-            defaultValue: '0',
+            // defaultValue: '0',
         },
         {
             id: cdCountFieldId,
@@ -227,7 +227,7 @@ function BookingManagement() {
             httpName: 'cd-count',
             labelOutside: true,
             labelOnTop: true,
-            defaultValue: '0',
+            // defaultValue: '0',
         },
         {
             id: extrasPaymentStatusFieldId,
@@ -247,7 +247,7 @@ function BookingManagement() {
             httpName: 'extras-payment-status',
             labelOutside: true,
             labelOnTop: true,
-            defaultValue: 'Not Signed Up',
+            // defaultValue: 'Not Signed Up',
         },
     ]
 
