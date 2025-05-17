@@ -654,7 +654,7 @@ function BookingManagement() {
             <animated.div style={animateDeleteBookingModal} className={"delete-booking-modal"}>
                 <div className={"delete-booking-modal-overlay"} onClick={handleCancelDeleteBookingModal}/>
 
-                < className={"delete-booking-modal-container"}>
+                <div className={"delete-booking-modal-container"}>
 
                     <div className={"delete-booking-modal-header"}>
 
