@@ -31,7 +31,7 @@ function BookingLogin() {
 
     useEffect (() => {
 
-        async function checkBooking() {
+        async function goToBookingDashboardIfSessionIsValid() {
             try {
                 const result = await checkBookingSessionFromBookingLogin(navigate);
 
@@ -43,7 +43,7 @@ function BookingLogin() {
             }
         }
 
-        checkBooking();
+        goToBookingDashboardIfSessionIsValid();
 
     }, [])
 

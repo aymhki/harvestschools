@@ -9,18 +9,26 @@ function BookingDashboard() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(async () => {
-        // setIsLoading(true);
-        //
-        // try {
-        //     await checkBookingSessionFromBookingDashboard()
-        // } catch (error) {
-        //     console.log(error.message);
-        //     navigate(bookingLoginPageUrl);
-        // } finally {
-        //     setIsLoading(false);
-        // }
-    }, []);
+    useEffect(() => {
+
+        async function  goToBookingLoginOnInvalidSession() {
+            setIsLoading(true);
+
+            try {
+                await checkBookingSessionFromBookingDashboard()
+            } catch (error) {
+                console.log(error.message);
+                navigate(bookingLoginPageUrl);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        goToBookingLoginOnInvalidSession();
+
+    }, [])
+
+
 
     return (
         <div className={"booking-dashboard-page"}>
