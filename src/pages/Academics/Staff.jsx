@@ -1,7 +1,6 @@
 import FullPageOptionsSelector from "../../modules/FullPageOptionsSelector.jsx";
 import {Helmet} from "react-helmet-async";
 
-
 function Staff() {
 
     const options = [
@@ -30,7 +29,6 @@ function Staff() {
             inArabic: false,
             isAssetLink: false
         }
-
     ];
 
   return (
