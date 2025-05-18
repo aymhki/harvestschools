@@ -1,10 +1,9 @@
 import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
-import {headToAdminLoginOnInvalidSession} from "../../services/Utils.jsx";
+import {headToAdminLoginOnInvalidSession, fetchJobApplicationsRequest} from "../../services/Utils.jsx";
 
 function JobApplications() {
     const navigate = useNavigate();
@@ -17,47 +16,13 @@ function JobApplications() {
     }, []);
 
     const loadTableData = async () => {
-        setIsLoading(true);
-        setJobApplications(null);
-        const timestamp = new Date().getTime();
-
         try {
-            const response = await axios.get(`/scripts/getJobApplications.php?_=${timestamp}`, {
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    'Expires': '0',
-                }
-            });
-
-            if (!Array.isArray(response.data) || response.data.length === 0) {
-                setJobApplications(null);
-            } else {
-                setJobApplications(response.data);
-            }
-
-            setIsLoading(false);
-            setLastUpdated(new Date().toLocaleTimeString());
-
+            setIsLoading(true);
+            await fetchJobApplicationsRequest(navigate, setJobApplications)
         } catch (error) {
-
-            if (error.response && error.response.data && error.response.data.message && error.response.data.code) {
-                console.log(error.response.data.message);
-
-                if (error.response.data.code === 401 || error.response.data.code === 403) {
-                    navigate('/admin/login');
-                }
-
-            } else {
-                console.log(error.message);
-
-                if (error.status === 401 || error.status === 403 || error.code === 401 || error.code === 403) {
-                    navigate('/admin/login');
-                }
-            }
-
+            console.log(error.message);
+        } finally {
             setIsLoading(false);
-            setJobApplications(null);
         }
     };
 
