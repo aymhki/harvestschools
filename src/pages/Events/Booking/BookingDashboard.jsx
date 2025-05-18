@@ -23,7 +23,7 @@ function BookingDashboard() {
     }, []);
 
     return (
-        <div className={"dashboard-page"}>
+        <div className={"booking-dashboard-page"}>
             {isLoading ? (
                 <Spinner />
             ) : (
