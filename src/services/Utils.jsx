@@ -27,6 +27,33 @@ const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 const submitFormEndpoint = '/scripts/submitForm.php';
 const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
+const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
+    setJobApplications(null);
+    const timestamp = new Date().getTime();
+
+    try {
+        const response = await fetch(getJobApplicationsEndpoint + '?_=' + timestamp, {method: 'GET'});
+
+        const result = await response.json();
+
+        if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
+            setJobApplications(result.data);
+        } else {
+            setJobApplications(null);
+
+            if (result && result.message) {
+                console.log(result.message);
+            }
+
+            if (result && result.code && (result.code === 401 || result.code === 403)) {
+                navigate(adminLoginPageUrl);
+            }
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 const fetchBookingsRequest = async (navigate, setAllBookings) => {
     try {
         const sessionId = validateAdminSessionLocally();
@@ -617,5 +644,6 @@ export {
     headToAdminLoginOnInvalidSessionFromAdminDashboard,
     headToBookingLoginOnInvalidSessionFromBookingDashboard,
     headToAdminDashboardOnValidSession,
-    headToBookingDashboardOnValidSession
+    headToBookingDashboardOnValidSession,
+    fetchJobApplicationsRequest
 };

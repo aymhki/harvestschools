@@ -553,8 +553,9 @@ function BookingManagement() {
                        sortConfigParam={{column: 0, direction: 'descending'}}
                        filterableColumns={
                        [
-                           'School Division',
-                           'Grade',
+                           'School Divisions',
+                           'Grades',
+                           'Booking Extras Status',
                        ]}
                        headerModuleElements={[(
                            <button key={1} onClick={() => {
