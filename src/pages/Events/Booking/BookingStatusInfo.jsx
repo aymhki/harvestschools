@@ -418,8 +418,6 @@ function BookingStatusInfo() {
             {isLoading && (<Spinner/>)}
 
             <div className={'booking-info-page'}>
-
-
                 <div className={"extreme-padding-container"}>
                     <h1>
                         Booking Info
