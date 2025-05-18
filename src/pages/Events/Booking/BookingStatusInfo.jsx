@@ -8,7 +8,7 @@ function BookingStatusInfo() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [finalFormFields, setFinalFormFields] = useState([]);
-    const [errorToDisplay, setErrorToDisplay] = useState(null);
+    const [fetchBookingBySessionError, setFetchBookingBySessionError] = useState(null);
 
     useEffect(() => {
         headToBookingLoginOnInvalidSession(navigate, setIsLoading)
@@ -403,11 +403,11 @@ function BookingStatusInfo() {
                 setFinalFormFields(currentFormFields);
 
             } else {
-                setErrorToDisplay(result.message || result);
+                setFetchBookingBySessionError(result.message || result);
             }
 
         } catch (error) {
-            setErrorToDisplay(error.message);
+            setFetchBookingBySessionError(error.message);
         } finally {
             setIsLoading(false);
         }
@@ -423,7 +423,7 @@ function BookingStatusInfo() {
                         Booking Info
                     </h1>
 
-                    {(finalFormFields.length > 0 && !errorToDisplay) (
+                    {(finalFormFields.length > 0 && !fetchBookingBySessionError) && (
                         <Form mailTo={''}
                               formTitle={'Booking Info'}
                               sendPdf={false}
@@ -435,16 +435,16 @@ function BookingStatusInfo() {
                         />
                     )}
 
-                    {errorToDisplay && (
+                    {fetchBookingBySessionError && (
                         <>
                             <h2>
                                 Error fetching booking info
                             </h2>
                             <p>
-                                {errorToDisplay}
+                                {fetchBookingBySessionError}
                             </p>
                             <button onClick={() => {
-                                setErrorToDisplay(null);
+                                setFetchBookingBySessionError(null);
                                 fetchBookingBySessionId();
                             }}>
                                 Retry
