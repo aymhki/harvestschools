@@ -10,36 +10,68 @@ try {
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error, 500);
+        echo json_encode([
+            "success" => false,
+            "message" => "Database connection failed",
+            "code" => 500
+        ]);
+        exit;
     }
 
     $input = json_decode(file_get_contents('php://input'), true);
+
     if (!isset($input['username']) || !isset($input['session_id'])) {
-        throw new Exception("Bad Request: Missing username or session_id", 405);
+        echo json_encode([
+            "success" => false,
+            "message" => "Bad Request: Missing username or session_id",
+            "code" => 405
+        ]);
+        exit;
     }
 
     $user = $conn->real_escape_string($input['username']);
     $sessionId = $conn->real_escape_string($input['session_id']);
-
     $checkSql = "SELECT id FROM admin_sessions WHERE username = '$user'";
     $checkResult = $conn->query($checkSql);
 
     if ($checkResult->num_rows > 0) {
         $deleteSql = "DELETE FROM admin_sessions WHERE username = '$user'";
+
         if (!$conn->query($deleteSql)) {
-            throw new Exception("Internal Server Error: " . $conn->error, 500);
+            echo json_encode([
+                "success" => false,
+                "message" => "Internal Server Error: " . $conn->error,
+                "code" => 500
+            ]);
+            exit;
         }
     }
 
     $insertSql = "INSERT INTO admin_sessions (username, id) VALUES ('$user', '$sessionId')";
+
     if (!$conn->query($insertSql)) {
-        throw new Exception("Internal Server Error: " . $conn->error, 500);
+        echo json_encode([
+            "success" => false,
+            "message" => "Internal Server Error: " . $conn->error,
+            "code" => 500
+        ]);
+        exit;
     }
 
-    echo json_encode(["success" => true]);
+    echo json_encode([
+        "success" => true,
+        "message" => "Session created successfully",
+        "code" => 200
+    ]);
+
 } catch (Exception $e) {
-    http_response_code($e->getCode());
-    echo json_encode(["message" => $e->getMessage()]);
+
+    echo json_encode([
+        "success" => false,
+        "message" => $e->getMessage(),
+        "code" => $e->getCode() ?: 500,
+    ]);
+
 } finally {
     $conn->close();
 }

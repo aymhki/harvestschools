@@ -7,6 +7,7 @@ import Spinner from "../../modules/Spinner.jsx";
 import Form from '../../modules/Form.jsx'
 import {
     checkAdminSessionFromAdminLogin,
+    checkBookingSessionFromBookingLogin,
     validateAdminLogin
 } from "../../services/Utils.jsx";
 
@@ -18,11 +19,35 @@ function AdminLogin() {
 
     const handleAdminLogin = async (formData) => {
         if (submittingLocal) {return;}
-        validateAdminLogin(formData, usernameFieldId, passwordFieldId, navigate);
+        setSubmittingLocal(true);
+
+        try {
+            const result = await  validateAdminLogin(formData, usernameFieldId, passwordFieldId, navigate);
+
+            if (result && !result.success) {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        } finally {
+            setSubmittingLocal(false);
+        }
     };
 
     useEffect(() => {
-        checkAdminSessionFromAdminLogin(navigate);
+        async function goToAdminDashboardIfSessionIsValid() {
+            try {
+                const result = await checkAdminSessionFromAdminLogin(navigate);
+
+                if (result && !result.success && result.message) {
+                    console.log(result.message);
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        }
+
+        goToAdminDashboardIfSessionIsValid()
     }, []);
 
   return (
