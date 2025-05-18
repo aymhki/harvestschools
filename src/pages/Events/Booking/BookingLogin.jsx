@@ -43,7 +43,12 @@ function BookingLogin() {
             }
         }
 
-        goToBookingDashboardIfSessionIsValid();
+        goToBookingDashboardIfSessionIsValid()
+        .catch(
+            (error) => {
+                console.log(error.message);
+            }
+        )
 
     }, [])
 
