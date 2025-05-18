@@ -500,8 +500,7 @@ function BookingManagement() {
         setIsLoading(true);
 
         try {
-            const newBookings = await fetchBookingsRequest(navigate);
-            setAllBookings(newBookings);
+            await fetchBookingsRequest(navigate, setAllBookings);
         } catch (error) {
             console.log(error.message || 'An error occurred while fetching the bookings.');
         } finally {
@@ -510,18 +509,18 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-        setIsLoading(true);
-       checkAdminSession(navigate, 1)
-       .then(
-           () => {
-               fetchBookings();
-           }
-       )
-       .finally(
-           () => {
-               setIsLoading(false);
-           }
-       )
+        async function headToLoginPageOnInvalidSession() {
+            try {
+                setIsLoading(true);
+                await checkAdminSession(navigate, 1)
+            } catch (error) {
+                console.log(error.message);
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        headToLoginPageOnInvalidSession();
     }, []);
 
     useEffect(() => {

@@ -37,11 +37,7 @@ function AdminLogin() {
     useEffect(() => {
         async function goToAdminDashboardIfSessionIsValid() {
             try {
-                const result = await checkAdminSessionFromAdminLogin(navigate);
-
-                if (result && !result.success && result.message) {
-                    console.log(result.message);
-                }
+                await checkAdminSessionFromAdminLogin(navigate);
             } catch (error) {
                 console.log(error.message);
             }

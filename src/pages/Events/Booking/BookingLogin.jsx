@@ -32,11 +32,7 @@ function BookingLogin() {
     useEffect (() => {
         async function goToBookingDashboardIfSessionIsValid() {
             try {
-                const result = await checkBookingSessionFromBookingLogin(navigate);
-
-                if (result && !result.success && result.message) {
-                    console.log(result.message);
-                }
+                await checkBookingSessionFromBookingLogin(navigate);
             } catch (error) {
                 console.log(error.message);
             }
