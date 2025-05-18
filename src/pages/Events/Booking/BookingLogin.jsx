@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
-import {checkBookingSessionFromBookingLogin, validateBookingLogin} from "../../../services/Utils.jsx";
+import {headToBookingDashboardOnValidSession, validateBookingLogin} from "../../../services/Utils.jsx";
 
 function BookingLogin() {
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ function BookingLogin() {
             const result = await validateBookingLogin(formData, usernameFieldId, passwordFieldId, navigate);
 
             if (result && !result.success) {
-                throw new Error(result.message);
+                throw new Error(result.message || result);
             }
         } catch (error) {
             throw new Error(error.message);
@@ -30,16 +30,7 @@ function BookingLogin() {
     }
 
     useEffect (() => {
-        async function goToBookingDashboardIfSessionIsValid() {
-            try {
-                await checkBookingSessionFromBookingLogin(navigate);
-            } catch (error) {
-                console.log(error.message);
-            }
-        }
-
-        goToBookingDashboardIfSessionIsValid()
-
+        headToBookingDashboardOnValidSession(navigate, setSubmittingLocal)
     }, [])
 
     return (

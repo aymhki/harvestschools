@@ -1,15 +1,9 @@
 import '../../styles/AdminLogin.css'
 import {useState, useEffect} from 'react';
-import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Form from '../../modules/Form.jsx'
-import {
-    checkAdminSessionFromAdminLogin,
-    checkBookingSessionFromBookingLogin,
-    validateAdminLogin
-} from "../../services/Utils.jsx";
+import {headToAdminDashboardOnValidSession, validateAdminLogin} from "../../services/Utils.jsx";
 
 function AdminLogin() {
     const navigate = useNavigate();
@@ -35,15 +29,7 @@ function AdminLogin() {
     };
 
     useEffect(() => {
-        async function goToAdminDashboardIfSessionIsValid() {
-            try {
-                await checkAdminSessionFromAdminLogin(navigate);
-            } catch (error) {
-                console.log(error.message);
-            }
-        }
-
-        goToAdminDashboardIfSessionIsValid()
+        headToAdminDashboardOnValidSession(navigate, setSubmittingLocal)
     }, []);
 
   return (

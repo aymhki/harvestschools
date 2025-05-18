@@ -3,7 +3,7 @@ import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
-import {checkAdminSessionFromAdminDashboard} from "../../services/Utils.jsx";
+import {headToAdminLoginOnInvalidSessionFromAdminDashboard} from "../../services/Utils.jsx";
 
 function AdminDashboard() {
     const navigate = useNavigate();
@@ -11,18 +11,7 @@ function AdminDashboard() {
     const [dashboardOptions, setDashboardOptions] = useState([]);
 
     useEffect(() => {
-        async function goToBookingLoginPageOnFailure() {
-            try {
-                setIsLoading(true);
-                await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions)
-            } catch (error) {
-                console.log(error.message);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-
-        goToBookingLoginPageOnFailure()
+        headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setDashboardOptions, setIsLoading)
     }, []);
 
     return (

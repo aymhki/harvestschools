@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {checkBookingSession} from "../../../services/Utils.jsx";
+import {headToBookingLoginOnInvalidSession} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 
 function BookingMedia() {
@@ -8,10 +8,8 @@ function BookingMedia() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        checkBookingSession(navigate);
+        headToBookingLoginOnInvalidSession(navigate, setIsLoading);
     }, []);
-
-
 
     return (
         <>

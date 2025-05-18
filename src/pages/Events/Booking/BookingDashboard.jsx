@@ -3,27 +3,14 @@ import '../../../styles/Events.css'
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
-import {checkBookingSessionFromBookingDashboard, resetSession, bookingLoginPageUrl} from "../../../services/Utils.jsx";
+import {headToBookingLoginOnInvalidSessionFromBookingDashboard, resetSession, bookingLoginPageUrl} from "../../../services/Utils.jsx";
 
 function BookingDashboard() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        async function  goToBookingLoginOnInvalidSession() {
-            setIsLoading(true);
-
-            try {
-                await checkBookingSessionFromBookingDashboard(navigate);
-            } catch (error) {
-                console.log(error.message);
-                navigate(bookingLoginPageUrl);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-
-        goToBookingLoginOnInvalidSession()
+        headToBookingLoginOnInvalidSessionFromBookingDashboard(navigate, setIsLoading)
     }, [])
 
 
@@ -64,7 +51,7 @@ function BookingDashboard() {
                                 descriptionInArabic: false
                             },
                         ]}
-                        title={"Booking Dashboard"}
+                        title={"Dashboard"}
                         divElements={[(
                             <div className={"booking-dashboard-page-footer"} key={1}>
                                 <button onClick={() => {

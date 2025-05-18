@@ -4,7 +4,7 @@ import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
-import {checkAdminSession} from "../../services/Utils.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/Utils.jsx";
 
 function JobApplications() {
     const navigate = useNavigate();
@@ -13,20 +13,7 @@ function JobApplications() {
     const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
-        async function headToLoginPageOnInvalidSession() {
-            try {
-                setIsLoading(true);
-                await checkAdminSession(navigate, 0)
-
-
-            } catch (error) {
-                console.log(error.message);
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        headToLoginPageOnInvalidSession();
+        headToAdminLoginOnInvalidSession(navigate, 0, setIsLoading);
     }, []);
 
     const loadTableData = async () => {

@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {checkAdminSession, fetchBookingsRequest, handleAddBookingRequest, handleDeleteBookingRequest, msgTimeout} from "../../services/Utils.jsx";
+import {headToAdminLoginOnInvalidSession, fetchBookingsRequest, handleAddBookingRequest, handleDeleteBookingRequest, msgTimeout} from "../../services/Utils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
@@ -509,18 +509,7 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-        async function headToLoginPageOnInvalidSession() {
-            try {
-                setIsLoading(true);
-                await checkAdminSession(navigate, 1)
-            } catch (error) {
-                console.log(error.message);
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        headToLoginPageOnInvalidSession();
+        headToAdminLoginOnInvalidSession(navigate, 1, setIsLoading);
     }, []);
 
     useEffect(() => {
