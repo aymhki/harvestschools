@@ -12,7 +12,7 @@ $dbname = $dbConfig['db_name'];
 try {
     $input = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($input['sessionId'])) {
+    if (!isset($input['session_id'])) {
         echo json_encode([
             'success' => false,
             'message' => "Session ID is required",
@@ -21,7 +21,7 @@ try {
         exit;
     }
 
-    $sessionId = $input['sessionId'];
+    $sessionId = $input['session_id'];
     $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
 

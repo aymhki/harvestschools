@@ -34,7 +34,7 @@ const fetchBookingInfoBySessionRequest = async (navigate) => {
 
         if (!sessionId) {
             navigate(bookingLoginPageUrl);
-            return;
+            return 'Session expired';
         }
 
         const response = await fetch(getBookingInfoBySessionEndpoint, {
