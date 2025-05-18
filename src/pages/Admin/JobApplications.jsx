@@ -13,13 +13,20 @@ function JobApplications() {
     const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
-        setIsLoading(true);
-        checkAdminSession(navigate, 0)
-        .finally(
-            () => {
+        async function headToLoginPageOnInvalidSession() {
+            try {
+                setIsLoading(true);
+                await checkAdminSession(navigate, 0)
+
+
+            } catch (error) {
+                console.log(error.message);
+            } finally {
                 setIsLoading(false)
             }
-        )
+        }
+
+        headToLoginPageOnInvalidSession();
     }, []);
 
     const loadTableData = async () => {

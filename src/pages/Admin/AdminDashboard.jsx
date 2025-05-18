@@ -11,15 +11,10 @@ function AdminDashboard() {
     const [dashboardOptions, setDashboardOptions] = useState([]);
 
     useEffect(() => {
-
         async function goToBookingLoginPageOnFailure() {
             try {
                 setIsLoading(true);
-                const result = await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions)
-
-                if (result && !result.success && result.message) {
-                    console.log(result.message);
-                }
+                await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions)
             } catch (error) {
                 console.log(error.message);
             } finally {

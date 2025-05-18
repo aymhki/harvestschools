@@ -26,8 +26,9 @@ const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
 const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
 const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 const submitFormEndpoint = '/scripts/submitForm.php';
+const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
-const fetchBookingsRequest = async (navigate) => {
+const fetchBookingsRequest = async (navigate, setAllBookings) => {
     try {
         const sessionId = validateAdminSessionLocally();
 
@@ -40,8 +41,8 @@ const fetchBookingsRequest = async (navigate) => {
         const result = await response.json();
 
         if (result) {
-            if (result.success) {
-                return result.data;
+            if (result.success && result.data) {
+                setAllBookings( result.data );
             } else {
                 if (result.message) {
                     console.log(result.message);
@@ -189,6 +190,10 @@ const checkBookingSessionFromBookingLogin = async (navigate) => {
 
         if (result.success) {
             navigate(bookingDashboardPageUrl);
+        } else {
+           if (result.message) {
+                console.log(result.message);
+           }
         }
     } catch (error) {
         return error.message;
@@ -212,8 +217,11 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
         const sessionResult = await sessionResponse.json();
 
         if (sessionResult && !sessionResult.success) {
+            if (sessionResult.message) {
+                console.log(sessionResult.message);
+            }
+
             navigate(adminLoginPageUrl);
-            return sessionResult;
         }
 
         const permissionsResponse = await fetch(getDashboardPermissionsEndpoint, {
@@ -225,7 +233,6 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
 
         if (permissionsResult.success) {
             setDashboardOptions(permissionsResult.dashboardOptions);
-            return permissionsResult;
         } else {
             if (permissionsResult.message) {
                 console.log(permissionsResult.message);
@@ -234,13 +241,10 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
             if (permissionsResult.code && (permissionsResult.code === 401 || permissionsResult.code === 403 || permissionsResult.code === 404))  {
                 navigate(adminLoginPageUrl);
             }
-
-            return permissionsResult;
         }
 
     } catch (error) {
         console.log(error.message);
-        return error;
     }
 }
 
@@ -293,6 +297,10 @@ const checkAdminSessionFromAdminLogin = async (navigate) => {
         if (result.success) {
             extendSession('harvest_schools_admin', sessionId);
             navigate(adminDashboardPageUrl);
+        } else {
+            if (result.message) {
+                console.log(result.message);
+            }
         }
     } catch (error) {
         console.log(error.message);
@@ -308,25 +316,46 @@ const checkAdminSession = async (navigate, allowedPermission) => {
     }
 
     try {
-        const response = await axios.post(validateAdminSessionEndpoint,
-            {session_id: sessionId}, {headers: {'Content-Type': 'application/json'}});
+        const response = await fetch(validateAdminSessionEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
 
-        if (response.data.success) {
+        const result = await response.json();
+
+        if (result.success) {
             extendSession('harvest_schools_admin', sessionId);
         } else {
             navigate(adminLoginPageUrl);
+            return result;
         }
 
-        const userPermissionsResponse = await axios.post(getUserPermissionsEndpoint,
-            {session_id: sessionId}, {headers: {'Content-Type': 'application/json'}});
+        const userPermissionsResponse = await fetch(getUserPermissionsEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
 
-        if (!userPermissionsResponse.data.includes(allowedPermission)) {
-            navigate(adminLoginPageUrl);
+        const userPermissionsResult = await userPermissionsResponse.json();
+
+        if (userPermissionsResult && userPermissionsResult.success && userPermissionsResult.cleanPermissionLevels) {
+            if (!userPermissionsResult.cleanPermissionLevels.includes(allowedPermission)) {
+                navigate(adminLoginPageUrl);
+            }
+
+            return userPermissionsResult;
+        } else {
+            if (userPermissionsResult.message) {
+                console.log(userPermissionsResult.message);
+            }
+
+            if (userPermissionsResult.code && (userPermissionsResult.code === 401 || userPermissionsResult.code === 403 || userPermissionsResult.code === 404)) {
+                navigate(adminLoginPageUrl);
+            }
         }
     } catch (error) {
         console.log(error.message);
     }
-};
+}
 
 const checkBookingSession = async (navigate) => {
     const sessionId = validateBookingSessionLocally();
@@ -500,5 +529,6 @@ export {
     bookingLoginPageUrl,
     bookingDashboardPageUrl,
     adminLoginPageUrl,
-    adminDashboardPageUrl
+    adminDashboardPageUrl,
+    getJobApplicationsEndpoint,
 };
