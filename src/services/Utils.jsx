@@ -100,9 +100,15 @@ const checkBookingSessionFromBookingDashboard = async (navigate) => {
         const result = await response.json();
 
         if (result && !result.success) {
+
+            if (result.message ) {
+                console.log(result.message);
+            }
+
             navigate(bookingLoginPageUrl);
         }
     } catch (error) {
+        console.log(error.message);
         navigate(bookingLoginPageUrl);
     }
 }
