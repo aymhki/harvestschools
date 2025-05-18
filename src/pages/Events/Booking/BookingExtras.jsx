@@ -1,6 +1,6 @@
 import Spinner from "../../../modules/Spinner.jsx";
 import {useEffect, useState} from "react";
-import {checkBookingSession} from "../../../services/Utils.jsx";
+import {headToBookingLoginOnInvalidSession} from "../../../services/Utils.jsx";
 import {useNavigate} from "react-router-dom";
 
 function BookingExtras() {
@@ -8,7 +8,7 @@ function BookingExtras() {
    const [isLoading, setIsLoading] = useState(false);
 
    useEffect(() => {
-       checkBookingSession(navigate);
+       headToBookingLoginOnInvalidSession(navigate, setIsLoading);
    }, [])
 
     return (

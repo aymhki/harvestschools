@@ -1,6 +1,10 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {checkBookingSession, getCookies, formatDateFromPacific} from "../../../services/Utils.jsx";
+import {
+    getCookies,
+    formatDateFromPacific,
+    headToBookingLoginOnInvalidSession
+} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 import axios from "axios";
 import Form from "../../../modules/Form.jsx";
@@ -11,7 +15,7 @@ function BookingStatusInfo() {
     const [finalFormFields, setFinalFormFields] = useState([]);
 
     useEffect(() => {
-        checkBookingSession(navigate)
+        headToBookingLoginOnInvalidSession(navigate, setIsLoading)
         .then(
             () => {
                 fetchBookingBySessionId();

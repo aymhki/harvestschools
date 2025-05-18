@@ -1,4 +1,3 @@
-import axios from "axios";
 import {useCallback} from "react";
 import {v4 as uuidv4} from "uuid";
 
@@ -326,8 +325,12 @@ const checkAdminSession = async (navigate, allowedPermission) => {
         if (result.success) {
             extendSession('harvest_schools_admin', sessionId);
         } else {
+            if (result.message) {
+                console.log(result.message);
+            }
+
             navigate(adminLoginPageUrl);
-            return result;
+
         }
 
         const userPermissionsResponse = await fetch(getUserPermissionsEndpoint, {
@@ -366,12 +369,20 @@ const checkBookingSession = async (navigate) => {
     }
 
     try {
-        const response = await axios.post(checkBookingSessionEndpoint,
-            {session_id: sessionId}, {headers: {'Content-Type': 'application/json'}});
+        const response = await fetch(checkBookingSessionEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
 
-        if (response.data.success) {
+        const result = await response.json();
+
+        if (result.success) {
             extendSession('harvest_schools_booking', sessionId);
         } else {
+            if (result.message) {
+                console.log(result.message);
+            }
+
             navigate(bookingLoginPageUrl);
         }
     } catch (error) {
@@ -379,7 +390,77 @@ const checkBookingSession = async (navigate) => {
     }
 }
 
-function getCookies() {
+const headToBookingLoginOnInvalidSession = async (navigate, setIsLoading) => {
+    try {
+        setIsLoading(true);
+        await checkBookingSession(navigate);
+
+    } catch (error) {
+        console.log(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+}
+
+const headToAdminLoginOnInvalidSession = async (navigate, allowedPermission, setIsLoading) => {
+    try {
+        setIsLoading(true);
+        await checkAdminSession(navigate, allowedPermission);
+
+    } catch (error) {
+        console.log(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+}
+
+const headToAdminLoginOnInvalidSessionFromAdminDashboard = async (navigate, setDashboardOptions, setIsLoading) => {
+    try {
+        setIsLoading(true);
+        await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions)
+    } catch (error) {
+        console.log(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+}
+
+const headToBookingLoginOnInvalidSessionFromBookingDashboard = async (navigate, setIsLoading) => {
+    setIsLoading(true);
+
+    try {
+        await checkBookingSessionFromBookingDashboard(navigate);
+    } catch (error) {
+        console.log(error.message);
+        navigate(bookingLoginPageUrl);
+    } finally {
+        setIsLoading(false);
+    }
+}
+
+const headToAdminDashboardOnValidSession = async (navigate, setIsLoading) => {
+    try {
+        setIsLoading(true);
+        await checkAdminSessionFromAdminLogin(navigate);
+    } catch (error) {
+        console.log(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+}
+
+const headToBookingDashboardOnValidSession = async (navigate, setIsLoading) => {
+    try {
+        setIsLoading(true);
+        await checkBookingSessionFromBookingLogin(navigate);
+    } catch (error) {
+        console.log(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+}
+
+const getCookies = () => {
     return document.cookie.split(';').reduce((acc, cookie) => {
         const [key, value] = cookie.trim().split('=');
         acc[key] = value;
@@ -531,4 +612,10 @@ export {
     adminLoginPageUrl,
     adminDashboardPageUrl,
     getJobApplicationsEndpoint,
+    headToAdminLoginOnInvalidSession,
+    headToBookingLoginOnInvalidSession,
+    headToAdminLoginOnInvalidSessionFromAdminDashboard,
+    headToBookingLoginOnInvalidSessionFromBookingDashboard,
+    headToAdminDashboardOnValidSession,
+    headToBookingDashboardOnValidSession
 };
