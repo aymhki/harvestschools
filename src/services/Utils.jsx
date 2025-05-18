@@ -244,37 +244,37 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
     }
 }
 
-
-const validateAdminLogin = async  (formData, usernameFieldId, passwordFieldId, navigate) => {
+const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, navigate) => {
     const formDataEntries = Array.from(formData.entries());
-    const username = formDataEntries.find(entry => entry[0] ===  ('field_' + usernameFieldId) )[1];
-    const password = formDataEntries.find(entry => entry[0] ===  ('field_' + passwordFieldId) )[1];
+    const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
+    const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
 
     try {
-        const response = await axios.post(validateAdminLoginEndpoint,
-            {username, password}, {headers: {'Content-Type': 'application/json'}});
+        const response = await fetch(validateAdminLoginEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({username, password})
+        });
 
-        if (response.data.success) {
-            const sessionResponse = await axios.post(createAdminSessionEndpoint, {
-                username: username,
-                session_id: createSessions('harvest_schools_admin')
-            }, {headers: {'Content-Type': 'application/json'}});
+        const result = await response.json();
 
-            if (sessionResponse.data.success) {
+        if (result.success) {
+            const sessionResponse = await fetch(createAdminSessionEndpoint, {
+                method: 'POST',
+                body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_admin')})
+            });
+
+            const sessionResult = await sessionResponse.json();
+
+            if (sessionResult.success) {
                 navigate(adminDashboardPageUrl);
             } else {
-                throw new Error('Session creation failed. Please try again');
+                return sessionResult;
             }
         } else {
-            throw new Error('Login failed. Wrong Username or Password. Please try again');
+            return result;
         }
-
     } catch (error) {
-        if (error.response && error.response.data && error.response.data.message) {
-            throw new Error(error.response.data.message);
-        } else {
-            throw new Error(error.message);
-        }
+        return error.message;
     }
 }
 
@@ -283,17 +283,21 @@ const checkAdminSessionFromAdminLogin = async (navigate) => {
     if (!sessionId) {return;}
 
     try {
-        const response = await axios.post(validateAdminSessionEndpoint,
-            {session_id: sessionId}, {headers: {'Content-Type': 'application/json'}});
+        const response = await fetch(validateAdminSessionEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
 
-        if (response.data.success) {
+        const result = await response.json();
+
+        if (result.success) {
             extendSession('harvest_schools_admin', sessionId);
             navigate(adminDashboardPageUrl);
         }
     } catch (error) {
         console.log(error.message);
     }
-};
+}
 
 const checkAdminSession = async (navigate, allowedPermission) => {
     const sessionId = validateAdminSessionLocally();
