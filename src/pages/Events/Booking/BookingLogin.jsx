@@ -21,6 +21,8 @@ function BookingLogin() {
 
             if (result && !result.success) {
                 throw new Error(result.message || result);
+            } else {
+                return true;
             }
         } catch (error) {
             throw new Error(error.message);

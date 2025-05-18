@@ -25,7 +25,54 @@ const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
 const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
 const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 const submitFormEndpoint = '/scripts/submitForm.php';
+const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
 const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
+
+const submitFormRequest = async (formData) => {
+    try {
+        const response = await fetch(submitFormEndpoint, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            return result;
+        } else {
+            if (result.message) {
+                return `${result.message}`;
+            } else {
+                return 'Form submission failed. Please try again.';
+            }
+        }
+    } catch (error) {
+        return error.message;
+    }
+}
+
+const submitJobApplicationRequest = async (formData) => {
+    try {
+        const response = await fetch(submitJobApplicationEndpoint, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            return result;
+        } else {
+            if (result.message) {
+                return `${result.message}`;
+            } else {
+                return 'Form submission failed. Please try again.';
+            }
+        }
+    } catch (error) {
+        return error.message;
+    }
+}
 
 const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
     setJobApplications(null);
@@ -645,5 +692,7 @@ export {
     headToBookingLoginOnInvalidSessionFromBookingDashboard,
     headToAdminDashboardOnValidSession,
     headToBookingDashboardOnValidSession,
-    fetchJobApplicationsRequest
+    fetchJobApplicationsRequest,
+    submitFormRequest,
+    submitJobApplicationRequest
 };

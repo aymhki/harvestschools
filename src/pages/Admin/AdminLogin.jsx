@@ -20,6 +20,8 @@ function AdminLogin() {
 
             if (result && !result.success) {
                 throw new Error(result.message);
+            } else {
+                return true;
             }
         } catch (error) {
             throw new Error(error.message);
