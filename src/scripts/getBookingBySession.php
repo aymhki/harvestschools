@@ -3,7 +3,6 @@ header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: 0');
-
 $dbConfig = require 'dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
@@ -11,24 +10,40 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-
     $input = json_decode(file_get_contents('php://input'), true);
+
     if (!isset($input['sessionId'])) {
-        throw new Exception("Session ID is required", 400);
+        echo json_encode([
+            'success' => false,
+            'message' => "Session ID is required",
+            'code' => 400
+        ]);
+        exit;
     }
 
     $sessionId = $input['sessionId'];
     $startTime = microtime(true);
-
     $conn = new mysqli($servername, $username, $password, $dbname);
+
     if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error, 500);
+        echo json_encode([
+            'success' => false,
+            'message' => "Connection failed: " . $conn->connect_error,
+            'code' => 500
+        ]);
+        exit;
     }
 
     $sessionSql = "SELECT username FROM booking_sessions WHERE id = ?";
     $stmt = $conn->prepare($sessionSql);
+
     if (!$stmt) {
-        throw new Exception("Prepare failed: " . $conn->error, 500);
+        echo json_encode([
+            'success' => false,
+            'message' => "Prepare failed: " . $conn->error,
+            'code' => 500
+        ]);
+        exit;
     }
 
     $stmt->bind_param("s", $sessionId);
@@ -37,19 +52,29 @@ try {
     $stmt->close();
 
     if ($sessionResult->num_rows == 0) {
-        throw new Exception("Invalid session ID", 404);
+        echo json_encode([
+            'success' => false,
+            'message' => "Invalid session ID",
+            'code' => 404
+        ]);
+        exit;
     }
 
     $sessionRow = $sessionResult->fetch_assoc();
     $bookingUsername = $sessionRow['username'];
-
     $bookingSql = "SELECT b.booking_id 
                    FROM bookings b
                    JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
                    WHERE ac.username = ?";
     $stmt = $conn->prepare($bookingSql);
+
     if (!$stmt) {
-        throw new Exception("Prepare failed: " . $conn->error, 500);
+        echo json_encode([
+            'success' => false,
+            'message' => "Prepare failed: " . $conn->error,
+            'code' => 500
+        ]);
+        exit;
     }
 
     $stmt->bind_param("s", $bookingUsername);
@@ -58,13 +83,16 @@ try {
     $stmt->close();
 
     if ($bookingResult->num_rows == 0) {
-        throw new Exception("No booking found for this user", 404);
+        echo json_encode([
+            'success' => false,
+            'message' => "No booking found for this user",
+            'code' => 404
+        ]);
+        exit;
     }
 
     $bookingRow = $bookingResult->fetch_assoc();
     $bookingId = $bookingRow['booking_id'];
-
-
     $bookingDetailsSql = "SELECT 
                             b.booking_id,
                             b.auth_id,
@@ -81,7 +109,6 @@ try {
                          FROM bookings b
                          JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
                          WHERE b.booking_id = ?";
-
     $stmt = $conn->prepare($bookingDetailsSql);
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
@@ -89,11 +116,15 @@ try {
     $stmt->close();
 
     if ($bookingDetailsResult->num_rows == 0) {
-        throw new Exception("Booking details not found", 404);
+        echo json_encode([
+            'success' => false,
+            'message' => "Booking details not found",
+            'code' => 404
+        ]);
+        exit;
     }
 
     $bookingDetails = $bookingDetailsResult->fetch_assoc();
-
     $extrasSql = "SELECT 
                     extra_id,
                     cd_count,
@@ -103,15 +134,12 @@ try {
                     updated_at
                   FROM booking_extras
                   WHERE booking_id = ?";
-
     $stmt = $conn->prepare($extrasSql);
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
     $extrasResult = $stmt->get_result();
     $stmt->close();
-
     $extras = $extrasResult->num_rows > 0 ? $extrasResult->fetch_assoc() : null;
-
     $parentsSql = "SELECT 
                      p.*,
                      pl.is_primary
@@ -119,14 +147,13 @@ try {
                    JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
                    WHERE pl.booking_id = ?
                    ORDER BY pl.is_primary DESC";
-
     $stmt = $conn->prepare($parentsSql);
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
     $parentsResult = $stmt->get_result();
     $stmt->close();
-
     $parents = [];
+
     while ($parent = $parentsResult->fetch_assoc()) {
         $parents[] = $parent;
     }
@@ -136,14 +163,13 @@ try {
                    FROM booking_students s
                    JOIN booking_students_linker sl ON s.student_id = sl.student_id
                    WHERE sl.booking_id = ?";
-
     $stmt = $conn->prepare($studentsSql);
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
     $studentsResult = $stmt->get_result();
     $stmt->close();
-
     $students = [];
+
     while ($student = $studentsResult->fetch_assoc()) {
         $students[] = $student;
     }
@@ -154,7 +180,6 @@ try {
         'parents' => $parents,
         'students' => $students
     ];
-
     $tabularData = [];
     $tabularHeaders = [
         'Booking ID', 'Student ID', 'Student Name', 'School Division', 'Grade',
@@ -163,9 +188,7 @@ try {
         'CD Count', 'Additional Attendees', 'Payment Status', 'Booking Date', 'Booking Time', 'Status', 'Notes',
         'Student Created', 'Booking Created'
     ];
-
     $tabularData[] = $tabularHeaders;
-
     $firstParent = null;
     $secondParent = null;
 
@@ -216,17 +239,16 @@ try {
         'sessionId' => $sessionId,
         'detailedData' => $bookingData,
         'tabularData' => $tabularData,
-        'executionTime' => $executionTime
+        'executionTime' => $executionTime,
+        'message' => "Booking details retrieved successfully",
+        'code' => 200
     ]);
 
 } catch (Exception $e) {
-    $statusCode = $e->getCode() ?: 500;
-    http_response_code($statusCode);
-
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage(),
-        'code' => $statusCode
+        'code' => $e->getCode() ?: 500
     ]);
 } finally {
     if (isset($conn) && $conn->ping()) {
