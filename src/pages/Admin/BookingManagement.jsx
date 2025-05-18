@@ -11,7 +11,6 @@ function BookingManagement() {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
-
     const [allBookings, setAllBookings] = useState(null);
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
@@ -382,7 +381,6 @@ function BookingManagement() {
     }
 
     const handleEditBookingModalInitialization = async (rowIndex) => {
-
         const bookingUsername = allBookings[rowIndex][6];
         const studentIds = allBookings[rowIndex][8];
         const studentNames = allBookings[rowIndex][9];
@@ -509,7 +507,12 @@ function BookingManagement() {
     }
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 1, setIsLoading);
+        headToAdminLoginOnInvalidSession(navigate, 1, setIsLoading)
+        .then(
+            () => {
+                fetchBookings();
+            }
+        )
     }, []);
 
     useEffect(() => {
