@@ -1,13 +1,34 @@
 import {Helmet} from "react-helmet-async";
 import '../styles/Vacancies.css'
 import Form from "../modules/Form";
+import {submitJobApplicationRequest} from "../services/Utils.jsx";
+import Spinner from "../modules/Spinner";
 
 function Vacancies() {
+    const [submittingLocal, setSubmittingLocal] = useState(false);
+
+    const handleSubmitJobApplication = async (formData) => {
+        try {
+            setSubmittingLocal(true);
+            const result = await submitJobApplicationRequest(formData);
+
+            if (result && !result.success && result.message) {
+                throw new Error(result.message);
+            } else {
+                return true;
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        } finally {
+            setSubmittingLocal(false);
+        }
+    }
 
 
   return (
       <>
-    <div className={"vacancies-page"}>
+          {submittingLocal && <Spinner/>}
+          <div className={"vacancies-page"}>
         <Helmet>
             <title>Harvest International School | Vacancies</title>
             <meta name="description"
@@ -42,7 +63,9 @@ function Vacancies() {
                 Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type "N/A."
             </p>
 
-            <Form sendPdf={false} formTitle={'Job Application Submission'} mailTo={'info@harvestschools.com'}
+            <Form sendPdf={false}
+                  formTitle={'Job Application Submission'}
+                  mailTo={'info@harvestschools.com'}
                   fields={[
                 {
                     id: 1,
@@ -517,8 +540,14 @@ function Vacancies() {
                     httpName: 'attachment-5',
                 }
 
-            ]} captchaLength={1}
-                lang={'en'}
+            ]}
+                  captchaLength={1}
+                  hasSetSubmittingLocal={true}
+                  setSubmittingLocal={setSubmittingLocal}
+                  hasDifferentOnSubmitBehaviour={true}
+                  differentOnSubmitBehaviour={handleSubmitJobApplication}
+                  lang={'en'}
+
             />
 
         </div>

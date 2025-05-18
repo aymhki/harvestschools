@@ -11,6 +11,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {useFormCache} from "../services/Utils.jsx";
 import {msgTimeout} from "../services/Utils.jsx";
+import {submitFormRequest} from "../services/Utils.jsx";
 
 function Form({
                   fields,
@@ -1350,9 +1351,26 @@ function Form({
             formData.append('mailTo', mailTo);
             formData.append('formTitle', formTitle);
 
-            if (hasDifferentOnSubmitBehaviour) {
+            if (hasDifferentOnSubmitBehaviour && differentOnSubmitBehaviour) {
                 try {
-                    await differentOnSubmitBehaviour(formData)
+                    const result = await differentOnSubmitBehaviour(formData);
+
+                    if (result) {
+                        setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
+
+                        setTimeout(() => {
+                            setSuccessMessage('');
+
+                            if (formInModalPopup) {
+                                setShowFormModalPopup(false);
+                            }
+
+                            resetFormCompletely();
+                            clearCache();
+
+                        }, msgTimeout);
+                    }
+
                 } catch (error) {
                     setGeneralFormError(error.message || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
                     setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
@@ -1363,12 +1381,7 @@ function Form({
                 }
             } else {
                 try {
-                    const response = await fetch('/scripts/submitForm.php', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    const result = await response.json();
+                    const result = await submitFormRequest(formData)
 
                     if (result.success) {
                         setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
@@ -1382,13 +1395,13 @@ function Form({
                         }, msgTimeout);
 
                     } else {
-                        setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message + ': Form submission failed. Please try again.');
+                        setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message || 'Form submission failed. Please try again.');
                         setTimeout(() => {
                             setGeneralFormError('');
                         }, msgTimeout);
                     }
                 } catch (error) {
-                    setGeneralFormError(error.message + ': Form submission failed. Please try again.' || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
+                    setGeneralFormError(error.message  || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.') );
                     setTimeout(() => { setGeneralFormError(''); }, msgTimeout);
                     setSubmitting(false);
                     if (hasSetSubmittingLocal) {

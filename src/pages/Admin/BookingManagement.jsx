@@ -330,6 +330,7 @@ function BookingManagement() {
                 setResetAddBookingModal(true)
                 setShowAddBookingModal(false);
                 fetchBookings();
+                return true;
             } else {
                 throw new Error(result || 'An error occurred while adding the booking.');
             }
@@ -486,6 +487,7 @@ function BookingManagement() {
         //         'CD Count', 'Additional Attendees', 'Booking Extras Status'
         // ];
         console.log(formData);
+        return true;
     }
 
     const handleCancelEditBookingModal = () => {
