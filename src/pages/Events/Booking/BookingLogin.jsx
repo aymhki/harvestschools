@@ -36,7 +36,7 @@ function BookingLogin() {
                 const result = await checkBookingSessionFromBookingLogin(navigate);
 
                 if (result && !result.success && result.message) {
-                    throw new Error(result.message);
+                    console.log(result.message);
                 }
             } catch (error) {
                 console.log(error.message);
