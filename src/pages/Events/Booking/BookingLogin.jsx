@@ -29,16 +29,22 @@ function BookingLogin() {
         }
     }
 
-    useEffect(async () => {
-        // try {
-        //     const result = await checkBookingSessionFromBookingLogin(navigate);
-        //
-        //     if (result && !result.success && result.message) {
-        //         throw new Error(result.message);
-        //     }
-        // } catch (error) {
-        //     console.log(error.message);
-        // }
+    useEffect (() => {
+
+        async function checkBooking() {
+            try {
+                const result = await checkBookingSessionFromBookingLogin(navigate);
+
+                if (result && !result.success && result.message) {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        }
+
+        checkBooking();
+
     }, [])
 
     return (
