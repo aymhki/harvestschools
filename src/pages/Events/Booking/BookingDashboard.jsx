@@ -10,7 +10,6 @@ function BookingDashboard() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-
         async function  goToBookingLoginOnInvalidSession() {
             setIsLoading(true);
 
@@ -25,7 +24,6 @@ function BookingDashboard() {
         }
 
         goToBookingLoginOnInvalidSession()
-
     }, [])
 
 

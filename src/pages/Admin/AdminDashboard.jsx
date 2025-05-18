@@ -11,13 +11,23 @@ function AdminDashboard() {
     const [dashboardOptions, setDashboardOptions] = useState([]);
 
     useEffect(() => {
-        setIsLoading(true);
-        checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions)
-        .finally(
-            () => {
+
+        async function goToBookingLoginPageOnFailure() {
+            try {
+                setIsLoading(true);
+                const result = await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions)
+
+                if (result && !result.success && result.message) {
+                    console.log(result.message);
+                }
+            } catch (error) {
+                console.log(error.message);
+            } finally {
                 setIsLoading(false);
             }
-        );
+        }
+
+        goToBookingLoginPageOnFailure()
     }, []);
 
     return (

@@ -43,9 +43,12 @@ const fetchBookingsRequest = async (navigate) => {
             if (result.success) {
                 return result.data;
             } else {
-                console.log(result.message);
+                if (result.message) {
+                    console.log(result.message);
+                }
 
-                if (result.code === 401 || result.code === 403) {
+
+                if (result.code  && (result.code === 401 || result.code === 403)) {
                     navigate(adminLoginPageUrl);
                 }
             }
@@ -201,26 +204,46 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
     }
 
     try {
-        const sessionResponse = await axios.post(validateAdminSessionEndpoint,
-            {session_id: sessionId}, {headers: {'Content-Type': 'application/json'}});
+        const sessionResponse = await fetch(validateAdminSessionEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
 
-        if (!sessionResponse.data.success) {
+        const sessionResult = await sessionResponse.json();
+
+        if (sessionResult && !sessionResult.success) {
             navigate(adminLoginPageUrl);
-            return;
+            return sessionResult;
         }
 
-        const permissionsResponse = await axios.post(getDashboardPermissionsEndpoint,
-            {session_id: sessionId}, {headers: {'Content-Type': 'application/json'}});
+        const permissionsResponse = await fetch(getDashboardPermissionsEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
 
-        if (permissionsResponse.data.success) {
-            setDashboardOptions(permissionsResponse.data.dashboardOptions);
+        const permissionsResult = await permissionsResponse.json();
+
+        if (permissionsResult.success) {
+            setDashboardOptions(permissionsResult.dashboardOptions);
+            return permissionsResult;
+        } else {
+            if (permissionsResult.message) {
+                console.log(permissionsResult.message);
+            }
+
+            if (permissionsResult.code && (permissionsResult.code === 401 || permissionsResult.code === 403 || permissionsResult.code === 404))  {
+                navigate(adminLoginPageUrl);
+            }
+
+            return permissionsResult;
         }
 
     } catch (error) {
         console.log(error.message);
-        navigate(adminLoginPageUrl);
+        return error;
     }
-};
+}
+
 
 const validateAdminLogin = async  (formData, usernameFieldId, passwordFieldId, navigate) => {
     const formDataEntries = Array.from(formData.entries());
