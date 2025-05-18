@@ -20,7 +20,6 @@ function BookingDashboard() {
         // } finally {
         //     setIsLoading(false);
         // }
-
     }, []);
 
     return (
