@@ -15,7 +15,7 @@ function BookingDashboard() {
             setIsLoading(true);
 
             try {
-                await checkBookingSessionFromBookingDashboard()
+                await checkBookingSessionFromBookingDashboard();
             } catch (error) {
                 console.log(error.message);
                 navigate(bookingLoginPageUrl);
@@ -24,7 +24,12 @@ function BookingDashboard() {
             }
         }
 
-        goToBookingLoginOnInvalidSession();
+        goToBookingLoginOnInvalidSession()
+        .catch(
+            (error) => {
+                console.log(error.message);
+            }
+        )
 
     }, [])
 
