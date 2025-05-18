@@ -10,16 +10,16 @@ function BookingDashboard() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(async () => {
-        setIsLoading(true);
-
-        try {
-            await checkBookingSessionFromBookingDashboard()
-        } catch (error) {
-            console.log(error.message);
-            navigate(bookingLoginPageUrl);
-        } finally {
-            setIsLoading(false);
-        }
+        // setIsLoading(true);
+        //
+        // try {
+        //     await checkBookingSessionFromBookingDashboard()
+        // } catch (error) {
+        //     console.log(error.message);
+        //     navigate(bookingLoginPageUrl);
+        // } finally {
+        //     setIsLoading(false);
+        // }
 
     }, []);
 

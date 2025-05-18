@@ -102,7 +102,6 @@ const checkBookingSessionFromBookingDashboard = async (navigate) => {
         if (result && !result.success) {
             navigate(bookingLoginPageUrl);
         }
-
     } catch (error) {
         navigate(bookingLoginPageUrl);
     }
