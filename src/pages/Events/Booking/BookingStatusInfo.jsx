@@ -1,18 +1,14 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {
-    getCookies,
-    formatDateFromPacific,
-    headToBookingLoginOnInvalidSession
-} from "../../../services/Utils.jsx";
+import {fetchBookingInfoBySessionRequest, formatDateFromPacific, headToBookingLoginOnInvalidSession} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
-import axios from "axios";
 import Form from "../../../modules/Form.jsx";
 
 function BookingStatusInfo() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [finalFormFields, setFinalFormFields] = useState([]);
+    const [errorToDisplay, setErrorToDisplay] = useState(null);
 
     useEffect(() => {
         headToBookingLoginOnInvalidSession(navigate, setIsLoading)
@@ -26,22 +22,8 @@ function BookingStatusInfo() {
     const fetchBookingBySessionId = async () => {
         try {
             setIsLoading(true);
-            const cookies = getCookies();
-            const sessionId = cookies.harvest_schools_booking_session_id;
 
-            if (!sessionId) {
-                throw new Error('Session ID not found. Please log in again.');
-            }
-
-            const response = await axios.post('/scripts/getBookingBySession.php', {
-                sessionId: sessionId
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const result = await response.data;
+            const result = await  fetchBookingInfoBySessionRequest(navigate);
 
             if (result.success) {
                 let bookingIdField = null;
@@ -316,22 +298,6 @@ function BookingStatusInfo() {
                 }
 
                 if (result.detailedData.extras) {
-                    // additional_attendees
-                    //     :
-                    //     0
-                    // cd_count
-                    //     :
-                    //     0
-                    // extra_id
-                    //     :
-                    //     13
-                    // payment_status
-                    //     :
-                    //     "Not Signed Up"
-                    // updated_at
-                    //     :
-                    //     "2025-05-12 13:05:10"
-
                     currentFormFields.push({
                         id: (currentFormFields[currentFormFields.length - 1].id + 1),
                         type: 'section',
@@ -437,20 +403,14 @@ function BookingStatusInfo() {
                 setFinalFormFields(currentFormFields);
 
             } else {
-                throw new Error(result.message);
+                setErrorToDisplay(result.message || result);
             }
 
         } catch (error) {
-            if (error.response && error.response.data && error.response.data.message) {
-                console.log(error.response.data.message);
-            } else {
-                console.log(error.message);
-            }
+            setErrorToDisplay(error.message);
         } finally {
             setIsLoading(false);
         }
-
-
     }
 
     return (
@@ -465,7 +425,7 @@ function BookingStatusInfo() {
                         Booking Info
                     </h1>
 
-                    {finalFormFields.length > 0 && (
+                    {(finalFormFields.length > 0 && !errorToDisplay) (
                         <Form mailTo={''}
                               formTitle={'Booking Info'}
                               sendPdf={false}
@@ -475,6 +435,23 @@ function BookingStatusInfo() {
                               fields={finalFormFields}
                               formIsReadOnly={true}
                         />
+                    )}
+
+                    {errorToDisplay && (
+                        <>
+                            <h2>
+                                Error fetching booking info
+                            </h2>
+                            <p>
+                                {errorToDisplay}
+                            </p>
+                            <button onClick={() => {
+                                setErrorToDisplay(null);
+                                fetchBookingBySessionId();
+                            }}>
+                                Retry
+                            </button>
+                        </>
                     )}
                 </div>
 
