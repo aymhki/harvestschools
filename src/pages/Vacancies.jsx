@@ -3,6 +3,7 @@ import '../styles/Vacancies.css'
 import Form from "../modules/Form";
 import {submitJobApplicationRequest} from "../services/Utils.jsx";
 import Spinner from "../modules/Spinner";
+import {useState} from "react";
 
 function Vacancies() {
     const [submittingLocal, setSubmittingLocal] = useState(false);
