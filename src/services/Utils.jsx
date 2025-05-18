@@ -28,6 +28,38 @@ const submitFormEndpoint = '/scripts/submitForm.php';
 const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
 const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
+const fetchBookingInfoBySessionRequest = async (navigate) => {
+    try {
+        const sessionId = validateBookingSessionLocally();
+
+        if (!sessionId) {
+            navigate(bookingLoginPageUrl);
+            return;
+        }
+
+        const response = await fetch(getBookingInfoBySessionEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        });
+
+        const result = await response.json();
+
+        if (result && result.success) {
+            return result;
+        } else {
+            if (result && result.message) {
+                return result;
+            }
+
+            if (result && result.code && (result.code === 401 || result.code === 403)) {
+                navigate(bookingLoginPageUrl);
+            }
+        }
+    } catch (error) {
+         return error.message;
+    }
+}
+
 const submitFormRequest = async (formData) => {
     try {
         const response = await fetch(submitFormEndpoint, {
@@ -694,5 +726,6 @@ export {
     headToBookingDashboardOnValidSession,
     fetchJobApplicationsRequest,
     submitFormRequest,
-    submitJobApplicationRequest
+    submitJobApplicationRequest,
+    fetchBookingInfoBySessionRequest
 };
