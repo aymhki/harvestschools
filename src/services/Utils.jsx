@@ -32,6 +32,15 @@ const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
 const handleEditBookingRequest = async (formData) => {
     try {
+        const sessionId = validateAdminSessionLocally();
+
+        if (!sessionId) {
+            return {
+                success: false,
+                message: 'Session expired'
+            };
+        }
+
         const response = await fetch(submitEditBookingFormEndpoint, {
             method: 'POST',
             body: formData
@@ -42,13 +51,18 @@ const handleEditBookingRequest = async (formData) => {
         if (result.success) {
             return result;
         } else {
-            throw new Error(result.message || 'An error occurred while updating the booking.');
+            return {
+                success: false,
+                message: result.message || 'An error occurred while updating the booking'
+            };
         }
-
     } catch (error) {
-        throw new Error(error.message || 'An error occurred while updating the booking.');
+        return {
+            success: false,
+            message: error.message || 'An error occurred while updating the booking'
+        };
     }
-};
+}
 
 const fetchBookingInfoBySessionRequest = async (navigate) => {
     try {
