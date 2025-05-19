@@ -1541,16 +1541,29 @@ function Form({
 
                         { switchFooterButtonsOrder ? (
                             <>
-                                { !noClearOption && (
-                                    lang === 'ar' ? (
-                                        <button type="reset" disabled={submitting}
-                                                className="reset-button">مسح</button>
-                                    ) : (
-                                        <button type="reset" disabled={submitting}
-                                                className="reset-button">Clear
+                                <div className={'reset-buttons-wrapper'}>
+                                    { !noClearOption && (
+                                        lang === 'ar' ? (
+                                            <button type="reset" disabled={submitting}
+                                                    className="reset-button">مسح</button>
+                                        ) : (
+                                            <button type="reset" disabled={submitting}
+                                                    className="reset-button">Clear</button>
+                                        ))
+                                    }
+
+                                    {thisFormIsEditingAnEntry && (
+                                        <button type="button" disabled={submitting}
+                                                className="reset-button"
+                                                onClick={() => {
+                                                    resetFormCompletely();
+                                                    clearCache();
+                                                }}
+                                        >
+                                            {lang === 'ar' ? 'إعادة تعيين الحالة الأصلية للتعديل' : 'Reset To Original Edit State'}
                                         </button>
-                                    ))
-                                }
+                                    )}
+                                </div>
 
                                 {hasDifferentSubmitButtonText ? (
                                     lang === 'ar' ? (
@@ -1594,15 +1607,29 @@ function Form({
                                     )
                                 )}
 
-                                { !noClearOption && (
-                                    lang === 'ar' ? (
-                                        <button type="reset" disabled={submitting}
-                                                className="reset-button">مسح</button>
-                                    ) : (
-                                        <button type="reset" disabled={submitting}
-                                                className="reset-button">Clear</button>
-                                    ))
-                                }
+                                <div className={'reset-buttons-wrapper'}>
+                                    { !noClearOption && (
+                                        lang === 'ar' ? (
+                                            <button type="reset" disabled={submitting}
+                                                    className="reset-button">مسح</button>
+                                        ) : (
+                                            <button type="reset" disabled={submitting}
+                                                    className="reset-button">Clear</button>
+                                        ))
+                                    }
+
+                                    {thisFormIsEditingAnEntry && (
+                                        <button type="button" disabled={submitting}
+                                                className="reset-button"
+                                                onClick={() => {
+                                                    resetFormCompletely();
+                                                    clearCache();
+                                                }}
+                                        >
+                                            {lang === 'ar' ? 'إعادة تعيين الحالة الأصلية للتعديل' : 'Reset To Original Edit State'}
+                                        </button>
+                                    )}
+                                </div>
                             </>
                         )}
 
