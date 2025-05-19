@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (isset($formData['bookingId'])) {
             $data['bookingId'] = $formData['bookingId'];
-            $stmt = $conn->prepare("SELECT auth_id FROM bookings WHERE bookind_id = ?");
+            $stmt = $conn->prepare("SELECT auth_id FROM bookings WHERE booking_id = ?");
 
             if (!$stmt) {
                 $errorInfo['success'] = false;
