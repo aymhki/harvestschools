@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!$stmt) {
                 $errorInfo['success'] = false;
-                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                $errorInfo['message'] = 'Prepare getting auth_id failed: ' . $conn->error;
                 $errorInfo['code'] = 500;
                 echo json_encode($errorInfo);
                 return;
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                    $errorInfo['message'] = 'Prepare getting parent_id failed: ' . $conn->error;
                     $errorInfo['code'] = 500;
                     performRollback($conn, $data);
                     echo json_encode($errorInfo);
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                    $errorInfo['message'] = 'Prepare getting parents info from booking parents failed: ' . $conn->error;
                     $errorInfo['code'] = 500;
                     performRollback($conn, $data);
                     echo json_encode($errorInfo);
@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                        $errorInfo['message'] = 'Prepare getting parents info from booking parents failed: ' . $conn->error;
                         $errorInfo['code'] = 500;
                         performRollback($conn, $data);
                         echo json_encode($errorInfo);
@@ -218,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                    $errorInfo['message'] = 'Prepare getting student id from booking students failed: ' . $conn->error;
                     $errorInfo['code'] = 500;
                     performRollback($conn, $data);
                     echo json_encode($errorInfo);
@@ -256,7 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                        $errorInfo['message'] = 'Prepare get student info from booking students failed: ' . $conn->error;
                         $errorInfo['code'] = 500;
                         performRollback($conn, $data);
                         echo json_encode($errorInfo);
@@ -292,7 +292,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                    $errorInfo['message'] = 'Prepare select extra id from booking extras failed: ' . $conn->error;
                     $errorInfo['code'] = 500;
                     performRollback($conn, $data);
                     echo json_encode($errorInfo);
@@ -331,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare delete booking parents linker failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -353,7 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare delete booking parents failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -385,7 +385,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare update booking parents failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -407,7 +407,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare update booking parents failed failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -431,7 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare insert booking parents failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -455,7 +455,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare insert booking parents linker failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -488,7 +488,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare update booking parents failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -519,7 +519,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
-                                $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                                $errorInfo['message'] = 'Prepare update booking parents failed: ' . $conn->error;
                                 $errorInfo['code'] = 500;
                                 performRollback($conn, $data);
                                 echo json_encode($errorInfo);
@@ -551,7 +551,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                        $errorInfo['message'] = 'Prepare delete booking students linker failed: ' . $conn->error;
                         $errorInfo['code'] = 500;
                         performRollback($conn, $data);
                         echo json_encode($errorInfo);
@@ -574,7 +574,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
-                            $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                            $errorInfo['message'] = 'Prepare delete booking students failed: ' . $conn->error;
                             $errorInfo['code'] = 500;
                             performRollback($conn, $data);
                             echo json_encode($errorInfo);
@@ -676,7 +676,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                        $errorInfo['message'] = 'Prepare update booking extras failed: ' . $conn->error;
                         $errorInfo['code'] = 500;
                         performRollback($conn, $data);
                         echo json_encode($errorInfo);
@@ -711,7 +711,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                        $errorInfo['message'] = 'Prepare count the number of booking auths with the same username failed: ' . $conn->error;
                         $errorInfo['code'] = 500;
                         performRollback($conn, $data);
                         echo json_encode($errorInfo);
@@ -747,7 +747,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
-                            $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                            $errorInfo['message'] = 'Prepare update booking auth credentials failed: ' . $conn->error;
                             $errorInfo['code'] = 500;
                             performRollback($conn, $data);
                             echo json_encode($errorInfo);
@@ -769,7 +769,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
-                            $errorInfo['message'] = 'Prepare failed: ' . $conn->error;
+                            $errorInfo['message'] = 'Prepare update booking auth credentials failed: ' . $conn->error;
                             $errorInfo['code'] = 500;
                             performRollback($conn, $data);
                             echo json_encode($errorInfo);
