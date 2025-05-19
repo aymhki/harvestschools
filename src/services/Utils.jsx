@@ -16,7 +16,8 @@ const validateBookingLoginEndpoint = '/scripts/validateBookingLogin.php';
 const createBookingSessionEndpoint = '/scripts/createBookingSession.php';
 const deleteBookingEntryEndpoint = '/scripts/deleteBookingEntry.php';
 const submitAddBookingFormEndpoint = '/scripts/submitAddBookingForm.php';
-const getBookingInfoBySessionEndpoint = '/scripts/getBookingBySession.php'
+const getBookingInfoBySessionEndpoint = '/scripts/getBookingBySession.php';
+const submitEditBookingFormEndpoint = '/scripts/submitEditBookingForm.php';
 
 const createAdminSessionEndpoint = '/scripts/createAdminSession.php';
 const validateAdminSessionEndpoint = '/scripts/checkAdminSession.php';
@@ -27,6 +28,27 @@ const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
 const submitFormEndpoint = '/scripts/submitForm.php';
 const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
 const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
+
+
+const handleEditBookingRequest = async (formData) => {
+    try {
+        const sessionId = validateAdminSessionLocally();
+
+        if (!sessionId) {
+            return { success: false, message: 'Session expired' };
+        }
+
+        const response = await fetch(submitEditBookingFormEndpoint, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
 
 const fetchBookingInfoBySessionRequest = async (navigate) => {
     try {
@@ -758,5 +780,6 @@ export {
     fetchJobApplicationsRequest,
     submitFormRequest,
     submitJobApplicationRequest,
-    fetchBookingInfoBySessionRequest
+    fetchBookingInfoBySessionRequest,
+    handleEditBookingRequest
 };

@@ -1,6 +1,13 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {headToAdminLoginOnInvalidSession, fetchBookingsRequest, handleAddBookingRequest, handleDeleteBookingRequest, msgTimeout} from "../../services/Utils.jsx";
+import {
+    headToAdminLoginOnInvalidSession,
+    fetchBookingsRequest,
+    handleAddBookingRequest,
+    handleDeleteBookingRequest,
+    msgTimeout,
+    handleEditBookingRequest
+} from "../../services/Utils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
@@ -16,6 +23,7 @@ function BookingManagement() {
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
     const [showDeleteBookingModal, setShowDeleteBookingModal] = useState(false);
     const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
+    const [rowIndexToEdit, setRowIndexToEdit] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(null);
 
@@ -382,6 +390,8 @@ function BookingManagement() {
     }
 
     const handleEditBookingModalInitialization = async (rowIndex) => {
+        setRowIndexToEdit(rowIndex);
+
         const bookingUsername = allBookings[rowIndex][6];
         const studentIds = allBookings[rowIndex][8];
         const studentNames = allBookings[rowIndex][9];
@@ -447,17 +457,46 @@ function BookingManagement() {
             } else if (field.name === 'student-grade') {
                 field.defaultValue = studentGrades;
             }
+
+
+
             return field;
-        })
+        });
+
+        const editBookingModalStudentSectionFieldsWithIds = editBookingModalStudentSectionFields.map((field) => {
+
+            const newField = {...field};
+
+            if (field.name === 'student-section' && !field.fields.some(f => f.name === 'student-id')) {
+                newField.fields.push({
+                    type: 'hidden',
+                    name: 'student-id',
+                    label: 'Student ID',
+                    placeholder: '',
+                    required: false
+                });
+            }
+
+            return newField;
+        });
 
         const editBookingModalStudentSectionInstances = [];
 
         for (let i = 0; i < studentIdsArray.length; i++) {
-            const editBookingModalStudentSectionInstance = editBookingModalStudentSectionFields.map((field) => {
+            const editBookingModalStudentSectionInstance = editBookingModalStudentSectionFieldsWithIds.map((field) => {
                 const newField = {...field};
 
                 if (newField.name === 'student-section') {
                     newField.defaultValue = studentIdsArray[i];
+
+                    if (newField.fields) {
+                        newField.fields = newField.fields.map(f => {
+                            if (f.name === 'student-id') {
+                                return {...f, defaultValue: studentIdsArray[i]};
+                            }
+                            return f;
+                        });
+                    }
                 } else if (newField.name === 'student-name') {
                     newField.defaultValue = studentNamesArray[i];
                 } else if (newField.name === 'student-school-division') {
@@ -478,16 +517,32 @@ function BookingManagement() {
     }
 
     const handleEditBooking = async (formData) => {
-        // headers:
-        // [
-        //         'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
-        //         'Booking Username', 'Booking Password', 'Student IDs', 'Student Names',
-        //         'School Divisions', 'Grades', 'Students Created',
-        //         'Parent Names', 'Parent Emails', 'Parent Phones',
-        //         'CD Count', 'Additional Attendees', 'Booking Extras Status'
-        // ];
-        console.log(formData);
-        return true;
+        setIsLoading(true);
+
+        const currentEditingBookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
+
+        try {
+            formData.append('booking_id', currentEditingBookingId);
+            const result = await handleEditBookingRequest(formData);
+
+            if (result.success) {
+                setResetEditBookingModal(true);
+                setShowEditBookingModal(false);
+                setEditBookingModalPreFilledCoreFields(null);
+                setEditBookingModalPreFilledExistingSections(null);
+                setRowIndexToEdit(null);
+                setShowEditBookingModal(false);
+                fetchBookings();
+                return true;
+            } else {
+                throw new Error(result.message || 'An error occurred while updating the booking.');
+            }
+
+        } catch (error) {
+            throw new Error(error.message || 'An error occurred while updating the booking.');
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const handleCancelEditBookingModal = () => {
@@ -577,25 +632,7 @@ function BookingManagement() {
                            setShowDeleteBookingModal(true);
                        }}
                        allowDeleteEntryOption={true}
-                       columnsToWrap={
-                            [
-                                // 'Booking ID',
-                                // 'School Division',
-                                // 'Student ID',
-                                // 'Grade',
-                                // 'Student Name',
-                                // 'Booking Username',
-                                // 'First Parent Name',
-                                // 'First Parent Email',
-                                // 'First Parent Phone',
-                                // 'CD Count',
-                                // 'Additional Attendees',
-                                // 'Payment Status',
-                                // 'Second Parent Name',
-                                // 'Second Parent Email',
-                                // 'Second Parent Phone',
-                            ]
-                       }
+                       columnsToWrap={[]}
                        allowEditEntryOption={true}
                        onEditEntryOption={(rowIndex) => {
                             handleEditBookingModalInitialization(rowIndex);

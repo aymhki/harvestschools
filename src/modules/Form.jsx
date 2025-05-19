@@ -744,6 +744,15 @@ function Form({
                     {renderControlField(field)}
                 </div>
             );
+        } else if (field.type === 'hidden') {
+            return (
+                <input
+                    type="hidden"
+                    id={field.id}
+                    name={field.httpName}
+                    value={fieldValues[field.id] !== undefined ? fieldValues[field.id] : field.defaultValue ? field.defaultValue : ''}
+                />
+            );
         }
 
         return (
