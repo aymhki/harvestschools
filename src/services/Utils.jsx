@@ -30,8 +30,31 @@ const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
 const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
 
-const handleEditBookingRequest = async (formData) => {
+const handleEditBookingRequest = async (formData, bookingId) => {
+    try {
+        const sessionId = validateAdminSessionLocally();
 
+        if (!sessionId) {
+            return 'Session expired';
+        }
+
+        formData.append('bookingId', bookingId);
+
+        const response = await fetch(submitEditBookingFormEndpoint, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            return result;
+        } else {
+            return `${result.message}`;
+        }
+    } catch (error) {
+        return error.message;
+    }
 };
 
 const fetchBookingInfoBySessionRequest = async (navigate) => {

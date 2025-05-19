@@ -45,6 +45,17 @@ function BookingManagement() {
     const cdCountFieldId = 11;
     const extrasPaymentStatusFieldId = 12;
     const colIndexForBookingId = 0;
+    const colIndexForBookingUsername = 6;
+    const colIndexForStudentIds = 8;
+    const colIndexForStudentNames = 9;
+    const colIndexForStudentSchoolDivisions = 10;
+    const colIndexForStudentGrades = 11;
+    const colIndexForParentNames = 13;
+    const colIndexForParentEmails = 14;
+    const colIndexForParentPhones = 15;
+    const colIndexForCdCount = 16;
+    const colIndexForAdditionalAttendees = 17;
+    const colIndexForBookingExtrasStatus = 18;
 
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
@@ -392,17 +403,17 @@ function BookingManagement() {
     const handleEditBookingModalInitialization = async (rowIndex) => {
         setRowIndexToEdit(rowIndex);
 
-        const bookingUsername = allBookings[rowIndex][6];
-        const studentIds = allBookings[rowIndex][8];
-        const studentNames = allBookings[rowIndex][9];
-        const studentSchoolDivisions = allBookings[rowIndex][10];
-        const studentGrades = allBookings[rowIndex][11];
-        const parentNames = allBookings[rowIndex][13];
-        const parentEmails = allBookings[rowIndex][14];
-        const parentPhones = allBookings[rowIndex][15];
-        const cdCount = allBookings[rowIndex][16];
-        const additionalAttendees = allBookings[rowIndex][17];
-        const bookingExtrasStatus = allBookings[rowIndex][18];
+        const bookingUsername = allBookings[rowIndex][colIndexForBookingUsername];
+        const studentIds = allBookings[rowIndex][colIndexForStudentIds];
+        const studentNames = allBookings[rowIndex][colIndexForStudentNames];
+        const studentSchoolDivisions = allBookings[rowIndex][colIndexForStudentSchoolDivisions];
+        const studentGrades = allBookings[rowIndex][colIndexForStudentGrades];
+        const parentNames = allBookings[rowIndex][colIndexForParentNames];
+        const parentEmails = allBookings[rowIndex][colIndexForParentEmails];
+        const parentPhones = allBookings[rowIndex][colIndexForParentPhones];
+        const cdCount = allBookings[rowIndex][colIndexForCdCount];
+        const additionalAttendees = allBookings[rowIndex][colIndexForAdditionalAttendees];
+        const bookingExtrasStatus = allBookings[rowIndex][colIndexForBookingExtrasStatus];
         const studentNamesArray = studentNames.split(', ');
         const studentSchoolDivisionsArray = studentSchoolDivisions.split(', ');
         const studentGradesArray = studentGrades.split(', ');
@@ -489,8 +500,27 @@ function BookingManagement() {
     }
 
     const handleEditBooking = async (formData) => {
-        console.log(formData);
-        return true;
+        setIsLoading(true);
+
+        try {
+            const bookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
+            const result = await handleEditBookingRequest(formData, bookingId);
+
+            if (result.success) {
+                setResetEditBookingModal(true);
+                setShowEditBookingModal(false);
+                setAllBookings(null);
+                fetchBookings();
+                return true;
+            } else {
+                throw new Error(result || 'An error occurred while editing the booking.');
+            }
+
+        } catch (error) {
+            throw new Error(error.message || 'An error occurred while editing the booking.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCancelEditBookingModal = () => {
