@@ -492,13 +492,14 @@ function BookingManagement() {
         setIsLoading(true);
 
         try {
-            formData.append('booking_id', allBookings[rowIndexToEdit][colIndexForBookingId]);
+            const bookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
 
-            const result = await handleEditBookingRequest(formData);
+            const result = await handleEditBookingRequest(formData, bookingId);
 
             if (result.success) {
                 setResetEditBookingModal(true);
                 setShowEditBookingModal(false);
+                setAllBookings(null);
                 fetchBookings();
                 return true;
             } else {
@@ -510,7 +511,7 @@ function BookingManagement() {
         } finally {
             setIsLoading(false);
         }
-    }
+    };
 
     const handleCancelEditBookingModal = () => {
         setShowEditBookingModal(false);
