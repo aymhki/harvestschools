@@ -30,41 +30,8 @@ const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
 const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
 
-const handleEditBookingRequest = async (formData, bookingId) => {
-    try {
-        const sessionId = validateAdminSessionLocally();
+const handleEditBookingRequest = async (formData) => {
 
-        if (!sessionId) {
-            return {
-                success: false,
-                message: 'Session expired'
-            };
-        }
-
-        formData.append('field_booking_id', bookingId);
-        formData.append('label_booking_id', 'booking-id');
-
-        const response = await fetch('edit_booking.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            return result;
-        } else {
-            return {
-                success: false,
-                message: result.message || 'An error occurred while updating the booking'
-            };
-        }
-    } catch (error) {
-        return {
-            success: false,
-            message: error.message || 'An error occurred while updating the booking'
-        };
-    }
 };
 
 const fetchBookingInfoBySessionRequest = async (navigate) => {
