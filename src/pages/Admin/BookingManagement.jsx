@@ -489,28 +489,7 @@ function BookingManagement() {
     }
 
     const handleEditBooking = async (formData) => {
-        setIsLoading(true);
 
-        try {
-            const bookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
-
-            const result = await handleEditBookingRequest(formData, bookingId);
-
-            if (result.success) {
-                setResetEditBookingModal(true);
-                setShowEditBookingModal(false);
-                setAllBookings(null);
-                fetchBookings();
-                return true;
-            } else {
-                throw new Error(result.message || 'An error occurred while updating the booking.');
-            }
-
-        } catch (error) {
-            throw new Error(error.message || 'An error occurred while updating the booking.');
-        } finally {
-            setIsLoading(false);
-        }
     };
 
     const handleCancelEditBookingModal = () => {
