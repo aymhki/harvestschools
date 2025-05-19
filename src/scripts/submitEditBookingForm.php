@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $data['firstParentId'] = $parentIds[0];
                 $data['secondParentId'] = $parentIds[1] ?? null;
 
-                $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE id = ?");
+                $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE parent_id = ?");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -182,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 if ($data['secondParentId'] !== null) {
-                    $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE id = ?");
+                    $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE parent_id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
