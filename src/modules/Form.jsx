@@ -727,6 +727,11 @@ function Form({
 
                 field.value = value;
 
+                const fieldElement = document.getElementById(field.id);
+                if (fieldElement) {
+                    fieldElement.value = value;
+                }
+
                 if (!noInputFieldsCache) {
                     saveToCache(field, value);
                 }
@@ -1301,6 +1306,10 @@ function Form({
             dynamicFields.forEach(field => {
                 if (fieldValues[field.id] === undefined) {
                     fieldValues[field.id] = field.defaultValue;
+                }
+
+                if (document.getElementById(field.id) && document.getElementById(field.id).value === '') {
+                    document.getElementById(field.id).value = field.defaultValue;
                 }
             });
         }
