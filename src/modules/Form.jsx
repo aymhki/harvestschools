@@ -1295,6 +1295,14 @@ function Form({
     const onSubmit = async (e) => {
         e.preventDefault();
 
+        if (thisFormIsEditingAnEntry){
+            dynamicFields.forEach(field => {
+                if (fieldValues[field.id] === undefined) {
+                    fieldValues[field.id] = field.defaultValue;
+                }
+            });
+        }
+
         if (pedanticIds) {
             const idMap = {};
             dynamicFields.forEach((field, index) => {
