@@ -320,13 +320,6 @@ function Form({
     };
 
     const resetFormCompletelyButItHasDefaultValuesBecauseItIsEditingAnEntry = () => {
-        // 1. make a copy of the original fields
-        // 2. go through each field and make sure to set the field.defaultValue to '' and field.value to ''
-        // 3. set the dynamicFields to the new copy of the empty fields without the default values
-        // 4. reset the sections, section instances, and all their values
-        // 5. set the nextIdCounter to the original section.startAddingFieldsFromId
-        // 6. set the fieldValues to the new empty fields
-
         const newFields = fields.map(field => {
             return {
                 ...field,
@@ -439,18 +432,15 @@ function Form({
 
             const instanceId = `${sectionId}_${currentSectionState.instances.length}`;
             const insertionIndex = findInsertionIndex(sectionId);
-
             if (insertionIndex === -1) return prevState;
 
-            const newFields = section.fieldsToAdd.map((field, index) => {
-                return {
-                    ...field,
-                    id: nextIdCounter + index,
-                    originalId: field.id,
-                    instanceId: instanceId
-                };
-            });
-
+            // Create new fields for this instance (do not reassign IDs later)
+            const newFields = section.fieldsToAdd.map(field => ({
+                ...field,
+                id: nextIdCounter, // assign current nextIdCounter as unique id
+                originalId: field.id,
+                instanceId: instanceId
+            }));
             const controlField = {
                 id: nextIdCounter + newFields.length,
                 type: 'control',
@@ -461,74 +451,37 @@ function Form({
                 label: `Control ${instanceId}`
             };
 
-            const allNewFieldIds = new Set([
-                ...newFields.map(f => f.id),
-                controlField.id
-            ]);
-
             const allNewFields = [...newFields, controlField];
+
+            // Insert the new fields without renumbering IDs of any existing fields
             const updatedDynamicFields = [...dynamicFields];
             updatedDynamicFields.splice(insertionIndex, 0, ...allNewFields);
+            setDynamicFields(updatedDynamicFields);
 
-            const idMap = {};
-            const normalizedFields = updatedDynamicFields.map((field, index) => {
-                const newId = index + 1;
-                if (field.id !== newId) {
-                    idMap[field.id] = newId;
-                    return { ...field, id: newId };
-                }
-                return field;
+            // Update refs for newly added fields
+            const newRefs = { ...refs };
+            allNewFields.forEach(field => {
+                newRefs[field.id] = createRef();
             });
-
-            const updatedFieldValues = {...fieldValues};
-
-            const existingFieldValues = {...fieldValues};
-
-            normalizedFields.forEach(field => {
-                const oldId = Object.entries(idMap).find(([_, newId]) => newId === field.id)?.[0];
-
-                if (allNewFieldIds.has(parseInt(oldId))) {
-                    delete updatedFieldValues[field.id];
-                }
-                else if (oldId && existingFieldValues[oldId] !== undefined) {
-                    updatedFieldValues[field.id] = existingFieldValues[oldId];
-                }
-            });
-
-            setFieldValues(updatedFieldValues);
-
-            const newRefs = {...refs};
-            normalizedFields.forEach(field => {
-                if (allNewFields.some(newField => newField.id === field.id) || idMap[field.id]) {
-                    newRefs[field.id] = createRef();
-                }
-            });
-
             setRefs(newRefs);
-            setDynamicFields(normalizedFields);
-            setNextIdCounter(normalizedFields.length + 1);
 
-            const updatedInstances = currentSectionState.instances.map(instance => ({
-                ...instance,
-                fieldIds: instance.fieldIds.map(id => idMap[id] || id)
-            }));
+            // Update nextIdCounter to preserve unique id generation
+            setNextIdCounter(nextIdCounter + allNewFields.length);
 
-            const newInstanceFieldIds = allNewFields.map(field =>
-                idMap[field.id] || field.id
-            );
-
+            // Append the new instance to this section's state without renormalizing instance field ids
             return {
                 ...prevState,
                 [sectionId]: {
                     count: currentSectionState.instances.length + 1,
                     instances: [
-                        ...updatedInstances,
+                        ...currentSectionState.instances,
                         {
                             instanceId: instanceId,
-                            fieldIds: newInstanceFieldIds,
+                            fieldIds: allNewFields.map(field => field.id),
                             insertedAtIndex: insertionIndex
                         }
                     ],
+                    // nextInsertPosition advanced by number of fields inserted
                     nextInsertPosition: insertionIndex + allNewFields.length
                 }
             };
@@ -537,102 +490,47 @@ function Form({
 
     const removeSectionInstance = (sectionId, instanceId) => {
         setSectionInstances(prevState => {
-            const currentSectionState = {...prevState[sectionId]};
+            const currentSectionState = { ...prevState[sectionId] };
             if (!currentSectionState) return prevState;
 
             const instanceIndex = currentSectionState.instances.findIndex(
                 instance => instance.instanceId === instanceId
             );
-
             if (instanceIndex === -1) return prevState;
 
+            // Get the fields belonging to the instance to be removed
             const instanceToRemove = currentSectionState.instances[instanceIndex];
             const fieldsToRemove = instanceToRemove.fieldIds;
 
-            const existingFieldValues = {...fieldValues};
-
+            // Remove those fields from the dynamicFields list while keeping other fields’ IDs intact
             const updatedDynamicFields = dynamicFields.filter(
                 field => !fieldsToRemove.includes(field.id)
             );
+            setDynamicFields(updatedDynamicFields);
 
-            const idMap = {};
-            const normalizedFields = updatedDynamicFields.map((field, index) => {
-                const newId = index + 1;
-                if (field.id !== newId) {
-                    idMap[field.id] = newId;
-                    return { ...field, id: newId };
-                }
-                return field;
-            });
-
-            const updatedFieldValues = {};
-            normalizedFields.forEach(field => {
-                const oldId = field.id in idMap ? field.id :
-                    Object.entries(idMap).find(([_, newId]) => newId === field.id)?.[0];
-
-                if (oldId && existingFieldValues[oldId] !== undefined) {
-                    updatedFieldValues[field.id] = existingFieldValues[oldId];
-                }
-            });
-
-            setFieldValues(updatedFieldValues);
-
-            const newRefs = {};
-            normalizedFields.forEach(field => {
-                if (refs[field.id]) {
-                    newRefs[idMap[field.id] || field.id] = refs[field.id];
-                } else {
-                    newRefs[idMap[field.id] || field.id] = createRef();
-                }
-            });
-
+            // Remove associated refs
+            const newRefs = { ...refs };
+            fieldsToRemove.forEach(id => delete newRefs[id]);
             setRefs(newRefs);
-            setDynamicFields(normalizedFields);
-            setNextIdCounter(normalizedFields.length + 1);
 
-            let updatedInstances = [...currentSectionState.instances];
-            updatedInstances.splice(instanceIndex, 1);
+            // Remove the instance from the sectionInstances array
+            const updatedInstances = currentSectionState.instances.filter(
+                instance => instance.instanceId !== instanceId
+            );
 
-            updatedInstances = updatedInstances.map((instance, index) => {
-                const newInstanceId = `${sectionId}_${index}`;
-
-                normalizedFields.forEach(field => {
-                    if (field.instanceId === instance.instanceId) {
-                        field.instanceId = newInstanceId;
-                    }
-                });
-
-                const updatedFieldIds = instance.fieldIds
-                    .filter(id => !fieldsToRemove.includes(id))
-                    .map(id => idMap[id] || id);
-
-                const removedFieldsBeforeThisInstance =
-                    instanceToRemove.insertedAtIndex < instance.insertedAtIndex ?
-                        fieldsToRemove.length : 0;
-
-                return {
-                    ...instance,
-                    instanceId: newInstanceId,
-                    fieldIds: updatedFieldIds,
-                    insertedAtIndex: instance.insertedAtIndex - removedFieldsBeforeThisInstance
-                };
-            });
-
+            // Recalculate the nextInsertPosition:
+            // For simplicity, you can set it to either the insertion index of the last instance or
+            // if none remain, use the index right after the section's trigger field.
             let newNextInsertPosition;
             if (updatedInstances.length === 0) {
-                const startField = dynamicSections.find(section => section.sectionId === sectionId);
-                newNextInsertPosition = normalizedFields.findIndex(
-                    field => field.id === startField.startAddingFieldsFromId
-                ) + 1;
-
-                if (newNextInsertPosition <= 0) {
-                    newNextInsertPosition = normalizedFields.length;
-                }
+                const sectionTrigger = dynamicSections.find(s => s.sectionId === sectionId);
+                const startFieldIndex = dynamicFields.findIndex(field => field.id === sectionTrigger.startAddingFieldsFromId);
+                newNextInsertPosition = startFieldIndex !== -1 ? startFieldIndex + 1 : updatedDynamicFields.length;
             } else {
                 const lastInstance = updatedInstances[updatedInstances.length - 1];
-                const lastFieldId = Math.max(...lastInstance.fieldIds);
-                const lastFieldIndex = normalizedFields.findIndex(field => field.id === lastFieldId);
-                newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : normalizedFields.length;
+                const lastFieldId = lastInstance.fieldIds[lastInstance.fieldIds.length - 1];
+                const lastFieldIndex = updatedDynamicFields.findIndex(field => field.id === lastFieldId);
+                newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : updatedDynamicFields.length;
             }
 
             return {
