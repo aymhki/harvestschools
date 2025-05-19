@@ -489,42 +489,8 @@ function BookingManagement() {
     }
 
     const handleEditBooking = async (formData) => {
-        setIsLoading(true);
-
-        try {
-            if (rowIndexToEdit !== null && allBookings && allBookings[rowIndexToEdit]) {
-                const bookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
-
-                const bookingIdField = document.createElement('input');
-                bookingIdField.type = 'hidden';
-                bookingIdField.name = 'field_booking_id';
-                bookingIdField.value = bookingId;
-
-                const bookingIdLabel = document.createElement('input');
-                bookingIdLabel.type = 'hidden';
-                bookingIdLabel.name = 'label_booking_id';
-                bookingIdLabel.value = 'booking-id';
-
-                formData.append('field_booking_id', bookingId);
-                formData.append('label_booking_id', 'booking-id');
-            }
-
-            const result = await handleEditBookingRequest(formData);
-
-            if (result.success) {
-                setResetEditBookingModal(true);
-                setShowEditBookingModal(false);
-                setAllBookings(null);
-                fetchBookings();
-                return true;
-            } else {
-                throw new Error(result.message || 'An error occurred while updating the booking.');
-            }
-        } catch (error) {
-            throw new Error(error.message || 'An error occurred while updating the booking.');
-        } finally {
-            setIsLoading(false);
-        }
+        console.log(formData);
+        return true;
     };
 
     const handleCancelEditBookingModal = () => {
