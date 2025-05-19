@@ -481,3 +481,4 @@ function getExistingBookingData($conn, $bookingId) {
 
     return $data;
 }
+?>
