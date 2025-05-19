@@ -1,5 +1,14 @@
 <?php
+// Prevent any output before intended JSON response
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
 header('Content-Type: application/json');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Include database configuration
 $dbConfig = require 'dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
@@ -8,10 +17,11 @@ $dbname = $dbConfig['db_name'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn = null;
-    $errorInfo = [
-        'success' => true,
+    $response = [
+        'success' => false,
         'message' => '',
-        'code' => 0
+        'code' => 0,
+        'booking_id' => null
     ];
 
     try {
@@ -53,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cleanPermissionLevels = array_map(function($level) {
             return intval(trim($level));
         }, $permissionLevels);
+
         $hasPermission = in_array(1, $cleanPermissionLevels);
 
         if (!$hasPermission) {
@@ -64,15 +75,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $studentSections = [];
         $bookingId = null;
 
-        // First extract booking ID which should be passed as a hidden field
-        foreach ($_POST as $key => $value) {
-            if (strpos($key, 'field_') === 0) {
-                $fieldId = substr($key, 6);
-                $labelKey = 'label_' . $fieldId;
+        // First check for booking ID
+        if (isset($_POST['booking_id'])) {
+            $bookingId = intval($_POST['booking_id']);
+        } else {
+            // Look for it in the field data
+            foreach ($_POST as $key => $value) {
+                if (strpos($key, 'field_') === 0) {
+                    $fieldId = substr($key, 6);
+                    $labelKey = 'label_' . $fieldId;
 
-                if (isset($_POST[$labelKey]) && $_POST[$labelKey] === 'booking-id') {
-                    $bookingId = intval($value);
-                    break;
+                    if (isset($_POST[$labelKey]) && $_POST[$labelKey] === 'booking-id') {
+                        $bookingId = intval($value);
+                        break;
+                    }
                 }
             }
         }
@@ -80,6 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$bookingId) {
             throw new Exception('Booking ID is required', 400);
         }
+
+        $response['booking_id'] = $bookingId;
 
         // Continue parsing other form data
         foreach ($_POST as $key => $value) {
@@ -282,19 +300,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $studentName = $studentData['Student Name'];
             $schoolDivision = $studentData['Student School Division'] ?? 'Other';
             $grade = $studentData['Student Grade'] ?? '';
-            $studentId = $studentData['Student Section'] ?? null; // This field should contain student_id
+            $studentId = isset($studentData['Student Section']) && is_numeric($studentData['Student Section']) ?
+                intval($studentData['Student Section']) : null;
 
-            if ($studentId && $index < $existingStudentCount) {
-                // Update existing student
-                $stmt = $conn->prepare("UPDATE booking_students SET name = ?, school_division = ?, grade = ? WHERE student_id = ?");
-                $stmt->bind_param("sssi", $studentName, $schoolDivision, $grade, $studentId);
+            // Check if this is an existing student that needs to be updated
+            $existingStudentMatch = false;
+            if ($studentId) {
+                foreach ($existingStudents as $existingStudent) {
+                    if ($existingStudent['student_id'] == $studentId) {
+                        $existingStudentMatch = true;
 
-                if (!$stmt->execute()) {
-                    throw new Exception('Failed to update student #' . ($index + 1) . ': ' . $stmt->error, 500);
+                        // Update existing student
+                        $stmt = $conn->prepare("UPDATE booking_students SET name = ?, school_division = ?, grade = ? WHERE student_id = ?");
+                        $stmt->bind_param("sssi", $studentName, $schoolDivision, $grade, $studentId);
+
+                        if (!$stmt->execute()) {
+                            throw new Exception('Failed to update student #' . ($index + 1) . ': ' . $stmt->error, 500);
+                        }
+                        $stmt->close();
+                        break;
+                    }
                 }
-                $stmt->close();
-            } else {
-                // Create new student
+            }
+
+            // If not an existing student, add a new one
+            if (!$existingStudentMatch) {
                 $stmt = $conn->prepare("INSERT INTO booking_students (name, school_division, grade) VALUES (?, ?, ?)");
                 $stmt->bind_param("sss", $studentName, $schoolDivision, $grade);
 
@@ -302,12 +332,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception('Failed to add student #' . ($index + 1) . ': ' . $stmt->error, 500);
                 }
 
-                $studentId = $conn->insert_id;
+                $newStudentId = $conn->insert_id;
                 $stmt->close();
 
                 // Link student to booking
                 $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
-                $stmt->bind_param("ii", $bookingId, $studentId);
+                $stmt->bind_param("ii", $bookingId, $newStudentId);
 
                 if (!$stmt->execute()) {
                     throw new Exception('Failed to link student #' . ($index + 1) . ' to booking: ' . $stmt->error, 500);
@@ -317,37 +347,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Remove students that were deleted from the form
-        if ($newStudentCount < $existingStudentCount) {
-            $studentIdsToKeep = [];
+        $studentIdsToKeep = [];
 
-            foreach ($studentSections as $studentData) {
-                if (isset($studentData['Student Section']) && is_numeric($studentData['Student Section'])) {
-                    $studentIdsToKeep[] = intval($studentData['Student Section']);
-                }
+        foreach ($studentSections as $studentData) {
+            if (isset($studentData['Student Section']) && is_numeric($studentData['Student Section'])) {
+                $studentIdsToKeep[] = intval($studentData['Student Section']);
             }
+        }
 
-            foreach ($existingStudents as $student) {
-                $studentId = $student['student_id'];
+        foreach ($existingStudents as $student) {
+            $studentId = $student['student_id'];
 
-                if (!in_array($studentId, $studentIdsToKeep)) {
-                    // Remove from linker first
-                    $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ? AND student_id = ?");
-                    $stmt->bind_param("ii", $bookingId, $studentId);
+            if (!in_array($studentId, $studentIdsToKeep)) {
+                // Remove from linker first
+                $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ? AND student_id = ?");
+                $stmt->bind_param("ii", $bookingId, $studentId);
 
-                    if (!$stmt->execute()) {
-                        throw new Exception('Failed to unlink removed student: ' . $stmt->error, 500);
-                    }
-                    $stmt->close();
-
-                    // Then delete the student
-                    $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
-                    $stmt->bind_param("i", $studentId);
-
-                    if (!$stmt->execute()) {
-                        throw new Exception('Failed to delete removed student: ' . $stmt->error, 500);
-                    }
-                    $stmt->close();
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to unlink removed student: ' . $stmt->error, 500);
                 }
+                $stmt->close();
+
+                // Then delete the student
+                $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+                $stmt->bind_param("i", $studentId);
+
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to delete removed student: ' . $stmt->error, 500);
+                }
+                $stmt->close();
             }
         }
 
@@ -356,8 +384,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $additionalAttendees = isset($formData['Additional Attendees']) ? intval($formData['Additional Attendees']) : 0;
         $paymentStatus = $formData['Extras Payment Status'] ?? 'Not Signed Up';
 
-        $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE booking_id = ?");
-        $stmt->bind_param("iisi", $cdCount, $additionalAttendees, $paymentStatus, $bookingId);
+        // Check if extras record exists
+        $stmt = $conn->prepare("SELECT COUNT(*) as count FROM booking_extras WHERE booking_id = ?");
+        $stmt->bind_param("i", $bookingId);
+        $stmt->execute();
+        $extrasResult = $stmt->get_result();
+        $extrasExists = $extrasResult->fetch_assoc()['count'] > 0;
+        $stmt->close();
+
+        if ($extrasExists) {
+            $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE booking_id = ?");
+            $stmt->bind_param("iisi", $cdCount, $additionalAttendees, $paymentStatus, $bookingId);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id, cd_count, additional_attendees, payment_status) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("iiis", $bookingId, $cdCount, $additionalAttendees, $paymentStatus);
+        }
 
         if (!$stmt->execute()) {
             throw new Exception('Failed to update extras: ' . $stmt->error, 500);
@@ -365,28 +406,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
 
         // Commit all changes
-        $conn->commit();
+        if (!$conn->commit()) {
+            throw new Exception('Failed to commit transaction: ' . $conn->error, 500);
+        }
 
-        echo json_encode([
+        $response = [
             'success' => true,
             'message' => 'Booking updated successfully',
             'code' => 200,
             'booking_id' => $bookingId
-        ]);
+        ];
 
     } catch (Exception $e) {
         if ($conn !== null && !$conn->connect_error) {
-            $conn->rollback();
+            try {
+                $conn->rollback();
+            } catch (Exception $rollbackException) {
+                // Log rollback exception but don't expose to client
+                error_log('Rollback failed: ' . $rollbackException->getMessage());
+            }
         }
 
-        $errorInfo['success'] = false;
-        $errorInfo['message'] = $e->getMessage();
-        $errorInfo['code'] = $e->getCode() ?: 500;
-        echo json_encode($errorInfo);
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+        $response['code'] = $e->getCode() ?: 500;
     } finally {
         if ($conn !== null && !$conn->connect_error) {
             $conn->close();
         }
+
+        echo json_encode($response);
+        exit;
     }
 } else {
     echo json_encode([
@@ -394,6 +444,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'message' => 'Invalid request method',
         'code' => 405
     ]);
+    exit;
 }
 
 /**
