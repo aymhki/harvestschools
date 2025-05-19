@@ -451,6 +451,8 @@ function BookingManagement() {
                 }
             } else if (field.id === bookingPasswordFieldId || field.id === confirmBookingPasswordFieldId) {
                 field.required = false;
+                field.value = '';
+                field.defaultValue = '';
             }
 
             return field;
