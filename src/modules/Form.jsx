@@ -273,7 +273,7 @@ function Form({
         setDynamicFields(currentFields);
     }, [dynamicFields, loadCachedValues, processFieldRules, noInputFieldsCache]);
 
-    const resetFormCompletely = () => {
+    const resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry = () => {
         setDynamicFields([...fields]);
         setFileInputs({});
         setCaptchaValue(generateCaptcha());
@@ -373,7 +373,7 @@ function Form({
         if (thisFormIsEditingAnEntry) {
             resetFormCompletelyButItHasDefaultValuesBecauseItIsEditingAnEntry();
         } else {
-            resetFormCompletely();
+            resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
         }
         clearCache();
     }
@@ -389,13 +389,13 @@ function Form({
 
     useEffect(() => {
         if (resetFormFromParent) {
-            resetFormCompletely();
+            resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
 
             if (setResetForFromParent) {
                 setResetForFromParent(false);
             }
         }
-    }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
+    }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry]);
 
     const [captchaValue, setCaptchaValue] = useState(generateCaptcha());
     const [enteredCaptcha, setEnteredCaptcha] = useState('');
@@ -432,15 +432,18 @@ function Form({
 
             const instanceId = `${sectionId}_${currentSectionState.instances.length}`;
             const insertionIndex = findInsertionIndex(sectionId);
+
             if (insertionIndex === -1) return prevState;
 
-            // Create new fields for this instance (do not reassign IDs later)
-            const newFields = section.fieldsToAdd.map(field => ({
-                ...field,
-                id: nextIdCounter, // assign current nextIdCounter as unique id
-                originalId: field.id,
-                instanceId: instanceId
-            }));
+            const newFields = section.fieldsToAdd.map((field, index) => {
+                return {
+                    ...field,
+                    id: nextIdCounter + index,
+                    originalId: field.id,
+                    instanceId: instanceId
+                };
+            });
+
             const controlField = {
                 id: nextIdCounter + newFields.length,
                 type: 'control',
@@ -451,37 +454,74 @@ function Form({
                 label: `Control ${instanceId}`
             };
 
-            const allNewFields = [...newFields, controlField];
+            const allNewFieldIds = new Set([
+                ...newFields.map(f => f.id),
+                controlField.id
+            ]);
 
-            // Insert the new fields without renumbering IDs of any existing fields
+            const allNewFields = [...newFields, controlField];
             const updatedDynamicFields = [...dynamicFields];
             updatedDynamicFields.splice(insertionIndex, 0, ...allNewFields);
-            setDynamicFields(updatedDynamicFields);
 
-            // Update refs for newly added fields
-            const newRefs = { ...refs };
-            allNewFields.forEach(field => {
-                newRefs[field.id] = createRef();
+            const idMap = {};
+            const normalizedFields = updatedDynamicFields.map((field, index) => {
+                const newId = index + 1;
+                if (field.id !== newId) {
+                    idMap[field.id] = newId;
+                    return { ...field, id: newId };
+                }
+                return field;
             });
+
+            const updatedFieldValues = {...fieldValues};
+
+            const existingFieldValues = {...fieldValues};
+
+            normalizedFields.forEach(field => {
+                const oldId = Object.entries(idMap).find(([_, newId]) => newId === field.id)?.[0];
+
+                if (allNewFieldIds.has(parseInt(oldId))) {
+                    delete updatedFieldValues[field.id];
+                }
+                else if (oldId && existingFieldValues[oldId] !== undefined) {
+                    updatedFieldValues[field.id] = existingFieldValues[oldId];
+                }
+            });
+
+            setFieldValues(updatedFieldValues);
+
+            const newRefs = {...refs};
+            normalizedFields.forEach(field => {
+                if (allNewFields.some(newField => newField.id === field.id) || idMap[field.id]) {
+                    newRefs[field.id] = createRef();
+                }
+            });
+
             setRefs(newRefs);
+            setDynamicFields(normalizedFields);
+            setNextIdCounter(normalizedFields.length + 1);
 
-            // Update nextIdCounter to preserve unique id generation
-            setNextIdCounter(nextIdCounter + allNewFields.length);
+            const updatedInstances = currentSectionState.instances.map(instance => ({
+                ...instance,
+                fieldIds: instance.fieldIds.map(id => idMap[id] || id)
+            }));
 
-            // Append the new instance to this section's state without renormalizing instance field ids
+            const newInstanceFieldIds = allNewFields.map(field =>
+                idMap[field.id] || field.id
+            );
+
             return {
                 ...prevState,
                 [sectionId]: {
                     count: currentSectionState.instances.length + 1,
                     instances: [
-                        ...currentSectionState.instances,
+                        ...updatedInstances,
                         {
                             instanceId: instanceId,
-                            fieldIds: allNewFields.map(field => field.id),
+                            fieldIds: newInstanceFieldIds,
                             insertedAtIndex: insertionIndex
                         }
                     ],
-                    // nextInsertPosition advanced by number of fields inserted
                     nextInsertPosition: insertionIndex + allNewFields.length
                 }
             };
@@ -490,47 +530,102 @@ function Form({
 
     const removeSectionInstance = (sectionId, instanceId) => {
         setSectionInstances(prevState => {
-            const currentSectionState = { ...prevState[sectionId] };
+            const currentSectionState = {...prevState[sectionId]};
             if (!currentSectionState) return prevState;
 
             const instanceIndex = currentSectionState.instances.findIndex(
                 instance => instance.instanceId === instanceId
             );
+
             if (instanceIndex === -1) return prevState;
 
-            // Get the fields belonging to the instance to be removed
             const instanceToRemove = currentSectionState.instances[instanceIndex];
             const fieldsToRemove = instanceToRemove.fieldIds;
 
-            // Remove those fields from the dynamicFields list while keeping other fields’ IDs intact
+            const existingFieldValues = {...fieldValues};
+
             const updatedDynamicFields = dynamicFields.filter(
                 field => !fieldsToRemove.includes(field.id)
             );
-            setDynamicFields(updatedDynamicFields);
 
-            // Remove associated refs
-            const newRefs = { ...refs };
-            fieldsToRemove.forEach(id => delete newRefs[id]);
+            const idMap = {};
+            const normalizedFields = updatedDynamicFields.map((field, index) => {
+                const newId = index + 1;
+                if (field.id !== newId) {
+                    idMap[field.id] = newId;
+                    return { ...field, id: newId };
+                }
+                return field;
+            });
+
+            const updatedFieldValues = {};
+            normalizedFields.forEach(field => {
+                const oldId = field.id in idMap ? field.id :
+                    Object.entries(idMap).find(([_, newId]) => newId === field.id)?.[0];
+
+                if (oldId && existingFieldValues[oldId] !== undefined) {
+                    updatedFieldValues[field.id] = existingFieldValues[oldId];
+                }
+            });
+
+            setFieldValues(updatedFieldValues);
+
+            const newRefs = {};
+            normalizedFields.forEach(field => {
+                if (refs[field.id]) {
+                    newRefs[idMap[field.id] || field.id] = refs[field.id];
+                } else {
+                    newRefs[idMap[field.id] || field.id] = createRef();
+                }
+            });
+
             setRefs(newRefs);
+            setDynamicFields(normalizedFields);
+            setNextIdCounter(normalizedFields.length + 1);
 
-            // Remove the instance from the sectionInstances array
-            const updatedInstances = currentSectionState.instances.filter(
-                instance => instance.instanceId !== instanceId
-            );
+            let updatedInstances = [...currentSectionState.instances];
+            updatedInstances.splice(instanceIndex, 1);
 
-            // Recalculate the nextInsertPosition:
-            // For simplicity, you can set it to either the insertion index of the last instance or
-            // if none remain, use the index right after the section's trigger field.
+            updatedInstances = updatedInstances.map((instance, index) => {
+                const newInstanceId = `${sectionId}_${index}`;
+
+                normalizedFields.forEach(field => {
+                    if (field.instanceId === instance.instanceId) {
+                        field.instanceId = newInstanceId;
+                    }
+                });
+
+                const updatedFieldIds = instance.fieldIds
+                    .filter(id => !fieldsToRemove.includes(id))
+                    .map(id => idMap[id] || id);
+
+                const removedFieldsBeforeThisInstance =
+                    instanceToRemove.insertedAtIndex < instance.insertedAtIndex ?
+                        fieldsToRemove.length : 0;
+
+                return {
+                    ...instance,
+                    instanceId: newInstanceId,
+                    fieldIds: updatedFieldIds,
+                    insertedAtIndex: instance.insertedAtIndex - removedFieldsBeforeThisInstance
+                };
+            });
+
             let newNextInsertPosition;
             if (updatedInstances.length === 0) {
-                const sectionTrigger = dynamicSections.find(s => s.sectionId === sectionId);
-                const startFieldIndex = dynamicFields.findIndex(field => field.id === sectionTrigger.startAddingFieldsFromId);
-                newNextInsertPosition = startFieldIndex !== -1 ? startFieldIndex + 1 : updatedDynamicFields.length;
+                const startField = dynamicSections.find(section => section.sectionId === sectionId);
+                newNextInsertPosition = normalizedFields.findIndex(
+                    field => field.id === startField.startAddingFieldsFromId
+                ) + 1;
+
+                if (newNextInsertPosition <= 0) {
+                    newNextInsertPosition = normalizedFields.length;
+                }
             } else {
                 const lastInstance = updatedInstances[updatedInstances.length - 1];
-                const lastFieldId = lastInstance.fieldIds[lastInstance.fieldIds.length - 1];
-                const lastFieldIndex = updatedDynamicFields.findIndex(field => field.id === lastFieldId);
-                newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : updatedDynamicFields.length;
+                const lastFieldId = Math.max(...lastInstance.fieldIds);
+                const lastFieldIndex = normalizedFields.findIndex(field => field.id === lastFieldId);
+                newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : normalizedFields.length;
             }
 
             return {
@@ -1328,7 +1423,7 @@ function Form({
                                 setShowFormModalPopup(false);
                             }
 
-                            resetFormCompletely();
+                            resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
                             clearCache();
 
                         }, msgTimeout);
@@ -1353,7 +1448,7 @@ function Form({
                             if (formInModalPopup) {
                                 setShowFormModalPopup(false);
                             }
-                            resetFormCompletely();
+                            resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
                             clearCache();
                         }, msgTimeout);
 
@@ -1454,7 +1549,7 @@ function Form({
                                         <button type="button" disabled={submitting}
                                                 className="reset-button"
                                                 onClick={() => {
-                                                    resetFormCompletely();
+                                                    resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
                                                     clearCache();
                                                 }}
                                         >
@@ -1520,7 +1615,7 @@ function Form({
                                         <button type="button" disabled={submitting}
                                                 className="reset-button"
                                                 onClick={() => {
-                                                    resetFormCompletely();
+                                                    resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
                                                     clearCache();
                                                 }}
                                         >
