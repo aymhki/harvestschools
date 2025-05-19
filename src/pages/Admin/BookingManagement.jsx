@@ -489,7 +489,28 @@ function BookingManagement() {
     }
 
     const handleEditBooking = async (formData) => {
+        setIsLoading(true);
 
+        try {
+            // Add the booking ID to the form data
+            formData.append('booking_id', allBookings[rowIndexToEdit][colIndexForBookingId]);
+
+            const result = await handleEditBookingRequest(formData);
+
+            if (result.success) {
+                setResetEditBookingModal(true);
+                setShowEditBookingModal(false);
+                fetchBookings();
+                return true;
+            } else {
+                throw new Error(result.message || 'An error occurred while updating the booking.');
+            }
+
+        } catch (error) {
+            throw new Error(error.message || 'An error occurred while updating the booking.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCancelEditBookingModal = () => {
