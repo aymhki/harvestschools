@@ -458,45 +458,17 @@ function BookingManagement() {
                 field.defaultValue = studentGrades;
             }
 
-
-
             return field;
-        });
-
-        const editBookingModalStudentSectionFieldsWithIds = editBookingModalStudentSectionFields.map((field) => {
-
-            const newField = {...field};
-
-            if (field.name === 'student-section' && !field.fields.some(f => f.name === 'student-id')) {
-                newField.fields.push({
-                    type: 'hidden',
-                    name: 'student-id',
-                    label: 'Student ID',
-                    placeholder: '',
-                    required: false
-                });
-            }
-
-            return newField;
         });
 
         const editBookingModalStudentSectionInstances = [];
 
         for (let i = 0; i < studentIdsArray.length; i++) {
-            const editBookingModalStudentSectionInstance = editBookingModalStudentSectionFieldsWithIds.map((field) => {
+            const editBookingModalStudentSectionInstance = editBookingModalStudentSectionFields.map((field) => {
                 const newField = {...field};
 
                 if (newField.name === 'student-section') {
                     newField.defaultValue = studentIdsArray[i];
-
-                    if (newField.fields) {
-                        newField.fields = newField.fields.map(f => {
-                            if (f.name === 'student-id') {
-                                return {...f, defaultValue: studentIdsArray[i]};
-                            }
-                            return f;
-                        });
-                    }
                 } else if (newField.name === 'student-name') {
                     newField.defaultValue = studentNamesArray[i];
                 } else if (newField.name === 'student-school-division') {
@@ -517,32 +489,7 @@ function BookingManagement() {
     }
 
     const handleEditBooking = async (formData) => {
-        setIsLoading(true);
 
-        const currentEditingBookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
-
-        try {
-            formData.append('booking_id', currentEditingBookingId);
-            const result = await handleEditBookingRequest(formData);
-
-            if (result.success) {
-                setResetEditBookingModal(true);
-                setShowEditBookingModal(false);
-                setEditBookingModalPreFilledCoreFields(null);
-                setEditBookingModalPreFilledExistingSections(null);
-                setRowIndexToEdit(null);
-                setShowEditBookingModal(false);
-                fetchBookings();
-                return true;
-            } else {
-                throw new Error(result.message || 'An error occurred while updating the booking.');
-            }
-
-        } catch (error) {
-            throw new Error(error.message || 'An error occurred while updating the booking.');
-        } finally {
-            setIsLoading(false);
-        }
     }
 
     const handleCancelEditBookingModal = () => {
