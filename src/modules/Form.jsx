@@ -355,10 +355,6 @@ function Form({
             return resetState;
         });
 
-        if (prefilledInitialized) {
-            setPrefilledInitialized(false);
-        }
-
         setNextIdCounter(fields.length + 1);
         setGeneralFormError('');
         setSuccessMessage('');
