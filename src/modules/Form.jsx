@@ -36,10 +36,10 @@ function Form({
                   setResetForFromParent,
                   dynamicSections = [],
                   pedanticIds,
-                    formInModalPopup,
-                    setShowFormModalPopup,
+                  formInModalPopup,
+                  setShowFormModalPopup,
                   formIsReadOnly,
-                footerButtonsSpaceBetween,
+                  footerButtonsSpaceBetween,
                   switchFooterButtonsOrder
               }) {
 
@@ -241,34 +241,35 @@ function Form({
     }, []);
 
     useEffect(() => {
-        if(noInputFieldsCache) {
+        if (noInputFieldsCache) {
             return;
         }
 
-        let cachedValues = loadCachedValues();
+        const cachedValues = loadCachedValues();
+        const initialFieldValues = {};
 
-        const initializeForm = () => {
-            let currentFields = [...fields];
+        dynamicFields.forEach(field => {
+            const cachedValue = cachedValues[field.id];
+            if (cachedValue !== undefined) {
+                initialFieldValues[field.id] = cachedValue;
+            }
+        });
 
-            Object.entries(cachedValues).forEach(([fieldId, value]) => {
-                const element = document.getElementById(fieldId);
-                if (element) {
-                    element.value = value;
-                }
-            });
+        setFieldValues(prevValues => ({
+            ...prevValues,
+            ...initialFieldValues
+        }));
 
-            fields.forEach(field => {
-                const cachedValue = cachedValues[field.id];
-                if (field.rules && cachedValue) {
-                    currentFields = processFieldRules(currentFields, field, cachedValue);
-                }
-            });
+        let currentFields = [...dynamicFields];
+        dynamicFields.forEach(field => {
+            const cachedValue = cachedValues[field.id];
+            if (field.rules && cachedValue) {
+                currentFields = processFieldRules(currentFields, field, cachedValue);
+            }
+        });
 
-            setDynamicFields(currentFields);
-        };
-
-        initializeForm();
-    }, [fields, loadCachedValues, processFieldRules, noInputFieldsCache]);
+        setDynamicFields(currentFields);
+    }, [dynamicFields, loadCachedValues, processFieldRules, noInputFieldsCache]);
 
     const resetFormCompletely = () => {
         setDynamicFields([...fields]);
@@ -653,7 +654,7 @@ function Form({
 
                 field.value = value;
 
-                if(!noInputFieldsCache) {
+                if (!noInputFieldsCache) {
                     saveToCache(field, value);
                 }
             }
@@ -1651,7 +1652,7 @@ Form.propTypes = {
         errorMsg: PropTypes.string,
         choices: PropTypes.arrayOf(PropTypes.string),
         regex: PropTypes.string,
-        widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
+        widthOfField: PropTypes.number,
         labelOutside: PropTypes.bool,
         allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
         placeholder: PropTypes.string,
@@ -1665,7 +1666,6 @@ Form.propTypes = {
         defaultValue: PropTypes.string,
         minimumValue: PropTypes.string,
         maximumValue: PropTypes.string,
-
         rules: PropTypes.arrayOf(PropTypes.shape({
             value: PropTypes.string.isRequired,
             ruleResult: PropTypes.arrayOf(PropTypes.shape({
@@ -1677,7 +1677,7 @@ Form.propTypes = {
                 errorMsg: PropTypes.string,
                 choices: PropTypes.arrayOf(PropTypes.string),
                 regex: PropTypes.string,
-                widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
+                widthOfField: PropTypes.number,
                 labelOutside: PropTypes.bool,
                 allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
                 placeholder: PropTypes.string,
@@ -1691,7 +1691,6 @@ Form.propTypes = {
                 defaultValue: PropTypes.string,
                 minimumValue: PropTypes.string,
                 maximumValue: PropTypes.string,
-
                 rules: PropTypes.arrayOf(PropTypes.shape({
                     value: PropTypes.string.isRequired,
                     ruleResult: PropTypes.arrayOf(PropTypes.shape({
@@ -1705,7 +1704,7 @@ Form.propTypes = {
                         regex: PropTypes.string,
                         mustMatchFieldWithId: PropTypes.number,
                         mustNotMatchFieldWithId: PropTypes.number,
-                        widthOfField: PropTypes.number, // a number between 1 and 3 where 1 means taking 100% of the width, 2 means taking 50% of the width, and 3 means taking 33.33% of the width
+                        widthOfField: PropTypes.number,
                         labelOutside: PropTypes.bool,
                         allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
                         placeholder: PropTypes.string,
@@ -1721,7 +1720,6 @@ Form.propTypes = {
             }))
         }))
     })).isRequired,
-
     mailTo: PropTypes.string.isRequired,
     sendPdf: PropTypes.bool.isRequired,
     formTitle: PropTypes.string.isRequired,
@@ -1760,9 +1758,6 @@ Form.propTypes = {
     formIsReadOnly: PropTypes.bool,
     footerButtonsSpaceBetween: PropTypes.bool,
     switchFooterButtonsOrder: PropTypes.bool,
-
-
 };
 
 export default Form;
-

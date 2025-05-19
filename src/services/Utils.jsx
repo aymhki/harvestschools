@@ -592,9 +592,7 @@ const formatDateFromPacific = (pacificTimeString) => {
     return pacificDate.toLocaleString(undefined, options);
 };
 
-const getStorageKey = (formTitle, fieldId, fieldLabel) => {
-    return `form_${formTitle}_${fieldLabel}_${fieldId}`;
-};
+
 
 const createSessions = (sessionName,) => {
     const sessionId = uuidv4();
@@ -643,7 +641,11 @@ const validateAdminSessionLocally = () => {
     }
 }
 
+
 const useFormCache = (formTitle, fields) => {
+    const getStorageKey = (formTitle, fieldId, fieldLabel) => {
+        return `form_${formTitle}_${fieldLabel}_${fieldId}`;
+    };
 
     const loadCachedValues = useCallback(() => {
         const cachedValues = {};
@@ -685,7 +687,6 @@ export {
     getCookies,
     formatDateFromPacific,
     useFormCache,
-    getStorageKey,
     checkAdminSessionFromAdminLogin,
     validateAdminLogin,
     checkAdminSessionFromAdminDashboard,
