@@ -361,7 +361,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 2000;
 
 
 }
@@ -372,7 +372,7 @@
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0.5rem;
-    z-index: 1000;
+    z-index: 2000;
     top: 0;
     left: 0;
 }
@@ -384,7 +384,7 @@
     background-color: #ffffff;
     width: 30%;
     max-height: 100%;
-    z-index: 1001;
+    z-index: 2001;
 }
 
 .form-select-date-modal-header {

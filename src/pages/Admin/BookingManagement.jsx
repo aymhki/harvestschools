@@ -757,6 +757,7 @@ function BookingManagement() {
                                   switchFooterButtonsOrder={true}
                                   resetFormFromParent={resetEditBookingModal}
                                   setResetForFromParent={setResetEditBookingModal}
+                                  thisFormIsEditingAnEntry={true}
                             />
                         )}
                     </div>

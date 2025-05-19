@@ -40,7 +40,8 @@ function Form({
                   setShowFormModalPopup,
                   formIsReadOnly,
                   footerButtonsSpaceBetween,
-                  switchFooterButtonsOrder
+                  switchFooterButtonsOrder,
+                  thisFormIsEditingAnEntry
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -69,6 +70,7 @@ function Form({
     const { loadCachedValues, saveToCache, clearCache } = useFormCache(formTitle, fields);
     const [prefilledInitialized, setPrefilledInitialized] = useState(false);
     const [fieldValues, setFieldValues] = useState({});
+
 
 
     useEffect(() => {
@@ -304,6 +306,24 @@ function Form({
 
         if (hasSetSubmittingLocal) {
             setSubmittingLocal(false);
+        }
+
+        if (thisFormIsEditingAnEntry) {
+            setSectionInstances(prevState => {
+                const resetState = {};
+
+                dynamicSections.forEach(section => {
+                    resetState[section.sectionId] = {
+                        count: 0,
+                        instances: [],
+                        nextInsertPosition: section.startAddingFieldsFromId
+                    };
+                });
+
+                return resetState;
+            });
+
+            setDynamicFields([...fields]);
         }
 
         setTimeout(() => {
@@ -1758,6 +1778,7 @@ Form.propTypes = {
     formIsReadOnly: PropTypes.bool,
     footerButtonsSpaceBetween: PropTypes.bool,
     switchFooterButtonsOrder: PropTypes.bool,
+    thisFormIsEditingAnEntry: PropTypes.bool
 };
 
 export default Form;
