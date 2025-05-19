@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     try {
-        // Check for admin session
         if (!isset($_COOKIE['harvest_schools_admin_session_id'])) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'Unauthorized: No session found';
@@ -45,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        // Verify admin permission
         $permissionSql = "SELECT u.permission_level
                          FROM admin_sessions s
                          JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
@@ -85,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        // Parse form data
         $formData = [];
         $studentSections = [];
 
@@ -112,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Get booking ID from form data or hidden field
         if (!isset($_POST['booking_id']) || !is_numeric($_POST['booking_id'])) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'Invalid or missing booking ID';
@@ -125,7 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->autocommit(false);
 
-        // Get existing booking data
         $stmt = $conn->prepare("SELECT * FROM bookings WHERE booking_id = ?");
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -156,7 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bookingInfo = $result->fetch_assoc();
         $data['authId'] = $bookingInfo['auth_id'];
 
-        // Get auth credentials
         $stmt = $conn->prepare("SELECT username FROM booking_auth_credentials WHERE auth_id = ?");
         $stmt->bind_param("i", $data['authId']);
         $stmt->execute();
@@ -164,7 +158,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $authData = $result->fetch_assoc();
         $currentUsername = $authData['username'];
 
-        // Verify username from form
         if (empty($formData['Booking Username'])) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'Username is required';
@@ -175,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $bookingUsername = $formData['Booking Username'];
 
-        // If username changed, check if it already exists
         if ($bookingUsername !== $currentUsername) {
             $stmt = $conn->prepare("SELECT auth_id FROM booking_auth_credentials WHERE username = ? AND auth_id != ?");
             $stmt->bind_param("si", $bookingUsername, $data['authId']);
@@ -191,7 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Delete existing students
         $stmt = $conn->prepare("SELECT student_id FROM booking_students_linker WHERE booking_id = ?");
         $stmt->bind_param("i", $data['bookingId']);
         $stmt->execute();
@@ -226,7 +217,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Delete existing parents
         $stmt = $conn->prepare("SELECT parent_id FROM booking_parents_linker WHERE booking_id = ?");
         $stmt->bind_param("i", $data['bookingId']);
         $stmt->execute();
@@ -261,14 +251,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Update auth credentials - username always, password only if provided
         if (!empty($formData['Booking Password'])) {
-            // Password provided, update both username and password
             $bookingPassword = $formData['Booking Password'];
             $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
             $stmt->bind_param("ssi", $bookingUsername, $bookingPassword, $data['authId']);
         } else {
-            // No password provided, update only username
             $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ? WHERE auth_id = ?");
             $stmt->bind_param("si", $bookingUsername, $data['authId']);
         }
@@ -282,7 +269,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        // Add first parent
         if (empty($formData['First Parent Name'])) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'First parent information is required';
@@ -323,7 +309,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        // Add second parent if provided
         if (!empty($formData['Second Parent Name'])) {
             $secondParentName = $formData['Second Parent Name'];
             $secondParentEmail = $formData['Second Parent Email'] ?? '';
@@ -357,7 +342,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Add students
         $hasStudents = false;
 
         foreach ($studentSections as $index => $studentData) {
@@ -405,7 +389,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        // Update extras
         $cdCount = isset($formData['CD Count']) ? intval($formData['CD Count']) : 0;
         $additionalAttendees = isset($formData['Additional Attendees']) ? intval($formData['Additional Attendees']) : 0;
         $paymentStatus = $formData['Extras Payment Status'] ?? 'Not Signed Up';
@@ -422,7 +405,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        // Commit the transaction
         if (!$conn->commit()) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'Failed to commit transaction: ' . $conn->error;
