@@ -308,23 +308,6 @@ function Form({
             setSubmittingLocal(false);
         }
 
-        if (thisFormIsEditingAnEntry) {
-            setSectionInstances(prevState => {
-                const resetState = {};
-
-                dynamicSections.forEach(section => {
-                    resetState[section.sectionId] = {
-                        count: 0,
-                        instances: [],
-                        nextInsertPosition: section.startAddingFieldsFromId
-                    };
-                });
-
-                return resetState;
-            });
-
-            setDynamicFields([...fields]);
-        }
 
         setTimeout(() => {
             fields.forEach(field => {
@@ -336,8 +319,73 @@ function Form({
         }, 0);
     };
 
+    const resetFormCompletelyButItHasDefaultValuesBecauseItIsEditingAnEntry = () => {
+        // 1. make a copy of the original fields
+        // 2. go through each field and make sure to set the field.defaultValue to '' and field.value to ''
+        // 3. set the dynamicFields to the new copy of the empty fields without the default values
+        // 4. reset the sections, section instances, and all their values
+        // 5. set the nextIdCounter to the original section.startAddingFieldsFromId
+        // 6. set the fieldValues to the new empty fields
+
+        const newFields = fields.map(field => {
+            return {
+                ...field,
+                defaultValue: '',
+                value: ''
+            };
+        });
+
+        setDynamicFields(newFields);
+        setFileInputs({});
+        setCaptchaValue(generateCaptcha());
+        setEnteredCaptcha('');
+        setFieldValues({});
+
+        setSectionInstances(prevState => {
+            const resetState = {};
+
+            dynamicSections.forEach(section => {
+                resetState[section.sectionId] = {
+                    count: 0,
+                    instances: [],
+                    nextInsertPosition: section.startAddingFieldsFromId
+                };
+            });
+
+            return resetState;
+        });
+
+        if (prefilledInitialized) {
+            setPrefilledInitialized(false);
+        }
+
+        setNextIdCounter(fields.length + 1);
+        setGeneralFormError('');
+        setSuccessMessage('');
+
+        if (hasSetSubmittingLocal) {
+            setSubmittingLocal(false);
+        }
+
+        setTimeout(() => {
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (element) {
+                    element.value = '';
+                }
+            });
+        }, 0);
+
+
+
+    }
+
     function resetForm() {
-        resetFormCompletely();
+        if (thisFormIsEditingAnEntry) {
+            resetFormCompletelyButItHasDefaultValuesBecauseItIsEditingAnEntry();
+        } else {
+            resetFormCompletely();
+        }
         clearCache();
     }
 
@@ -1503,7 +1551,8 @@ function Form({
                                                 className="reset-button">مسح</button>
                                     ) : (
                                         <button type="reset" disabled={submitting}
-                                                className="reset-button">Clear</button>
+                                                className="reset-button">Clear
+                                        </button>
                                     ))
                                 }
 
