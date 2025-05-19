@@ -381,7 +381,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -403,7 +403,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -427,7 +427,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     } else  if ($data['firstParentId'] !== null && $data['secondParentId'] === null) {
                         if (!empty($secondParentName) ) {
-                            $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone) VALUES (?, ?, ?)");
+                            $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -484,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -515,7 +515,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
