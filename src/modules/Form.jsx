@@ -727,10 +727,10 @@ function Form({
 
                 field.value = value;
 
-                const fieldElement = document.getElementById(field.id);
-                if (fieldElement) {
-                    fieldElement.value = value;
-                }
+                // const fieldElement = document.getElementById(field.id);
+                // if (fieldElement) {
+                //     fieldElement.value = value;
+                // }
 
                 if (!noInputFieldsCache) {
                     saveToCache(field, value);
