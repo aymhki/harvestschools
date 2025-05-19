@@ -226,8 +226,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Delete existing parents
-        $stmt = $conn->prepare("SELECT parent_id FROM booking_parents_linker WHERE booking_id = ?");
+        // Get existing parent information before deleting
+        $stmt = $conn->prepare("
+            SELECT p.parent_id, p.name, p.email, p.phone_number, pl.is_primary
+            FROM booking_parents p
+            JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
+            WHERE pl.booking_id = ?
+            ORDER BY pl.is_primary DESC
+        ");
         $stmt->bind_param("i", $data['bookingId']);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -237,6 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $existingParentIds[] = $row['parent_id'];
         }
 
+        // Delete parent links
         $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
         $stmt->bind_param("i", $data['bookingId']);
         if (!$stmt->execute()) {
@@ -248,6 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
+        // Delete parents
         foreach ($existingParentIds as $parentId) {
             $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
             $stmt->bind_param("i", $parentId);
@@ -323,11 +331,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        // Add second parent if provided
+        // Add second parent if provided - checking for any of the second parent fields
         if (!empty($formData['Second Parent Name'])) {
             $secondParentName = $formData['Second Parent Name'];
             $secondParentEmail = $formData['Second Parent Email'] ?? '';
             $secondParentPhone = $formData['Second Parent Phone Number'] ?? '';
+
+            // Validate that second parent is different from first parent
+            if ($secondParentName === $firstParentName) {
+                $errorInfo['success'] = false;
+                $errorInfo['message'] = 'Second parent must be different from first parent';
+                $errorInfo['code'] = 400;
+                $conn->rollback();
+                echo json_encode($errorInfo);
+                return;
+            }
 
             $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $secondParentName, $secondParentEmail, $secondParentPhone);
@@ -366,6 +384,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $studentName = $studentData['Student Name'];
                 $schoolDivision = $studentData['Student School Division'] ?? 'IGCSE';
                 $grade = $studentData['Student Grade'] ?? '';
+
+                // Validate required fields for students
+                if (empty($schoolDivision) || empty($grade)) {
+                    $errorInfo['success'] = false;
+                    $errorInfo['message'] = 'School division and grade are required for student: ' . $studentName;
+                    $errorInfo['code'] = 400;
+                    $conn->rollback();
+                    echo json_encode($errorInfo);
+                    return;
+                }
 
                 $stmt = $conn->prepare("INSERT INTO booking_students (name, school_division, grade) VALUES (?, ?, ?)");
                 $stmt->bind_param("sss", $studentName, $schoolDivision, $grade);
@@ -410,8 +438,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $additionalAttendees = isset($formData['Additional Attendees']) ? intval($formData['Additional Attendees']) : 0;
         $paymentStatus = $formData['Extras Payment Status'] ?? 'Not Signed Up';
 
-        $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE booking_id = ?");
-        $stmt->bind_param("iisi", $cdCount, $additionalAttendees, $paymentStatus, $data['bookingId']);
+        // Check if extras record exists
+        $stmt = $conn->prepare("SELECT extra_id FROM booking_extras WHERE booking_id = ?");
+        $stmt->bind_param("i", $data['bookingId']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // Update existing extras record
+            $extrasRow = $result->fetch_assoc();
+            $data['extrasId'] = $extrasRow['extra_id'];
+
+            $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE booking_id = ?");
+            $stmt->bind_param("iisi", $cdCount, $additionalAttendees, $paymentStatus, $data['bookingId']);
+        } else {
+            // Create new extras record if none exists
+            $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id, cd_count, additional_attendees, payment_status) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("iiis", $data['bookingId'], $cdCount, $additionalAttendees, $paymentStatus);
+        }
 
         if (!$stmt->execute()) {
             $errorInfo['success'] = false;
