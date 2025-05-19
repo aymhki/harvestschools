@@ -765,7 +765,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             return;
                         }
                     } else {
-                        $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ?, password = SHA2(?, 256) WHERE auth_id = ?");
+                        $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
