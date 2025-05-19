@@ -498,6 +498,8 @@ function BookingManagement() {
             if (result.success) {
                 setResetEditBookingModal(true)
                 setShowEditBookingModal(false);
+                setAllBookings(null);
+                setRowIndexToEdit(null);
                 fetchBookings();
                 return true;
             } else {
@@ -568,6 +570,8 @@ function BookingManagement() {
                            'Booking Time',
                            'Booking Notes',
                            'Students Created',
+                           'Student IDs',
+
 
                        ]}
                        allowExport={true}
