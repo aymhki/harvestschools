@@ -252,7 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 foreach ($data['oldStudentIds'] as $studentId) {
-                    $stmt = $conn->prepare("SELECT name, school_division, grade FROM booking_students WHERE id = ?");
+                    $stmt = $conn->prepare("SELECT name, school_division, grade FROM booking_students WHERE student_id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
@@ -349,7 +349,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE id = ?");
+                            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -381,7 +381,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -403,7 +403,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -484,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -515,7 +515,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
 
-                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE id = ?");
+                            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone = ? WHERE parent_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -570,7 +570,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     foreach ($data['oldStudentIds'] as $studentId) {
-                        $stmt = $conn->prepare("DELETE FROM booking_students WHERE id = ?");
+                        $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
