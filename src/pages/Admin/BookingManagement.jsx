@@ -492,14 +492,29 @@ function BookingManagement() {
         setIsLoading(true);
 
         try {
-            formData.append('booking_id', allBookings[rowIndexToEdit][colIndexForBookingId]);
+            if (rowIndexToEdit !== null && allBookings && allBookings[rowIndexToEdit]) {
+                const bookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
+
+                const bookingIdField = document.createElement('input');
+                bookingIdField.type = 'hidden';
+                bookingIdField.name = 'field_booking_id';
+                bookingIdField.value = bookingId;
+
+                const bookingIdLabel = document.createElement('input');
+                bookingIdLabel.type = 'hidden';
+                bookingIdLabel.name = 'label_booking_id';
+                bookingIdLabel.value = 'booking-id';
+
+                formData.append('field_booking_id', bookingId);
+                formData.append('label_booking_id', 'booking-id');
+            }
+
             const result = await handleEditBookingRequest(formData);
 
             if (result.success) {
-                setResetEditBookingModal(true)
+                setResetEditBookingModal(true);
                 setShowEditBookingModal(false);
                 setAllBookings(null);
-                setRowIndexToEdit(null);
                 fetchBookings();
                 return true;
             } else {
@@ -510,7 +525,7 @@ function BookingManagement() {
         } finally {
             setIsLoading(false);
         }
-    }
+    };
 
     const handleCancelEditBookingModal = () => {
         setShowEditBookingModal(false);
