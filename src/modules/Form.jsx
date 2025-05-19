@@ -539,80 +539,88 @@ function Form({
 
             if (instanceIndex === -1) return prevState;
 
+            // Get instance to remove and its fields
             const instanceToRemove = currentSectionState.instances[instanceIndex];
-            const fieldsToRemove = instanceToRemove.fieldIds;
+            const fieldsToRemove = new Set(instanceToRemove.fieldIds);
 
+            // Create a copy of existing field values before modification
             const existingFieldValues = {...fieldValues};
 
+            // Filter out fields to remove while preserving instance associations
             const updatedDynamicFields = dynamicFields.filter(
-                field => !fieldsToRemove.includes(field.id)
+                field => !fieldsToRemove.has(field.id)
             );
 
+            // Create a mapping of old IDs to new IDs
             const idMap = {};
-            const normalizedFields = updatedDynamicFields.map((field, index) => {
+            updatedDynamicFields.forEach((field, index) => {
                 const newId = index + 1;
                 if (field.id !== newId) {
                     idMap[field.id] = newId;
+                }
+            });
+
+            // Normalize fields with new IDs
+            const normalizedFields = updatedDynamicFields.map((field, index) => {
+                const newId = index + 1;
+                if (field.id !== newId) {
                     return { ...field, id: newId };
                 }
                 return field;
             });
 
+            // Create updated field values maintaining associations
             const updatedFieldValues = {};
             normalizedFields.forEach(field => {
-                const oldId = field.id in idMap ? field.id :
-                    Object.entries(idMap).find(([_, newId]) => newId === field.id)?.[0];
+                // Find old ID for this field (either directly or by mapping)
+                const oldId = Object.keys(idMap).find(key => idMap[key] === field.id) || field.id;
 
-                if (oldId && existingFieldValues[oldId] !== undefined) {
+                // If we have a value for the old ID, preserve it with the new ID
+                if (existingFieldValues[oldId] !== undefined) {
                     updatedFieldValues[field.id] = existingFieldValues[oldId];
                 }
             });
 
-            setFieldValues(updatedFieldValues);
-
+            // Update refs for all fields
             const newRefs = {};
             normalizedFields.forEach(field => {
-                if (refs[field.id]) {
-                    newRefs[idMap[field.id] || field.id] = refs[field.id];
-                } else {
-                    newRefs[idMap[field.id] || field.id] = createRef();
-                }
+                newRefs[field.id] = refs[field.id] || createRef();
             });
 
-            setRefs(newRefs);
-            setDynamicFields(normalizedFields);
-            setNextIdCounter(normalizedFields.length + 1);
+            // Update instances with new field IDs
+            let updatedInstances = currentSectionState.instances.filter(
+                instance => instance.instanceId !== instanceId
+            ).map(instance => {
+                // Update field IDs in this instance
+                return {
+                    ...instance,
+                    fieldIds: instance.fieldIds
+                        .filter(id => !fieldsToRemove.has(id))
+                        .map(id => idMap[id] || id)
+                };
+            });
 
-            let updatedInstances = [...currentSectionState.instances];
-            updatedInstances.splice(instanceIndex, 1);
-
+            // Renumber instance IDs sequentially
             updatedInstances = updatedInstances.map((instance, index) => {
                 const newInstanceId = `${sectionId}_${index}`;
 
+                // Update instanceId references in fields
                 normalizedFields.forEach(field => {
                     if (field.instanceId === instance.instanceId) {
                         field.instanceId = newInstanceId;
                     }
                 });
 
-                const updatedFieldIds = instance.fieldIds
-                    .filter(id => !fieldsToRemove.includes(id))
-                    .map(id => idMap[id] || id);
-
-                const removedFieldsBeforeThisInstance =
-                    instanceToRemove.insertedAtIndex < instance.insertedAtIndex ?
-                        fieldsToRemove.length : 0;
-
                 return {
                     ...instance,
-                    instanceId: newInstanceId,
-                    fieldIds: updatedFieldIds,
-                    insertedAtIndex: instance.insertedAtIndex - removedFieldsBeforeThisInstance
+                    instanceId: newInstanceId
                 };
             });
 
+            // Calculate new insertion position
             let newNextInsertPosition;
             if (updatedInstances.length === 0) {
+                // If no more instances, reset to starting position
                 const startField = dynamicSections.find(section => section.sectionId === sectionId);
                 newNextInsertPosition = normalizedFields.findIndex(
                     field => field.id === startField.startAddingFieldsFromId
@@ -622,11 +630,18 @@ function Form({
                     newNextInsertPosition = normalizedFields.length;
                 }
             } else {
+                // Otherwise, position after the last field of the last instance
                 const lastInstance = updatedInstances[updatedInstances.length - 1];
                 const lastFieldId = Math.max(...lastInstance.fieldIds);
                 const lastFieldIndex = normalizedFields.findIndex(field => field.id === lastFieldId);
                 newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : normalizedFields.length;
             }
+
+            // Update state
+            setRefs(newRefs);
+            setDynamicFields(normalizedFields);
+            setNextIdCounter(normalizedFields.length + 1);
+            setFieldValues(updatedFieldValues);
 
             return {
                 ...prevState,
@@ -672,6 +687,7 @@ function Form({
                     className="remove-section-button"
                     onClick={() => removeSectionInstance(field.sectionId, field.instanceId)}
                     disabled={submitting}
+                    data-instance-id={field.instanceId}
                 >
                     {section?.removeButtonText || `Remove`}
                 </button>
