@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $data['firstParentId'] = $parentIds[0];
                 $data['secondParentId'] = $parentIds[1] ?? null;
 
-                $stmt = $conn->prepare("SELECT name, email, phone FROM booking_parents WHERE id = ?");
+                $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE id = ?");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -178,11 +178,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $row = $result->fetch_assoc();
                     $data['oldFirstParentName'] = $row['name'];
                     $data['oldFirstParentEmail'] = $row['email'];
-                    $data['oldFirstParentPhone'] = $row['phone'];
+                    $data['oldFirstParentPhone'] = $row['phone_number'];
                 }
 
                 if ($data['secondParentId'] !== null) {
-                    $stmt = $conn->prepare("SELECT name, email, phone FROM booking_parents WHERE id = ?");
+                    $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $row = $result->fetch_assoc();
                         $data['oldSecondParentName'] = $row['name'];
                         $data['oldSecondParentEmail'] = $row['email'];
-                        $data['oldSecondParentPhone'] = $row['phone'];
+                        $data['oldSecondParentPhone'] = $row['phone_number'];
                     }
                 }
 
