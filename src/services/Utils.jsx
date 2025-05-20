@@ -431,12 +431,19 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
             body: JSON.stringify({username, password})
         });
 
-        const result = await response.json();
+        let result = null;
+
+        try {
+            result = await response.json();
+        } catch (error) {
+            console.log('Error parsing JSON response:', error, response);
+            return 'Error parsing JSON response';
+        }
 
         if (result.success) {
             const sessionResponse = await fetch(endpoints.createAdminSession, {
                 method: 'POST',
-                body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_admin')})
+                body: JSON.stringify({ username: username, session_id: createSessions('harvest_schools_admin') })
             });
 
             const sessionResult = await sessionResponse.json();
