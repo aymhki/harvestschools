@@ -650,7 +650,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         } else {
                             $errorInfo['success'] = false;
-                            $errorInfo['message'] = 'Student Name cannot be empty';
+                            $errorInfo['message'] = 'Student Name cannot be empty: ' . $studentData['Student Grade'] . ' - ' . $studentData['Student School Division'];
                             $errorInfo['code'] = 400;
                             performRollback($conn, $data);
                             echo json_encode($errorInfo);
