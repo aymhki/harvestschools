@@ -70,6 +70,8 @@ try {
         "code" => $e->getCode() ?: 500
     ]);
 } finally {
-    $conn?->close();
+    if ($conn) {
+        $conn->close();
+    }
 }
 ?>
