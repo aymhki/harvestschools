@@ -1300,6 +1300,8 @@ function Form({
     const onSubmit = async (e) => {
         e.preventDefault();
 
+        console.log('field values before updating with default values:\n', fieldValues);
+
         if (thisFormIsEditingAnEntry){
             dynamicFields.forEach(field => {
                 if (fieldValues[field.id] === undefined) {
@@ -1311,6 +1313,9 @@ function Form({
                 }
             });
         }
+
+        console.log('field values after updating with default values:\n', fieldValues);
+        console.log('dynamic fields:\n', dynamicFields);
 
         if (pedanticIds) {
             const idMap = {};
