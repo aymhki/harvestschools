@@ -674,7 +674,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($newCdCount < 0 || $newAdditionalAttendees < 0 || $newPaymentStatus === '') {
                         $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'CD Count and Additional Attendees must be greater than or equal to 0';
+                        $errorInfo['message'] = 'CD Count and Additional Attendees must be greater than or equal to 0 and Payment Status cannot be empty';
                         $errorInfo['code'] = 400;
                         performRollback($conn, $data);
                         echo json_encode($errorInfo);
