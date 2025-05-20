@@ -240,7 +240,7 @@ const handleDeleteBookingRequest = async (bookingId) => {
 
         const response = await fetch(endpoints.deleteBookingEntry, {
             method: 'POST',
-            body: JSON.stringify({bookingId: bookingId})
+            body: JSON.stringify({bookingId: bookingId, session_id: sessionId})
         });
 
         const result = await response.json();
@@ -397,7 +397,7 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
-
+        console.log('hiiiiii');
         const permissionsResult = await permissionsResponse.json();
 
         if (permissionsResult.success) {

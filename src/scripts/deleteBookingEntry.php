@@ -10,15 +10,6 @@ $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 try {
-    if (!isset($_COOKIE['harvest_schools_admin_session_id'])) {
-        echo json_encode([
-            'success' => false,
-            'message' => "Unauthorized: No session found",
-            'code' => 401
-        ]);
-        exit;
-    }
-
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         echo json_encode([
             'success' => false,
@@ -40,7 +31,7 @@ try {
     }
 
     $bookingId = (int)$data['bookingId'];
-    $sessionId = $_COOKIE['harvest_schools_admin_session_id'];
+    $sessionId = $data['session_id'];
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
