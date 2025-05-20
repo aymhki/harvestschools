@@ -30,24 +30,24 @@ const adminDashboardPageUrl = '/admin/dashboard';
 // const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
 
-const checkBookingSessionEndpoint = 'http://localhost:8000/scripts/checkBookingSession.php';
-const getAllBookingsEndpoint = 'http://localhost:8000/scripts/getAllBookings.php';
-const validateBookingLoginEndpoint = 'http://localhost:8000/scripts/validateBookingLogin.php';
-const createBookingSessionEndpoint = 'http://localhost:8000/scripts/createBookingSession.php';
-const deleteBookingEntryEndpoint = 'http://localhost:8000/scripts/deleteBookingEntry.php';
-const submitAddBookingFormEndpoint = 'http://localhost:8000/scripts/submitAddBookingForm.php';
-const getBookingInfoBySessionEndpoint = 'http://localhost:8000/scripts/getBookingBySession.php';
-const submitEditBookingFormEndpoint = 'http://localhost:8000/scripts/submitEditBookingForm.php';
+const checkBookingSessionEndpoint = 'http://localhost:80/scripts/checkBookingSession.php';
+const getAllBookingsEndpoint = 'http://localhost:80/scripts/getAllBookings.php';
+const validateBookingLoginEndpoint = 'http://localhost:80/scripts/validateBookingLogin.php';
+const createBookingSessionEndpoint = 'http://localhost:80/scripts/createBookingSession.php';
+const deleteBookingEntryEndpoint = 'http://localhost:80/scripts/deleteBookingEntry.php';
+const submitAddBookingFormEndpoint = 'http://localhost:80/scripts/submitAddBookingForm.php';
+const getBookingInfoBySessionEndpoint = 'http://localhost:80/scripts/getBookingBySession.php';
+const submitEditBookingFormEndpoint = 'http://localhost:80/scripts/submitEditBookingForm.php';
 
-const createAdminSessionEndpoint = 'http://localhost:8000/scripts/createAdminSession.php';
-const validateAdminSessionEndpoint = 'http://localhost:8000/scripts/checkAdminSession.php';
-const validateAdminLoginEndpoint = 'http://localhost:8000/scripts/validateAdminLogin.php';
-const getDashboardPermissionsEndpoint = 'http://localhost:8000/scripts/getDashboardPermissions.php';
-const getUserPermissionsEndpoint = 'http://localhost:8000/scripts/getUserPermissions.php';
-const submitFormEndpoint = 'http://localhost:8000/scripts/submitForm.php';
+const createAdminSessionEndpoint = 'http://localhost:80/scripts/createAdminSession.php';
+const validateAdminSessionEndpoint = 'http://localhost:80/scripts/checkAdminSession.php';
+const validateAdminLoginEndpoint = 'http://localhost:80/scripts/validateAdminLogin.php';
+const getDashboardPermissionsEndpoint = 'http://localhost:80/scripts/getDashboardPermissions.php';
+const getUserPermissionsEndpoint = 'http://localhost:80/scripts/getUserPermissions.php';
+const submitFormEndpoint = 'http://localhost:80/scripts/submitForm.php';
 
-const submitJobApplicationEndpoint = 'http://localhost:8000/scripts/submitJobApplication.php';
-const getJobApplicationsEndpoint = 'http://localhost:8000/scripts/getJobApplications.php';
+const submitJobApplicationEndpoint = 'http://localhost:80/scripts/submitJobApplication.php';
+const getJobApplicationsEndpoint = 'http://localhost:80/scripts/getJobApplications.php';
 
 const handleEditBookingRequest = async (formData, bookingId) => {
     try {
