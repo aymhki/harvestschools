@@ -1,6 +1,50 @@
 import {useCallback} from "react";
 import {v4 as uuidv4} from "uuid";
 
+const isDevelopment = () => {
+    return window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1';
+};
+
+const BASE_URLS = {
+    development: 'http://localhost:8088',
+    production: ''
+};
+
+const getBaseUrl = () => {
+    return isDevelopment() ? BASE_URLS.development : BASE_URLS.production;
+};
+
+const ENDPOINTS = {
+    checkBookingSession: '/scripts/checkBookingSession.php',
+    getAllBookings: '/scripts/getAllBookings.php',
+    validateBookingLogin: '/scripts/validateBookingLogin.php',
+    createBookingSession: '/scripts/createBookingSession.php',
+    deleteBookingEntry: '/scripts/deleteBookingEntry.php',
+    submitAddBookingForm: '/scripts/submitAddBookingForm.php',
+    getBookingInfoBySession: '/scripts/getBookingBySession.php',
+    submitEditBookingForm: '/scripts/submitEditBookingForm.php',
+    createAdminSession: '/scripts/createAdminSession.php',
+    validateAdminSession: '/scripts/checkAdminSession.php',
+    validateAdminLogin: '/scripts/validateAdminLogin.php',
+    getDashboardPermissions: '/scripts/getDashboardPermissions.php',
+    getUserPermissions: '/scripts/getUserPermissions.php',
+    submitForm: '/scripts/submitForm.php',
+    submitJobApplication: '/scripts/submitJobApplication.php',
+    getJobApplications: '/scripts/getJobApplications.php'
+};
+
+const generateEndpoints = () => {
+    const baseUrl = getBaseUrl();
+    const fullEndpoints = {};
+
+    for (const [key, path] of Object.entries(ENDPOINTS)) {
+        fullEndpoints[key] = `${baseUrl}${path}`;
+    }
+
+    return fullEndpoints;
+};
+
 
 const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
@@ -10,44 +54,7 @@ const bookingDashboardPageUrl = '/events/booking/dashboard';
 const adminLoginPageUrl = '/admin/login';
 const adminDashboardPageUrl = '/admin/dashboard';
 
-// const checkBookingSessionEndpoint = '/scripts/checkBookingSession.php';
-// const getAllBookingsEndpoint = '/scripts/getAllBookings.php';
-// const validateBookingLoginEndpoint = '/scripts/validateBookingLogin.php';
-// const createBookingSessionEndpoint = '/scripts/createBookingSession.php';
-// const deleteBookingEntryEndpoint = '/scripts/deleteBookingEntry.php';
-// const submitAddBookingFormEndpoint = '/scripts/submitAddBookingForm.php';
-// const getBookingInfoBySessionEndpoint = '/scripts/getBookingBySession.php';
-// const submitEditBookingFormEndpoint = '/scripts/submitEditBookingForm.php';
-//
-// const createAdminSessionEndpoint = '/scripts/createAdminSession.php';
-// const validateAdminSessionEndpoint = '/scripts/checkAdminSession.php';
-// const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
-//
-// const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
-// const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
-// const submitFormEndpoint = '/scripts/submitForm.php';
-// const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
-// const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
-
-
-const checkBookingSessionEndpoint = 'http://localhost:80/scripts/checkBookingSession.php';
-const getAllBookingsEndpoint = 'http://localhost:80/scripts/getAllBookings.php';
-const validateBookingLoginEndpoint = 'http://localhost:80/scripts/validateBookingLogin.php';
-const createBookingSessionEndpoint = 'http://localhost:80/scripts/createBookingSession.php';
-const deleteBookingEntryEndpoint = 'http://localhost:80/scripts/deleteBookingEntry.php';
-const submitAddBookingFormEndpoint = 'http://localhost:80/scripts/submitAddBookingForm.php';
-const getBookingInfoBySessionEndpoint = 'http://localhost:80/scripts/getBookingBySession.php';
-const submitEditBookingFormEndpoint = 'http://localhost:80/scripts/submitEditBookingForm.php';
-
-const createAdminSessionEndpoint = 'http://localhost:80/scripts/createAdminSession.php';
-const validateAdminSessionEndpoint = 'http://localhost:80/scripts/checkAdminSession.php';
-const validateAdminLoginEndpoint = 'http://localhost:80/scripts/validateAdminLogin.php';
-const getDashboardPermissionsEndpoint = 'http://localhost:80/scripts/getDashboardPermissions.php';
-const getUserPermissionsEndpoint = 'http://localhost:80/scripts/getUserPermissions.php';
-const submitFormEndpoint = 'http://localhost:80/scripts/submitForm.php';
-
-const submitJobApplicationEndpoint = 'http://localhost:80/scripts/submitJobApplication.php';
-const getJobApplicationsEndpoint = 'http://localhost:80/scripts/getJobApplications.php';
+export const endpoints = generateEndpoints();
 
 const handleEditBookingRequest = async (formData, bookingId) => {
     try {
@@ -59,7 +66,7 @@ const handleEditBookingRequest = async (formData, bookingId) => {
 
         formData.append('bookingId', bookingId);
 
-        const response = await fetch(submitEditBookingFormEndpoint, {
+        const response = await fetch(endpoints.submitEditBookingForm, {
             method: 'POST',
             body: formData
         });
@@ -85,7 +92,7 @@ const fetchBookingInfoBySessionRequest = async (navigate) => {
             return 'Session expired';
         }
 
-        const response = await fetch(getBookingInfoBySessionEndpoint, {
+        const response = await fetch(endpoints.getBookingInfoBySession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -110,7 +117,7 @@ const fetchBookingInfoBySessionRequest = async (navigate) => {
 
 const submitFormRequest = async (formData) => {
     try {
-        const response = await fetch(submitFormEndpoint, {
+        const response = await fetch(endpoints.submitForm, {
             method: 'POST',
             body: formData
         });
@@ -133,7 +140,7 @@ const submitFormRequest = async (formData) => {
 
 const submitJobApplicationRequest = async (formData) => {
     try {
-        const response = await fetch(submitJobApplicationEndpoint, {
+        const response = await fetch(endpoints.submitJobApplication, {
             method: 'POST',
             body: formData
         });
@@ -165,7 +172,7 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
     const timestamp = new Date().getTime();
 
     try {
-        const response = await fetch(getJobApplicationsEndpoint + '?_=' + timestamp,
+        const response = await fetch(endpoints.getJobApplications + '?_=' + timestamp,
             {method: 'POST', body: JSON.stringify({session_id: sessionId})});
 
 
@@ -198,7 +205,7 @@ const fetchBookingsRequest = async (navigate, setAllBookings) => {
             return;
         }
 
-        const response = await fetch(getAllBookingsEndpoint,
+        const response = await fetch(endpoints.getAllBookings,
             {method: 'POST', body: JSON.stringify({session_id: sessionId})});
         const result = await response.json();
 
@@ -231,7 +238,7 @@ const handleDeleteBookingRequest = async (bookingId) => {
             return 'Session expired'
         }
 
-        const response = await fetch(deleteBookingEntryEndpoint, {
+        const response = await fetch(endpoints.deleteBookingEntry, {
             method: 'POST',
             body: JSON.stringify({bookingId: bookingId})
         });
@@ -258,7 +265,7 @@ const checkBookingSessionFromBookingDashboard = async (navigate) => {
     }
 
     try {
-        const response = await fetch(checkBookingSessionEndpoint, {
+        const response = await fetch(endpoints.checkBookingSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -287,7 +294,7 @@ const handleAddBookingRequest = async (formData) => {
             return 'Session expired';
         }
 
-        const response = await fetch(submitAddBookingFormEndpoint, {
+        const response = await fetch(endpoints.submitAddBookingForm, {
             method: 'POST',
             body: formData
         });
@@ -310,7 +317,7 @@ const validateBookingLogin = async (formData, usernameFieldId, passwordFieldId, 
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
 
     try {
-        const response = await fetch(validateBookingLoginEndpoint, {
+        const response = await fetch(endpoints.validateBookingLogin, {
             method: 'POST',
             body: JSON.stringify({username, password})
         });
@@ -318,7 +325,7 @@ const validateBookingLogin = async (formData, usernameFieldId, passwordFieldId, 
         const result = await response.json();
 
         if (result.success) {
-            const sessionResponse = await fetch(createBookingSessionEndpoint, {
+            const sessionResponse = await fetch(endpoints.createBookingSession, {
                 method: 'POST',
                 body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_booking')})
             });
@@ -343,7 +350,7 @@ const checkBookingSessionFromBookingLogin = async (navigate) => {
     if (!sessionId) {return;}
 
     try {
-        const response = await fetch(checkBookingSessionEndpoint, {
+        const response = await fetch(endpoints.checkBookingSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -371,7 +378,7 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
     }
 
     try {
-        const sessionResponse = await fetch(validateAdminSessionEndpoint, {
+        const sessionResponse = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -386,7 +393,7 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
             navigate(adminLoginPageUrl);
         }
 
-        const permissionsResponse = await fetch(getDashboardPermissionsEndpoint, {
+        const permissionsResponse = await fetch(endpoints.getDashboardPermissions, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -416,7 +423,7 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
 
     try {
-        const response = await fetch(validateAdminLoginEndpoint, {
+        const response = await fetch(endpoints.validateAdminLogin, {
             method: 'POST',
             body: JSON.stringify({username, password})
         });
@@ -424,7 +431,7 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
         const result = await response.json();
 
         if (result.success) {
-            const sessionResponse = await fetch(createAdminSessionEndpoint, {
+            const sessionResponse = await fetch(endpoints.createAdminSession, {
                 method: 'POST',
                 body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_admin')})
             });
@@ -449,7 +456,7 @@ const checkAdminSessionFromAdminLogin = async (navigate) => {
     if (!sessionId) {return;}
 
     try {
-        const response = await fetch(validateAdminSessionEndpoint, {
+        const response = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -478,7 +485,7 @@ const checkAdminSession = async (navigate, allowedPermission) => {
     }
 
     try {
-        const response = await fetch(validateAdminSessionEndpoint, {
+        const response = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -496,7 +503,7 @@ const checkAdminSession = async (navigate, allowedPermission) => {
 
         }
 
-        const userPermissionsResponse = await fetch(getUserPermissionsEndpoint, {
+        const userPermissionsResponse = await fetch(endpoints.getUserPermissions, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -532,7 +539,7 @@ const checkBookingSession = async (navigate) => {
     }
 
     try {
-        const response = await fetch(checkBookingSessionEndpoint, {
+        const response = await fetch(endpoints.checkBookingSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -788,24 +795,10 @@ export {
     createSessions,
     extendSession,
     resetSession,
-    createAdminSessionEndpoint,
-    validateAdminSessionEndpoint,
-    validateAdminLoginEndpoint,
-    getDashboardPermissionsEndpoint,
-    getUserPermissionsEndpoint,
-    checkBookingSessionEndpoint,
-    getAllBookingsEndpoint,
-    validateBookingLoginEndpoint,
-    createBookingSessionEndpoint,
-    deleteBookingEntryEndpoint,
-    submitAddBookingFormEndpoint,
-    getBookingInfoBySessionEndpoint,
-    submitFormEndpoint,
     bookingLoginPageUrl,
     bookingDashboardPageUrl,
     adminLoginPageUrl,
     adminDashboardPageUrl,
-    getJobApplicationsEndpoint,
     headToAdminLoginOnInvalidSession,
     headToBookingLoginOnInvalidSession,
     headToAdminLoginOnInvalidSessionFromAdminDashboard,
@@ -816,5 +809,6 @@ export {
     submitFormRequest,
     submitJobApplicationRequest,
     fetchBookingInfoBySessionRequest,
-    handleEditBookingRequest
+    handleEditBookingRequest,
+
 };
