@@ -665,7 +665,6 @@ function BookingManagement() {
                               formHasPasswordField={true}
                               footerButtonsSpaceBetween={true}
                               switchFooterButtonsOrder={true}
-
                         />
                     </div>
 

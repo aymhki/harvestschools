@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $conn = new mysqli($servername, $username, $password, $dbname);
 
+
         if ($conn->connect_error) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'Database connection failed: ' . $conn->connect_error;
@@ -647,6 +648,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 echo json_encode($errorInfo);
                                 return;
                             }
+                        } else {
+                            $errorInfo['success'] = false;
+                            $errorInfo['message'] = 'Student Name cannot be empty';
+                            $errorInfo['code'] = 400;
+                            performRollback($conn, $data);
+                            echo json_encode($errorInfo);
+                            return;
                         }
                     }
 
