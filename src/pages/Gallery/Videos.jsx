@@ -15,7 +15,7 @@ function Videos() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <div className={'extreme-padding-container'}>
+        <div className={'extreme-padding-container  make-this-container-have-gaps'}>
             <h1>
                 Videos
             </h1>
