@@ -1,20 +1,13 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: http://localhost:5173');
-//$dbConfig = require 'dbConfig.php';
-//$servername = $dbConfig['db_host'];
-//$username = $dbConfig['db_username'];
-//$password = $dbConfig['db_password'];
-//$dbname = $dbConfig['db_name'];
-//
-//$conn = null;
+$dbConfig = require 'dbConfig.php';
+$servername = $dbConfig['db_host'];
+$username = $dbConfig['db_username'];
+$password = $dbConfig['db_password'];
+$dbname = $dbConfig['db_name'];
 
-$servername = "localhost";
-$username = "harvest_admin";
-$password = "Hkibrahim@3";
-$dbname = "harvest_schools";
-
-
+$conn = null;
 
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);

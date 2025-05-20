@@ -422,23 +422,13 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
     const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
 
-    console.log(endpoints.validateAdminLogin);
-
-
     try {
         const response = await fetch(endpoints.validateAdminLogin, {
             method: 'POST',
             body: JSON.stringify({username, password})
         });
 
-        let result = null;
-
-        try {
-            result = await response.json();
-        } catch (error) {
-            console.log('Error parsing JSON response:', error, response);
-            return 'Error parsing JSON response';
-        }
+        const result = await response.json();
 
         if (result.success) {
             const sessionResponse = await fetch(endpoints.createAdminSession, {
