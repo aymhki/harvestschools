@@ -7,7 +7,7 @@ const isDevelopment = () => {
 };
 
 const BASE_URLS = {
-    development: 'http://localhost:8088',
+    development: 'http://localhost:8080',
     production: ''
 };
 
