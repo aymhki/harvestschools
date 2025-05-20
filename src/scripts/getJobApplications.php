@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Pragma: no-cache');
 header('Expires: 0');
 $dbConfig = require 'dbConfig.php';
@@ -10,22 +11,21 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    $cookies = [];
+    $input = file_get_contents('php://input');
+    $data = json_decode($input, true);
 
-    foreach ($_COOKIE as $key => $value) {
-        $cookies[$key] = $value;
-    }
-
-    if (!isset($cookies['harvest_schools_admin_session_id'])) {
+    if (!isset($data['session_id'])) {
         echo json_encode([
             "success" => false,
-            "message" => "Unauthorized: No session found",
-            "code" => 401
+            "message" => "Bad Request: Missing session_id",
+            "code" => 400
         ]);
         exit;
     }
 
-    $sessionId = $cookies['harvest_schools_admin_session_id'];
+    $sessionId = $data['session_id'];
+
+
     $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -143,7 +143,7 @@ try {
         "code" => $e->getCode() ?: 500
     ]);
 } finally {
-    if (isset($conn) && $conn->ping()) {
+    if (isset($conn)) {
         $conn->close();
     }
 }

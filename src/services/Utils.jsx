@@ -10,25 +10,44 @@ const bookingDashboardPageUrl = '/events/booking/dashboard';
 const adminLoginPageUrl = '/admin/login';
 const adminDashboardPageUrl = '/admin/dashboard';
 
-const checkBookingSessionEndpoint = '/scripts/checkBookingSession.php';
-const getAllBookingsEndpoint = '/scripts/getAllBookings.php';
-const validateBookingLoginEndpoint = '/scripts/validateBookingLogin.php';
-const createBookingSessionEndpoint = '/scripts/createBookingSession.php';
-const deleteBookingEntryEndpoint = '/scripts/deleteBookingEntry.php';
-const submitAddBookingFormEndpoint = '/scripts/submitAddBookingForm.php';
-const getBookingInfoBySessionEndpoint = '/scripts/getBookingBySession.php';
-const submitEditBookingFormEndpoint = '/scripts/submitEditBookingForm.php';
+// const checkBookingSessionEndpoint = '/scripts/checkBookingSession.php';
+// const getAllBookingsEndpoint = '/scripts/getAllBookings.php';
+// const validateBookingLoginEndpoint = '/scripts/validateBookingLogin.php';
+// const createBookingSessionEndpoint = '/scripts/createBookingSession.php';
+// const deleteBookingEntryEndpoint = '/scripts/deleteBookingEntry.php';
+// const submitAddBookingFormEndpoint = '/scripts/submitAddBookingForm.php';
+// const getBookingInfoBySessionEndpoint = '/scripts/getBookingBySession.php';
+// const submitEditBookingFormEndpoint = '/scripts/submitEditBookingForm.php';
+//
+// const createAdminSessionEndpoint = '/scripts/createAdminSession.php';
+// const validateAdminSessionEndpoint = '/scripts/checkAdminSession.php';
+// const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
+//
+// const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
+// const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
+// const submitFormEndpoint = '/scripts/submitForm.php';
+// const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
+// const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
 
-const createAdminSessionEndpoint = '/scripts/createAdminSession.php';
-const validateAdminSessionEndpoint = '/scripts/checkAdminSession.php';
-const validateAdminLoginEndpoint = '/scripts/validateAdminLogin.php';
 
-const getDashboardPermissionsEndpoint = '/scripts/getDashboardPermissions.php';
-const getUserPermissionsEndpoint = '/scripts/getUserPermissions.php';
-const submitFormEndpoint = '/scripts/submitForm.php';
-const submitJobApplicationEndpoint = '/scripts/submitJobApplication.php';
-const getJobApplicationsEndpoint = '/scripts/getJobApplications.php';
+const checkBookingSessionEndpoint = 'http://localhost:8000/scripts/checkBookingSession.php';
+const getAllBookingsEndpoint = 'http://localhost:8000/scripts/getAllBookings.php';
+const validateBookingLoginEndpoint = 'http://localhost:8000/scripts/validateBookingLogin.php';
+const createBookingSessionEndpoint = 'http://localhost:8000/scripts/createBookingSession.php';
+const deleteBookingEntryEndpoint = 'http://localhost:8000/scripts/deleteBookingEntry.php';
+const submitAddBookingFormEndpoint = 'http://localhost:8000/scripts/submitAddBookingForm.php';
+const getBookingInfoBySessionEndpoint = 'http://localhost:8000/scripts/getBookingBySession.php';
+const submitEditBookingFormEndpoint = 'http://localhost:8000/scripts/submitEditBookingForm.php';
 
+const createAdminSessionEndpoint = 'http://localhost:8000/scripts/createAdminSession.php';
+const validateAdminSessionEndpoint = 'http://localhost:8000/scripts/checkAdminSession.php';
+const validateAdminLoginEndpoint = 'http://localhost:8000/scripts/validateAdminLogin.php';
+const getDashboardPermissionsEndpoint = 'http://localhost:8000/scripts/getDashboardPermissions.php';
+const getUserPermissionsEndpoint = 'http://localhost:8000/scripts/getUserPermissions.php';
+const submitFormEndpoint = 'http://localhost:8000/scripts/submitForm.php';
+
+const submitJobApplicationEndpoint = 'http://localhost:8000/scripts/submitJobApplication.php';
+const getJobApplicationsEndpoint = 'http://localhost:8000/scripts/getJobApplications.php';
 
 const handleEditBookingRequest = async (formData, bookingId) => {
     try {
@@ -136,11 +155,19 @@ const submitJobApplicationRequest = async (formData) => {
 }
 
 const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
+    const sessionId = validateAdminSessionLocally();
+
+    if (!sessionId) {
+        console.log('Session expired');
+    }
+
     setJobApplications(null);
     const timestamp = new Date().getTime();
 
     try {
-        const response = await fetch(getJobApplicationsEndpoint + '?_=' + timestamp, {method: 'GET'});
+        const response = await fetch(getJobApplicationsEndpoint + '?_=' + timestamp,
+            {method: 'POST', body: JSON.stringify({session_id: sessionId})});
+
 
         const result = await response.json();
 
@@ -171,7 +198,8 @@ const fetchBookingsRequest = async (navigate, setAllBookings) => {
             return;
         }
 
-        const response = await fetch(getAllBookingsEndpoint, {method: 'GET'});
+        const response = await fetch(getAllBookingsEndpoint,
+            {method: 'POST', body: JSON.stringify({session_id: sessionId})});
         const result = await response.json();
 
         if (result) {
