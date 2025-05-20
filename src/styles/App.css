@@ -59,6 +59,13 @@
     color: #1f2152;
 }
 
+.make-this-container-have-gaps {
+    gap: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 @media (max-width: 1600px) {
     .logo {
         height: 6rem;
