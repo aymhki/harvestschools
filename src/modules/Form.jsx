@@ -388,7 +388,7 @@ function Form({
     }
 
     useEffect(() => {
-        if (resetFormFromParent) {
+        if (resetFormFromParent && !thisFormIsEditingAnEntry) {
             resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
 
             if (setResetForFromParent) {
@@ -727,10 +727,13 @@ function Form({
 
                 field.value = value;
 
-                // const fieldElement = document.getElementById(field.id);
-                // if (fieldElement) {
-                //     fieldElement.value = value;
-                // }
+                if (thisFormIsEditingAnEntry) {
+                    const fieldElement = document.getElementById(field.id);
+
+                    if (fieldElement) {
+                        fieldElement.value = value;
+                    }
+                }
 
                 if (!noInputFieldsCache) {
                     saveToCache(field, value);
@@ -1303,13 +1306,16 @@ function Form({
 
         if (thisFormIsEditingAnEntry){
             dynamicFields.forEach(field => {
+
+
                 if (fieldValues[field.id] === undefined) {
-                    fieldValues[field.id] = field.defaultValue;
+                    fieldValues[field.id] = field.defaultValue !== undefined ? field.defaultValue : '';
                 }
 
-                if (document.getElementById(field.id) && document.getElementById(field.id).value === '') {
-                    document.getElementById(field.id).value = field.defaultValue;
+                if (document.getElementById(field.id) && document.getElementById(field.id).value !== fieldValues[field.id] ) {
+                    document.getElementById(field.id).value = field.defaultValue !== undefined ? field.defaultValue : '';
                 }
+
             });
         }
 
@@ -1462,9 +1468,9 @@ function Form({
                         setTimeout(() => {
                             setSuccessMessage('');
 
-                            if (formInModalPopup) {
-                                setShowFormModalPopup(false);
-                            }
+                            // if (formInModalPopup) {
+                            //     setShowFormModalPopup(false);
+                            // }
 
                             resetFormCompletelyOrPartiallyInTheCaseOfEditingAnEntry();
                             clearCache();

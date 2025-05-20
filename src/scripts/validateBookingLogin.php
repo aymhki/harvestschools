@@ -7,6 +7,8 @@ $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
+$conn = null;
+
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -68,6 +70,6 @@ try {
         "code" => $e->getCode() ?: 500
     ]);
 } finally {
-    $conn->close();
+    $conn?->close();
 }
 ?>

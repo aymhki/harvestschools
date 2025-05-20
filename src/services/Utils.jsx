@@ -397,7 +397,7 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
-        console.log('hiiiiii');
+
         const permissionsResult = await permissionsResponse.json();
 
         if (permissionsResult.success) {

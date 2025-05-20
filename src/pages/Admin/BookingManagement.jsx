@@ -41,8 +41,8 @@ function BookingManagement() {
     const secondParentNameFieldId = 7;
     const secondParentEmailFieldId = 8;
     const secondParentPhoneNumberFieldId = 9;
-    const additionalAttendeesFieldId = 10;
-    const cdCountFieldId = 11;
+    const cdCountFieldId = 10;
+    const additionalAttendeesFieldId = 11;
     const extrasPaymentStatusFieldId = 12;
     const colIndexForBookingId = 0;
     const colIndexForBookingUsername = 6;
@@ -216,24 +216,6 @@ function BookingManagement() {
             labelOnTop: true,
         },
         {
-            id: additionalAttendeesFieldId,
-            type: 'number',
-            name: 'additional-attendees',
-            label: 'Additional Attendees',
-            required: false,
-            placeholder: 'Additional Attendees',
-            errorMsg: 'Please enter the additional attendees',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'additional-attendees',
-            labelOutside: true,
-            labelOnTop: true,
-            defaultValue: '0',
-            minimumValue: '0',
-            maximumValue: '10',
-        },
-        {
             id: cdCountFieldId,
             type: 'number',
             name: 'cd-count',
@@ -252,13 +234,31 @@ function BookingManagement() {
             maximumValue: '10',
         },
         {
+            id: additionalAttendeesFieldId,
+            type: 'number',
+            name: 'additional-attendees',
+            label: 'Additional Attendees',
+            required: false,
+            placeholder: 'Additional Attendees',
+            errorMsg: 'Please enter the additional attendees',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'additional-attendees',
+            labelOutside: true,
+            labelOnTop: true,
+            defaultValue: '0',
+            minimumValue: '0',
+            maximumValue: '10',
+        },
+        {
             id: extrasPaymentStatusFieldId,
             type: 'select',
             name: 'extras-payment-status',
             label: 'Extras Payment Status',
             choices:
                 [
-                   'Not Signed Up', 'Signed Up, pending payment', 'Confirmed'
+                    'Not Signed Up', 'Signed Up, pending payment', 'Confirmed'
                 ],
             required: false,
             placeholder: 'Extras Payment Status',
@@ -270,7 +270,7 @@ function BookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             defaultValue: 'Not Signed Up',
-        },
+        }
     ]
 
     const studentSectionFields = [
@@ -359,7 +359,6 @@ function BookingManagement() {
         } finally {
             setIsLoading(false);
         }
-
     }
 
     const handleDeleteBooking = async () => {
@@ -400,7 +399,7 @@ function BookingManagement() {
         setRowIndexToDelete(null);
     }
 
-    const handleEditBookingModalInitialization = async (rowIndex) => {
+    const handleEditBookingModalInitialization = (rowIndex) => {
         setRowIndexToEdit(rowIndex);
 
         const bookingUsername = allBookings[rowIndex][colIndexForBookingUsername];
@@ -512,6 +511,11 @@ function BookingManagement() {
                 setResetEditBookingModal(true);
                 setShowEditBookingModal(false);
                 setAllBookings(null);
+                setResetAddBookingModal(true);
+                setShowAddBookingModal(false);
+                setRowIndexToEdit(null);
+                setEditBookingModalPreFilledCoreFields(null);
+                setEditBookingModalPreFilledExistingSections(null);
                 fetchBookings();
                 return true;
             } else {
