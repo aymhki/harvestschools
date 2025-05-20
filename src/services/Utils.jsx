@@ -422,6 +422,9 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
     const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
 
+    console.log(endpoints.validateAdminLogin);
+
+
     try {
         const response = await fetch(endpoints.validateAdminLogin, {
             method: 'POST',
@@ -655,8 +658,6 @@ const formatDateFromPacific = (pacificTimeString) => {
 
     return pacificDate.toLocaleString(undefined, options);
 };
-
-
 
 const createSessions = (sessionName,) => {
     const sessionId = uuidv4();
