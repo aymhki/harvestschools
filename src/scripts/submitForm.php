@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: http://localhost:5173');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {

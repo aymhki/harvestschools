@@ -1,10 +1,14 @@
 <?php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: http://localhost:5173');
 $dbConfig = require 'dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
+
+$conn = null;
+
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -64,6 +68,8 @@ try {
         "code" => $e->getCode() ?: 500,
     ]);
 } finally {
-    $conn->close();
+    if (isset($conn)) {
+        $conn->close();
+    }
 }
 ?>
