@@ -218,7 +218,7 @@ try {
 
 } finally {
 
-    if (isset($conn)) {
+    if ($conn) {
         $conn->close();
     }
 

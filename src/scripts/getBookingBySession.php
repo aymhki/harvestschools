@@ -252,7 +252,7 @@ try {
         'code' => $e->getCode() ?: 500
     ]);
 } finally {
-    if (isset($conn)) {
+    if ($conn) {
         $conn->close();
     }
 }
