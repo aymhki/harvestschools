@@ -743,7 +743,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
 
-                    if (empty($newPassword)) {
+                    if ($newPassword === '') {
                         $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ? WHERE auth_id = ?");
 
                         if (!$stmt) {
@@ -777,7 +777,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             return;
                         }
 
-                        $stmt->bind_param("ssi", $newUsername, $hashedPassword, $data['authId']);
+                        $stmt->bind_param("ssi", $newUsername, $newPassword, $data['authId']);
 
                         if (!$stmt->execute()) {
                             $errorInfo['success'] = false;

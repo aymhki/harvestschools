@@ -74,6 +74,6 @@ try {
     ]);
 
 } finally {
-    $conn->close();
+    $conn?->close();
 }
 ?>
