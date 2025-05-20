@@ -7,7 +7,7 @@ $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
-$conn = null;
+//$conn = null;
 
 
 try {
