@@ -543,71 +543,51 @@ function Form({
             const instanceToRemove = currentSectionState.instances[instanceIndex];
             const fieldsToRemove = new Set(instanceToRemove.fieldIds);
 
-            // Create a copy of existing field values before modification
-            const existingFieldValues = {...fieldValues};
+            // Create a map to track which field corresponds to which original field
+            const fieldOriginMap = {};
+            dynamicFields.forEach(field => {
+                if (field.originalId) {
+                    fieldOriginMap[field.id] = field.originalId;
+                }
+            });
 
-            // Filter out fields to remove while preserving instance associations
+            // Store current values before modifying fields
+            const currentValues = {};
+            dynamicFields.forEach(field => {
+                // Store the current value from the DOM if possible, fallback to state
+                const element = document.getElementById(field.id);
+                if (element) {
+                    currentValues[field.id] = element.value;
+                } else if (fieldValues[field.id] !== undefined) {
+                    currentValues[field.id] = fieldValues[field.id];
+                } else if (field.defaultValue !== undefined) {
+                    currentValues[field.id] = field.defaultValue;
+                }
+            });
+
+            // Filter out fields to remove
             const updatedDynamicFields = dynamicFields.filter(
                 field => !fieldsToRemove.has(field.id)
             );
 
-            // Create a mapping of old IDs to new IDs
-            const idMap = {};
-            updatedDynamicFields.forEach((field, index) => {
-                const newId = index + 1;
-                if (field.id !== newId) {
-                    idMap[field.id] = newId;
-                }
-            });
-
-            // Normalize fields with new IDs
-            const normalizedFields = updatedDynamicFields.map((field, index) => {
-                const newId = index + 1;
-                if (field.id !== newId) {
-                    return { ...field, id: newId };
-                }
-                return field;
-            });
-
-            // Create updated field values maintaining associations
-            const updatedFieldValues = {};
-            normalizedFields.forEach(field => {
-                // Find old ID for this field (either directly or by mapping)
-                const oldId = Object.keys(idMap).find(key => idMap[key] === field.id) || field.id;
-
-                // If we have a value for the old ID, preserve it with the new ID
-                if (existingFieldValues[oldId] !== undefined) {
-                    updatedFieldValues[field.id] = existingFieldValues[oldId];
-                }
-            });
-
-            // Update refs for all fields
-            const newRefs = {};
-            normalizedFields.forEach(field => {
-                newRefs[field.id] = refs[field.id] || createRef();
-            });
-
-            // Update instances with new field IDs
+            // Update remaining instances with new positions
             let updatedInstances = currentSectionState.instances.filter(
                 instance => instance.instanceId !== instanceId
-            ).map(instance => {
-                // Update field IDs in this instance
-                return {
-                    ...instance,
-                    fieldIds: instance.fieldIds
-                        .filter(id => !fieldsToRemove.has(id))
-                        .map(id => idMap[id] || id)
-                };
-            });
+            );
 
-            // Renumber instance IDs sequentially
+            // Renumber instance IDs sequentially and update field references
             updatedInstances = updatedInstances.map((instance, index) => {
                 const newInstanceId = `${sectionId}_${index}`;
+                const oldInstanceId = instance.instanceId;
 
-                // Update instanceId references in fields
-                normalizedFields.forEach(field => {
-                    if (field.instanceId === instance.instanceId) {
+                // Update instanceId for fields in this instance
+                updatedDynamicFields.forEach(field => {
+                    if (field.instanceId === oldInstanceId) {
                         field.instanceId = newInstanceId;
+                        // Also update the httpName to match the new instance
+                        if (field.httpName && field.httpName.includes(oldInstanceId)) {
+                            field.httpName = field.httpName.replace(oldInstanceId, newInstanceId);
+                        }
                     }
                 });
 
@@ -620,27 +600,57 @@ function Form({
             // Calculate new insertion position
             let newNextInsertPosition;
             if (updatedInstances.length === 0) {
-                // If no more instances, reset to starting position
                 const startField = dynamicSections.find(section => section.sectionId === sectionId);
-                newNextInsertPosition = normalizedFields.findIndex(
+                newNextInsertPosition = updatedDynamicFields.findIndex(
                     field => field.id === startField.startAddingFieldsFromId
                 ) + 1;
 
                 if (newNextInsertPosition <= 0) {
-                    newNextInsertPosition = normalizedFields.length;
+                    newNextInsertPosition = updatedDynamicFields.length;
                 }
             } else {
-                // Otherwise, position after the last field of the last instance
                 const lastInstance = updatedInstances[updatedInstances.length - 1];
-                const lastFieldId = Math.max(...lastInstance.fieldIds);
-                const lastFieldIndex = normalizedFields.findIndex(field => field.id === lastFieldId);
-                newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : normalizedFields.length;
+                const lastFieldId = Math.max(...lastInstance.fieldIds.filter(id =>
+                    updatedDynamicFields.some(field => field.id === id)
+                ));
+                const lastFieldIndex = updatedDynamicFields.findIndex(field => field.id === lastFieldId);
+                newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : updatedDynamicFields.length;
             }
+
+            // Carefully preserve field values, including DOM updates
+            const updatedFieldValues = {...fieldValues};
+
+            // Remove values for fields that are gone
+            Object.keys(updatedFieldValues).forEach(id => {
+                if (fieldsToRemove.has(parseInt(id))) {
+                    delete updatedFieldValues[id];
+                }
+            });
+
+            // Update the DOM with preserved values
+            setTimeout(() => {
+                updatedDynamicFields.forEach(field => {
+                    const element = document.getElementById(field.id);
+                    if (element) {
+                        // If this field was preserved, restore its value
+                        if (currentValues[field.id]) {
+                            element.value = currentValues[field.id];
+                            // Ensure fieldValues has the current value
+                            updatedFieldValues[field.id] = currentValues[field.id];
+                        }
+                    }
+                });
+            }, 0);
+
+            // Update refs only for fields that remain
+            const newRefs = {};
+            updatedDynamicFields.forEach(field => {
+                newRefs[field.id] = refs[field.id] || createRef();
+            });
 
             // Update state
             setRefs(newRefs);
-            setDynamicFields(normalizedFields);
-            setNextIdCounter(normalizedFields.length + 1);
+            setDynamicFields(updatedDynamicFields);
             setFieldValues(updatedFieldValues);
 
             return {
@@ -1307,7 +1317,6 @@ function Form({
         if (thisFormIsEditingAnEntry){
             dynamicFields.forEach(field => {
 
-
                 if (fieldValues[field.id] === undefined) {
                     fieldValues[field.id] = field.defaultValue !== undefined ? field.defaultValue : '';
                 }
@@ -1315,7 +1324,6 @@ function Form({
                 if (document.getElementById(field.id) && document.getElementById(field.id).value !== fieldValues[field.id] ) {
                     document.getElementById(field.id).value = field.defaultValue !== undefined ? field.defaultValue : '';
                 }
-
             });
         }
 
@@ -1415,7 +1423,14 @@ function Form({
 
             dynamicFields.forEach(field => {
                 if (field.type !== 'section' && field.type !== 'button' && field.type !== 'control') {
-                    let value = document.getElementById(field.id)?.value || '';
+                    let currentElement = document.getElementById(field.id);
+                    let value = currentElement?.value || ''
+
+                    if (thisFormIsEditingAnEntry) {
+                        if (value === '' && field.required ) {
+                            value = field.defaultValue !== undefined ? field.defaultValue : '';
+                        }
+                    }
 
                     if (field.type === 'file' && field.file) {
                         const file = field.file;
