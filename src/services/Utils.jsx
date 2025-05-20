@@ -421,7 +421,6 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
     const formDataEntries = Array.from(formData.entries());
     const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
-    console.log(endpoints.validateAdminLogin);
 
     try {
         const response = await fetch(endpoints.validateAdminLogin, {
