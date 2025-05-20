@@ -9,6 +9,7 @@ $dbname = $dbConfig['db_name'];
 
 $conn = null;
 
+
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -68,8 +69,6 @@ try {
         "code" => $e->getCode() ?: 500,
     ]);
 } finally {
-    if (isset($conn)) {
-        $conn->close();
-    }
+    $conn?->close();
 }
 ?>
