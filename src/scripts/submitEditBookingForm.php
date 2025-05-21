@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'oldCdCount' => null,
         'oldAdditionalAttendeesCount' => null,
         'oldPaymentStatus' => null,
-        'oldStudentsInfo' => [[]],
+        'oldStudentsInfo' => [],
         'studentsInfoHaveChanged' => false,
         'authDataHaveChanged' => false,
         'extrasDataHaveChanged' => false,
@@ -1146,6 +1146,18 @@ function performRollback($conn, $data) {
 
         if ($data['studentsInfoHaveChanged'] && $data['oldStudentIds'] !== null && $data['newStudentIds'] !== null && $data['oldStudentsInfo'] !== null) {
             foreach ($data['newStudentIds'] as $studentId) {
+                $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE student_id = ?");
+
+                if (!$stmt) {
+                    error_log("Prepare delete booking students linker failed: " . $conn->error);
+                }
+
+                $stmt->bind_param("s", $studentId);
+
+                if (!$stmt->execute()) {
+                    error_log("Execute failed: " . $stmt->error);
+                }
+
                 $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
 
                 if (!$stmt) {
@@ -1160,11 +1172,11 @@ function performRollback($conn, $data) {
             }
 
             foreach ($data['oldStudentIds'] as $index => $studentId) {
-                $studentName = $data['oldStudentsInfo'][$index]['name'];
-                $schoolDivision = $data['oldStudentsInfo'][$index]['school_division'];
-                $grade = $data['oldStudentsInfo'][$index]['grade'];
+                $studentName = $data['oldStudentsInfo'][$studentId]['name'];
+                $schoolDivision = $data['oldStudentsInfo'][$studentId]['school_division'];
+                $grade = $data['oldStudentsInfo'][$studentId]['grade'];
 
-                if (empty($studentName)) {
+                if (empty($studentName) || $studentName === null ) {
                     error_log("Student Name cannot be empty");
                 }
 
@@ -1178,6 +1190,19 @@ function performRollback($conn, $data) {
 
                 if (!$stmt->execute()) {
                     error_log("Failed to add student: " . $stmt->error);
+                }
+
+
+                $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
+
+                if (!$stmt) {
+                    error_log("Database error preparing statement: " . $conn->error);
+                }
+
+                $stmt->bind_param("ss", $data['bookingId'], $studentId);
+
+                if (!$stmt->execute()) {
+                    error_log("Failed to link student to booking: " . $stmt->error);
                 }
             }
         }
