@@ -452,6 +452,12 @@ function BookingManagement() {
                 field.required = false;
                 field.value = '';
                 field.defaultValue = '';
+                
+                if (field.id === bookingPasswordFieldId) {
+                    field.label = 'Booking Password (Not required in editing unless you want a new Password)';
+                } else if (field.id === confirmBookingPasswordFieldId) {
+                    field.label = 'Confirm Booking Password (Not required in editing unless you want a new Password)';
+                }
             }
 
             return field;
