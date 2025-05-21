@@ -539,11 +539,9 @@ function Form({
 
             if (instanceIndex === -1) return prevState;
 
-            // Get instance to remove and its fields
             const instanceToRemove = currentSectionState.instances[instanceIndex];
             const fieldsToRemove = new Set(instanceToRemove.fieldIds);
 
-            // Create a map to track which field corresponds to which original field
             const fieldOriginMap = {};
             dynamicFields.forEach(field => {
                 if (field.originalId) {
@@ -551,10 +549,8 @@ function Form({
                 }
             });
 
-            // Store current values before modifying fields
             const currentValues = {};
             dynamicFields.forEach(field => {
-                // Store the current value from the DOM if possible, fallback to state
                 const element = document.getElementById(field.id);
                 if (element) {
                     currentValues[field.id] = element.value;
@@ -565,26 +561,21 @@ function Form({
                 }
             });
 
-            // Filter out fields to remove
             const updatedDynamicFields = dynamicFields.filter(
                 field => !fieldsToRemove.has(field.id)
             );
 
-            // Update remaining instances with new positions
             let updatedInstances = currentSectionState.instances.filter(
                 instance => instance.instanceId !== instanceId
             );
 
-            // Renumber instance IDs sequentially and update field references
             updatedInstances = updatedInstances.map((instance, index) => {
                 const newInstanceId = `${sectionId}_${index}`;
                 const oldInstanceId = instance.instanceId;
 
-                // Update instanceId for fields in this instance
                 updatedDynamicFields.forEach(field => {
                     if (field.instanceId === oldInstanceId) {
                         field.instanceId = newInstanceId;
-                        // Also update the httpName to match the new instance
                         if (field.httpName && field.httpName.includes(oldInstanceId)) {
                             field.httpName = field.httpName.replace(oldInstanceId, newInstanceId);
                         }
@@ -597,7 +588,6 @@ function Form({
                 };
             });
 
-            // Calculate new insertion position
             let newNextInsertPosition;
             if (updatedInstances.length === 0) {
                 const startField = dynamicSections.find(section => section.sectionId === sectionId);
@@ -617,38 +607,31 @@ function Form({
                 newNextInsertPosition = lastFieldIndex !== -1 ? lastFieldIndex + 1 : updatedDynamicFields.length;
             }
 
-            // Carefully preserve field values, including DOM updates
             const updatedFieldValues = {...fieldValues};
 
-            // Remove values for fields that are gone
             Object.keys(updatedFieldValues).forEach(id => {
                 if (fieldsToRemove.has(parseInt(id))) {
                     delete updatedFieldValues[id];
                 }
             });
 
-            // Update the DOM with preserved values
             setTimeout(() => {
                 updatedDynamicFields.forEach(field => {
                     const element = document.getElementById(field.id);
                     if (element) {
-                        // If this field was preserved, restore its value
                         if (currentValues[field.id]) {
                             element.value = currentValues[field.id];
-                            // Ensure fieldValues has the current value
                             updatedFieldValues[field.id] = currentValues[field.id];
                         }
                     }
                 });
             }, 0);
 
-            // Update refs only for fields that remain
             const newRefs = {};
             updatedDynamicFields.forEach(field => {
                 newRefs[field.id] = refs[field.id] || createRef();
             });
 
-            // Update state
             setRefs(newRefs);
             setDynamicFields(updatedDynamicFields);
             setFieldValues(updatedFieldValues);
