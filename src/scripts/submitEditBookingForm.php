@@ -32,6 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'oldAdditionalAttendeesCount' => null,
         'oldPaymentStatus' => null,
         'oldStudentsInfo' => [[]],
+        'studentsInfoHaveChanged' => false,
+        'authDataHaveChanged' => false,
+        'extrasDataHaveChanged' => false,
         'haveSuccessfullyUpdatedParents' => false,
         'haveSuccessfullyUpdatedStudents' => false,
         'haveSuccessfullyUpdatedExtras' => false,
@@ -613,6 +616,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $data['haveSuccessfullyUpdatedParents'] = true;
 
+                    $data['studentsInfoHaveChanged'] = $thereIsNewStudentInfo;
+
                     if ($thereIsNewStudentInfo) {
 
                         $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
@@ -735,9 +740,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     $data['haveSuccessfullyUpdatedStudents'] = true;
+
+
                     $newCdCount = isset($formData['CD Count']) ? intval($formData['CD Count']) : -1;
                     $newAdditionalAttendees = isset($formData['Additional Attendees']) ? intval($formData['Additional Attendees']) : -1;
                     $newPaymentStatus = $formData['Extras Payment Status'] ?? '';
+
+
 
                     if ($newCdCount < 0 || $newAdditionalAttendees < 0 || $newPaymentStatus === '') {
                         $errorInfo['success'] = false;
@@ -748,18 +757,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         return;
                     }
 
-                    $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
+                    $stmt = $conn->prepare("SELECT cd_count, additional_attendees, payment_status FROM booking_extras WHERE booking_id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Prepare update booking extras failed: ' . $conn->error;
+                        $errorInfo['message'] = 'Prepare select booking extras failed: ' . $conn->error;
                         $errorInfo['code'] = 500;
                         performRollback($conn, $data);
                         echo json_encode($errorInfo);
                         return;
                     }
 
-                    $stmt->bind_param("iisi", $newCdCount, $newAdditionalAttendees, $newPaymentStatus, $data['extrasId']);
+                    $stmt->bind_param("s", $data['bookingId']);
 
                     if (!$stmt->execute()) {
                         $errorInfo['success'] = false;
@@ -770,7 +779,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         return;
                     }
 
+                    $result = $stmt->get_result();
+
+                    if ($result->num_rows > 0) {
+                        $row = $result->fetch_assoc();
+                        $data['oldCdCount'] = $row['cd_count'];
+                        $data['oldAdditionalAttendeesCount'] = $row['additional_attendees'];
+                        $data['oldPaymentStatus'] = $row['payment_status'];
+                    } else {
+                        $errorInfo['success'] = false;
+                        $errorInfo['message'] = 'No extras found for the booking';
+                        $errorInfo['code'] = 404;
+                        performRollback($conn, $data);
+                        echo json_encode($errorInfo);
+                        return;
+                    }
+
+                    if ($data['oldCdCount'] !== $newCdCount || $data['oldAdditionalAttendeesCount'] !== $newAdditionalAttendees || $data['oldPaymentStatus'] !== $newPaymentStatus) {
+                        $data['extrasDataHaveChanged'] = true;
+                    }
+
+                    if ($data['extrasDataHaveChanged']) {
+                        $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
+
+                        if (!$stmt) {
+                            $errorInfo['success'] = false;
+                            $errorInfo['message'] = 'Prepare update booking extras failed: ' . $conn->error;
+                            $errorInfo['code'] = 500;
+                            performRollback($conn, $data);
+                            echo json_encode($errorInfo);
+                            return;
+                        }
+
+                        $stmt->bind_param("iisi", $newCdCount, $newAdditionalAttendees, $newPaymentStatus, $data['extrasId']);
+
+                        if (!$stmt->execute()) {
+                            $errorInfo['success'] = false;
+                            $errorInfo['message'] = 'Execute failed: ' . $stmt->error;
+                            $errorInfo['code'] = 500;
+                            performRollback($conn, $data);
+                            echo json_encode($errorInfo);
+                            return;
+                        }
+
+                    }
+
                     $data['haveSuccessfullyUpdatedExtras'] = true;
+
+
+
                     $newUsername = $formData['Booking Username'] ?? '';
                     $newPassword = $formData['Booking Password'] ?? '';
 
@@ -838,7 +895,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $usernameHasChanged = $data['oldUsername'] !== $newUsername;
 
                     if ($usernameHasChanged) {
-
                         $stmt = $conn->prepare("SELECT COUNT(*) as count FROM booking_auth_credentials WHERE username = ? AND auth_id != ?");
 
                         if (!$stmt) {
@@ -878,7 +934,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($newPassword === '') {
 
                         if ($usernameHasChanged) {
-
+                            $data['authDataHaveChanged'] = true;
                             $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ? WHERE auth_id = ?");
 
                             if (!$stmt) {
@@ -904,6 +960,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     } else {
                         if ($usernameHasChanged) {
+                            $data['authDataHaveChanged'] = true;
                             $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
 
                             if (!$stmt) {
@@ -926,6 +983,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
                         } else {
+                            $data['authDataHaveChanged'] = true;
                             $stmt = $conn->prepare("UPDATE booking_auth_credentials SET password_hash = SHA2(?, 256) WHERE auth_id = ?");
 
                             if (!$stmt) {
@@ -1020,17 +1078,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function performRollback($conn, $data) {
 
-    // if there is a bookingId then successfully proceed
-
-    // if there is parent 1 or 2 id and parents data have updated successfully and old corressponding parent data is not null or empty, then rollback the changes, i.e. remove the new parent data inserted and insert back the old one or just update using the parent id
-
-    // if there is newStudentIds and oldStudentIds and students data have updated successfully and old students data is not null or empty, then rollback the changes manually
-
-    // if there is extrasId and extras data have updated successfully and old extras data is not null or empty, then rollback the changes manually
-
-    // if there is authId and auth data have updated successfully and old auth data is not null or empty, then rollback the changes manually
-
-    if ($data['haveSuccessfullyUpdatedParents'] && $data['haveSuccessfullyUpdatedStudents'] && $data['haveSuccessfullyUpdatedExtras'] && $data['haveSuccessfullyUpdatedAuth']) {
+    if ($conn === null || $conn->connect_error) {
         return;
     }
 
@@ -1043,12 +1091,135 @@ function performRollback($conn, $data) {
             error_log("Failed to begin transaction for rollback");
         }
 
+        if ($data['firstParentDataHaveChanged'] && $data['firstParentId'] !== null) {
+            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
+            if (!$stmt) {
+                error_log("Prepare update booking parents failed: " . $conn->error);
+            }
+
+            $firstParentName = $data['oldFirstParentName'] ?? '';
+            $firstParentEmail = $data['oldFirstParentEmail'] ?? '';
+            $firstParentPhone = $data['oldFirstParentPhone'] ?? '';
+
+            $stmt->bind_param("ssss", $firstParentName, $firstParentEmail, $firstParentPhone, $data['firstParentId']);
+
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+            }
+        }
+
+        if ($data['secondParentDataHaveChanged'] && $data['secondParentId'] !== null) {
+
+            if ($data['oldSecondParentName'] === null) {
+
+                $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
+
+                if (!$stmt) {
+                    error_log("Prepare update booking parents failed: " . $conn->error);
+                }
+
+                $secondParentName = $data['oldSecondParentName'] ?? '';
+                $secondParentEmail = $data['oldSecondParentEmail'] ?? '';
+                $secondParentPhone = $data['oldSecondParentPhone'] ?? '';
+
+                $stmt->bind_param("ssss", $secondParentName , $secondParentEmail, $secondParentPhone, $data['secondParentId']);
+
+                if (!$stmt->execute()) {
+                    error_log("Execute failed: " . $stmt->error);
+                }
+
+            } else {
+                $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+
+                if (!$stmt) {
+                    error_log("Prepare delete booking parents failed: " . $conn->error);
+                }
+
+                $stmt->bind_param("s", $data['secondParentId']);
+
+                if (!$stmt->execute()) {
+                    error_log("Execute failed: " . $stmt->error);
+                }
+            }
+        }
+
+        if ($data['studentsInfoHaveChanged'] && $data['oldStudentIds'] !== null && $data['newStudentIds'] !== null && $data['oldStudentsInfo'] !== null) {
+            foreach ($data['newStudentIds'] as $studentId) {
+                $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+
+                if (!$stmt) {
+                    error_log("Prepare delete booking students failed: " . $conn->error);
+                }
+
+                $stmt->bind_param("s", $studentId);
+
+                if (!$stmt->execute()) {
+                    error_log("Execute failed: " . $stmt->error);
+                }
+            }
+
+            foreach ($data['oldStudentIds'] as $index => $studentId) {
+                $studentName = $data['oldStudentsInfo'][$index]['name'];
+                $schoolDivision = $data['oldStudentsInfo'][$index]['school_division'];
+                $grade = $data['oldStudentsInfo'][$index]['grade'];
+
+                if (empty($studentName)) {
+                    error_log("Student Name cannot be empty");
+                }
+
+                $stmt = $conn->prepare("INSERT INTO booking_students (student_id, name, school_division, grade) VALUES (?, ?, ?, ?)");
+
+                if (!$stmt) {
+                    error_log("Database error preparing statement: " . $conn->error);
+                }
+
+                $stmt->bind_param("ssss", $studentId, $studentName, $schoolDivision, $grade);
+
+                if (!$stmt->execute()) {
+                    error_log("Failed to add student: " . $stmt->error);
+                }
+            }
+        }
+
+        if ($data['extrasDataHaveChanged'] && $data['extrasId'] !== null) {
+            $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
+
+            if (!$stmt) {
+                error_log("Prepare update booking extras failed: " . $conn->error);
+            }
+
+            $cdCount = $data['oldCdCount'] ?? 0;
+            $additionalAttendees = $data['oldAdditionalAttendeesCount'] ?? 0;
+            $paymentStatus = $data['oldPaymentStatus'] ?? '';
+
+            $stmt->bind_param("iisi", $cdCount, $additionalAttendees, $paymentStatus, $data['extrasId']);
+
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+            }
+        }
+
+        if ($data['authDataHaveChanged'] && $data['authId'] !== null) {
+            $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
+
+            if (!$stmt) {
+                error_log("Prepare update booking auth credentials failed: " . $conn->error);
+            }
+
+            $username = $data['oldUsername'] ?? '';
+            $passwordHash = $data['oldPasswordHash'] ?? '';
+
+            $stmt->bind_param("ssi", $username, $passwordHash, $data['authId']);
+
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
+            }
+        }
 
 
         if (!$conn->commit()) {
             error_log("Failed to commit rollback transaction: " . $conn->error);
-            performFinalCleanup($conn, $data);
         }
 
     } catch (Exception $e) {
@@ -1056,13 +1227,8 @@ function performRollback($conn, $data) {
 
         try {
             $conn->rollback();
-            performFinalCleanup($conn, $data);
         } catch (Exception $innerEx) {
             error_log("Critical error during rollback: " . $innerEx->getMessage());
         }
     }
-}
-
-function performFinalCleanup($conn, $data) {
-
 }
