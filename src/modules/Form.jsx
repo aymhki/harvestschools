@@ -1212,23 +1212,6 @@ function Form({
         return 'third-width';
     };
     
-    const getFieldValue = (field) => {
-        const ref = fieldRefs.current[field.id];
-        
-        if (field.readOnlyField) {
-            return field.value || '';
-        }
-        
-        if (ref && ref.current) {
-            if (field.type === 'checkbox' || field.type === 'radio') {
-                return ref.current.checked;
-            }
-            return ref.current.value;
-        }
-        
-        return '';
-    };
-    
     const getCommonInputProps = (field) => ({
         id: field.id,
         name: field.httpName,
@@ -1931,13 +1914,22 @@ function Form({
         
         dynamicFields.forEach(field => {
             const cachedValue = cachedValues[field.id];
-            if (cachedValue !== undefined) {
+            if (cachedValue !== undefined && field.value === '') {
                 const ref = fieldRefs.current[field.id];
                 if (ref && ref.current) {
                     if (field.type === 'checkbox' || field.type === 'radio') {
                         ref.current.checked = cachedValue;
                     } else {
                         ref.current.value = cachedValue;
+                    }
+                }
+            } else if (field.value !== '') {
+                const ref = fieldRefs.current[field.id];
+                if (ref && ref.current) {
+                    if (field.type === 'checkbox' || field.type === 'radio') {
+                        ref.current.checked = field.value;
+                    } else {
+                        ref.current.value = field.value;
                     }
                 }
             }
