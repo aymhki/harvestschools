@@ -74,8 +74,9 @@ tr {
 }
 
 th, td {
-    padding: 1rem;
+    padding: 0 0.5rem 0 0.5rem;
 }
+
 
 tr:hover {
     background-color: #f1f1f1;
@@ -258,6 +259,14 @@ tr:hover {
     filter: drop-shadow(0 0 0.5rem #1f2152);
 }
 
+td button {
+    padding: 0.5rem 1rem;
+    font-size: small;
+    cursor: pointer;
+    letter-spacing: 0.1rem;
+    border-radius: 0.5rem;
+}
+
 @media (max-width: 1600px) {
     .table-module-header-buttons-wrapper {
         flex-wrap: wrap;
@@ -280,7 +289,7 @@ tr:hover {
 
 @media (max-width: 1024px) {
     th, td {
-        padding: 0.5rem;
+        padding: 0 0.3rem 0 0.3rem;
     }
 
     .table-module-header-buttons-wrapper {
@@ -347,13 +356,13 @@ tr:hover {
 
 @media (max-height: 600px) {
     th, td {
-        padding: 0.25rem;
+        padding: 0 0.3rem 0 0.3rem;
     }
 }
 
 @media (max-height: 400px) {
     th, td {
-        padding: 0.1rem;
+        padding: 0 0.3rem 0 0.3rem;
     }
 }
 
