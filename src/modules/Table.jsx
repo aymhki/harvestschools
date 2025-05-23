@@ -354,6 +354,7 @@ function Table({
                                                 wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
                                                 wrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
                                                 textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
+                                                padding: '0.5rem',
                                             }}>
                                                 <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                     {detectLink(cell)}{getSortIndicator(cellIndex)}
@@ -374,6 +375,7 @@ function Table({
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center',
+                                                padding: '0.5rem',
                                             }}>
                                                 <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                     {detectLink(cell)}{getSortIndicator(cellIndex)}

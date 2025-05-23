@@ -650,6 +650,49 @@
     cursor: pointer;
 }
 
+.number-input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 0.1rem solid #1f2152;
+    border-radius: 0.5rem;
+    justify-content: space-around;
+    padding: 0.35rem;
+    margin: 1rem 0 1rem 1rem;
+    width: calc(100% - 2rem);
+}
+
+.number-form-field {
+    will-change: filter;
+    transition: filter 0.5s;
+    color: #1f2152;
+    font-size: large;
+    font-family: 'Futura', sans-serif;
+    border: none;
+    width: 50%;
+    font-weight: 400;
+    font-style: normal;
+    text-align: center;
+    line-height: 1.5;
+    letter-spacing: 0.1rem;
+    border-radius: 0.1rem;
+}
+
+.number-input-reduce-button, .number-input-add-button {
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.number-input-reduce-button span, .number-input-add-button span {
+    font-size: x-large;
+    font-weight: bold;
+}
 
 
 @media (max-width: 1600px) {
@@ -801,6 +844,31 @@
         width: calc(100%);
     }
 
+    .number-form-field{
+
+    }
+
+    .number-input-container {
+        width: calc(100% - 2rem);
+        margin: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .number-input-reduce-button, .number-input-add-button {
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        margin: 0;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .number-input-reduce-button span, .number-input-add-button span {
+        font-size: large;
+        font-weight: bold;
+    }
+
     .refresh-captcha-button {
         height: auto;
         font-size: x-large;
@@ -949,5 +1017,15 @@
         background-color: #454545;
         color: #ffffff;
         filter: drop-shadow(0 0 1em #ffffff);
+    }
+
+    .number-input-container {
+        border: 0.1rem solid #ffffff;
+    }
+
+    .number-form-field {
+        color: #ffffff;
+        border: none;
+        background-color: #242424;
     }
 }

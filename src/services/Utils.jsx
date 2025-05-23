@@ -1,5 +1,5 @@
-import {useCallback} from "react";
-import {v4 as uuidv4} from "uuid";
+import { useCallback, useState } from "react";
+import {v6 as uuidv6} from "uuid";
 
 const isDevelopment = () => {
     return window.location.hostname === 'localhost' ||
@@ -657,7 +657,7 @@ const formatDateFromPacific = (pacificTimeString) => {
 };
 
 const createSessions = (sessionName,) => {
-    const sessionId = uuidv4();
+    const sessionId = uuidv6();
     const sessionExpiry = new Date();
     sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
     document.cookie = `${sessionName}_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
