@@ -1760,7 +1760,7 @@ function Form({
             return;
         }
         
-        if (enteredCaptcha.current !== captchaValue && !noCaptcha) {
+        if (enteredCaptcha.current && enteredCaptcha.current.value !== captchaValue && !noCaptcha) {
             setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
             setTimeout(() => {
                 setGeneralFormError('');
