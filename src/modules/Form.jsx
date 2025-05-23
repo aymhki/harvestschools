@@ -1923,16 +1923,8 @@ function Form({
                         ref.current.value = cachedValue;
                     }
                 }
-            } else if (field.value !== '') {
-                const ref = fieldRefs.current[field.id];
-                if (ref && ref.current) {
-                    if (field.type === 'checkbox' || field.type === 'radio') {
-                        ref.current.checked = field.value;
-                    } else {
-                        ref.current.value = field.value;
-                    }
-                }
             }
+            
         });
         
         
@@ -1957,6 +1949,17 @@ function Form({
         dynamicFields.forEach(field => {
             if (!fieldRefs.current[field.id]) {
                 fieldRefs.current[field.id] = createRef();
+                
+                if (field.value !== '') {
+                    const ref = fieldRefs.current[field.id];
+                    if (ref && ref.current) {
+                        if (field.type === 'checkbox' || field.type === 'radio') {
+                            ref.current.checked = field.value;
+                        } else {
+                            ref.current.value = field.value;
+                        }
+                    }
+                }
             }
         });
         
