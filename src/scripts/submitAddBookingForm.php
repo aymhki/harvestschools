@@ -35,31 +35,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
+
         $formData = [];
+
+        $studentFieldMappings = [
+            14 => ['section' => 1, 'field' => 'Student Name'],
+            15 => ['section' => 1, 'field' => 'Student School Division'],
+            16 => ['section' => 1, 'field' => 'Student Grade'],
+            18 => ['section' => 2, 'field' => 'Student Name'],
+            19 => ['section' => 2, 'field' => 'Student School Division'],
+            20 => ['section' => 2, 'field' => 'Student Grade'],
+            22 => ['section' => 3, 'field' => 'Student Name'],
+            23 => ['section' => 3, 'field' => 'Student School Division'],
+            24 => ['section' => 3, 'field' => 'Student Grade'],
+            26 => ['section' => 4, 'field' => 'Student Name'],
+            27 => ['section' => 4, 'field' => 'Student School Division'],
+            28 => ['section' => 4, 'field' => 'Student Grade'],
+            30 => ['section' => 5, 'field' => 'Student Name'],
+            31 => ['section' => 5, 'field' => 'Student School Division'],
+            32 => ['section' => 5, 'field' => 'Student Grade'],
+        ];
+
         $studentSections = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $studentSections[$i] = [];
+        }
 
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
-                $fieldId = substr($key, 6);
+                $fieldId = (int)substr($key, 6);
                 $labelKey = 'label_' . $fieldId;
-                $instanceKey = 'instance_' . $fieldId;
-                if (isset($_POST[$labelKey])) {
+
+                if (isset($studentFieldMappings[$fieldId])) {
+                    $mapping = $studentFieldMappings[$fieldId];
+                    $sectionNumber = $mapping['section'];
+                    $fieldName = $mapping['field'];
+                    $studentSections[$sectionNumber][$fieldName] = $value;
+                } else if (isset($_POST[$labelKey])) {
                     $label = $_POST[$labelKey];
-                    if (isset($_POST[$instanceKey])) {
-                        $instanceId = $_POST[$instanceKey];
-                        if (strpos($instanceId, 'student-section') === 0) {
-                            $sectionNumber = substr($instanceId, strrpos($instanceId, '_') + 1);
-                            if (!isset($studentSections[$sectionNumber])) {
-                                $studentSections[$sectionNumber] = [];
-                            }
-                            $studentSections[$sectionNumber][$label] = $value;
-                        }
-                    } else {
-                        $formData[$label] = $value;
-                    }
+                    $formData[$label] = $value;
                 }
             }
         }
+
+
+//        $formData = [];
+//        $studentSections = [];
+//
+//        foreach ($_POST as $key => $value) {
+//            if (strpos($key, 'field_') === 0) {
+//                $fieldId = substr($key, 6);
+//                $labelKey = 'label_' . $fieldId;
+//                $instanceKey = 'instance_' . $fieldId;
+//                if (isset($_POST[$labelKey])) {
+//                    $label = $_POST[$labelKey];
+//                    if (isset($_POST[$instanceKey])) {
+//                        $instanceId = $_POST[$instanceKey];
+//                        if (strpos($instanceId, 'student-section') === 0) {
+//                            $sectionNumber = substr($instanceId, strrpos($instanceId, '_') + 1);
+//                            if (!isset($studentSections[$sectionNumber])) {
+//                                $studentSections[$sectionNumber] = [];
+//                            }
+//                            $studentSections[$sectionNumber][$label] = $value;
+//                        }
+//                    } else {
+//                        $formData[$label] = $value;
+//                    }
+//                }
+//            }
+//        }
 
         $conn->autocommit(false);
 
