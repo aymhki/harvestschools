@@ -194,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $data['bookingId'] = $conn->insert_id;
 
-        if (empty($formData['First Parent Name']) || empty($formData['First Parent Email']) || empty($formData['First Parent Phone Number'])) {
+        if (empty($formData['First Parent Name'])) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'First parent information is incomplete';
             $errorInfo['code'] = 400;
@@ -204,8 +204,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $firstParentName = $formData['First Parent Name'];
-        $firstParentEmail = $formData['First Parent Email'];
-        $firstParentPhone = $formData['First Parent Phone Number'];
+        $firstParentEmail = $formData['First Parent Email'] ?? '';
+        $firstParentPhone = $formData['First Parent Phone Number'] ?? '';
         $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
 
         if (!$stmt) {
