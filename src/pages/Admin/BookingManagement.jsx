@@ -16,7 +16,7 @@ import '../../styles/AdminDashboard.css';
 
 function BookingManagement() {
     const navigate = useNavigate();
-
+    const maxNumberOfStudents = 5;
     const [isLoading, setIsLoading] = useState(false);
     const [allBookings, setAllBookings] = useState(null);
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
@@ -26,10 +26,8 @@ function BookingManagement() {
     const [rowIndexToEdit, setRowIndexToEdit] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(null);
-
     const [showEditBookingModal, setShowEditBookingModal] = useState(false);
     const [editBookingModalPreFilledCoreFields, setEditBookingModalPreFilledCoreFields] = useState(null);
-    const [editBookingModalPreFilledExistingSections, setEditBookingModalPreFilledExistingSections] = useState(null);
     const [resetEditBookingModal, setResetEditBookingModal] = useState(false);
 
     const bookingUsernameFieldId = 1;
@@ -44,6 +42,27 @@ function BookingManagement() {
     const cdCountFieldId = 10;
     const additionalAttendeesFieldId = 11;
     const extrasPaymentStatusFieldId = 12;
+    const firstStudentSectionTitleId = 13;
+    const firstStudentNameId = 14;
+    const firstStudentSchoolDivisionId = 15;
+    const firstStudentGradeId = 16;
+    const secondStudentSectionTitleId = 17;
+    const secondStudentNameId = 18;
+    const secondStudentSchoolDivisionId = 19;
+    const secondStudentGradeId = 20;
+    const thirdStudentSectionTitleId = 21;
+    const thirdStudentNameId = 22;
+    const thirdStudentSchoolDivisionId = 23;
+    const thirdStudentGradeId = 24;
+    const fourthStudentSectionTitleId = 25;
+    const fourthStudentNameId = 26;
+    const fourthStudentSchoolDivisionId = 27;
+    const fourthStudentGradeId = 28;
+    const fifthStudentSectionTitleId = 29;
+    const fifthStudentNameId = 30;
+    const fifthStudentSchoolDivisionId = 31;
+    const fifthStudentGradeId = 32;
+    
     const colIndexForBookingId = 0;
     const colIndexForBookingUsername = 6;
     const colIndexForStudentIds = 8;
@@ -270,11 +289,9 @@ function BookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             defaultValue: 'Not Signed Up',
-        }
-    ]
-
-    const studentSectionFields = [
+        },
         {
+            id: firstStudentSectionTitleId,
             type: 'section',
             name: 'student-section',
             label: 'New Student',
@@ -289,6 +306,7 @@ function BookingManagement() {
             labelOnTop: true,
         },
         {
+            id: firstStudentNameId,
             type: 'text',
             name: 'student-name',
             label: 'Student Name',
@@ -303,6 +321,7 @@ function BookingManagement() {
             labelOnTop: true,
         },
         {
+            id: firstStudentSchoolDivisionId,
             type: 'select',
             name: 'student-school-division',
             label: 'Student School Division',
@@ -318,11 +337,260 @@ function BookingManagement() {
             labelOnTop: true,
         },
         {
+            id: firstStudentGradeId,
             type: 'select',
             name: 'student-grade',
             label: 'Student Grade',
             choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
             required: true,
+            placeholder: 'Student Grade',
+            errorMsg: 'Please enter the student grade',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-grade',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: secondStudentSectionTitleId,
+            type: 'section',
+            name: 'student-section',
+            label: 'New Student',
+            required: false,
+            placeholder: 'Student Section',
+            errorMsg: '',
+            value: '',
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'student-section',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: secondStudentNameId,
+            type: 'text',
+            name: 'student-name',
+            label: 'Student Name',
+            required: false,
+            placeholder: 'Student Name',
+            errorMsg: 'Please enter the student name',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-name',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: secondStudentSchoolDivisionId,
+            type: 'select',
+            name: 'student-school-division',
+            label: 'Student School Division',
+            choices: ['IGCSE', 'American', 'National', 'Kindergarten'],
+            required: false,
+            placeholder: 'Student School Division',
+            errorMsg: 'Please enter the student school division',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-school-division',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: secondStudentGradeId,
+            type: 'select',
+            name: 'student-grade',
+            label: 'Student Grade',
+            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+            required: false,
+            placeholder: 'Student Grade',
+            errorMsg: 'Please enter the student grade',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-grade',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: thirdStudentSectionTitleId,
+            type: 'section',
+            name: 'student-section',
+            label: 'New Student',
+            required: false,
+            placeholder: 'Student Section',
+            errorMsg: '',
+            value: '',
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'student-section',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: thirdStudentNameId,
+            type: 'text',
+            name: 'student-name',
+            label: 'Student Name',
+            required: false,
+            placeholder: 'Student Name',
+            errorMsg: 'Please enter the student name',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-name',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: thirdStudentSchoolDivisionId,
+            type: 'select',
+            name: 'student-school-division',
+            label: 'Student School Division',
+            choices: ['IGCSE', 'American', 'National', 'Kindergarten'],
+            required: false,
+            placeholder: 'Student School Division',
+            errorMsg: 'Please enter the student school division',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-school-division',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: thirdStudentGradeId,
+            type: 'select',
+            name: 'student-grade',
+            label: 'Student Grade',
+            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+            required: false,
+            placeholder: 'Student Grade',
+            errorMsg: 'Please enter the student grade',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-grade',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fourthStudentSectionTitleId,
+            type: 'section',
+            name: 'student-section',
+            label: 'New Student',
+            required: false,
+            placeholder: 'Student Section',
+            errorMsg: '',
+            value: '',
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'student-section',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fourthStudentNameId,
+            type: 'text',
+            name: 'student-name',
+            label: 'Student Name',
+            required: false,
+            placeholder: 'Student Name',
+            errorMsg: 'Please enter the student name',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-name',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fourthStudentSchoolDivisionId,
+            type: 'select',
+            name: 'student-school-division',
+            label: 'Student School Division',
+            choices: ['IGCSE', 'American', 'National', 'Kindergarten'],
+            required: false,
+            placeholder: 'Student School Division',
+            errorMsg: 'Please enter the student school division',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-school-division',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fourthStudentGradeId,
+            type: 'select',
+            name: 'student-grade',
+            label: 'Student Grade',
+            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+            required: false,
+            placeholder: 'Student Grade',
+            errorMsg: 'Please enter the student grade',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-grade',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fifthStudentSectionTitleId,
+            type: 'section',
+            name: 'student-section',
+            label: 'New Student',
+            required: false,
+            placeholder: 'Student Section',
+            errorMsg: '',
+            value: '',
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'student-section',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fifthStudentNameId,
+            type: 'text',
+            name: 'student-name',
+            label: 'Student Name',
+            required: false,
+            placeholder: 'Student Name',
+            errorMsg: 'Please enter the student name',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-name',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fifthStudentSchoolDivisionId,
+            type: 'select',
+            name: 'student-school-division',
+            label: 'Student School Division',
+            choices: ['IGCSE', 'American', 'National', 'Kindergarten'],
+            required: false,
+            placeholder: 'Student School Division',
+            errorMsg: 'Please enter the student school division',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'student-school-division',
+            labelOutside: true,
+            labelOnTop: true,
+        },
+        {
+            id: fifthStudentGradeId,
+            type: 'select',
+            name: 'student-grade',
+            label: 'Student Grade',
+            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+            required: false,
             placeholder: 'Student Grade',
             errorMsg: 'Please enter the student grade',
             value: '',
@@ -390,7 +658,6 @@ function BookingManagement() {
         } finally {
             setIsDeleting(false);
             setIsLoading(false);
-            // setShowDeleteBookingModal(false);
         }
     };
 
@@ -401,7 +668,7 @@ function BookingManagement() {
 
     const handleEditBookingModalInitialization = (rowIndex) => {
         setRowIndexToEdit(rowIndex);
-
+        
         const bookingUsername = allBookings[rowIndex][colIndexForBookingUsername];
         const studentIds = allBookings[rowIndex][colIndexForStudentIds];
         const studentNames = allBookings[rowIndex][colIndexForStudentNames];
@@ -423,86 +690,70 @@ function BookingManagement() {
 
         const editBookingModalCoreFields = addBookingModalCoreFormFields.map((field) => {
             if (field.id === bookingUsernameFieldId) {
-                field.defaultValue = bookingUsername;
+                field.value = bookingUsername;
+                field.widthOfField = 1;
             } else if (field.id === cdCountFieldId) {
-                field.defaultValue = cdCount;
+                field.value = cdCount;
             } else if (field.id === additionalAttendeesFieldId) {
-                field.defaultValue = additionalAttendees;
+                field.value = additionalAttendees;
             } else if (field.id === extrasPaymentStatusFieldId) {
-                field.defaultValue = bookingExtrasStatus;
+                field.value = bookingExtrasStatus;
             } else if (field.id === firstParentNameFieldId) {
-                field.defaultValue = parentNamesArray[0];
+                field.value = parentNamesArray[0];
             } else if (field.id === firstParentEmailFieldId) {
-                field.defaultValue = parentEmailsArray[0];
+                field.value = parentEmailsArray[0];
             } else if (field.id === firstParentPhoneNumberFieldId) {
-                field.defaultValue = parentPhonesArray[0];
+                field.value = parentPhonesArray[0];
             } else if (field.id === secondParentNameFieldId) {
                 if (parentNamesArray[1]) {
-                    field.defaultValue = parentNamesArray[1];
+                    field.value = parentNamesArray[1];
                 }
             } else if (field.id === secondParentEmailFieldId) {
                 if (parentEmailsArray[1]) {
-                    field.defaultValue = parentEmailsArray[1];
+                    field.value = parentEmailsArray[1];
                 }
             } else if (field.id === secondParentPhoneNumberFieldId) {
                 if (parentPhonesArray[1]) {
-                    field.defaultValue = parentPhonesArray[1];
+                    field.value = parentPhonesArray[1];
                 }
             } else if (field.id === bookingPasswordFieldId || field.id === confirmBookingPasswordFieldId) {
                 field.required = false;
                 field.value = '';
-                field.defaultValue = '';
+                field.widthOfField = 2 ;
                 
                 if (field.id === bookingPasswordFieldId) {
-                    field.label = 'Booking Password (Not required in editing unless you want a new Password)';
+                    field.label = '(Leave it empty if you do not want to change it)';
                 } else if (field.id === confirmBookingPasswordFieldId) {
-                    field.label = 'Confirm Booking Password (Not required in editing unless you want a new Password)';
+                    field.label = '(Leave it empty if you do not want to change it)';
                 }
             }
 
             return field;
         });
 
-        setEditBookingModalPreFilledCoreFields(editBookingModalCoreFields);
-
-        const editBookingModalStudentSectionFields = studentSectionFields.map((field) => {
-            if (field.name === 'student-section') {
-                field.defaultValue = studentIds;
-            } else if (field.name === 'student-name') {
-                field.defaultValue = studentNames;
-            } else if (field.name === 'student-school-division') {
-                field.defaultValue = studentSchoolDivisions;
-            } else if (field.name === 'student-grade') {
-                field.defaultValue = studentGrades;
-            }
-
-            return field;
-        });
-
-        const editBookingModalStudentSectionInstances = [];
-
-        for (let i = 0; i < studentIdsArray.length; i++) {
-            const editBookingModalStudentSectionInstance = editBookingModalStudentSectionFields.map((field) => {
-                const newField = {...field};
-
-                if (newField.name === 'student-section') {
-                    newField.defaultValue = studentIdsArray[i];
-                } else if (newField.name === 'student-name') {
-                    newField.defaultValue = studentNamesArray[i];
-                } else if (newField.name === 'student-school-division') {
-                    newField.defaultValue = studentSchoolDivisionsArray[i];
-                } else if (newField.name === 'student-grade') {
-                    newField.defaultValue = studentGradesArray[i];
+        for (let i = 0; i < studentIdsArray.length && i < maxNumberOfStudents; i++) {
+            const studentFieldIds = [
+                { nameId: firstStudentNameId, divisionId: firstStudentSchoolDivisionId, gradeId: firstStudentGradeId },
+                { nameId: secondStudentNameId, divisionId: secondStudentSchoolDivisionId, gradeId: secondStudentGradeId },
+                { nameId: thirdStudentNameId, divisionId: thirdStudentSchoolDivisionId, gradeId: thirdStudentGradeId },
+                { nameId: fourthStudentNameId, divisionId: fourthStudentSchoolDivisionId, gradeId: fourthStudentGradeId },
+                { nameId: fifthStudentNameId, divisionId: fifthStudentSchoolDivisionId, gradeId: fifthStudentGradeId }
+            ];
+            
+            const currentStudentFields = studentFieldIds[i];
+            
+            editBookingModalCoreFields.forEach(field => {
+                if (field.id === currentStudentFields.nameId) {
+                    field.value = studentNamesArray[i] || '';
+                } else if (field.id === currentStudentFields.divisionId) {
+                    field.value = studentSchoolDivisionsArray[i] || '';
+                } else if (field.id === currentStudentFields.gradeId) {
+                    field.value = studentGradesArray[i] || '';
                 }
-
-                return newField;
             });
-
-            editBookingModalStudentSectionInstances.push(editBookingModalStudentSectionInstance);
         }
-
-        setEditBookingModalPreFilledExistingSections(editBookingModalStudentSectionInstances);
-
+        
+        setEditBookingModalPreFilledCoreFields(editBookingModalCoreFields);
         setShowEditBookingModal(true);
     }
 
@@ -521,7 +772,6 @@ function BookingManagement() {
                 setShowAddBookingModal(false);
                 setRowIndexToEdit(null);
                 setEditBookingModalPreFilledCoreFields(null);
-                setEditBookingModalPreFilledExistingSections(null);
                 fetchBookings();
                 return true;
             } else {
@@ -538,7 +788,6 @@ function BookingManagement() {
     const handleCancelEditBookingModal = () => {
         setShowEditBookingModal(false);
         setEditBookingModalPreFilledCoreFields(null);
-        setEditBookingModalPreFilledExistingSections(null);
     }
 
     const fetchBookings = async () => {
@@ -653,18 +902,6 @@ function BookingManagement() {
                               setResetForFromParent={setResetAddBookingModal}
                               hasDifferentOnSubmitBehaviour={true}
                               differentOnSubmitBehaviour={handleAddBooking}
-                              dynamicSections={[
-                                  {
-                                      addButtonText: "Add Student",
-                                      removeButtonText: "Remove Student",
-                                      startAddingFieldsFromId: 9,
-                                      fieldsToAdd: studentSectionFields,
-                                      maxSectionInstancesToAdd: 5,
-                                      sectionId: "student-section",
-                                      minimumSectionInstancesForValidSubmission: 1,
-                                      sectionTitle: "New Student",
-                                  }
-                              ]}
                               formInModalPopup={true}
                               setShowFormModalPopup={setShowAddBookingModal}
                               pedanticIds={true}
@@ -749,7 +986,7 @@ function BookingManagement() {
                     </div>
 
                     <div className={"edit-booking-modal-content"}>
-                        {editBookingModalPreFilledCoreFields && editBookingModalPreFilledExistingSections && (
+                        {editBookingModalPreFilledCoreFields && (
                             <Form fields={editBookingModalPreFilledCoreFields}
                                   mailTo={''}
                                   sendPdf={false}
@@ -763,19 +1000,6 @@ function BookingManagement() {
                                   hasDifferentSubmitButtonText={true}
                                   differentSubmitButtonText={[
                                       "Save", "Saving...", "تعديل", "جاري التعديل..."
-                                  ]}
-                                  dynamicSections={[
-                                      {
-                                          addButtonText: "Add Student",
-                                          removeButtonText: "Remove Student",
-                                          startAddingFieldsFromId: 9,
-                                          fieldsToAdd: studentSectionFields,
-                                          maxSectionInstancesToAdd: 5,
-                                          sectionId: "student-section",
-                                          minimumSectionInstancesForValidSubmission: 1,
-                                          sectionTitle: "New Student",
-                                          existingFilledSectionInstances: editBookingModalPreFilledExistingSections,
-                                      }
                                   ]}
                                   formInModalPopup={true}
                                   setShowFormModalPopup={setShowEditBookingModal}

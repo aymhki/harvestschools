@@ -15,6 +15,12 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     };
 
     const closeLightBox = () => {
+        
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            video.pause();
+        });
+        
         setIsOpen(false);
         document.body.classList.toggle('lock-scroll', false);
     };
@@ -53,7 +59,13 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         return (
             <div className="photo-slider">
                 {photos && (
-                    <img src={photos[maxIndex].src} alt={photos[maxIndex].alt} className="photo-slider-main-photo" onClick={() => openLightBox(maxIndex)} />
+                    (photos[maxIndex].isVideo) ? (
+                        <video src={photos[maxIndex].src} alt={photos[maxIndex].alt}  onClick={() => openLightBox(maxIndex)}
+                        className={'video-slider-preview'}
+                        />
+                    ) : (
+                        <img src={photos[maxIndex].src} alt={photos[maxIndex].alt} className="photo-slider-main-photo" onClick={() => openLightBox(maxIndex)} />
+                    )
                 )}
                 {title && <h2>{title}</h2>}
             </div>
@@ -63,7 +75,11 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     const renderCollage = () => (
         <div className="photo-collage">
             {collagePreview && (
-                <img src={collagePreview.src} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
+                (collagePreview.isVideo) ? (
+                    <video src={collagePreview.src} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} controls />
+                    ) : (
+                    <img src={collagePreview.src} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
+                )
             )}
         </div>
     );
@@ -87,15 +103,40 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                         transform: isOpen ? 'translateY(0%)' : 'translateY(-100%)'
                     })
                 }>
-                    <img
-                        src={photos[currentIndex].src}
-                        alt={photos[currentIndex].alt}
-                        className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
-                        onLoad={handleImageLoad}
-                    />
+                    
+                    {photos[currentIndex].isVideo ? (
+                        <video
+                            src={photos[currentIndex].src}
+                            alt={photos[currentIndex].alt}
+                            className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
+                            controls
+                            autoPlay
+                            
+                            />
+                        ) : (
+                    
+                        <img
+                            src={photos[currentIndex].src}
+                            alt={photos[currentIndex].alt}
+                            className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
+                            onLoad={handleImageLoad}
+                        />
+                        
+                    )}
+                    
+                    
                     <div onClick={closeLightBox} className="close-lightbox">&#10007;</div>
-                    <div onClick={prevPhoto} className="prev-photo">&#10094;</div>
-                    <div onClick={nextPhoto} className="next-photo">&#10095;</div>
+                    
+                    { photos.length > 1 && (
+                        <>
+                            <div onClick={prevPhoto} className="prev-photo">&#10094;</div>
+                            <div onClick={nextPhoto} className="next-photo">&#10095;</div>
+                        </>
+                    )}
+                    
+
+                    
+                    
                     <div className="photo-index"><p>{currentIndex + 1} / {photos.length}</p></div>
                 </animated.div>
 
@@ -107,12 +148,14 @@ PhotoCollage.propTypes = {
     type: PropTypes.oneOf(['slider', 'collage']).isRequired,
     photos: PropTypes.arrayOf(PropTypes.shape({
         src: PropTypes.string.isRequired,
-        alt: PropTypes.string.isRequired
+        alt: PropTypes.string.isRequired,
+        isVideo: PropTypes.bool
     })).isRequired,
     title: PropTypes.string,
     collagePreview: PropTypes.shape({
         src: PropTypes.string.isRequired,
-        alt: PropTypes.string.isRequired
+        alt: PropTypes.string.isRequired,
+        isVideo: PropTypes.bool
     })
 };
 

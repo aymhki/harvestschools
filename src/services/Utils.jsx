@@ -31,7 +31,8 @@ const ENDPOINTS = {
     getUserPermissions: '/scripts/getUserPermissions.php',
     submitForm: '/scripts/submitForm.php',
     submitJobApplication: '/scripts/submitJobApplication.php',
-    getJobApplications: '/scripts/getJobApplications.php'
+    getJobApplications: '/scripts/getJobApplications.php',
+    updateBookingExtras: '/scripts/submitUpdateBookingExtras.php'
 };
 
 const generateEndpoints = () => {
@@ -45,7 +46,6 @@ const generateEndpoints = () => {
     return fullEndpoints;
 };
 
-
 const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
@@ -55,6 +55,53 @@ const adminLoginPageUrl = '/admin/login';
 const adminDashboardPageUrl = '/admin/dashboard';
 
 export const endpoints = generateEndpoints();
+
+const submitUpdateBookingExtrasRequest = async (formData, bookingId, navigate) => {
+    try {
+        const sessionId = validateBookingSessionLocally();
+        
+        if (!sessionId) {
+            return 'Session expired';
+        }
+        
+        const response = await fetch (endpoints.checkBookingSession, {
+            method: 'POST',
+            body: JSON.stringify({session_id: sessionId})
+        })
+        
+        const result = await response.json();
+        
+        if (result && !result.success) {
+            if (result.message) {
+                console.log(result.message);
+            }
+            
+            navigate(bookingLoginPageUrl);
+        }
+        
+        formData.append('bookingId', bookingId);
+        
+        const updateResponse = await fetch(endpoints.updateBookingExtras, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const updateResult = await updateResponse.json();
+        
+        if (updateResult && updateResult.success) {
+            return updateResult;
+        } else {
+            if (updateResult && updateResult.message) {
+                return updateResult.message;
+            } else {
+                return 'Update failed. Please try again.';
+            }
+        }
+    } catch ( error ) {
+        return error.message;
+    }
+    
+}
 
 const handleEditBookingRequest = async (formData, bookingId) => {
     try {
@@ -703,7 +750,6 @@ const validateAdminSessionLocally = () => {
     }
 }
 
-
 const useFormCache = (formTitle, fields) => {
     const CACHE_DURATION_IN_HOURS = 4;
     const CACHE_DURATION = CACHE_DURATION_IN_HOURS * 60 * 60 * 1000;
@@ -808,5 +854,6 @@ export {
     submitJobApplicationRequest,
     fetchBookingInfoBySessionRequest,
     handleEditBookingRequest,
+    submitUpdateBookingExtrasRequest
 
 };

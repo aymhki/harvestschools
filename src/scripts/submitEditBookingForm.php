@@ -60,27 +60,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $formData = [];
+        $studentFieldMappings = [
+            14 => ['section' => 1, 'field' => 'Student Name'],
+            15 => ['section' => 1, 'field' => 'Student School Division'],
+            16 => ['section' => 1, 'field' => 'Student Grade'],
+            18 => ['section' => 2, 'field' => 'Student Name'],
+            19 => ['section' => 2, 'field' => 'Student School Division'],
+            20 => ['section' => 2, 'field' => 'Student Grade'],
+            22 => ['section' => 3, 'field' => 'Student Name'],
+            23 => ['section' => 3, 'field' => 'Student School Division'],
+            24 => ['section' => 3, 'field' => 'Student Grade'],
+            26 => ['section' => 4, 'field' => 'Student Name'],
+            27 => ['section' => 4, 'field' => 'Student School Division'],
+            28 => ['section' => 4, 'field' => 'Student Grade'],
+            30 => ['section' => 5, 'field' => 'Student Name'],
+            31 => ['section' => 5, 'field' => 'Student School Division'],
+            32 => ['section' => 5, 'field' => 'Student Grade'],
+        ];
         $studentSections = [];
+
+        for ($i = 1; $i <= 5; $i++) {
+            $studentSections[$i] = [];
+        }
 
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
-                $fieldId = substr($key, 6);
+                $fieldId = (int)substr($key, 6);
                 $labelKey = 'label_' . $fieldId;
-                $instanceKey = 'instance_' . $fieldId;
-                if (isset($_POST[$labelKey])) {
+
+                if (isset($studentFieldMappings[$fieldId])) {
+                    $mapping = $studentFieldMappings[$fieldId];
+                    $sectionNumber = $mapping['section'];
+                    $fieldName = $mapping['field'];
+                    $studentSections[$sectionNumber][$fieldName] = $value;
+                } else if (isset($_POST[$labelKey])) {
                     $label = $_POST[$labelKey];
-                    if (isset($_POST[$instanceKey])) {
-                        $instanceId = $_POST[$instanceKey];
-                        if (strpos($instanceId, 'student-section') === 0) {
-                            $sectionNumber = substr($instanceId, strrpos($instanceId, '_') + 1);
-                            if (!isset($studentSections[$sectionNumber])) {
-                                $studentSections[$sectionNumber] = [];
-                            }
-                            $studentSections[$sectionNumber][$label] = $value;
-                        }
-                    } else {
-                        $formData[$label] = $value;
-                    }
+                    $formData[$label] = $value;
+                } else {
+                    $formData[$key] = $value;
                 }
             } else {
                 $formData[$key] = $value;
@@ -313,7 +330,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $thereIsNewStudentInfo = true;
                 } else {
                     foreach ($studentSections as $index => $studentData) {
-                        if (!empty($studentData['Student Name'])) {
+                        if (
+                            (!empty($studentData['Student Name'])) ||
+                            (
+                                empty($studentData['Student Name']) &&
+                                empty($studentData['Student School Division']) &&
+                                empty($studentData['Student Grade'])
+                            )
+                        ) {
                             $studentName = $studentData['Student Name'];
                             $schoolDivision = $studentData['Student School Division'] ?? 'Other';
                             $grade = $studentData['Student Grade'] ?? '';
@@ -669,7 +693,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $hasStudents = false;
 
                         foreach ($studentSections as $index => $studentData) {
-                            if (!empty($studentData['Student Name'])) {
+                            if (
+                                (!empty($studentData['Student Name'])) ||
+                                (
+                                    empty($studentData['Student Name']) &&
+                                    empty($studentData['Student School Division']) &&
+                                    empty($studentData['Student Grade'])
+                                )
+                            ) {
+
+                                if (empty($studentData['Student Name']) && empty($studentData['Student School Division']) && empty($studentData['Student Grade']) ) {
+                                    continue;
+                                } else if (empty($studentData['Student Name'])) {
+                                    $errorInfo['success'] = false;
+                                    $errorInfo['message'] = 'Student Name cannot be empty: ' . $studentData['Student Grade'] . ' - ' . $studentData['Student School Division'];
+                                    $errorInfo['code'] = 400;
+                                    performRollback($conn, $data);
+                                    echo json_encode($errorInfo);
+                                    return;
+                                }
+
                                 $hasStudents = true;
                                 $studentName = $studentData['Student Name'];
                                 $schoolDivision = $studentData['Student School Division'] ?? 'Other';
@@ -870,28 +913,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $data['oldPasswordHash'] = $row['password_hash'];
                     }
 
-                    $stmt = $conn->prepare("DELETE FROM booking_sessions WHERE username = ?");
-
-                    if (!$stmt) {
-                        $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Prepare delete booking sessions failed: ' . $conn->error;
-                        $errorInfo['code'] = 500;
-                        performRollback($conn, $data);
-                        echo json_encode($errorInfo);
-                        return;
-                    }
-
-                    $stmt->bind_param("s", $data['oldUsername']);
-
-                    if (!$stmt->execute()) {
-                        $errorInfo['success'] = false;
-                        $errorInfo['message'] = 'Execute failed: ' . $stmt->error;
-                        $errorInfo['code'] = 500;
-                        performRollback($conn, $data);
-                        echo json_encode($errorInfo);
-                        return;
-                    }
-
                     $usernameHasChanged = $data['oldUsername'] !== $newUsername;
 
                     if ($usernameHasChanged) {
@@ -1006,6 +1027,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return;
                             }
                         }
+                    }
+
+                    if ($usernameHasChanged  || $newPassword !== '') {
+
+                        $stmt = $conn->prepare("DELETE FROM booking_sessions WHERE username = ?");
+
+                        if (!$stmt) {
+                            $errorInfo['success'] = false;
+                            $errorInfo['message'] = 'Prepare delete booking sessions failed: ' . $conn->error;
+                            $errorInfo['code'] = 500;
+                            performRollback($conn, $data);
+                            echo json_encode($errorInfo);
+                            return;
+                        }
+
+                        $stmt->bind_param("s", $data['oldUsername']);
+
+                        if (!$stmt->execute()) {
+                            $errorInfo['success'] = false;
+                            $errorInfo['message'] = 'Execute failed: ' . $stmt->error;
+                            $errorInfo['code'] = 500;
+                            performRollback($conn, $data);
+                            echo json_encode($errorInfo);
+                            return;
+                        }
+
                     }
 
                     $data['haveSuccessfullyUpdatedAuth'] = true;
