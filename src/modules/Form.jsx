@@ -64,46 +64,7 @@ function Form({
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
 
     const processFieldOnChangeResult = useCallback((field, value) => {
-       // onChangeResult: [
-       //      {
-       //          idOfTheFieldThatShouldChangeBasedOnThisNewValue: additionalAttendeesFieldCostId,
-       //          whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'multiply',
-       //          firstValueToMultiplyWith: additionalAttendeeCost,
-       //      },
-       //      {
-       //          idOfTheFieldThatShouldChangeBasedOnThisNewValue: totalCostFieldId,
-       //          whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'add & multiply',
-       //          fieldIdsToAddAndMultiplyTogether: {
-       //              cdCountFieldId: cdCountFieldCostId,
-       //              additionalAttendeesFieldId: additionalAttendeesFieldCostId,
-       //          },
-       //      },
-       //      {
-       //          idOfTheFieldThatShouldChangeBasedOnThisNewValue: paymentStatusFieldId,
-       //          whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'set',
-       //          fieldIdsToCheckIfBiggerThanZero: [ additionalAttendeesFieldId, cdCountFieldId ],
-       //          valueToSetOnValuesBiggerThanZero: 'Signed up, pending payment',
-       //          valueToSetOnValuesZero: 'Not Signed up',
-       //      }
-       //  ]
-        
-        // first case:
-        // set fieldRefs.current[additionalAttendeesFieldCostId].current.value = additionalAttendeeCost * value;
-        
-        // second case:
-        // set fieldRefs.current[totalCostFieldId].current.value =
-        // (fieldRefs.current[additionalAttendeesFieldId].current.value * fieldRefs.current[additionalAttendeesFieldCostId].current.value ) +
-        // (fieldRefs.current[cdCountFieldId].current.value * fieldRefs.current[cdCountFieldCostId].current.value);
-        
-        // third case:
-        // if (fieldRefs.current[additionalAttendeesFieldId].current.value > 0 || fieldRefs.current[cdCountFieldId].current.value > 0) {
-        //     set fieldRefs.current[paymentStatusFieldId].current.value = 'Signed up, pending payment';
-        // } else {
-        //     set fieldRefs.current[paymentStatusFieldId].current.value = 'Not Signed up';
-        // }
-        
-        // now write a for each loop to iterate over the array and do the above logic for each object in the array, note that we don't want to hard code values and instead use the object values
-        
+
         if (field.onChangeResult) {
             field.onChangeResult.forEach((result) => {
                 const fieldToChange = fieldRefs.current[result.idOfTheFieldThatShouldChangeBasedOnThisNewValue];
@@ -217,7 +178,7 @@ function Form({
         id: field.id,
         name: field.httpName,
         required: field.required,
-        disabled: submitting || field.readOnlyField,
+        disabled: submitting, //|| field.readOnlyField,
         readOnly: field.readOnlyField || formIsReadOnly || submitting || false,
         onChange: (e) => onChange(e, field),
         ref: fieldRefs.current[field.id],
@@ -259,7 +220,7 @@ function Form({
             ...baseProps,
             type,
             placeholder: getPlaceholder(field),
-            className: `text-form-field`
+            className: `text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`
         };
         
         if (field.dontLetTheBrowserSaveField) {
