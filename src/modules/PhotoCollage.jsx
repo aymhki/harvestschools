@@ -110,8 +110,6 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                             alt={photos[currentIndex].alt}
                             className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
                             controls
-                            autoPlay
-                            
                             />
                         ) : (
                     
