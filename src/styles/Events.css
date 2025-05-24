@@ -139,7 +139,7 @@
 
     .booking-extras-form-wrapper {
         width: 95vw;
-        height: 70vh;
+        height: auto;
     }
 
 }
@@ -151,7 +151,7 @@
 @media (max-width: 768px) {
 
     .booking-extras-form-wrapper {
-        height: 90vh;
+        height: auto;
     }
 
     .booking-login-page {
