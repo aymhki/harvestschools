@@ -259,7 +259,7 @@ function Form({
             ...baseProps,
             type,
             placeholder: getPlaceholder(field),
-            className: `text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`
+            className: `text-form-field`
         };
         
         if (field.dontLetTheBrowserSaveField) {
