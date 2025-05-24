@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, Navigate, useLocation } from 'react-route
 import { HelmetProvider } from 'react-helmet-async';
 import NavigationBar from "../modules/NavigationBar.jsx";
 import Footer from "../modules/Footer.jsx";
+import ErrorBoundary from "../modules/ErrorBoundary.jsx";
 
 
 
@@ -108,83 +109,85 @@ function App() {
         <>
             {!shouldExclude && <NavigationBar />}
             <div className="content">
-                <Suspense fallback={<Loading />}>
-                    <HelmetProvider>
-                        <Routes>
-                            <Route path="/" element={<Navigate to="/home" />} />
-                            <Route path="/home" element={<Home />} />
-
-                            <Route path="/admin/login" element={<AdminLogin />} />
-                            <Route path="/admin/dashboard" element={<Dashboard />} />
-                            <Route path="/admin/job-applications" element={<JobApplications />} />
-                            <Route path="/admin/booking-management" element={<BookingManagement />} />
-
-                            <Route path="/more-info" element={<MoreInfo />} />
-                            <Route path="/faqs" element={<Faqs />} />
-                            <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
-                            <Route path="/covid-19" element={<Covid19 />} />
-                            <Route path="/covid-19/covid-19-english-read" element={<Covid19EnglishRead />} />
-                            <Route path="/covid-19/covid-19-arabic-read" element={<Covid19ArabicRead />} />
-                            <Route path="/covid-19/covid-19-english" element={<Covid19English />} />
-                            <Route path="/covid-19/covid-19-arabic" element={<Covid19Arabic />} />
-
-                            <Route path="/vacancies" element={<Vacancies />} />
-
-                            <Route path="/admission" element={<Admission />} />
-                            <Route path="/admission/admission-process" element={<AdmissionProcess />} />
-                            <Route path="/admission/admission-requirements" element={<AdmissionRequirements />} />
-                            <Route path="/admission/inside-egypt-requirements" element={<InsideEgyptRequirements />} />
-                            <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
-                            <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
-                            <Route path="/admission/admission-fees" element={<AdmissionFees />} />
-
-                            <Route path="/academics" element={<Academics />} />
-                            <Route path="/academics/british" element={<British />} />
-                            <Route path="/academics/national" element={<NationalAcademics />} />
-                            <Route path="/academics/american" element={<AmericanAcademics />} />
-                            <Route path="/academics/partners" element={<PartnersAcademics />} />
-                            <Route path="/academics/facilities" element={<Facilities />} />
-                            <Route path="/academics/staff" element={<StaffAcademics />} />
-                            <Route path="/academics/staff/national-staff" element={<NationalStaff />} />
-                            <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
-                            <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
-                            <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
-
-                            <Route path="/students-life" element={<StudentLife />} />
-                            <Route path="/students-life/students-union" element={<StudentsUnion />} />
-                            <Route path="/students-life/activities" element={<Activities />} />
-                            <Route path="/students-life/library" element={<Library />} />
-                            <Route path="/students-life/library/english-library" element={<EnglishLibrary />} />
-                            <Route path="/students-life/library/arabic-library" element={<ArabicLibrary />} />
-                            <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />
-                            <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
-                            <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />
-                            <Route path="/students-life/library/english-general" element={<EnglishGeneral />} />
-                            <Route path="/students-life/library/arabic-information" element={<ArabicInformation />} />
-                            <Route path="/students-life/library/arabic-general" element={<ArabicGeneral />} />
-                            <Route path="/students-life/library/arabic-religion" element={<ArabicReligion />} />
-                            <Route path="/students-life/library/arabic-stories" element={<ArabicStories />} />
-
-                            <Route path="/events" element={<Events />} />
-                            <Route path="/events/national-calendar" element={<NationalCalendar />} />
-                            <Route path="/events/british-calendar" element={<BritishCalendar />} />
-                            <Route path="/events/american-calendar" element={<AmericanCalendar />} />
-                            <Route path="/events/kg-calendar" element={<KgCalendarEvents />} />
-                            <Route path="/events/booking" element={<BookingLogin />} />
-                            <Route path="/events/booking/dashboard" element={<BookingDashboard />} />
-                            <Route path="/events/booking/media" element={<BookingMedia />} />
-                            <Route path="/events/booking/extras" element={<BookingExtras />} />
-                            <Route path="/events/booking/info" element={<BookingStatusInfo />} />
-
-                            <Route path="/gallery" element={<Gallery />} />
-                            <Route path="/gallery/photos" element={<PhotosGallery />} />
-                            <Route path="/gallery/videos" element={<VideosGallery />} />
-                            <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
-
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
-                    </HelmetProvider>
-                </Suspense>
+                <ErrorBoundary>
+                    <Suspense fallback={<Loading />}>
+                        <HelmetProvider>
+                            <Routes>
+                                <Route path="/" element={<Navigate to="/home" />} />
+                                <Route path="/home" element={<Home />} />
+    
+                                <Route path="/admin/login" element={<AdminLogin />} />
+                                <Route path="/admin/dashboard" element={<Dashboard />} />
+                                <Route path="/admin/job-applications" element={<JobApplications />} />
+                                <Route path="/admin/booking-management" element={<BookingManagement />} />
+    
+                                <Route path="/more-info" element={<MoreInfo />} />
+                                <Route path="/faqs" element={<Faqs />} />
+                                <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
+                                <Route path="/covid-19" element={<Covid19 />} />
+                                <Route path="/covid-19/covid-19-english-read" element={<Covid19EnglishRead />} />
+                                <Route path="/covid-19/covid-19-arabic-read" element={<Covid19ArabicRead />} />
+                                <Route path="/covid-19/covid-19-english" element={<Covid19English />} />
+                                <Route path="/covid-19/covid-19-arabic" element={<Covid19Arabic />} />
+    
+                                <Route path="/vacancies" element={<Vacancies />} />
+    
+                                <Route path="/admission" element={<Admission />} />
+                                <Route path="/admission/admission-process" element={<AdmissionProcess />} />
+                                <Route path="/admission/admission-requirements" element={<AdmissionRequirements />} />
+                                <Route path="/admission/inside-egypt-requirements" element={<InsideEgyptRequirements />} />
+                                <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
+                                <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
+                                <Route path="/admission/admission-fees" element={<AdmissionFees />} />
+    
+                                <Route path="/academics" element={<Academics />} />
+                                <Route path="/academics/british" element={<British />} />
+                                <Route path="/academics/national" element={<NationalAcademics />} />
+                                <Route path="/academics/american" element={<AmericanAcademics />} />
+                                <Route path="/academics/partners" element={<PartnersAcademics />} />
+                                <Route path="/academics/facilities" element={<Facilities />} />
+                                <Route path="/academics/staff" element={<StaffAcademics />} />
+                                <Route path="/academics/staff/national-staff" element={<NationalStaff />} />
+                                <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
+                                <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
+                                <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
+    
+                                <Route path="/students-life" element={<StudentLife />} />
+                                <Route path="/students-life/students-union" element={<StudentsUnion />} />
+                                <Route path="/students-life/activities" element={<Activities />} />
+                                <Route path="/students-life/library" element={<Library />} />
+                                <Route path="/students-life/library/english-library" element={<EnglishLibrary />} />
+                                <Route path="/students-life/library/arabic-library" element={<ArabicLibrary />} />
+                                <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />
+                                <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
+                                <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />
+                                <Route path="/students-life/library/english-general" element={<EnglishGeneral />} />
+                                <Route path="/students-life/library/arabic-information" element={<ArabicInformation />} />
+                                <Route path="/students-life/library/arabic-general" element={<ArabicGeneral />} />
+                                <Route path="/students-life/library/arabic-religion" element={<ArabicReligion />} />
+                                <Route path="/students-life/library/arabic-stories" element={<ArabicStories />} />
+    
+                                <Route path="/events" element={<Events />} />
+                                <Route path="/events/national-calendar" element={<NationalCalendar />} />
+                                <Route path="/events/british-calendar" element={<BritishCalendar />} />
+                                <Route path="/events/american-calendar" element={<AmericanCalendar />} />
+                                <Route path="/events/kg-calendar" element={<KgCalendarEvents />} />
+                                <Route path="/events/booking" element={<BookingLogin />} />
+                                <Route path="/events/booking/dashboard" element={<BookingDashboard />} />
+                                <Route path="/events/booking/media" element={<BookingMedia />} />
+                                <Route path="/events/booking/extras" element={<BookingExtras />} />
+                                <Route path="/events/booking/info" element={<BookingStatusInfo />} />
+    
+                                <Route path="/gallery" element={<Gallery />} />
+                                <Route path="/gallery/photos" element={<PhotosGallery />} />
+                                <Route path="/gallery/videos" element={<VideosGallery />} />
+                                <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
+    
+                                <Route path="*" element={<NotFound />} />
+                            </Routes>
+                        </HelmetProvider>
+                    </Suspense>
+                </ErrorBoundary>
             </div>
             {!shouldExclude && <Footer />}
         </>
