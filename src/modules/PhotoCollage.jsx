@@ -60,8 +60,8 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
             <div className="photo-slider">
                 {photos && (
                     (photos[maxIndex].isVideo) ? (
-                        <video src={photos[maxIndex].src} alt={photos[maxIndex].alt}  onClick={() => openLightBox(maxIndex)}
-                        className={'video-slider-preview'}
+                        <video src={ `${photos[maxIndex].src}#t=0.1` } alt={photos[maxIndex].alt}  onClick={() => openLightBox(maxIndex)}
+                        className={'video-slider-preview'} playsInline
                         />
                     ) : (
                         <img src={photos[maxIndex].src} alt={photos[maxIndex].alt} className="photo-slider-main-photo" onClick={() => openLightBox(maxIndex)} />
@@ -76,7 +76,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         <div className="photo-collage">
             {collagePreview && (
                 (collagePreview.isVideo) ? (
-                    <video src={collagePreview.src} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} controls />
+                    <video src={`${collagePreview.src}#t=0.1`} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} controls playsInline />
                     ) : (
                     <img src={collagePreview.src} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
                 )
@@ -106,7 +106,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                     
                     {photos[currentIndex].isVideo ? (
                         <video
-                            src={photos[currentIndex].src}
+                            src={`${photos[currentIndex].src}#t=0.1`}
                             alt={photos[currentIndex].alt}
                             className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
                             controls
