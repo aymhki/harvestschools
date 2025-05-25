@@ -176,4 +176,10 @@
     .booking-login-form-wrapper:hover {
         filter: drop-shadow(0 0 0.5rem #ffffff);
     }
+
+    .booking-extras-form-wrapper {
+        background-color: #242424;
+        color: #ffffff;
+    }
+
 }
