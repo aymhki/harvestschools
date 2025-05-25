@@ -791,9 +791,12 @@
     }
 
     .third-width,
-    .half-width,
     .two-thirds-width {
         width: calc(100% - 1.5rem);
+    }
+
+    .half-width {
+        width: calc(100% - 1rem);
     }
 
     .field-with-label-on-top.two-thirds-width .text-form-field, .field-with-label-on-top.third-width .text-form-field, .field-with-label-on-top.half-width .text-form-field {
@@ -893,16 +896,7 @@
         justify-content: center;
     }
 
-    .captcha-wrapper-half-width {
-        margin: 0.5rem 0.5rem 0.5rem 0.5rem;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-    }
 
-    .captcha-wrapper-half-width button {
-        margin: 0.5rem;
-    }
 
     .captcha-wrapper button {
         margin: 0.5rem;
@@ -941,15 +935,29 @@
         width: 90%;
     }
 
-    .remove-section-button {
-        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-        font-size: medium;
+    .form {
+        overflow: hidden;
     }
 
-    .add-section-button {
-        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-        font-size: medium;
+    .text-form-field.full-width.captcha-box {
+        width: calc(100%);
+        margin: 0.5rem;
+        overflow: hidden;
     }
+
+    .captcha-wrapper-half-width {
+        margin: 0.5rem 0.5rem 0.5rem 0.5rem;
+        padding: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% - 1rem);
+    }
+
+    .captcha-wrapper-half-width button {
+        margin: 0.5rem;
+    }
+
 }
 
 @media (prefers-color-scheme: dark) {
