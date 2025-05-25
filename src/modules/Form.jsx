@@ -43,7 +43,7 @@ function Form({
     const [generalFormError, setGeneralFormError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [dynamicFields, setDynamicFields] = useState(fields);
-    const captchaMaxLength = easySimpleCaptcha ? 4 : 7;
+    const captchaMaxLength = easySimpleCaptcha ? 4 : 6;
     const characters = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghkmnopqrstuvwxyz0123456789@#$%&';
     const [fileInputs, setFileInputs] = useState({});
     const [showSelectDateModal, setShowSelectDateModal] = useState(false);
@@ -178,7 +178,7 @@ function Form({
         id: field.id,
         name: field.httpName,
         required: field.required,
-        disabled: submitting, //|| field.readOnlyField,
+        disabled: submitting,
         readOnly: field.readOnlyField || formIsReadOnly || submitting || false,
         onChange: (e) => onChange(e, field),
         ref: fieldRefs.current[field.id],
@@ -461,7 +461,6 @@ function Form({
                                 field.file = null;
                                 setFileInputs(prev => ({...prev, [field.id]: null}));
                                 
-                                // Clear file input using ref
                                 const ref = fieldRefs.current[field.id];
                                 if (ref && ref.current) {
                                     ref.current.value = '';
