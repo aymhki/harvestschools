@@ -384,6 +384,12 @@ try {
         $totalCdCost = $cdCount * 250;
         $totalAdditionalAttendeeCost = $additionalAttendees * 100;
         $totalCost = $totalCdCost + $totalAdditionalAttendeeCost;
+        $totalCostInString = number_format($totalCost, 2, '.', '');
+        $totalCdCostInString = number_format($totalCdCost, 2, '.', '');
+        $totalAdditionalAttendeeCostInString = number_format($totalAdditionalAttendeeCost, 2, '.', '');
+        $totalCost = $totalCostInString . ' EGP';
+        $totalCdCost = $totalCdCostInString . ' EGP';
+        $totalAdditionalAttendeeCost = $totalAdditionalAttendeeCostInString . ' EGP';
 
         $rowData = [
             $booking['booking_id'],
