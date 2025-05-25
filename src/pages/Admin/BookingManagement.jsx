@@ -843,8 +843,8 @@ function BookingManagement() {
                            'Booking Notes',
                            'Students Created',
                            'Student IDs',
-
-
+                           'Total CD Cost',
+                           'Total Additional Attendee(s) Cost'
                        ]}
                        allowExport={true}
                        exportFileName={'bookings'}
