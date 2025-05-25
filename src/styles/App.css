@@ -114,6 +114,32 @@
         height: 4rem;
         width: 4rem;
     }
+
+    .content {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    body {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
