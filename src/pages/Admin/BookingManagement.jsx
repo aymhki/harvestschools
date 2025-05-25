@@ -854,6 +854,11 @@ function BookingManagement() {
                            'School Divisions',
                            'Grades',
                            'Booking Extras Status',
+                           'Booking Username',
+                           'Student Names',
+                           'Parent Names',
+                           'Parent Emails',
+                           'Parent Phones',
                        ]}
                        headerModuleElements={[(
                            <button key={1} onClick={() => {
