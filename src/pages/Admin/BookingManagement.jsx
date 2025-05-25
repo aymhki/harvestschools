@@ -844,7 +844,8 @@ function BookingManagement() {
                            'Students Created',
                            'Student IDs',
                            'Total CD Cost',
-                           'Total Additional Attendee(s) Cost'
+                           'Total Additional Attendee(s) Cost',
+                           'Parent Emails'
                        ]}
                        allowExport={true}
                        exportFileName={'bookings'}
