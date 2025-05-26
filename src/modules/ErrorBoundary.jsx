@@ -50,15 +50,6 @@ class ErrorBoundary extends React.Component {
 					<p>Please refresh the page to continue.</p>
 					<button
 						onClick={() => window.location.reload()}
-						style={{
-							padding: '10px 20px',
-							backgroundColor: '#007bff',
-							color: 'white',
-							border: 'none',
-							borderRadius: '4px',
-							cursor: 'pointer',
-							marginTop: '10px'
-						}}
 					>
 						Refresh Page
 					</button>
