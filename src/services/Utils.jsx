@@ -1208,9 +1208,9 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
         if (action === 'download') {
             pdf.save(filename);
         } else if (action === 'print') {
-            const pdfBlob = pdf.output('blob');
-            const pdfUrl = URL.createObjectURL(pdfBlob);
-            window.open(pdfUrl, "_blank");
+            const pdfBlob = pdf.output( 'blob' );
+            const pdfUrl = URL.createObjectURL( pdfBlob );
+            window.open( pdfUrl, "_blank" );
         }
         
     } catch (error) {
