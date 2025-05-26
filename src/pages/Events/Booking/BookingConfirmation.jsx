@@ -115,7 +115,10 @@ function BookingConfirmation() {
 								<p><strong>Extras Status:</strong> {confirmationData.payment_status}</p>
 								{getAdditionalAttendeesTextToShow(confirmationData)}
 								{getCDCountTextToShow(confirmationData)}
-								<p><strong>Total Paid For Extras:</strong> {confirmationData.total_paid}</p>
+								<p><strong>Total Paid For Base Fare:</strong> {confirmationData.total_paid_for_base_fair}</p>
+								<p><strong>Total Cost For Extras:</strong> {confirmationData.total_paid}</p>
+								<p><strong>Total Cost For Base Fare and Extras:</strong> {confirmationData.total_paid_for_base_and_extras}</p>
+								
 							</div>
 						</div>
 					) : (
