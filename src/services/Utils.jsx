@@ -848,6 +848,8 @@ const useFormCache = (formTitle, fields) => {
 const generateConfirmationPDF = async (action = 'download', setIsLoading, bookingId, bookingUsername, detailedData, setError) => {
     try {
         setIsLoading(true);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pageWidth = pdf.internal.pageSize.getWidth();
@@ -1195,23 +1197,66 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
         
         yPosition += 30;
         
-        const qrData = `https://harvestschools.com/events/booking-confirmation/?bookingId=${bookingId}&extrasId=${detailedData?.extras?.extra_id || ''}&authId=${detailedData?.booking?.password_hash || ''}&username=${bookingUsername}`;
-        const qrCodeDataURL = await QRCode.toDataURL(qrData, { width: 300, margin: 2 });
+        try {
+            const qrData = `https://harvestschools.com/events/booking-confirmation/?bookingId=${bookingId}&extrasId=${detailedData?.extras?.extra_id || ''}&authId=${detailedData?.booking?.password_hash || ''}&username=${bookingUsername}`;
+            const qrCodeDataURL = await QRCode.toDataURL(qrData, {
+                width: 300,
+                margin: 2,
+                errorCorrectionLevel: 'M'
+            });
+            
+            const qrSize = 60;
+            const qrX = (pageWidth - qrSize) / 2;
+            pdf.addImage(qrCodeDataURL, 'PNG', qrX, yPosition, qrSize, qrSize);
+        } catch (qrError) {
+            console.warn('Could not generate QR code:', qrError);
+            pdf.setFont(textFontName, textFontWeight);
+            pdf.setFontSize(10);
+            pdf.text('QR Code generation failed', pageWidth / 2, yPosition, { align: 'center' });
+        }
         
-        const qrSize = 60;
-        const qrX = (pageWidth - qrSize) / 2;
-        pdf.addImage(qrCodeDataURL, 'PNG', qrX, yPosition, qrSize, qrSize);
         addFooter();
         
         const filename = `booking-confirmation-${bookingId}.pdf`;
         
         if (action === 'download') {
-            pdf.save(filename);
+            try {
+                if (isIOS) {
+                    const pdfBlob = pdf.output('blob');
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else if (isMobile) {
+                    const pdfBlob = pdf.output('blob');
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = filename;
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    pdf.save(filename);
+                }
+            } catch (downloadError) {
+                console.warn('Download failed, opening in new tab:', downloadError);
+                const pdfBlob = pdf.output('blob');
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                window.open(pdfUrl, '_blank');
+            }
         } else if (action === 'print') {
-            const pdfBlob = pdf.output( 'blob' );
-            const pdfUrl = URL.createObjectURL( pdfBlob );
-            window.open( pdfUrl, "_blank" );
+            const pdfBlob = pdf.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfUrl, "_blank");
         }
+        
+        
         
     } catch (error) {
         console.error('Error generating PDF:', error.message || error || 'Unknown error');
