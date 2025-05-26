@@ -1156,7 +1156,7 @@ function Form({
                                 className="select-form-field third-width"
                                 onChange={(e) => setSelectedDateYear(e.target.value)}
                                 value={selectedDateYear}
-                                autoFocus
+                                autoFocus={showSelectDateModal}
                             >
                                 <option value="">Year</option>
                                 {Array.from({length: new Date().getFullYear() - 1970 + 1}, (v, k) => k + 1970).map(year => (
