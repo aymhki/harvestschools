@@ -1,14 +1,18 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {fetchBookingInfoBySessionRequest, formatDateFromPacific, headToBookingLoginOnInvalidSession} from "../../../services/Utils.jsx";
+import {fetchBookingInfoBySessionRequest, formatDateFromPacific, headToBookingLoginOnInvalidSession, generateConfirmationPDF} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
+import '../../../styles/Events.css'
 
 function BookingStatusInfo() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [finalFormFields, setFinalFormFields] = useState([]);
     const [fetchBookingBySessionError, setFetchBookingBySessionError] = useState(null);
+    const [detailedData, setDetailedData] = useState(null);
+    const [bookingId, setBookingId] = useState(null);
+    const [bookingUsername, setBookingUsername] = useState(null);
 
     useEffect(() => {
         headToBookingLoginOnInvalidSession(navigate, setIsLoading)
@@ -33,6 +37,11 @@ function BookingStatusInfo() {
                 let currentFormFields = [];
                 let numParents = null;
                 let numStudents = null;
+                
+                if (result.detailedData) {
+                    setDetailedData(result.detailedData)
+                }
+                
 
                 if (result.detailedData && result.detailedData.parents) {
                     numParents = result.detailedData.parents.length;
@@ -59,6 +68,7 @@ function BookingStatusInfo() {
                         readOnlyField: true,
                     }
 
+                    setBookingId(result.bookingId);
                     currentFormFields.push(bookingIdField);
                 }
 
@@ -79,6 +89,7 @@ function BookingStatusInfo() {
                         readOnlyField: true,
                     }
 
+                    setBookingUsername(result.bookingUsername);
                     currentFormFields.push(userNameField);
                 }
 
@@ -399,15 +410,84 @@ function BookingStatusInfo() {
                         })
                     }
                 }
+                
+                currentFormFields.push({
+                    id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                    type: 'section',
+                    name: 'total-amounts',
+                    label: 'Total Amounts',
+                    required: true,
+                    widthOfField: 1,
+                    httpName: 'total-amounts',
+                });
+                
+                
+                if (result.detailedData.booking.total_paid_for_base_fair) {
+                    currentFormFields.push({
+                        id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                        type: 'text',
+                        name: 'total-paid-for-base-fare',
+                        label: 'Total Paid For Base Fare:',
+                        required: false,
+                        value: `${result.detailedData.booking.total_paid_for_base_fair} EGP`,
+                        setValue: null,
+                        widthOfField: 3,
+                        labelOutside: true,
+                        labelOnTop: true,
+                        dontLetTheBrowserSaveField: true,
+                        readOnlyField: true,
+                    })
+                }
+                
+                if (result.detailedData.booking.total_extras_cost) {
+                    currentFormFields.push({
+                        id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                        type: 'text',
+                        name: 'total-extras-cost',
+                        label: 'Total Extras Cost:',
+                        required: false,
+                        value: `${result.detailedData.booking.total_extras_cost} EGP`,
+                        setValue: null,
+                        widthOfField: 3,
+                        labelOutside: true,
+                        labelOnTop: true,
+                        dontLetTheBrowserSaveField: true,
+                        readOnlyField: true,
+                        
+                    })
+                }
+                
+                if (result.detailedData.booking.total_paid_for_base_and_extras) {
+                    currentFormFields.push({
+                        id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                        type: 'text',
+                        name: 'total-paid-for-base-and-extras',
+                        label: 'Total Cost For Base And Extras:',
+                        required: false,
+                        value: `${result.detailedData.booking.total_paid_for_base_and_extras} EGP`,
+                        setValue: null,
+                        widthOfField: 3,
+                        labelOutside: true,
+                        labelOnTop: true,
+                        dontLetTheBrowserSaveField: true,
+                        readOnlyField: true,
+                    })
+                }
 
                 setFinalFormFields(currentFormFields);
 
             } else {
                 setFetchBookingBySessionError(result.message || result);
+                setBookingId(null);
+                setBookingUsername(null);
+                setDetailedData(null);
             }
 
         } catch (error) {
             setFetchBookingBySessionError(error.message);
+            setBookingId(null);
+            setBookingUsername(null);
+            setDetailedData(null);
         } finally {
             setIsLoading(false);
         }
@@ -423,7 +503,7 @@ function BookingStatusInfo() {
                         Booking Info
                     </h1>
 
-                    {(finalFormFields.length > 0 && !fetchBookingBySessionError) && (
+                    {(finalFormFields && finalFormFields.length > 0 && !fetchBookingBySessionError) && (
                         <Form mailTo={''}
                               formTitle={'Booking Info'}
                               sendPdf={false}
@@ -433,6 +513,40 @@ function BookingStatusInfo() {
                               fields={finalFormFields}
                               formIsReadOnly={true}
                         />
+                    )}
+                    
+                    { (!fetchBookingBySessionError && finalFormFields && finalFormFields.length > 0 && detailedData && bookingId && bookingUsername) && (
+                        <div className={'confirmation-buttons-wrapper-in-booking-info-page'}>
+                            <button
+                                className={'download-confirmation-button'}
+                                onClick={() => generateConfirmationPDF(
+                                    'download',
+                                    setIsLoading,
+                                    bookingId,
+                                    bookingUsername,
+                                    detailedData,
+                                    setFetchBookingBySessionError,
+                                
+                                )}
+                                disabled={isLoading}
+                            >
+                                Download Confirmation
+                            </button>
+                            <button
+                                className={'print-confirmation-button'}
+                                onClick={() => generateConfirmationPDF(
+                                    'print',
+                                    setIsLoading,
+                                    bookingId,
+                                    bookingUsername,
+                                    detailedData,
+                                    setFetchBookingBySessionError,
+                                )}
+                                disabled={isLoading}
+                            >
+                                Print Confirmation
+                            </button>
+                        </div>
                     )}
 
                     {fetchBookingBySessionError && (
@@ -451,6 +565,8 @@ function BookingStatusInfo() {
                             </button>
                         </>
                     )}
+                    
+                    
                 </div>
 
             </div>

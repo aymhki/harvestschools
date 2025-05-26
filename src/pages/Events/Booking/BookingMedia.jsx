@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {headToBookingLoginOnInvalidSession} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 import PhotoCollage from "../../../modules/PhotoCollage.jsx";
+import '../../../styles/Events.css'
 
 function BookingMedia() {
     const navigate = useNavigate();
