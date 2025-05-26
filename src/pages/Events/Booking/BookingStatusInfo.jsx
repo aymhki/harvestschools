@@ -575,3 +575,4 @@ function BookingStatusInfo() {
 }
 
 export default BookingStatusInfo;
+
