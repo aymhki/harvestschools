@@ -1227,7 +1227,6 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
                 
                 if (isIOS) {
                     const pdfBlob = pdf.output('blob');
-                    const pdfUrl = URL.createObjectURL(pdfBlob);
                     
                     if (navigator.share) {
                         navigator.share({
