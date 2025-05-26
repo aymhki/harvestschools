@@ -1234,7 +1234,16 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
                             title: 'Booking Confirmation'
                         }).catch(console.error);
                     } else {
-                        pdf.save(filename)
+                        const pdfBlob = pdf.output('blob');
+                        const pdfUrl = URL.createObjectURL(pdfBlob);
+                        const link = document.createElement('a');
+                        link.href = pdfUrl;
+                        link.download = filename;
+                        link.target = '_blank';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        pdf.save(filename);
                     }
                 } else if (isMobile) {
                     const pdfBlob = pdf.output('blob');
@@ -1246,7 +1255,11 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                    pdf.save(filename);
                 } else {
+                    const pdfBlob = pdf.output('blob');
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    window.open(pdfUrl, "_blank");
                     pdf.save(filename);
                 }
             } catch (downloadError) {
