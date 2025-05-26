@@ -1210,13 +1210,7 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
         } else if (action === 'print') {
             const pdfBlob = pdf.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
-            const printWindow = window.open(pdfUrl);
-            
-            if (printWindow) {
-                printWindow.addEventListener('load', () => {
-                    printWindow.print();
-                });
-            }
+            window.open(pdfUrl, "_blank");
         }
         
     } catch (error) {
