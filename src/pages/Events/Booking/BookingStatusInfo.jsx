@@ -495,81 +495,82 @@ function BookingStatusInfo() {
 
     return (
         <>
-            {isLoading && (<Spinner/>)}
+            {isLoading ? (<Spinner/>) : (
 
-            <div className={'booking-info-page'}>
-                <div className={"extreme-padding-container"}>
-                    <h1>
-                        Booking Info
-                    </h1>
-
-                    {(finalFormFields && finalFormFields.length > 0 && !fetchBookingBySessionError) && (
-                        <Form mailTo={''}
-                              formTitle={'Booking Info'}
-                              sendPdf={false}
-                              lang={'en'}
-                              noInputFieldsCache={true}
-                              noCaptcha={true}
-                              fields={finalFormFields}
-                              formIsReadOnly={true}
-                        />
-                    )}
-                    
-                    { (!fetchBookingBySessionError && finalFormFields && finalFormFields.length > 0 && detailedData && bookingId && bookingUsername) && (
-                        <div className={'confirmation-buttons-wrapper-in-booking-info-page'}>
-                            <button
-                                className={'download-confirmation-button'}
-                                onClick={() => generateConfirmationPDF(
-                                    'download',
-                                    setIsLoading,
-                                    bookingId,
-                                    bookingUsername,
-                                    detailedData,
-                                    setFetchBookingBySessionError,
-                                
-                                )}
-                                disabled={isLoading}
-                            >
-                                Download Confirmation
-                            </button>
-                            {/*<button*/}
-                            {/*    className={'print-confirmation-button'}*/}
-                            {/*    onClick={() => generateConfirmationPDF(*/}
-                            {/*        'print',*/}
-                            {/*        setIsLoading,*/}
-                            {/*        bookingId,*/}
-                            {/*        bookingUsername,*/}
-                            {/*        detailedData,*/}
-                            {/*        setFetchBookingBySessionError,*/}
-                            {/*    )}*/}
-                            {/*    disabled={isLoading}*/}
-                            {/*>*/}
-                            {/*    Print Confirmation*/}
-                            {/*</button>*/}
-                        </div>
-                    )}
-
-                    {fetchBookingBySessionError && (
-                        <>
-                            <h2>
-                                Error fetching booking info
-                            </h2>
-                            <p>
-                                {fetchBookingBySessionError}
-                            </p>
-                            <button onClick={() => {
-                                setFetchBookingBySessionError(null);
-                                fetchBookingBySessionId();
-                            }}>
-                                Retry
-                            </button>
-                        </>
-                    )}
-                    
-                    
+                <div className={'booking-info-page'}>
+                    <div className={"extreme-padding-container"}>
+                        <h1>
+                            Booking Info
+                        </h1>
+    
+                        {(finalFormFields && finalFormFields.length > 0 && !fetchBookingBySessionError) && (
+                            <Form mailTo={''}
+                                  formTitle={'Booking Info'}
+                                  sendPdf={false}
+                                  lang={'en'}
+                                  noInputFieldsCache={true}
+                                  noCaptcha={true}
+                                  fields={finalFormFields}
+                                  formIsReadOnly={true}
+                            />
+                        )}
+                        
+                        { (!fetchBookingBySessionError && finalFormFields && finalFormFields.length > 0 && detailedData && bookingId && bookingUsername) && (
+                            <div className={'confirmation-buttons-wrapper-in-booking-info-page'}>
+                                <button
+                                    className={'download-confirmation-button'}
+                                    onClick={() => generateConfirmationPDF(
+                                        'download',
+                                        setIsLoading,
+                                        bookingId,
+                                        bookingUsername,
+                                        detailedData,
+                                        setFetchBookingBySessionError,
+                                    
+                                    )}
+                                    disabled={isLoading}
+                                >
+                                    Download Confirmation
+                                </button>
+                                {/*<button*/}
+                                {/*    className={'print-confirmation-button'}*/}
+                                {/*    onClick={() => generateConfirmationPDF(*/}
+                                {/*        'print',*/}
+                                {/*        setIsLoading,*/}
+                                {/*        bookingId,*/}
+                                {/*        bookingUsername,*/}
+                                {/*        detailedData,*/}
+                                {/*        setFetchBookingBySessionError,*/}
+                                {/*    )}*/}
+                                {/*    disabled={isLoading}*/}
+                                {/*>*/}
+                                {/*    Print Confirmation*/}
+                                {/*</button>*/}
+                            </div>
+                        )}
+    
+                        {fetchBookingBySessionError && (
+                            <>
+                                <h2>
+                                    Error fetching booking info
+                                </h2>
+                                <p>
+                                    {fetchBookingBySessionError}
+                                </p>
+                                <button onClick={() => {
+                                    setFetchBookingBySessionError(null);
+                                    fetchBookingBySessionId();
+                                }}>
+                                    Retry
+                                </button>
+                            </>
+                        )}
+                        
+                        
+                    </div>
+    
                 </div>
-
-            </div>
+            )}
         </>
     );
 }
