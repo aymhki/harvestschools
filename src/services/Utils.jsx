@@ -848,8 +848,7 @@ const useFormCache = (formTitle, fields) => {
 const generateConfirmationPDF = async (action = 'download', setIsLoading, bookingId, bookingUsername, detailedData, setError) => {
     try {
         setIsLoading(true);
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
         
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pageWidth = pdf.internal.pageSize.getWidth();
@@ -862,6 +861,8 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
         const subTextFontWeight = 'normal';
         const textFontName = 'futur';
         const textFontWeight = 'bold';
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         const addFooter = () => {
             pdf.setFont('Futura Book Italic font', 'italic');
@@ -1221,16 +1222,21 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
         
         if (action === 'download') {
             try {
+                
+
+                
                 if (isIOS) {
                     const pdfBlob = pdf.output('blob');
                     const pdfUrl = URL.createObjectURL(pdfBlob);
-                    const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.target = '_blank';
-                    link.rel = 'noopener noreferrer';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    
+                    if (navigator.share) {
+                        navigator.share({
+                            files: [new File([pdfBlob], filename, { type: 'application/pdf' })],
+                            title: 'Booking Confirmation'
+                        }).catch(console.error);
+                    } else {
+                        pdf.save()
+                    }
                 } else if (isMobile) {
                     const pdfBlob = pdf.output('blob');
                     const pdfUrl = URL.createObjectURL(pdfBlob);
