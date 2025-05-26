@@ -532,20 +532,20 @@ function BookingStatusInfo() {
                             >
                                 Download Confirmation
                             </button>
-                            <button
-                                className={'print-confirmation-button'}
-                                onClick={() => generateConfirmationPDF(
-                                    'print',
-                                    setIsLoading,
-                                    bookingId,
-                                    bookingUsername,
-                                    detailedData,
-                                    setFetchBookingBySessionError,
-                                )}
-                                disabled={isLoading}
-                            >
-                                Print Confirmation
-                            </button>
+                            {/*<button*/}
+                            {/*    className={'print-confirmation-button'}*/}
+                            {/*    onClick={() => generateConfirmationPDF(*/}
+                            {/*        'print',*/}
+                            {/*        setIsLoading,*/}
+                            {/*        bookingId,*/}
+                            {/*        bookingUsername,*/}
+                            {/*        detailedData,*/}
+                            {/*        setFetchBookingBySessionError,*/}
+                            {/*    )}*/}
+                            {/*    disabled={isLoading}*/}
+                            {/*>*/}
+                            {/*    Print Confirmation*/}
+                            {/*</button>*/}
                         </div>
                     )}
 
