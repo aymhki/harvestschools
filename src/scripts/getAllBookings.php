@@ -9,11 +9,9 @@
 //$username = $dbConfig['db_username'];
 //$password = $dbConfig['db_password'];
 //$dbname = $dbConfig['db_name'];
-//
 //try {
 //    $input = file_get_contents('php://input');
 //    $data = json_decode($input, true);
-//
 //    if (!isset($data['session_id'])) {
 //        echo json_encode([
 //            "success" => false,
@@ -22,12 +20,9 @@
 //        ]);
 //        exit;
 //    }
-//
 //    $sessionId = $data['session_id'];
-//
 //    $startTime = microtime(true);
 //    $conn = new mysqli($servername, $username, $password, $dbname);
-//
 //    if ($conn->connect_error) {
 //        echo json_encode([
 //            'success' => false,
@@ -40,9 +35,7 @@
 //                      FROM admin_sessions s
 //                      JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
 //                      WHERE s.id = ?";
-//
 //    $stmt = $conn->prepare($permissionSql);
-//
 //    if (!$stmt) {
 //        echo json_encode([
 //            'success' => false,
@@ -51,12 +44,10 @@
 //        ]);
 //        exit;
 //    }
-//
 //    $stmt->bind_param("s", $sessionId);
 //    $stmt->execute();
 //    $permissionResult = $stmt->get_result();
 //    $stmt->close();
-//
 //    if ($permissionResult->num_rows == 0) {
 //        echo json_encode([
 //            'success' => false,
@@ -65,12 +56,12 @@
 //        ]);
 //        exit;
 //    }
-//
 //    $permissionRow = $permissionResult->fetch_assoc();
 //    $permissionLevels = explode(',', $permissionRow['permission_level']);
-//    $cleanPermissionLevels = array_map(function($level) {return intval(trim($level));}, $permissionLevels);
+//    $cleanPermissionLevels = array_map(function ($level) {
+//        return intval(trim($level));
+//    }, $permissionLevels);
 //    $hasPermission = in_array(1, $cleanPermissionLevels);
-//
 //    if (!$hasPermission) {
 //        echo json_encode([
 //            'success' => false,
@@ -79,7 +70,6 @@
 //        ]);
 //        exit;
 //    }
-//
 //    $bookingsSql = "SELECT
 //                b.booking_id,
 //                b.created_at AS booking_created,
@@ -96,7 +86,6 @@
 //            JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
 //            LEFT JOIN booking_extras e ON b.booking_id = e.booking_id
 //            ORDER BY b.booking_id";
-//
 //    $bookingsResult = $conn->query($bookingsSql);
 //    if (!$bookingsResult) {
 //        echo json_encode([
@@ -106,35 +95,31 @@
 //        ]);
 //        exit;
 //    }
-//
 //    $data = [];
 //    $headers = [
 //        'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
 //        'Booking Username', 'Booking Password', 'Student IDs', 'Student Names',
 //        'School Divisions', 'Grades', 'Students Created',
 //        'Parent Names', 'Parent Emails', 'Parent Phones',
-//        'CD Count', 'Additional Attendees', 'Booking Extras Status'
+//        'CD Count', 'Additional Attendees', 'Booking Extras Status',
+//        'Total CD Cost', 'Total Additional Attendee(s) Cost', 'Total Extras Cost'
 //    ];
 //    $data[] = $headers;
-//
 //    while ($booking = $bookingsResult->fetch_assoc()) {
 //        $studentsSql = "SELECT s.student_id, s.name, s.school_division, s.grade, s.created_at
 //                       FROM booking_students s
 //                       JOIN booking_students_linker sl ON s.student_id = sl.student_id
 //                       WHERE sl.booking_id = ?
 //                       ORDER BY s.student_id";
-//
 //        $stmtStudents = $conn->prepare($studentsSql);
 //        $stmtStudents->bind_param("i", $booking['booking_id']);
 //        $stmtStudents->execute();
 //        $studentsResult = $stmtStudents->get_result();
-//
 //        $studentIds = [];
 //        $studentNames = [];
 //        $schoolDivisions = [];
 //        $grades = [];
 //        $studentsCreated = [];
-//
 //        while ($student = $studentsResult->fetch_assoc()) {
 //            $studentIds[] = $student['student_id'];
 //            $studentNames[] = $student['name'];
@@ -142,15 +127,12 @@
 //            $grades[] = $student['grade'];
 //            $studentsCreated[] = $student['created_at'];
 //        }
-//
 //        $stmtStudents->close();
-//
 //        $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number
 //                      FROM booking_parents p
 //                      JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
 //                      WHERE pl.booking_id = ?
 //                      ORDER BY p.parent_id";
-//
 //        $stmtParents = $conn->prepare($parentsSql);
 //        $stmtParents->bind_param("i", $booking['booking_id']);
 //        $stmtParents->execute();
@@ -158,7 +140,6 @@
 //        $parentNames = [];
 //        $parentEmails = [];
 //        $parentPhones = [];
-//
 //        while ($parent = $parentsResult->fetch_assoc()) {
 //            if (!empty($parent['name'])) {
 //                $parentNames[] = $parent['name'];
@@ -170,8 +151,19 @@
 //                $parentPhones[] = $parent['phone_number'];
 //            }
 //        }
-//
 //        $stmtParents->close();
+//
+//        $cdCount = intval($booking['cd_count'] ?? 0);
+//        $additionalAttendees = intval($booking['additional_attendees'] ?? 0);
+//        $totalCdCost = $cdCount * 250;
+//        $totalAdditionalAttendeeCost = $additionalAttendees * 100;
+//        $totalCost = $totalCdCost + $totalAdditionalAttendeeCost;
+//        $totalCostInString = number_format($totalCost, 2, '.', '');
+//        $totalCdCostInString = number_format($totalCdCost, 2, '.', '');
+//        $totalAdditionalAttendeeCostInString = number_format($totalAdditionalAttendeeCost, 2, '.', '');
+//        $totalCost = $totalCostInString . ' EGP';
+//        $totalCdCost = $totalCdCostInString . ' EGP';
+//        $totalAdditionalAttendeeCost = $totalAdditionalAttendeeCostInString . ' EGP';
 //
 //        $rowData = [
 //            $booking['booking_id'],
@@ -192,38 +184,34 @@
 //            implode(', ', $parentPhones),
 //            $booking['cd_count'],
 //            $booking['additional_attendees'],
-//            $booking['payment_status']
+//            $booking['payment_status'],
+//            $totalCdCost,
+//            $totalAdditionalAttendeeCost,
+//            $totalCost
 //        ];
 //
 //        $data[] = $rowData;
 //    }
-//
 //    $endTime = microtime(true);
 //    $executionTime = ($endTime - $startTime) * 1000;
-//
 //    echo json_encode([
 //        'success' => true,
 //        'data' => $data,
 //        'executionTime' => $executionTime
 //    ]);
-//
 //} catch (Exception $e) {
-//
 //    $statusCode = $e->getCode() ?: 500;
 //    echo json_encode([
 //        'success' => false,
 //        'message' => $e->getMessage(),
 //        'code' => $statusCode
 //    ]);
-//
 //} finally {
-//
 //    if ($conn) {
 //        $conn->close();
 //    }
-//
 //}
-
+//
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: http://localhost:5173');
@@ -325,10 +313,11 @@ try {
     $headers = [
         'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
         'Booking Username', 'Booking Password', 'Student IDs', 'Student Names',
-        'School Divisions', 'Grades', 'Students Created',
+        'School Divisions', 'Grades', 'Students Created', 'Student Count',
         'Parent Names', 'Parent Emails', 'Parent Phones',
         'CD Count', 'Additional Attendees', 'Booking Extras Status',
-        'Total CD Cost', 'Total Additional Attendee(s) Cost', 'Total Cost'
+        'Total CD Cost', 'Total Additional Attendee(s) Cost', 'Total Extras Cost',
+        'Total Paid for Base Fare', 'Total for Base and Extras'
     ];
     $data[] = $headers;
     while ($booking = $bookingsResult->fetch_assoc()) {
@@ -346,12 +335,14 @@ try {
         $schoolDivisions = [];
         $grades = [];
         $studentsCreated = [];
+        $studentCount = 0;
         while ($student = $studentsResult->fetch_assoc()) {
             $studentIds[] = $student['student_id'];
             $studentNames[] = $student['name'];
             $schoolDivisions[] = $student['school_division'];
             $grades[] = $student['grade'];
             $studentsCreated[] = $student['created_at'];
+            $studentCount++;
         }
         $stmtStudents->close();
         $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number
@@ -383,13 +374,17 @@ try {
         $additionalAttendees = intval($booking['additional_attendees'] ?? 0);
         $totalCdCost = $cdCount * 250;
         $totalAdditionalAttendeeCost = $additionalAttendees * 100;
-        $totalCost = $totalCdCost + $totalAdditionalAttendeeCost;
-        $totalCostInString = number_format($totalCost, 2, '.', '');
-        $totalCdCostInString = number_format($totalCdCost, 2, '.', '');
-        $totalAdditionalAttendeeCostInString = number_format($totalAdditionalAttendeeCost, 2, '.', '');
-        $totalCost = $totalCostInString . ' EGP';
-        $totalCdCost = $totalCdCostInString . ' EGP';
-        $totalAdditionalAttendeeCost = $totalAdditionalAttendeeCostInString . ' EGP';
+        $totalExtrasCost = $totalCdCost + $totalAdditionalAttendeeCost;
+
+        $totalBaseFair = $studentCount * 1200;
+        $totalCostBaseAndExtras = $totalBaseFair + $totalExtrasCost;
+
+        $totalCdCostFormatted = number_format($totalCdCost, 2, '.', '') . ' EGP';
+        $totalAdditionalAttendeeCostFormatted = number_format($totalAdditionalAttendeeCost, 2, '.', '') . ' EGP';
+        $totalExtrasCostFormatted = number_format($totalExtrasCost, 2, '.', '') . ' EGP';
+        $totalBaseFairFormatted = number_format($totalBaseFair, 2, '.', '') . ' EGP';
+        $totalCostBaseAndExtrasFormatted = number_format($totalCostBaseAndExtras, 2, '.', '') . ' EGP';
+        $studentCount = number_format($studentCount, 0, '.', '');
 
         $rowData = [
             $booking['booking_id'],
@@ -405,15 +400,18 @@ try {
             implode(', ', $schoolDivisions),
             implode(', ', $grades),
             implode(', ', $studentsCreated),
+            $studentCount,
             implode(', ', $parentNames),
             implode(', ', $parentEmails),
             implode(', ', $parentPhones),
             $booking['cd_count'],
             $booking['additional_attendees'],
             $booking['payment_status'],
-            $totalCdCost,
-            $totalAdditionalAttendeeCost,
-            $totalCost
+            $totalCdCostFormatted,
+            $totalAdditionalAttendeeCostFormatted,
+            $totalExtrasCostFormatted,
+            $totalBaseFairFormatted,
+            $totalCostBaseAndExtrasFormatted
         ];
         $data[] = $rowData;
     }
@@ -437,4 +435,6 @@ try {
     }
 }
 
+
 ?>
+

@@ -69,12 +69,12 @@ function BookingManagement() {
     const colIndexForStudentNames = 9;
     const colIndexForStudentSchoolDivisions = 10;
     const colIndexForStudentGrades = 11;
-    const colIndexForParentNames = 13;
-    const colIndexForParentEmails = 14;
-    const colIndexForParentPhones = 15;
-    const colIndexForCdCount = 16;
-    const colIndexForAdditionalAttendees = 17;
-    const colIndexForBookingExtrasStatus = 18;
+    const colIndexForParentNames = 14;
+    const colIndexForParentEmails = 15;
+    const colIndexForParentPhones = 16;
+    const colIndexForCdCount = 17;
+    const colIndexForAdditionalAttendees = 18;
+    const colIndexForBookingExtrasStatus = 19;
 
     const animateAddBookingModal = useSpring({
         opacity: showAddBookingModal ? 1 : 0,
@@ -845,7 +845,8 @@ function BookingManagement() {
                            'Student IDs',
                            'Total CD Cost',
                            'Total Additional Attendee(s) Cost',
-                           'Parent Emails'
+                           'Parent Emails',
+                           'Student Count'
                        ]}
                        allowExport={true}
                        exportFileName={'bookings'}

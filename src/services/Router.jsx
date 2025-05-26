@@ -69,6 +69,8 @@ const BookingDashboard = lazy(() => import('../pages/Events/Booking/BookingDashb
 const BookingMedia = lazy(() => import("../pages/Events/Booking/BookingMedia.jsx"));
 const BookingExtras = lazy(() => import("../pages/Events/Booking/BookingExtras.jsx"));
 const BookingStatusInfo = lazy(() => import("../pages/Events/Booking/BookingStatusInfo.jsx"));
+const BookingConfirmation = lazy(() => import('../pages/Events/Booking/BookingConfirmation.jsx'));
+
 
 // Gallery pages
 const Gallery = lazy(() => import("../pages/Gallery/Gallery.jsx"));
@@ -177,7 +179,8 @@ function App() {
                                 <Route path="/events/booking/media" element={<BookingMedia />} />
                                 <Route path="/events/booking/extras" element={<BookingExtras />} />
                                 <Route path="/events/booking/info" element={<BookingStatusInfo />} />
-    
+                                <Route path="/events/booking-confirmation" element={<BookingConfirmation />} />
+                                
                                 <Route path="/gallery" element={<Gallery />} />
                                 <Route path="/gallery/photos" element={<PhotosGallery />} />
                                 <Route path="/gallery/videos" element={<VideosGallery />} />

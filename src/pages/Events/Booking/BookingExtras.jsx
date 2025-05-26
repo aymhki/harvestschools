@@ -5,17 +5,21 @@ import { useNavigate } from "react-router-dom";
 import ParallaxScrollSection from "../../../modules/ParallaxScrollSection.jsx";
 import Form from '../../../modules/Form.jsx';
 import '../../../styles/Events.css';
-import {submitUpdateBookingExtrasRequest} from "../../../services/Utils.jsx";
+import {submitUpdateBookingExtrasRequest, generateConfirmationPDF} from "../../../services/Utils.jsx";
+import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAttendeeCost, cdCost} from "../../../services/Utils.jsx";
 
 function BookingExtras() {
     const navigate = useNavigate();
-   const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [fetchBookingBySessionError, setFetchBookingBySessionError] = useState(null);
     const [extrasFormField, setExtrasFormField] = useState(null);
     const [resetFormFromParent, setResetFormFromParent] = useState(false);
     const [detailedData, setDetailedData] = useState(null);
     const [formReadOnly, setFormReadOnly] = useState(true);
     const [formAllowEdit, setAllowEdit] = useState(false);
+    const [bookingId, setBookingId] = useState(null);
+    const [bookingUsername, setBookingUsername] = useState(null);
+    
     const additionalAttendeesFieldId = 1;
     const cdCountFieldId = 2;
     const paymentStatusFieldId = 3;
@@ -23,43 +27,39 @@ function BookingExtras() {
     const cdCountFieldCostId = 5;
     const totalCostFieldId = 6;
     
-    const cdCost = 250;
-    const additionalAttendeeCost = 100;
-    const pendingPaymentStatus = 'Signed Up, pending payment';
-    const notSignedUpStatus = 'Not Signed Up';
-    const confirmedStatus = 'Confirmed';
-    
 
-   useEffect(() => {
-       headToBookingLoginOnInvalidSession(navigate, setIsLoading).then(
-           () => {
+    
+    useEffect(() => {
+        headToBookingLoginOnInvalidSession(navigate, setIsLoading).then(
+            () => {
                 fetchBookingBySessionId().then(
-                     () => {
-                          setIsLoading(false);
-                     }
+                    () => {
+                        setIsLoading(false);
+                    }
                 ).catch(
-                     (error) => {
-                          setFetchBookingBySessionError(error.message);
-                          setIsLoading(false);
-                     }
+                    (error) => {
+                        setFetchBookingBySessionError(error.message);
+                        setIsLoading(false);
+                    }
                 );
-           }
-       )
-   }, [])
+            }
+        )
+    }, [])
     
     const fetchBookingBySessionId = async () => {
         try {
-            setIsLoading( true );
+            setIsLoading(true);
             
-            const result = await fetchBookingInfoBySessionRequest( navigate );
+            const result = await fetchBookingInfoBySessionRequest(navigate);
             
             if (result.success) {
                 let currentFormFields = [];
                 setDetailedData(result.detailedData);
+                setBookingId(result.bookingId);
+                setBookingUsername(result.bookingUsername);
                 setExtrasFormField(null);
                 
                 if (result.detailedData.extras) {
-
                     
                     if (result.detailedData.extras.additional_attendees >= 0) {
                         currentFormFields.push({
@@ -96,7 +96,7 @@ function BookingExtras() {
                                 {
                                     idOfTheFieldThatShouldChangeBasedOnThisNewValue: paymentStatusFieldId,
                                     whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'set',
-                                    fieldIdsToCheckIfBiggerThanZero: [ additionalAttendeesFieldId, cdCountFieldId ],
+                                    fieldIdsToCheckIfBiggerThanZero: [additionalAttendeesFieldId, cdCountFieldId],
                                     valueToSetOnValuesBiggerThanZero: pendingPaymentStatus,
                                     valueToSetOnValuesZero: notSignedUpStatus,
                                 }
@@ -128,7 +128,7 @@ function BookingExtras() {
                             id: cdCountFieldId,
                             type: 'number',
                             name: 'extra-cd-count',
-                            label: `Requested After Party CD(s) (${ cdCost } EGP Each):`,
+                            label: `Requested After Party CD(s) (${cdCost} EGP Each):`,
                             required: false,
                             value: result.detailedData.extras.cd_count === 0 ? 'No' : result.detailedData.extras.cd_count,
                             setValue: null,
@@ -158,7 +158,7 @@ function BookingExtras() {
                                 {
                                     idOfTheFieldThatShouldChangeBasedOnThisNewValue: paymentStatusFieldId,
                                     whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'set',
-                                    fieldIdsToCheckIfBiggerThanZero: [ additionalAttendeesFieldId, cdCountFieldId ],
+                                    fieldIdsToCheckIfBiggerThanZero: [additionalAttendeesFieldId, cdCountFieldId],
                                     valueToSetOnValuesBiggerThanZero: pendingPaymentStatus,
                                     valueToSetOnValuesZero: notSignedUpStatus,
                                 }
@@ -193,7 +193,7 @@ function BookingExtras() {
                             name: 'extra-payment-status',
                             label: 'Extras Payment Status:',
                             required: false,
-                            value: result.detailedData.extras.payment_status ,
+                            value: result.detailedData.extras.payment_status,
                             setValue: null,
                             widthOfField: 2,
                             httpName: 'extra-payment-status',
@@ -213,7 +213,7 @@ function BookingExtras() {
                             name: 'extra-total-cost',
                             label: 'Total Cost:',
                             required: false,
-                            value: `${ (result.detailedData.extras.cd_count * cdCost) + (result.detailedData.extras.additional_attendees * additionalAttendeeCost) } EGP`,
+                            value: `${(result.detailedData.extras.cd_count * cdCost) + (result.detailedData.extras.additional_attendees * additionalAttendeeCost)} EGP`,
                             setValue: null,
                             widthOfField: 2,
                             httpName: 'extra-total-cost',
@@ -240,20 +240,20 @@ function BookingExtras() {
     const handleExtrasFormSubmit = async (formData) => {
         try {
             if (detailedData.booking && detailedData.booking.booking_id) {
-                setIsLoading( true );
-                setFetchBookingBySessionError( null );
+                setIsLoading(true);
+                setFetchBookingBySessionError(null);
                 
-                const result = await submitUpdateBookingExtrasRequest( formData, detailedData.booking.booking_id, navigate );
+                const result = await submitUpdateBookingExtrasRequest(formData, detailedData.booking.booking_id, navigate);
                 
-                if ( result.success ) {
-                    setResetFormFromParent( true );
-                    setFormReadOnly( true );
-                    setAllowEdit( false );
+                if (result.success) {
+                    setResetFormFromParent(true);
+                    setFormReadOnly(true);
+                    setAllowEdit(false);
                     setExtrasFormField(null);
                     setDetailedData(null);
                     fetchBookingBySessionId();
                 } else {
-                    throw new Error( result.message || result || 'Error while submitting the form' );
+                    throw new Error(result.message || result || 'Error while submitting the form');
                 }
             } else {
                 throw new Error('Booking ID is not available');
@@ -265,20 +265,21 @@ function BookingExtras() {
         }
     }
     
+
+    
     useEffect(() => {
         if (detailedData && detailedData.extras) {
-            if (detailedData.extras.payment_status !== confirmedStatus ) {
+            if (detailedData.extras.payment_status !== confirmedStatus) {
                 setAllowEdit(true);
             } else {
                 setAllowEdit(false);
             }
         }
     }, [detailedData])
-            
+    
     return (
         <>
             {isLoading && (<Spinner/>)}
-
             <div className={'booking-extras-page'}>
                 <ParallaxScrollSection backgroundImage={'/assets/images/AcademicsPages/Facilities/Toys.jpg'} title={''} darken={true}
                                        divElements={[
@@ -289,7 +290,7 @@ function BookingExtras() {
                                                            <div className={'fetch-booking-session-error-message-in-booking-extras-page'}>
                                                                <p>{fetchBookingBySessionError}</p>
                                                            </div>
-                                                        ) : (
+                                                       ) : (
                                                            <div className={'booking-extras-form-wrapper'}>
                                                                <h3>
                                                                    Booking Extras
@@ -316,6 +317,41 @@ function BookingExtras() {
                                                                                  resetFormFromParent={resetFormFromParent}
                                                                                  setResetFormFromParent={setResetFormFromParent}
                                                                            />
+                                                                           
+                                                                           {detailedData?.extras?.payment_status === confirmedStatus && (
+                                                                               <div className={'confirmation-buttons-wrapper-in-booking-extras-page'}>
+                                                                                   <button
+                                                                                       className={'download-confirmation-button'}
+                                                                                       onClick={() => generateConfirmationPDF(
+                                                                                           'download',
+                                                                                           setIsLoading,
+                                                                                           bookingId,
+                                                                                           bookingUsername,
+                                                                                           detailedData,
+                                                                                           setFetchBookingBySessionError,
+                                                                                       
+                                                                                       )}
+                                                                                       disabled={isLoading}
+                                                                                   >
+                                                                                       Download Confirmation
+                                                                                   </button>
+                                                                                   <button
+                                                                                       className={'print-confirmation-button'}
+                                                                                       onClick={() => generateConfirmationPDF(
+                                                                                           'print',
+                                                                                           setIsLoading,
+                                                                                           bookingId,
+                                                                                           bookingUsername,
+                                                                                           detailedData,
+                                                                                           setFetchBookingBySessionError,
+                                                                                       )}
+                                                                                       disabled={isLoading}
+                                                                                   >
+                                                                                       Print Confirmation
+                                                                                   </button>
+                                                                               </div>
+                                                                           )}
+                                                                           
                                                                            {formAllowEdit && (
                                                                                ( formReadOnly ? (
                                                                                        <button className={'booking-extras-edit-form-button'} onClick={ () => {setFormReadOnly( false );}}>
@@ -325,10 +361,10 @@ function BookingExtras() {
                                                                                        <button className={'booking-extras-cancel-form-button'} onClick={ () => {
                                                                                            setFormReadOnly( true );
                                                                                            setResetFormFromParent( true );
-                                                                                             setAllowEdit( false );
-                                                                                             setExtrasFormField(null);
-                                                                                             fetchBookingBySessionId();
-                                                                                             
+                                                                                           setAllowEdit( false );
+                                                                                           setExtrasFormField(null);
+                                                                                           fetchBookingBySessionId();
+                                                                                           
                                                                                        }}>
                                                                                            Cancel
                                                                                        </button>
@@ -336,7 +372,7 @@ function BookingExtras() {
                                                                                )
                                                                            )}
                                                                        </>
-                                                                    )
+                                                                   )
                                                                }
                                                            </div>
                                                        )
@@ -351,4 +387,3 @@ function BookingExtras() {
 }
 
 export default BookingExtras;
-
