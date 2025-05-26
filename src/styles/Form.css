@@ -827,7 +827,7 @@
 
     .password-field-wrapper.full-width-with-margin .text-form-field, .password-field-wrapper.full-width  .text-form-field {
         margin: 0.5rem;
-        width: calc(100% - 2.19rem);
+        width: calc(100% - 1rem);
     }
 
     .password-field-wrapper.half-width .text-form-field, .password-field-wrapper.two-thirds-width  .text-form-field {
@@ -895,8 +895,6 @@
         align-items: center;
         justify-content: center;
     }
-
-
 
     .captcha-wrapper button {
         margin: 0.5rem;
