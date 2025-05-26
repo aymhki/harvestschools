@@ -211,6 +211,11 @@
         width: 90vw;
         height: 20vh;
     }
+
+    .booking-confirmation-wrapper {
+        width: 90vw;
+        height: auto;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
