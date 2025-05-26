@@ -1235,7 +1235,7 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
                             title: 'Booking Confirmation'
                         }).catch(console.error);
                     } else {
-                        pdf.save()
+                        pdf.save(filename)
                     }
                 } else if (isMobile) {
                     const pdfBlob = pdf.output('blob');
