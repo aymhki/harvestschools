@@ -51,3 +51,4 @@ function BookingMedia() {
 }
 
 export default BookingMedia;
+
