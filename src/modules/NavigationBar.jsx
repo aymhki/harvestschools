@@ -8,7 +8,7 @@ import {useNavigate} from "react-router-dom";
 
 
 const NavigationBar = () => {
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState(false);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
     const [academicsOpen, setAcademicsOpen] = useState(false);

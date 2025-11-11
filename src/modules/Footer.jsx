@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import '../styles/Footer.css';
 
 function Footer() {
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const checkWindowSize = () => {
