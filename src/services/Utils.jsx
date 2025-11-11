@@ -10,8 +10,7 @@ import '../../public/assets/fonts/Futura/Futura Book Italic font-italic.js'
 
 
 const isDevelopment = () => {
-    return window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1';
+    return !import.meta.env.PROD;
 };
 
 const BASE_URLS = {

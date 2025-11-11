@@ -2,10 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './styles/index.css'
+import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+
 
 window.addEventListener('error', (event) => {
     const error = event.error;
-    
+
     if (
         error && (
             error.message?.includes('Failed to fetch dynamically imported module') ||
@@ -15,9 +18,9 @@ window.addEventListener('error', (event) => {
         )
     ) {
         console.log('Dynamic import error detected, reloading page...');
-        
+
         const currentPath = window.location.pathname + window.location.search;
-        
+
         if (currentPath && currentPath !== '/') {
             window.location.href = currentPath;
         } else {
@@ -28,7 +31,7 @@ window.addEventListener('error', (event) => {
 
 window.addEventListener('unhandledrejection', (event) => {
     const error = event.reason;
-    
+
     if (
         error && (
             error.message?.includes('Failed to fetch dynamically imported module') ||
@@ -38,11 +41,11 @@ window.addEventListener('unhandledrejection', (event) => {
         )
     ) {
         console.log('Dynamic import promise rejection detected, reloading page...');
-        
+
         event.preventDefault();
-        
+
         const currentPath = window.location.pathname + window.location.search;
-        
+
         if (currentPath && currentPath !== '/') {
             window.location.href = currentPath;
         } else {
@@ -53,6 +56,10 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <App />
+        <HelmetProvider>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </HelmetProvider>
     </React.StrictMode>
 )
