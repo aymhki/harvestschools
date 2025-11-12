@@ -159,21 +159,6 @@ function Table({
         return ' ⇅';
     };
 
-    // const detectLink = (text) => {
-    //     if (text) {
-    //         const linkRegex = /https?:\/\/[^\s]+?\.[a-zA-Z]{3}/g;
-    //         const link = text.match(linkRegex);
-    //         if (link) {
-    //             const linkText = text.replace(linkRegex, '');
-    //             return <p className={"table-link"} lang={"en"}
-    //                       onClick={() => {
-    //                           window.open(link + linkText, "_blank");
-    //                       }}
-    //             >{link + linkText}</p>;
-    //         }
-    //     }
-    //     return text;
-    // };
 
     const applyLikelyUrlFunction = (columnName, cellValue) => {
         if (likelyUrlColumns && likelyUrlColumns[columnName]) {
