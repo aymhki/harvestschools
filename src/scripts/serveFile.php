@@ -2,13 +2,23 @@
 $dbConfig = require 'dbConfig.php';
 $privateUploadsBasePath = '../../files_uploaded_from_harvestschools_webapp/job_applications/';
 $requiredPermissionLevel = 0;
+$sessionDurationInHours = 12;
 
 $file_path_from_get = isset($_GET['file']) ? $_GET['file'] : null;
 $sessionId = isset($_COOKIE['harvest_schools_admin_session_id']) ? $_COOKIE['harvest_schools_admin_session_id'] : null;
+$sessionTime = isset($_COOKIE['harvest_schools_admin_session_time']) ? (int)$_COOKIE['harvest_schools_admin_session_time'] : null;
 
-if (!$file_path_from_get || !$sessionId) {
-    http_response_code(400);
-    echo "Error: Missing required parameters.";
+if (!$file_path_from_get || !$sessionId || !$sessionTime) {
+    http_response_code(400); // Bad Request
+    echo "Error: Missing required parameters or authentication cookies.";
+    exit;
+}
+
+$sessionDurationInSeconds = $sessionDurationInHours * 60 * 60;
+$sessionStartTimeSeconds = $sessionTime / 1000;
+if (time() > ($sessionStartTimeSeconds + $sessionDurationInSeconds)) {
+    http_response_code(401); // Unauthorized
+    echo "Error: Your session has expired. Please log in again.";
     exit;
 }
 
@@ -36,7 +46,6 @@ if (!$full_file_path || strpos($full_file_path, realpath($privateUploadsBasePath
 }
 
 $conn = new mysqli($dbConfig['db_host'], $dbConfig['db_username'], $dbConfig['db_password'], $dbConfig['db_name']);
-
 if ($conn->connect_error) {
     http_response_code(500); exit;
 }
@@ -49,7 +58,7 @@ try {
 
     if ($result->num_rows === 0) {
         http_response_code(401);
-        echo "Error: Invalid or expired session.";
+        echo "Error: Invalid session.";
         exit;
     }
 
@@ -69,9 +78,11 @@ try {
 }
 
 if (file_exists($full_file_path)) {
+    $filenameForBrowser = basename($full_file_path);
+
     header('Content-Description: File Transfer');
     header('Content-Type: ' . mime_content_type($full_file_path));
-    header('Content-Disposition: inline; filename="' . basename($full_file_path) . '"');
+    header('Content-Disposition: inline; filename="' . $filenameForBrowser . '"');
     header('Expires: 0');
     header('Cache-Control: must-revalidate');
     header('Pragma: public');
@@ -87,5 +98,3 @@ if (file_exists($full_file_path)) {
     exit;
 }
 ?>
-
-
