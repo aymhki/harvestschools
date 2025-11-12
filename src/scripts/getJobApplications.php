@@ -242,7 +242,7 @@ try {
             $rowData = array_values($row);
             foreach($fileLinkIndices as $index) {
                 if (!empty($rowData[$index])) {
-                    $rowData[$index] = "https://www.harvestschools.com/download.html?file=" . urlencode($rowData[$index]);
+                    $rowData[$index] = "https://www.harvestschools.com/download.html?file=" . rawurlencode($rowData[$index]);
                 }
             }
             $dataRows[] = $rowData;
