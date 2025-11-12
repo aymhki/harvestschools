@@ -91,7 +91,7 @@ try {
             $rowData = array_values($row);
             foreach($fileLinkIndices as $index) {
                 if (!empty($rowData[$index])) {
-                    $rowData[$index] = "https://www.harvestschools.com/scripts/serveFile.php?file=" . urlencode($rowData[$index]);
+                    $rowData[$index] = "https://www.harvestschools.com/scripts/job_applications_file/" . urlencode($rowData[$index]);
                 }
             }
             $dataRows[] = $rowData;
