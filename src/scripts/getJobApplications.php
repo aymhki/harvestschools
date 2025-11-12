@@ -91,7 +91,10 @@ try {
             $rowData = array_values($row);
             foreach($fileLinkIndices as $index) {
                 if (!empty($rowData[$index])) {
-                    $rowData[$index] = "https://www.harvestschools.com/job_applications_file/" . urlencode($rowData[$index]);
+                    $pathParts = explode('/', $rowData[$index]);
+                    $encodedParts = array_map('rawurlencode', $pathParts);
+                    $safePath = implode('/', $encodedParts);
+                    $rowData[$index] = "https://www.harvestschools.com/job_applications_file/" . $safePath;
                 }
             }
             $dataRows[] = $rowData;
