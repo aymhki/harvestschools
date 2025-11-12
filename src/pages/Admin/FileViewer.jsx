@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import Spinner from '../../modules/Spinner';
 import '../../styles/FileViewer.css';
 
 function FileViewer() {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
 
     const [fileBlobUrl, setFileBlobUrl] = useState(null);
     const [filename, setFilename] = useState('file');
@@ -57,20 +56,14 @@ function FileViewer() {
         };
     }, [searchParams]);
 
-    const handleGoBack = () => {
-        navigate(-1);
-    };
-
     if (isLoading) {
         return <Spinner />;
     }
 
     return (
-        <div className="file-viewer-container">
+        <div className="file-viewer-page">
             <div className="file-viewer-header">
-                <h1>{error ? 'Error' : filename}</h1>
-                <div className="file-viewer-actions">
-                    <button onClick={handleGoBack} className="file-viewer-button secondary">Go Back</button>
+                <div className="file-viewer-actions-wrapper">
                     {!error && fileBlobUrl && (
                         <a href={fileBlobUrl} download={filename} className="file-viewer-button primary">
                             Download File
@@ -78,6 +71,7 @@ function FileViewer() {
                     )}
                 </div>
             </div>
+
             <div className="file-viewer-content">
                 {error ? (
                     <div className="error-message">{error}</div>

@@ -90,7 +90,7 @@ function JobApplications() {
                        }
                        likelyUrlColumns={
                             {
-                                'Resume Link': onJobApplicationFileUrlClick,
+                                'CV Link': onJobApplicationFileUrlClick,
                                 'Cover Letter Link': onJobApplicationFileUrlClick,
                                 'Personal Photo Link': onJobApplicationFileUrlClick,
                                 'Other Documents Link First': onJobApplicationFileUrlClick,

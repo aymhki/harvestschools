@@ -52,13 +52,13 @@ function Vacancies() {
                 Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form below.
             </p>
 
-            <p>
-                If you are not sure about any of the fields required in the form, please read the example pdf available below.
-            </p>
+            {/*<p>*/}
+            {/*    If you are not sure about any of the fields required in the form, please read the example pdf available below.*/}
+            {/*</p>*/}
 
-            <div className={"download-cv-button-wrapper"} >
-                <button className={"download-cv-button"} onClick={() => {window.open("/assets/documents/Vacancies/ResumeExample.pdf", "_blank")}}>Download CV Example</button>
-            </div>
+            {/*<div className={"download-cv-button-wrapper"} >*/}
+            {/*    <button className={"download-cv-button"} onClick={() => {window.open("/assets/documents/Vacancies/ResumeExample.pdf", "_blank")}}>Download CV Example</button>*/}
+            {/*</div>*/}
 
             <p>
                 Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type "N/A."
