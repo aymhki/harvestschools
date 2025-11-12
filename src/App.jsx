@@ -16,7 +16,7 @@ import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 import Dashboard from "./pages/Admin/./AdminDashboard";
 import JobApplications from "./pages/Admin/JobApplications.jsx";
 import BookingManagement from "./pages/Admin/BookingManagement.jsx";
-import FileViewer from './pages/admin/FileViewer';
+import FileViewer from './pages/admin/FileViewer.jsx';
 
 // Admission pages
 import Admission from "./pages/Admission/Admission.jsx";
