@@ -71,8 +71,8 @@
     flex-direction: column;
     justify-content: center;
     gap: 1rem;
-    color: #1f2152;
-    box-shadow: 0 0 0.5rem #1f2152;
+    color: var(--primary-color);
+    box-shadow: 0 0 0.5rem var(--primary-color);
     padding: 1rem;
     border-radius: 1rem;
 }

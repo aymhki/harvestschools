@@ -4,6 +4,7 @@ import App from './App.jsx'
 import './styles/index.css'
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import './i18n'
 
 
 window.addEventListener('error', (event) => {

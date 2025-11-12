@@ -587,7 +587,7 @@ function Form({
     
     const handleDateSelection = (day, month, year) => {
         if (!day || !month || !year) {
-            setSelectedDateError(lang === 'ar' ? 'الرجاء اختيار تاريخ صحيح' : 'Please select a valid date');
+            setSelectedDateError( 'Please select a valid date');
             setTimeout(() => {
                 setSelectedDateError('');
             }, msgTimeout);
@@ -727,7 +727,7 @@ function Form({
         }
         
         if (enteredCaptcha.current && enteredCaptcha.current.value !== captchaValue && !noCaptcha) {
-            setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
+            setGeneralFormError('Captcha is incorrect');
             setTimeout(() => {
                 setGeneralFormError('');
             }, msgTimeout);
@@ -827,7 +827,7 @@ function Form({
                     const result = await differentOnSubmitBehaviour(formData);
                     
                     if (result) {
-                        setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
+                        setSuccessMessage( 'Form submitted successfully!');
                         setTimeout(() => {
                             setSuccessMessage('');
                             resetFormCompletely();
@@ -835,7 +835,7 @@ function Form({
                         }, msgTimeout);
                     }
                 } catch (error) {
-                    setGeneralFormError(error.message || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.'));
+                    setGeneralFormError(error.message || ( 'Form submission failed. Please try again.'));
                     setTimeout(() => {
                         setGeneralFormError('');
                     }, msgTimeout);
@@ -850,7 +850,7 @@ function Form({
                 try {
                     const result = await submitFormRequest(formData)
                     if (result.success) {
-                        setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
+                        setSuccessMessage( 'Form submitted successfully!');
                         setTimeout(() => {
                             setSuccessMessage('');
                             if (formInModalPopup) {
@@ -860,13 +860,13 @@ function Form({
                             clearCache();
                         }, msgTimeout);
                     } else {
-                        setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message || 'Form submission failed. Please try again.');
+                        setGeneralFormError( result.message || 'Form submission failed. Please try again.');
                         setTimeout(() => {
                             setGeneralFormError('');
                         }, msgTimeout);
                     }
                 } catch (error) {
-                    setGeneralFormError(error.message || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.'));
+                    setGeneralFormError(error.message || ('Form submission failed. Please try again.'));
                     setTimeout(() => {
                         setGeneralFormError('');
                     }, msgTimeout);
@@ -877,7 +877,7 @@ function Form({
                 }
             }
         } catch (error) {
-            setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : error || error.message + ': Form submission failed. Please try again.');
+            setGeneralFormError(error || error.message + ': Form submission failed. Please try again.');
             setTimeout(() => {setGeneralFormError('');}, msgTimeout);
         } finally {
             setSubmitting(false);
@@ -982,10 +982,7 @@ function Form({
             }
         }
     }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
-    
-    const getLocalizedText = (lang, enText, arText) => {
-        return lang === 'ar' ? arText : enText;
-    };
+
     
     const CaptchaField = () => {
         if (noCaptcha) return null;
@@ -1000,7 +997,7 @@ function Form({
             <>
                 {!easySimpleCaptcha && (
                     <label htmlFor="captcha" className="form-label-outside">
-                        {getLocalizedText(lang, 'Captcha*', 'كود التحقق*')}
+                        { 'Captcha*'}
                     </label>
                 )}
                 <div className={captchaWrapperClass}>
@@ -1039,9 +1036,7 @@ function Form({
     
     const SubmitButton = () => {
         if (hasDifferentSubmitButtonText) {
-            const buttonText = lang === 'ar'
-                ? (submitting ? differentSubmitButtonText[3] : differentSubmitButtonText[2])
-                : (submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]);
+            const buttonText = (submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]);
             return (
                 <button type="submit" disabled={submitting} className="submit-button">
                     {buttonText}
@@ -1051,10 +1046,7 @@ function Form({
         
         return (
             <button type="submit" disabled={submitting} className="submit-button">
-                {getLocalizedText(lang,
-                    submitting ? 'Submitting...' : 'Submit',
-                    submitting ? 'جاري الارسال...' : 'ارسال'
-                )}
+                {submitting ? 'Submitting...' : 'Submit'}
             </button>
         );
     };
@@ -1063,7 +1055,7 @@ function Form({
         <div className="reset-buttons-wrapper">
             {!noClearOption && (
                 <button type="reset" disabled={submitting} className="reset-button">
-                    {getLocalizedText(lang, 'Clear', 'مسح')}
+                    {'Clear'}
                 </button>
             )}
         </div>
@@ -1186,14 +1178,14 @@ function Form({
                     {selectedDateError && <p className="general-form-error">{selectedDateError}</p>}
                     <div className="form-select-date-modal-footer">
                         <button className="form-select-date-modal-close-btn" onClick={closeModal}>
-                            {getLocalizedText(lang, 'Cancel', 'إلغاء')}
+                            {'Cancel'}
                         </button>
                         <button
                             className="form-select-date-modal-confirm-btn"
                             onClick={() => handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear)}
                             type="submit"
                         >
-                            {getLocalizedText(lang, 'Confirm', 'تأكيد')}
+                            {'Confirm'}
                         </button>
                     </div>
                 </div>
@@ -1243,7 +1235,7 @@ const fieldShape = {
     mustNotMatchFieldWithId: PropTypes.number,
     labelOnTop: PropTypes.bool,
     readOnlyField: PropTypes.bool,
-    defaultValue: PropTypes.string,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     minimumValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     maximumValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     rules: PropTypes.arrayOf(PropTypes.shape({
@@ -1256,7 +1248,7 @@ Form.propTypes = {
     fields: PropTypes.arrayOf(PropTypes.shape(fieldShape)).isRequired,
     mailTo: PropTypes.string.isRequired,
     formTitle: PropTypes.string.isRequired,
-    lang: PropTypes.string.isRequired,
+    lang: PropTypes.string,
     captchaLength: PropTypes.number,
     noInputFieldsCache: PropTypes.bool,
     noCaptcha: PropTypes.bool,

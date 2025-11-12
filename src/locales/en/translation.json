@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "home": "Home",
+    "admission": "Admission",
+    "academics": "Academics",
+    "studentsLife": "Students Life",
+    "events": "Events",
+    "gallery": "Gallery",
+    "faqs": "FAQs",
+    "vacancies": "Vacancies"
+  },
+  "common": {
+    "readMore": "Read More",
+    "contactUs": "Contact Us",
+    "loading": "Loading..."
+  }
+}

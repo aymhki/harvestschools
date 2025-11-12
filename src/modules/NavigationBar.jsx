@@ -5,6 +5,8 @@ import '../styles/NavigationBar.css';
 import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import { useSpring, animated } from 'react-spring';
 import {useNavigate} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 
 const NavigationBar = () => {
@@ -17,6 +19,8 @@ const NavigationBar = () => {
     const [eventsOpen, setEventsOpen] = useState(false);
     const [galleryOpen, setGalleryOpen] = useState(false);
     const [moreInfoOpen, setMoreInfoOpen] = useState(false);
+    const { t } = useTranslation();
+
 
 
     const toggleMenu = () => {
@@ -131,6 +135,14 @@ const NavigationBar = () => {
                     </button>
                 </div>
 
+                {!isMobile && (
+                        <div className={"language-switcher-desktop-container"}>
+                            <LanguageSwitcher />
+                        </div>
+                    )
+                }
+
+
                 {isMobile && (
                     <button className={"menu-icon-container"} onClick={toggleMenu}>
 
@@ -153,7 +165,9 @@ const NavigationBar = () => {
                 }}><Link to="/" onClick={() => {
                     (isMobile ? toggleMenu() : null);
                     navigate('/');
-                }}>Home</Link></li>
+                }}>
+                    Home
+                </Link></li>
 
                 <li className="dropdown"
                     onClick={(e) => (isMobile ? (toggleDropdown(academicsOpen, setAcademicsOpen)) : handleDropdownClick(e, '/academics'))}
@@ -355,6 +369,11 @@ const NavigationBar = () => {
                 }}><Link to="/vacancies">Vacancies</Link></li>
 
 
+                {isMobile && (
+                    <div className={"language-switcher-mobile-container"}>
+                        <LanguageSwitcher />
+                    </div>
+                )}
 
             </animated.ul>
         </nav>

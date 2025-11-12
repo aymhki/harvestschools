@@ -54,7 +54,7 @@ function AdminLogin() {
                                   hasDifferentOnSubmitBehaviour={true}
                                   differentOnSubmitBehaviour={handleAdminLogin}
                                   hasDifferentSubmitButtonText={true}
-                                  differentSubmitButtonText={['Login', 'Logging in...', 'تسجيل دخول', 'جاري تسجيل الدخول...']}
+                                  differentSubmitButtonText={['Login', 'Logging in...']}
                                   noClearOption={true}
                                   centerSubmitButton={true}
                                   easySimpleCaptcha={true}

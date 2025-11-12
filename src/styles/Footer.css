@@ -23,7 +23,7 @@
     font-size: small;
     min-width: 20rem;
     padding: 1rem 0;
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 .footer-social-media-logo {
@@ -42,13 +42,13 @@
 
 .copy-right-text {
     font-size: 0.5rem;
-    font-family: 'Futura', sans-serif;
+    font-family: var(--english-normal-font);
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     text-align: right;
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 .mobile-footer-action-container {
@@ -92,11 +92,11 @@
 }
 
 .mobile-footer-chat-icon:hover {
-    filter: drop-shadow(0 0 1rem #1f2152);
+    filter: drop-shadow(0 0 1rem var(--primary-color) );
 }
 
 .mobile-footer-call-icon:hover {
-    filter: drop-shadow(0 0 1rem #1f2152);
+    filter: drop-shadow(0 0 1rem var(--primary-color) );
 }
 
 @media (max-width: 1600px) {
@@ -121,19 +121,19 @@
 
 
     .copy-right-text {
-        color: #ffffff;
+        color: var(--light-accent-color);
     }
 
     .mobile-footer-action-text {
-        color: #ffffff;
+        color: var(--light-accent-color);
     }
 
     .mobile-footer-chat-icon {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--light-accent-color));
     }
 
     .mobile-footer-call-icon {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--light-accent-color));
     }
 
     .footer {
@@ -145,10 +145,10 @@
     }
 
     .mobile-footer-chat-icon:hover {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--light-accent-color));
     }
 
     .mobile-footer-call-icon:hover {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--light-accent-color));
     }
 }
