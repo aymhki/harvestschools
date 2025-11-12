@@ -25,32 +25,16 @@ try {
 
     $sessionId = $data['session_id'];
 
-
-    $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Connection failed: " . $conn->connect_error,
-            "code" => 500
-        ]);
+        echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error, "code" => 500]);
         exit;
     }
 
-    $permissionSql = "SELECT u.permission_level 
-                     FROM admin_sessions s
-                     JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
-                     WHERE s.id = ?";
-
-    $stmt = $conn->prepare($permissionSql);
-
+    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON LOWER(s.username) = LOWER(u.username) WHERE s.id = ?");
     if (!$stmt) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Prepare failed: " . $conn->error,
-            "code" => 500
-        ]);
+        echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error, "code" => 500]);
         exit;
     }
 
@@ -60,36 +44,25 @@ try {
     $stmt->close();
 
     if ($permissionResult->num_rows == 0) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Invalid session",
-            "code" => 401
-        ]);
+        echo json_encode(["success" => false, "message" => "Invalid session", "code" => 401]);
         exit;
     }
 
     $permissionRow = $permissionResult->fetch_assoc();
-    $permissionLevels = explode(',', $permissionRow['permission_level']);
-    $cleanPermissionLevels = array_map(function($level) {return intval(trim($level));}, $permissionLevels);
-    $hasPermission = in_array(0, $cleanPermissionLevels);
+    $cleanPermissionLevels = array_map('intval', explode(',', $permissionRow['permission_level']));
 
-    if (!$hasPermission) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Permission denied",
-            "code" => 403
-        ]);
+    if (!in_array(0, $cleanPermissionLevels, true)) {
+        echo json_encode(["success" => false, "message" => "Permission denied", "code" => 403]);
         exit;
     }
 
-    $sql = "SELECT
-                id, application_time, first_name, last_name, date_of_birth, email, phone_number, gender, address_street,
-                address_district, address_district_other, position_applying_for, position_applying_for_other,
-                position_applying_for_specialty, high_school_name, high_school_system, high_school_system_other,
-                high_school_graduation_date, instituion_name, institution_major, institution_graduation_date,
-                years_of_experience, experience_details, skills_or_hobbies, other_details, refrence_name,
-                refrence_position, reference_email, reference_phone_number, personal_photo_link, cv_link,
-                cover_letter_link, other_documents_link_first, other_documents_link_second, other_documents_link_third
+    $sql = "SELECT id, application_time, first_name, last_name, date_of_birth, email, phone_number, gender, address_street,
+                   address_district, address_district_other, position_applying_for, position_applying_for_other,
+                   position_applying_for_specialty, high_school_name, high_school_system, high_school_system_other,
+                   high_school_graduation_date, instituion_name, institution_major, institution_graduation_date,
+                   years_of_experience, experience_details, skills_or_hobbies, other_details, refrence_name,
+                   refrence_position, reference_email, reference_phone_number, personal_photo_link, cv_link,
+                   cover_letter_link, other_documents_link_first, other_documents_link_second, other_documents_link_third
             FROM job_applications";
 
     $result = $conn->query($sql);
@@ -104,46 +77,38 @@ try {
         "Cover Letter Link", "Other Documents Link First", "Other Documents Link Second", "Other Documents Link Third"
     ];
 
-    $data = [];
-    $data[] = $headers;
+    $fileLinkColumns = [
+        "Personal Photo Link", "CV Link", "Cover Letter Link", "Other Documents Link First",
+        "Other Documents Link Second", "Other Documents Link Third"
+    ];
 
+    $fileLinkIndices = array_keys(array_intersect($headers, $fileLinkColumns));
+
+
+    $dataRows = [];
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $data[] = [
-                $row['id'], $row['application_time'], $row['first_name'], $row['last_name'], $row['date_of_birth'], $row['email'], $row['phone_number'],
-                $row['gender'], $row['address_street'], $row['address_district'], $row['address_district_other'],
-                $row['position_applying_for'], $row['position_applying_for_other'], $row['position_applying_for_specialty'],
-                $row['high_school_name'], $row['high_school_system'], $row['high_school_system_other'],
-                $row['high_school_graduation_date'], $row['instituion_name'], $row['institution_major'],
-                $row['institution_graduation_date'], $row['years_of_experience'], $row['experience_details'],
-                $row['skills_or_hobbies'], $row['other_details'], $row['refrence_name'], $row['refrence_position'],
-                $row['reference_email'], $row['reference_phone_number'], $row['personal_photo_link'], $row['cv_link'],
-                $row['cover_letter_link'], $row['other_documents_link_first'], $row['other_documents_link_second'],
-                $row['other_documents_link_third']
-            ];
+            $rowData = array_values($row);
+            foreach($fileLinkIndices as $index) {
+                if (!empty($rowData[$index])) {
+                    $rowData[$index] = "/scripts/serveFile.php?file=" . urlencode($rowData[$index]);
+                }
+            }
+            $dataRows[] = $rowData;
         }
     }
-
-    $endTime = microtime(true);
-    $executionTime = ($endTime - $startTime) * 1000;
 
     echo json_encode([
         "success" => true,
         "message" => "Data retrieved successfully",
         "code" => 200,
-        "execution_time" => $executionTime . ' ms',
-        "data" => $data
+        "data" => array_merge([$headers], $dataRows)
     ]);
-
 
 } catch (Exception $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => $e->getMessage(),
-        "code" => $e->getCode() ?: 500
-    ]);
+    echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {
-    if ($conn) {
+    if (isset($conn) ) {
         $conn->close();
     }
 }
