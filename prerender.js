@@ -62,6 +62,7 @@ const routesToPrerender = [
     '/covid-19/covid-19-english',
     '/covid-19/covid-19-arabic',
     '/not-found',
+
 ];
 
 console.log('Starting pre-rendering...');
