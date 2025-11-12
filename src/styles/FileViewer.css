@@ -18,11 +18,8 @@
 }
 
 .file-viewer-content {
-    flex-grow: 1;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-top: 2rem;
 }
 
 .file-viewer-content embed {
