@@ -65,9 +65,12 @@ function FileViewer() {
             <div className="file-viewer-header">
                 <div className="file-viewer-actions-wrapper">
                     {!error && fileBlobUrl && (
-                        <a href={fileBlobUrl} download={filename} className="file-viewer-button primary">
+                        <button
+                            ref={fileBlobUrl}
+                            className="file-viewer-button primary"
+                        >
                             Download File
-                        </a>
+                        </button>
                     )}
                 </div>
             </div>
