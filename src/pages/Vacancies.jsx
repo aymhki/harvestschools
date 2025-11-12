@@ -477,7 +477,7 @@ function Vacancies() {
                     label: 'CV',
                     required: false,
                     placeholder: 'Upload your CV here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -491,7 +491,7 @@ function Vacancies() {
                     label: 'Cover Letter',
                     required: false,
                     placeholder: 'Upload your cover letter here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -505,7 +505,7 @@ function Vacancies() {
                     label: 'Other Documents: First',
                     required: false,
                     placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -519,7 +519,7 @@ function Vacancies() {
                     label: 'Other Documents: Second',
                     required: false,
                     placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -533,14 +533,13 @@ function Vacancies() {
                     label: 'Other Documents: Third',
                     required: false,
                     placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'attachment-5',
                 }
-
             ]}
                   captchaLength={1}
                   hasSetSubmittingLocal={true}
