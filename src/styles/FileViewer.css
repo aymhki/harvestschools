@@ -6,7 +6,7 @@
 }
 
 .file-viewer-header {
-    flex-shrink: 0;
+
 }
 
 .file-viewer-actions-wrapper {
@@ -19,7 +19,7 @@
 .file-viewer-content {
     flex-grow: 1;
     overflow: hidden;
-    margin-top: 2rem;
+    margin-top: 1rem;
     padding: 0 1rem 1rem 1rem;
     display: flex;
     flex-direction: column;

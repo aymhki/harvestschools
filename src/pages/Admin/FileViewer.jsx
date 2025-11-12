@@ -101,7 +101,7 @@ function FileViewer() {
                             {canEmbed ? (
                                 <embed
                                     src={fileBlobUrl}
-                                    type="application/octet-stream"
+                                    type="application/pdf"
                                     width="100%"
                                     height="100%"
                                 />
