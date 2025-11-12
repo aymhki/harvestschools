@@ -31,7 +31,6 @@ function JobApplications() {
     }, []);
 
     function onJobApplicationFileUrlClick(cellValue) {
-        // open a new tab with https://harvestschools.com/admin/view-file?file=<cellValue>
         const url = `/admin/view-file?file=${encodeURIComponent(cellValue)}`;
         window.open(url, '_blank');
     }

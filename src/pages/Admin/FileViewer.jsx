@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import Spinner from '../../modules/Spinner';
 import '../../styles/FileViewer.css';
 
+const EMBEDDABLE_EXTENSIONS = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
+
 function FileViewer() {
     const [searchParams] = useSearchParams();
 
@@ -10,6 +12,7 @@ function FileViewer() {
     const [filename, setFilename] = useState('file');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [canEmbed, setCanEmbed] = useState(false);
 
     useEffect(() => {
         const fetchFile = async () => {
@@ -22,9 +25,15 @@ function FileViewer() {
             }
 
             try {
-                setFilename(decodeURIComponent(filePath.split('/').pop()));
+                const decodedFilename = decodeURIComponent(filePath.split('/').pop());
+                setFilename(decodedFilename);
+
+                const extension = decodedFilename.split('.').pop().toLowerCase();
+                setCanEmbed(EMBEDDABLE_EXTENSIONS.includes(extension));
+
             } catch (e) {
                 setFilename('download');
+                setCanEmbed(false);
             }
 
             try {
@@ -36,7 +45,6 @@ function FileViewer() {
                 }
 
                 const blob = await response.blob();
-
                 const blobUrl = URL.createObjectURL(blob);
                 setFileBlobUrl(blobUrl);
 
@@ -60,22 +68,22 @@ function FileViewer() {
         return <Spinner />;
     }
 
+    const downloadFile = () => {
+        const link = document.createElement('a');
+        link.href = fileBlobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="file-viewer-page">
             <div className="file-viewer-header">
                 <div className="file-viewer-actions-wrapper">
                     {!error && fileBlobUrl && (
                         <button
-                            onClick={
-                                () => {
-                                    const link = document.createElement('a');
-                                    link.href = fileBlobUrl;
-                                    link.download = filename;
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                }
-                            }
+                            onClick={downloadFile}
                             className="file-viewer-button primary"
                         >
                             Download File
@@ -89,12 +97,21 @@ function FileViewer() {
                     <div className="error-message">{error}</div>
                 ) : (
                     fileBlobUrl && (
-                        <embed
-                            src={fileBlobUrl}
-                            type="application/pdf"
-                            width="100%"
-                            height="100%"
-                        />
+                        <>
+                            {canEmbed ? (
+                                <embed
+                                    src={fileBlobUrl}
+                                    type="application/octet-stream"
+                                    width="100%"
+                                    height="100%"
+                                />
+                            ) : (
+                                <div className="download-message">
+                                    <p>This file cannot be previewed.</p>
+                                    <p>Please download it to view.</p>
+                                </div>
+                            )}
+                        </>
                     )
                 )}
             </div>
