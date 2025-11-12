@@ -735,16 +735,16 @@ const createSessions = (sessionName,) => {
     const sessionId = uuidv6();
     const sessionExpiry = new Date();
     sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
-    document.cookie = `${sessionName}_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
-    document.cookie = `${sessionName}_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
+    document.cookie = `${sessionName}_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=Lax`;
+    document.cookie = `${sessionName}_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=Lax`;
     return sessionId;
 }
 
 const extendSession = (sessionName, sessionId) => {
     const sessionExpiry = new Date();
     sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
-    document.cookie = `${sessionName}_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/`;
-    document.cookie = `${sessionName}_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/`;
+    document.cookie = `${sessionName}_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=Lax`;
+    document.cookie = `${sessionName}_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=Lax`;
 }
 
 const resetSession = (sessionName) => {
