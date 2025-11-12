@@ -16,6 +16,7 @@ import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 import Dashboard from "./pages/Admin/./AdminDashboard";
 import JobApplications from "./pages/Admin/JobApplications.jsx";
 import BookingManagement from "./pages/Admin/BookingManagement.jsx";
+import FileViewer from './pages/admin/FileViewer';
 
 // Admission pages
 import Admission from "./pages/Admission/Admission.jsx";
@@ -109,6 +110,7 @@ function App() {
                         <Route path="/admin/login" element={<AdminLogin />} />
                         <Route path="/admin/dashboard" element={<Dashboard />} />
                         <Route path="/admin/job-applications" element={<JobApplications />} />
+                        <Route path="/admin/view-file" element={<FileViewer />} />
                         <Route path="/admin/booking-management" element={<BookingManagement />} />
 
                         <Route path="/more-info" element={<MoreInfo />} />

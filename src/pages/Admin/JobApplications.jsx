@@ -30,6 +30,12 @@ function JobApplications() {
         loadTableData();
     }, []);
 
+    function onJobApplicationFileUrlClick(cellValue) {
+        // open a new tab with https://harvestschools.com/admin/view-file?file=<cellValue>
+        const url = `/admin/view-file?file=${encodeURIComponent(cellValue)}`;
+        window.open(url, '_blank');
+    }
+
     return (
         <>
             {isLoading && <Spinner/>}
@@ -81,6 +87,16 @@ function JobApplications() {
                                'Institution Graduation Date',
                                'Years of Experience',
                            ]
+                       }
+                       likelyUrlColumns={
+                            {
+                                'Resume Link': onJobApplicationFileUrlClick,
+                                'Cover Letter Link': onJobApplicationFileUrlClick,
+                                'Personal Photo Link': onJobApplicationFileUrlClick,
+                                'Other Documents Link First': onJobApplicationFileUrlClick,
+                                'Other Documents Link Second': onJobApplicationFileUrlClick,
+                                'Other Documents Link Third': onJobApplicationFileUrlClick,
+                            }
                        }
                 />
             </div>
