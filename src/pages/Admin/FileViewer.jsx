@@ -66,7 +66,16 @@ function FileViewer() {
                 <div className="file-viewer-actions-wrapper">
                     {!error && fileBlobUrl && (
                         <button
-                            ref={fileBlobUrl}
+                            onClick={
+                                () => {
+                                    const link = document.createElement('a');
+                                    link.href = fileBlobUrl;
+                                    link.download = filename;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }
+                            }
                             className="file-viewer-button primary"
                         >
                             Download File
