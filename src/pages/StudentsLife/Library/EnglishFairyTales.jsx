@@ -125,7 +125,7 @@ function EnglishFairyTales() {
                           widthOfField: 1
                       },
                   ]
-              }  captchaLength={1}/>
+              }  captchaLength={1} lang={'en'}/>
 
 
           </div>

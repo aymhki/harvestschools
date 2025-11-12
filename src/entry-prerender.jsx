@@ -2,6 +2,7 @@ import ReactDOMServer from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
+import './i18n';
 
 export function render(url) {
     const helmetContext = {};

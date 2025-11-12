@@ -312,7 +312,7 @@ function BookingExtras() {
                                                                                  hasDifferentOnCancelBehaviour={true}
                                                                                  hasDifferentSubmitButtonText={true}
                                                                                  differentSubmitButtonText={[
-                                                                                     'Save', 'Saving...', 'حفظ', 'جاري الحفظ...'
+                                                                                     'Save', 'Saving...'
                                                                                  ]}
                                                                                  resetFormFromParent={resetFormFromParent}
                                                                                  setResetFormFromParent={setResetFormFromParent}

@@ -22,14 +22,14 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    background-color: #1f2152;
+    background-color: var(--primary-color);
     color: white;
     font-size: 100%;
 }
 
 .double-in-full-page-selector-left-option-in-full-page-selector:hover, .quadruple-full-page-selector-left-option-in-full-page-selector:hover {
     background-color: white;
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 .double-in-full-page-selector-right-option-in-full-page-selector, .quadruple-full-page-selector-right-option-in-full-page-selector {
@@ -38,14 +38,14 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    background-color: #c94349;
+    background-color: var(--secondary-color);
     color: white;
     font-size: 100%;
 }
 
 .double-in-full-page-selector-right-option-in-full-page-selector:hover, .quadruple-full-page-selector-right-option-in-full-page-selector:hover {
     background-color: white;
-    color: #c94349;
+    color: var(--secondary-color);
 }
 
 .double-in-full-page-selector-left-option-in-full-page-selector h1 {

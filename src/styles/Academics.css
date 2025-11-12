@@ -112,7 +112,7 @@
 
 .academics-partners-page h1 {
     text-align: center;
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 
@@ -161,7 +161,7 @@
     flex-direction: column;
     width: calc(100% - 10rem);
     padding: 5rem;
-    background-color: #c94349;
+    background-color: var(--secondary-color);
     color: white;
     margin: 0;
     min-height: 100vh;
@@ -173,7 +173,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: #1f2152;
+    background-color: var(--primary-color);
     color: white;
     min-height: 100vh;
 }
@@ -184,7 +184,7 @@
     align-items: center;
     flex-direction: column;
     width: 100%;
-    background-color: #c94349;
+    background-color: var(--secondary-color);
     color: white;
     min-height: 100vh;
 }
@@ -215,7 +215,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: #1f2152;
+    background-color: var(--primary-color);
     color: white;
     min-height: 100vh;
     flex-direction: column;
@@ -235,7 +235,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: #c94349;
+    background-color: var(--secondary-color);
     color: white;
     min-height: 100vh;
     flex-direction: column;
@@ -251,7 +251,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: #1f2152;
+    background-color: var(--primary-color);
     color: white;
     min-height: 100vh;
     flex-direction: column;

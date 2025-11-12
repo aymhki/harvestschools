@@ -19,13 +19,13 @@
     margin: 1rem;
     will-change: filter;
     transition: filter 0.5s;
-    color: #1f2152;
+    color: var(--primary-color);
     font-size: large;
-    font-family: 'Futura', sans-serif;
+    font-family: var(--english-normal-font);
     font-weight: 400;
     font-style: normal;
     padding: 0.5rem;
-    border: 0.1rem solid #1f2152;
+    border: 0.1rem solid var(--primary-color);
     width: 100%;
     line-height: 1.5;
     letter-spacing: 0.1rem;
@@ -34,11 +34,11 @@
 }
 
 .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover, .select-multiple-form-field:hover, .file-form-field-styled:hover {
-    filter: drop-shadow(0 0 0.5rem #1f2152);
+    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
 }
 
 .text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus, .select-multiple-form-field:focus, .file-form-field-styled:focus {
-    filter: drop-shadow(0 0 0.5rem #1f2152);
+    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
 }
 
 .text-form-field:lang(ar), .textarea-form-field:lang(ar), .select-form-field:lang(ar), .radio-form-field:lang(ar), .checkbox-form-field:lang(ar), .file-form-field:lang(ar), .select-multiple-form-field:lang(ar), .file-form-field-styled:lang(ar), .form-title-section:lang(ar) {
@@ -215,7 +215,7 @@
     width: calc(100%);
     display: flex;
     text-align: center;
-    border: 0.1rem solid #1f2152;
+    border: 0.1rem solid var(--primary-color);
     border-radius: 0.5rem;
     margin:1rem 0 1rem 1rem;
 }
@@ -226,7 +226,7 @@
     width: calc(100%);
     display: flex;
     text-align: center;
-    border: 0.1rem solid #1f2152;
+    border: 0.1rem solid var(--primary-color);
     border-radius: 0.5rem;
 }
 
@@ -236,7 +236,7 @@
     text-align: center;
     background-color: #f0f0f0;
     text-decoration: line-through;
-    text-decoration-color: #ffffff;
+    text-decoration-color: var(--light-accent-color);
     user-select: none; /* Prevents text selection */
     -webkit-user-select: none; /* For Chrome, Safari, and Opera */
     -moz-user-select: none; /* For Firefox */
@@ -273,7 +273,7 @@
     text-align: center;
     justify-content: center;
     align-items: center;
-    border: 0.1rem solid #1f2152;
+    border: 0.1rem solid var(--primary-color);
     border-radius: 0.5rem;
     flex-wrap: wrap;
     padding-right: 0.5rem;
@@ -291,7 +291,7 @@
     text-align: center;
     justify-content: center;
     align-items: center;
-    border: 0.1rem solid #1f2152;
+    border: 0.1rem solid var(--primary-color);
     border-radius: 0.5rem;
     flex-wrap: wrap;
     padding-right: 0.5rem;
@@ -324,33 +324,33 @@
 }
 
 .remove-button:hover {
-    background-color: #c94349;
-    color: #ffffff;
+    background-color: var(--secondary-color);
+    color: var(--light-accent-color);
 }
 
 .captcha-wrapper:lang(ar) {
     direction: ltr;
-    font-family: 'Futura', sans-serif
+    font-family: var(--english-normal-font)
 }
 
 .captcha-wrapper-half-width:lang(ar) {
     direction: ltr;
-    font-family: 'Futura', sans-serif
+    font-family: var(--english-normal-font)
 }
 
 .captcha-wrapper-half-width-with-full-margin:lang(ar) {
     direction: ltr;
-    font-family: 'Futura', sans-serif
+    font-family: var(--english-normal-font)
 }
 
 .captcha-wrapper-with-full-margin:lang(ar) {
     direction: ltr;
-    font-family: 'Futura', sans-serif
+    font-family: var(--english-normal-font)
 }
 
 .captcha-input:lang(ar) {
     direction: ltr;
-    font-family: 'Futura', sans-serif
+    font-family: var(--english-normal-font)
 }
 
 .form-select-date-modal {
@@ -384,7 +384,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: #ffffff;
+    background-color: var(--light-accent-color);
     width: 30%;
     max-height: 100%;
     z-index: 2001;
@@ -586,12 +586,12 @@
     justify-content: center;
     z-index: 1;
     box-shadow: none;
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 .toggle-password-visibility:hover {
     opacity: 0.8;
-    color: #1f2152;
+    color: var(--primary-color);
     background: transparent;
     backdrop-filter: none;
 }
@@ -604,10 +604,10 @@
 .read-only-field {
     pointer-events: none;
     /*background-color: #f0f0f0;*/
-    /*color: #1f2152;*/
-    background: #ccc;
-    color: #000000;
-    border-color: #000000
+    /*color: var(--primary-color);*/
+    background: var(--read-only-field-grey-color);
+    color: var(--harvest-black-color);
+    border-color: var(--harvest-black-color)
 
 }
 
@@ -631,19 +631,19 @@
 }
 
 .remove-section-button {
-    background-color: #ffffff;
-    color: #c94349;
+    background-color: var(--light-accent-color);
+    color: var(--secondary-color);
     padding: 1rem 1rem 1rem 1rem;
     font-size: large;
     cursor: pointer;
     border-radius: 0.5rem;
-    box-shadow: 0 0 0.5rem #c94349;
+    box-shadow: 0 0 0.5rem var(--secondary-color);
 }
 
 .remove-section-button:hover {
-    background-color: #c94349;
-    color: #ffffff;
-    filter: drop-shadow(0 0 1em #c94349);
+    background-color: var(--secondary-color);
+    color: var(--light-accent-color);
+    filter: drop-shadow(0 0 1em var(--secondary-color) );
 
 }
 
@@ -658,7 +658,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    border: 0.1rem solid #1f2152;
+    border: 0.1rem solid var(--primary-color);
     border-radius: 0.5rem;
     justify-content: space-around;
     padding: 0.35rem;
@@ -669,9 +669,9 @@
 .number-form-field {
     will-change: filter;
     transition: filter 0.5s;
-    color: #1f2152;
+    color: var(--primary-color);
     font-size: large;
-    font-family: 'Futura', sans-serif;
+    font-family: var(--english-normal-font);
     border: none;
     width: 50%;
     font-weight: 400;
@@ -961,16 +961,16 @@
 @media (prefers-color-scheme: dark) {
 
     .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
-        color: #ffffff;
-        border: 0.1rem solid #ffffff;
+        color: var(--light-accent-color);
+        border: 0.1rem solid var(--light-accent-color);
     }
 
     .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover, .select-multiple-form-field:hover, .file-form-field-styled:hover {
-        filter: drop-shadow(0 0 0.5rem #ffffff);
+        filter: drop-shadow(0 0 0.5rem var(--light-accent-color));
     }
 
     .text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus, .select-multiple-form-field:focus, .file-form-field-styled:focus {
-        filter: drop-shadow(0 0 0.5rem #ffffff);
+        filter: drop-shadow(0 0 0.5rem var(--light-accent-color));
     }
 
     .select-form-field {
@@ -978,69 +978,69 @@
     }
 
     .captcha-box {
-        color: #ffffff;
-        border: 0.1rem solid #ffffff;
-        background-color: #0f0f0f;
-        text-decoration-color: #000000;
+        color: var(--light-accent-color);
+        border: 0.1rem solid var(--light-accent-color);
+        background-color: var(--harvest-black-gradient-color);
+        text-decoration-color: var(--harvest-black-color);
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <circle cx="5" cy="5" r="1" fill="%23000080"/> <circle cx="12" cy="5" r="1" fill="%23004040"/> <circle cx="19" cy="5" r="1" fill="%23000040"/> <circle cx="5" cy="12" r="1" fill="%23008000"/> <circle cx="12" cy="12" r="1" fill="%23004080"/> <circle cx="19" cy="12" r="1" fill="%23004080"/> <circle cx="5" cy="19" r="1" fill="%23ffffff"/> <circle cx="12" cy="19" r="1" fill="%23000000"/> <circle cx="19" cy="19" r="1" fill="%23808080"/> </svg>');
 
 
     }
 
     .captcha-wrapper {
-        border: 0.1rem solid #ffffff;
+        border: 0.1rem solid var(--light-accent-color);
     }
 
 
     .captcha-wrapper-half-width {
-        border: 0.1rem solid #ffffff;
+        border: 0.1rem solid var(--light-accent-color);
     }
 
     .form-select-date-modal-container {
-        background-color: #242424;
+        background-color: var(--light-dark-accent-color);
     }
 
     .captcha-wrapper-with-full-margin {
-        border: 0.1rem solid #ffffff;
+        border: 0.1rem solid var(--light-accent-color);
     }
 
     .captcha-wrapper-half-width-with-full-margin {
-        border: 0.1rem solid #ffffff;
+        border: 0.1rem solid var(--light-accent-color);
     }
 
     .toggle-password-visibility {
-        color: #ffffff
+        color: var(--light-accent-color)
     }
 
     .toggle-password-visibility:hover {
-        color: #ffffff
+        color: var(--light-accent-color)
     }
 
     .read-only-field {
-        background: #454545;
-        color: #ffffff;
-        border-color: #ffffff
+        background: var(--dark-accent-color);
+        color: var(--light-accent-color);
+        border-color: var(--light-accent-color);
     }
 
     .remove-section-button {
-        background-color: #c94349;
-        color: #ffffff;
-        box-shadow: 0 0 0.5rem #ffffff;
+        background-color: var(--secondary-color);
+        color: var(--light-accent-color);
+        box-shadow: 0 0 0.5rem var(--light-accent-color);
     }
 
     .remove-section-button:hover {
-        background-color: #454545;
-        color: #ffffff;
-        filter: drop-shadow(0 0 1em #ffffff);
+        background-color: var(--dark-accent-color);
+        color: var(--light-accent-color);
+        filter: drop-shadow(0 0 1em var(--light-accent-color));
     }
 
     .number-input-container {
-        border: 0.1rem solid #ffffff;
+        border: 0.1rem solid var(--light-accent-color);
     }
 
     .number-form-field {
-        color: #ffffff;
+        color: var(--light-accent-color);
         border: none;
-        background-color: #242424;
+        background-color: var(--light-dark-accent-color);
     }
 }

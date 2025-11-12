@@ -10,7 +10,7 @@
 }
 
 .photo-slider {
-    color: #1f2152;
+    color: var(--primary-color);
     background-color: white;
     border-radius: 1rem;
     column-span: 3;
@@ -19,7 +19,7 @@
     height: 100%;
     text-align: left;
     padding: 1rem;
-    box-shadow: 0 0 0 0.1rem #1f2152;
+    box-shadow: 0 0 0 0.1rem var(--primary-color);
 
 }
 
@@ -35,7 +35,7 @@
     max-width: 100%;
     width: 100%;
     object-fit: fill;
-    background-color: #ffffff;
+    background-color: var(--light-accent-color);
     color: white;
     border-radius: 1rem;
 }

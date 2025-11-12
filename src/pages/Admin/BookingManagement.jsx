@@ -1006,7 +1006,7 @@ function BookingManagement() {
                                   differentOnSubmitBehaviour={handleEditBooking}
                                   hasDifferentSubmitButtonText={true}
                                   differentSubmitButtonText={[
-                                      "Save", "Saving...", "تعديل", "جاري التعديل..."
+                                      "Save", "Saving..."
                                   ]}
                                   formInModalPopup={true}
                                   setShowFormModalPopup={setShowEditBookingModal}

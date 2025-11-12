@@ -1,0 +1,52 @@
+
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    direction: ltr;
+}
+
+.language-switcher .en {
+    font-family: var(--english-normal-font);
+}
+
+.language-switcher .en, .language-switcher .ar,  .language-switcher .en.mobile, .language-switcher .ar.mobile {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+.language-switcher .ar, .language-switcher .ar.mobile {
+    font-family: var(--arabic-normal-font), sans-serif;
+}
+
+.language-switcher .en.active, .language-switcher .ar.active {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.language-switcher .ar.active.mobile, .language-switcher .en.active.mobile {
+    color: var(--light-accent-color);
+    text-decoration: underline;
+}
+
+.language-switcher-separator {
+    color: var(--primary-color);
+    font-weight: normal;
+}
+
+.language-switcher-separator.mobile {
+    color: var(--light-accent-color);
+    font-weight: normal;
+}
+
+@media (prefers-color-scheme: dark) {
+    .language-switcher .en.active, .language-switcher .ar.active {
+        color: var(--light-accent-color);
+        text-decoration: underline;
+    }
+
+    .language-switcher-separator, .language-switcher-separator.mobile {
+        color: var(--light-accent-color);
+    }
+}

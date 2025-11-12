@@ -1,3 +1,11 @@
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="ltr"] {
+    text-align: left;
+}
+
 @font-face {
     font-family: 'Futura';
     src: url('../../public/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
@@ -47,20 +55,61 @@
     font-style: auto;
 }
 
+@font-face {
+    font-family: 'Reem Kufi';
+    src: url('../../public/assets/fonts/Reem Kufi/ReemKufi-Bold.woff2') format('woff2'),
+        url('../../public/assets/fonts/Reem Kufi/ReemKufi-Bold.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+}
+
+@font-face {
+    font-family: 'Arslan Wessam A';
+    src: url('../../public/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff2') format('woff2'),
+        url('../../public/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+}
+
+@font-face {
+    font-family: 'Janna LT Bold';
+    src: url('../../public/assets/fonts/Janna LT Bold/Janna LT Bold.woff2') format('woff2'),
+        url('../../public/assets/fonts/Janna LT Bold/Janna LT Bold.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+}
+
 
 :root {
-    font-family: Futura, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    background-color: var(--light-dark-accent-color);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    --primary-color: #1f2152;
+    --secondary-color: #c94349;
+    --light-accent-color: #ffffff;
+    --dark-accent-color: #454545;
+    --light-dark-accent-color: #242425FF;
+    --harvest-black-color: #000000;
+    --harvest-black-gradient-color: #0f0f0f;
+    --harvest-link-color: #0000EE;
+    --read-only-field-grey-color: #ccc;
+    --english-title-font: "American Typewriter", "Courier New", Courier, monospace;
+    --english-normal-font: 'Futura', sans-serif;
+    --english-normal-font-bold: 'Futura-Bold', sans-serif;
+    --arabic-title-font: 'Janna LT Bold', sans-serif;
+    --arabic-normal-font: 'Arian LT', sans-serif;
+    --arabic-normal-font-bold: 'Arian LT Demi', sans-serif;
+
+    font-family: var(--english-normal-font);
 }
 
 a {
@@ -68,7 +117,7 @@ a {
     padding: 0;
     margin: 0;
     font-weight: 500;
-    color: #1f2152;
+    color: var(--primary-color);
     text-decoration: inherit;
 }
 
@@ -83,7 +132,7 @@ a:visited {
 }
 
 a:visited:hover {
-    color: #ffffff;
+    color: var(--light-accent-color);
 }
 
 body {
@@ -99,7 +148,7 @@ body.lock-scroll {
 
 
 h1 {
-    font-family: "American Typewriter", "Courier New", Courier, monospace;
+    font-family: var(--english-title-font);
     font-weight: 600;
     font-size: 5rem;
     line-height: 1;
@@ -107,7 +156,7 @@ h1 {
 }
 
 h2 {
-    font-family: "American Typewriter", "Courier New", Courier, monospace;
+    font-family: var(--english-title-font);
     font-size: 3rem;
     line-height: 1;
     letter-spacing: 0.2rem;
@@ -115,7 +164,7 @@ h2 {
 }
 
 h3 {
-    font-family: "American Typewriter", "Courier New", Courier, monospace;
+    font-family: var(--english-title-font);
     font-size: 2rem;
     line-height: 1;
     letter-spacing: 0.1rem;
@@ -131,20 +180,20 @@ p {
 }
 
 h1:lang(ar) {
-    font-family: 'Arian LT Demi', sans-serif;
+    font-family: var(--arabic-title-font);
     letter-spacing: 0.1rem;
 }
 
 p:lang(ar) {
-    font-family: 'Arian LT Demi', sans-serif;
+    font-family: var(--arabic-normal-font);
 }
 
 h2:lang(ar) {
-    font-family: 'Arian Lt', sans-serif;
+    font-family: var(--arabic-title-font);
 }
 
 h3:lang(ar) {
-    font-family: 'Arian Lt', sans-serif;
+    font-family: var(--arabic-title-font);
 }
 
 
@@ -155,25 +204,25 @@ button {
     margin: 1rem;
     font-size: x-large;
     font-weight: bold;
-    font-family: 'Futura-Bold', sans-serif;
+    font-family: var(--english-normal-font-bold);
     letter-spacing: 0.3rem;
     line-height: 1.5;
-    background-color: #ffffff;
-    color: #1f2152;
+    background-color: var(--light-accent-color);
+    color: var(--primary-color);
     cursor: pointer;
     will-change: filter;
     transition: filter 0.25s;
-    box-shadow: 0 0 0.5rem #1f2152;
+    box-shadow: 0 0 0.5rem var(--primary-color);
 }
 
 button:hover {
-    filter: drop-shadow(0 0 0.5rem #1f2152);
-    background-color: #1f2152;
-    color: #ffffff;
+    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+    background-color: var(--primary-color);
+    color: var(--light-accent-color);
 }
 
 button:lang(ar) {
-    font-family:'Arian LT Demi', sans-serif;
+    font-family: var(--arabic-normal-font-bold);
     letter-spacing: 0.1rem;
 
 }
@@ -184,18 +233,18 @@ form:lang(ar) {
 
 input:lang(ar) {
     direction: rtl;
-    font-family: 'Arian LT', sans-serif;
+    font-family: var(--arabic-normal-font);
 }
 
 textarea:lang(ar) {
     direction: rtl;
-    font-family: 'Arian LT', sans-serif;
+    font-family: var(--arabic-normal-font);
 }
 
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
-        background-color: #ffffff;
+        background-color: var(--light-accent-color);
     }
 
     a:hover {
@@ -203,7 +252,7 @@ textarea:lang(ar) {
     }
 
     button {
-        background-color: #ffffff;
+        background-color: var(--light-accent-color);
     }
 }
 
@@ -301,30 +350,30 @@ textarea:lang(ar) {
 @media (prefers-color-scheme: dark) {
 
     a {
-        color: #ffffff;
+        color: var(--light-accent-color);
     }
 
     a:visited {
-        color: #ffffff;
+        color: var(--light-accent-color);
     }
 
     a:visited:hover {
-        color: #ffffff;
+        color: var(--light-accent-color);
     }
 
     a:hover {
-        color: #ffffff;
+        color: var(--light-accent-color);
     }
 
     button {
-        background-color: #ffffff;
-        color: #1f2152;
+        background-color: var(--light-accent-color);
+        color: var(--primary-color);
     }
 
     button:hover {
-        filter: drop-shadow(0 0 2rem #ffffff);
-        background-color: #242424;
-        color: #ffffff;
+        filter: drop-shadow(0 0 2rem var(--light-accent-color));
+        background-color: var(--light-dark-accent-color);
+        color: var(--light-accent-color);
     }
 }
 
