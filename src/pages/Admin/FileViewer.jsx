@@ -104,42 +104,40 @@ function FileViewer() {
 
     return (
         <div className="file-viewer-page">
-            <div className={"extreme-padding-container"}>
-                <div className="file-viewer-body">
+            <div className="file-viewer-body">
 
-                    <div className="file-viewer-actions-wrapper">
-                        {!error && fileBlobUrl && (
-                            <button
-                                onClick={downloadFile}
-                                className="file-viewer-button primary"
-                            >
-                                Download File
-                            </button>
-                        )}
-                    </div>
+                <div className="file-viewer-actions-wrapper">
+                    {!error && fileBlobUrl && (
+                        <button
+                            onClick={downloadFile}
+                            className="file-viewer-button primary"
+                        >
+                            Download File
+                        </button>
+                    )}
+                </div>
 
-                    <div className="file-viewer-embed-container">
-                        {error ? (
-                            <div className="error-message">{error}</div>
-                        ) : (
-                            fileBlobUrl && (
-                                <>
-                                    {canEmbed ? (
-                                        <embed
-                                            src={fileBlobUrl}
-                                            type={mimeType}
-                                            className="file-embed-viewer"
-                                        />
-                                    ) : (
-                                        <div className="download-message">
-                                            <p>This file cannot be previewed.</p>
-                                            <p>Please download it to view.</p>
-                                        </div>
-                                    )}
-                                </>
-                            )
-                        )}
-                    </div>
+                <div className="file-viewer-embed-container">
+                    {error ? (
+                        <div className="error-message">{error}</div>
+                    ) : (
+                        fileBlobUrl && (
+                            <>
+                                {canEmbed ? (
+                                    <embed
+                                        src={fileBlobUrl}
+                                        type={mimeType}
+                                        className="file-embed-viewer"
+                                    />
+                                ) : (
+                                    <div className="download-message">
+                                        <p>This file cannot be previewed.</p>
+                                        <p>Please download it to view.</p>
+                                    </div>
+                                )}
+                            </>
+                        )
+                    )}
                 </div>
             </div>
         </div>
