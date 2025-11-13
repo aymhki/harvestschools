@@ -1,14 +1,16 @@
+
 .file-viewer-page {
-    min-height: calc(100vh);
-    height: calc(100vh);
-    width: 100%;
-    justify-content: center;
-    align-items: stretch;
+    display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
 }
 
 .file-viewer-body {
-
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
 }
 
 
@@ -16,9 +18,11 @@
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
+    flex-shrink: 0;
 }
 
 .file-viewer-embed-container {
+    flex-grow: 1;
     min-height: 0;
 }
 
