@@ -39,12 +39,10 @@
 }
 
 .error-message, .download-message {
-    color: #c94349;
-    background-color: #ffffff;
     padding: 1rem;
-    border-radius: 0.5rem;
-    font-size: medium;
-    border: 0.3rem solid #ccc;
+    font-size: small;
+    text-align: center;
+
 }
 
 @media (max-width: 1200px) {
