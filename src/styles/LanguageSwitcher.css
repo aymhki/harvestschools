@@ -5,6 +5,7 @@
     gap: 0.5rem;
     font-weight: bold;
     direction: ltr;
+    font-size: medium;
 }
 
 .language-switcher .en {

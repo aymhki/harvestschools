@@ -99,11 +99,14 @@ function App() {
             if (i18n.language !== langParam) {
                 i18n.changeLanguage(langParam);
             }
-        } else {
-            if (i18n.language !== 'en') {
-                i18n.changeLanguage('en');
-            }
         }
+        // else
+        // {
+        //     if (i18n.language !== 'en')
+        //     {
+        //         i18n.changeLanguage('en');
+        //     }
+        // }
 
         document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = i18n.language;

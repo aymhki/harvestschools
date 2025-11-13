@@ -3,22 +3,26 @@ import '../styles/Home.css';
 import {Helmet} from "react-helmet-async";
 import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
+import { useTranslation } from 'react-i18next';
 
 function Home() {
+
+    const { t } = useTranslation();
     
 
     const homeSliderPhotos = [
-        { id: 1, url: '/assets/images/HomePage/VisionBackground.jpg', title: 'Our Vision', text: 'Is to invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.' },
-        { id: 2, url: '/assets/images/HomePage/MissionBackground.jpg', title: 'Our Mission', text: 'Is to invest in the skills of educators and administrative calibers to provide an inspirational environment made fit to qualify students to be part of a gleaming future placing technology in its best use to activate the most effective educational system.' },
+        { id: 1, url: '/assets/images/HomePage/VisionBackground.jpg', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
+        { id: 2, url: '/assets/images/HomePage/MissionBackground.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
     ]
 
     const contactUsFormFields = [
-        { id: 1, type: 'text', label:     'Name', httpName: 'name', required: true, value: '', setValue: null, widthOfField: 1 },
-        { id: 2, type: 'email', label:    'Email', httpName: 'email', required: true, value: '', setValue: null, widthOfField: 2 },
-        { id: 3, type: 'tel', label:   'Phone Number', httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
-        {id:  4, type: 'select', label:   'Subject', httpName: 'subject', required: true, value: '', setValue: null, widthOfField: 1, choices: ['Admissions', 'General Inquiry', 'Feedback', 'Other']},
-        { id: 5, type: 'textarea', label: 'Message', httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 }
+        { id: 1, type: 'text', label: 'Name', displayLabel: t("home.contact-us-form-fields.name"), httpName: 'name', required: true, value: '', setValue: null, widthOfField: 1 },
+        { id: 2, type: 'email', label: 'Email', displayLabel: t("home.contact-us-form-fields.email"), httpName: 'email', required: true, value: '', setValue: null, widthOfField: 2 },
+        { id: 3, type: 'tel', label: 'Phone Number', displayLabel: t("home.contact-us-form-fields.phone-number"), httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
+        {id:  4, type: 'select', label: 'Subject', displayLabel: t("home.contact-us-form-fields.subject"), httpName: 'subject', required: true, value: '', setValue: null, widthOfField: 1, choices: [t("home.contact-us-form-fields.admissions"), t("home.contact-us-form-fields.general-inquiry"), t("home.contact-us-form-fields.feedback"), t("home.contact-us-form-fields.other")]},
+        { id: 5, type: 'textarea', label: 'Message', displayLabel: t("home.contact-us-form-fields.message"), httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 }
     ]
+
     return (
 
         <div className="home-page" >
@@ -38,8 +42,12 @@ function Home() {
             </div>
 
             <div className="home-page-about-us-section">
-                <h1>About Us</h1>
-                <p>Harvest International School (HIS) was founded in 2016 by Eng. Hassan Khalil Ibrahim to be the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. Eng. Hassan has, for many years, dreamt and planned of founding a school with a true mission and vision. He consulted various specialized educators and finally, the dream came true. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program. The purpose-built world-class educational facility includes extended grounds, specialized sports fields and courts, a well-equipped gymnasium and an outdoor swimming pool. Eng. Hassan’s mission is to raise well-rounded young people who are physically, ethically and educationally capable to face the challenges of the twenty-first century in an ever-evolving global community. At HIS, we are committed to providing the best by offering simultaneously the Egyptian, British and American syllabi.  Lifelong education and eagerness to discover and experiment are at the heart of our mission.</p>
+                <h1>
+                    {t("home.about-us")}
+                </h1>
+                <p>
+                    {t("home.harvest-schools-about-us")}
+                </p>
 
                 <div className="home-page-about-us-video">
                     {/*<iframe className="home-page-about-us-video"*/}
@@ -71,34 +79,36 @@ function Home() {
 
             <div className="home-page-admission-section">
                 <ParallaxScrollSection
-                    title="E-Learning & Academics"
-                    text="At Harvest Schools, E-learning is integrated with all National, British, and American stages making it the first school in Egypt that not only allow parents to access classes live from anywhere around the world but also allow students to follow up with their previously recorded lessons online and solve related assignments. All of this is powered by an advanced, moderated, and well-tested system called schoolEverywhere. To understand the policies and the curriculums that are embedded within the online system, learn more below."
+                    title={t("home.elearning-and-academics")}
+                    text={t("home.harvest-schools-elearning-and-academics")}
                     backgroundImage="/assets/images/HomePage/E-Learning&Academics.jpg"
                     darken={true}
-                    buttonText="Learn More"
+                    buttonText={t("common.learn-more")}
                     buttonLink="/academics/partners"
                 />
             </div>
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.jpg'} darken={true} buttonText={'Explore'} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.jpg'} darken={true} buttonText={t("common.explore")} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">
                 <div className="home-page-contact-us-section">
-                    <h1>Contact Us</h1>
+                    <h1>
+                        {t("home.contact-us")}
+                    </h1>
 
                     <p className="important-info-hyperlink-text">
-                        Phone: &nbsp;
+                        {t("home.phone")} &nbsp;
                         <span  onClick={() => window.open('tel:+201028329668')}>
-                             01028329668,
+                             {t("home.01028329668,")}
                         </span> &nbsp;
                         <span  onClick={() => window.open('tel:+201097875407')}>
-                            01097875407,
+                            {t("home.01097875407,")}
                         </span> &nbsp;
                         <span onClick={() => window.open('tel:+201028940675')}>
-                           01028940675
+                            {t("home.01028940675")}
                         </span>
                     </p>
 
@@ -107,11 +117,13 @@ function Home() {
                 </div>
 
                 <div className="home-page-visit-us-section">
-                    <h1>Visit Us</h1>
+                    <h1>
+                        {t("home.visit-us")}
+                    </h1>
 
                     <p className="important-info-hyperlink-text"
                        onClick={() => window.open('https://maps.app.goo.gl/4mWYs9jX5T2gK1FL7', '_blank')}>
-                        Borg Al Arab City, Second Territory, Alexandria Governorate, Egypt
+                        {t("home.harvest-schools-address")}
                     </p>
 
                     <div className="home-page-visit-us-section-map-container">

@@ -241,6 +241,14 @@ textarea:lang(ar) {
     font-family: var(--arabic-normal-font);
 }
 
+label {
+
+}
+
+label:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
@@ -373,6 +381,14 @@ textarea:lang(ar) {
     button:hover {
         filter: drop-shadow(0 0 2rem var(--light-accent-color));
         background-color: var(--light-dark-accent-color);
+        color: var(--light-accent-color);
+    }
+
+    h1, h2, h3, p {
+        color: var(--light-accent-color);
+    }
+
+    label {
         color: var(--light-accent-color);
     }
 }
