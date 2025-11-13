@@ -3,7 +3,6 @@
     flex-direction: column;
     min-height: 100vh;
     width: 100%;
-
 }
 
 .file-viewer-header {
@@ -18,11 +17,10 @@
 }
 
 .file-embed-viewer {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    margin: 1rem;
+    border: 0.3rem solid #ccc;
     border-radius: 0.5rem;
+    width: 100%;
+    height: 100%;
 }
 
 .file-viewer-embed-container {
@@ -33,13 +31,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.file-viewer-content embed {
-    border: 0.3rem solid #ccc;
-    border-radius: 0.5rem;
-    width: 100%;
-    height: 100%;
 }
 
 .error-message, .download-message {
