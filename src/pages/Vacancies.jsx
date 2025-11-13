@@ -52,13 +52,13 @@ function Vacancies() {
                 Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form below.
             </p>
 
-            <p>
-                If you are not sure about any of the fields required in the form, please read the example pdf available below.
-            </p>
+            {/*<p>*/}
+            {/*    If you are not sure about any of the fields required in the form, please read the example pdf available below.*/}
+            {/*</p>*/}
 
-            <div className={"download-cv-button-wrapper"} >
-                <button className={"download-cv-button"} onClick={() => {window.open("/assets/documents/Vacancies/ResumeExample.pdf", "_blank")}}>Download CV Example</button>
-            </div>
+            {/*<div className={"download-cv-button-wrapper"} >*/}
+            {/*    <button className={"download-cv-button"} onClick={() => {window.open("/assets/documents/Vacancies/ResumeExample.pdf", "_blank")}}>Download CV Example</button>*/}
+            {/*</div>*/}
 
             <p>
                 Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type "N/A."
@@ -477,7 +477,7 @@ function Vacancies() {
                     label: 'CV',
                     required: false,
                     placeholder: 'Upload your CV here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -491,7 +491,7 @@ function Vacancies() {
                     label: 'Cover Letter',
                     required: false,
                     placeholder: 'Upload your cover letter here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -505,7 +505,7 @@ function Vacancies() {
                     label: 'Other Documents: First',
                     required: false,
                     placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -519,7 +519,7 @@ function Vacancies() {
                     label: 'Other Documents: Second',
                     required: false,
                     placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
@@ -533,14 +533,13 @@ function Vacancies() {
                     label: 'Other Documents: Third',
                     required: false,
                     placeholder: 'Upload your attachment here',
-                    allowedFileTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.oasis.opendocument.text', '.pdf', '.doc', '.docx', '.odt'],
+                    allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'attachment-5',
                 }
-
             ]}
                   captchaLength={1}
                   hasSetSubmittingLocal={true}

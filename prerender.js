@@ -6,7 +6,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const toAbsolute = (p) => path.resolve(__dirname, p);
 
 const template = fs.readFileSync(toAbsolute('dist/static/index.html'), 'utf-8');
-
 const { render } = await import('./dist/prerender/entry-prerender.js');
 
 const routesToPrerender = [
@@ -63,29 +62,85 @@ const routesToPrerender = [
     '/covid-19/covid-19-english',
     '/covid-19/covid-19-arabic',
     '/not-found',
+
 ];
 
 console.log('Starting pre-rendering...');
 
-for (const url of routesToPrerender) {
+const originalIndexPath = toAbsolute('dist/static/index.html');
+const tempIndexPath = toAbsolute('dist/static/index.original.html');
+if (fs.existsSync(originalIndexPath)) {
+    fs.renameSync(originalIndexPath, tempIndexPath);
+}
 
+for (const url of routesToPrerender) {
     const { appHtml, helmet } = render(url);
 
-    const finalHtml = template
+    const currentTemplate = fs.readFileSync(tempIndexPath, 'utf-8');
+
+    const finalHtml = currentTemplate
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(`<!--helmet-tags-->`, helmet);
 
-    const filePath = `dist/static${url === '/' ? '/index' : url}.html`;
-    const absolutePath = toAbsolute(filePath);
+    const dirPath = `dist/static${url}`;
+    const absoluteDirPath = toAbsolute(dirPath);
 
-    const dir = path.dirname(absolutePath);
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(absoluteDirPath)) {
+        fs.mkdirSync(absoluteDirPath, { recursive: true });
     }
 
-    fs.writeFileSync(absolutePath, finalHtml);
-
+    const filePath = path.join(absoluteDirPath, 'index.html');
+    fs.writeFileSync(filePath, finalHtml);
     console.log('pre-rendered:', filePath);
 }
 
+const prerenderedRoot = toAbsolute('dist/static/index.html');
+const homeHtmlPath = toAbsolute('dist/static/home.html');
+
+if (fs.existsSync(prerenderedRoot)) {
+    if (routesToPrerender.includes('/home')) {
+        fs.unlinkSync(prerenderedRoot);
+    } else {
+        fs.renameSync(prerenderedRoot, homeHtmlPath);
+    }
+}
+
+if (fs.existsSync(tempIndexPath)) {
+    fs.renameSync(tempIndexPath, originalIndexPath);
+}
+
+
 console.log('Pre-rendering complete.');
+
+
+function generateSitemap() {
+    const domain = 'https://www.harvestschools.com';
+
+    const excludedRoutes = [
+        '/not-found',
+    ];
+
+    const urls = routesToPrerender
+        .filter(route => !excludedRoutes.includes(route))
+        .map(route => {
+            const url = `${domain}${route}`;
+            return `
+    <url>
+        <loc>${url}</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>${route === '/' ? '1.0' : '0.8'}</priority>
+    </url>`;
+        });
+
+    const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    ${urls.join('')}
+</urlset>`;
+
+    const sitemapPath = toAbsolute('dist/static/sitemap.xml');
+    fs.writeFileSync(sitemapPath, sitemapContent);
+    console.log('sitemap.xml generated at:', sitemapPath);
+}
+
+generateSitemap();

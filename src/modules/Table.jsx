@@ -22,6 +22,7 @@ function Table({
                    columnsToWrap,
                    allowEditEntryOption,
                    onEditEntryOption,
+                     likelyUrlColumns,
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
@@ -158,21 +159,18 @@ function Table({
         return ' ⇅';
     };
 
-    const detectLink = (text) => {
-        if (text) {
-            const linkRegex = /https?:\/\/[^\s]+?\.[a-zA-Z]{3}/g;
-            const link = text.match(linkRegex);
-            if (link) {
-                const linkText = text.replace(linkRegex, '');
-                return <p className={"table-link"} lang={"en"}
-                          onClick={() => {
-                              window.open(link + linkText, "_blank");
-                          }}
-                >{link + linkText}</p>;
-            }
+
+    const applyLikelyUrlFunction = (columnName, cellValue) => {
+        if (likelyUrlColumns && likelyUrlColumns[columnName]) {
+            return <p className={"table-link"} lang={"en"}
+                        onClick={() => {
+                            likelyUrlColumns[columnName](cellValue);
+                        }}
+                >{cellValue}</p>;
+        } else {
+            return cellValue;
         }
-        return text;
-    };
+    }
 
     const toggleColumnVisibility = (column) => {
         setHiddenColumns((prevHidden) => {
@@ -357,7 +355,7 @@ function Table({
                                                 padding: '0.5rem',
                                             }}>
                                                 <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                    {detectLink(cell)}{getSortIndicator(cellIndex)}
+                                                    {cell}{getSortIndicator(cellIndex)}
                                                 </h3>
                                                 {(filterableColumns && finalTableData[0] &&
                                                         filterableColumns.includes(finalTableData[0][cellIndex])) &&
@@ -378,7 +376,7 @@ function Table({
                                                 padding: '0.5rem',
                                             }}>
                                                 <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                    {detectLink(cell)}{getSortIndicator(cellIndex)}
+                                                    {cell}{getSortIndicator(cellIndex)}
                                                 </h2>
                                                 {(filterableColumns && finalTableData[0] &&
                                                         filterableColumns.includes(finalTableData[0][cellIndex])) &&
@@ -400,13 +398,19 @@ function Table({
                                                 className={"compact-table-cell-text"}
                                                 lang={detectLang(cell)}
                                             >
-                                                {detectLink(cell)}
+                                                {
+                                                    // detectLink(cell)
+                                                    applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
+                                                }
                                             </p>
                                         ) : (
                                             <p
                                                 lang={detectLang(cell)}
                                             >
-                                                {detectLink(cell)}
+                                                {
+                                                    // detectLink(cell)
+                                                    applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
+                                                }
                                             </p>
                                         )}
                                     </>
@@ -592,6 +596,8 @@ Table.propTypes = {
     columnsToWrap: PropTypes.arrayOf(PropTypes.string),
     allowEditEntryOption: PropTypes.bool,
     onEditEntryOption: PropTypes.func,
+    likelyUrlColumns: PropTypes.objectOf(PropTypes.func),
+
 };
 
 export default Table;
