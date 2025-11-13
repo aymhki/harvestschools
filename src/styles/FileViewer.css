@@ -1,5 +1,4 @@
 .file-viewer-page {
-    display: flex;
     min-height: calc(100vh);
     height: calc(100vh);
     width: 100%;
@@ -9,15 +8,9 @@
 }
 
 .file-viewer-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    width: 100%;
+
 }
 
-.file-viewer-header {
-    flex-shrink: 0;
-}
 
 .file-viewer-actions-wrapper {
     display: flex;
@@ -26,9 +19,7 @@
 }
 
 .file-viewer-embed-container {
-    flex: 1;
     min-height: 0;
-    display: flex;
 }
 
 .file-embed-viewer {

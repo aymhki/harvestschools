@@ -106,17 +106,16 @@ function FileViewer() {
         <div className="file-viewer-page">
             <div className={"extreme-padding-container"}>
                 <div className="file-viewer-body">
-                    <div className="file-viewer-header">
-                        <div className="file-viewer-actions-wrapper">
-                            {!error && fileBlobUrl && (
-                                <button
-                                    onClick={downloadFile}
-                                    className="file-viewer-button primary"
-                                >
-                                    Download File
-                                </button>
-                            )}
-                        </div>
+
+                    <div className="file-viewer-actions-wrapper">
+                        {!error && fileBlobUrl && (
+                            <button
+                                onClick={downloadFile}
+                                className="file-viewer-button primary"
+                            >
+                                Download File
+                            </button>
+                        )}
                     </div>
 
                     <div className="file-viewer-embed-container">
