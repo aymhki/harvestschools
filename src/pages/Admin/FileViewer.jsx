@@ -93,7 +93,7 @@ function FileViewer() {
                     </div>
                 </div>
 
-                <div className="file-viewer-content">
+                <div className="file-viewer-embed-container">
                     {error ? (
                         <div className="error-message">{error}</div>
                     ) : (
@@ -103,8 +103,7 @@ function FileViewer() {
                                     <embed
                                         src={fileBlobUrl}
                                         type="application/pdf"
-                                        width="100%"
-                                        height="100%"
+                                        className="file-embed-viewer"
                                     />
                                 ) : (
                                     <div className="download-message">
