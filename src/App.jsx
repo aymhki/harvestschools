@@ -93,7 +93,8 @@ function App() {
         '/covid-19',
         '/covid-19/covid-19-english',
         '/covid-19/covid-19-arabic',
-        '/academics/staff'
+        '/academics/staff',
+        'admin/view-file'
     ];
 
     const shouldExclude = excludePaths.includes(location.pathname);
