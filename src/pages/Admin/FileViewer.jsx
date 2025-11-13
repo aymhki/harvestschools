@@ -104,7 +104,7 @@ function FileViewer() {
 
     return (
         <div className="file-viewer-page">
-            <div className={"extreme-padding-container"}>
+            <div className={"standard-padding-container"}>
                 <div className="file-viewer-body">
 
                     <div className="file-viewer-actions-wrapper">
