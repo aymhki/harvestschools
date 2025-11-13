@@ -47,6 +47,9 @@
 
 @media (max-width: 1200px) {
 
+    .file-viewer-embed-container {
+        width: 90%;
+    }
 
     .file-embed-viewer {
 
