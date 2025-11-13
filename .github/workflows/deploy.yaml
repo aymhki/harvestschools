@@ -59,7 +59,7 @@ jobs:
 
       - name: Update index.html
         run: |
-          lftp -e "set ssl:verify-certificate no; put -O /public_html dist/index.html; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+          lftp -e "set ssl:verify-certificate no; put -O /public_html dist/static/index.html; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
 
       - name: Sync assets folder with lftp
         if: steps.check_assets_changes.outputs.assets_changed == 'true'
