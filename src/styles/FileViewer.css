@@ -26,7 +26,7 @@
 .file-viewer-embed-container {
     flex-grow: 1;
     min-height: 0;
-    width: 50%;
+    width: 80%;
 }
 
 .file-embed-viewer {
@@ -46,11 +46,10 @@
 }
 
 @media (max-width: 1200px) {
-    .file-viewer-embed-container {
-        width: 70%;
-    }
+
 
     .file-embed-viewer {
+
         height: 90vh;
     }
 }
