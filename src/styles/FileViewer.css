@@ -16,21 +16,18 @@
     margin-top: 1rem;
 }
 
+.file-viewer-embed-container {
+    flex-grow: 1;
+    overflow: hidden;
+    margin-top: 1rem;
+    padding: 1rem;
+}
+
 .file-embed-viewer {
     border: 0.3rem solid #ccc;
     border-radius: 0.5rem;
     width: 100%;
     height: 100%;
-}
-
-.file-viewer-embed-container {
-    flex-grow: 1;
-    overflow: hidden;
-    margin-top: 1rem;
-    padding: 0 1rem 1rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .error-message, .download-message {
