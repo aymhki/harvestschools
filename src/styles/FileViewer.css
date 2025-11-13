@@ -1,17 +1,17 @@
 .file-viewer-page {
     display: flex;
-    min-height: 100vh;
-    height: 100vh;
+    min-height: calc(100vh);
+    height: calc(100vh);
     width: 100%;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     flex-direction: column;
 }
 
 .file-viewer-body {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    flex: 1;
     width: 100%;
 }
 
