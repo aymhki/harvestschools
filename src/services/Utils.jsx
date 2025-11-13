@@ -778,7 +778,7 @@ const validateAdminSessionLocally = () => {
     }
 }
 
-const useFormCache = (formTitle, fields) => {
+const useFormCache = (formTitle, fields, t) => {
     const CACHE_DURATION_IN_HOURS = 4;
     const CACHE_DURATION = CACHE_DURATION_IN_HOURS * 60 * 60 * 1000;
 
@@ -816,7 +816,7 @@ const useFormCache = (formTitle, fields) => {
             }
         });
         return cachedValues;
-    }, [formTitle, fields, CACHE_DURATION]);
+    }, [formTitle, fields, CACHE_DURATION, t]);
 
     const saveToCache = useCallback((field, value) => {
         const storageKey = getStorageKey(formTitle, field.id, field.label);
