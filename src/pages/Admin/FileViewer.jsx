@@ -8,11 +8,36 @@ const EMBEDDABLE_EXTENSIONS = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'svg',
 function FileViewer() {
     const [searchParams] = useSearchParams();
 
+
+    const getMimeType = (extension) => {
+        switch (extension) {
+            case 'pdf':
+                return 'application/pdf';
+            case 'txt':
+                return 'text/plain';
+            case 'jpg':
+            case 'jpeg':
+                return 'image/jpeg';
+            case 'png':
+                return 'image/png';
+            case 'gif':
+                return 'image/gif';
+            case 'svg':
+                return 'image/svg+xml';
+            case 'webp':
+                return 'image/webp';
+            default:
+                return 'application/octet-stream';
+        }
+    };
+
+
     const [fileBlobUrl, setFileBlobUrl] = useState(null);
     const [filename, setFilename] = useState('file');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [canEmbed, setCanEmbed] = useState(false);
+    const [mimeType, setMimeType] = useState('');
 
     useEffect(() => {
         const fetchFile = async () => {
@@ -30,7 +55,7 @@ function FileViewer() {
 
                 const extension = decodedFilename.split('.').pop().toLowerCase();
                 setCanEmbed(EMBEDDABLE_EXTENSIONS.includes(extension));
-
+                setMimeType(getMimeType(extension));
             } catch (e) {
                 setFilename('download');
                 setCanEmbed(false);
@@ -102,7 +127,7 @@ function FileViewer() {
                                 {canEmbed ? (
                                     <embed
                                         src={fileBlobUrl}
-                                        type="application/pdf"
+                                        type={mimeType}
                                         className="file-embed-viewer"
                                     />
                                 ) : (
