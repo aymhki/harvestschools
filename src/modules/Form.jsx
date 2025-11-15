@@ -12,11 +12,12 @@ import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/Utils.jsx";
 import {msgTimeout} from "../services/Utils.jsx";
 import {submitFormRequest} from "../services/Utils.jsx";
+import { useTranslation } from 'react-i18next';
+
 function Form({
                   fields,
                   mailTo,
                   formTitle,
-                  lang,
                   captchaLength = 1,
                   noInputFieldsCache,
                   noCaptcha,
@@ -38,7 +39,7 @@ function Form({
                   footerButtonsSpaceBetween,
                   switchFooterButtonsOrder,
               }) {
-    
+
     const [submitting, setSubmitting] = useState(false);
     const [generalFormError, setGeneralFormError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -62,6 +63,7 @@ function Form({
     const enteredCaptcha = useRef('');
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
+    const { t } = useTranslation();
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -151,6 +153,11 @@ function Form({
     const resetFormCompletely = useCallback(() => {
         resetFormCommon(false);
     }, []);
+
+    useEffect(() => {
+        resetFormCommon(true);
+        clearCache()
+    }, [t]);
     
     const resetForm = () => {
         resetFormCompletely();
@@ -186,10 +193,18 @@ function Form({
     });
     
     const getPlaceholder = (field) =>
-        `${field.placeholder || field.label}${field.required ? '*' : ''}`;
+        `${field.placeholder || getWhichLabelToUse(field)}${field.required ? '*' : ''}`;
     
     const getLabelText = (field) =>
-        `${field.label}${field.required ? '*' : ''}`;
+        `${getWhichLabelToUse(field)}${field.required ? '*' : ''}`;
+
+    const getWhichLabelToUse = (field) => {
+        if (field.displayLabel !== undefined && field.displayLabel.length > 0) {
+            return field.displayLabel;
+        } else {
+            return field.label;
+        }
+    }
     
     const renderLabel = (field, htmlFor = field.id) => (
         <label htmlFor={htmlFor} className="form-label-outside">
@@ -351,9 +366,9 @@ function Form({
             <input
                 {...baseProps}
                 type="text"
-                placeholder={`${field.placeholder ? field.placeholder + ' (YYYY-MM-DD)' : field.label + ' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
+                placeholder={`${field.placeholder ? field.placeholder + ' (YYYY-MM-DD)' : getWhichLabelToUse(field) + ' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
                 readOnly={true}
-                onFocus={() => showSelectDateModalForField(field.id, field.label)}
+                onFocus={() => showSelectDateModalForField(field.id, getWhichLabelToUse(field))}
                 onKeyDown={handleKeyDown}
                 className={`text-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
             />
@@ -587,7 +602,7 @@ function Form({
     
     const handleDateSelection = (day, month, year) => {
         if (!day || !month || !year) {
-            setSelectedDateError(lang === 'ar' ? 'الرجاء اختيار تاريخ صحيح' : 'Please select a valid date');
+            setSelectedDateError( 'Please select a valid date');
             setTimeout(() => {
                 setSelectedDateError('');
             }, msgTimeout);
@@ -727,7 +742,7 @@ function Form({
         }
         
         if (enteredCaptcha.current && enteredCaptcha.current.value !== captchaValue && !noCaptcha) {
-            setGeneralFormError(lang === 'ar' ? 'الكود التحقق غير صحيح' : 'Captcha is incorrect');
+            setGeneralFormError(t('all-forms.captcha-error'));
             setTimeout(() => {
                 setGeneralFormError('');
             }, msgTimeout);
@@ -745,8 +760,11 @@ function Form({
                     
                     if (firstValue && secondValue) {
                         if (firstValue !== secondValue) {
-                            setGeneralFormError("Field '" + dynamicFields[i].label + "' must match field '" +
-                                dynamicFields.find(field => field.id === dynamicFields[i].mustMatchFieldWithId).label + "'");
+                            const field1 = getWhichLabelToUse(dynamicFields[i]);
+                            const field2 = getWhichLabelToUse(dynamicFields.find(field => field.id === dynamicFields[i].mustMatchFieldWithId));
+
+                            setGeneralFormError( t('all-forms.fields-must-match-error', {field1: field1, field2: field2} ) );
+
                             setTimeout(() => {
                                 setGeneralFormError('');
                             }, msgTimeout);
@@ -767,11 +785,15 @@ function Form({
                     
                     if (firstValue && secondValue) {
                         if (firstValue === secondValue) {
-                            setGeneralFormError("Field '" + dynamicFields[i].label + "' must not match field '" +
-                                dynamicFields.find(field => field.id === dynamicFields[i].mustNotMatchFieldWithId).label + "'");
+                            const field1 = getWhichLabelToUse(dynamicFields[i]);
+                            const field2 = getWhichLabelToUse(dynamicFields.find(field => field.id === dynamicFields[i].mustNotMatchFieldWithId));
+
+                            setGeneralFormError( t('all-forms.fields-must-not-match-error', {field1: field1, field2: field2} ) );
+
                             setTimeout(() => {
                                 setGeneralFormError('');
                             }, msgTimeout);
+
                             return;
                         }
                     }
@@ -827,7 +849,7 @@ function Form({
                     const result = await differentOnSubmitBehaviour(formData);
                     
                     if (result) {
-                        setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
+                        setSuccessMessage( t('all-forms.success-message'));
                         setTimeout(() => {
                             setSuccessMessage('');
                             resetFormCompletely();
@@ -835,7 +857,7 @@ function Form({
                         }, msgTimeout);
                     }
                 } catch (error) {
-                    setGeneralFormError(error.message || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.'));
+                    setGeneralFormError(error.message || ( t('all-forms.general-error')));
                     setTimeout(() => {
                         setGeneralFormError('');
                     }, msgTimeout);
@@ -850,7 +872,7 @@ function Form({
                 try {
                     const result = await submitFormRequest(formData)
                     if (result.success) {
-                        setSuccessMessage(lang === 'ar' ? 'تم الارسال بنجاح' : 'Form submitted successfully!');
+                        setSuccessMessage( t('all-forms.success-message'));
                         setTimeout(() => {
                             setSuccessMessage('');
                             if (formInModalPopup) {
@@ -860,13 +882,13 @@ function Form({
                             clearCache();
                         }, msgTimeout);
                     } else {
-                        setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : result.message || 'Form submission failed. Please try again.');
+                        setGeneralFormError( result.message || t('all-forms.general-error'));
                         setTimeout(() => {
                             setGeneralFormError('');
                         }, msgTimeout);
                     }
                 } catch (error) {
-                    setGeneralFormError(error.message || (lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : 'Form submission failed. Please try again.'));
+                    setGeneralFormError(error.message || t('all-forms.general-error'));
                     setTimeout(() => {
                         setGeneralFormError('');
                     }, msgTimeout);
@@ -877,7 +899,7 @@ function Form({
                 }
             }
         } catch (error) {
-            setGeneralFormError(lang === 'ar' ? 'فشل الارسال، حاول مره اخرى' : error || error.message + ': Form submission failed. Please try again.');
+            setGeneralFormError(error || error.message + ': ' +   t('all-forms.general-error'));
             setTimeout(() => {setGeneralFormError('');}, msgTimeout);
         } finally {
             setSubmitting(false);
@@ -982,10 +1004,7 @@ function Form({
             }
         }
     }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
-    
-    const getLocalizedText = (lang, enText, arText) => {
-        return lang === 'ar' ? arText : enText;
-    };
+
     
     const CaptchaField = () => {
         if (noCaptcha) return null;
@@ -1000,7 +1019,7 @@ function Form({
             <>
                 {!easySimpleCaptcha && (
                     <label htmlFor="captcha" className="form-label-outside">
-                        {getLocalizedText(lang, 'Captcha*', 'كود التحقق*')}
+                        { t("all-forms.captcha")}*
                     </label>
                 )}
                 <div className={captchaWrapperClass}>
@@ -1039,9 +1058,7 @@ function Form({
     
     const SubmitButton = () => {
         if (hasDifferentSubmitButtonText) {
-            const buttonText = lang === 'ar'
-                ? (submitting ? differentSubmitButtonText[3] : differentSubmitButtonText[2])
-                : (submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]);
+            const buttonText = (submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]);
             return (
                 <button type="submit" disabled={submitting} className="submit-button">
                     {buttonText}
@@ -1051,10 +1068,7 @@ function Form({
         
         return (
             <button type="submit" disabled={submitting} className="submit-button">
-                {getLocalizedText(lang,
-                    submitting ? 'Submitting...' : 'Submit',
-                    submitting ? 'جاري الارسال...' : 'ارسال'
-                )}
+                {submitting ? t('all-forms.submitting') : t('all-forms.submit')}
             </button>
         );
     };
@@ -1063,7 +1077,7 @@ function Form({
         <div className="reset-buttons-wrapper">
             {!noClearOption && (
                 <button type="reset" disabled={submitting} className="reset-button">
-                    {getLocalizedText(lang, 'Clear', 'مسح')}
+                    {t('all-forms.clear')}
                 </button>
             )}
         </div>
@@ -1158,7 +1172,10 @@ function Form({
                                 value={selectedDateYear}
                                 autoFocus={showSelectDateModal}
                             >
-                                <option value="">Year</option>
+                                <option value="">
+                                    {t('all-forms.year')}
+                                </option>
+
                                 {Array.from({length: new Date().getFullYear() - 1970 + 1}, (v, k) => k + 1970).map(year => (
                                     <option key={year} value={year}>{year}</option>
                                 ))}
@@ -1168,17 +1185,24 @@ function Form({
                                 onChange={(e) => setSelectedDateMonth(e.target.value)}
                                 value={selectedDateMonth}
                             >
-                                <option value="">Month</option>
+                                <option value="">
+                                    {t('all-forms.month')}
+                                </option>
+
                                 {Array.from({length: 12}, (v, k) => k + 1).map(month => (
                                     <option key={month} value={month}>{month}</option>
                                 ))}
+
                             </select>
                             <select
                                 className="select-form-field third-width"
                                 onChange={(e) => setSelectedDateDay(e.target.value)}
                                 value={selectedDateDay}
                             >
-                                <option value="">Day</option>
+                                <option value="">
+                                    {t('all-forms.day')}
+                                </option>
+
                                 {generateDayOptions()}
                             </select>
                         </form>
@@ -1186,14 +1210,14 @@ function Form({
                     {selectedDateError && <p className="general-form-error">{selectedDateError}</p>}
                     <div className="form-select-date-modal-footer">
                         <button className="form-select-date-modal-close-btn" onClick={closeModal}>
-                            {getLocalizedText(lang, 'Cancel', 'إلغاء')}
+                            {t('all-forms.cancel')}
                         </button>
                         <button
                             className="form-select-date-modal-confirm-btn"
                             onClick={() => handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear)}
                             type="submit"
                         >
-                            {getLocalizedText(lang, 'Confirm', 'تأكيد')}
+                            {t('all-forms.confirm')}
                         </button>
                     </div>
                 </div>
@@ -1225,6 +1249,7 @@ const fieldShape = {
     id: PropTypes.number.isRequired,
     httpName: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
+    displayLabel: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     required: PropTypes.bool.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -1243,7 +1268,7 @@ const fieldShape = {
     mustNotMatchFieldWithId: PropTypes.number,
     labelOnTop: PropTypes.bool,
     readOnlyField: PropTypes.bool,
-    defaultValue: PropTypes.string,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     minimumValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     maximumValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     rules: PropTypes.arrayOf(PropTypes.shape({
@@ -1256,7 +1281,6 @@ Form.propTypes = {
     fields: PropTypes.arrayOf(PropTypes.shape(fieldShape)).isRequired,
     mailTo: PropTypes.string.isRequired,
     formTitle: PropTypes.string.isRequired,
-    lang: PropTypes.string.isRequired,
     captchaLength: PropTypes.number,
     noInputFieldsCache: PropTypes.bool,
     noCaptcha: PropTypes.bool,

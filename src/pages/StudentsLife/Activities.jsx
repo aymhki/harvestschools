@@ -52,11 +52,12 @@ function Activities() {
             </h1>
 
             <Form sendPdf={false} mailTo={'asmaa.samir@harvestschools.com'} formTitle={'Harvest Academy Enrollment'} fields={[
-                {id: 1, type: 'text', label: 'Student Name', required: true, value: '', setValue: null, widthOfField: 3 },
-                {id: 2, type: 'tel', label: 'Contact Phone Number', required: true, value: '', setValue: null, widthOfField: 3 },
-                {id: 3, type: 'date', label: 'Date of Birth', required: true, value: '', setValue: null, widthOfField: 3, regex: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/ , errorMsg: 'Please enter a valid date in the format YYYY-MM-DD' },
-                {id: 4, type: 'select', multiple: true, label: 'Select a Sport (You can select more than one)', required: true, value: '', setValue: null, widthOfField: 1, choices: ['Swimming', 'Football (Soccer)', 'Gymnastics', 'Basketball'], labelOutside: true },
-            ]} captchaLength={1}/>
+                {id: 1, type: 'text', label: 'Student Name', httpName: 'student-name', required: true, value: '', setValue: null, widthOfField: 3 },
+                {id: 2, type: 'tel', label: 'Contact Phone Number', httpName: 'contact-phone-number', required: true, value: '', setValue: null, widthOfField: 3 },
+                {id: 3, type: 'date', label: 'Date of Birth', httpName: 'dob', required: true, value: '', setValue: null, widthOfField: 3 , errorMsg: 'Please enter a valid date in the format YYYY-MM-DD' },
+                {id: 4, type: 'select', multiple: true, label: 'Select a Sport (You can select more than one)', httpName: 'sport', required: true, value: '', setValue: null, widthOfField: 1, choices: ['Swimming', 'Football (Soccer)', 'Gymnastics', 'Basketball'], labelOutside: true, defaultValue: [] },
+
+            ]} captchaLength={1} lang={'en'}/>
 
 
         </div>

@@ -55,7 +55,7 @@
     height: 40%;
     object-fit: cover;
     min-width: 10rem;
-    filter: drop-shadow(0 0 1rem #ffffff);
+    filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     margin-bottom: 5rem;
 }
 
@@ -114,7 +114,7 @@
 .important-info-hyperlink-text {
 
     text-decoration: underline;
-    color: #1f2152;
+    color: var(--primary-color);
     cursor: pointer;
     line-height: 3;
     font-size: xx-large;
@@ -237,6 +237,6 @@
 
 @media (prefers-color-scheme: dark) {
     .important-info-hyperlink-text {
-        color: #ffffff;
+        color: var(--harvest-white-color);
     }
 }

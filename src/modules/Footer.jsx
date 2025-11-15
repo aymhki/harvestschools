@@ -1,8 +1,14 @@
 import {useEffect, useState} from "react";
 import '../styles/Footer.css';
+import {useTranslation} from "react-i18next";
 
 function Footer() {
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(true);
+    const { t, i18n } = useTranslation();
+    const currentYear = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+    })
+    .format(new Date());
 
     useEffect(() => {
         const checkWindowSize = () => {
@@ -14,6 +20,10 @@ function Footer() {
         window.addEventListener("resize", checkWindowSize);
 
         return () => window.removeEventListener("resize", checkWindowSize);
+    }, []);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
     }, []);
 
 
@@ -28,7 +38,7 @@ function Footer() {
                             <img src="/assets/images/FooterLogos/Facebook_f_logo_(2019).svg" alt="Facebook icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
-                            Facebook
+                            {t("footer.facebook")}
                         </div>
                     </div>
 
@@ -37,7 +47,7 @@ function Footer() {
                             <img src="/assets/images/FooterLogos/google_maps_icon.png" alt="Google maps Directions icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
-                            Directions
+                            {t("footer.directions")}
                         </div>
                     </div>
 
@@ -47,7 +57,7 @@ function Footer() {
                             <img src="/assets/images/FooterLogos/chat_icon.png" alt="Chat icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
-                            Chat
+                            {t("footer.chat")}
                         </div>
                     </div>
 
@@ -56,7 +66,7 @@ function Footer() {
                             <img src="/assets/images/FooterLogos/mobile_ringing_icon.png" alt="Call icon"  className="mobile-footer-action-icon"/>
                         </div>
                         <div className="mobile-footer-action-text">
-                            Call
+                            {t("footer.call")}
                         </div>
                     </div>
 
@@ -69,7 +79,9 @@ function Footer() {
                              alt='Footer social media logo' className="footer-social-media-logo"/>
                     </div>
 
-                    <div className="copy-right-text">© {new Date().getFullYear()} Harvest International Schools. All rights reserved.</div>
+                    <div className="copy-right-text">
+                        {t("footer.all-rights-reserved", { year: currentYear })}.
+                    </div>
 
                 </>
 

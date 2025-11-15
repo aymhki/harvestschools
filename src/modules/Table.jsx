@@ -30,7 +30,7 @@ function Table({
     const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
     const [columnToFilterBasedOn, setColumnToFilterBasedOn] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(true);
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
 
@@ -136,6 +136,12 @@ function Table({
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+    }, []);
+
+
 
     const requestSort = (columnIndex) => {
         let direction = 'ascending';

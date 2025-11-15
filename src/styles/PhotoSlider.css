@@ -53,24 +53,36 @@
     position: absolute;
     top: calc(50vh + 1.5rem);
     transform: translate(0, -50%);
-    box-shadow: 0 0 0.01rem #1f2152;
+    box-shadow: 0 0 0.01rem var(--primary-color);
     font-size: 3rem;
     font-weight: 10;
-    color: white;
+    color: var(--harvest-white-color);
     cursor: pointer;
     z-index: 100;
 }
 
+
+
 .left-arrow {
     left: 1.5rem;
+}
+
+.left-arrow:lang(ar) {
+    left: auto;
+    right: 1.5rem;
 }
 
 .right-arrow {
     right: 1.5rem;
 }
 
+.right-arrow:lang(ar) {
+    right: auto;
+    left: 1.5rem;
+}
+
 .photo-text {
-    color: white;
+    color: var(--harvest-white-color);
     position: absolute;
     top: 35vh;
     left: 20%;

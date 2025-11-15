@@ -81,12 +81,37 @@ import Covid19EnglishRead from './pages/FAQs/Covid19/Covid19EnglishRead';
 import Covid19ArabicRead from './pages/FAQs/Covid19/Covid19ArabicRead';
 import Covid19English from './pages/FAQs/Covid19/Covid19English';
 import Covid19Arabic from './pages/FAQs/Covid19/Covid19Arabic';
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 // Error page
 import NotFound from './pages/NotFound';
 
 function App() {
     const location = useLocation();
+    const { i18n } = useTranslation();
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const langParam = searchParams.get('lang');
+
+        if (langParam && ['en', 'ar'].includes(langParam)) {
+            if (i18n.language !== langParam) {
+                i18n.changeLanguage(langParam);
+            }
+        }
+        // else
+        // {
+        //     if (i18n.language !== 'en')
+        //     {
+        //         i18n.changeLanguage('en');
+        //     }
+        // }
+
+        document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = i18n.language;
+    }, [location.search, i18n]);
+
 
     const excludePaths = [
         '/students-life/library',

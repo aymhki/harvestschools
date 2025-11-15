@@ -7,7 +7,7 @@
     padding: 1rem 0;
     margin: 1rem 0;
     min-height: 100vh;
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 .options-grid-single, .options-grid-double, .options-grid-triple, .options-grid-quadruple {
@@ -43,7 +43,7 @@
     justify-items: center;
     will-change: filter;
     transition: filter 0.25s;
-    box-shadow: 0 0 0.5rem #1f2152;
+    box-shadow: 0 0 0.5rem var(--primary-color);
     border-radius: 1rem;
     cursor: pointer;
     height: auto;
@@ -51,7 +51,7 @@
 
 
 .options-grid-items-container:hover {
-    filter: drop-shadow(0 0 1em #1f2152);
+    filter: drop-shadow(0 0 1em var(--primary-color));
 }
 
 .options-grid-items-container img {
@@ -120,16 +120,16 @@
 @media (prefers-color-scheme: dark) {
 
     .options-grid-container {
-        color: #ffffff;
+        color: var(--harvest-white-color);
     }
 
     .options-grid-items-container {
-        color: #ffffff;
-        box-shadow: 0 0 0.5rem #ffffff;
+        color: var(--harvest-white-color);
+        box-shadow: 0 0 0.5rem var(--harvest-white-color);
     }
 
     .options-grid-items-container:hover {
-        filter: drop-shadow(0 0 1em #ffffff);
+        filter: drop-shadow(0 0 1em var(--harvest-white-color));
     }
 
 }
