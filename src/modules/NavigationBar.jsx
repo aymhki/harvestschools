@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/NavigationBar.css';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import { useSpring, animated } from 'react-spring';
 import {useNavigate} from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
-
+import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 
 const NavigationBar = () => {
     const [isMobile, setIsMobile] = useState(true);
@@ -18,13 +17,16 @@ const NavigationBar = () => {
     const [eventsOpen, setEventsOpen] = useState(false);
     const [galleryOpen, setGalleryOpen] = useState(false);
     const [moreInfoOpen, setMoreInfoOpen] = useState(false);
-    const { t } = useTranslation();
+    const [isClient, setIsClient] = useState(false);
+    const { t, i18n } = useTranslation();
 
-
+    // Set client-side flag
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
-        // document.body.classList.toggle('lock-scroll', !isOpen);
 
         if (isOpen) {
             setAcademicsOpen(false);
@@ -34,12 +36,10 @@ const NavigationBar = () => {
             setGalleryOpen(false);
             setMoreInfoOpen(false);
         }
-
     }
 
     const closeMenu = () => {
         setIsOpen(false);
-        // document.body.classList.toggle('lock-scroll', false);
         setAcademicsOpen(false);
         setAdmissionOpen(false);
         setStudentsLifeOpen(false);
@@ -48,12 +48,9 @@ const NavigationBar = () => {
         setMoreInfoOpen(false);
     }
 
-
-
     const toggleDropdown = (dropdown, setDropdown) => {
         setDropdown(!dropdown);
     }
-
 
     const handleDropdownClick = (e, mainLink) => {
         if (!e.target.closest('.dropdown-content')) {
@@ -61,14 +58,9 @@ const NavigationBar = () => {
 
             if (isMobile){
                 setIsOpen(true);
-
             }
         }
     };
-
-
-
-
 
     useEffect(() => {
         let lastWidth = window.innerWidth;
@@ -115,7 +107,7 @@ const NavigationBar = () => {
 
     const menuAnimation = useSpring({
         opacity: isOpen ? 1 : 0,
-        transform: isOpen ? 'translateX(0%)' : 'translateX(100%)',
+        transform: isOpen ? 'translateX(0%)' : i18n.language === 'ar' ? 'translateX(-100%)' : 'translateX(100%)',
         config: { tension: 170, friction: 26 }
     });
 
@@ -141,28 +133,25 @@ const NavigationBar = () => {
                 </div>
 
                 {!isMobile && (
-                        <div className={"language-switcher-desktop-container"}>
-                            <LanguageSwitcher />
-                        </div>
-                    )
+                    <div className={"language-switcher-desktop-container"}>
+                        <LanguageSwitcher />
+                    </div>
+                )
                 }
-
 
                 {isMobile && (
                     <button className={"menu-icon-container"} onClick={toggleMenu}>
-
                         <div className={isOpen ? "menu-icon open" : "menu-icon"}>
                             {isOpen ? '+' : '☰'}
                         </div>
                     </button>
                 )}
-
             </div>
+
             <animated.ul style={{
                 transform: menuAnimation.transform,
                 opacity: menuAnimation.opacity,
                 position: (isMobile) ? (isOpen ? 'absolute' : 'fixed') : 'absolute',
-
             }} className={(isMobile) ? "nav-links-mobile" : "nav-links"}>
                 <li onClick={() => {
                     (isMobile ? toggleMenu() : null);
@@ -182,7 +171,7 @@ const NavigationBar = () => {
                     <Link to="/academics" onClick={() => isMobile ? null : navigate('/academics')}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.academics")}
-                            {isMobile ? <ArrowDropDownCircleOutlinedIcon/> : ''}
+                            {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
@@ -257,7 +246,7 @@ const NavigationBar = () => {
                     <Link to="/admission" onClick={() => isMobile ? null : navigate('/admission')}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.admission")}
-                            {isMobile ? <ArrowDropDownCircleOutlinedIcon/> : ''}
+                            {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
@@ -282,7 +271,6 @@ const NavigationBar = () => {
                         }}><Link to="/admission/admission-fees">
                             {t("nav.admission-fees")}
                         </Link></li>
-
                     </ul>
                 </li>
 
@@ -294,7 +282,8 @@ const NavigationBar = () => {
                     <Link to="/students-life" onClick={() => isMobile ? null : navigate('/students-life')}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.students-life")}
-                            {isMobile ? <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
+                            {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
+                        </div>
                     </Link>
 
                     <ul className="dropdown-content" style={{display: studentsLifeOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
@@ -318,7 +307,6 @@ const NavigationBar = () => {
                         }}><Link to="/students-life/library">
                             {t("nav.library")}
                         </Link></li>
-
                     </ul>
                 </li>
 
@@ -330,7 +318,8 @@ const NavigationBar = () => {
                     <Link to="/events" onClick={() => isMobile ? null : navigate('/events')}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.events")}
-                            {isMobile ? <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
+                            {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
+                        </div>
                     </Link>
 
                     <ul className="dropdown-content" style={{display: eventsOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
@@ -368,7 +357,6 @@ const NavigationBar = () => {
                         }}><Link to="/events/booking">
                             {t("nav.booking")}
                         </Link></li>
-
                     </ul>
                 </li>
 
@@ -380,7 +368,8 @@ const NavigationBar = () => {
                     <Link to="/gallery" onClick={() => isMobile ? null : navigate('/gallery')}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.gallery")}
-                            {isMobile ? <ArrowDropDownCircleOutlinedIcon/> : ''}</div>
+                            {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
+                        </div>
                     </Link>
 
                     <ul className="dropdown-content" style={{display: galleryOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
@@ -404,10 +393,8 @@ const NavigationBar = () => {
                         }}><Link to="/gallery/360-tour">
                             {t("nav.360-tour")}
                         </Link></li>
-
                     </ul>
                 </li>
-
 
                 <li className="dropdown"
                     onClick={(e) => (isMobile ? (toggleDropdown(moreInfoOpen, setMoreInfoOpen)) : handleDropdownClick(e, '/more-info'))}
@@ -416,7 +403,7 @@ const NavigationBar = () => {
                     <Link to="/more-info" onClick={() => isMobile ? null : navigate('/more-info')}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.faqs")}
-                            {isMobile ? <ArrowDropDownCircleOutlinedIcon/> : ''}
+                            {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
@@ -443,7 +430,6 @@ const NavigationBar = () => {
                         }}><Link to="/covid-19">
                             {t("nav.covid-19-policy")}
                         </Link></li>
-
                     </ul>
                 </li>
 
@@ -454,13 +440,11 @@ const NavigationBar = () => {
                     {t("nav.vacancies")}
                 </Link></li>
 
-
                 {isMobile && (
                     <div className={"language-switcher-mobile-container"}>
                         <LanguageSwitcher />
                     </div>
                 )}
-
             </animated.ul>
         </nav>
     );
