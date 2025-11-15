@@ -1,58 +1,62 @@
 import '../../../styles/Academics.css';
 import Table from "../../../modules/Table.jsx";
 import {Helmet} from "react-helmet-async";
-
+import {useTranslation} from "react-i18next";
 
 function KindergartenStaff() {
-  return (
-    <div className="academics-kindergarten-staff-page">
-        <Helmet>
-            <title>Harvest International School | KG Staff</title>
-            <meta name="description"
-                  content="Learn more about the Kindergarten Division Staff members, teachers, coordinators, and administrative staff at Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords"
-                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
-            <meta name="author" content="Harvest International School"/>
-            <meta name="robots" content="index, follow"/>
-            <meta name="googlebot" content="index, follow"/>
-        </Helmet>
+    const { t, i18n } = useTranslation();
 
-        <div className={"extreme-padding-container"}>
+    const staffList = t('academics-pages.staff.kindergarten-staff-list', { returnObjects: true }) || [];
 
-            <p>
-                Head of Department: Ms. Shimaa Ahmed Khalil
-            </p>
+    const tableHeaders = [
+        t('academics-pages.staff.name-column-header'),
+        t('academics-pages.staff.subject-column-header'),
+        t('academics-pages.staff.title-column-header')
+    ];
 
-            <p>
-                Vice: Ms. Rana Sayed Mokhtar
-            </p>
+    const tableRows = Array.isArray(staffList) ? staffList.slice(2).map(member => [member.name, member.subject, member.title]) : [];
+    const tableData = [tableHeaders, ...tableRows];
 
-            <Table tableData={[
-                ['Name', 'Subject', 'Title'],
-                ['Rehab Abdallah Ali Abdelbaky', 'Religion', 'Teacher'],
-                ['Naglaa Fathy Gaber Aboel Magd', 'General', 'Teacher'],
-                ['May Hamdy Khalaf Abdelgawad Elsayed', 'General', 'Assistant'],
-                ['Alaa Ahmed Ibrahim Mohamed', 'General', 'Teacher'],
-                ['Asmaa Abdelrehem Mohamed Abdelrehem Mohamed', 'Arabic', 'Teacher'],
-                ['Sara Mohamed Ahmed Fatouh', 'Arabic', 'Teacher'],
-                ['Rehab Nasreldin Reteb Abdelalim', 'General', 'Teacher'],
-                ['Marwa Mostafa Abdelaziz Mahmoud Saleh', 'General', 'Teacher'],
-                ['Rana Mohamed Salah Mohamed Agamy', 'General', 'Teacher'],
-                ['Yostina Ezzat Faiz', 'General', 'Assistant'],
-                ['Bassant Hefny Fouad Hefny', 'General', 'Assistant'],
-                ['Fatma Karam Saad Ahmed Elsharkawy', 'General', 'Assistant'],
-                ['Maha Mohamed Kamal Mohamed Abdelmaksoud', 'General', 'Teacher'],
-                ['Asmaa Mohamed Abbas Aglan', 'Assistant KG1', 'Assistant']
+    const lastUpdatedDate = new Date('2021-06-20');
+    const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }).format(lastUpdatedDate);
 
-                ]} numCols={3}
-                   sortConfigParam={{column: 1, direction: 'ascending'}}/>
+    return (
+        <div className="academics-kindergarten-staff-page">
+            <Helmet>
+                <title>{t('academics-pages.staff.kindergarten-option')} | {t('nav.staff')}</title>
+                <meta name="description"
+                      content="Learn more about the Kindergarten Division Staff members, teachers, coordinators, and administrative staff at Harvest International School in Borg El Arab, Egypt."/>
+                <meta name="keywords"
+                      content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
+                <meta name="author" content="Harvest International School"/>
+                <meta name="robots" content="index, follow"/>
+                <meta name="googlebot" content="index, follow"/>
+            </Helmet>
 
-            <p>
-                This page was last updated on June 20, 2021
-            </p>
+            <div className={"extreme-padding-container"}>
+                <h1>{t('academics-pages.staff.kindergarten-staff-title')}</h1>
+
+                <p>
+                    {t('academics-pages.staff.head-of-department-feminine')}: {Array.isArray(staffList) && staffList.length > 0 ? staffList[0].name : ''}
+                </p>
+
+                <p>
+                    {t('academics-pages.staff.vice-feminine')}: {Array.isArray(staffList) && staffList.length > 1 ? staffList[1].name : ''}
+                </p>
+
+                <Table tableData={tableData} numCols={3}
+                       sortConfigParam={{column: 1, direction: 'ascending'}}/>
+
+                <p>
+                    {t('common.last-updated')} {formattedDate}
+                </p>
+            </div>
         </div>
-    </div>
-  );
+    );
 }
 
 export default KindergartenStaff;

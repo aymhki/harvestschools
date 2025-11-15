@@ -11,7 +11,7 @@
 
 .photo-slider {
     color: var(--primary-color);
-    background-color: white;
+    background-color: var(--harvest-white-color);
     border-radius: 1rem;
     column-span: 3;
     row-span: 3;
@@ -35,8 +35,8 @@
     max-width: 100%;
     width: 100%;
     object-fit: fill;
-    background-color: var(--light-accent-color);
-    color: white;
+    background-color: var(--harvest-white-color);
+    color: var(--harvest-white-color);
     border-radius: 1rem;
 }
 
@@ -110,7 +110,7 @@
     position: absolute;
     top: 15px;
     right: 35px;
-    color: white;
+    color: var(--harvest-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
@@ -121,7 +121,7 @@
     position: absolute;
     top: 50%;
     left: 1%;
-    color: white;
+    color: var(--harvest-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
@@ -132,29 +132,40 @@
     position: absolute;
     top: 50%;
     right: 1%;
-    color: white;
+    color: var(--harvest-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
     cursor: pointer;
 }
 
+.next-photo:lang(ar) {
+    right: auto;
+    left: 1%;
+}
+
+.prev-photo:lang(ar) {
+    left: auto;
+    right: 1%;
+}
+
 .photo-index {
     position: absolute;
     top: 15px;
     left: 35px;
-    color: white;
+    color: var(--harvest-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
+    direction: ltr;
 }
 
 
 @media (prefers-color-scheme: dark) {
     .photo-slider {
-        color: white;
+        color: var(--harvest-white-color);
         background-color: inherit;
-        box-shadow: 0 0 0 0.1rem white;
+        box-shadow: 0 0 0 0.1rem var(--harvest-white-color);
     }
 
 

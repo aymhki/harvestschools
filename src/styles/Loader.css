@@ -31,7 +31,7 @@
 
 .loader-line {
     fill: none;
-    stroke: var(--light-accent-color);
+    stroke: var(--harvest-white-color);
     stroke-width: 8px;
     stroke-dasharray: 70 100;
     stroke-linecap: round;

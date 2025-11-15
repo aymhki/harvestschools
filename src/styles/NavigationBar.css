@@ -117,7 +117,7 @@
     flex-direction: column;
     list-style: none;
     position: absolute;
-    background-color: var(--light-accent-color);
+    background-color: var(--harvest-white-color);
     box-shadow: 0 0.1rem 0.3rem 0 rgba(0,0,0,0.5);
     padding: 0;
     margin: 0;
@@ -130,7 +130,7 @@
 
 
 .nav-links li  {
-    color: var(--light-accent-color);
+    color: var(--harvest-white-color);
     background-color: var(--primary-color);
     font-size: x-large;
     width: calc(calc( 100% /8) + 16rem);
@@ -141,7 +141,7 @@
 }
 
 .nav-links-mobile li {
-    color: var(--light-accent-color);
+    color: var(--harvest-white-color);
     background-color: var(--primary-color);
     font-size: xxx-large;
     text-align: center;
@@ -162,7 +162,7 @@
 
 .nav-links li:hover, .dropdown-content li:hover, .nav-links-mobile li:hover {
     color: var(--primary-color);
-    background-color: var(--light-accent-color);
+    background-color: var(--harvest-white-color);
 }
 
 .nav-links li a, .dropdown-content li a, .nav-links-mobile li a {
@@ -302,11 +302,11 @@
 
     .nav-links li, .dropdown-content li, .nav-links-mobile li {
         color: var(--light-dark-accent-color);
-        background-color: var(--light-accent-color);
+        background-color: var(--harvest-white-color);
     }
 
     .nav-links li:hover, .dropdown-content li:hover, .nav-links-mobile li:hover {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
         background-color: var(--light-dark-accent-color);
     }
 
@@ -327,11 +327,11 @@
 
     .nav-links-mobile li {
         background-color: var(--light-dark-accent-color);
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     .nav-links-mobile li:hover {
-        background-color: var(--light-accent-color);
+        background-color: var(--harvest-white-color);
         color: var(--light-dark-accent-color);
     }
 

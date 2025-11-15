@@ -23,12 +23,12 @@
 
 .language-switcher .en.active, .language-switcher .ar.active {
     color: var(--primary-color);
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .language-switcher .ar.active.mobile, .language-switcher .en.active.mobile {
-    color: var(--light-accent-color);
-    text-decoration: underline;
+    color: var(--harvest-white-color);
+    text-decoration: none;
 }
 
 .language-switcher-separator {
@@ -37,17 +37,17 @@
 }
 
 .language-switcher-separator.mobile {
-    color: var(--light-accent-color);
+    color: var(--harvest-white-color);
     font-weight: normal;
 }
 
 @media (prefers-color-scheme: dark) {
     .language-switcher .en.active, .language-switcher .ar.active {
-        color: var(--light-accent-color);
-        text-decoration: underline;
+        color: var(--harvest-white-color);
+        text-decoration: none;
     }
 
     .language-switcher-separator, .language-switcher-separator.mobile {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 }

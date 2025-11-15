@@ -37,6 +37,13 @@
     "check-status": "Check Status",
     "schooleverywhere": "SchoolEverywhere"
   },
+  "footer": {
+    "all-rights-reserved" : "All rights reserved. © Harvest International Schools {{year}}",
+    "facebook": "Facebook",
+    "directions": "Directions",
+    "chat": "Chat",
+    "call": "Call"
+  },
   "home": {
     "our-vision": "Our Vision",
     "our-mission": "Our Mission",
@@ -68,9 +75,10 @@
   "common": {
     "learn-more": "Learn More",
     "explore": "Explore",
-    "read-mode": "Read More",
     "contact-us": "Contact Us",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "this-page-is-under-construction": "This page is under construction.",
+    "last-updated": "This page was last updated on"
   },
   "all-forms": {
     "submit": "Submit",
@@ -88,5 +96,467 @@
     "fields-must-match-error": "Field '{{field1}}' must match '{{field2}}'",
     "success-message": "Form submitted successfully!"
 
+  },
+  "academics-pages": {
+    "national-section": "National",
+    "british-section": "British",
+    "american-section": "American",
+    "national-description": "Information about the national curriculum.",
+    "british-description": "Information about the British curriculum.",
+    "american-description": "Information about the American curriculum.",
+    "partners-description": "Information about our partners.",
+    "staff-description": "Information about our staff.",
+    "facilities-description": "Information about our facilities.",
+    "web-mail-description": "Access your Harvest Schools email.",
+    "admin-login-description": "Web app administration portal.",
+    "national": {
+      "harvest-language-schools": "Harvest Language Schools",
+      "safe-environment": "Safe Environment",
+      "preparation-to-the-new-academic-year": "Preparation to the New Academic Year",
+      "science-labs": "Science Labs",
+      "new-english-syllabus": "New English Syllabus",
+      "new-science-syllabus": "New Science Syllabus",
+      "extra-worksheets": "Extra Worksheets",
+      "quran-syllabus": "Quran Syllabus",
+      "math-junior-one": "Math (Junior 1)",
+      "english-junior-one": "English (Junior 1)",
+      "english-junior-six": "English (Junior 6)",
+      "french-junior-one": "French (Junior 1)",
+      "science-middle-two": "Science (Middle 2)",
+      "arabic-junior-one": "Arabic (Junior 1)",
+      "precautions-for-covid-19": "Precautions for Covid-19",
+      "precautions-for-covid-19-description": "Follow our guide for a safe environment during school day",
+      "break-times-table": {
+        "grade": "Grade",
+        "break-time": "Break Time",
+        "junior-one": "Junior 1",
+        "junior-two-and-five": "Junior 2 & 5",
+        "junior-three-and-middle-grades-and-senior-grades": "Junior 3, Middle 1, 2, 3 & Senior 1, 2, 3",
+        "junior-four-and-six": "Junior 4 & 6",
+        "from-nine-twenty-am-to-ten-o-clock-am": "From 9:20 AM to 10:00 AM",
+        "from-ten-o-clock-am-to-ten-forty-am": "From 10:00 AM to 10:40 AM",
+        "from-ten-forty-am-to-eleven-twenty-am": "From 10:40 AM to 11:20 AM",
+        "from-eleven-twenty-am-to-twelve-o-clock-pm": "From 11:20 AM to 12:00 PM"
+      }
+
+    },
+    "british": {},
+    "american": {
+      "dear-harvest-international-school-families": "Dear Harvest International School Families",
+      "quote-by-ms-salma-ehab-american-school-principal": "- Ms. Salma Ehab, American School Principal",
+
+      "welcome-paragraph": "Welcome to our Harvest International School Website! We hope you will find the information you're looking for on this page. We also have an active HIS Facebook page account where you will find information, updates, and all of the fun and exciting things going on at HIS.",
+
+      "principal-introduction": "HIS is a special place with warm and friendly teachers, students, parents, and staff, and I am grateful for the opportunity to be your principal. I believe in working collaboratively with staff, students, parents, and community partners in order to continue the success. Through this collaboration, I believe we will keep moving our students and school forward, as we navigate our way through this ever changing world.",
+
+      "upper-school-description": "In the Upper School, students take great pride in challenging themselves and supporting one another academically while also developing and deepening their values and interests in and beyond the classroom.",
+
+      "curriculum-standards": "Harvest International School provides a high quality, rigorous, and student centered curriculum, which is aligned with Common Core State Standards (CCSS) and Next Generation Science Standards (NGSS) learning standards. It is our goal that every learner feels happy, safe, accepted and valued while receiving a quality education.",
+
+      "values-and-goals": "It is our aim to remain focused on Egyptian values while equipping our students with both a passion for learning and the ambition to make a difference to the local and global communities.",
+
+      "community-description": "Our school is made up of outstanding students across all grades. Our faculty and staff are dedicated, caring professionals, who love and support one another as both, friends and colleagues. HIS is also very lucky to have a group of parents who are an open, approachable, creative, dedicated, and committed to working together toward the success of their children at HIS.",
+
+      "lower-middle-school-description": "Students in our Lower School enjoy an environment in which they are encouraged by their teachers to explore new academic and social frontiers in a safe environment. Middle School students gain healthy confidence and character as they boldly expand their learning with elective courses in preparation for the Upper School."
+    },
+    "partners": {
+      "schooleverywhere-title": "About SchoolEveryWhere",
+      "schooleverywhere-description": "SchoolEveryWhere is a comprehensive, massive web-based school management system designed to streamline the administration and daily operations of educational institutions, particularly those tackling multi-education systems like American, British, or National curricula, by centralizing all data and automating routine functions. This platform encompasses a wide array of core features, including online admissions, real-time attendance tracking, advanced Time Table Management, automated Grade Book and mark-sheet generation, and robust Financial and Fee Management with online payment integration. Furthermore, it enhances community engagement by providing secure, separate portals for administrators, teachers, students, and parents, facilitating instant communication via SMS and alerts. The system has established a significant presence in Egypt for over 10 years, successfully supporting the operational needs of more than 20 schools across the country, aiming to revolutionize efficient school management by connecting all key stakeholders and providing valuable operational insights through extensive reports.",
+      "ucmas-title": "About UCMAS",
+      "ucmas-description": "Universal Concept of Mental Arithmetic System (UCMAS) is a globally recognized, scientifically-proven child development program designed for children aged 4 to 13 years, when brain development is at its peak. Since 1993, UCMAS has transformed the lives of over 3 million children across more than 80 countries worldwide through 5,000+ centers. At Harvest International School, we proudly offer UCMAS as an enrichment program to develop our students' cognitive abilities far beyond traditional mathematics education. The program uses the abacus, an ancient Chinese calculating tool, to develop extraordinary mental arithmetic capabilities. Children begin by learning to manipulate the abacus beads with both hands, which activates both hemispheres of the brain simultaneously—the left logical hemisphere for mathematical formulas and sequencing, and the right creative hemisphere for visualization and spatial memory. Through systematic training, students progress from physical abacus use to visualizing a mental abacus, storing over 450,000 abacus images in their minds by program completion. This visualization technique enables students to perform complex calculations—including multi-digit addition, subtraction, multiplication, and division—faster than calculators, often solving 10-digit arithmetic problems in seconds. The benefits of UCMAS extend far beyond mathematical ability. The program significantly enhances Concentration, as children learn to focus on multiple simultaneous processes while filtering out distractions. Observation skills are sharpened through rapid flashcard training, teaching students to capture information at a glance. Listening abilities improve through high-speed oral arithmetic exercises. Visualization and Imagination are developed as students create and manipulate mental images of the abacus. Memory, particularly photographic memory, is strengthened as children memorize bead patterns and momentarily retain each calculation image before producing answers. Speed and Accuracy improve as students are progressively challenged to deliver precise results in decreasing time intervals. Creativity flourishes as right-brain activation facilitates innovative thinking and problem-solving. Self-Confidence grows through continuous positive feedback from parents, teachers, and peers, as well as through participation in competitions and public demonstrations of their abilities. The program's impact is supported by research from Harvard University and has received ISO 9001:2008 certification, making UCMAS the first organization in the mental arithmetic industry to achieve this distinction. Students receive systematic training through professionally curated courses with daily 15-20 minute practice assignments that develop strong work habits and discipline. At Harvest International School, UCMAS students consistently demonstrate superior academic performance, enhanced learning abilities across all subjects, and increased confidence in tackling challenging problems—skills that prepare them for success not just in mathematics, but in all areas of life and future careers."
+    },
+    "staff": {
+      "national-option": "National",
+      "british-option": "British",
+      "american-option": "American",
+      "kindergarten-option": "KG",
+      "national-staff-title": "National",
+      "british-staff-title": "British",
+      "american-staff-title": "American",
+      "kindergarten-staff-title": "KG",
+      "head-of-department": "Head of Department",
+      "vice": "Vice",
+      "head-of-department-feminine": "Head of Department",
+      "vice-feminine": "Vice",
+      "name-column-header": "Name",
+      "subject-column-header": "Subject",
+      "title-column-header": "Title",
+      "teacher-title": "Teacher",
+      "coordinator-title": "Coordinator",
+      "assistant-title": "Assistant",
+      "american-staff-list": [
+        { "name": "Ms. Salma Ehab", "subject": "N/A", "title": "Head of Department" },
+        { "name": "Amany Yakout", "subject": "P.E.", "title": "Teacher" },
+        { "name": "Heba Moustafa", "subject": "Art", "title": "Coordinator" },
+        { "name": "Bassma Ossama", "subject": "National Studies", "title": "Teacher" },
+        { "name": "Beshoy Saad", "subject": "National Studies", "title": "Coordinator" },
+        { "name": "Bassma Ossama", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Mayada Ossama", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Hend Abdel Fattah", "subject": "Arabic & Religion", "title": "Coordinator" },
+        { "name": "Hadeel EL Hagan", "subject": "Science", "title": "Teacher" },
+        { "name": "Hanan ElAbd", "subject": "Science", "title": "Coordinator" },
+        { "name": "Marwa Moustafa", "subject": "Mathematics", "title": "Teacher" },
+        { "name": "Mennah Abady", "subject": "Mathematics", "title": "Teacher" },
+        { "name": "Abdelrahman ElShami", "subject": "Mathematics", "title": "Coordinator" },
+        { "name": "Mashaer Mohamed", "subject": "English & Social Studies", "title": "Teacher" },
+        { "name": "Walaa Gharib", "subject": "English & Social Studies", "title": "Teacher" },
+        { "name": "Ghada Said", "subject": "English & Social Studies", "title": "Coordinator" }
+      ],
+      "british-staff-list": [
+        { "name": "Ms. Amal El Malt", "subject": "N/A", "title": "Head of Department" },
+        { "name": "Amany Yakout", "subject": "P.E.", "title": "Teacher" },
+        { "name": "Sabah", "subject": "Computer", "title": "Coordinator" },
+        { "name": "Heba Moustafa", "subject": "Art", "title": "Coordinator" },
+        { "name": "Beshoy", "subject": "National Studies", "title": "Coordinator" },
+        { "name": "Ahmed Hassan", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Nourhan", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Rowan", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Hanna Abdallah", "subject": "Arabic & Religion", "title": "Coordinator" },
+        { "name": "Sara Abdelfatah", "subject": "Science", "title": "Teacher" },
+        { "name": "Soha", "subject": "Science", "title": "Teacher" },
+        { "name": "Marwa Adel", "subject": "Science", "title": "Coordinator" },
+        { "name": "Salma Ramadan", "subject": "Mathematics", "title": "Teacher" },
+        { "name": "Dalia Essam", "subject": "Mathematics", "title": "Coordinator" },
+        { "name": "Yasmine Ashraf", "subject": "English", "title": "Teacher" },
+        { "name": "Fatima", "subject": "English", "title": "Teacher" },
+        { "name": "Cherihanne", "subject": "English", "title": "Teacher" },
+        { "name": "Mariam", "subject": "English", "title": "Teacher" },
+        { "name": "Eman", "subject": "English", "title": "Teacher" },
+        { "name": "Ayat Ashraf", "subject": "English", "title": "Teacher" },
+        { "name": "Rana Gamal", "subject": "English", "title": "Teacher" },
+        { "name": "Yasmine Alaa", "subject": "English", "title": "Coordinator" },
+        { "name": "Dina Yousry", "subject": "ICT & Computer Science", "title": "Coordinator" },
+        { "name": "Ghada Labeeb", "subject": "Physics", "title": "Coordinator" },
+        { "name": "Dr. Shereen Abo Hasheesh", "subject": "Chemistry", "title": "Coordinator" },
+        { "name": "Eman Abas", "subject": "Mathematics", "title": "Coordinator" },
+        { "name": "Dr. Zeinab El Shazly", "subject": "Mathematics", "title": "Coordinator" },
+        { "name": "Ghadeer Raslan", "subject": "English", "title": "Coordinator" }
+      ],
+      "kindergarten-staff-list": [
+        { "name": "Ms. Shimaa Ahmed Khalil", "subject": "N/A", "title": "Head of Department" },
+        { "name": "Ms. Rana Sayed Mokhtar", "subject": "N/A", "title": "Vice" },
+        { "name": "Rehab Abdallah Ali Abdelbaky", "subject": "Religion", "title": "Teacher" },
+        { "name": "Naglaa Fathy Gaber Aboel Magd", "subject": "General", "title": "Teacher" },
+        { "name": "May Hamdy Khalaf Abdelgawad Elsayed", "subject": "General", "title": "Assistant" },
+        { "name": "Alaa Ahmed Ibrahim Mohamed", "subject": "General", "title": "Teacher" },
+        { "name": "Asmaa Abdelrehem Mohamed Abdelrehem Mohamed", "subject": "Arabic", "title": "Teacher" },
+        { "name": "Sara Mohamed Ahmed Fatouh", "subject": "Arabic", "title": "Teacher" },
+        { "name": "Rehab Nasreldin Reteb Abdelalim", "subject": "General", "title": "Teacher" },
+        { "name": "Marwa Mostafa Abdelaziz Mahmoud Saleh", "subject": "General", "title": "Teacher" },
+        { "name": "Rana Mohamed Salah Mohamed Agamy", "subject": "General", "title": "Teacher" },
+        { "name": "Yostina Ezzat Faiz", "subject": "General", "title": "Assistant" },
+        { "name": "Bassant Hefny Fouad Hefny", "subject": "General", "title": "Assistant" },
+        { "name": "Fatma Karam Saad Ahmed Elsharkawy", "subject": "General", "title": "Assistant" },
+        { "name": "Maha Mohamed Kamal Mohamed Abdelmaksoud", "subject": "General", "title": "Teacher" },
+        { "name": "Asmaa Mohamed Abbas Aglan", "subject": "Assistant KG1", "title": "Assistant" }
+      ],
+      "national-staff-list": [
+        { "name": "Mr. Islam Ali Farag Ali", "subject": "N/A", "title": "Head of Department" },
+        { "name": "Ms. Sara Ahmed Abd El Monim", "subject": "French", "title": "Vice" },
+        { "name": "Sondos Ahmed Abdelhafiz Ahmed", "subject": "Art", "title": "Teacher" },
+        { "name": "Hamed Soliman Mohamed Aly Mokkadam", "subject": "P.E.", "title": "Teacher" },
+        { "name": "Dina Magdy Abdel Aziz Ghanem Saad", "subject": "P.E.", "title": "Teacher" },
+        { "name": "Nada Gamal Mostafa Hassan Hassanin", "subject": "Art", "title": "Teacher" },
+        { "name": "Nourhan Tarek Elsayed Ali Elsayed", "subject": "Maths", "title": "Teacher" },
+        { "name": "Nesreen Nabil Mohamed Ahmed Elzahar", "subject": "Maths", "title": "Teacher" },
+        { "name": "Sherine Mamdouh Abdelazim Elshamy", "subject": "Maths", "title": "Teacher" },
+        { "name": "Bakinaz Farouk Mohamed Gad Elgahamry", "subject": "Maths", "title": "Teacher" },
+        { "name": "Nasra Abdelkhalek Kamal Seyam", "subject": "Maths", "title": "Teacher" },
+        { "name": "Lojaina Mamdouh Tawfik Morsy Darwish", "subject": "French", "title": "Teacher" },
+        { "name": "Abla Abdelmohsen Abdelfattah Salem Barakat", "subject": "French", "title": "Teacher" },
+        { "name": "Nevein Hussein Mohamed Bassyouny", "subject": "French", "title": "Teacher" },
+        { "name": "Salma Al Hussein Mohamed", "subject": "Science", "title": "Teacher" },
+        { "name": "Basma Mahmoud Mosaad Ramadan Soliman", "subject": "Science, Physics, Chemistry", "title": "Teacher" },
+        { "name": "Amany Hesham Mostafa Aly Elhamshary", "subject": "Science", "title": "Teacher" },
+        { "name": "Nesreen Mohamed Ameen", "subject": "English", "title": "Teacher" },
+        { "name": "Alaa Ahmed Mokhtar Mohamed Mohamed", "subject": "English", "title": "Teacher" },
+        { "name": "Ayatallah Ahmed Abdelgawad Mohamed", "subject": "English", "title": "Teacher" },
+        { "name": "Mohamed Salah Abdelhamid Metwaly Shahen", "subject": "English", "title": "Teacher" },
+        { "name": "Amal Tarek Ahmed Ibrahim", "subject": "English", "title": "Teacher" },
+        { "name": "Hagar Mahmoud Mohamed Abdelfattah Kenawy", "subject": "English", "title": "Teacher" },
+        { "name": "Ahmed Adly Mohamed Mohamed Seyam", "subject": "English", "title": "Teacher" },
+        { "name": "Ghada Mahroos Ibrahim", "subject": "English", "title": "Teacher" },
+        { "name": "Amal Kamel Hassan Mohamed", "subject": "Social Studies", "title": "Teacher" },
+        { "name": "Laila Mohamed Saad Abelhamid Khodier", "subject": "Psychology", "title": "Teacher" },
+        { "name": "Marina Maged Saied Youssef Saied", "subject": "Christianity & Social Studies", "title": "Teacher" },
+        { "name": "Hebatallah Ahmed Abdelsalam Ahmed", "subject": "Religion", "title": "Teacher" },
+        { "name": "Samar Mahrous Ibrahim Ali Masoud", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Asmaa Magdy Ahmed Badr", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Samya Adel Metwally Abdel Mohsen", "subject": "Arabic & Religion", "title": "Teacher" },
+        { "name": "Sarah Hamdy Hamed Ahmed", "subject": "Arabic & Religion", "title": "Teacher" }
+      ]
+    },
+
+    "facilities": {
+        "pageTitle": "Facilities",
+        "imageAlts": [
+          "Handball Field",
+          "Football Field",
+          "Library",
+          "Gym",
+          "Basketball Field",
+          "Biology Lab",
+          "Chemistry Lab",
+          "Playground",
+          "Handball Field",
+          "Basketball Field",
+          "Physics Lab",
+          "Gym"
+        ],
+        "computerLab": {
+          "title": "Computer Lab Policy",
+          "intro": "Students are required to:",
+          "rules": [
+            "Can’t use computer labs except for computer lessons.",
+            "Avoid touching or handle any equipment –especially the computer screen- until they receive instructions.",
+            "Touch the keyboard lightly.",
+            "Put all materials and garbage in appropriate containers.",
+            "Avoid bringing food or other banned items into the computer.",
+            "Raise hands if they need help and wait patiently and quietly for help.",
+            "Respect the rights and belongings of classmates.",
+            "Avoid abusing the hardware, in case of any problem with hardware or software, they tell the instructor who will contact the computer lab technician.",
+            "Close all programs before leaving the lab.",
+            "Leave their places clean."
+          ],
+          "responsibilitiesIntro": "Students are responsible for all actions done on their computers:",
+          "responsibilities": [
+            "Log only onto their own user accounts.",
+            "Protect and remember their passwords.",
+            "Safeguard their computers and save all their work.",
+            "Log off their computer accounts when they are finished.",
+            "Students will be charged a fine for any damage they cause to any equipment or materials in the computer lab."
+          ]
+        },
+        "library": {
+          "title": "Library",
+          "lessons": "Library Lessons: We have weekly Library lessons schedule for both English & Arabic languages.",
+          "circulationTitle": "Circulation Policy:",
+          "rules": [
+            "Students may have (2) items checked-out under their names at a time.",
+            "Most books circulate for two weeks.",
+            "The books must be returned to the library in the same condition they were borrowed.",
+            "If damaged in any way, i.e., covers, pages damaged by having pictures cut out, or writing in the book, a student has to pay the replacement cost of the book.",
+            "Please place books in the book drop at the circulation desk.",
+            "No eating, drinking, chewing gum, etc., is allowed.",
+            "Proper respect toward other people, teachers, the books and other materials must be maintained at all times while in the Library.",
+            "The noise level in the library should not rise above a whisper."
+          ]
+        },
+        "canteen": {
+          "title": "School Canteen",
+          "intro": "Our school provides a variety of nutritious foods and beverages to students and staff that enables them to make healthy food choicesAll nutritious food choices are displayed on front shelves and in an area that students and staff can easily see.",
+          "policyTitle": "Policy:",
+          "rules": [
+            "Students are allowed to buy from the school canteen during break time only, except water is allowed at any time but with permission.",
+            "Students should line up when buying from the school canteen.",
+            "Students should throw litters in the litter baskets, not on the floor.",
+            "It is forbidden to take drinks in any glass, or metal containers; only disposable plastic or paper cups and containers are allowed.",
+            "Teachers on duty have to watch over these rules."
+          ]
+        },
+        "smartClasses": {
+          "title": "Smart Classes",
+          "description": "Smart classes are available in KG Department and Elementary schools We all know how helpful it is to remember something that is taught visually to us rather than the one that is read through pages after pages."
+        },
+        "sports": {
+          "title": "Sports",
+          "intro": "Physical Education in schools concerns the involvement of children in fitness , activities, sports, Health Education, and gymnastics . All are designed to encourage a healthier, more enjoyable lifestyle.Through all the sports facilities, its apparatus and equipment, HIS offers excellent conditions for practicing physical sports, going all out to meet the needs of each user, thus increasing the number and quality of the available sports.",
+          "gymTitle": "Gym:",
+          "gymList": [
+            "Aerobics",
+            "Gymnastic"
+          ],
+          "outdoorCourtsTitle": "Outdoor Courts:",
+          "outdoorCourtsList": [
+            "Football Court",
+            "Volleyball",
+            "Basketball",
+            "Handball"
+          ],
+          "gymnasiumsTitle": "Gymnasiums:",
+          "gymRulesIntro": "Please follow the below rules:",
+          "gymRules": [
+            "No running or ball playing in the GYM.",
+            "The hall and gym must be kept neat and clean.",
+            "No gum chewing, candy, foods, seeds, or drink in the gym before, during or after school.",
+            "Only sneakers are allowed on the GYM floor. They must be laced all the way and tied securely before entering the GYM.",
+            "Do not leave the GYM without permission.",
+            "Your cooperation is greatly appreciated."
+          ],
+          "swimmingPoolTitle": "Swimming Pool:",
+          "swimmingPoolRules": [
+            "Student may not be allowed to enter the swimming pool if he/she has suffered from any communicable diseases.",
+            "No one shall enter a swimming pool without first having passed through a shower bath and foot bath.",
+            "Swimmers must wear proper swimming suits when entering the pool.",
+            "Slippers must be thoroughly cleaned when entering pool areas.",
+            "Swimmers must follow the instructions of the venue in-charge or life guards on duty."
+          ]
+        }
+      }
+
+  },
+  "admin": {
+    "login-page": {
+      "title": "Admin Login",
+      "login-btn": "Login",
+      "logging-in-btn": "Logging in...",
+      "username-field": "Username",
+      "password-field": "Password"
+
+    }
+  },
+  "admission-pages": {
+    "options-page" : {
+      "admission-title": "Admission",
+      "admission-process-option": "Admission Process",
+      "admission-process-option-description": "How to apply? Where to apply? What should you do before and after you apply?",
+      "admission-requirements-option": "Admission Requirements",
+      "admission-requirements-option-description": "What are the required documents? What are the age requirements?",
+      "admission-fees-option": "Admission Fees",
+      "admission-fees-option-description": "How much are the tuition fees for each grade? What are the payment methods? Are there any discounts?"
+    },
+    "admission-process-page": {
+      "fill-an-application": "Fill An Application",
+      "fill-an-application-description": "You can apply online by clicking the button below, or visit the schools reception to fill the application in person.",
+      "attend-your-interview": "Attend Your Interview",
+      "attend-your-interview-description": "we will directly review your application and book an appointment for the interview with both the parents and the students. Interviews with students could involve entry level tests according to the educational stage of the student and his/her origin school.",
+      "follow-up": "Follow Up",
+      "follow-up-description": "After the interview, the students affairs department will get in touch with the accepted applicants to start the registration process, which include providing the required documents and paying the tuition fees.",
+      "required-documents-btn": "Required Documents",
+      "admission-fees-btn": "Admission Fees"
+    },
+    "admission-requirements-page": {
+      "options-page": {
+        "inside-egypt-option": "Inside Egypt",
+        "inside-egypt-option-description": "Information about admission requirements for students inside Egypt",
+        "outside-egypt-option": "Outside Egypt",
+        "outside-egypt-option-description": "Information about admission requirements for students outside Egypt",
+        "outside-egypt-foreigners-option": "Outside Egypt - Foreigners",
+        "outside-egypt-foreigners-option-description": "Information about admission requirements for foreign students outside Egypt",
+        "admission-requirements-title": "Admission Requirements"
+      },
+      "common": {
+        "admission-requirements-note": "Admission Requirements Note"
+      },
+      "inside-egypt-page": {
+        "admission-requirements-note-list": [
+          "After passing the entry tests, the following documents will be requested for the registration process.",
+          "The National and the International Departments request the same documents. However, students applying for the International department in upper stages should provide educational Sequence certificates",
+          "Online transfer is a process done by the School students originally came from"
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "From KG 1",
+          "from-kg-1-requirements-list": [
+            "Original Birth Certificate",
+            "6 Personal ID Photos",
+            "2 Copies From Parents ID Cards"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+          "from-kg-2-to-junior-6-title": "From KG 2 to Junior 6",
+          "from-kg-2-to-junior-6-requirements-list": [
+            "Old School transfer form & new Stage form",
+            "Student File",
+            "Online Transfer"
+          ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+          "from-preparatory-1-to-preparatory-3-title": "From Preparatory 1 to Preparatory 3",
+          "from-preparatory-1-to-preparatory-3-requirements-list": [
+              "Old School transfer form & new Stage form",
+              "Grade 6 Certificate",
+              "Student File",
+              "Online Transfer"
+          ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+          "from-senior-1-to-senior-3-title": "From Senior 1 to Senior 3",
+          "from-senior-1-to-senior-3-requirements-list": [
+              "Old School transfer form and new Stage form",
+              "Grade 6 Certificate & Preparatory Certificate",
+              "Student File",
+              "Online Transfer"
+          ]
+        }
+      },
+      "outside-egypt-page": {
+        "admission-requirements-note-list": [
+          "After passing the entry tests, the following documents will be requested for the registration process.",
+          "The National and the International Departments request the same documents. However, students applying for the International department in upper stages should provide educational Sequence certificates stamped by the Egyptian Ministry of Foreign Affairs.",
+          "After taking official acceptance from the student affairs department parents should fill the \"Returning/Coming to Egypt Form\" from the Egyptian Ministry of Foreign Affairs. This form requires 2 personal photos and a certificate of the last stage the student passed."
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "From KG 1",
+          "from-kg-1-requirements-list": [
+            "Original Birth Certificate",
+            "6 Personal ID Photos",
+            "2 Copies From Parents ID Cards"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+            "from-kg-2-to-junior-6-title": "From KG 2 to Junior 6",
+            "from-kg-2-to-junior-6-requirements-list": [
+              "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+              "Student File"
+            ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+            "from-preparatory-1-to-preparatory-3-title": "From Preparatory 1 to Preparatory 3",
+            "from-preparatory-1-to-preparatory-3-requirements-list": [
+              "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+              "Grade 6 Certificate",
+              "Student File"
+            ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+            "from-senior-1-to-senior-3-title": "From Senior 1 to Senior 3",
+            "from-senior-1-to-senior-3-requirements-list": [
+              "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+              "Grade 6 Certificate & Preparatory Certificate",
+              "Student File"
+            ]
+        }
+      },
+      "outside-egypt-foreigners-page": {
+        "admission-requirements-note-list": [
+          "After passing the entry tests, the following documents will be requested for the registration process.",
+          "The National and the International departments request the same documents. However, students applying for International departments in upper stages should provide educational sequence certificates stamped by the Egyptian Ministry of Foreign Affairs.",
+          "After taking official acceptance from the student affairs department parents should fill the \"Returning/Coming to Egypt Form\" from the Egyptian Ministry of Foreign Affairs. This form requires 2 personal photos and a certificate of the last stage the student passed.",
+          "Parents should provide recent passports and personal ID's for the students affairs department."
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "From KG 1",
+          "from-kg-1-requirements-list": [
+            "Original Birth Certificate",
+            "6 Personal ID Photos",
+            "2 Copies From Parent ID Cards"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+            "from-kg-2-to-junior-6-title": "From KG 2 to Junior 6",
+            "from-kg-2-to-junior-6-requirements-list": [
+              "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+              "Student File"
+            ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+            "from-preparatory-1-to-preparatory-3-title": "From Preparatory 1 to Preparatory 3",
+            "from-preparatory-1-to-preparatory-3-requirements-list": [
+              "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+              "Grade 6 Certificate",
+              "Student File"
+            ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+            "from-senior-1-to-senior-3-title": "From Senior 1 to Senior 3",
+            "from-senior-1-to-senior-3-requirements-list": [
+              "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+              "Grade 6 Certificate & Preparatory Certificate",
+              "Student File"
+            ]
+        }
+      }
+    },
+    "admission-fees-page": {}
   }
 }

@@ -7,11 +7,11 @@ const LanguageSwitcher = () => {
     const { i18n } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(true);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
+            setIsMobile(window.innerWidth < 768);
         }
 
         handleResize();
@@ -23,6 +23,10 @@ const LanguageSwitcher = () => {
         }
 
     }, []);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+    }, [])
 
     const changeLanguage = (lng) => {
         i18n.changeLanguage(lng);

@@ -120,16 +120,16 @@
 @media (prefers-color-scheme: dark) {
 
     .options-grid-container {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     .options-grid-items-container {
-        color: var(--light-accent-color);
-        box-shadow: 0 0 0.5rem var(--light-accent-color);
+        color: var(--harvest-white-color);
+        box-shadow: 0 0 0.5rem var(--harvest-white-color);
     }
 
     .options-grid-items-container:hover {
-        filter: drop-shadow(0 0 1em var(--light-accent-color));
+        filter: drop-shadow(0 0 1em var(--harvest-white-color));
     }
 
 }

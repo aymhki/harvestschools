@@ -55,7 +55,7 @@
     height: 40%;
     object-fit: cover;
     min-width: 10rem;
-    filter: drop-shadow(0 0 1rem var(--light-accent-color));
+    filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     margin-bottom: 5rem;
 }
 
@@ -237,6 +237,6 @@
 
 @media (prefers-color-scheme: dark) {
     .important-info-hyperlink-text {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 }

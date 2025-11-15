@@ -40,7 +40,8 @@ const ENDPOINTS = {
     submitJobApplication: '/scripts/submitJobApplication.php',
     getJobApplications: '/scripts/getJobApplications.php',
     updateBookingExtras: '/scripts/submitUpdateBookingExtras.php',
-    getBookingConfirmation: '/scripts/getBookingConfirmation.php'
+    getBookingConfirmation: '/scripts/getBookingConfirmation.php',
+    serveJobApplicationFile: '/scripts/serveJobApplicationFile.php?file='
 };
 
 const generateEndpoints = () => {
@@ -633,6 +634,48 @@ const checkBookingSession = async (navigate) => {
     } catch (error) {
         console.log(error.message);
     }
+}
+
+const serveJobApplicationFile = async (searchParams, setIsLoading, setError, setCanEmbed, setMimeType, setFilename, setFileBlobUrl) => {
+    const filePath = searchParams.get('file');
+
+    if (!filePath) {
+        setError('No file was specified.');
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+        const decodedFilename = decodeURIComponent(filePath.split('/').pop());
+        setFilename(decodedFilename);
+        const extension = decodedFilename.split('.').pop().toLowerCase();
+        setCanEmbed(EMBEDDABLE_EXTENSIONS.includes(extension));
+        setMimeType(getMimeType(extension));
+    } catch (e) {
+        setFilename('download');
+        setCanEmbed(false);
+    }
+
+    try {
+        const response = await fetch(`${endpoints.serveJobApplicationFile}${filePath}`, {credentials: 'include'});
+
+        const result = await response.json();
+
+        if (result && !result.success) {
+            const errorText = await result.message;
+            setError((errorText || "Unclear Error - Status:") + ` ${result.code}`);
+        } else {
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            setFileBlobUrl(blobUrl);
+        }
+
+    } catch (error) {
+        setError(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+
 }
 
 const headToBookingLoginOnInvalidSession = async (navigate, setIsLoading) => {
@@ -1284,6 +1327,31 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
     }
 };
 
+const EMBEDDABLE_EXTENSIONS = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
+
+const getMimeType = (extension) => {
+    switch (extension) {
+        case 'pdf':
+            return 'application/pdf';
+        case 'txt':
+            return 'text/plain';
+        case 'jpg':
+        case 'jpeg':
+            return 'image/jpeg';
+        case 'png':
+            return 'image/png';
+        case 'gif':
+            return 'image/gif';
+        case 'svg':
+            return 'image/svg+xml';
+        case 'webp':
+            return 'image/webp';
+        default:
+            return 'application/octet-stream';
+    }
+};
+
+
 const cdCost = 250;
 const additionalAttendeeCost = 100;
 const pendingPaymentStatus = 'Signed Up, pending payment';
@@ -1335,5 +1403,6 @@ export {
     additionalAttendeeCost,
     pendingPaymentStatus,
     notSignedUpStatus,
-    confirmedStatus
+    confirmedStatus,
+    serveJobApplicationFile
 };

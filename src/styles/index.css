@@ -95,13 +95,14 @@
 
     --primary-color: #1f2152;
     --secondary-color: #c94349;
-    --light-accent-color: #ffffff;
     --dark-accent-color: #454545;
     --light-dark-accent-color: #242425FF;
     --harvest-black-color: #000000;
     --harvest-black-gradient-color: #0f0f0f;
-    --harvest-link-color: #0000EE;
+    --harvest-link-color: #052ced;
     --read-only-field-grey-color: #ccc;
+    --harvest-white-gradient: #f0f0f0f0;
+    --harvest-white-color: #ffffff;
     --english-title-font: "American Typewriter", "Courier New", Courier, monospace;
     --english-normal-font: 'Futura', sans-serif;
     --english-normal-font-bold: 'Futura-Bold', sans-serif;
@@ -132,7 +133,7 @@ a:visited {
 }
 
 a:visited:hover {
-    color: var(--light-accent-color);
+    color: var(--harvest-white-color);
 }
 
 body {
@@ -207,7 +208,7 @@ button {
     font-family: var(--english-normal-font-bold);
     letter-spacing: 0.3rem;
     line-height: 1.5;
-    background-color: var(--light-accent-color);
+    background-color: var(--harvest-white-color);
     color: var(--primary-color);
     cursor: pointer;
     will-change: filter;
@@ -218,7 +219,7 @@ button {
 button:hover {
     filter: drop-shadow(0 0 0.5rem var(--primary-color));
     background-color: var(--primary-color);
-    color: var(--light-accent-color);
+    color: var(--harvest-white-color);
 }
 
 button:lang(ar) {
@@ -252,7 +253,7 @@ label:lang(ar) {
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
-        background-color: var(--light-accent-color);
+        background-color: var(--harvest-white-color);
     }
 
     a:hover {
@@ -260,7 +261,7 @@ label:lang(ar) {
     }
 
     button {
-        background-color: var(--light-accent-color);
+        background-color: var(--harvest-white-color);
     }
 }
 
@@ -357,39 +358,43 @@ label:lang(ar) {
 
 @media (prefers-color-scheme: dark) {
 
+    :root {
+        --harvest-link-color: deepskyblue;
+    }
+
     a {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     a:visited {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     a:visited:hover {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     a:hover {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     button {
-        background-color: var(--light-accent-color);
+        background-color: var(--harvest-white-color);
         color: var(--primary-color);
     }
 
     button:hover {
-        filter: drop-shadow(0 0 2rem var(--light-accent-color));
+        filter: drop-shadow(0 0 2rem var(--harvest-white-color));
         background-color: var(--light-dark-accent-color);
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     h1, h2, h3, p {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     label {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 }
 
