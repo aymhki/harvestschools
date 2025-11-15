@@ -65,7 +65,7 @@ jobs:
         if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
           echo "Syncing entire assets folder as changes were detected in excluded subfolders"
-          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=upload.log --parallel=2 dist/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=upload.log --parallel=2 dist/static/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
 
 
       - name: Debug - List workspace contents
