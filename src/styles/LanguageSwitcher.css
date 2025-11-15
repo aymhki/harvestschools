@@ -8,8 +8,12 @@
     font-size: medium;
 }
 
-.language-switcher .en {
+.language-switcher .en, .language-switcher .en.mobile {
     font-family: var(--english-normal-font);
+}
+
+.language-switcher .ar, .language-switcher .ar.mobile {
+    font-family: var(--arabic-normal-font);
 }
 
 .language-switcher .en, .language-switcher .ar,  .language-switcher .en.mobile, .language-switcher .ar.mobile {
@@ -17,9 +21,6 @@
     text-decoration: underline;
 }
 
-.language-switcher .ar, .language-switcher .ar.mobile {
-    font-family: var(--arabic-normal-font), sans-serif;
-}
 
 .language-switcher .en.active, .language-switcher .ar.active {
     color: var(--primary-color);
