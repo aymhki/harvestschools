@@ -61,7 +61,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: #ffffff;
+    background-color: var(--harvest-white-color);
     width: 80%;
     min-height: 50%;
     z-index: 1001;
@@ -127,7 +127,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: #ffffff;
+    background-color: var(--harvest-white-color);
     width: 50%;
     z-index: 1001;
 }
@@ -185,11 +185,11 @@
 @media (prefers-color-scheme: dark) {
 
     .add-booking-modal-form-container, .edit-booking-modal-container {
-        background-color: #242424;
+        background-color: var(--light-dark-accent-color);
     }
 
     .delete-booking-modal-container {
-        background-color: #242424;
+        background-color: var(--light-dark-accent-color);
     }
 
 }

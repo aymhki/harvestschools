@@ -19,11 +19,11 @@
     bottom: 0;
     width: 100%;
     box-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
-    height: 5rem;
+    height: 7rem;
     font-size: small;
     min-width: 20rem;
-    padding: 1rem 0;
-    color: #1f2152;
+    padding: 1rem 0rem;
+    color: var(--primary-color);
 }
 
 .footer-social-media-logo {
@@ -42,13 +42,18 @@
 
 .copy-right-text {
     font-size: 0.5rem;
-    font-family: 'Futura', sans-serif;
+    font-family: var(--english-normal-font);
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     text-align: right;
-    color: #1f2152;
+    color: var(--primary-color);
+}
+
+.copy-right-text:lang(ar) {
+    text-align: left;
+    font-family: var(--arabic-normal-font);
 }
 
 .mobile-footer-action-container {
@@ -82,6 +87,10 @@
     text-decoration: underline;
 }
 
+.mobile-footer-action-text:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
 .mobile-footer-action-icon-facebook:hover {
     filter: drop-shadow(0 0 1rem #1977f3);
 }
@@ -92,11 +101,11 @@
 }
 
 .mobile-footer-chat-icon:hover {
-    filter: drop-shadow(0 0 1rem #1f2152);
+    filter: drop-shadow(0 0 1rem var(--primary-color) );
 }
 
 .mobile-footer-call-icon:hover {
-    filter: drop-shadow(0 0 1rem #1f2152);
+    filter: drop-shadow(0 0 1rem var(--primary-color) );
 }
 
 @media (max-width: 1600px) {
@@ -121,19 +130,19 @@
 
 
     .copy-right-text {
-        color: #ffffff;
+        color: var(--harvest-white-color);
     }
 
     .mobile-footer-action-text {
-        color: #ffffff;
+        color: var(--harvest-white-color);
     }
 
     .mobile-footer-chat-icon {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 
     .mobile-footer-call-icon {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 
     .footer {
@@ -145,10 +154,10 @@
     }
 
     .mobile-footer-chat-icon:hover {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 
     .mobile-footer-call-icon:hover {
-        filter: drop-shadow(0 0 1rem #ffffff);
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 }

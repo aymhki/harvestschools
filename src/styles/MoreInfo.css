@@ -47,14 +47,14 @@
 }
 
 .covid-19-arabic-read-page-title {
-    color: #c94349;
+    color: var(--secondary-color);
     line-height: 2;
     direction: rtl;
     text-align: right;
 }
 
 .covid-19-arabic-read-page-paragraph {
-    color: #1f2152;
+    color: var(--primary-color);
     direction: rtl;
     text-align: right;
 }
@@ -77,12 +77,12 @@
 }
 
 .covid-19-english-read-title {
-    color: #c94349;
+    color: var(--secondary-color);
     line-height: 2;
 }
 
 .covid-19-english-read-paragraph {
-    color: #1f2152;
+    color: var(--primary-color);
 
 }
 
@@ -95,28 +95,28 @@
 }
 
 .covid-19-english-read-link {
-    color: #c94349;
+    color: var(--secondary-color);
 
 }
 
 .covid-19-english-read-link:hover {
-    color: #1f2152;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
 .covid-19-arabic-read-page-link {
-    color: #c94349;
+    color: var(--secondary-color);
 }
 
 .covid-19-arabic-read-page-link:hover {
-    color: #1f2152;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
 .faq-breaker {
-    color: #c94349;
-    filter: drop-shadow(0 0 1rem #c94349);
-    box-shadow: 0 0 1rem #c94349;
+    color: var(--secondary-color);
+    filter: drop-shadow(0 0 1rem var(--secondary-color) );
+    box-shadow: 0 0 1rem var(--secondary-color);
     text-align: center;
     border-radius: 3rem;
 }
@@ -158,12 +158,12 @@
 }
 
 .faq-q-and-a-list-english-q {
-    color: #c94349;
+    color: var(--secondary-color);
 }
 
 
 .faq-q-and-a-list-english-a {
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 .faq-q-and-a-list-english li, .faq-q-and-a-list-english li p {
@@ -195,11 +195,11 @@
 }
 
 .faq-q-and-a-list-arabic-q {
-    color: #c94349;
+    color: var(--secondary-color);
 }
 
 .faq-q-and-a-list-arabic-a {
-    color: #1f2152;
+    color: var(--primary-color);
 }
 
 .faq-q-and-a-list-arabic li, .faq-q-and-a-list-arabic li p {
@@ -252,41 +252,41 @@
 
 @media (prefers-color-scheme: dark) {
     .faq-breaker {
-        color: white;
-        filter: drop-shadow(0 0 1rem white);
-        box-shadow: 0 0 1rem white;
+        color: var(--harvest-white-color);
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+        box-shadow: 0 0 1rem var(--harvest-white-color);
     }
 
     .faq-q-and-a-list-arabic-q {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .faq-q-and-a-list-arabic-a {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .faq-q-and-a-list-english-q {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .faq-q-and-a-list-english-a {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .covid-19-arabic-read-page-title {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .covid-19-arabic-read-page-paragraph {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .covid-19-english-read-title {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .covid-19-english-read-paragraph {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .covid-19-english-read-link {
@@ -294,7 +294,7 @@
     }
 
     .covid-19-english-read-link:hover {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .covid-19-arabic-read-page-link {
@@ -302,7 +302,7 @@
     }
 
     .covid-19-arabic-read-page-link:hover {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
 

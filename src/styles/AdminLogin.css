@@ -4,7 +4,7 @@
     align-items: center;
     min-height: 100vh;
     min-width: 100vw;
-    background: radial-gradient(circle, #ffffff, #1a2a6c);
+    background: radial-gradient(circle, var(--harvest-white-color), #1a2a6c);
 }
 
 .admin-login-page-form-controller {
@@ -23,7 +23,7 @@
     justify-content: center;
     width: 50vw;
     height: 40vh;
-    background-color: #ffffff;
+    background-color: var(--harvest-white-color);
     border-radius: 1rem;
     will-change: filter;
     transition: filter 0.5s;
@@ -32,7 +32,7 @@
 }
 
 .admin-login-form-wrapper:hover {
-    filter: drop-shadow(0 0 0.5rem #1f2152);
+    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
 }
 
 
@@ -75,15 +75,15 @@
 
 
     .admin-login-page {
-        background: radial-gradient(circle, #ffffff, #0f0f0f) ;
+        background: radial-gradient(circle, var(--harvest-white-color), var(--harvest-black-gradient-color)) ;
     }
 
     .admin-login-form-wrapper {
-        background-color: #242424;
+        background-color: var(--light-dark-accent-color);
     }
 
     .admin-login-form-wrapper:hover {
-        filter: drop-shadow(0 0 0.5rem #ffffff);
+        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
     }
 }
 

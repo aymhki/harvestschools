@@ -3,19 +3,21 @@ import Table from '../../modules/Table';
 import PhotoCollage from '../../modules/PhotoCollage';
 import {useNavigate} from "react-router-dom";
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 
 function National() {
 
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const tableData = [
-        ["Grade", "Break Time"],
-        ["Junior 1", "From 9:20 To 10:000"],
-        ["Junior 2 & 5", "From 10:00 To 10:40"],
-        ["Junior 3, M. 1, 2, 3 & Senior 1, 2, 3", "From 10:40 To 11:20"],
-        ["Junior 4 & Junior 6", "From 11:20 To 12:00"]
-    ];
+        [t("academics-pages.national.break-times-table.grade"), t("academics-pages.national.break-times-table.break-time")],
+        [t("academics-pages.national.break-times-table.junior-one"), t("academics-pages.national.break-times-table.from-nine-twenty-am-to-ten-o-clock-am")],
+        [t("academics-pages.national.break-times-table.junior-two-and-five"), t("academics-pages.national.break-times-table.from-ten-o-clock-am-to-ten-forty-am")],
+        [t("academics-pages.national.break-times-table.junior-three-and-middle-grades-and-senior-grades"), t("academics-pages.national.break-times-table.from-ten-forty-am-to-eleven-twenty-am")],
+        [t("academics-pages.national.break-times-table.junior-four-and-six"), t("academics-pages.national.break-times-table.from-eleven-twenty-am-to-twelve-o-clock-pm")]
+    ]
 
     const preparationToTheNewAcademicYearPhotos = [
         {
@@ -90,10 +92,8 @@ function National() {
     <div className="national-academics-page">
         <Helmet>
             <title>Harvest International School | National</title>
-            <meta name="description"
-                  content="Learn more about the National academics, the curriculum, and facilities for the National Division at Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords"
-                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
+            <meta name="description" content="Learn more about the National academics, the curriculum, and facilities for the National Division at Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
             <meta name="author" content="Harvest International School"/>
             <meta name="robots" content="index, follow"/>
             <meta name="googlebot" content="index, follow"/>
@@ -101,19 +101,30 @@ function National() {
 
         <div className="national-academics-page-header">
 
-                <img src={'../assets/images/HarvestLogos/The National school logo-01.png'} alt="Harvest Language School"
-                     className="national-academics-page-header-title-logo"/>
-                <h1>Harvest Language School</h1>
+                <img src={'../assets/images/HarvestLogos/The National school logo-01.png'} alt="Harvest Language School" className="national-academics-page-header-title-logo"/>
+
+            <h1>
+                {t("academics-pages.national.harvest-language-schools")}
+            </h1>
             
         </div>
 
         <div className="national-academics-vision-and-mission">
             <div className={"standard-padding-container"}>
-                <h1>Our Vision:</h1>
-                <p>Is to invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.</p>
+                <h1>
+                    {t("home.our-vision")}:
+                </h1>
+                <p>
+                    {t("home.harvest-schools-vision")}
+                </p>
 
-                <h1>Our Mission:</h1>
-                <p>Is to invest in the skills of educators and administrative calibers to provide an inspirational environment made fit to qualify students to be part of a gleaming future placing technology in its best use to activate the most effective educational system.</p>
+                <h1>
+                    {t("home.our-mission")}:
+                </h1>
+
+                <p>
+                    {t("home.harvest-schools-mission")}
+                </p>
             </div>
         </div>
 
@@ -125,17 +136,24 @@ function National() {
 
         <div className="national-academics-page-safe-environment">
             <div className={"standard-padding-container"}>
-            <h1>Safe Environment</h1>
-            <img src={'../assets/images/AcademicsPages/SafeEnvironment.jpg'} alt="Safe Environment" className="national-academics-page-safe-environment-image"/>
+                <h1>
+                    {t("academics-pages.national.safe-environment")}
+                </h1>
+                <img src={'../assets/images/AcademicsPages/SafeEnvironment.jpg'} alt="Safe Environment" className="national-academics-page-safe-environment-image"/>
             </div>
         </div>
 
         <div className="national-academics-page-preparation-to-the-new-academic-year-images-section">
             <div className={"standard-padding-container"}>
-                <h1>Preparation To The New Academic Year</h1>
+                <h1>
+                    {t("academics-pages.national.preparation-to-the-new-academic-year")}
+                </h1>
+
                 <PhotoCollage photos={preparationToTheNewAcademicYearPhotos}
-                              title="Preparation To The New Academic Year" type="collage"
-                              collagePreview={preparationToTheNewAcademicYearCollagePreview}/>
+                              title="Preparation To The New Academic Year"
+                              type="collage"
+                              collagePreview={preparationToTheNewAcademicYearCollagePreview}
+                />
 
             </div>
         </div>
@@ -143,52 +161,86 @@ function National() {
         <div className="national-academics-page-science-labs-images-section">
 
             <div className={"standard-padding-container"}>
-                <h1>Science Labs</h1>
-                <PhotoCollage photos={scienceLabsPhotos} title="Science Labs" type="collage"
-                              collagePreview={scienceLabsCollagePreview}/>
+                <h1>
+                    {t("academics-pages.national.science-labs")}
+                </h1>
+
+                <PhotoCollage photos={scienceLabsPhotos}
+                              title="Science Labs"
+                              type="collage"
+                              collagePreview={scienceLabsCollagePreview}
+                />
 
             </div>
         </div>
 
         <div className="national-academics-page-english-syllabus">
             <div className={"standard-padding-container"}>
-                <h1>New English Syllabus</h1>
-                <img src={'../assets/images/AcademicsPages/WORLDBooks.png'} alt="New English Syllabus"
-                     className="national-academics-page-english-syllabus-image"/>
+
+                <h1>
+                    {t("academics-pages.national.new-english-syllabus")}
+                </h1>
+
+                <img src={'../assets/images/AcademicsPages/WORLDBooks.png'}
+                     alt="New English Syllabus"
+                     className="national-academics-page-english-syllabus-image"
+                />
+
             </div>
         </div>
 
         <div className="national-academics-page-science-syllabus">
             <div className={"standard-padding-container"}>
-            <h1>New Science Syllabus</h1>
-            <img src={'../assets/images/AcademicsPages/RichmondScienceBooks.png'} alt="New Science Syllabus" className="national-academics-page-science-syllabus-image"/>
+
+                <h1>
+                    {t("academics-pages.national.new-science-syllabus")}
+                </h1>
+
+                <img src={'../assets/images/AcademicsPages/RichmondScienceBooks.png'}
+                     alt="New Science Syllabus"
+                     className="national-academics-page-science-syllabus-image"
+                />
+
             </div>
         </div>
 
         <div className="national-academics-page-extra-worksheets-syllabus">
             <div className={"standard-padding-container"}>
-                <h1>Extra Worksheets</h1>
-                <img src={'../assets/images/AcademicsPages/Booklet.png'} alt="Extra Worksheets"
-                     className="national-academics-page-extra-worksheets-image"/>
+                <h1>
+                    {t("academics-pages.national.extra-worksheets")}
+                </h1>
+
+                <img src={'../assets/images/AcademicsPages/Booklet.png'}
+                     alt="Extra Worksheets"
+                     className="national-academics-page-extra-worksheets-image"
+                />
             </div>
         </div>
 
         <div className="national-academics-page-quran-syllabus">
             <div className={"standard-padding-container"}>
-                <h1>Quran Syllabus</h1>
+                <h1>
+                    {t("academics-pages.national.quran-syllabus")}
+                </h1>
+
                 <iframe className="national-academics-page-quran-syllabus-video"
                         src="https://www.youtube-nocookie.com/embed/eCiGLdBqHpA?si=YVck_mUlGvxNXtSh"
                         title="منهج القرآن الكريم"
                         frameBorder={0}
                         loading={"lazy"}
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen/>
+                        allowFullScreen
+                />
+
             </div>
         </div>
 
         <div className="national-academics-page-math-junior-one">
             <div className={"standard-padding-container"}>
-                <h1>Math (Junior 1)</h1>
+                <h1>
+                    {t("academics-pages.national.math-junior-one")}
+                </h1>
+
                 <iframe className="national-academics-page-math-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/NoHx7-DK4NU?si=QQ6u6r30BxX7mls_"
                         title="Math J1"
@@ -201,7 +253,10 @@ function National() {
 
         <div className="national-academics-page-english-junior-one">
             <div className={"standard-padding-container"}>
-                <h1>English (Junior 1)</h1>
+                <h1>
+                    {t("academics-pages.national.english-junior-one")}
+                </h1>
+
                 <iframe className="national-academics-page-english-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/W-xeX1XFDkY?si=ZvayNB-C2_a0Js4Z"
                         title="jr1 Eng"
@@ -214,7 +269,10 @@ function National() {
 
         <div className="national-academics-page-english-junior-six">
             <div className={"standard-padding-container"}>
-                <h1>English (Junior 6)</h1>
+                <h1>
+                    {t("academics-pages.national.english-junior-six")}
+                </h1>
+
                 <iframe className="national-academics-page-english-junior-six-video"
                         src="https://www.youtube-nocookie.com/embed/r-KQ7RzYDH8?si=e6uxAqgPX2W1cSkg"
                         title="jr6 english"
@@ -227,7 +285,9 @@ function National() {
 
         <div className="national-academics-page-french-junior-one">
             <div className={"standard-padding-container"}>
-                <h1>French (Junior 1)</h1>
+                <h1>
+                    {t("academics-pages.national.french-junior-one")}
+                </h1>
                 <iframe className="national-academics-page-french-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/XwAGJNs6gTU?si=Jtejjsfl0jxnrWFA"
                         title="Fr jr 1"
@@ -240,7 +300,9 @@ function National() {
 
         <div className="national-academics-page-arabic-junior-one">
             <div className={"standard-padding-container"}>
-                <h1>Arabic (Junior 1)</h1>
+                <h1>
+                    {t("academics-pages.national.arabic-junior-one")}
+                </h1>
                 <iframe className="national-academics-page-arabic-junior-one-video"
                         src="https://www.youtube-nocookie.com/embed/J48T7RuyNcw?si=HZH95R3FFABrkmh8"
                         title="حرف الألف أ"
@@ -253,7 +315,9 @@ function National() {
 
         <div className="national-academics-page-science-middle-two">
             <div className={"standard-padding-container"}>
-                <h1>Science (Middle 2)</h1>
+                <h1>
+                    {t("academics-pages.national.science-middle-two")}
+                </h1>
                 <iframe className="national-academics-page-science-middle-two-video"
                         src="https://www.youtube-nocookie.com/embed/6zJYZw0AA2U?si=eDD5eDcxzNaX_aYU"
                         title="Science m2"
@@ -266,11 +330,15 @@ function National() {
 
         <div className="national-academics-page-covid-19-policy">
             <div className={"standard-padding-container"}>
-                <h1>Precautions For Covid-19</h1>
-                <p>Follow our guide for safety environment during School day.</p>
-                <button onClick={() => navigate('/covid-19')}
-                        className="national-academics-page-covid-19-policy-button">
-                    Learn More
+                <h1>
+                    {t("academics-pages.national.precautions-for-covid-19")}
+                </h1>
+                <p>
+                    {t("academics-pages.national.precautions-for-covid-19-description")}
+                </p>
+
+                <button onClick={() => navigate('/covid-19')} className="national-academics-page-covid-19-policy-button">
+                    {t("common.learn-more")}
                 </button>
             </div>
         </div>

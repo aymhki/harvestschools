@@ -11,8 +11,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
+    color: var(--harvest-white-color);
     text-align: left;
+}
+
+.parallax-section:lang(ar) {
+    text-align: right;
 }
 
 .parallax-section .content {
