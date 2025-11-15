@@ -3,12 +3,15 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-weight: bold;
     direction: ltr;
     font-size: medium;
 }
 
 .language-switcher .en, .language-switcher .en.mobile {
+    font-family: var(--english-normal-font);
+}
+
+.language-switcher .en:lang(ar), .language-switcher .en.mobile:lang(ar) {
     font-family: var(--english-normal-font);
 }
 
@@ -47,6 +50,8 @@
         color: var(--harvest-white-color);
         text-decoration: none;
     }
+
+
 
     .language-switcher-separator, .language-switcher-separator.mobile {
         color: var(--harvest-white-color);
