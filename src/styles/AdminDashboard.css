@@ -61,7 +61,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: var(--light-accent-color);
+    background-color: var(--harvest-white-color);
     width: 80%;
     min-height: 50%;
     z-index: 1001;
@@ -127,7 +127,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: var(--light-accent-color);
+    background-color: var(--harvest-white-color);
     width: 50%;
     z-index: 1001;
 }

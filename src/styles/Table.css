@@ -60,7 +60,7 @@
 
 table {
     width: 100%;
-    background-color: white;
+    background-color: var(--harvest-white-color);
     color: var(--primary-color);
     border-collapse: collapse;
 }
@@ -159,7 +159,7 @@ tr:hover {
     gap: 1rem;
     padding: 2rem;
     border-radius: 1rem;
-    background-color: white;
+    background-color: var(--harvest-white-color);
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 1);
     justify-content: center;
     align-items: center;
@@ -203,7 +203,7 @@ tr:hover {
     position: relative;
     width: 80%;
     height: 60%;
-    background-color: white;
+    background-color: var(--harvest-white-color);
     box-shadow: 0 0 1rem 0 rgba(255, 255, 255, 1);
     border-radius: 1rem;
     display: flex;
@@ -220,7 +220,7 @@ tr:hover {
     justify-content: center;
     align-items: start;
     overflow-y: auto;
-    background-color: #f0f0f0;
+    background-color: var(--harvest-white-gradient);
     border-radius: 0.5rem;
     height: 8rem;
     max-height: 8rem;
@@ -369,21 +369,22 @@ td button {
 @media (prefers-color-scheme: dark) {
     table {
         background-color: inherit;
-        color: white;
+        color: var(--harvest-white-color);
         border-collapse: collapse;
         border-radius: 1rem;
     }
 
     td {
-        border: white 0.1rem solid;
+        border: var(--harvest-white-color) 0.1rem solid;
     }
 
     tr {
-        border: white 0.1rem solid;
+        border: var(--harvest-white-color) 0.1rem solid;
     }
 
     tr:hover {
         color: var(--primary-color);
+        background-color: var(--dark-accent-color);
     }
 
     .table-module-filter-popup {
@@ -399,18 +400,18 @@ td button {
     }
 
     .table-module-filter-search-input-field {
-        border: 0.1rem solid white;
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
     .table-module-filter-search-input-field::placeholder {
-        color: white;
+        color: var(--harvest-white-color);
     }
 
     .table-module-filter-search-input-field:focus {
-        filter: drop-shadow(0 0 0.5rem white);
+        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
     }
 
     .table-module-filter-search-input-field:hover {
-        filter: drop-shadow(0 0 0.5rem white);
+        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
     }
 }

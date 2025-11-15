@@ -152,14 +152,14 @@
 
 @media (prefers-color-scheme: dark) {
     .logo {
-        filter: drop-shadow(0 0 1em var(--light-accent-color));
+        filter: drop-shadow(0 0 1em var(--harvest-white-color));
     }
 
     .logo:hover {
-        filter: drop-shadow(0 0 1em var(--light-accent-color));
+        filter: drop-shadow(0 0 1em var(--harvest-white-color));
     }
 
     .extreme-padding-container:lang(ar) h1 {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 }

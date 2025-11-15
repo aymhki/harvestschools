@@ -155,7 +155,7 @@
 
 @media (prefers-color-scheme: dark) {
     .gallery-videos-page-video-and-title-container {
-        color: white;
-        box-shadow: 0 0 0.5rem white;
+        color: var(--harvest-white-color);
+        box-shadow: 0 0 0.5rem var(--harvest-white-color);
     }
 }

@@ -19,10 +19,10 @@
     bottom: 0;
     width: 100%;
     box-shadow: 0 0 0.1rem rgba(0, 0, 0, 0.5);
-    height: 5rem;
+    height: 7rem;
     font-size: small;
     min-width: 20rem;
-    padding: 1rem 0;
+    padding: 1rem 0rem;
     color: var(--primary-color);
 }
 
@@ -49,6 +49,11 @@
     right: 0;
     text-align: right;
     color: var(--primary-color);
+}
+
+.copy-right-text:lang(ar) {
+    text-align: left;
+    font-family: var(--arabic-normal-font);
 }
 
 .mobile-footer-action-container {
@@ -80,6 +85,10 @@
 .mobile-footer-action-text {
     font-size: small;
     text-decoration: underline;
+}
+
+.mobile-footer-action-text:lang(ar) {
+    font-family: var(--arabic-normal-font);
 }
 
 .mobile-footer-action-icon-facebook:hover {
@@ -121,19 +130,19 @@
 
 
     .copy-right-text {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     .mobile-footer-action-text {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
     }
 
     .mobile-footer-chat-icon {
-        filter: drop-shadow(0 0 1rem var(--light-accent-color));
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 
     .mobile-footer-call-icon {
-        filter: drop-shadow(0 0 1rem var(--light-accent-color));
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 
     .footer {
@@ -145,10 +154,10 @@
     }
 
     .mobile-footer-chat-icon:hover {
-        filter: drop-shadow(0 0 1rem var(--light-accent-color));
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 
     .mobile-footer-call-icon:hover {
-        filter: drop-shadow(0 0 1rem var(--light-accent-color));
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
     }
 }

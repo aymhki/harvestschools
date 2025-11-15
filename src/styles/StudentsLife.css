@@ -49,7 +49,7 @@
 }
 
 .students-life-activities-phone-number {
-    color: white;
+    color: var(--harvest-white-color);
 }
 
 .students-life-activities-phone-number:hover {

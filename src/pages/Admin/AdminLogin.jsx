@@ -4,12 +4,14 @@ import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Form from '../../modules/Form.jsx'
 import {headToAdminDashboardOnValidSession, validateAdminLogin} from "../../services/Utils.jsx";
+import {useTranslation} from "react-i18next";
 
 function AdminLogin() {
     const navigate = useNavigate();
     const [submittingLocal, setSubmittingLocal] = useState(false);
     const usernameFieldId = 1
     const passwordFieldId = 2
+    const { t } = useTranslation();
 
     const handleAdminLogin = async (formData) => {
         if (submittingLocal) {return;}
@@ -42,11 +44,13 @@ function AdminLogin() {
                 <div className={'admin-login-page-form-controller'}>
                     <div className={'admin-login-form-wrapper'}>
 
-                            <h2>Admin Login</h2>
+                            <h2>
+                                {t("admin.login-page.title")}
+                            </h2>
 
                             <Form mailTo={''}
                                   sendPdf={false}
-                                  formTitle={'Admin Login'}
+                                  formTitle={t("admin.login-page.title")}
                                   lang={'en'}
                                   captchaLength={1}
                                   noInputFieldsCache={true}
@@ -54,7 +58,7 @@ function AdminLogin() {
                                   hasDifferentOnSubmitBehaviour={true}
                                   differentOnSubmitBehaviour={handleAdminLogin}
                                   hasDifferentSubmitButtonText={true}
-                                  differentSubmitButtonText={['Login', 'Logging in...']}
+                                  differentSubmitButtonText={[t("admin.login-page.login-btn"), t("admin.login-page.logging-in-btn")]}
                                   noClearOption={true}
                                   centerSubmitButton={true}
                                   easySimpleCaptcha={true}
@@ -68,8 +72,9 @@ function AdminLogin() {
                                             type: 'text',
                                             name: 'username',
                                             label: 'Username',
+                                            displayLabel: t("admin.login-page.username-field"),
                                             required: true,
-                                            placeholder: 'Username',
+                                            placeholder: t("admin.login-page.username-field"),
                                             errorMsg: 'Please enter username',
                                             value: '',
                                             setValue: null,
@@ -82,8 +87,9 @@ function AdminLogin() {
                                             type: 'password',
                                             name: 'password',
                                             label: 'Password',
+                                            displayLabel: t("admin.login-page.password-field"),
                                             required: true,
-                                            placeholder: 'Password',
+                                            placeholder: t("admin.login-page.password-field"),
                                             errorMsg: 'Please enter password',
                                             widthOfField: 1,
                                             value: '',

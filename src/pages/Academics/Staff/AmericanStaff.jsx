@@ -1,13 +1,33 @@
 import '../../../styles/Academics.css';
 import Table from "../../../modules/Table.jsx";
 import {Helmet} from "react-helmet-async";
-
+import {useTranslation} from "react-i18next";
 
 function AmericanStaff() {
+    const { t, i18n } = useTranslation();
+
+    const staffList = t('academics-pages.staff.american-staff-list', { returnObjects: true }) || [];
+
+    const tableHeaders = [
+        t('academics-pages.staff.name-column-header'),
+        t('academics-pages.staff.subject-column-header'),
+        t('academics-pages.staff.title-column-header')
+    ];
+
+    const tableRows = Array.isArray(staffList) ? staffList.slice(1).map(member => [member.name, member.subject, member.title]) : [];
+    const tableData = [tableHeaders, ...tableRows];
+
+    const lastUpdatedDate = new Date('2021-06-20');
+    const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }).format(lastUpdatedDate);
+
     return (
         <div className="academics-american-staff-page">
             <Helmet>
-                <title>Harvest International School | American Staff</title>
+                <title>{t('academics-pages.american-section')} | {t('nav.staff')}</title>
                 <meta name="description"
                       content="Learn more about the American Division Staff members, teachers, coordinators, and administrative staff at Harvest International School in Borg El Arab, Egypt."/>
                 <meta name="keywords"
@@ -18,35 +38,18 @@ function AmericanStaff() {
             </Helmet>
 
             <div className={"extreme-padding-container"}>
+                <h1>{t('academics-pages.staff.american-staff-title')}</h1>
 
                 <p>
-                    Head of Department: Ms. Salma Ehab
+                    {t('academics-pages.staff.head-of-department-feminine')}: {Array.isArray(staffList) && staffList.length > 0 ? staffList[0].name : ''}
                 </p>
 
-                <Table tableData={[
-                    ['Name', 'Subject', 'Title'],
-                    ['Amany Yakout', 'P.E.', 'Teacher'],
-                    ['Heba Moustafa', 'Art', 'Coordinator'],
-                    ['Bassma Ossama', 'National Studies', 'Teacher'],
-                    ['Beshoy Saad', 'National Studies', 'Coordinator'],
-                    ['Bassma Ossama', 'Arabic + Religion', 'Teacher'],
-                    ['Mayada Ossama', 'Arabic + Religion', 'Teacher'],
-                    ['Hend Abdel Fattah', 'Arabic + Religion', 'Coordinator'],
-                    ['Hadeel EL Hagan', 'Science', 'Teacher'],
-                    ['Hanan ElAbd', 'Science', 'Coordinator'],
-                    ['Marwa Moustafa', 'Mathematics', 'Teacher'],
-                    ['Mennah Abady', 'Mathematics', 'Teacher'],
-                    ['Abdelrahman ElShami', 'Mathematics', 'Coordinator'],
-                    ['Mashaer Mohamed', 'English + Social Studies', 'Teacher'],
-                    ['Walaa Gharib', 'English + Social Studies', 'Teacher'],
-                    ['Ghada Said', 'English + Social Studies', 'Coordinator']
-
-                ]} numCols={3}
+                <Table tableData={tableData} numCols={3}
                        sortConfigParam={{column: 1, direction: 'ascending'}}
                 />
 
                 <p>
-                    This page was last updated on June 20, 2021
+                    {t('common.last-updated')} {formattedDate}
                 </p>
             </div>
         </div>

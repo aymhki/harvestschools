@@ -247,9 +247,9 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    background-color: #f0f0f0;
+    background-color: var(--harvest-white-gradient);
     text-decoration: line-through;
-    text-decoration-color: var(--light-accent-color);
+    text-decoration-color: var(--harvest-white-color);
     user-select: none; /* Prevents text selection */
     -webkit-user-select: none; /* For Chrome, Safari, and Opera */
     -moz-user-select: none; /* For Firefox */
@@ -338,7 +338,7 @@
 
 .remove-button:hover {
     background-color: var(--secondary-color);
-    color: var(--light-accent-color);
+    color: var(--harvest-white-color);
 }
 
 .captcha-wrapper:lang(ar) {
@@ -397,7 +397,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: var(--light-accent-color);
+    background-color: var(--harvest-white-color);
     width: 30%;
     max-height: 100%;
     z-index: 2001;
@@ -602,6 +602,11 @@
     color: var(--primary-color);
 }
 
+.toggle-password-visibility:lang(ar) {
+    right: auto;
+    left: 2rem;
+}
+
 .toggle-password-visibility:hover {
     opacity: 0.8;
     color: var(--primary-color);
@@ -644,7 +649,7 @@
 }
 
 .remove-section-button {
-    background-color: var(--light-accent-color);
+    background-color: var(--harvest-white-color);
     color: var(--secondary-color);
     padding: 1rem 1rem 1rem 1rem;
     font-size: large;
@@ -655,7 +660,7 @@
 
 .remove-section-button:hover {
     background-color: var(--secondary-color);
-    color: var(--light-accent-color);
+    color: var(--harvest-white-color);
     filter: drop-shadow(0 0 1em var(--secondary-color) );
 
 }
@@ -777,6 +782,11 @@
         top: 1.3rem;
         right: 2rem;
         transform: scale(1.2);
+    }
+
+    .toggle-password-visibility:lang(ar) {
+        right: auto;
+        left: 2rem;
     }
 
     .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
@@ -974,16 +984,16 @@
 @media (prefers-color-scheme: dark) {
 
     .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
-        color: var(--light-accent-color);
-        border: 0.1rem solid var(--light-accent-color);
+        color: var(--harvest-white-color);
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
     .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover, .select-multiple-form-field:hover, .file-form-field-styled:hover {
-        filter: drop-shadow(0 0 0.5rem var(--light-accent-color));
+        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
     }
 
     .text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus, .select-multiple-form-field:focus, .file-form-field-styled:focus {
-        filter: drop-shadow(0 0 0.5rem var(--light-accent-color));
+        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
     }
 
     .select-form-field {
@@ -995,8 +1005,8 @@
     }
 
     .captcha-box {
-        color: var(--light-accent-color);
-        border: 0.1rem solid var(--light-accent-color);
+        color: var(--harvest-white-color);
+        border: 0.1rem solid var(--harvest-white-color);
         background-color: var(--harvest-black-gradient-color);
         text-decoration-color: var(--harvest-black-color);
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <circle cx="5" cy="5" r="1" fill="%23000080"/> <circle cx="12" cy="5" r="1" fill="%23004040"/> <circle cx="19" cy="5" r="1" fill="%23000040"/> <circle cx="5" cy="12" r="1" fill="%23008000"/> <circle cx="12" cy="12" r="1" fill="%23004080"/> <circle cx="19" cy="12" r="1" fill="%23004080"/> <circle cx="5" cy="19" r="1" fill="%23ffffff"/> <circle cx="12" cy="19" r="1" fill="%23000000"/> <circle cx="19" cy="19" r="1" fill="%23808080"/> </svg>');
@@ -1005,12 +1015,12 @@
     }
 
     .captcha-wrapper {
-        border: 0.1rem solid var(--light-accent-color);
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
 
     .captcha-wrapper-half-width {
-        border: 0.1rem solid var(--light-accent-color);
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
     .form-select-date-modal-container {
@@ -1018,45 +1028,45 @@
     }
 
     .captcha-wrapper-with-full-margin {
-        border: 0.1rem solid var(--light-accent-color);
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
     .captcha-wrapper-half-width-with-full-margin {
-        border: 0.1rem solid var(--light-accent-color);
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
     .toggle-password-visibility {
-        color: var(--light-accent-color)
+        color: var(--harvest-white-color)
     }
 
     .toggle-password-visibility:hover {
-        color: var(--light-accent-color)
+        color: var(--harvest-white-color)
     }
 
     .read-only-field {
         background: var(--dark-accent-color);
-        color: var(--light-accent-color);
-        border-color: var(--light-accent-color);
+        color: var(--harvest-white-color);
+        border-color: var(--harvest-white-color);
     }
 
     .remove-section-button {
         background-color: var(--secondary-color);
-        color: var(--light-accent-color);
-        box-shadow: 0 0 0.5rem var(--light-accent-color);
+        color: var(--harvest-white-color);
+        box-shadow: 0 0 0.5rem var(--harvest-white-color);
     }
 
     .remove-section-button:hover {
         background-color: var(--dark-accent-color);
-        color: var(--light-accent-color);
-        filter: drop-shadow(0 0 1em var(--light-accent-color));
+        color: var(--harvest-white-color);
+        filter: drop-shadow(0 0 1em var(--harvest-white-color));
     }
 
     .number-input-container {
-        border: 0.1rem solid var(--light-accent-color);
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
     .number-form-field {
-        color: var(--light-accent-color);
+        color: var(--harvest-white-color);
         border: none;
         background-color: var(--light-dark-accent-color);
     }

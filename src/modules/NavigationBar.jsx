@@ -9,7 +9,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 
 
 const NavigationBar = () => {
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
     const [academicsOpen, setAcademicsOpen] = useState(false);
@@ -77,26 +77,7 @@ const NavigationBar = () => {
             const currentWidth = window.innerWidth;
             if (currentWidth !== lastWidth) {
                 lastWidth = currentWidth;
-                setIsMobile(currentWidth < 768);
-                if (currentWidth >= 768) {
-                    setIsOpen(true);
-                    // Close all dropdowns
-                    setAcademicsOpen(false);
-                    setAdmissionOpen(false);
-                    setStudentsLifeOpen(false);
-                    setEventsOpen(false);
-                    setGalleryOpen(false);
-                    setMoreInfoOpen(false);
-                } else {
-                    setIsOpen(false);
-                    // Close all dropdowns
-                    setAcademicsOpen(false);
-                    setAdmissionOpen(false);
-                    setStudentsLifeOpen(false);
-                    setEventsOpen(false);
-                    setGalleryOpen(false);
-                    setMoreInfoOpen(false);
-                }
+                toggleNavMenuMobile(currentWidth);
             }
         };
 
@@ -105,6 +86,31 @@ const NavigationBar = () => {
         window.addEventListener("resize", checkWindowSize);
 
         return () => window.removeEventListener("resize", checkWindowSize);
+    }, []);
+
+    const toggleNavMenuMobile = (currentWidth) => {
+        setIsMobile(currentWidth < 768);
+        if (currentWidth >= 768) {
+            setIsOpen(true);
+            setAcademicsOpen(false);
+            setAdmissionOpen(false);
+            setStudentsLifeOpen(false);
+            setEventsOpen(false);
+            setGalleryOpen(false);
+            setMoreInfoOpen(false);
+        } else {
+            setIsOpen(false);
+            setAcademicsOpen(false);
+            setAdmissionOpen(false);
+            setStudentsLifeOpen(false);
+            setEventsOpen(false);
+            setGalleryOpen(false);
+            setMoreInfoOpen(false);
+        }
+    }
+
+    useEffect(() => {
+        toggleNavMenuMobile(window.innerWidth);
     }, []);
 
     const menuAnimation = useSpring({

@@ -56,7 +56,7 @@
     box-shadow: 0 0 0.01rem var(--primary-color);
     font-size: 3rem;
     font-weight: 10;
-    color: white;
+    color: var(--harvest-white-color);
     cursor: pointer;
     z-index: 100;
 }
@@ -82,7 +82,7 @@
 }
 
 .photo-text {
-    color: white;
+    color: var(--harvest-white-color);
     position: absolute;
     top: 35vh;
     left: 20%;
