@@ -47,7 +47,7 @@ const LanguageSwitcher = () => {
         <div className="language-switcher">
 
             <div onClick={() => changeLanguage('en')}
-                 className={`en ${i18n.language === 'en' ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
+                 className={`en ${(i18n.language === 'en' || i18n.language !== 'ar') ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 English
             </div>
