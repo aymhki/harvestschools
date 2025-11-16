@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
 
                     $uniqueFileName = isset($_POST['uniqueFileName_' . $fileKey]) ? $_POST['uniqueFileName_' . $fileKey] : basename($file["name"]);
+                    $uniqueFileName = preg_replace('/[^a-zA-Z0-9_.-]/', '', $uniqueFileName);
                     $targetFile = $targetDir . $uniqueFileName;
 
                     if (move_uploaded_file($file["tmp_name"], $targetFile)) {
