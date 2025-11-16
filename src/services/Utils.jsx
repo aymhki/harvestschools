@@ -659,11 +659,12 @@ const serveJobApplicationFile = async (searchParams, setIsLoading, setError, set
     try {
         const response = await fetch(`${endpoints.serveJobApplicationFile}${filePath}`, {credentials: 'include'});
 
-        const result = await response.json();
+        const contentType = response.headers.get("content-type");
 
-        if (result && !result.success) {
-            const errorText = await result.message;
-            setError((errorText || "Unclear Error - Status:") + ` ${result.code}`);
+        if (contentType && contentType.includes("application/json")) {
+            const result = await response.json();
+            const errorText = result.message || "An unclear error occurred";
+            setError(`${errorText} (Code: ${result.code})`);
         } else {
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
