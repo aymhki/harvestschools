@@ -11,7 +11,7 @@ function FileViewer() {
 
     const [fileBlobUrl, setFileBlobUrl] = useState(null);
     const [filename, setFilename] = useState('file');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [canEmbed, setCanEmbed] = useState(false);
     const [mimeType, setMimeType] = useState('');
