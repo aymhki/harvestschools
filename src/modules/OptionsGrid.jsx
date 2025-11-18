@@ -4,12 +4,12 @@ import {useNavigate} from "react-router-dom";
 import {Fragment} from "react";
 
 
-function OptionsGrid({title, options, divElements})
+function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInThePage})
 {
     const navigate = useNavigate();
 
     return (
-        <div className="options-grid-container">
+        <div className= {thisOptionsGridIsNotAloneInThePage ? "options-grid-container-dynamic" : "options-grid-container"}>
             <h1>{title}</h1>
 
             {options.length > 0 ? (
@@ -72,6 +72,7 @@ OptionsGrid.propTypes = {
         })
     ).isRequired,
     divElements: PropTypes.array,
+    thisOptionsGridIsNotAloneInThePage: PropTypes.bool
 };
 
 export default OptionsGrid;

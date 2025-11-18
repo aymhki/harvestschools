@@ -101,6 +101,10 @@
     cursor: pointer;
 }
 
+.select-multiple-form-field:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
 .form-label-outside {
     margin-left: 1rem;
     margin-top: 1rem;

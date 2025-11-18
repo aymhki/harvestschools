@@ -2,60 +2,38 @@ import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 function EnglishFairyTales() {
+    const {t} = useTranslation();
+    const booksTable = t('students-life-pages.library-pages.english-fairy-tales-page.books', { returnObjects: true }) || [];
+    const tableRows = Array.isArray(booksTable) ? booksTable.map(member => [member.title, member.series]) : [];
+    const finalTableData = [...tableRows];
+
   return (
       <div className={'students-life-library-books-page'}>
           <Helmet>
               <title>Harvest International School | English Library | Fairy Tails</title>
-              <meta name="description"
-                    content="Learn more about the avialable books in the Fairy Tails category at the English library at Harvest International School in Borg El Arab, Egypt."/>
-              <meta name="keywords"
-                    content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+              <meta name="description" content="Learn more about the avialable books in the Fairy Tails category at the English library at Harvest International School in Borg El Arab, Egypt."/>
+              <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
               <meta name="author" content="Harvest International School"/>
               <meta name="robots" content="index, follow"/>
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
           <div className={"extreme-padding-container"}>
-              <h1>English Fairy Tails</h1>
+              <h1>
+                  {t("students-life-pages.library-pages.english-fairy-tales-page.title")}
+              </h1>
 
-              <Table tableData={
-                  [
-                      ['Title', 'Series'],
-                      ['Alice in wonderland', 'Young explorers'],
-                      ['Charlie and the chocolate factory', '50 years'],
-                      ['Dante', 'Young explorers'],
-                      ['Down the rabbit hole', 'Young explorers'],
-                      ['Goldilocks and the three bears', 'Young explorers'],
-                      ['In the jungle', 'Young explorers'],
-                      ['James and the giant peach', '50 years'],
-                      ['Monsters, inc', 'Disnep'],
-                      ['Peter pan', 'Disnep'],
-                      ['Return to never land', 'Disnep'],
-                      ["Roald Dahl's revolting rhymes", '50 years'],
-                      ['Sleeping beauty', 'Disnep'],
-                      ['Snow white and the seven dwarfs', 'Disnep'],
-                      ['The BFG', '-'],
-                      ['The Bick racer', 'Young explorers'],
-                      ['The camcorder thief', 'Young explorers'],
-                      ['The enormous crocodile', '50 years'],
-                      ['The incredible', 'Disnep'],
-                      ['The little mermaid', 'Disnep'],
-                      ['The magic flute', 'Young explorers'],
-                      ['The twits', '50 years'],
-                      ['The wonderful story of Henry sugar and six more', '50 years']
-                  ]
-
-              } numCols={2}
-                     sortConfigParam={{column: 1, direction: 'ascending'}}/>
+              <Table tableData={finalTableData} numCols={2} ortConfigParam={{column: 1, direction: 'ascending'}}/>
 
               <h2>
-                  Recommend a book for the Library to add it to its collection
+                    {t("students-life-pages.library-pages.suggest-book-form.recommend-a-book-for-the-library-to-add-to-its-collection")}
               </h2>
 
               <Form sendPdf={false} mailTo={'ayman.ibrahim@harvestschools.com'}
-                    formTitle={'Student Book Recommendation'} fields={
+                    formTitle={t("students-life-pages.library-pages.suggest-book-form.student-book-recommendation-form")} fields={
                   [
                       {
                           id: 1,
@@ -65,7 +43,8 @@ function EnglishFairyTales() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Name',
-                          placeholder: 'Enter your name',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-your-name"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-your-name"),
                           widthOfField: 2
                       },
                       {
@@ -76,7 +55,8 @@ function EnglishFairyTales() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Email',
-                          placeholder: 'Enter your email',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-your-email"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-your-email"),
                           widthOfField: 2
                       },
                       {
@@ -87,7 +67,8 @@ function EnglishFairyTales() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Book Title',
-                          placeholder: 'Enter the book title',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-book-title"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-book-title"),
                           widthOfField: 3
                       },
                       {
@@ -98,7 +79,8 @@ function EnglishFairyTales() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Author',
-                          placeholder: 'Enter the author or writer',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-book-author"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-book-author"),
                           widthOfField: 3
                       },
                       {
@@ -109,7 +91,8 @@ function EnglishFairyTales() {
                           required: false,
                           labelOutside: false,
                           httpName: 'Series',
-                          placeholder: 'Enter the series name or distributor',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-the-series-name-or-distributor"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-the-series-name-or-distributor"),
                           widthOfField: 3
 
                       },
@@ -121,7 +104,8 @@ function EnglishFairyTales() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Reason',
-                          placeholder: 'Why do you think this book should be added to the library?',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
                           widthOfField: 1
                       },
                   ]

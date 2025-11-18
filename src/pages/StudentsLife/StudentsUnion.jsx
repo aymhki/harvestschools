@@ -1,15 +1,23 @@
 import '../../styles/StudentsLife.css'
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 function StudentsUnion() {
+    const {t, i18n} = useTranslation();
+
+    const lastUpdatedDate = new Date('2019-06-07');
+    const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }).format(lastUpdatedDate);
+
     return (
         <div className={"students-life-students-union-page"}>
             <Helmet>
                 <title>Harvest International School | Students Union</title>
-                <meta name="description"
-                      content="Learn more about the Students Union requirements, duties, benefits, and members at Harvest International School in Borg El Arab, Egypt."/>
-                <meta name="keywords"
-                      content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+                <meta name="description" content="Learn more about the Students Union requirements, duties, benefits, and members at Harvest International School in Borg El Arab, Egypt."/>
+                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
                 <meta name="author" content="Harvest International School"/>
                 <meta name="robots" content="index, follow"/>
                 <meta name="googlebot" content="index, follow"/>
@@ -18,126 +26,68 @@ function StudentsUnion() {
             <div className={"extreme-padding-container"}>
 
                 <h1>
-                    Students Union
+                    {t("students-life-pages.students-union-page.students-union-title")}
                 </h1>
 
-            <h2>How can I join the students union?</h2>
+            <h2>
+                {t("students-life-pages.students-union-page.how-can-i-join-the-students-union-question")}
+            </h2>
                 <p>
-                    In order to join the students union, students enrolled in the highest education stages must pass two examination stages created by the current students union, one of which is written (held in classrooms randomly) and the other one is oral held in the meetings room in the national premises. If a student passed the two exams successfully a judging committee consist of head teachers from all the subjects look through the history of all students to filter the best of which can represent the new students union.
+                    {t("students-life-pages.students-union-page.how-can-i-join-the-students-union-answer")}
                 </p>
 
                 <h2>
-                    What is the students union duties?
+                    {t("students-life-pages.students-union-page.what-are-the-students-union-duties-question")}
                 </h2>
 
                 <ul className={"students-union-duties-list"}>
-                    <li>
-                        <p>
-                            To represent Harvest Schools students outlook and behavior.
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            To provide and protect a healthy environment for the rest of the students during the school time and summer time.
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            To create new ideas that help teachers and administrators in the school management systems.
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            To organize school trips and moderate champions during the year.
-                        </p>
-                    </li>
+                    {t("students-life-pages.students-union-page.what-are-the-students-union-duties-answer", {returnObjects: true}).map((duty, index) => (
+                        <li key={index}>
+                            <p>
+                                {duty}
+                            </p>
+                        </li>
+                    ))}
                 </ul>
 
                 <p>
-                    and more...
+                    {t("common.and-more")}
                 </p>
 
                 <h2>
-                    What are the students union benefits?
+                    {t("students-life-pages.students-union-page.what-are-the-students-union-benefits-question")}
                 </h2>
 
                 <ul className={"students-union-benefits-list"}>
-                    <li>
-                        <p>
-                            Special access to all school facilities and resources such as libraries, computer labs, Stationery and Canteen.
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            A decision making voice in meetings related Books, Stationary, and E - Learning devices.
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            Discounts and offers for all school trips and products sold or services used.
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            Leading classrooms in playgrounds, swimming pool and gymnasium for competitions and champions among students.
-                        </p>
-                    </li>
+                    {t("students-life-pages.students-union-page.what-are-the-students-union-benefits-answer", {returnObjects: true}).map((benefit, index) => (
+                        <li key={index}>
+                            <p>
+                                {benefit}
+                            </p>
+                        </li>
+                    ))}
                 </ul>
 
                 <p>
-                    and more...
+                    {t("common.and-more")}
                 </p>
 
                 <h2>
-                    Who are the students union members right now?
+                    {t("students-life-pages.students-union-page.who-are-the-students-union-members-right-now-question")}
                 </h2>
 
                 <ul className={"students-union-members-list"}>
-                    <li>
-                        <p>
-                            From Middle 1: Mariam Mohamed, Darin Ahmed
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            From Year 7: Rehad Hossam, Yehia Mohamed
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            From Year 8: Salma El A, Khaled Ahmed
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            From Middle 2: Adham Ibrahim
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            From Middle 3: Mahmoud Saeed, Farida Sharaf, Habiba Aboraya
-                        </p>
-                    </li>
-
-                    <li>
-                        <p>
-                            From Year 9:  Yomna Ghanem, Zeina Ashraf
-                        </p>
-                    </li>
+                    {t("students-life-pages.students-union-page.who-are-the-students-union-members-right-now-answer", {returnObjects: true}).map((member, index) => (
+                        <li key={index}>
+                            <p>
+                                {member}
+                            </p>
+                        </li>
+                    ))}
                 </ul>
 
                 <p>
-                    This page was last updated in June 7, 2019.
+                    {t('common.last-updated')} {formattedDate}
                 </p>
             </div>
         </div>

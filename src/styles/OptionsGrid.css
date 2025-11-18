@@ -10,6 +10,17 @@
     color: var(--primary-color);
 }
 
+.options-grid-container-dynamic {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+    padding: 1rem 0;
+    margin: 1rem 0;
+    color: var(--primary-color);
+}
+
 .options-grid-single, .options-grid-double, .options-grid-triple, .options-grid-quadruple {
     display: grid;
     gap: 1rem;
