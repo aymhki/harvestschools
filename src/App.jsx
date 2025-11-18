@@ -44,9 +44,7 @@ import KindergartenStaff from './pages/Academics/Staff/KindergartenStaff';
 import StudentLife from "./pages/StudentsLife/StudentsLife.jsx";
 import StudentsUnion from './pages/StudentsLife/StudentsUnion';
 import Activities from './pages/StudentsLife/Activities';
-import Library from './pages/StudentsLife/Library/EnglishOrArabic';
-import EnglishLibrary from './pages/StudentsLife/Library/EnglishLibrary';
-import ArabicLibrary from './pages/StudentsLife/Library/ArabicLibrary';
+import Library from './pages/StudentsLife/Library/Library.jsx';
 import EnglishFairyTales from './pages/StudentsLife/Library/EnglishFairyTales';
 import EnglishDrama from './pages/StudentsLife/Library/EnglishDrama';
 import EnglishLevels from './pages/StudentsLife/Library/EnglishLevels';
@@ -114,7 +112,6 @@ function App() {
 
 
     const excludePaths = [
-        '/students-life/library',
         '/covid-19',
         '/covid-19/covid-19-english',
         '/covid-19/covid-19-arabic',
@@ -174,8 +171,6 @@ function App() {
                         <Route path="/students-life/students-union" element={<StudentsUnion />} />
                         <Route path="/students-life/activities" element={<Activities />} />
                         <Route path="/students-life/library" element={<Library />} />
-                        <Route path="/students-life/library/english-library" element={<EnglishLibrary />} />
-                        <Route path="/students-life/library/arabic-library" element={<ArabicLibrary />} />
                         <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />
                         <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
                         <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />

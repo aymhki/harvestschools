@@ -37,8 +37,6 @@ const routesToPrerender = [
     '/students-life/students-union',
     '/students-life/activities',
     '/students-life/library',
-    '/students-life/library/english-library',
-    '/students-life/library/arabic-library',
     '/students-life/library/english-fairy-tales',
     '/students-life/library/english-drama',
     '/students-life/library/english-levels',

@@ -2,67 +2,39 @@ import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 function EnglishLevels() {
+    const {t} = useTranslation();
+
+    const booksTable = t('students-life-pages.library-pages.english-levels-page.books', { returnObjects: true }) || [];
+    const tableRows = Array.isArray(booksTable) ? booksTable.map(member => [member.title, member.series]) : [];
+    const finalTableData = [...tableRows];
+
   return (
       <div className={'students-life-library-books-page'}>
           <Helmet>
               <title>Harvest International School | English Library | Levels</title>
-              <meta name="description"
-                    content="Learn more about the avialable books in the Levels category at the English library at Harvest International School in Borg El Arab, Egypt."/>
-              <meta name="keywords"
-                    content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+              <meta name="description" content="Learn more about the avialable books in the Levels category at the English library at Harvest International School in Borg El Arab, Egypt."/>
+              <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
               <meta name="author" content="Harvest International School"/>
               <meta name="robots" content="index, follow"/>
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
           <div className={"extreme-padding-container"}>
-              <h1>English Levels</h1>
+              <h1>
+                  {t("students-life-pages.library-pages.english-levels-page.title")}
+              </h1>
 
-              <Table tableData={
-                  [
-                      ['Title', 'Series'],
-                      ['A Christmas carol', 'Helbling readers'],
-                      ["Alice's adventures in wonder land", 'Helbling readers'],
-                      ['Anne of green gables Anne arrives', 'Helbling readers'],
-                      ['Beauty and beast', 'Helbling young readers'],
-                      ['Black beauty', 'Helbling readers'],
-                      ['David and the great detective', 'Helbling readers'],
-                      ['David Copperfield', 'Green apple'],
-                      ['Freddy the frog prince', 'Helbling young readers'],
-                      ["Gulliver's travels", 'Helbling readers'],
-                      ['Little women', 'Helbling readers'],
-                      ['Lola in the land of fire', 'Helbling young readers'],
-                      ['Oliver twist', 'Helbling readers'],
-                      ['Oliver twist', 'Green apple'],
-                      ['Peter pan', 'Helbling readers'],
-                      ['Robin hood', 'Helbling readers'],
-                      ['Robinson Crusoe', 'Green apple'],
-                      ['Sam and the sunflower seeds', 'Helbling young readers'],
-                      ['The big fire', 'Helbling young readers'],
-                      ['The big wave', 'Helbling young readers'],
-                      ['The fisher man and his wife', 'Helbling young readers'],
-                      ['The happy prince and the nightingale and the rose', 'Helbling readers'],
-                      ['The hare and the tortoise', 'Helbling young readers'],
-                      ['The kite', 'Helbling young readers'],
-                      ['The leopard and the monkey', 'Helbling young readers'],
-                      ['The prince and the pauper', 'Helbling readers'],
-                      ['The secret garden', 'Helbling readers'],
-                      ['The stolen white elephant', 'Helbling readers'],
-                      ['Treasure island', 'Helbling readers'],
-                      ['Treasure island', 'Green apple']
-                  ]
-
-              } numCols={2}
-                     sortConfigParam={{column: 1, direction: 'ascending'}}/>
+              <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
               <h2>
-                  Recommend a book for the Library to add it to its collection
+                    {t("students-life-pages.library-pages.suggest-book-form.recommend-a-book-for-the-library-to-add-to-its-collection")}
               </h2>
 
               <Form sendPdf={false} mailTo={'ayman.ibrahim@harvestschools.com'}
-                    formTitle={'Student Book Recommendation'} fields={
+                    formTitle={t("students-life-pages.library-pages.suggest-book-form.student-book-recommendation-form")} fields={
                   [
                       {
                           id: 1,
@@ -72,7 +44,8 @@ function EnglishLevels() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Name',
-                          placeholder: 'Enter your name',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-your-name"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-your-name"),
                           widthOfField: 2
                       },
                       {
@@ -83,7 +56,8 @@ function EnglishLevels() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Email',
-                          placeholder: 'Enter your email',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-your-email"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-your-email"),
                           widthOfField: 2
                       },
                       {
@@ -94,7 +68,8 @@ function EnglishLevels() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Book Title',
-                          placeholder: 'Enter the book title',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-book-title"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-book-title"),
                           widthOfField: 3
                       },
                       {
@@ -105,7 +80,8 @@ function EnglishLevels() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Author',
-                          placeholder: 'Enter the author or writer',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-book-author"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-book-author"),
                           widthOfField: 3
                       },
                       {
@@ -116,7 +92,8 @@ function EnglishLevels() {
                           required: false,
                           labelOutside: false,
                           httpName: 'Series',
-                          placeholder: 'Enter the series name or distributor',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-the-series-name-or-distributor"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-the-series-name-or-distributor"),
                           widthOfField: 3
 
                       },
@@ -128,7 +105,8 @@ function EnglishLevels() {
                           required: true,
                           labelOutside: false,
                           httpName: 'Reason',
-                          placeholder: 'Why do you think this book should be added to the library?',
+                          displayLabel: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
+                          placeholder: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
                           widthOfField: 1
                       },
                   ]

@@ -2,201 +2,115 @@ import '../../../styles/StudentsLife.css'
 import Table from "../../../modules/Table.jsx";
 import Form from "../../../modules/Form.jsx";
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 function ArabicStories() {
+    const {t} = useTranslation();
+    const booksTable = t('students-life-pages.library-pages.arabic-stories-page.books', { returnObjects: true }) || [];
+    const tableRows = Array.isArray(booksTable) ? booksTable.map(member => [member.title, member.series]) : [];
+    const finalTableData = [...tableRows];
+
   return (
       <div className={'students-life-library-books-page'}>
           <Helmet>
               <title>Harvest International School | Arabic Library | Stories</title>
-              <meta name="description"
-                    content="Learn more about the avialable books in the Stories category at the Arabic library at Harvest International School in Borg El Arab, Egypt."/>
-              <meta name="keywords"
-                    content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+              <meta name="description" content="Learn more about the avialable books in the Stories category at the Arabic library at Harvest International School in Borg El Arab, Egypt."/>
+              <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
               <meta name="author" content="Harvest International School"/>
               <meta name="robots" content="index, follow"/>
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
-          <div className={"extreme-padding-container"} lang={'ar'}>
-              <h1 lang={'ar'}>
-                  روايات
+          <div className={"extreme-padding-container"} >
+              <h1>
+                  {t("students-life-pages.library-pages.arabic-stories-page.title")}
               </h1>
 
-                <Table tableData={
-                    [
-                        ['الاسم', 'السلسلة'],
-                        ['عفاريت نصف الليل', 'المكتبة الخضراء للاطفال'],
-                        ['عقلة الاصبع', 'المكتبة الخضراء للاطفال'],
-                        ['عروس البحر', 'المكتبة الخضراء للاطفال'],
-                        ['بدر البدور و الحصان المسحور', 'المكتبة الخضراء للاطفال'],
-                        ['بلاد النهر', 'المكتبة الخضراء للاطفال'],
-                        ['بنات الصياد', 'المكتبة الخضراء للاطفال'],
-                        ['دبدوب القرصان ابو لحية', 'مغامرات سمسم'],
-                        ['دنانير لبلبة', 'المكتبة الخضراء للاطفال'],
-                        ['ضوء النهار و الملك زنكار', 'المكتبة الخضراء للاطفال'],
-                        ['فى جزيرة النور', 'المكتبة الخضراء للاطفال'],
-                        ['حكاية نعيم و نعمة', 'المكتبة الخضراء للاطفال'],
-                        ['حكايات الف ليلة و ليلة', '-'],
-                        ['حلم من دخان', 'المكتبة الخضراء للاطفال'],
-                        ['احلام و اميرات', 'المكتبة الخضراء للاطفال'],
-                        ['حسناء و الثعبان الملكى', 'المكتبة الخضراء للاطفال'],
-                        ['جبل العجائب', 'المكتبة الخضراء للاطفال'],
-                        ['خاتم السلطان', 'المكتبة الخضراء للاطفال'],
-                        ['كنز جزيرة عروس البحر', 'المكتبة الخضراء للاطفال'],
-                        ['الاعمى و كنز الصحراء', 'المكتبة الخضراء للاطفال'],
-                        ['العودة الى كوكبريش', 'مغامرات سمسم'],
-                        ['البجعات المتوحشات', 'المكتبة الخضراء للاطفال'],
-                        ['البلبل', 'المكتبة الخضراء للاطفال'],
-                        ['البنت و الاسد', 'المكتبة الخضراء للاطفال'],
-                        ['البطة السوداء', 'روضة الطفل'],
-                        ['البطل الصغير', 'المكتبة الخضراء للاطفال'],
-                        ['الفأرة البيضاء', 'المكتبة الخضراء للاطفال'],
-                        ['الهدهد يمتلك تاجا', 'المكتبة الخضراء للاطفال'],
-                        ['الاحلام الذهبية', 'المكتبة الخضراء للاطفال'],
-                        ['الحمار الشقي', 'يحكى ان'],
-                        ['الحصان الطيار في بلاد الاسرار', 'المكتبة الخضراء للاطفال'],
-                        ['الجميلة النائمة', 'المكتبة الخضراء للاطفال'],
-                        ['الجزيرة المهجورة', 'المكتبة الخضراء للاطفال'],
-                        ['الكابوس المرعب', 'مغامرات سمسم'],
-                        ['الاخوات التلات', 'المكتبة الخضراء للاطفال'],
-                        ['الخيار السهل', 'مغامرات سمسم'],
-                        ['الكرة الذهبية', 'المكتبة الخضراء للاطفال'],
-                        ['الكسلان و تاج السلطان', 'المكتبة الخضراء للاطفال'],
-                        ['الليمون العجيب', 'المكتبة الخضراء للاطفال'],
-                        ['الملك العادل', 'المكتبة الخضراء للاطفال'],
-                        ['المراة السحرية', 'المكتبة الخضراء للاطفال'],
-                        ['الماسة الزرقاء', 'المكتبة الخضراء للاطفال'],
-                        ['الاميرة الحسناء', 'المكتبة الخضراء للاطفال'],
-                        ['الاميرة المخطوفة', 'المكتبة الخضراء للاطفال'],
-                        ['الاميرة و الثعبان', 'المكتبة الخضراء للاطفال'],
-                        ['الانف العجيب', 'المكتبة الخضراء للاطفال'],
-                        ['النجم الكبير', 'المكتبة الخضراء للاطفال'],
-                        ['القداحة العجيبة', 'المكتبة الخضراء للاطفال'],
-                        ['القدم الذهبية', 'المكتبة الخضراء للاطفال'],
-                        ['الراعى الشجاع', 'المكتبة الخضراء للاطفال'],
-                        ['الرفيق المجهول', 'المكتبة الخضراء للاطفال'],
-                        ['الرحلة العجيبة لعروس النيل', 'المكتبة الخضراء للاطفال'],
-                        ['الشمس و القمر', 'حكاية لطفلك'],
-                        ['الشاطر محظوظ', 'المكتبة الخضراء للاطفال'],
-                        ['السلطان المسحور', 'المكتبة الخضراء للاطفال'],
-                        ['السن المفقودة', 'مغامرات سمسم'],
-                        ['الصياد الماهر', 'المكتبة الخضراء للاطفال'],
-                        ['الصياد المسكين و المارد اللعين', 'المكتبة الخضراء للاطفال'],
-                        ['الصياد ودينار السلطان', 'المكتبة الخضراء للاطفال'],
-                        ['الطبلة المسحورة', 'المكتبة الخضراء للاطفال'],
-                        ['التاج المسحور', 'المكتبة الخضراء للاطفال'],
-                        ['الوحش المخيف', 'مغامرات سمسم'],
-                        ['الوزير الحكيم', 'المكتبة الخضراء للاطفال'],
-                        ['اليس في بلاد العجائب', 'المكتبة الخضراء للاطفال'],
-                        ['مغامرة زهرة مع الشجرة', 'المكتبة الخضراء للاطفال'],
-                        ['مملكة العدل', 'المكتبة الخضراء للاطفال'],
-                        ['امير في بلاد الاقزام', 'المكتبة الخضراء للاطفال'],
-                        ['اميرة البحيرة', 'المكتبة الخضراء للاطفال'],
-                        ['اميرة القصر الذهبي', 'المكتبة الخضراء للاطفال'],
-                        ['نهر الدهب', 'المكتبة الخضراء للاطفال'],
-                        ['قصير الذيل', 'المكتبة الخضراء للاطفال'],
-                        ['قطعة السكر', 'روضة الطفل'],
-                        ['صديق الملك', 'مغامرات سمسم'],
-                        ['سلطان ليوم واحد', 'المكتبة الخضراء للاطفال'],
-                        ['سامية و سمسم', 'حكايات من الشروق و الغروب'],
-                        ['سندريلا', 'المكتبة الخضراء للاطفال'],
-                        ['سر العلبة الذهبية', 'المكتبة الخضراء للاطفال'],
-                        ['سر اللحية البيضاء', 'المكتبة الخضراء للاطفال'],
-                        ['سر الشعر الاسود', 'المكتبة الخضراء للاطفال'],
-                        ['سر الشمعدان', 'المكتبة الخضراء للاطفال'],
-                        ['اطفال الغابة', 'المكتبة الخضراء للاطفال'],
-                        ['ثروة تحت الارض', 'المكتبة الخضراء للاطفال'],
-                        ['تائه في القناة', 'المكتبة الخضراء للاطفال'],
-                        ['طيور الاحلام', 'المكتبة الخضراء للاطفال'],
-                        ['وجبة زقملان', 'مغامرات سمسم'],
-                        ['وجدت ساعة', '-'],
-                        ['ياسمينة و الحمار الوفي', '-'],
-                        ['ياسمينة و الخروف الصغير', '-'],
-                        ['زحلف الشجاع', 'روضة الطفل'],
-                        ['زقملان النظيف', 'مغامرات سمسم']
-                    ]
+                <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
-                } numCols={2}
+                <h2>
+                    {t("students-life-pages.library-pages.suggest-book-form.recommend-a-book-for-the-library-to-add-to-its-collection")}
+                </h2>
 
-                       sortConfigParam={{column: 1, direction: 'ascending'}}/>
-
-                <h1 lang={'ar'}>
-                    اقترح كتاب للمكتبة لاضافته الى مجموعتنا
-                </h1>
-
-              <Form sendPdf={false} mailTo={'ayman.ibrahim@harvestschools.com'} formTitle={'اقتراح كتاب للمكتبة لاضافته الى مجموعتنا'}
+              <Form sendPdf={false} mailTo={'ayman.ibrahim@harvestschools.com'} formTitle={t("students-life-pages.library-pages.suggest-book-form.student-book-recommendation-form")}
                     fields={
-                          [
-                                {
-                                    id: 1,
-                                    type: 'text',
-                                    label: 'الاسم',
-                                    name: 'name',
-                                    required: true,
-                                    labelOutside: false,
-                                    httpName: 'Name',
-                                    placeholder: 'ادخل اسمك',
-                                    widthOfField: 2
-                                },
-                                {
-                                    id: 2,
-                                    type: 'email',
-                                    label: 'البريد الالكتروني',
-                                    name: 'email',
-                                    required: true,
-                                    labelOutside: false,
-                                    httpName: 'Email',
-                                    placeholder: 'ادخل بريدك الالكتروني',
-                                    widthOfField: 2
-                                },
-                                {
-                                    id: 3,
-                                    type: 'text',
-                                    label: 'عنوان الكتاب',
-                                    name: 'book_title',
-                                    required: true,
-                                    labelOutside: false,
-                                    httpName: 'Book Title',
-                                    placeholder: 'ادخل عنوان الكتاب',
-                                    widthOfField: 3
-                                },
-                                {
-                                    id: 4,
-                                    type: 'text',
-                                    label: 'المؤلف او الكاتب',
-                                    name: 'author',
-                                    required: true,
-                                    labelOutside: false,
-                                    httpName: 'Author',
-                                    placeholder: 'ادخل اسم المؤلف او الكاتب',
-                                    widthOfField: 3
-                                },
-                                {
-                                    id: 5,
-                                    type: 'text',
-                                    label: 'السلسلة او الموزع',
-                                    name: 'series',
-                                    required: true,
-                                    labelOutside: false,
-                                    httpName: 'Series',
-                                    placeholder: 'ادخل اسم السلسلة او الموزع',
-                                    widthOfField: 3
-                                },
-                                {
-                                    id: 6,
-                                    type: 'textarea',
-                                    label: 'التفاصيل',
-                                    name: 'details',
-                                    required: true,
-                                    labelOutside: false,
-                                    httpName: 'Details',
-                                    placeholder: 'ادخل تفاصيل الكتاب',
-                                    widthOfField: 1
-                                }
-                          ]
-                    }
+                        [
+                            {
+                                id: 1,
+                                type: 'text',
+                                label: 'Name',
+                                name: 'name',
+                                required: true,
+                                labelOutside: false,
+                                httpName: 'Name',
+                                displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-your-name"),
+                                placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-your-name"),
+                                widthOfField: 2
+                            },
+                            {
+                                id: 2,
+                                type: 'email',
+                                label: 'Email',
+                                name: 'email',
+                                required: true,
+                                labelOutside: false,
+                                httpName: 'Email',
+                                displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-your-email"),
+                                placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-your-email"),
+                                widthOfField: 2
+                            },
+                            {
+                                id: 3,
+                                type: 'text',
+                                label: 'Book Title',
+                                name: 'book_title',
+                                required: true,
+                                labelOutside: false,
+                                httpName: 'Book Title',
+                                displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-book-title"),
+                                placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-book-title"),
+                                widthOfField: 3
+                            },
+                            {
+                                id: 4,
+                                type: 'text',
+                                label: 'Author or Writer',
+                                name: 'author',
+                                required: true,
+                                labelOutside: false,
+                                httpName: 'Author',
+                                displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-book-author"),
+                                placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-book-author"),
+                                widthOfField: 3
+                            },
+                            {
+                                id: 5,
+                                type: 'text',
+                                label: 'Series or Distributor',
+                                name: 'series',
+                                required: false,
+                                labelOutside: false,
+                                httpName: 'Series',
+                                displayLabel: t("students-life-pages.library-pages.suggest-book-form.enter-the-series-name-or-distributor"),
+                                placeholder: t("students-life-pages.library-pages.suggest-book-form.enter-the-series-name-or-distributor"),
+                                widthOfField: 3
 
-              lang={"ar"}  captchaLength={1}/>
+                            },
+                            {
+                                id: 6,
+                                type: 'textarea',
+                                label: 'Why do you think this book should be added to the library?',
+                                name: 'reason',
+                                required: true,
+                                labelOutside: false,
+                                httpName: 'Reason',
+                                displayLabel: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
+                                placeholder: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
+                                widthOfField: 1
+                            },
+                        ]
+                    }
+                    captchaLength={1}/>
 
           </div>
     </div>
