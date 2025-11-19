@@ -63,30 +63,80 @@ function BookingConfirmation() {
 
     const getAdditionalAttendeesTextToShow = (confirmationData) => {
         if (confirmationData.payment_status === confirmedStatus) {
-            return (<p><strong>{t('events-pages.booking-pages.booking-confirmation-page.number-of-additional-attendees-allowed')}</strong> {confirmationData.additional_attendees}</p>)
+            return (
+                <>
+                    <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.number-of-additional-attendees-allowed')}</strong> </p>
+                    <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.additional_attendees}</p>
+                </>
+            )
         } else if (confirmationData.payment_status === pendingPaymentStatus) {
-            return (<p><strong>{t('events-pages.booking-pages.booking-confirmation-page.signed-up-for')}</strong> {confirmationData.additional_attendees} <strong>{t("events-pages.booking-pages.booking-confirmation-page.cd")} {t('events-pages.booking-pages.booking-confirmation-page.but-did-not-pay-for-extras-yet')}</strong> </p>)
+            return (
+                <>
+                    <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.signed-up-for')}</strong> </p>
+                    <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.additional_attendees}</p>
+                    <p><strong>{t("events-pages.booking-pages.booking-confirmation-page.additional-attendee")} {t('events-pages.booking-pages.booking-confirmation-page.but-did-not-pay-for-extras-yet')}</strong> </p>
+                </>
+            )
         } else if (confirmationData.payment_status === notSignedUpStatus) {
             if (confirmationData.additional_attendees === 0 || confirmationData.additional_attendees === '0') {
                 return ( <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.did-not-sign-up-for-additional-attendees')}</strong></p> )
             } else {
-                return (<p><strong>{t('events-pages.booking-pages.booking-confirmation-page.found-additional-attendees-number')}</strong> {confirmationData.additional_attendees} <strong>{t('events-pages.booking-pages.booking-confirmation-page.but-did-not-sign-up-for-extras')}</strong> </p>)
+                return (
+                    <>
+                        <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.found-additional-attendees-number')}</strong></p>
+                        <p className={"dynamic-booking-confirmation-result-value-field"}> {confirmationData.additional_attendees} </p>
+                        <p> <strong>{t('events-pages.booking-pages.booking-confirmation-page.but-did-not-sign-up-for-extras')}</strong> </p>
+                    </>
+                )
             }
         } else {
             return <p>{t('events-pages.booking-pages.booking-confirmation-page.unknown')}</p>
         }
     }
 
+    // const getCDCountTextToShow = (confirmationData) => {
+    //     if (confirmationData.payment_status === confirmedStatus) {
+    //         return (<p><strong>{t('events-pages.booking-pages.booking-confirmation-page.number-of-paid-for-cds')}</strong> {confirmationData.cd_count}</p>)
+    //     } else if (confirmationData.payment_status === pendingPaymentStatus) {
+    //         return (<p><strong>{t('events-pages.booking-pages.booking-confirmation-page.signed-up-for')}</strong> {confirmationData.cd_count} <strong>{t("events-pages.booking-pages.booking-confirmation-page.cd")} {t('events-pages.booking-pages.booking-confirmation-page.but-did-not-pay-for-extras-yet')}</strong> </p>)
+    //     } else if (confirmationData.payment_status === notSignedUpStatus) {
+    //         if (confirmationData.cd_count === 0 || confirmationData.cd_count === '0') {
+    //             return ( <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.did-not-sign-up-for-cds')}</strong></p> )
+    //         } else {
+    //             return ( <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.found-cds-number')}</strong> { confirmationData.cd_count } <strong>{t('events-pages.booking-pages.booking-confirmation-page.but-did-not-sign-up-for-extras')}</strong></p> )
+    //         }
+    //     } else {
+    //         return <p>{t('events-pages.booking-pages.booking-confirmation-page.unknown')}</p>
+    //     }
+    // }
+
     const getCDCountTextToShow = (confirmationData) => {
         if (confirmationData.payment_status === confirmedStatus) {
-            return (<p><strong>{t('events-pages.booking-pages.booking-confirmation-page.number-of-paid-for-cds')}</strong> {confirmationData.cd_count}</p>)
+            return (
+                <>
+                    <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.number-of-paid-for-cds')}</strong> </p>
+                    <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.cd_count}</p>
+                </>
+            )
         } else if (confirmationData.payment_status === pendingPaymentStatus) {
-            return (<p><strong>{t('events-pages.booking-pages.booking-confirmation-page.signed-up-for')}</strong> {confirmationData.cd_count} <strong>{t("events-pages.booking-pages.booking-confirmation-page.cd")} {t('events-pages.booking-pages.booking-confirmation-page.but-did-not-pay-for-extras-yet')}</strong> </p>)
+            return (
+                <>
+                    <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.signed-up-for')}</strong> </p>
+                    <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.cd_count}</p>
+                    <p><strong>{t("events-pages.booking-pages.booking-confirmation-page.cd")} {t('events-pages.booking-pages.booking-confirmation-page.but-did-not-pay-for-extras-yet')}</strong> </p>
+                </>
+            )
         } else if (confirmationData.payment_status === notSignedUpStatus) {
             if (confirmationData.cd_count === 0 || confirmationData.cd_count === '0') {
                 return ( <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.did-not-sign-up-for-cds')}</strong></p> )
             } else {
-                return ( <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.found-cds-number')}</strong> { confirmationData.cd_count } <strong>{t('events-pages.booking-pages.booking-confirmation-page.but-did-not-sign-up-for-extras')}</strong></p> )
+                return (
+                    <>
+                        <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.found-cds-number')}</strong></p>
+                        <p className={"dynamic-booking-confirmation-result-value-field"}> {confirmationData.cd_count} </p>
+                        <p> <strong>{t('events-pages.booking-pages.booking-confirmation-page.but-did-not-sign-up-for-extras')}</strong> </p>
+                    </>
+                )
             }
         } else {
             return <p>{t('events-pages.booking-pages.booking-confirmation-page.unknown')}</p>
@@ -112,14 +162,27 @@ function BookingConfirmation() {
                         <div className={'confirmation-details'}>
                             <h1>{t('events-pages.booking-pages.booking-confirmation-page.booking-found')}</h1>
                             <div className={'confirmation-info'}>
+
                                 {getConfirmationTitle(confirmationData)}
-                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.booking-id')}</strong> {confirmationData.booking_id}</p>
-                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.extras-status')}</strong> {confirmationData.payment_status}</p>
+
+                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.booking-id')}</strong> </p>
+                                <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.booking_id}</p>
+
+                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.extras-status')}</strong> </p>
+                                <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.payment_status}</p>
+
                                 {getAdditionalAttendeesTextToShow(confirmationData)}
                                 {getCDCountTextToShow(confirmationData)}
-                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.total-paid-for-base-fare')}</strong> {confirmationData.total_paid_for_base_fair}</p>
-                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.total-cost-for-extras')}</strong> {confirmationData.total_paid}</p>
-                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.total-cost-for-base-and-extras')}</strong> {confirmationData.total_paid_for_base_and_extras}</p>
+
+
+                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.total-paid-for-base-fare')}</strong> </p>
+                                <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.total_paid_for_base_fair}</p>
+
+                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.total-cost-for-extras')}</strong> </p>
+                                <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.total_paid}</p>
+
+                                <p><strong>{t('events-pages.booking-pages.booking-confirmation-page.total-cost-for-base-and-extras')}</strong></p>
+                                <p className={"dynamic-booking-confirmation-result-value-field"}>{confirmationData.total_paid_for_base_and_extras}</p>
 
                             </div>
                         </div>

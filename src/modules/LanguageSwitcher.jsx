@@ -29,6 +29,8 @@ const LanguageSwitcher = () => {
     }, [])
 
     const changeLanguage = (lng) => {
+        if (i18n.language === lng) return;
+
         i18n.changeLanguage(lng);
 
         const searchParams = new URLSearchParams(location.search);
@@ -41,6 +43,8 @@ const LanguageSwitcher = () => {
 
         document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = lng;
+
+
     };
 
     return (
