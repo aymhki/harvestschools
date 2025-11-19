@@ -22,6 +22,7 @@ function BritishStaff() {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
+        timeZone: 'Africa/Cairo'
     }).format(lastUpdatedDate);
 
     return (

@@ -94,6 +94,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newAdditionalAttendees = isset($formData['Requested Additional Attendee(s) (100 EGP Each):']) ? intval($formData['Requested Additional Attendee(s) (100 EGP Each):']) : $oldAdditionalAttendees;
         $newPaymentStatus = isset($formData['Extras Payment Status:']) ? $formData['Extras Payment Status:'] : $oldPaymentStatus;
 
+        if (($newCdCount > 0 || $newAdditionalAttendees > 0) && $newPaymentStatus === 'Not Signed Up') {
+            $errorInfo['success'] = false;
+            $errorInfo['message'] = 'You can\'t sign up for extras without updating the extras status';
+            $errorInfo['code'] = 400;
+            $conn->rollback();
+            echo json_encode($errorInfo);
+            return;
+        }
+
         if ($newCdCount < 0 || $newAdditionalAttendees < 0 || empty($newPaymentStatus)) {
             $errorInfo['success'] = false;
             $errorInfo['message'] = 'CD Count and Additional Attendees must be greater than or equal to 0 and Payment Status cannot be empty';
