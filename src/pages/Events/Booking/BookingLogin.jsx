@@ -5,9 +5,11 @@ import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
 import {headToBookingDashboardOnValidSession, validateBookingLogin} from "../../../services/Utils.jsx";
+import {useTranslation} from "react-i18next";
 
 function BookingLogin() {
     const navigate = useNavigate();
+    const {t} = useTranslation();
     const [submittingLocal, setSubmittingLocal] = useState(false);
     const usernameFieldId = 1
     const passwordFieldId = 2
@@ -41,10 +43,8 @@ function BookingLogin() {
 
             <Helmet>
                 <title>Harvest International School | Events | Booking</title>
-                <meta name="description"
-                      content="Access booking info, extras, and media."/>
-                <meta name="keywords"
-                      content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Events, Calendar, Academic Year, National, British, American, Kindergarten, Booking,  سنة أكاديمية, تقويم, وطني, بريطاني, أمريكي, روضة, الروضة, سنة دراسية, مواعيد, امتحنات, اجازات"/>
+                <meta name="description" content="Access booking info, extras, and media."/>
+                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Events, Calendar, Academic Year, National, British, American, Kindergarten, Booking,  سنة أكاديمية, تقويم, وطني, بريطاني, أمريكي, روضة, الروضة, سنة دراسية, مواعيد, امتحنات, اجازات"/>
                 <meta name="author" content="Harvest International School"/>
                 <meta name="robots" content="index, follow"/>
                 <meta name="googlebot" content="index, follow"/>
@@ -53,11 +53,13 @@ function BookingLogin() {
             <div className={'booking-login-page'}>
                 <div className={'booking-login-page-form-controller'}>
                     <div className={'booking-login-form-wrapper'}>
-                        <h2>Booking Login</h2>
+                        <h2>
+                            {t("events-pages.booking-pages.login-page.title")}
+                        </h2>
 
                         <Form mailTo={''}
                               sendPdf={false}
-                              formTitle={'Booking Login'}
+                              formTitle={t("events-pages.booking-pages.login-page.title")}
                               lang={'en'}
                               captchaLength={1}
                               noInputFieldsCache={true}
@@ -65,7 +67,7 @@ function BookingLogin() {
                               hasDifferentOnSubmitBehaviour={true}
                               differentOnSubmitBehaviour={handleBookingLogin}
                               hasDifferentSubmitButtonText={true}
-                              differentSubmitButtonText={['Login', 'Logging in...']}
+                              differentSubmitButtonText={[t("events-pages.booking-pages.login-page.login-btn"), t("events-pages.booking-pages.login-page.logging-in-btn")]}
                               noClearOption={true}
                               centerSubmitButton={true}
                               easySimpleCaptcha={true}
@@ -80,7 +82,8 @@ function BookingLogin() {
                                           name: 'username',
                                           label: 'Username',
                                           required: true,
-                                          placeholder: 'Username',
+                                          displayLabel: t("events-pages.booking-pages.login-page.username-field"),
+                                          placeholder: t("events-pages.booking-pages.login-page.username-field"),
                                           errorMsg: 'Please enter username',
                                           value: '',
                                           setValue: null,
@@ -95,7 +98,8 @@ function BookingLogin() {
                                           name: 'password',
                                           label: 'Password',
                                           required: true,
-                                          placeholder: 'Password',
+                                          displayLabel: t("events-pages.booking-pages.login-page.password-field"),
+                                          placeholder: t("events-pages.booking-pages.login-page.password-field"),
                                           errorMsg: 'Please enter password',
                                           widthOfField: 1,
                                           value: '',

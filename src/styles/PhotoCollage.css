@@ -20,7 +20,10 @@
     text-align: left;
     padding: 1rem;
     box-shadow: 0 0 0 0.1rem var(--primary-color);
+}
 
+.photo-slider:lang(ar) {
+    text-align: right;
 }
 
 .video-slider-preview {

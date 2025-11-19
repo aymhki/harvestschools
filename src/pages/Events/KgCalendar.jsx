@@ -1,68 +1,57 @@
 import '../../styles/Events.css'
 import Table from "../../modules/Table.jsx";
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 
 function KgCalendar() {
-  return (
+    const {t, i18n} = useTranslation()
+
+    const calendarTableData = t("events-pages.kg-calendar-page.calendar", { returnObjects: true }) || [];
+    const tableRows = Array.isArray(calendarTableData) ? calendarTableData.map(member => [member.title, member['start-date'], member['end-date']]) : [];
+    const finalTableData = [...tableRows];
+    const dateFormatter = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'Africa/Cairo'
+    })
+
+    for (let i = 1; i < finalTableData.length; i++) {
+        const startDate = new Date(finalTableData[i][1]);
+        const endDate = new Date(finalTableData[i][2]);
+        finalTableData[i][1] = dateFormatter.format(startDate);
+        finalTableData[i][2] = dateFormatter.format(endDate);
+    }
+
+
+    return (
       <div className={"events-calendar-page"}>
           <Helmet>
               <title>Harvest International School | KG Calendar</title>
-              <meta name="description"
-                    content="Learn more about the KG academic year calendar at Harvest International School in Borg El Arab, Egypt."/>
-              <meta name="keywords"
-                    content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Events, Calendar, Academic Year, National, British, American, Kindergarten, سنة أكاديمية, تقويم, وطني, بريطاني, أمريكي, روضة, الروضة, سنة دراسية, مواعيد, امتحنات, اجازات"/>
+              <meta name="description" content="Learn more about the KG academic year calendar at Harvest International School in Borg El Arab, Egypt."/>
+              <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Events, Calendar, Academic Year, National, British, American, Kindergarten, سنة أكاديمية, تقويم, وطني, بريطاني, أمريكي, روضة, الروضة, سنة دراسية, مواعيد, امتحنات, اجازات"/>
               <meta name="author" content="Harvest International School"/>
               <meta name="robots" content="index, follow"/>
               <meta name="googlebot" content="index, follow"/>
           </Helmet>
 
           <div className={"extreme-padding-container"}>
-              <h1>KG Calendar</h1>
-              <h2>
-                  Online View
-              </h2>
+              <h1>
+                    {t("events-pages.kg-calendar-page.title")}
+              </h1>
 
-              <Table tableData={
-                  [
-                      ["Title", "Start Date", "End Date"],
-                      ["1st School Day: Play School", "September 12, 2021", "September 12, 2021"],
-                      ["1st School Day: FS2 & K", "September 14, 2021", "September 14, 2021"],
-                      ["1st School Day: FS1 & Pre - K", "September 15, 2021", "September 15, 2021"],
-                      ["Armed Forces Day", "October 6, 2021", "October 6, 2021"],
-                      ["1st School Day: KG2", "October 10, 2021", "October 10, 2021"],
-                      ["1st School Day: KG1", "October 12, 2021", "October 12, 2021"],
-                      ["Prophet Mohammed's Birthday", "October 19, 2021", "October 19, 2021"],
-                      ["Coptic Christmas Day", "January 7, 2022", "January 7, 2022"],
-                      ["End of 1st Term", "January 13, 2022", "January 13, 2022"],
-                      ["Revolution Day", "January 25, 2022", "January 25, 2022"],
-                      ["Mid-Year Holiday", "February 5, 2022", "February 17, 2022"],
-                      ["1st School Day For The Second Term", "February 19, 2022", "February 19, 2022"],
-                      ["Easter Holiday", "April 25, 2022", "April 25, 2022"],
-                      ["Sinai Liberation Day", "April 25, 2022", "April 25, 2022"],
-                      ["Labor Day", "May 1, 2022", "May 1, 2022"],
-                      ["Feast Holiday", "May 3, 2022", "May 3, 2022"],
-                      ["End of 2nd Term", "June 9, 2022", "June 9, 2022"],
-                      ["Revolution Day", "June 30, 2022", "June 30, 2022"]
-
-                  ]
-              } numCols={3}/>
-
+              <Table tableData={finalTableData} numCols={3}/>
 
               <p>
-                  Kindly notice that any Official Holiday in the middle of the week will be shifted to Thursday
-                  according to the Prime Minister’s Decision.
+                    {t("events-pages.common.holiday-shifted-notice")}
               </p>
-
-              <h2>
-                  Offline View
-              </h2>
 
               <div className={"download-calendar-button-wrapper"} onClick={() => {
                   window.open("/assets/documents/Calendars/KGCalendar.pdf", "_blank");
               }}>
                   <button className={"download-calendar-button"}>
-                      Download Calendar
+                        {t("events-pages.common.download-calendar-btn")}
                   </button>
               </div>
 

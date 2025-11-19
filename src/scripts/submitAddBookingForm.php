@@ -371,6 +371,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cdCount = isset($formData['CD Count']) ? intval($formData['CD Count']) : 0;
         $additionalAttendees = isset($formData['Additional Attendees']) ? intval($formData['Additional Attendees']) : 0;
         $paymentStatus = $formData['Extras Payment Status'] ?? 'Not Signed Up';
+
+
+        if (($cdCount > 0 || $additionalAttendees > 0) && $paymentStatus === 'Not Signed Up') {
+            $errorInfo['success'] = false;
+            $errorInfo['message'] = 'You can\'t sign up for extras without updating the extras status';
+            $errorInfo['code'] = 400;
+            performRollback($conn, $data);
+            echo json_encode($errorInfo);
+            return;
+        }
+
         $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id, cd_count, additional_attendees, payment_status) VALUES (?, ?, ?, ?)");
 
         if (!$stmt) {

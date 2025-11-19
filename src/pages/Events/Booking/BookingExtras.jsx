@@ -7,8 +7,10 @@ import Form from '../../../modules/Form.jsx';
 import '../../../styles/Events.css';
 import {submitUpdateBookingExtrasRequest, generateConfirmationPDF} from "../../../services/Utils.jsx";
 import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAttendeeCost, cdCost} from "../../../services/Utils.jsx";
+import {useTranslation} from "react-i18next";
 
 function BookingExtras() {
+    const {t, i18n} = useTranslation();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [fetchBookingBySessionError, setFetchBookingBySessionError] = useState(null);
@@ -19,16 +21,16 @@ function BookingExtras() {
     const [formAllowEdit, setAllowEdit] = useState(false);
     const [bookingId, setBookingId] = useState(null);
     const [bookingUsername, setBookingUsername] = useState(null);
-    
+
     const additionalAttendeesFieldId = 1;
     const cdCountFieldId = 2;
     const paymentStatusFieldId = 3;
     const additionalAttendeesFieldCostId = 4;
     const cdCountFieldCostId = 5;
     const totalCostFieldId = 6;
-    
 
-    
+
+
     useEffect(() => {
         headToBookingLoginOnInvalidSession(navigate, setIsLoading).then(
             () => {
@@ -45,206 +47,222 @@ function BookingExtras() {
             }
         )
     }, [])
-    
+
+    useEffect(() => {
+        if (!detailedData) {
+            return;
+        }
+
+        let currentFormFields = [];
+
+        if (detailedData.extras) {
+
+            if (detailedData.extras.additional_attendees >= 0) {
+                currentFormFields.push({
+                    id: additionalAttendeesFieldId,
+                    type: 'number',
+                    name: 'extra-additional-attendees',
+                    label: `Requested Additional Attendee(s) (${additionalAttendeeCost} EGP Each):`,
+                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-additional-attendees", {"cost-per-attendee": additionalAttendeeCost}),
+                    required: false,
+                    value: detailedData.extras.additional_attendees === 0 ? '0' : detailedData.extras.additional_attendees,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'extra-additional-attendees',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    minimumValue: 0,
+                    maximumValue: 10,
+                    alwaysEnglish: true,
+                    onChangeResult: [
+                        {
+                            idOfTheFieldThatShouldChangeBasedOnThisNewValue: additionalAttendeesFieldCostId,
+                            whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'multiply',
+                            firstValueToMultiplyWith: additionalAttendeeCost,
+                            isCurrency: true,
+                        },
+                        {
+                            idOfTheFieldThatShouldChangeBasedOnThisNewValue: totalCostFieldId,
+                            whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'add & multiply',
+                            fieldIdsToAddAndMultiplyTogether: {
+                                [cdCountFieldId]: cdCost,
+                                [additionalAttendeesFieldId]: additionalAttendeeCost,
+                            },
+                            isCurrency: true,
+                        },
+                        {
+                            idOfTheFieldThatShouldChangeBasedOnThisNewValue: paymentStatusFieldId,
+                            whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'set',
+                            fieldIdsToCheckIfBiggerThanZero: [additionalAttendeesFieldId, cdCountFieldId],
+                            valueToSetOnValuesBiggerThanZero: pendingPaymentStatus,
+                            valueToSetOnValuesZero: notSignedUpStatus,
+                        }
+                    ]
+
+                })
+            }
+
+            if (detailedData.extras.additional_attendees >= 0) {
+                currentFormFields.push({
+                    id: additionalAttendeesFieldCostId,
+                    type: 'text',
+                    name: 'extra-additional-attendees-cost',
+                    label: 'Total Additional Attendee(s) Cost:',
+                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-additional-attendees-cost"),
+                    required: false,
+                    value: detailedData.extras.additional_attendees === 0 ? '0' : `${(detailedData.extras.additional_attendees * additionalAttendeeCost)} EGP`,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'extra-additional-attendees-cost',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+                    alwaysEnglish: true,
+                })
+            }
+
+            if (detailedData.extras.cd_count >= 0) {
+                currentFormFields.push({
+                    id: cdCountFieldId,
+                    type: 'number',
+                    name: 'extra-cd-count',
+                    label: `Requested After Party CD(s) (${cdCost} EGP Each):`,
+                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-cd-count", {"cost-per-cd": cdCost}),
+                    required: false,
+                    value: detailedData.extras.cd_count === 0 ? '0' : detailedData.extras.cd_count,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'extra-cd-count',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    minimumValue: 0,
+                    maximumValue: 10,
+                    alwaysEnglish: true,
+                    onChangeResult: [
+                        {
+                            idOfTheFieldThatShouldChangeBasedOnThisNewValue: cdCountFieldCostId,
+                            whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'multiply',
+                            firstValueToMultiplyWith: cdCost,
+                            isCurrency: true,
+                        },
+                        {
+                            idOfTheFieldThatShouldChangeBasedOnThisNewValue: totalCostFieldId,
+                            whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'add & multiply',
+                            fieldIdsToAddAndMultiplyTogether: {
+                                [cdCountFieldId]: cdCost,
+                                [additionalAttendeesFieldId]: additionalAttendeeCost,
+                            },
+                            isCurrency: true,
+                        },
+                        {
+                            idOfTheFieldThatShouldChangeBasedOnThisNewValue: paymentStatusFieldId,
+                            whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'set',
+                            fieldIdsToCheckIfBiggerThanZero: [additionalAttendeesFieldId, cdCountFieldId],
+                            valueToSetOnValuesBiggerThanZero: pendingPaymentStatus,
+                            valueToSetOnValuesZero: notSignedUpStatus,
+                        }
+                    ]
+                })
+            }
+
+
+            if (detailedData.extras.cd_count >= 0) {
+                currentFormFields.push({
+                    id: cdCountFieldCostId,
+                    type: 'text',
+                    name: 'extra-cd-count-cost',
+                    label: 'Total After Party CD(s) Cost:',
+                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-cd-count-cost"),
+                    required: false,
+                    value: detailedData.extras.cd_count === 0 ? '0' : `${(detailedData.extras.cd_count * cdCost)} EGP`,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'extra-cd-count-cost',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+                    alwaysEnglish: true,
+                })
+            }
+
+            if (detailedData.extras.payment_status) {
+
+                currentFormFields.push({
+                    id: paymentStatusFieldId,
+                    type: 'text',
+                    name: 'extra-payment-status',
+                    label: 'Extras Payment Status:',
+                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-payment-status"),
+                    required: false,
+                    value: detailedData.extras.payment_status,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'extra-payment-status',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+                    alwaysEnglish: true,
+                })
+            }
+
+            if (detailedData.extras) {
+                currentFormFields.push({
+                    id: totalCostFieldId,
+                    type: 'text',
+                    name: 'extra-total-cost',
+                    label: 'Total Cost:',
+                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-total-cost"),
+                    required: false,
+                    value: `${(detailedData.extras.cd_count * cdCost) + (detailedData.extras.additional_attendees * additionalAttendeeCost)} EGP`,
+                    setValue: null,
+                    widthOfField: 2,
+                    httpName: 'extra-total-cost',
+                    labelOutside: true,
+                    labelOnTop: true,
+                    dontLetTheBrowserSaveField: true,
+                    readOnlyField: true,
+                    alwaysEnglish: true,
+                })
+            }
+        }
+        setExtrasFormField(currentFormFields);
+    }, [detailedData, i18n.language]);
+
     const fetchBookingBySessionId = async () => {
         try {
             setIsLoading(true);
-            
+
             const result = await fetchBookingInfoBySessionRequest(navigate);
-            
+
             if (result.success) {
-                let currentFormFields = [];
                 setDetailedData(result.detailedData);
                 setBookingId(result.bookingId);
                 setBookingUsername(result.bookingUsername);
-                setExtrasFormField(null);
-                
-                if (result.detailedData.extras) {
-                    
-                    if (result.detailedData.extras.additional_attendees >= 0) {
-                        currentFormFields.push({
-                            id: additionalAttendeesFieldId,
-                            type: 'number',
-                            name: 'extra-additional-attendees',
-                            label: `Requested Additional Attendee(s) (${additionalAttendeeCost} EGP Each):`,
-                            required: false,
-                            value: result.detailedData.extras.additional_attendees === 0 ? 'No' : result.detailedData.extras.additional_attendees,
-                            setValue: null,
-                            widthOfField: 2,
-                            httpName: 'extra-additional-attendees',
-                            labelOutside: true,
-                            labelOnTop: true,
-                            dontLetTheBrowserSaveField: true,
-                            minimumValue: 0,
-                            maximumValue: 10,
-                            onChangeResult: [
-                                {
-                                    idOfTheFieldThatShouldChangeBasedOnThisNewValue: additionalAttendeesFieldCostId,
-                                    whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'multiply',
-                                    firstValueToMultiplyWith: additionalAttendeeCost,
-                                    isCurrency: true,
-                                },
-                                {
-                                    idOfTheFieldThatShouldChangeBasedOnThisNewValue: totalCostFieldId,
-                                    whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'add & multiply',
-                                    fieldIdsToAddAndMultiplyTogether: {
-                                        [cdCountFieldId]: cdCost,
-                                        [additionalAttendeesFieldId]: additionalAttendeeCost,
-                                    },
-                                    isCurrency: true,
-                                },
-                                {
-                                    idOfTheFieldThatShouldChangeBasedOnThisNewValue: paymentStatusFieldId,
-                                    whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'set',
-                                    fieldIdsToCheckIfBiggerThanZero: [additionalAttendeesFieldId, cdCountFieldId],
-                                    valueToSetOnValuesBiggerThanZero: pendingPaymentStatus,
-                                    valueToSetOnValuesZero: notSignedUpStatus,
-                                }
-                            ]
-                            
-                        })
-                    }
-                    
-                    if (result.detailedData.extras.additional_attendees >= 0) {
-                        currentFormFields.push({
-                            id: additionalAttendeesFieldCostId,
-                            type: 'text',
-                            name: 'extra-additional-attendees-cost',
-                            label: 'Total Additional Attendee(s) Cost:',
-                            required: false,
-                            value: result.detailedData.extras.additional_attendees === 0 ? 'No' : `${(result.detailedData.extras.additional_attendees * additionalAttendeeCost)} EGP`,
-                            setValue: null,
-                            widthOfField: 2,
-                            httpName: 'extra-additional-attendees-cost',
-                            labelOutside: true,
-                            labelOnTop: true,
-                            dontLetTheBrowserSaveField: true,
-                            readOnlyField: true,
-                        })
-                    }
-                    
-                    if (result.detailedData.extras.cd_count >= 0) {
-                        currentFormFields.push({
-                            id: cdCountFieldId,
-                            type: 'number',
-                            name: 'extra-cd-count',
-                            label: `Requested After Party CD(s) (${cdCost} EGP Each):`,
-                            required: false,
-                            value: result.detailedData.extras.cd_count === 0 ? 'No' : result.detailedData.extras.cd_count,
-                            setValue: null,
-                            widthOfField: 2,
-                            httpName: 'extra-cd-count',
-                            labelOutside: true,
-                            labelOnTop: true,
-                            dontLetTheBrowserSaveField: true,
-                            minimumValue: 0,
-                            maximumValue: 10,
-                            onChangeResult: [
-                                {
-                                    idOfTheFieldThatShouldChangeBasedOnThisNewValue: cdCountFieldCostId,
-                                    whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'multiply',
-                                    firstValueToMultiplyWith: cdCost,
-                                    isCurrency: true,
-                                },
-                                {
-                                    idOfTheFieldThatShouldChangeBasedOnThisNewValue: totalCostFieldId,
-                                    whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'add & multiply',
-                                    fieldIdsToAddAndMultiplyTogether: {
-                                        [cdCountFieldId]: cdCost,
-                                        [additionalAttendeesFieldId]: additionalAttendeeCost,
-                                    },
-                                    isCurrency: true,
-                                },
-                                {
-                                    idOfTheFieldThatShouldChangeBasedOnThisNewValue: paymentStatusFieldId,
-                                    whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue: 'set',
-                                    fieldIdsToCheckIfBiggerThanZero: [additionalAttendeesFieldId, cdCountFieldId],
-                                    valueToSetOnValuesBiggerThanZero: pendingPaymentStatus,
-                                    valueToSetOnValuesZero: notSignedUpStatus,
-                                }
-                            ]
-                        })
-                    }
-                    
-                    
-                    if (result.detailedData.extras.cd_count >= 0) {
-                        currentFormFields.push({
-                            id: cdCountFieldCostId,
-                            type: 'text',
-                            name: 'extra-cd-count-cost',
-                            label: 'Total After Party CD(s) Cost:',
-                            required: false,
-                            value: result.detailedData.extras.cd_count === 0 ? 'No' : `${(result.detailedData.extras.cd_count * cdCost)} EGP`,
-                            setValue: null,
-                            widthOfField: 2,
-                            httpName: 'extra-cd-count-cost',
-                            labelOutside: true,
-                            labelOnTop: true,
-                            dontLetTheBrowserSaveField: true,
-                            readOnlyField: true,
-                        })
-                    }
-                    
-                    if (result.detailedData.extras.payment_status) {
-                        
-                        currentFormFields.push({
-                            id: paymentStatusFieldId,
-                            type: 'text',
-                            name: 'extra-payment-status',
-                            label: 'Extras Payment Status:',
-                            required: false,
-                            value: result.detailedData.extras.payment_status,
-                            setValue: null,
-                            widthOfField: 2,
-                            httpName: 'extra-payment-status',
-                            labelOutside: true,
-                            labelOnTop: true,
-                            dontLetTheBrowserSaveField: true,
-                            readOnlyField: true,
-                            
-                            
-                        })
-                    }
-                    
-                    if (result.detailedData.extras) {
-                        currentFormFields.push({
-                            id: totalCostFieldId,
-                            type: 'text',
-                            name: 'extra-total-cost',
-                            label: 'Total Cost:',
-                            required: false,
-                            value: `${(result.detailedData.extras.cd_count * cdCost) + (result.detailedData.extras.additional_attendees * additionalAttendeeCost)} EGP`,
-                            setValue: null,
-                            widthOfField: 2,
-                            httpName: 'extra-total-cost',
-                            labelOutside: true,
-                            labelOnTop: true,
-                            dontLetTheBrowserSaveField: true,
-                            readOnlyField: true,
-                        })
-                    }
-                }
                 setFetchBookingBySessionError(null);
-                setExtrasFormField(currentFormFields);
             }
-            
+
         } catch (error) {
             setFetchBookingBySessionError(error.message);
             setExtrasFormField(null);
         } finally {
             setIsLoading(false);
         }
-        
+
     }
-    
+
     const handleExtrasFormSubmit = async (formData) => {
         try {
             if (detailedData.booking && detailedData.booking.booking_id) {
                 setIsLoading(true);
                 setFetchBookingBySessionError(null);
-                
+
                 const result = await submitUpdateBookingExtrasRequest(formData, detailedData.booking.booking_id, navigate);
-                
+
                 if (result.success) {
                     setResetFormFromParent(true);
                     setFormReadOnly(true);
@@ -253,10 +271,10 @@ function BookingExtras() {
                     setDetailedData(null);
                     fetchBookingBySessionId();
                 } else {
-                    throw new Error(result.message || result || 'Error while submitting the form');
+                    throw new Error(result.message || result || t("events-pages.booking-pages.booking-extras-page.error-while-submitting-the-form"));
                 }
             } else {
-                throw new Error('Booking ID is not available');
+                throw new Error(t("events-pages.booking-pages.booking-extras-page.booking-id-is-not-available"));
             }
         } catch (error) {
             throw new Error(error.message || 'Error while submitting the form');
@@ -264,9 +282,9 @@ function BookingExtras() {
             setIsLoading(false);
         }
     }
-    
 
-    
+
+
     useEffect(() => {
         if (detailedData && detailedData.extras) {
             if (detailedData.extras.payment_status !== confirmedStatus) {
@@ -276,7 +294,7 @@ function BookingExtras() {
             }
         }
     }, [detailedData])
-    
+
     return (
         <>
             {isLoading && (<Spinner/>)}
@@ -293,14 +311,13 @@ function BookingExtras() {
                                                        ) : (
                                                            <div className={'booking-extras-form-wrapper'}>
                                                                <h3>
-                                                                   Booking Extras
+                                                                   {t("events-pages.booking-pages.booking-extras-page.title")}
                                                                </h3>
                                                                { extrasFormField && extrasFormField.length > 0 &&
                                                                    (
                                                                        <>
                                                                            <Form fields={ extrasFormField }
-                                                                                 lang={ 'english' }
-                                                                                 formTitle={ 'Booking Extras' }
+                                                                                 formTitle={ t("events-pages.booking-pages.booking-extras-page.title") }
                                                                                  mailTo={ '' }
                                                                                  noCaptcha={ true }
                                                                                  noInputFieldsCache={ true }
@@ -312,12 +329,12 @@ function BookingExtras() {
                                                                                  hasDifferentOnCancelBehaviour={true}
                                                                                  hasDifferentSubmitButtonText={true}
                                                                                  differentSubmitButtonText={[
-                                                                                     'Save', 'Saving...'
+                                                                                     t("events-pages.booking-pages.booking-extras-page.save-btn"), t("events-pages.booking-pages.booking-extras-page.saving-btn")
                                                                                  ]}
                                                                                  resetFormFromParent={resetFormFromParent}
                                                                                  setResetFormFromParent={setResetFormFromParent}
                                                                            />
-                                                                           
+
                                                                            {detailedData?.extras?.payment_status === confirmedStatus && (
                                                                                <div className={'confirmation-buttons-wrapper-in-booking-extras-page'}>
                                                                                    <button
@@ -329,7 +346,7 @@ function BookingExtras() {
                                                                                            bookingUsername,
                                                                                            detailedData,
                                                                                            setFetchBookingBySessionError,
-                                                                                       
+
                                                                                        )}
                                                                                        disabled={isLoading}
                                                                                    >
@@ -351,11 +368,11 @@ function BookingExtras() {
                                                                                    {/*</button>*/}
                                                                                </div>
                                                                            )}
-                                                                           
+
                                                                            {formAllowEdit && (
                                                                                ( formReadOnly ? (
                                                                                        <button className={'booking-extras-edit-form-button'} onClick={ () => {setFormReadOnly( false );}}>
-                                                                                           Edit
+                                                                                           {t("events-pages.booking-pages.booking-extras-page.edit-btn")}
                                                                                        </button>
                                                                                    ) : (
                                                                                        <button className={'booking-extras-cancel-form-button'} onClick={ () => {
@@ -364,9 +381,9 @@ function BookingExtras() {
                                                                                            setAllowEdit( false );
                                                                                            setExtrasFormField(null);
                                                                                            fetchBookingBySessionId();
-                                                                                           
+
                                                                                        }}>
-                                                                                           Cancel
+                                                                                           {t("events-pages.booking-pages.booking-extras-page.cancel-btn")}
                                                                                        </button>
                                                                                    )
                                                                                )
@@ -387,4 +404,3 @@ function BookingExtras() {
 }
 
 export default BookingExtras;
-

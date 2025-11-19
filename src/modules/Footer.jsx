@@ -7,6 +7,7 @@ function Footer() {
     const { t, i18n } = useTranslation();
     const currentYear = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
         year: 'numeric',
+        timeZone: 'Africa/Cairo'
     })
     .format(new Date());
 

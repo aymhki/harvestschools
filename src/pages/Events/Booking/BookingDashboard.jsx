@@ -4,8 +4,10 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
 import {headToBookingLoginOnInvalidSessionFromBookingDashboard, resetSession, bookingLoginPageUrl} from "../../../services/Utils.jsx";
+import {useTranslation} from "react-i18next";
 
 function BookingDashboard() {
+    const {t} = useTranslation()
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -24,40 +26,42 @@ function BookingDashboard() {
                     <OptionsGrid
                         options={[
                             {
-                                title: "Booking Extras",
+                                title: t("events-pages.booking-pages.dashboard-page.extras-option"),
                                 image: "/assets/images/EventsPages/BookingExtras1.png",
-                                description: "Sign up for booking extras.",
+                                description: t("events-pages.booking-pages.dashboard-page.extras-option-description"),
                                 link: "/events/booking/extras",
-                                buttonText: "Access",
+                                buttonText: t("common.access"),
                                 titleInArabic: false,
                                 descriptionInArabic: false
                             },
                             {
-                                title: "Booking Info",
+                                title: t("events-pages.booking-pages.dashboard-page.booking-info-option"),
                                 image: "/assets/images/EventsPages/BookingInfo1.png",
-                                description: "Check your booking status and info.",
+                                description: t("events-pages.booking-pages.dashboard-page.booking-info-option-description"),
                                 link: "/events/booking/info",
-                                buttonText: "Access",
+                                buttonText: t("common.access"),
                                 titleInArabic: false,
                                 descriptionInArabic: false
                             },
                             {
-                                title: "Booking Media",
+                                title: t("events-pages.booking-pages.dashboard-page.media-option"),
                                 image: "/assets/images/EventsPages/BookingMedia1.png",
-                                description: "Access booking media.",
+                                description: t("events-pages.booking-pages.dashboard-page.media-option-description"),
                                 link: "/events/booking/media",
-                                buttonText: "Access",
+                                buttonText: t("common.access"),
                                 titleInArabic: false,
                                 descriptionInArabic: false
                             },
                         ]}
-                        title={"Dashboard"}
+                        title={t("events-pages.booking-pages.dashboard-page.title")}
                         divElements={[(
                             <div className={"booking-dashboard-page-footer"} key={1}>
                                 <button onClick={() => {
                                     resetSession('harvest_schools_booking');
                                     navigate(bookingLoginPageUrl);
-                                }}>Logout</button>
+                                }}>
+                                    {t("events-pages.booking-pages.dashboard-page.logout-btn")}
+                                </button>
                             </div>
                         )]}
                         titleInArabic={false}
