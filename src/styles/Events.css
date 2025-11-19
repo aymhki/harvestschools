@@ -236,4 +236,9 @@
         color: var(--harvest-white-color);
     }
 
+    .booking-confirmation-page {
+        background-color: var(--light-dark-accent-color);
+        color: var(--harvest-white-color);
+    }
+
 }

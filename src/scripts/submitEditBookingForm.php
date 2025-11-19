@@ -789,7 +789,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $newAdditionalAttendees = isset($formData['Additional Attendees']) ? intval($formData['Additional Attendees']) : -1;
                     $newPaymentStatus = $formData['Extras Payment Status'] ?? '';
 
-
+                    if ( ($newCdCount > 0 || $newAdditionalAttendees > 0) && $newPaymentStatus === 'Not Signed Up') {
+                        $errorInfo['success'] = false;
+                        $errorInfo['message'] = 'You can\'t sign up for extras without updating the extras status';
+                        $errorInfo['code'] = 400;
+                        performRollback($conn, $data);
+                        echo json_encode($errorInfo);
+                        return;
+                    }
 
                     if ($newCdCount < 0 || $newAdditionalAttendees < 0 || $newPaymentStatus === '') {
                         $errorInfo['success'] = false;

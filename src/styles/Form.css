@@ -15,6 +15,7 @@
 
 }
 
+
 .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
     margin: 1rem;
     will-change: filter;
@@ -33,6 +34,8 @@
     cursor: text;
 }
 
+
+
 .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover, .select-multiple-form-field:hover, .file-form-field-styled:hover {
     filter: drop-shadow(0 0 0.5rem var(--primary-color) );
 }
@@ -47,6 +50,17 @@
 
 .text-form-field {
 
+}
+
+.text-form-field.read-only-field.always-english  {
+    direction: ltr;
+    text-align: left;
+    font-family: var(--english-normal-font);
+}
+
+.number-input-container.read-only-field.always-english,  .number-input-container.always-english, .number-form-field.read-only-field.always-english {
+    direction: ltr;
+    font-family: var(--english-normal-font);
 }
 
 .textarea-form-field {
