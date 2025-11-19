@@ -63,7 +63,7 @@ function Form({
     const enteredCaptcha = useRef('');
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -155,9 +155,23 @@ function Form({
     }, []);
 
     useEffect(() => {
-        resetFormCommon(true);
-        clearCache()
-    }, [t]);
+        setDynamicFields(currentFields =>
+            currentFields.map(currentField => {
+                const newFieldData = fields.find(f => f.id === currentField.id);
+                if (newFieldData) {
+                    return {
+                        ...currentField,
+                        label: newFieldData.label,
+                        displayLabel: newFieldData.displayLabel,
+                        placeholder: newFieldData.placeholder,
+                        errorMsg: newFieldData.errorMsg,
+                        choices: newFieldData.choices,
+                    };
+                }
+                return currentField;
+            })
+        );
+    }, [t, fields]);
     
     const resetForm = () => {
         resetFormCompletely();
@@ -235,7 +249,7 @@ function Form({
             ...baseProps,
             type,
             placeholder: getPlaceholder(field),
-            className: `text-form-field ${field.readOnlyField ? 'read-only-field' : ''}`
+            className: `text-form-field ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`,
         };
         
         if (field.dontLetTheBrowserSaveField) {
@@ -280,7 +294,7 @@ function Form({
         };
         
         const numberInput = (
-            <div className={`number-input-container ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${ (field.readOnlyField || formIsReadOnly || submitting) ? 'read-only-field' : ''}`}>
+            <div className={`number-input-container ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${ (field.readOnlyField || formIsReadOnly || submitting) ? 'read-only-field' : ''} ${(field.alwaysEnglish) ? 'always-english' : ''}`}>
                 <button className="number-input-reduce-button" type="button" onClick={handleNumberChange(-1)}
                 disabled={field.readOnlyField || submitting || formIsReadOnly || false}
                 >
@@ -291,7 +305,7 @@ function Form({
                     {...baseProps}
                     type="text"
                     placeholder={getPlaceholder(field)}
-                    className={`number-form-field ${ (field.readOnlyField || formIsReadOnly || submitting) ? 'read-only-field' : ''}`}
+                    className={`number-form-field ${ (field.readOnlyField || formIsReadOnly || submitting) ? 'read-only-field' : ''} ${(field.alwaysEnglish) ? 'always-english' : ''}`}
                     min={field.minimumValue || ''}
                     max={field.maximumValue || ''}
                 />
@@ -538,7 +552,9 @@ function Form({
             <div className= {`form-title-section ${widthClass}`}
                  ref={fieldRefs.current[field.id]}
                  id={field.id}>
-                <h2>{field.label}</h2>
+                <h2>
+                    {getWhichLabelToUse(field)}
+                </h2>
             </div>
         );
     }
@@ -1275,6 +1291,7 @@ const fieldShape = {
         value: PropTypes.string.isRequired,
         ruleResult: PropTypes.arrayOf(PropTypes.object).isRequired
     })),
+    alwaysEnglish: PropTypes.bool,
 };
 
 Form.propTypes = {

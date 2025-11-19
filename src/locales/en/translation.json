@@ -77,10 +77,11 @@
     "explore": "Explore",
     "contact-us": "Contact Us",
     "loading": "Loading...",
-    "this-page-is-under-construction": "This page is under construction.",
+    "this-page-is-under-construction": "This page is under construction",
     "last-updated": "This page was last updated on",
     "and-more": "and more...",
-    "select": "Select"
+    "select": "Select",
+    "access": "Access"
   },
   "all-forms": {
     "submit": "Submit",
@@ -90,27 +91,27 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "captcha-error": "Captcha is incorrect",
-    "general-error": "Form submission failed. Please try again.",
+    "general-error": "Form submission failed. Please try again",
     "month": "Month",
     "day": "Day",
     "year": "Year",
     "fields-must-not-match-error": "Field '{{field1}}' must not match '{{field2}}'",
     "fields-must-match-error": "Field '{{field1}}' must match '{{field2}}'",
-    "success-message": "Form submitted successfully!"
-
+    "success-message": "Form submitted successfully!",
+    "egp": "EGP"
   },
   "academics-pages": {
     "national-section": "National",
     "british-section": "British",
     "american-section": "American",
-    "national-description": "Information about the national curriculum.",
-    "british-description": "Information about the British curriculum.",
-    "american-description": "Information about the American curriculum.",
-    "partners-description": "Information about our partners.",
-    "staff-description": "Information about our staff.",
-    "facilities-description": "Information about our facilities.",
-    "web-mail-description": "Access your Harvest Schools email.",
-    "admin-login-description": "Web app administration portal.",
+    "national-description": "Information about the national curriculum",
+    "british-description": "Information about the British curriculum",
+    "american-description": "Information about the American curriculum",
+    "partners-description": "Information about our partners",
+    "staff-description": "Information about our staff",
+    "facilities-description": "Information about our facilities",
+    "web-mail-description": "Access your Harvest Schools email",
+    "admin-login-description": "Web app administration portal",
     "national": {
       "harvest-language-schools": "Harvest Language Schools",
       "safe-environment": "Safe Environment",
@@ -622,7 +623,7 @@
           "drama-option": "Drama",
           "drama-option-description": "Explore drama books",
           "levels-option": "Levels",
-          "levels-option-description": "Explore books based on your reading level.",
+          "levels-option-description": "Explore books based on your reading level",
           "general-option": "General",
           "general-option-description": "Explore general books"
         },
@@ -1296,6 +1297,200 @@
       }
     }
   },
+  "events-pages": {
+    "options-page": {
+        "title": "Events",
+        "national-calendar-option": "National Calendar",
+        "national-calendar-option-description": "Detailed timeline of the National academic year",
+        "british-calendar-option": "British Calendar",
+        "british-calendar-option-description": "Detailed timeline of the British academic year",
+        "american-calendar-option": "American Calendar",
+        "american-calendar-option-description": "Detailed timeline of the American academic year",
+        "kg-calendar-option": "KG Calendar",
+        "kg-calendar-option-description": "Detailed timeline of the Kindergarten academic year",
+        "booking-login-option": "Booking",
+        "booking-login-option-description": "Access booking info, extras, and media"
+    },
+    "common": {
+      "download-calendar-btn": "Download Calendar",
+      "subjected-to-change-notice": "Note: Some dates are subjected to change.",
+      "holiday-shifted-notice": "Note: Any official holiday in the middle of the week will be shifted to Thursday according to the Prime Minister’s Decision."
+    },
+    "national-calendar-page": {
+      "title": "National Calendar"
+    },
+    "british-calendar-page": {
+      "title": "British Calendar",
+      "calendar": [
+        {"title": "Title", "start-date": "Start Date", "end-date": "End Date"},
+        {"title": "1st School Day: Yr. 6, 7, 8, & 9", "start-date": "2021-09-01", "end-date": "2021-09-01"},
+        {"title": "1st School Day: Yr. 3, 4, & 5", "start-date": "2021-09-02", "end-date": "2021-09-02"},
+        {"title": "1st School Day: Yr. 1 & 2", "start-date": "2021-09-05", "end-date": "2021-09-05"},
+        {"title": "6th of October Holiday", "start-date": "2021-10-07", "end-date": "2021-10-07"},
+        {"title": "1st MidTerm Exams", "start-date": "2021-10-17", "end-date": "2021-10-20"},
+        {"title": "Prophet's Mohammed Birthday", "start-date": "2021-10-21", "end-date": "2021-10-21"},
+        {"title": "1st Term Exams", "start-date": "2021-12-05", "end-date": "2021-12-08"},
+        {"title": "1st Term Break", "start-date": "2021-12-09", "end-date": "2021-12-12"},
+        {"title": "1st Parent/Teacher Meeting", "start-date": "2021-12-12", "end-date": "2021-12-12"},
+        {"title": "2nd Term Begins", "start-date": "2021-12-13", "end-date": "2021-12-13"},
+        {"title": "2nd MidTerm Exams", "start-date": "2022-01-23", "end-date": "2022-01-27"},
+        {"title": "Mid Year Vacation", "start-date": "2022-02-06", "end-date": "2022-02-19"},
+        {"title": "2nd Term Exams", "start-date": "2022-03-27", "end-date": "2022-03-31"},
+        {"title": "2nd Term Break", "start-date": "2022-04-01", "end-date": "2022-04-07"},
+        {"title": "2nd Parent Teacher Meeting", "start-date": "2022-04-05", "end-date": "2022-04-05"},
+        {"title": "3rd Term Begins", "start-date": "2022-04-10", "end-date": "2022-04-10"},
+        {"title": "Easter Holiday", "start-date": "2022-04-25", "end-date": "2022-04-25"},
+        {"title": "Labor Day & Eid El Fetr Vacation", "start-date": "2022-05-01", "end-date": "2022-05-07"},
+        {"title": "3rd Term Exams", "start-date": "2022-06-12", "end-date": "2022-06-16"}
+      ]
+    },
+    "american-calendar-page": {
+      "title": "American Calendar",
+      "calendar": [
+        {"title": "Title", "start-date": "Start Date", "end-date": "End Date"},
+        {"title": "1st School Day: Gr. 1, 2, and 3", "start-date": "2021-09-05", "end-date": "2021-09-05"},
+        {"title": "1st School Day: Gr. 4, 5, and 6", "start-date": "2021-09-06", "end-date": "2021-09-06"},
+        {"title": "1st School Day: Gr. 7, 8, 9, and 10", "start-date": "2021-09-07", "end-date": "2021-09-07"},
+        {"title": "Armed Forces Day", "start-date": "2021-10-06", "end-date": "2021-10-06"},
+        {"title": "Prophet Muhammed's Birthday", "start-date": "2021-10-19", "end-date": "2021-10-19"},
+        {"title": "Halloween Day", "start-date": "2021-10-28", "end-date": "2021-10-28"},
+        {"title": "1st Quarter Exams", "start-date": "2021-11-14", "end-date": "2021-11-18"},
+        {"title": "Parents Meeting", "start-date": "2021-11-25", "end-date": "2021-11-25"},
+        {"title": "Christmas Day", "start-date": "2021-12-23", "end-date": "2021-12-23"},
+        {"title": "Coptic Christmas Day", "start-date": "2022-01-07", "end-date": "2022-01-07"},
+        {"title": "Revolution Day", "start-date": "2022-01-25", "end-date": "2022-01-25"},
+        {"title": "2nd Quarter Exams", "start-date": "2022-01-30", "end-date": "2022-02-03"},
+        {"title": "Mid-Year Vacation", "start-date": "2022-02-05", "end-date": "2022-02-19"},
+        {"title": "Beginning of 3rd Quarter", "start-date": "2022-02-20", "end-date": "2022-02-20"},
+        {"title": "Mother's Day", "start-date": "2022-03-21", "end-date": "2022-03-21"},
+        {"title": "3rd Quarter Exams", "start-date": "2022-04-17", "end-date": "2022-04-21"},
+        {"title": "Easter Vacation", "start-date": "2022-04-25", "end-date": "2022-04-25"},
+        {"title": "Labor Day", "start-date": "2022-05-01", "end-date": "2022-05-01"},
+        {"title": "Feast Vacation", "start-date": "2022-05-03", "end-date": "2022-05-05"},
+        {"title": "Beginning of 4th Quarter", "start-date": "2022-05-08", "end-date": "2022-05-08"},
+        {"title": "Parents Meeting", "start-date": "2022-05-12", "end-date": "2022-05-12"},
+        {"title": "4th Quarter Exams", "start-date": "2022-06-19", "end-date": "2022-06-22"}
+      ]
+    },
+    "kg-calendar-page": {
+      "title": "KG Calendar",
+      "calendar": [
+        {"title": "Title", "start-date": "Start Date", "end-date": "End Date"},
+        {"title": "1st School Day: Play School", "start-date": "2021-09-12", "end-date": "2021-09-12"},
+        {"title": "1st School Day: FS2 & K", "start-date": "2021-09-14", "end-date": "2021-09-14"},
+        {"title": "1st School Day: FS1 & Pre - K", "start-date": "2021-09-15", "end-date": "2021-09-15"},
+        {"title": "Armed Forces Day", "start-date": "2021-10-06", "end-date": "2021-10-06"},
+        {"title": "1st School Day: KG2", "start-date": "2021-10-10", "end-date": "2021-10-10"},
+        {"title": "1st School Day: KG1", "start-date": "2021-10-12", "end-date": "2021-10-12"},
+        {"title": "Prophet Mohammed's Birthday", "start-date": "2021-10-19", "end-date": "2021-10-19"},
+        {"title": "Coptic Christmas Day", "start-date": "2022-01-07", "end-date": "2022-01-07"},
+        {"title": "End of 1st Term", "start-date": "2022-01-13", "end-date": "2022-01-13"},
+        {"title": "Revolution Day", "start-date": "2022-01-25", "end-date": "2022-01-25"},
+        {"title": "Mid-Year Holiday", "start-date": "2022-02-05", "end-date": "2022-02-17"},
+        {"title": "1st School Day For The Second Term", "start-date": "2022-02-19", "end-date": "2022-02-19"},
+        {"title": "Easter Holiday", "start-date": "2022-04-25", "end-date": "2022-04-25"},
+        {"title": "Sinai Liberation Day", "start-date": "2022-04-25", "end-date": "2022-04-25"},
+        {"title": "Labor Day", "start-date": "2022-05-01", "end-date": "2022-05-01"},
+        {"title": "Feast Holiday", "start-date": "2022-05-03", "end-date": "2022-05-03"},
+        {"title": "End of 2nd Term", "start-date": "2022-06-09", "end-date": "2022-06-09"},
+        {"title": "Revolution Day", "start-date": "2022-06-30", "end-date": "2022-06-30"}
+      ]
+    },
+    "booking-pages": {
+      "login-page": {
+        "title": "Booking Login",
+        "username-field": "Username",
+        "password-field": "Password",
+        "login-btn": "Login",
+        "logging-in-btn": "Logging in..."
+      },
+      "dashboard-page": {
+        "title": "Dashboard",
+        "logout-btn": "Logout",
+        "booking-info-option": "Booking Info",
+        "booking-info-option-description": "Check your booking status and details",
+        "extras-option": "Booking Extras",
+        "extras-option-description": "Sign up for booking extras",
+        "media-option": "Booking Media",
+        "media-option-description": "Access booking media"
+      },
+      "booking-media-page": {
+        "title": "Booking Media",
+        "rehearsals": "Rehearsals",
+        "stay-tuned-for-more": "Stay tuned for more!"
+      },
+      "booking-status-info-page": {
+        "title": "Booking Info",
+        "username": "Username:",
+        "auth-id": "Auth ID:",
+        "booking-id": "Booking ID:",
+        "booking-status": "Booking Status:",
+        "parent": "Parent: {{parent-number}}",
+        "parent-id": "Parent ID:",
+        "parent-name": "Parent Name:",
+        "parent-email": "Parent Email:",
+        "parent-phone": "Parent Phone:",
+        "student": "Student: {{student-number}}",
+        "student-id": "Student ID:",
+        "student-name": "Student Name:",
+        "student-grade": "Student Grade:",
+        "student-school-division": "Student School Division:",
+        "extras": "Extras",
+        "extra-id": "Extra Booking ID:",
+        "extra-payment-status": "Extra Payment Status:",
+        "requested-after-party-cd": "Requested After Party CD(s):",
+        "requested-additional-attendees": "Requested Additional Attendee(s):",
+        "last-updated-at": "Last Updated At:",
+        "total-amounts": "Total Amounts",
+        "total-for-base-fare": "Total for Base Fare:",
+        "total-for-extras": "Total Extras Cost:",
+        "total-cost-for-base-and-extras": "Total Cost for Base and Extras:",
+        "download-confirmation-btn": "Download Confirmation",
+        "retry-btn": "Retry",
+        "error-fetching-booking-info": "Error fetching booking info."
+      },
+      "booking-extras-page": {
+        "title": "Booking Extras",
+        "extra-additional-attendees": "Requested Additional Attendee(s) ({{cost-per-attendee}} EGP each):",
+        "extra-additional-attendees-cost": "Total Additional Attendee(s) Cost:",
+        "extra-cd-count": "Requested After Party CD(s) ({{cost-per-cd}} EGP each):",
+        "extra-cd-count-cost": "Total After Party CD(s) Cost:",
+        "extra-payment-status": "Extra Payment Status:",
+        "extra-total-cost": "Total Cost:",
+        "save-btn": "Save",
+        "saving-btn": "Saving...",
+        "edit-btn": "Edit",
+        "cancel-btn": "Cancel",
+        "error-while-submitting-the-form": "Error while submitting the form",
+        "booking-id-is-not-available": "Booking ID is not available",
+        "egp": "EGP"
+      },
+      "booking-confirmation-page": {
+        "could-not-find-nor-confirm-booking": "Could not find nor confirm the booking",
+        "booking-found": "Booking Found",
+        "paid-for-base-fare-and-extras": "Paid for base fare and extras",
+        "paid-for-base-fare-only": "Paid for base fare only",
+        "unknown": "Unknown",
+        "number-of-additional-attendees-allowed": "Number of Additional Attendee(s) Allowed:",
+        "signed-up-for": "Signed Up For:",
+        "but-did-not-pay-for-extras-yet": "but did not pay for extras yet",
+        "did-not-sign-up-for-additional-attendees": "Did not sign up for Additional Attendee(s)",
+        "found-additional-attendees-number": "Found Additional Attendee(s) Number:",
+        "but-did-not-sign-up-for-extras": "but did not sign up for extras",
+        "number-of-paid-for-cds": "Number of Paid for CD(s):",
+        "did-not-sign-up-for-cds": "Did not sign up for CD(s)",
+        "found-cds-number": "Found CD(s) Number:",
+        "booking-id": "Booking ID:",
+        "extras-status": "Extras Status:",
+        "total-paid-for-base-fare": "Total Paid For Base Fare:",
+        "total-cost-for-extras": "Total Cost For Extras:",
+        "total-cost-for-base-and-extras": "Total Cost For Base Fare and Extras:",
+        "loading-confirmation-details": "Loading confirmation details...",
+        "missing-required-confirmation-parameters": "Missing required confirmation parameters",
+        "failed-to-fetch-confirmation-data": "Failed to fetch confirmation data"
+      }
+    }
+  },
   "admin": {
     "login-page": {
       "title": "Admin Login",
@@ -1303,7 +1498,6 @@
       "logging-in-btn": "Logging in...",
       "username-field": "Username",
       "password-field": "Password"
-
     }
   }
 }
