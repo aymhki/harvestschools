@@ -130,6 +130,12 @@
     flex-direction: column;
 }
 
+.dynamic-booking-confirmation-result-value-field,  .dynamic-booking-confirmation-result-value-field:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+    text-align: left;
+}
+
 .booking-confirmation-wrapper {
     display: flex;
     flex-direction: column;
