@@ -6,6 +6,10 @@
     text-align: left;
 }
 
+:lang(ar) {
+    letter-spacing: 0 !important;
+}
+
 @font-face {
     font-family: 'Futura';
     src: url('../../public/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
@@ -312,7 +316,7 @@ label:lang(ar) {
     }
 
     h2:lang(ar) {
-        letter-spacing: 0.1rem;
+        letter-spacing: 0rem;
     }
 
 
@@ -331,7 +335,7 @@ label:lang(ar) {
     }
 
     h1:lang(ar) {
-        letter-spacing: 0.1rem;
+        letter-spacing: 0rem;
     }
 
     h2 {
@@ -339,7 +343,7 @@ label:lang(ar) {
     }
 
     h2:lang(ar) {
-        letter-spacing: 0.1rem;
+        letter-spacing: 0rem;
     }
 
     h3 {
@@ -351,7 +355,11 @@ label:lang(ar) {
     }
 
     p:lang(ar) {
-        letter-spacing: 0.1rem;
+        letter-spacing: 0rem;
+    }
+
+    h3:lang(ar) {
+        letter-spacing: 0rem;
     }
 
 }

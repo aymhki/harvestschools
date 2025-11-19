@@ -1242,7 +1242,8 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
         yPosition += 30;
         
         try {
-            const qrData = `https://harvestschools.com/events/booking-confirmation/?bookingId=${bookingId}&extrasId=${detailedData?.extras?.extra_id || ''}&authId=${detailedData?.booking?.password_hash || ''}&username=${bookingUsername}`;
+            const baseQRUrl = isDevelopment() ? BASE_URLS.development : 'https://harvestschools.com';
+            const qrData = `${baseQRUrl}/events/booking-confirmation/?bookingId=${bookingId}&extrasId=${detailedData?.extras?.extra_id || ''}&authId=${detailedData?.booking?.password_hash || ''}&username=${bookingUsername}`;
             const qrCodeDataURL = await QRCode.toDataURL(qrData, {
                 width: 300,
                 margin: 2,
