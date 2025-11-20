@@ -1496,6 +1496,56 @@
       }
     }
   },
+  "gallery-pages": {
+    "options-page": {
+      "title": "المعرض",
+      "photo-gallery-option": "الصور",
+      "photo-gallery-option-description": "شاهد صور من الأيام المميزه والفعاليات",
+      "video-gallery-option": "الڤيديوهات",
+      "video-gallery-option-description": "شاهد ڤيديوهات من الحفلات والمشاريع المدرسيه",
+      "360-tour-option": "جولة ٣٦٠",
+      "360-tour-option-description": "خذ جولة افتراضية في المدرسة"
+    },
+    "photo-gallery-page": {
+      "title": "معرض الصور",
+      "about-that-team-work": "عن العمل الجماعي",
+      "harvest-academy-moments": "لحظات من أكاديمية هارڤست",
+      "best-fun-day-ever": "يوم من المرح",
+      "first-day": "اليوم الأول",
+      "science-fair-and-art-gallery-2018": "معرض العلوم والفنون ٢٠١٨",
+      "harvest-schools-bazaar-2019": "بازار مدارس هارڤست ٢٠١٩",
+      "trip-to-farag-allah-factory-2019": "رحلة إلى مصنع فرج الله ٢٠١٩",
+      "trip-to-al-bawadi-factory-2019": "رحلة إلى مصنع البوادي ٢٠١٩",
+      "trip-to-khan-khadija-resort-2019": "رحلة إلى منتجع خان خديجة ٢٠١٩",
+      "techno-kids-competition-2019": "مسابقة تكنو كيدز ٢٠١٩",
+      "art-competition-2019": "مسابقة الفن ٢٠١٩",
+      "kindergarten-welcome-party-2019": "حفلة ترحيب رياض الأطفال ٢٠١٩"
+    },
+    "video-gallery-page": {
+      "title": "معرض الڤيديوهات",
+      "harvest-schools-bazaar-2019": "بازار مدارس هارڤست ٢٠١٩",
+      "stem-projects": "مشاريع العلوم والتكنولوجيا والهندسة والرياضيات",
+      "graduation-party-2019": "حفلة التخرج ٢٠١٩",
+      "no-bullying-interview": "مقابلة عن مكافحة التنمر",
+      "students-union-meet-up": "اجتماع اتحاد الطلبة",
+      "harvest-academy-moments": "لحظات من أكاديمية هارڤست",
+      "the-unhealthy-habits-taqadam-video": "عادات غير صحية - ڤيديو برنامج تقدم"
+    },
+    "360-tour-page": {
+      "title": "جولة ٣٦٠",
+      "computer-lab": "معمل الكمبيوتر",
+      "swimming-pool": "حمام السباحة",
+      "library": "المكتبة",
+      "science-labs": "مختبرات العلوم",
+      "football-court": "ملعب كرة القدم",
+      "basketball-court": "ملعب كرة السلة",
+      "classrooms": "الفصول الدراسية",
+      "hallways": "الممرات",
+      "next-btn": "التالي",
+      "previous-btn": "السابق",
+      "of-separator": "من"
+    }
+  },
   "admin": {
     "login-page": {
       "title": "تسجيل دخول الإدارة",
