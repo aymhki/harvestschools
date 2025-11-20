@@ -1496,6 +1496,56 @@
       }
     }
   },
+  "gallery-pages": {
+    "options-page": {
+      "title": "Gallery",
+      "photo-gallery-option": "Photos",
+      "photo-gallery-option-description": "View photos of our events and activities",
+      "video-gallery-option": "Videos",
+      "video-gallery-option-description": "View videos of the school projects and parties",
+      "360-tour-option": "360 Tour",
+      "360-tour-option-description": "Take a 360 Tour in the School"
+    },
+    "photo-gallery-page": {
+      "title": "Photos Gallery",
+      "about-that-team-work": "About that team work",
+      "harvest-academy-moments": "Harvest Academy Moments",
+      "best-fun-day-ever": "Best Fun Day Ever",
+      "first-day": "First Day",
+      "science-fair-and-art-gallery-2018": "Science Fair & Art Gallery 2018",
+      "harvest-schools-bazaar-2019": "Harvest Schools Bazaar 2019",
+      "trip-to-farag-allah-factory-2019": "Trip to Farag Allah Factory 2019",
+      "trip-to-al-bawadi-factory-2019": "Trip to Al Bawadi Factory 2019",
+      "trip-to-khan-khadija-resort-2019": "Trip to Khan Khadija Resort 2019",
+      "techno-kids-competition-2019": "Techno Kids Competition 2019",
+      "art-competition-2019": "Art Competition 2019",
+      "kindergarten-welcome-party-2019": "Kindergarten Welcome Party 2019"
+    },
+    "video-gallery-page": {
+      "title": "Videos Gallery",
+      "harvest-schools-bazaar-2019": "Harvest Schools Bazaar 2019",
+      "stem-projects": "STEM Projects",
+      "graduation-party-2019": "Graduation Party 2019",
+      "no-bullying-interview": "No Bullying Interview",
+      "students-union-meet-up": "Students' Union Meet Up",
+      "harvest-academy-moments": "Harvest Academy Moments",
+      "the-unhealthy-habits-taqadam-video": "The Unhealthy Habits Taqadam Video"
+    },
+    "360-tour-page": {
+      "title": "360 Tour",
+      "computer-lab": "Computer Lab",
+      "swimming-pool": "Swimming Pool",
+      "library": "Library",
+      "science-labs": "Science Labs",
+      "football-court": "Football Court",
+      "basketball-court": "Basketball Court",
+      "classrooms": "Classrooms",
+      "hallways": "Hallways",
+      "next-btn": "Next",
+      "previous-btn": "Previous",
+      "of-separator": "of"
+    }
+  },
   "admin": {
     "login-page": {
       "title": "Admin Login",
