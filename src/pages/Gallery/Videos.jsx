@@ -1,15 +1,16 @@
 import '../../styles/Gallery.css'
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 function Videos() {
+    const {t} = useTranslation();
+
   return (
     <div className={'gallery-videos-page'}>
         <Helmet>
             <title>Harvest International School | Gallery | Videos</title>
-            <meta name="description"
-                  content="Take a look at memories, demos, tours, and more videos and photos of Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords"
-                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Gallery, Photos, Videos, 360 Tour, Memories, Demos, Tours, معرض, صور, فيديوهات, جولة 360, ذكريات, عروض, جولات"/>
+            <meta name="description" content="Take a look at memories, demos, tours, and more videos and photos of Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Gallery, Photos, Videos, 360 Tour, Memories, Demos, Tours, معرض, صور, فيديوهات, جولة 360, ذكريات, عروض, جولات"/>
             <meta name="author" content="Harvest International School"/>
             <meta name="robots" content="index, follow"/>
             <meta name="googlebot" content="index, follow"/>
@@ -17,7 +18,7 @@ function Videos() {
 
         <div className={'extreme-padding-container  make-this-container-have-gaps'}>
             <h1>
-                Videos
+                {t("gallery-pages.video-gallery-page.title")}
             </h1>
 
             <div className={"gallery-videos-page-video-and-title-container"}>
@@ -29,7 +30,7 @@ function Videos() {
                         referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/>
 
                 <h2 className="gallery-videos-page-video-title">
-                    Harvest Schools Bazzar 2019
+                    {t("gallery-pages.video-gallery-page.harvest-schools-bazaar-2019")}
                 </h2>
             </div>
 
@@ -43,7 +44,7 @@ function Videos() {
                     referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
 
                 <h2 className="gallery-videos-page-video-title">
-                    STEM Projects
+                    {t("gallery-pages.video-gallery-page.stem-projects")}
                 </h2>
 
             </div>
@@ -57,7 +58,7 @@ function Videos() {
                         referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/>
 
                 <h2 className="gallery-videos-page-video-title">
-                    Graduation Party 2019
+                    {t("gallery-pages.video-gallery-page.graduation-party-2019")}
                 </h2>
 
             </div>
@@ -71,7 +72,7 @@ function Videos() {
                     referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
 
                 <h2 className="gallery-videos-page-video-title">
-                    No Bullying Interview
+                    {t("gallery-pages.video-gallery-page.no-bullying-interview")}
                 </h2>
             </div>
 
@@ -85,7 +86,7 @@ function Videos() {
                     referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
 
                 <h2 className="gallery-videos-page-video-title">
-                    Students Union Meet Up
+                    {t("gallery-pages.video-gallery-page.students-union-meet-up")}
                 </h2>
             </div>
 
@@ -99,7 +100,7 @@ function Videos() {
                     referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
 
                 <h2 className="gallery-videos-page-video-title">
-                    Harvest Academy Announcement
+                    {t("gallery-pages.video-gallery-page.harvest-academy-moments")}
                 </h2>
             </div>
 
@@ -114,7 +115,7 @@ function Videos() {
                         referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
 
                 <h2 className="gallery-videos-page-video-title">
-                    The Unhealthy habits Taqadam Video
+                    {t("gallery-pages.video-gallery-page.the-unhealthy-habits-taqadam-video")}
                 </h2>
             </div>
 

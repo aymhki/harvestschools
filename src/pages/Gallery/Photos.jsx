@@ -1,16 +1,17 @@
 import '../../styles/Gallery.css';
 import PhotoCollage from "../../modules/PhotoCollage.jsx";
 import {Helmet} from "react-helmet-async";
+import {useTranslation} from "react-i18next";
 
 function Photos() {
+    const { t } = useTranslation();
+
   return (
     <div className="gallery-photos-page">
         <Helmet>
             <title>Harvest International School | Gallery | Photos</title>
-            <meta name="description"
-                  content="Take a look at memories, demos, tours, and more videos and photos of Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords"
-                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Gallery, Photos, Videos, 360 Tour, Memories, Demos, Tours, معرض, صور, فيديوهات, جولة 360, ذكريات, عروض, جولات"/>
+            <meta name="description" content="Take a look at memories, demos, tours, and more videos and photos of Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Gallery, Photos, Videos, 360 Tour, Memories, Demos, Tours, معرض, صور, فيديوهات, جولة 360, ذكريات, عروض, جولات"/>
             <meta name="author" content="Harvest International School"/>
             <meta name="robots" content="index, follow"/>
             <meta name="googlebot" content="index, follow"/>
@@ -18,9 +19,12 @@ function Photos() {
 
       <div className={'extreme-padding-container make-this-container-have-gaps'}>
 
-        <h1>Photos</h1>
+        <h1>
+            {t("gallery-pages.photo-gallery-page.title")}
+        </h1>
 
-        <PhotoCollage type={"slider"} title={"About That Team Work"} photos={[
+        <PhotoCollage type={"slider"} title={t("gallery-pages.photo-gallery-page.about-that-team-work")} photos={
+            [
           {
             src: "/assets/images/Gallery/Photos/TeamWork/TeamWork10.jpg",
             alt: "TeamWork10"
@@ -65,7 +69,10 @@ function Photos() {
 
         ]} />
 
-        <PhotoCollage type={"slider"} title={"Harvest Academy Moments"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.harvest-academy-moments")
+        } photos={
+            [
             {
               src: "/assets/images/Gallery/Photos/HarvestAcademy/HarvestAcademy6.jpg",
               alt: "HarvestAcademy6"
@@ -113,7 +120,10 @@ function Photos() {
 
             ]} />
 
-        <PhotoCollage type={"slider"} title={"Best Fun Day Ever"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.best-fun-day-ever")
+        } photos={
+            [
             {
               src: "/assets/images/Gallery/Photos/FunDay/FunDay10.jpg",
               alt: "FunDay10"
@@ -196,7 +206,10 @@ function Photos() {
             },
             ]} />
 
-        <PhotoCollage type={"slider"} title={"That First Day"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.first-day")
+        } photos={
+            [
             {
               src: "/assets/images/Gallery/Photos/FirstDay/FirstDay2.jpg",
               alt: "FirstDay2"
@@ -255,7 +268,10 @@ function Photos() {
             },
             ]} />
 
-        <PhotoCollage type={"slider"} title={"Science Fair & Art Gallery 2018"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.science-fair-and-art-gallery-2018")
+        } photos={
+            [
           {
             src: "/assets/images/Gallery/Photos/ScienceFairAndArtGallery/ScienceFairAndArtGallery14.jpg",
             alt: "ScienceFairAndArtGallery14"
@@ -340,7 +356,10 @@ function Photos() {
             },
             ]} />
 
-        <PhotoCollage type={"slider"} title={"Harvest Schools Bazaar 2019"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.harvest-schools-bazaar-2019")
+        } photos={
+            [
           {
             src: "/assets/images/Gallery/Photos/SchoolsBazaar/SchoolsBazaar16.jpg",
             alt: "SchoolsBazaar16"
@@ -555,7 +574,10 @@ function Photos() {
             },
             ]} />
 
-        <PhotoCollage type={"slider"} title={"Trip to Farag Allah Factory 2019"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.trip-to-farag-allah-factory-2019")
+        } photos={
+            [
           {
             src: "/assets/images/Gallery/Photos/FaragAllahFactoryTrip/FaragAllahFactoryTrip15.jpg",
             alt: "FaragAllahFactoryTrip15"
@@ -659,7 +681,10 @@ function Photos() {
                 },
             ]} />
 
-        <PhotoCollage type={"slider"} title={"Trip to Al Bawadi Factory 2019"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.trip-to-al-bawadi-factory-2019")
+        } photos={
+            [
           {
             src: "/assets/images/Gallery/Photos/BawadiFactoryTrip/BawadiFactoryTrip2.jpg",
             alt: "BawadiFactoryTrip2"
@@ -739,7 +764,10 @@ function Photos() {
             },
             ]} />
 
-        <PhotoCollage type={"slider"} title={"Trip to Khan Khadija Resort 2019"} photos={[
+        <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.trip-to-khan-khadija-resort-2019")
+        } photos={
+            [
           {
             src: "/assets/images/Gallery/Photos/KhanKhadijaResortTrip/KhanKhadijaResortTrip1.jpg",
             alt: "KhanKhadijaResortTrip1"
@@ -956,7 +984,10 @@ function Photos() {
 
         <div className={"narrow-sliders-grid"}>
 
-          <PhotoCollage type={"slider"} title={"Techno Kids Competition 2019"} photos={[
+          <PhotoCollage type={"slider"} title={
+            t("gallery-pages.photo-gallery-page.techno-kids-competition-2019")
+          } photos={
+              [
             {
               src: "/assets/images/Gallery/Photos/TechnoKidsCompetition/TechnoKidsCompetition3.jpg",
               alt: "TechnoKidsCompetition3"
@@ -977,7 +1008,10 @@ function Photos() {
 
             ]} />
 
-          <PhotoCollage type={"slider"} title={"Art Competition 2019"} photos={[
+          <PhotoCollage type={"slider"} title={
+              t("gallery-pages.photo-gallery-page.art-competition-2019")
+          } photos={
+              [
               {
                   src: "/assets/images/Gallery/Photos/ArtCompetition/ArtCompetition1.jpg",
                   alt: "ArtCompetition1"
@@ -1144,7 +1178,10 @@ function Photos() {
               },
               ]} />
 
-          <PhotoCollage type={"slider"} title={"Kindergarten Welcome Party 2019"} photos={[
+          <PhotoCollage type={"slider"} title={
+              t("gallery-pages.photo-gallery-page.kindergarten-welcome-party-2019")
+          } photos={
+              [
             {
               src: "/assets/images/Gallery/Photos/KindergartenWelcomeParty/KindergartenWelcomeParty15.jpg",
               alt: "KindergartenWelcomeParty15"
