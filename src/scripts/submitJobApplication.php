@@ -47,7 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             foreach ($_FILES as $fileKey => $file) {
                 if ($file['error'] == 0 && is_uploaded_file($file["tmp_name"])) {
-                    $label = isset($_POST['label_' . $fileKey]) ? $_POST['label_' . $fileKey] : 'File';
+
+                    $labelKey = 'label_' . $fileKey;
+                    if (strpos($fileKey, 'field_') === 0) {
+                        $fileId = substr($fileKey, 6);
+                        $labelKey = 'label_' . $fileId;
+                    }
+
+                    $label = isset($_POST[$labelKey]) ? $_POST[$labelKey] : 'File';
                     $subFolder = 'others/';
 
                     switch ($label) {
@@ -58,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         case 'Other Documents: Second':
                         case 'Other Documents: Third':
                             $subFolder = 'others/'; break;
+                        default: $subFolder = 'others/'; break;
                     }
 
                     $baseDir = "../../files_uploaded_from_harvestschools_webapp/job_applications/";
@@ -71,7 +79,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         }
                     }
 
-                    $uniqueFileName = isset($_POST['uniqueFileName_' . $fileKey]) ? $_POST['uniqueFileName_' . $fileKey] : basename($file["name"]);
+                    $uniqueFileNameKey = 'uniqueFileName_' . $fileKey;
+                    if (strpos($fileKey, 'field_') === 0) {
+                        $fileId = substr($fileKey, 6);
+                        if (isset($_POST['uniqueFileName_' . $fileId])) {
+                            $uniqueFileNameKey = 'uniqueFileName_' . $fileId;
+                        }
+                    }
+
+                    $uniqueFileName = isset($_POST[$uniqueFileNameKey]) ? $_POST[$uniqueFileNameKey] : basename($file["name"]);
                     $uniqueFileName = preg_replace('/[^a-zA-Z0-9_.-]/', '', $uniqueFileName);
                     $targetFile = $targetDir . $uniqueFileName;
 
@@ -162,6 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $headers .= "Reply-To: no-reply@harvestschools.com\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
+
             $body = "--$boundary\r\n";
             $body .= "Content-Type: text/plain; charset=UTF-8\r\n";
             $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
