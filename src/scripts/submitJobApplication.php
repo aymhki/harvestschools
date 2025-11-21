@@ -15,12 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
 
+        // 1. Start Transaction
         $conn->begin_transaction();
 
         $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'info@harvestschools.com';
         $subject = isset($_POST['formTitle']) ? $_POST['formTitle'] : 'Job Application Submission';
         $emailText = "New Job Application Received:\n\n";
 
+        // 2. Process $_POST Text Data
+        // We keep the data temporarily to help identifying files, but we track which fields are actually valid files later.
         $formData = [];
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
@@ -34,29 +37,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
+        // Defines which labels expect files
         $fileLabels = [
             'Personal Photo', 'CV', 'Cover Letter',
             'Other Documents: First', 'Other Documents: Second', 'Other Documents: Third'
         ];
-        foreach ($fileLabels as $fLabel) {
-            if (isset($formData[$fLabel])) unset($formData[$fLabel]);
-        }
 
+        // Track which file labels have been successfully handled
+        $uploadedFileLabels = [];
+
+        // 3. Process File Uploads
         if (!empty($_FILES)) {
             $emailText .= "\n--- Attachments (Links) ---\n";
 
             foreach ($_FILES as $fileKey => $file) {
                 if ($file['error'] == 0 && is_uploaded_file($file["tmp_name"])) {
 
+                    // --- STRATEGY A: ID Match ---
+                    // Try to find label by ID (e.g. field_123 -> label_123)
                     $labelKey = 'label_' . $fileKey;
                     if (strpos($fileKey, 'field_') === 0) {
                         $fileId = substr($fileKey, 6);
                         $labelKey = 'label_' . $fileId;
                     }
+                    $label = isset($_POST[$labelKey]) ? $_POST[$labelKey] : null;
 
-                    $label = isset($_POST[$labelKey]) ? $_POST[$labelKey] : 'File';
+                    // --- STRATEGY B: Name Match (Fallback) ---
+                    // If ID match failed or returned generic 'File', try to match the filename
+                    // against the text values we collected in $formData.
+                    $uniqueFileNameKey = strpos($fileKey, 'field_') === 0 ? 'uniqueFileName_' . substr($fileKey, 6) : 'uniqueFileName_' . $fileKey;
+                    $postedFileName = isset($_POST[$uniqueFileNameKey]) ? $_POST[$uniqueFileNameKey] : $file["name"];
+
+                    if (!$label || $label === 'File') {
+                        foreach ($fileLabels as $fLabel) {
+                            // If the text input for "Personal Photo" equals the filename we are processing, that's our match.
+                            if (isset($formData[$fLabel]) && ($formData[$fLabel] === $postedFileName || $formData[$fLabel] === $file['name'])) {
+                                $label = $fLabel;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Final Fallback
+                    if (!$label) $label = 'File';
+
+                    // Determine Folder
                     $subFolder = 'others/';
-
                     switch ($label) {
                         case 'Personal Photo': $subFolder = 'personal_photos/'; break;
                         case 'CV': $subFolder = 'resumes/'; break;
@@ -65,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         case 'Other Documents: Second':
                         case 'Other Documents: Third':
                             $subFolder = 'others/'; break;
-                        default: $subFolder = 'others/'; break;
                     }
 
                     $baseDir = "../../files_uploaded_from_harvestschools_webapp/job_applications/";
@@ -79,21 +104,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         }
                     }
 
-                    $uniqueFileNameKey = 'uniqueFileName_' . $fileKey;
-                    if (strpos($fileKey, 'field_') === 0) {
-                        $fileId = substr($fileKey, 6);
-                        if (isset($_POST['uniqueFileName_' . $fileId])) {
-                            $uniqueFileNameKey = 'uniqueFileName_' . $fileId;
-                        }
-                    }
-
-                    $uniqueFileName = isset($_POST[$uniqueFileNameKey]) ? $_POST[$uniqueFileNameKey] : basename($file["name"]);
-                    $uniqueFileName = preg_replace('/[^a-zA-Z0-9_.-]/', '', $uniqueFileName);
-                    $targetFile = $targetDir . $uniqueFileName;
+                    // Sanitize
+                    $finalFileName = $postedFileName;
+                    $finalFileName = preg_replace('/[^a-zA-Z0-9_.-]/', '', $finalFileName);
+                    $targetFile = $targetDir . $finalFileName;
 
                     if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-                        $relativePath = $subFolder . $uniqueFileName;
+                        $relativePath = $subFolder . $finalFileName;
+
+                        // UPDATE FORM DATA with the actual file path
                         $formData[$label] = $relativePath;
+                        $uploadedFileLabels[] = $label; // Mark this label as "Real File Uploaded"
+
                         $emailText .= "$label: $relativePath\n";
                     } else {
                         $conn->rollback();
@@ -104,6 +126,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
+        // 4. SECURITY CLEANUP
+        // Loop through the expected file labels.
+        // If a label is NOT in $uploadedFileLabels, it means no file was uploaded for it.
+        // We MUST clear whatever text value is currently there (e.g. the filename string from JS)
+        // so we don't insert garbage into the DB.
+        foreach ($fileLabels as $fLabel) {
+            if (!in_array($fLabel, $uploadedFileLabels)) {
+                $formData[$fLabel] = ''; // Set to empty string for DB
+            }
+        }
+
+        // 5. Map fields for DB
         $fields = [
             'First Name' => $formData['First Name'] ?? '',
             'Last Name' => $formData['Last Name'] ?? '',
@@ -132,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'Reference Position' => $formData['Reference Position'] ?? '',
             'Reference Email' => $formData['Reference Email'] ?? '',
             'Reference Phone Number' => $formData['Reference Phone Number'] ?? '',
+            // These will now be either the valid path OR empty string
             'Personal Photo' => $formData['Personal Photo'] ?? '',
             'CV' => $formData['CV'] ?? '',
             'Cover Letter' => $formData['Cover Letter'] ?? '',
@@ -172,7 +207,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         );
 
         if ($stmt->execute()) {
+            // 6. Commit Database
             $conn->commit();
+
+            // 7. Send Email
             $boundary = md5(time());
             $headers = "From: no-reply@harvestschools.com\r\n";
             $headers .= "Reply-To: no-reply@harvestschools.com\r\n";
