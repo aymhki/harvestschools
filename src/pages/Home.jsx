@@ -27,11 +27,9 @@ function Home() {
 
         <div className="home-page" >
             <Helmet>
-                <title>Harvest International School | Egypt</title>
-                <meta name="description"
-                      content="Harvest International School (HIS) was founded in 2016 by Eng. Hassan Khalil Ibrahim to be the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. "/>
-                <meta name="keywords"
-                      content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, International School, British Syllabus, American Syllabus, Egyptian Syllabus, Education, School, Learning, Teaching, Students, Teachers, World-Class Educational Facility, Sports Fields, Gymnasium, Swimming Pool, Twenty-First Century, Education, Eng. Hassan Khalil Ibrahim, مدارس هارفست, برج العرب, مدرسة, هارفست"/>
+                <title>Harvest International Schools | Egypt</title>
+                <meta name="description" content="Harvest International School (HIS) was founded in 2016 by Eng. Hassan Khalil Ibrahim to be the first international school in Borg El-Arab recruiting highly qualified teachers and administrators. "/>
+                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, International School, British Syllabus, American Syllabus, Egyptian Syllabus, Education, School, Learning, Teaching, Students, Teachers, World-Class Educational Facility, Sports Fields, Gymnasium, Swimming Pool, Twenty-First Century, Education, Eng. Hassan Khalil Ibrahim, مدارس هارفست, برج العرب, مدرسة, هارفست"/>
                 <meta name="author" content="Harvest International School"/>
                 <meta name="robots" content="index, follow"/>
                 <meta name="googlebot" content="index, follow"/>

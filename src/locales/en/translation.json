@@ -1546,6 +1546,274 @@
       "of-separator": "of"
     }
   },
+  "faqs-pages": {
+    "options-page": {
+      "title": "Q & A",
+      "faqs-option": "Frequently Asked Questions",
+      "faqs-option-description": "Get answers to common questions",
+      "minimum-registration-age-option": "Minimum Registration Age",
+      "minimum-registration-age-option-description": "Find the minimum age requirements for registration in each stage",
+      "covid-19-policy-option": "COVID-19 Policy",
+      "covid-19-policy-option-description": "Read about the COVID-19 policy"
+    },
+    "minimum-stage-age-page": {
+      "title": "Minimum Stage Age",
+      "age-requirements-effective-date-notice": "Please note, students should meet the minimum registration age on the 1st of October.",
+      "national-division-table-header": "National Division",
+      "national-division-table-data": [
+        {"stage": "Stage", "minimum-registration-age": "Minimum Registration Age"},
+        {"stage": "KG1", "minimum-registration-age": "4 Years"},
+        {"stage": "KG2", "minimum-registration-age": "5 Years"},
+        {"stage": "J1", "minimum-registration-age": "6 Years"},
+        {"stage": "J2", "minimum-registration-age": "7 Years"},
+        {"stage": "J3", "minimum-registration-age": "8 Years"},
+        {"stage": "J4", "minimum-registration-age": "9 Years"},
+        {"stage": "J5", "minimum-registration-age": "10 Years"},
+        {"stage": "J6", "minimum-registration-age": "11 Years"},
+        {"stage": "M1", "minimum-registration-age": "12 Years"},
+        {"stage": "M2", "minimum-registration-age": "13 Years"},
+        {"stage": "M3", "minimum-registration-age": "14 Years"},
+        {"stage": "S1", "minimum-registration-age": "15 Years"},
+        {"stage": "S2", "minimum-registration-age": "16 Years"},
+        {"stage": "S3", "minimum-registration-age": "17 Years"}
+      ],
+      "international-division-table-header": "International Division",
+      "international-division-table-data": [
+        {"stage": "FS 1, Pre - K", "minimum-registration-age": "3 Years & 6 Months"},
+        {"stage": "FS 2, K", "minimum-registration-age": "4 Years & 6 Months"},
+        {"stage": "Y 1, G 1", "minimum-registration-age": "5 Years & 6 Months"},
+        {"stage": "Y 2, G 2", "minimum-registration-age": "6 Years & 6 Months"},
+        {"stage": "Y 3, G 3", "minimum-registration-age": "7 Years & 6 Months"},
+        {"stage": "Y 4, G 4", "minimum-registration-age": "8 Years & 6 Months"},
+        {"stage": "Y 5, G 5", "minimum-registration-age": "9 Years & 6 Months"},
+        {"stage": "Y 6, G 6", "minimum-registration-age": "10 Years & 6 Months"},
+        {"stage": "Y 7, G 7", "minimum-registration-age": "11 Years & 6 Months"},
+        {"stage": "Y 8, G 8", "minimum-registration-age": "12 Years & 6 Months"},
+        {"stage": "Y 9, G 9", "minimum-registration-age": "13 Years & 6 Months"},
+        {"stage": "Y 10, G 10", "minimum-registration-age": "14 Years & 6 Months"},
+        {"stage": "Y 11, G 11", "minimum-registration-age": "15 Years & 6 Months"},
+        {"stage": "Y 12, G 12", "minimum-registration-age": "16 Years & 6 Months"}
+      ]
+    },
+    "faqs-page": {
+      "title": "Frequently Asked Questions",
+      "intro": "In this page you will find the most frequently asked questions. However, If you have more questions, please do not hesitate to reach out at:",
+      "phone": "Phone: ",
+      "01028329668": "01028329668, ",
+      "01097875407": "01097875407, ",
+      "01028940675": "01028940675",
+      "q-and-a-list": [
+        {"question": "Are there any foreign teachers at your school?", "answer": "Mostly Egyptians, Highly Qualified."},
+        {"question": "Does the school accept any transfer from other schools?", "answer": "Yes, we accept students from other schools as long as they pass an entry test held at the school."},
+        {"question": "Is the school mixed?", "answer":  "Yes."},
+        {"question": "Does the school provide a transportation service?", "answer": "Yes, our buses cover every district in Alexandria."},
+        {"question": "Does the school provide any sport activities?", "answer": " Yes, Harvest Academy provides all kinds of sports available through out the year."},
+        {"question": "Does the school fees change every year?", "answer": "No, we only apply Ministry of Education fees which can go up to 10%."}
+      ],
+      "?": "?"
+    },
+    "covid-19-page": {
+      "download-copy-btn": "Download a Copy of this guide",
+      "intro-title": "Our Happiness Is Restored By Welcoming Our Beloved Students",
+      "intro-description": "Dear Parents, Together we have experienced a challenging academic year, However, your discipline and cooperation had the most significant role in providing our beloved students with high-quality education programs at Harvest Schools.Harvest has worked intensively with teachers and responsible admins during the summer season to put cautionary policies and guidelines that will make sure all our students return to their classes safely in the academic year of 2021/2022. The guidelines were created by several schools admins upon scientific experiments and worldwide practices.The goal of this guide is to notify you with the necessary information that will allow our students to get ready for returning to school. Shall you have any more inquiries, you may contact the school administration.",
+      "commitment-in-providing-emotional-support-section": {
+        "title": "To assure our commitment in providing emotional support when facing hesitance or fear of going back to school during these rough times, We recommend following the instructions presented below to overcome this challenge:",
+        "points": [
+          {"point": "Make sure to inform your children about the Covid-19 virus, so they realize that feeling anxious or nervous about going back to school is a natural matter."},
+          {"point": "Make sure to engage in conversation with them about their fears and worries of returning to school. Explain to them the cautionary measurements that Harvest schools will follow to assure everyone’s safety."},
+          {"point": "Make sure to clarify the changes that will occur inside the school with great respect to the role they will have to follow in order to maintain the safety of their own and their community. And we recommend wearing face masks, social distancing, and constantly washing hands."},
+          {"point": "Remember to show the positive side of returning to school that includes meeting friends and learning new topics as done recently in many countries around the world."},
+          {"point": "Make sure to constantly engage in conversation with them about how are they feeling and what do they require before going. Back to school."}
+        ]
+      },
+      "academic-plan-section": {
+        "title": "The Academic Plan",
+        "points": [
+          {"point": "The regulations made by the Egyptian ministry of education will be strictly followed."},
+          {"point": "The school will get in contact with you at least one week before the beginning of the academic year to inform you with the confirmed model regarding the school schedule. The applications of the educational model might vary from one stage to another."},
+          {"point": "The school will provide a 100% remote learning option that the students could follow if one of the following circumstances occur:", "sublist": [
+            {"point": "If the student is suffering from a severe medical condition, Then, for the student’s own safety, it is recommended that he/she stay at home while using the remote learning option. However, the parents will be obligated to provide a medical report regarding the student’s condition. Kindly contact the school for more details."},
+            {"point":  "If parents wish to not send their son/daughter to the school and prefer him/her staying at home during the first academic semester. In this case, the parents will have to  contact the school to sign the approval form."}
+          ]},
+          {"point": "In case of complete shutdown by the government for any exceptional situation that could occur later."}
+        ]
+      },
+      "school-attendance-section": {
+        "title": "School Attendance",
+        "points": [
+            {"point": "All students enrolled in the academic year of 2021/2022 must commit to attending the school (either physically or through virtual classes while completing the remote educational tasks) and completing all educational tasks according to the plan admitted by the school."},
+            {"point": "In case a student repeats his/her absence to the school premises, virtual classes, or remote educational tasks, The school will take the necessary measures presented in the absence/attendance policy."}
+        ]
+      },
+      "safety-first": "Safety First",
+      "health-and-hygiene-precautions-section": {
+        "title": "Health and Hygiene Precautions",
+        "points": [
+          {"point": "The school will clean and sterilize all its facilities on a daily basis."},
+          {"point": "There will be different locations inside the school premises to wash and sterilize hands."},
+          {"point": "The surfaces intensively used like light switches, door handles, stairs, and toilets will be cleaned and sterilized on a daily basis."},
+          {"point": "Washing rooms will be constantly cleaned and sterilized."},
+          {"point": "The school will either provide a nurse or a medical specialist that will well be available inside the school premises, as well as, a quarantine room for students and staff members who suddenly show Covid-19 symptoms."}
+        ]
+      },
+      "personal-health-and-safety-section": {
+        "title": "Personal Health and Safety",
+        "points": [
+          {"point": "The school advise that students from Grade 1 and above wear face masks as per the instructions. However, students in the lower grades have the option to not wear face masks."},
+          {"point": "Any student is prohibited from getting on the school bus without wearing a face mask. Nevertheless, if a student felt that he/she needed a break from the facemask, He/She will have to leave the face shield on. And if a student wishes to eat during the break, He/She will have to wear a face shield. Therefore, parents should provide an extra face mask to be with the face shield for students."},
+          {"point": "Gloves are not recommended as washing hands showed more functionality in protecting students from Covid-19. However, if parents wish for a student to wear gloves, students are permitted to do so."}
+        ]
+      },
+      "social-distancing-section": {
+        "title": "Social Distancing",
+        "points": [
+          {"point": "All students must follow the social distancing precautions at all times as per the school plan."},
+          {"point": "Students that would find difficulties in social distancing will be distributed into small groups in the kindergarten stage."},
+          {"point": "Parents will not be allowed to enter the school unless they are combining a student with a physical disability. In this case, only one parent/guardian will be allowed to enter the school premises."},
+          {"point": "While students are lining up in front of the school’s gates, They are required to leave a valued distance between each other, as well as, wear face masks."},
+          {"point": "The temperature of the students and parents who wish to enter the school will be measured."},
+          {"point": "Entering and exiting times might vary for students, Therefore, to avoid long or crowded lines, you will be informed with these times before returning to school."},
+          {"point": "Parents will not be permitted to stay in the students pick up area more than 10 minutes with commitment to the cautionary measurements."},
+          {"point": "Parents must not be late for picking up their son/daughter when the students are leaving from school."}
+        ]
+      },
+      "safety-and-security-measures-for-bus-students": {
+        "title": "Safety and Security Measures for Bus Students",
+        "points": [
+          {"point": "The temperature of each student will be measured before leaving the bus. Students with high temperature will not be permitted to enter their classes."},
+          {"point": "A separate seat will be provided for each student. However, students will have to use this seat for the entire academic year."}
+        ]
+      },
+      "precautions-inside-the-school": "Precautions Inside The School",
+      "the-space-inside-each-class-or-group-and-students-distribution-section": {
+        "title": "The Space Inside Each Class/Group and Students Distribution",
+        "points": [
+          {"point": "Harvest schools has distinguishably large classes, playgrounds, and general spaces. Therefore, students will be distributed into academic groups to fit the social distancing guidelines allowing each student a valued distance. Each student will also have a fixed seat inside the class during the entire academic year."},
+          {"point": "Students must remain in their academic groups till the end of the Covid-19 phase to lower interactions with others."}
+        ]
+      },
+      "the-greatest-usage-of-the-school-facilities-and-resources-section": {
+        "title": "The Greatest Usage of The School Facilities and Resources",
+        "points": [
+          {"point": "Some of the areas that are not made for educational purposes inside the schools like the sports playgrounds and libraries will be transformed to fit academic groups."},
+          {"point": "The school will lower the exchange of materials, tools, and toys (computer devices)."},
+          {"point": "Students movement inside the school will be restricted in order to lower interactions between groups."}
+        ]
+      },
+      "physical-and-theoretical-activities-section": {
+        "title": "Physical And Theoretical Activities",
+        "points": [
+          {"point": "Physical activities will be reduced and playgrounds designated for sports inside the school will be shut down until further notice. Some virtual activities might be provided instead."},
+          {"point": "Extra-curricular provided by the school like music and acting art classes will be paused until further notice."},
+          {"point": "Regarding the International department, The school will run from 8:30 AM to 1:30 PM in the period from 15/9 till 10/15. The rest of the running times will be appointed later."}
+        ]
+      },
+      "break-and-lunch-times-section": {
+        "title": "Break And Lunch Times",
+        "points": [
+          {"point": "Students will get regulated rest times during the day. However, the rest period will be quite different than the one students were used to before Covid-19. As students will have to maintain a valued distance between each other."},
+          {"point": "The facilities in the playgrounds such as the swings and slides will be available for use by distributed small groups and will be sterilized to limit the chance of spreading any illness."},
+          {"point": "Dealing with the canteen will occur in an organized and clear fashion. Hot meals will not be served."},
+          {"point": "Students are permitted to take of their face masks while eating under the supervision of the teachers and their assistants. Students must keep their face shields before eating."}
+        ]
+      },
+      "in-case-a-student-show-signs-of-illness-during-the-school-day-section": {
+        "title": "In Case A Student Show Signs Of Illness During The School Period",
+        "points": [
+          {"point": "The student will be immediately sent to the quarantine room for the school nurse to follow his/her case."},
+          {"point": "Parents will be contacted to pick up the student from school."},
+          {"point": "The school can not give any medicines to the students. Therefore, parents have the full responsibility to take the student to a hospital or to a Covid-19 test spot."},
+          {"point": "If the student tested positive, parents must immediately inform the school to take the necessary precautions to grantee the health of the students and staff members that interacted with the positive student."},
+          {"point": "The school will inform all the parents of the students that interacted with the Covid-19 case."}
+        ]
+      },
+      "maintaining-the-quality-of-education": "Maintaining The Quality Of Education",
+      "supporting-the-students-emotional-mental-and-physical-health": "Supporting The Students Emotional, Mental, And Physical Health",
+      "supporting-the-students-emotional-mental-and-physical-health-description": "The school will provide awareness sessions for students on different topics to keep up with the current events regarding the Covid-19 virus.",
+      "constant-communication-section": {
+        "title": "Constant Communication",
+        "points": [
+          {"point": "To inform you with the schedule and weekly plans related to different subjects, The school will contact you constantly using the available communication channels like the weekly posts, the text messages, or the email."},
+          {"point": "The school recommend that all your meetings and discussions with the teachers remain remote."}
+        ]
+      },
+      "returning-to-school": "Returning To School",
+      "parents-responsibilities-and-tasks": {
+        "title": "Parents Responsibilities And Tasks",
+        "points": [
+          {"point": "Make sure the school has the up to date contact information for the parents (The Mother phone number, The Father phone number, an email address, and the house address (And any other valued data))"},
+          {"point": "Take care of all the messages received from the school to stay on top of the educational model admitted by the school."},
+          {"point": "Commit to following the educational model provided by the school, as well as, any guidelines associated with the following:", "sublist": [
+            {"point": "Filling and submitting the models and forums for the school before the beginning of the academic year."},
+            {"point": "The student attendance to the school days."},
+            {"point": "The academic schedule and the remote learning requirements."},
+            {"point": "The times of arriving and leaving the school (For private cars and school buses)."},
+            {"point": "Informing the school with all the information and data associated with the student Including the up to date medical reports and records for the parents and other guardians that interact with the student."},
+            {"point": "Any further guidelines will be forwarded through the school."},
+            {"point": "Informing the school principal with any relatives to the student that were infected by Covid-19."},
+            {"point": "Committing to never be late for the student pickup time."}
+          ]}
+        ]
+      },
+      "daily-precautions-during-the-academic-semester-section": {
+        "title": "Daily Precautions During The Academic Semester",
+        "points": [
+          {"point": "On a daily basis, parents must make sure that the students do not suffer from a fever or any other symptoms like coughing, difficulty in breathing, or different body aches before going to school. In case the student showed any symptoms of illness, even if the symptoms we not related to Covid-19, Parents must keep the student home, notify the school of his/her absence, and take the student to the closest hospital to make the necessary tests."},
+          {"point": "Parents must make sure that the student has all the requirements needed for the safety precautions. Students will not be permitted in without them."},
+          {"point": "Parents must wear a face mask when delivering the student to the school."},
+          {"point": "Parents must social distance when delivering the student to the school."},
+          {"point": "One of the parents is allowed to accompany the student while standing in the entry waiting lines. Only for the kindergarten stage."},
+          {"point": "Students must be trained to use the safety precautions tools."}
+        ]
+      },
+      "the-constant-precautions-to-maintain-the-health-and-safety-of-the-community-section": {
+        "title": "The Constant Precautions To Maintain The Health And Safety Of The Community",
+        "points": [
+          {"point": "In cooperation with Harvest schools, We try to create a safe environment for the students to go back home safe. Nevertheless, we will rely on you during the next period to grantee a lower chance of spreading the risk of Covid-19 inside the school. Therefore, kindly consider the following:", "sublist": [
+            {"point": "Committing to the safety measurements and precautions announced by official organizations on a daily basis."},
+            {"point": "Make sure to not expose yourself or your children to the risk of the Covid-19 virus by avoiding crowded places and sizable gatherings."},
+            {"point": "Make sure that all the family members who are involved in social activities outside the house do wear a face mask and social distance."},
+            {"point": "Do not send your son/daughter to the school if he/she suffered from any COVID-19 symptoms such as coughing, fever, or difficulty breathing. Make sure to provide immediate health care in case any of these symptoms appear."},
+            {"point": "Inform your son/daughter with the safety precautions essential to protect his/her self from others like:", "sublist": [
+              {"point": "Maintaining a safe distance from others."},
+              {"point": "Covering the mouth and nose area when coughing or sneezing using a paper towel. Throwing the paper towel immediately after using it. If there were no tissues available the student must cough or sneeze while covering his/her self using the inner elbow."},
+              {"point": "Washing both hands several times a day with soap and water for 20 seconds."},
+              {"point": "Wearing the face mask when leaving the house."}
+            ]}
+          ]}
+        ]
+      },
+      "express-your-worries": "Express Your Worries",
+      "express-your-worries-description": "The goal of the information we presented to you is to inform you about the nature of the safety measures and precautions we took in cooperation with responsible officials to re-open the school. Therefore, if you have any notes regarding the way the school presented the information in this guide or the way the school applied the guidelines, kindly contact us using the school's email (info@harvestschools.com).Harvest schools maintain its rights in updating the information presented in this guide at any given time government officials provide new information. You will be notified with any changes.",
+      "extra-information": "Extra Information",
+      "extra-information-description": "To receive the newest updates about Covid-19 from official government organizations,visit:",
+      "applying-to-harvest-schools-section": {
+        "title": "Applying To Harvest Schools",
+        "points": [
+          {"point": "The student is accepted if the following applies:", "sublist": [
+            {"point": "The student has reached the acceptable age."},
+            {"point": " The student applied during the specified times and all the documents required were submitted through the school or the application website."},
+            {"point": "All the requirements shaped by the Ministry of Education are met."}
+          ]}
+        ],
+        "for-more-information-about-applying-paragraph": "For more information about applying to Harvest Schools, visit "
+      },
+      "harvest-schools-contact-information-section": {
+        "title": "Harvest Schools Contact Information",
+        "points": [
+          {"point": "National: 01028329668"},
+          {"point": "British: 01097875407"},
+          {"point": "American: 01028940675"},
+          {"point": "KG: 01028319440"}
+        ]
+      },
+      "common": {
+        "what-should-parents-know": "What Should Parents Know?",
+        "egypt-care-index-link": "https://www.care.gov.eg/EgyptCare/Index.aspx",
+        "harvest-schools-website-link": "https://www.harvestschools.com"
+      }
+    }
+  },
   "admin": {
     "login-page": {
       "title": "Admin Login",
