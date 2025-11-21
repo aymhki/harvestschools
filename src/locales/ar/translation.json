@@ -98,7 +98,9 @@
     "fields-must-not-match-error": "'{{field1}}' يجب ألا يطابق '{{field2}}'",
     "fields-must-match-error": "'{{field1}}' يجب أن يطابق '{{field2}}'",
     "success-message": "تم إرسال النموذج بنجاح!",
-    "egp": "جنيه"
+    "egp": "جنيه",
+    "upload": "رفع",
+    "remove": "إزالة"
   },
   "academics-pages": {
     "national-section": "قسم الناشونال",
@@ -1811,8 +1813,50 @@
       "common": {
         "what-should-parents-know": "ما الذي يتوجب على أولياء الأمور معرفته؟",
         "egypt-care-index-link": "موقع مؤشر العناية بمصر",
-        "harvest-schools-website-link": "موقع مدارس هارڤست الإلكتروني"
+        "harvest-schools-website-link": "موقع مدارس هارڤست الإلكتروني",
+        "not-found-message": "الصفحة غير موجودة - ٤٠٤"
       }
+    }
+  },
+  "vacancies-page": {
+    "title": "الوظائف الشاغرة",
+    "intro": "انضم إلى فريقنا",
+    "intro-description": "لا تقتصر فرص العمل في مدارس هارڤست على المرشحين ذوي الخبرة أو الخريجين الجدد فقط، بل نؤمن في مدارس هارڤست بضرورة توفير الفرص للأشخاص المبدعين وذوي المعرفة والانفتاح الذهني. نحن دائمًا نبحث عن موظفين جدد، للتقديم يرجى ملء النموذج أدناه.",
+    "submission-confirmation-notice": "ملاحظة: بعد الإرسال، يجب أن تظهر رسالة تأكيد. لا تغلق متصفحك حتى ترى هذه الرسالة وإلا فلن يصلنا طلبك. إذا لم ينطبق حقل ما على خبرتك / تعليمك، يرجى كتابة \"غير متوفر.\"",
+    "application-form": {
+      "first-name": "الاسم الأول",
+      "last-name": "اسم العائلة",
+      "dob": "تاريخ الميل",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "gender": "الجنس",
+      "address-1": "عنوان ١: الشارع",
+      "address-2": "عنوان ٢: الحي",
+      "address-2-other": "عنوان ٢: آخر",
+      "position-applying-for": "الوظيفة المتقدم لها",
+      "subject-to-teach": "المادة التي سيتم تدريسها",
+      "position-applying-for-other": "الوظيفة المتقدم لها: أخرى",
+      "high-school": "اسم المدرسة الثانوية",
+      "high-school-system": "نظام المدرسة الثانوية",
+      "high-school-system-other": "نظام المدرسة الثانوية: أخرى",
+      "high-school-finish-date": "تاريخ إنهاء المدرسة الثانوية",
+      "graduation-institution": "اسم الجامعة",
+      "graduation-degree": "مجال الشهادة الجامعية",
+      "graduation-date": "تاريخ التخرج",
+      "years-of-experience": "عدد سنوات الخبرة العملية",
+      "experience": "تفاصيل الخبرة العملية",
+      "skills": "المهارات والهوايات",
+      "about": "اي تفاصيل اخرى عنك",
+      "reference-name": "اسم المرجع",
+      "reference-position": "وظيفة المرجع",
+      "reference-email": "البريد الإلكتروني للمرجع",
+      "reference-phone": "رقم هاتف المرجع",
+      "personal-photo": "الصورة الشخصية",
+      "attachment-1": "السيرة الذاتية",
+      "attachment-2": "رسالة التقديم",
+      "attachment-3": "اخرى: أولى",
+      "attachment-4": "اخرى: ثانية",
+      "attachment-5": "اخرى: ثالثة"
     }
   },
   "admin": {
@@ -1822,7 +1866,6 @@
       "logging-in-btn": "جارِ تسجيل الدخول...",
       "username-field": "اسم المستخدم",
       "password-field": "كلمة المرور"
-
     }
   }
 }
