@@ -98,7 +98,9 @@
     "fields-must-not-match-error": "Field '{{field1}}' must not match '{{field2}}'",
     "fields-must-match-error": "Field '{{field1}}' must match '{{field2}}'",
     "success-message": "Form submitted successfully!",
-    "egp": "EGP"
+    "egp": "EGP",
+    "upload": "Upload",
+    "remove": "Remove"
   },
   "academics-pages": {
     "national-section": "National",
@@ -1810,8 +1812,50 @@
       "common": {
         "what-should-parents-know": "What Should Parents Know?",
         "egypt-care-index-link": "https://www.care.gov.eg/EgyptCare/Index.aspx",
-        "harvest-schools-website-link": "https://www.harvestschools.com"
+        "harvest-schools-website-link": "https://www.harvestschools.com",
+        "not-found-message": "404 - Page Not Found"
       }
+    }
+  },
+  "vacancies-page": {
+    "title": "Vacancies",
+    "intro": "Join Our Team",
+    "intro-description": "Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form below.",
+    "submission-confirmation-notice": "Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type \"N/A.\"",
+    "application-form": {
+      "first-name": "First Name",
+      "last-name": "Last Name",
+      "dob": "Date of Birth",
+      "email": "Email",
+      "phone": "Phone Number",
+      "gender": "Gender",
+      "address-1": "Address 1: Street",
+      "address-2": "Address District",
+      "address-2-other": "Address District: Other",
+      "position-applying-for": "Position Applying For",
+      "subject-to-teach": "Subject to Teach",
+      "position-applying-for-other": "Position Applying For: Other",
+      "high-school": "High School Name",
+      "high-school-system": "High School System",
+      "high-school-system-other": "High School System: Other",
+      "high-school-finish-date": "High School Graduation Date",
+      "graduation-institution": "Institution/University Name",
+      "graduation-degree": "Institution/University Major",
+      "graduation-date": "Institution/University Graduation Date",
+      "years-of-experience": "Years of Experience",
+      "experience": "Experience Details",
+      "skills": "Skills or Hobbies",
+      "about": "Other Details",
+      "reference-name": "Reference Name",
+      "reference-position": "Reference Position",
+      "reference-email": "Reference Email",
+      "reference-phone": "Reference Phone Number",
+      "personal-photo": "Personal Photo",
+      "attachment-1": "CV",
+      "attachment-2": "Cover Letter",
+      "attachment-3": "Other Documents: First",
+      "attachment-4": "Other Documents: Second",
+      "attachment-5": "Other Documents:Third"
     }
   },
   "admin": {
