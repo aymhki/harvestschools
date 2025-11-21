@@ -16,6 +16,41 @@
 
 }
 
+.faq-q-and-a {
+    width: 100%
+}
+
+.download-a-copy-of-covid-19-guide-btn-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.faq-q-and-a-breaker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    filter: drop-shadow(0 0 1rem var(--secondary-color) );
+    box-shadow: 0 0 1rem var(--secondary-color);
+    color: var(--secondary-color);
+    border-radius: 3rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.faq-q-and-a-breaker h1:lang(ar) {
+    color: var(--secondary-color);
+}
+
+.faq-q-and-a-breaker h1 {
+    font-size: 5rem;
+}
+
 .minimum-stage-age-page {
     display: flex;
     justify-content: center;
@@ -25,7 +60,7 @@
 
 }
 
-.covid-19-english-read-page {
+.covid-19-read-page {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -36,275 +71,117 @@
 
 }
 
-.covid-19-arabic-read-page {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    direction: rtl;
-    text-align: right;
-}
-
-.covid-19-arabic-read-page-title {
-    color: var(--secondary-color);
-    line-height: 2;
-    direction: rtl;
-    text-align: right;
-}
-
-.covid-19-arabic-read-page-paragraph {
-    color: var(--primary-color);
-    direction: rtl;
-    text-align: right;
-}
-
-.covid-19-arabic-read-page-numbered-list {
-    list-style-type: decimal;
-    direction: rtl;
-    text-align: right;
-}
-
-.covid-19-arabic-read-page-list {
-    direction: rtl;
-    text-align: right;
-}
-
-
-
-.covid-19-arabic-read-page-list li {
-
-}
-
-.covid-19-english-read-title {
+.covid-19-read-title {
     color: var(--secondary-color);
     line-height: 2;
 }
 
-.covid-19-english-read-paragraph {
+.covid-19-read-paragraph {
     color: var(--primary-color);
 
 }
 
-.covid-19-english-read-numbered-list {
-    list-style-type: decimal
-}
-
-.covid-19-english-read-list {
+.covid-19-read-list {
 
 }
 
-.covid-19-english-read-link {
+.covid-19-read-link {
     color: var(--secondary-color);
-
 }
 
-.covid-19-english-read-link:hover {
+.covid-19-read-link:hover {
     color: var(--primary-color);
     cursor: pointer;
-}
-
-.covid-19-arabic-read-page-link {
-    color: var(--secondary-color);
-}
-
-.covid-19-arabic-read-page-link:hover {
-    color: var(--primary-color);
-    cursor: pointer;
-}
-
-.faq-breaker {
-    color: var(--secondary-color);
-    filter: drop-shadow(0 0 1rem var(--secondary-color) );
-    box-shadow: 0 0 1rem var(--secondary-color);
-    text-align: center;
-    border-radius: 3rem;
-}
-
-.faq-breaker h1 {
-    font-size: 10rem;
 }
 
 .faq-q-and-a-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    justify-content: stretch;
-    align-content: stretch;
-    column-gap: 3rem;
-    row-gap: 0;
+    display: flex;
 }
 
-.faq-q-and-a-english {
-    direction: ltr;
-    text-align: left;
-}
-
-.faq-q-and-a-list-english {
+.faq-q-and-a-list {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
 }
 
-.faq-q-and-a-list-english ul {
-    direction: ltr;
-    text-align: left;
-}
 
-.faq-q-and-a-list-english ul li {
-    direction: ltr;
-    text-align: left;
-}
-
-.faq-q-and-a-list-english-q {
+.faq-q-and-a-list-q {
     color: var(--secondary-color);
 }
 
 
-.faq-q-and-a-list-english-a {
+.faq-q-and-a-list-a {
     color: var(--primary-color);
 }
 
-.faq-q-and-a-list-english li, .faq-q-and-a-list-english li p {
-    font-size: 2.5rem;
-
-}
-
-.faq-q-and-a-arabic {
-    direction: rtl;
-    text-align: right;
-}
-
-.faq-q-and-a-list-arabic {
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-}
-
-.faq-q-and-a-list-arabic ul {
-    direction: rtl;
-    text-align: right;
-}
-
-.faq-q-and-a-list-arabic ul li {
-    direction: rtl;
-    text-align: right;
-}
-
-.faq-q-and-a-list-arabic-q {
-    color: var(--secondary-color);
-}
-
-.faq-q-and-a-list-arabic-a {
-    color: var(--primary-color);
-}
-
-.faq-q-and-a-list-arabic li, .faq-q-and-a-list-arabic li p {
-    font-size: 2.5rem;
+.faq-q-and-a-list li, .faq-q-and-a-list li p {
+    font-size: xx-large;
 }
 
 @media (max-width: 1600px) {
-
-    .faq-q-and-a-list-arabic li, .faq-q-and-a-list-arabic li p {
-        font-size: 2rem;
+    .faq-q-and-a-breaker h1 {
+        font-size: 4rem;
     }
-
-    .faq-q-and-a-list-english li, .faq-q-and-a-list-english li p {
-        font-size: 2rem;
-    }
-
 }
 
-@media (max-width: 1440px) {
-
+@media (max-width: 1400px) {
+    .faq-q-and-a-breaker h1 {
+        font-size: 3rem;
+    }
 }
-
 
 @media (max-width: 1200px) {
-    .faq-q-and-a-list-arabic li, .faq-q-and-a-list-arabic li p {
-        font-size: 1.5rem;
+
+    .faq-q-and-a-breaker h1 {
+        font-size: 2rem;
     }
 
-    .faq-q-and-a-list-english li, .faq-q-and-a-list-english li p {
-        font-size: 1.5rem;
-    }
-}
-
-
-@media (max-width: 1024px) {
-    .faq-q-and-a-container {
-        grid-template-columns: 1fr;
+    .faq-q-and-a-list li, .faq-q-and-a-list li p {
+        font-size: x-large;
     }
 }
 
 @media (max-width: 768px) {
-    .faq-q-and-a-list-arabic li, .faq-q-and-a-list-arabic li p {
-        font-size: 1rem;
-    }
 
-    .faq-q-and-a-list-english li, .faq-q-and-a-list-english li p {
-        font-size: 1rem;
+    .faq-q-and-a-list li, .faq-q-and-a-list li p {
+        font-size: large;
     }
 }
 
 @media (prefers-color-scheme: dark) {
-    .faq-breaker {
+    .faq-q-and-a-breaker {
         color: var(--harvest-white-color);
-        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 1rem var(--harvest-white-color) );
         box-shadow: 0 0 1rem var(--harvest-white-color);
     }
 
-    .faq-q-and-a-list-arabic-q {
+    .faq-q-and-a-breaker h1:lang(ar) {
         color: var(--harvest-white-color);
     }
 
-    .faq-q-and-a-list-arabic-a {
+
+    .faq-q-and-a-list-q {
         color: var(--harvest-white-color);
     }
 
-    .faq-q-and-a-list-english-q {
+    .faq-q-and-a-list-a {
         color: var(--harvest-white-color);
     }
 
-    .faq-q-and-a-list-english-a {
+    .covid-19-read-title {
         color: var(--harvest-white-color);
     }
 
-    .covid-19-arabic-read-page-title {
+    .covid-19-read-paragraph {
         color: var(--harvest-white-color);
     }
 
-    .covid-19-arabic-read-page-paragraph {
-        color: var(--harvest-white-color);
-    }
-
-    .covid-19-english-read-title {
-        color: var(--harvest-white-color);
-    }
-
-    .covid-19-english-read-paragraph {
-        color: var(--harvest-white-color);
-    }
-
-    .covid-19-english-read-link {
+    .covid-19-read-link {
         color: deepskyblue;
     }
 
-    .covid-19-english-read-link:hover {
+    .covid-19-read-link:hover {
         color: var(--harvest-white-color);
     }
-
-    .covid-19-arabic-read-page-link {
-        color: deepskyblue;
-    }
-
-    .covid-19-arabic-read-page-link:hover {
-        color: var(--harvest-white-color);
-    }
-
-
-
 }
