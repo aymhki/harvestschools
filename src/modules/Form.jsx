@@ -63,7 +63,7 @@ function Form({
     const enteredCaptcha = useRef('');
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -480,7 +480,7 @@ function Form({
                         }
                     }}
                     >
-                        Upload
+                        {t("all-forms.upload")}
                     </button>
                     {fileInputs[field.id] && (
                         <button
@@ -498,7 +498,7 @@ function Form({
                             type="button"
                             disabled={submitting}
                         >
-                            Remove
+                            {t("all-forms.remove")}
                         </button>
                     )}
                 </div>

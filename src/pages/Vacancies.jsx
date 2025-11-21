@@ -4,9 +4,11 @@ import Form from "../modules/Form";
 import {submitJobApplicationRequest} from "../services/Utils.jsx";
 import Spinner from "../modules/Spinner";
 import {useState} from "react";
+import {useTranslation} from "react-i18next";
 
 function Vacancies() {
     const [submittingLocal, setSubmittingLocal] = useState(false);
+    const {t} = useTranslation();
 
     const handleSubmitJobApplication = async (formData) => {
         try {
@@ -29,13 +31,12 @@ function Vacancies() {
   return (
       <>
           {submittingLocal && <Spinner/>}
-          <div className={"vacancies-page"}>
+
+      <div className={"vacancies-page"}>
         <Helmet>
             <title>Harvest International School | Vacancies</title>
-            <meta name="description"
-                  content="Learn more about the available vacancies, job openings, and career opportunities, and the job application process at Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords"
-                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, International School, Vacancies, Job Openings, Career Opportunities, Job Application, مدارس هارفست, برج العرب, مدرسة, فرص عمل, وظائف شاغرة, تقديم للوظائف"/>
+            <meta name="description" content="Learn more about the available vacancies, job openings, and career opportunities, and the job application process at Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, International School, Vacancies, Job Openings, Career Opportunities, Job Application, مدارس هارفست, برج العرب, مدرسة, فرص عمل, وظائف شاغرة, تقديم للوظائف"/>
             <meta name="robots" content="index, follow"/>
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
@@ -43,13 +44,14 @@ function Vacancies() {
 
         <div className={"extreme-padding-container"}>
 
-
-          <h1>Vacancies</h1>
+          <h1>
+              {t("vacancies-page.title")}
+          </h1>
             <h2>
-                Dear Applicant,
+                {t("vacancies-page.intro")}
             </h2>
             <p>
-                Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form below.
+                {t("vacancies-page.intro-description")}
             </p>
 
             {/*<p>*/}
@@ -61,7 +63,7 @@ function Vacancies() {
             {/*</div>*/}
 
             <p>
-                Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type "N/A."
+                {t("vacancies-page.submission-confirmation-notice")}
             </p>
 
             <Form sendPdf={false}
@@ -74,12 +76,13 @@ function Vacancies() {
                     name: 'first-name',
                     label: 'First Name',
                     required: true,
-                    placeholder: 'First Name',
+                    placeholder: t("vacancies-page.application-form.first-name"),
                     errorMsg: 'Please enter your first name',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'first-name',
+                    displayLabel: t("vacancies-page.application-form.first-name")
                 },
                 {
                     id: 2,
@@ -87,12 +90,13 @@ function Vacancies() {
                     name: 'last-name',
                     label: 'Last Name',
                     required: true,
-                    placeholder: 'Last Name',
+                    placeholder: t("vacancies-page.application-form.last-name"),
                     errorMsg: 'Please enter your last name',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
-                    httpName: 'last-name'
+                    httpName: 'last-name',
+                    displayLabel: t("vacancies-page.application-form.last-name")
                 },
                 {
                     id: 3,
@@ -100,12 +104,13 @@ function Vacancies() {
                     name: 'dob',
                     label: 'Date of Birth',
                     required: true,
-                    placeholder: 'Date of Birth',
+                    placeholder: t("vacancies-page.application-form.dob"),
                     errorMsg: 'Please enter your date of birth in the format YYYY-MM-DD',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'dob',
+                    displayLabel: t("vacancies-page.application-form.dob")
                 },
                 {
                     id: 4,
@@ -113,12 +118,13 @@ function Vacancies() {
                     name: 'email',
                     label: 'Email',
                     required: true,
-                    placeholder: 'Email',
+                    placeholder: t("vacancies-page.application-form.email"),
                     errorMsg: 'Please enter your email',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
-                    httpName: 'email'
+                    httpName: 'email',
+                    displayLabel: t("vacancies-page.application-form.email")
                 },
                 {
                     id: 5,
@@ -126,12 +132,13 @@ function Vacancies() {
                     name: 'phone',
                     label: 'Phone Number',
                     required: true,
-                    placeholder: 'Phone Number',
+                    placeholder: t("vacancies-page.application-form.phone"),
                     errorMsg: 'Please enter your phone number',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
-                    httpName: 'phone'
+                    httpName: 'phone',
+                    displayLabel: t("vacancies-page.application-form.phone")
                 },
                 {
                     id: 6,
@@ -144,7 +151,8 @@ function Vacancies() {
                     errorMsg: 'Please select your gender',
                     value: '',
                     setValue: null,
-                    httpName: 'gender'
+                    httpName: 'gender',
+                    displayLabel: t("vacancies-page.application-form.gender")
                 },
                 {
                     id: 7,
@@ -152,12 +160,13 @@ function Vacancies() {
                     name: 'address-1',
                     label: 'Address Street',
                     required: true,
-                    placeholder: 'Address 1: Street',
+                    placeholder: t("vacancies-page.application-form.address-1"),
                     errorMsg: 'Please enter your street address',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
-                    httpName: 'address-1'
+                    httpName: 'address-1',
+                    displayLabel: t("vacancies-page.application-form.address-1")
                 },
                 {
                     id: 8,
@@ -171,6 +180,7 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     httpName: 'address-2',
+                    displayLabel: t("vacancies-page.application-form.address-2"),
                     rules: [
                         {
                             value: 'Other',
@@ -181,12 +191,13 @@ function Vacancies() {
                                     name: 'address-2-other',
                                     label: 'Address District: Other',
                                     required: true,
-                                    placeholder: 'If Other District: Specify',
+                                    placeholder: t("vacancies-page.application-form.address-2-other"),
                                     errorMsg: 'Please specify your district',
                                     value: '',
                                     setValue: null,
                                     widthOfField: 3,
-                                    httpName: 'address-2-other'
+                                    httpName: 'address-2-other',
+                                    displayLabel: t("vacancies-page.application-form.address-2-other")
                                 },
                             ]
                         }
@@ -205,6 +216,7 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     httpName: 'position-applying-for',
+                    displayLabel: t("vacancies-page.application-form.position-applying-for"),
                     rules: [
                         {
                             value: 'Teacher',
@@ -222,6 +234,7 @@ function Vacancies() {
                                     setValue: null,
                                     httpName: 'subject-to-teach',
                                     multiple: false,
+                                    displayLabel: t("vacancies-page.application-form.subject-to-teach"),
                                 }
                             ]
                         },
@@ -234,12 +247,13 @@ function Vacancies() {
                                     name: 'position-applying-for-other',
                                     label: 'Position Applying For: Other',
                                     required: true,
-                                    placeholder: 'If Other Position: Specify',
+                                    placeholder: t("vacancies-page.application-form.position-applying-for-other"),
                                     errorMsg: 'Please specify the position you are applying for',
                                     value: '',
                                     setValue: null,
                                     widthOfField: 3,
-                                    httpName: 'position-applying-for-other'
+                                    httpName: 'position-applying-for-other',
+                                    displayLabel: t("vacancies-page.application-form.position-applying-for-other")
                                 },
                             ]
                         }
@@ -251,12 +265,13 @@ function Vacancies() {
                     name: 'high-school',
                     label: 'High School Name',
                     required: true,
-                    placeholder: 'What was your high school?',
+                    placeholder: t("vacancies-page.application-form.high-school"),
                     errorMsg: 'Please enter the name of your high school',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
-                    httpName: 'high-school'
+                    httpName: 'high-school',
+                    displayLabel: t("vacancies-page.application-form.high-school")
                 },
                 {
                     id: 15,
@@ -270,6 +285,7 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     httpName: 'high-school-system',
+                    displayLabel: t("vacancies-page.application-form.high-school-system"),
                     rules: [
                         {
                             value: 'Other',
@@ -280,12 +296,13 @@ function Vacancies() {
                                     name: 'high-school-system-other',
                                     label: 'High School System: Other',
                                     required: true,
-                                    placeholder: 'If Other System: Specify',
+                                    placeholder: t("vacancies-page.application-form.high-school-system-other"),
                                     errorMsg: 'Please specify the system of your high school',
                                     value: '',
                                     setValue: null,
                                     widthOfField: 3,
-                                    httpName: 'high-school-system-other'
+                                    httpName: 'high-school-system-other',
+                                    displayLabel: t("vacancies-page.application-form.high-school-system-other")
                                 },
                             ]
                         }
@@ -297,12 +314,13 @@ function Vacancies() {
                     name: 'high-school-finish-date',
                     label: 'High School Graduation Date',
                     required: true,
-                    placeholder: 'When did you finish high school?',
+                    placeholder: t("vacancies-page.application-form.high-school-finish-date"),
                     errorMsg: 'Please enter the date you finished high school in the format YYYY-MM-DD',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'high-school-finish-date',
+                    displayLabel: t("vacancies-page.application-form.high-school-finish-date")
 
                 },
                 {
@@ -311,13 +329,13 @@ function Vacancies() {
                     name: 'graduation-institution',
                     label: 'Institution/University Name',
                     required: true,
-                    placeholder: 'What institution did you graduate from?',
+                    placeholder: t("vacancies-page.application-form.graduation-institution"),
                     errorMsg: 'Please enter the institution you graduated from',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
-                    httpName: 'graduation-institution'
-
+                    httpName: 'graduation-institution',
+                    displayLabel: t("vacancies-page.application-form.graduation-institution")
                 },
                 {
                     id: 19,
@@ -325,12 +343,13 @@ function Vacancies() {
                     name: 'graduation-degree',
                     label: 'Institution/University Major',
                     required: true,
-                    placeholder: 'What did you graduate in?',
+                    placeholder: t("vacancies-page.application-form.graduation-degree"),
                     errorMsg: 'Please enter the degree you graduated in',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
-                    httpName: 'graduation-degree'
+                    httpName: 'graduation-degree',
+                    displayLabel: t("vacancies-page.application-form.graduation-degree")
                 },
                 {
                     id: 20,
@@ -338,13 +357,13 @@ function Vacancies() {
                     name: 'graduation-date',
                     label: 'Institution/University Graduation Date',
                     required: true,
-                    placeholder: 'When did you graduate?',
+                    placeholder: t("vacancies-page.application-form.graduation-date"),
                     errorMsg: 'Please enter the date you graduated in the format YYYY-MM-DD',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'graduation-date',
-
+                    displayLabel: t("vacancies-page.application-form.graduation-date")
                 },
                 {
                     id: 21,
@@ -357,7 +376,8 @@ function Vacancies() {
                     errorMsg: 'Please select the number of years of experience',
                     value: '',
                     setValue: null,
-                    httpName: 'years-of-experience'
+                    httpName: 'years-of-experience',
+                    displayLabel: t("vacancies-page.application-form.years-of-experience")
                 },
                 {
                     id: 22,
@@ -365,13 +385,14 @@ function Vacancies() {
                     name: 'experience',
                     label: 'Experience Details',
                     required: false,
-                    placeholder: 'Write your experience here',
+                    placeholder: t("vacancies-page.application-form.experience"),
                     errorMsg: 'Please write about your experience',
                     value: '',
                     setValue: null,
                     widthOfField: 1,
                     httpName: 'experience',
-                    large: true
+                    large: true,
+                    displayLabel: t("vacancies-page.application-form.experience")
                 },
                 {
                     id: 23,
@@ -379,13 +400,14 @@ function Vacancies() {
                     name: 'skills',
                     label: 'Skills or Hobbies',
                     required: false,
-                    placeholder: 'Write your skills or hobbies here',
+                    placeholder: t("vacancies-page.application-form.skills"),
                     errorMsg: 'Please write about your skills or hobbies',
                     value: '',
                     setValue: null,
                     widthOfField: 1,
                     httpName: 'skills',
-                    large: true
+                    large: true,
+                    displayLabel: t("vacancies-page.application-form.skills")
                 },
                 {
                     id: 24,
@@ -393,13 +415,14 @@ function Vacancies() {
                     name: 'about',
                     label: 'Other Details',
                     required: false,
-                    placeholder: 'Here you can write anything you want to add about yourself',
+                    placeholder: t("vacancies-page.application-form.about"),
                     errorMsg: 'Please write about yourself',
                     value: '',
                     setValue: null,
                     widthOfField: 1,
                     large: true,
-                    httpName: 'about'
+                    httpName: 'about',
+                    displayLabel: t("vacancies-page.application-form.about")
                 },
                 {
                     id: 25,
@@ -407,14 +430,13 @@ function Vacancies() {
                     name: 'reference-name',
                     label: 'Reference Name',
                     required: false,
-                    placeholder: 'Reference Name',
+                    placeholder: t("vacancies-page.application-form.reference-name"),
                     errorMsg: 'Please enter your reference name',
                     value: '',
                     setValue: null,
                     widthOfField: 2,
-                    httpName: 'reference-name'
-
-
+                    httpName: 'reference-name',
+                    displayLabel: t("vacancies-page.application-form.reference-name")
                 },
                 {
                     id: 26,
@@ -422,13 +444,13 @@ function Vacancies() {
                     name: 'reference-position',
                     label: 'Reference Position',
                     required: false,
-                    placeholder: 'Reference Position',
+                    placeholder: t("vacancies-page.application-form.reference-position"),
                     errorMsg: 'Please enter your reference position',
                     value: '',
                     setValue: null,
                     widthOfField: 2,
-                    httpName: 'reference-position'
-
+                    httpName: 'reference-position',
+                    displayLabel: t("vacancies-page.application-form.reference-position")
                 },
                 {
                     id: 27,
@@ -436,12 +458,13 @@ function Vacancies() {
                     name: 'reference-email',
                     label: 'Reference Email',
                     required: false,
-                    placeholder: 'Reference Email',
+                    placeholder: t("vacancies-page.application-form.reference-email"),
                     errorMsg: 'Please enter your reference email',
                     value: '',
                     setValue: null,
                     widthOfField: 2,
-                    httpName: 'reference-email'
+                    httpName: 'reference-email',
+                    displayLabel: t("vacancies-page.application-form.reference-email")
                 },
                 {
                     id: 28,
@@ -449,12 +472,13 @@ function Vacancies() {
                     name: 'reference-phone',
                     label: 'Reference Phone Number',
                     required: false,
-                    placeholder: 'Reference Phone Number',
+                    placeholder: t("vacancies-page.application-form.reference-phone"),
                     errorMsg: 'Please enter your reference phone number',
                     value: '',
                     setValue: null,
                     widthOfField: 2,
-                    httpName: 'reference-phone'
+                    httpName: 'reference-phone',
+                    displayLabel: t("vacancies-page.application-form.reference-phone")
                 },
                 {
                     id: 29,
@@ -462,13 +486,14 @@ function Vacancies() {
                     name: 'personal-photo',
                     label: 'Personal Photo',
                     required: false,
-                    placeholder: 'Upload your personal photo here',
+                    placeholder: t("vacancies-page.application-form.personal-photo"),
                     allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff', 'image/svg+xml', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'],
                     errorMsg: 'Please upload your personal photo in a valid format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'personal-photo',
+                    displayLabel: t("vacancies-page.application-form.personal-photo")
                 },
                 {
                     id: 30,
@@ -476,13 +501,14 @@ function Vacancies() {
                     name: 'attachment-1',
                     label: 'CV',
                     required: false,
-                    placeholder: 'Upload your CV here',
+                    placeholder: t("vacancies-page.application-form.attachment-1"),
                     allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'attachment-1',
+                    displayLabel: t("vacancies-page.application-form.attachment-1")
                 },
                 {
                     id: 31,
@@ -490,13 +516,14 @@ function Vacancies() {
                     name: 'attachment-2',
                     label: 'Cover Letter',
                     required: false,
-                    placeholder: 'Upload your cover letter here',
+                    placeholder: t("vacancies-page.application-form.attachment-2"),
                     allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'attachment-2',
+                    displayLabel: t("vacancies-page.application-form.attachment-2")
                 },
                 {
                     id: 32,
@@ -504,13 +531,14 @@ function Vacancies() {
                     name: 'attachment-3',
                     label: 'Other Documents: First',
                     required: false,
-                    placeholder: 'Upload your attachment here',
+                    placeholder: t("vacancies-page.application-form.attachment-3"),
                     allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'attachment-3',
+                    displayLabel: t("vacancies-page.application-form.attachment-3")
                 },
                 {
                     id: 33,
@@ -518,13 +546,14 @@ function Vacancies() {
                     name: 'attachment-4',
                     label: 'Other Documents: Second',
                     required: false,
-                    placeholder: 'Upload your attachment here',
+                    placeholder: t("vacancies-page.application-form.attachment-4"),
                     allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'attachment-4',
+                    displayLabel: t("vacancies-page.application-form.attachment-4")
                 },
                 {
                     id: 34,
@@ -532,13 +561,14 @@ function Vacancies() {
                     name: 'attachment-5',
                     label: 'Other Documents: Third',
                     required: false,
-                    placeholder: 'Upload your attachment here',
+                    placeholder: t("vacancies-page.application-form.attachment-5"),
                     allowedFileTypes: ['application/pdf', '.pdf'],
                     errorMsg: 'Please upload your attachment in PDF format',
                     value: '',
                     setValue: null,
                     widthOfField: 3,
                     httpName: 'attachment-5',
+                    displayLabel: t("vacancies-page.application-form.attachment-5")
                 }
             ]}
                   captchaLength={1}
@@ -546,8 +576,6 @@ function Vacancies() {
                   setSubmittingLocal={setSubmittingLocal}
                   hasDifferentOnSubmitBehaviour={true}
                   differentOnSubmitBehaviour={handleSubmitJobApplication}
-                  lang={'en'}
-
             />
 
         </div>

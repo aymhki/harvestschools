@@ -280,12 +280,20 @@
 
 }
 
+.captcha-box:lang(ar) {
+    letter-spacing: 3rem !important;
+}
+
 .captcha-input {
     justify-content: center;
     align-items: center;
     text-align: center;
     letter-spacing: 3rem;
     font-size: x-large;
+}
+
+.captcha-input:lang(ar) {
+    letter-spacing: 3rem !important;
 }
 
 .refresh-captcha-button {
@@ -741,9 +749,17 @@
         font-size: x-large;
     }
 
+    .captcha-box:lang(ar) {
+        letter-spacing: 2rem !important;
+    }
+
     .captcha-input {
         letter-spacing: 2rem;
         font-size: x-large;
+    }
+
+    .captcha-input:lang(ar) {
+        letter-spacing: 2rem !important;
     }
 
     .file-form-field-styled-buttons-wrapper button  {
@@ -757,9 +773,17 @@
         font-size: x-large;
     }
 
+    .captcha-box:lang(ar) {
+        letter-spacing: 1.5rem !important;
+    }
+
     .captcha-input {
         letter-spacing: 1.5rem;
         font-size: x-large;
+    }
+
+    .captcha-input:lang(ar) {
+        letter-spacing: 1.5rem !important;
     }
 
     .form-select-date-modal-container {
@@ -779,10 +803,18 @@
         font-size: large;
     }
 
+    .captcha-box:lang(ar) {
+        letter-spacing: 2rem !important;
+    }
+
     .captcha-input {
         letter-spacing: 2rem;
         font-size: large;
 
+    }
+
+    .captcha-input:lang(ar) {
+        letter-spacing: 2rem !important;
     }
 
     .file-form-field-styled.third-width {
@@ -964,10 +996,17 @@
         font-size: medium;
     }
 
+    .captcha-box:lang(ar) {
+        letter-spacing: 2.5rem !important;
+    }
+
     .captcha-input {
         letter-spacing: 2.5rem;
         font-size: medium;
+    }
 
+    .captcha-input:lang(ar) {
+        letter-spacing: 2.5rem !important;
     }
 
     .form-select-date-modal-container {
