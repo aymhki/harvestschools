@@ -110,7 +110,7 @@ function App() {
 
     const excludePaths = [
         '/academics/staff',
-        '/admin/view-file'
+        '/admin/view-job-application-file'
     ];
 
     const shouldExclude = excludePaths.includes(location.pathname);
@@ -127,7 +127,7 @@ function App() {
                         <Route path="/admin/login" element={<AdminLogin />} />
                         <Route path="/admin/dashboard" element={<Dashboard />} />
                         <Route path="/admin/job-applications" element={<JobApplications />} />
-                        <Route path="/admin/view-file" element={<FileViewer />} />
+                        <Route path="/admin/view-job-application-file" element={<FileViewer />} />
                         <Route path="/admin/booking-management" element={<BookingManagement />} />
 
                         <Route path="/more-info" element={<MoreInfo />} />

@@ -31,7 +31,7 @@ function JobApplications() {
     }, []);
 
     function onJobApplicationFileUrlClick(cellValue) {
-        const url = `/admin/view-file?file=${encodeURIComponent(cellValue)}`;
+        const url = `/admin/view-job-application-file?file=${encodeURIComponent(cellValue)}`;
         window.open(url, '_blank');
     }
 
