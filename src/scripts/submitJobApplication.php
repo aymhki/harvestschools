@@ -17,41 +17,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $conn->begin_transaction();
 
+        $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'info@harvestschools.com';
+        $subject = isset($_POST['formTitle']) ? $_POST['formTitle'] : 'Job Application Submission';
+        $emailText = "New Job Application Received:\n\n";
+
         $formData = [];
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
                 $fieldId = substr($key, 6);
                 $labelKey = 'label_' . $fieldId;
                 if (isset($_POST[$labelKey])) {
-                    $formData[$_POST[$labelKey]] = $value;
+                    $label = $_POST[$labelKey];
+                    $formData[$label] = $value;
+                    $emailText .= "$label: $value\n";
                 }
             }
         }
 
+        $fileLabels = [
+            'Personal Photo', 'CV', 'Cover Letter',
+            'Other Documents: First', 'Other Documents: Second', 'Other Documents: Third'
+        ];
+        foreach ($fileLabels as $fLabel) {
+            if (isset($formData[$fLabel])) unset($formData[$fLabel]);
+        }
+
         if (!empty($_FILES)) {
+            $emailText .= "\n--- Attachments (Links) ---\n";
+
             foreach ($_FILES as $fileKey => $file) {
                 if ($file['error'] == 0 && is_uploaded_file($file["tmp_name"])) {
                     $label = isset($_POST['label_' . $fileKey]) ? $_POST['label_' . $fileKey] : 'File';
-                    $subFolder = '';
+                    $subFolder = 'others/';
 
                     switch ($label) {
-                        case 'Personal Photo':
-                            $subFolder = 'personal_photos/';
-                            break;
-                        case 'CV':
-                            $subFolder = 'resumes/';
-                            break;
-                        case 'Cover Letter':
-                            $subFolder = 'cover_letters/';
-                            break;
+                        case 'Personal Photo': $subFolder = 'personal_photos/'; break;
+                        case 'CV': $subFolder = 'resumes/'; break;
+                        case 'Cover Letter': $subFolder = 'cover_letters/'; break;
                         case 'Other Documents: First':
                         case 'Other Documents: Second':
                         case 'Other Documents: Third':
-                            $subFolder = 'others/';
-                            break;
-                        default:
-                            $subFolder = 'others/';
-                            break;
+                            $subFolder = 'others/'; break;
                     }
 
                     $baseDir = "../../files_uploaded_from_harvestschools_webapp/job_applications/";
@@ -70,7 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $targetFile = $targetDir . $uniqueFileName;
 
                     if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-                        $formData[$label] = $subFolder . $uniqueFileName;
+                        $relativePath = $subFolder . $uniqueFileName;
+                        $formData[$label] = $relativePath;
+                        $emailText .= "$label: $relativePath\n";
                     } else {
                         $conn->rollback();
                         echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file.', 'code' => 500]);
@@ -117,39 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ];
 
         $stmt = $conn->prepare("INSERT INTO job_applications (
-                first_name,
-                last_name,
-                date_of_birth,
-                email,
-                phone_number,
-                gender,
-                address_street,
-                address_district,
-                address_district_other,
-                position_applying_for,
-                position_applying_for_other,
-                position_applying_for_specialty,
-                high_school_name,
-                high_school_system,
-                high_school_system_other,
-                high_school_graduation_date,
-                instituion_name,
-                institution_major,
-                institution_graduation_date,
-                years_of_experience, 
-                experience_details,
-                skills_or_hobbies,
-                other_details,
-                refrence_name,
-                refrence_position,
-                reference_email,
-                reference_phone_number,
-                personal_photo_link,
-                cv_link,
-                cover_letter_link,
-                other_documents_link_first,
-                other_documents_link_second,
-                other_documents_link_third
+                first_name, last_name, date_of_birth, email, phone_number, gender, address_street,
+                address_district, address_district_other, position_applying_for, position_applying_for_other,
+                position_applying_for_specialty, high_school_name, high_school_system, high_school_system_other,
+                high_school_graduation_date, instituion_name, institution_major, institution_graduation_date,
+                years_of_experience, experience_details, skills_or_hobbies, other_details, refrence_name,
+                refrence_position, reference_email, reference_phone_number, personal_photo_link, cv_link,
+                cover_letter_link, other_documents_link_first, other_documents_link_second, other_documents_link_third
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         if (!$stmt) {
@@ -159,44 +141,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $stmt->bind_param("sssssssssssssssssssssssssssssssss",
-            $fields['First Name'],
-            $fields['Last Name'],
-            $fields['Date of Birth'],
-            $fields['Email'],
-            $fields['Phone Number'],
-            $fields['Gender'],
-            $fields['Address Street'],
-            $fields['Address District'],
-            $fields['Address District: Other'],
-            $fields['Position Applying For'],
-            $fields['Position Applying For: Other'],
-            $fields['Subject to Teach'],
-            $fields['High School Name'],
-            $fields['High School System'],
-            $fields['High School System: Other'],
-            $fields['High School Graduation Date'],
-            $fields['Institution/University Name'],
-            $fields['Institution/University Major'],
-            $fields['Institution/University Graduation Date'],
-            $fields['Years of Experience'],
-            $fields['Experience Details'],
-            $fields['Skills or Hobbies'],
-            $fields['Other Details'],
-            $fields['Reference Name'],
-            $fields['Reference Position'],
-            $fields['Reference Email'],
-            $fields['Reference Phone Number'],
-            $fields['Personal Photo'],
-            $fields['CV'],
-            $fields['Cover Letter'],
-            $fields['Other Documents: First'],
-            $fields['Other Documents: Second'],
+            $fields['First Name'], $fields['Last Name'], $fields['Date of Birth'], $fields['Email'],
+            $fields['Phone Number'], $fields['Gender'], $fields['Address Street'], $fields['Address District'],
+            $fields['Address District: Other'], $fields['Position Applying For'], $fields['Position Applying For: Other'],
+            $fields['Subject to Teach'], $fields['High School Name'], $fields['High School System'],
+            $fields['High School System: Other'], $fields['High School Graduation Date'],
+            $fields['Institution/University Name'], $fields['Institution/University Major'],
+            $fields['Institution/University Graduation Date'], $fields['Years of Experience'],
+            $fields['Experience Details'], $fields['Skills or Hobbies'], $fields['Other Details'],
+            $fields['Reference Name'], $fields['Reference Position'], $fields['Reference Email'],
+            $fields['Reference Phone Number'], $fields['Personal Photo'], $fields['CV'],
+            $fields['Cover Letter'], $fields['Other Documents: First'], $fields['Other Documents: Second'],
             $fields['Other Documents: Third']
         );
 
         if ($stmt->execute()) {
             $conn->commit();
-            echo json_encode(['success' => true, 'message' => 'Job application submitted successfully.', 'code' => 200]);
+            $boundary = md5(time());
+            $headers = "From: no-reply@harvestschools.com\r\n";
+            $headers .= "Reply-To: no-reply@harvestschools.com\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
+            $body = "--$boundary\r\n";
+            $body .= "Content-Type: text/plain; charset=UTF-8\r\n";
+            $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
+            $body .= chunk_split(base64_encode($emailText));
+            $body .= "--$boundary--";
+
+            if (mail($mailTo, $subject, $body, $headers)) {
+                echo json_encode(['success' => true, 'message' => 'Job application submitted successfully.', 'code' => 200]);
+            } else {
+                echo json_encode(['success' => true, 'message' => 'Application saved, but email notification could not be sent.', 'code' => 200]);
+            }
+
         } else {
             $conn->rollback();
             echo json_encode(['success' => false, 'message' => 'DB execute failed: ' . $stmt->error, 'code' => 500]);
