@@ -74,7 +74,7 @@ import VideosGallery from './pages/Gallery/Videos';
 import Tour360Gallery from './pages/Gallery/360Tour';
 
 // Covid pages
-import Covid19 from './pages/FAQs/Covid19/Covid19.jsx';
+import Covid19 from './pages/FAQs/Covid19.jsx';
 
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';

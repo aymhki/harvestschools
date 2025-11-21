@@ -55,10 +55,6 @@ const routesToPrerender = [
     '/gallery/videos',
     '/gallery/360-tour',
     '/covid-19',
-    '/covid-19/covid-19-english-read',
-    '/covid-19/covid-19-arabic-read',
-    '/covid-19/covid-19-english',
-    '/covid-19/covid-19-arabic',
     '/not-found',
 
 ];
