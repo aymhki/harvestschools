@@ -74,11 +74,8 @@ import VideosGallery from './pages/Gallery/Videos';
 import Tour360Gallery from './pages/Gallery/360Tour';
 
 // Covid pages
-import Covid19 from './pages/FAQs/Covid19/EnglishOrArabic';
-import Covid19EnglishRead from './pages/FAQs/Covid19/Covid19EnglishRead';
-import Covid19ArabicRead from './pages/FAQs/Covid19/Covid19ArabicRead';
-import Covid19English from './pages/FAQs/Covid19/Covid19English';
-import Covid19Arabic from './pages/FAQs/Covid19/Covid19Arabic';
+import Covid19 from './pages/FAQs/Covid19/Covid19.jsx';
+
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 
@@ -112,9 +109,6 @@ function App() {
 
 
     const excludePaths = [
-        '/covid-19',
-        '/covid-19/covid-19-english',
-        '/covid-19/covid-19-arabic',
         '/academics/staff',
         '/admin/view-file'
     ];
@@ -140,10 +134,6 @@ function App() {
                         <Route path="/faqs" element={<Faqs />} />
                         <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
                         <Route path="/covid-19" element={<Covid19 />} />
-                        <Route path="/covid-19/covid-19-english-read" element={<Covid19EnglishRead />} />
-                        <Route path="/covid-19/covid-19-arabic-read" element={<Covid19ArabicRead />} />
-                        <Route path="/covid-19/covid-19-english" element={<Covid19English />} />
-                        <Route path="/covid-19/covid-19-arabic" element={<Covid19Arabic />} />
 
                         <Route path="/vacancies" element={<Vacancies />} />
 
