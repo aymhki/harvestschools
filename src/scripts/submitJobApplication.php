@@ -39,8 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if (!in_array($label, $fileLabels)) {
                         $emailText .= "$label: $value\n";
                     }
-
-                    $emailText .= "$label: $value\n";
                 }
             }
         }
