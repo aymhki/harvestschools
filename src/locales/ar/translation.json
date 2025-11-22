@@ -100,7 +100,9 @@
     "success-message": "تم إرسال النموذج بنجاح!",
     "egp": "جنيه",
     "upload": "رفع",
-    "remove": "إزالة"
+    "remove": "إزالة",
+    "year-month-day": " (سنة-شهر-يوم) "
+
   },
   "academics-pages": {
     "national-section": "قسم الناشونال",
