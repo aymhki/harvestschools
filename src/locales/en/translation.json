@@ -100,7 +100,8 @@
     "success-message": "Form submitted successfully!",
     "egp": "EGP",
     "upload": "Upload",
-    "remove": "Remove"
+    "remove": "Remove",
+    "year-month-day": " (YYYY-MM-DD)"
   },
   "academics-pages": {
     "national-section": "National",

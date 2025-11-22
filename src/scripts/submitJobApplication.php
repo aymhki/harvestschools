@@ -198,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!empty($attachmentLinks)) {
                 $emailText .= "\n--- Attachments (Links) ---\n";
                 foreach ($attachmentLinks as $linkLine) {
-                    $emailText .= $linkLine . "\n";
+                    $emailText .= $linkLine . "\n\n";
                 }
             }
 

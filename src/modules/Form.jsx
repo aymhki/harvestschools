@@ -380,7 +380,7 @@ function Form({
             <input
                 {...baseProps}
                 type="text"
-                placeholder={`${field.placeholder ? field.placeholder + ' (YYYY-MM-DD)' : getWhichLabelToUse(field) + ' (YYYY-MM-DD)'}${field.required ? '*' : ''}`}
+                placeholder={`${field.placeholder ? field.placeholder + t("all-forms.year-month-day") : getWhichLabelToUse(field) + t("all-forms.year-month-day")}${field.required ? '*' : ''}`}
                 readOnly={true}
                 onFocus={() => showSelectDateModalForField(field.id, getWhichLabelToUse(field))}
                 onKeyDown={handleKeyDown}
