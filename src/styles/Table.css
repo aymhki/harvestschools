@@ -383,7 +383,6 @@ td button {
     }
 
     tr:hover {
-        color: var(--primary-color);
         background-color: var(--dark-accent-color);
     }
 
