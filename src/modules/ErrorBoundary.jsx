@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from "prop-types";
+import { useTranslation } from 'react-i18next';
 
-class ErrorBoundary extends React.Component {
+
+class ErrorBoundaryClass extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = { hasError: false };
@@ -35,7 +37,9 @@ class ErrorBoundary extends React.Component {
 	}
 	
 	render() {
-		if (this.state.hasError) {
+        const { t } = this.props;
+
+        if (this.state.hasError) {
 			return (
 				<div style={{
 					padding: '20px',
@@ -46,12 +50,12 @@ class ErrorBoundary extends React.Component {
 					justifyContent: 'center',
 					alignItems: 'center'
 				}}>
-					<h2>Something went wrong</h2>
-					<p>Please refresh the page to continue.</p>
+					<h2>{t("error-boundary-page.title")}</h2>
+					<p>{t("error-boundary-page.please-refresh-the-page-to-continue")}</p>
 					<button
 						onClick={() => window.location.reload()}
 					>
-						Refresh Page
+						{t("error-boundary-page.refresh-page-btn")}
 					</button>
 				</div>
 			);
@@ -61,11 +65,18 @@ class ErrorBoundary extends React.Component {
 	}
 }
 
+ErrorBoundaryClass.propTypes = {
+    children: PropTypes.node.isRequired,
+    t: PropTypes.func.isRequired,
+};
+
+const ErrorBoundary = ({ children }) => {
+    const { t } = useTranslation();
+    return <ErrorBoundaryClass t={t}>{children}</ErrorBoundaryClass>;
+};
+
 export default ErrorBoundary;
-
-
 
 ErrorBoundary.propTypes = {
 	children: PropTypes.node.isRequired,
 }
-
