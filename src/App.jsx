@@ -4,21 +4,16 @@ import NavigationBar from "./modules/NavigationBar.jsx";
 import Footer from "./modules/Footer.jsx";
 import ErrorBoundary from "./modules/ErrorBoundary.jsx";
 
-// Top Level components
 import Home from './pages/Home';
 import Faqs from './pages/FAQs/FAQs.jsx';
 import MinimumStageAge from './pages/FAQs/MinimumStageAge.jsx';
 import Vacancies from './pages/Vacancies';
 import MoreInfo from "./pages/FAQs/MoreInfo.jsx";
-
-// Admin pages
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 import Dashboard from "./pages/Admin/./AdminDashboard";
 import JobApplications from "./pages/Admin/JobApplications.jsx";
 import BookingManagement from "./pages/Admin/BookingManagement.jsx";
 import FileViewer from './pages/Admin/FileViewer.jsx';
-
-// Admission pages
 import Admission from "./pages/Admission/Admission.jsx";
 import AdmissionProcess from './pages/Admission/AdmissionProcess';
 import AdmissionRequirements from './pages/Admission/AdmissionRequirements';
@@ -26,8 +21,6 @@ import InsideEgyptRequirements from './pages/Admission/InsideEgyptRequirements';
 import OutsideEgyptRequirements from './pages/Admission/OutsideEgyptRequirements';
 import OutsideEgyptRequirementsForeigners from './pages/Admission/OutsideEgyptRequirementsForeigners';
 import AdmissionFees from "./pages/Admission/AdmissionFees.jsx";
-
-// Academic pages
 import Academics from './pages/Academics/Academics.jsx';
 import British from "./pages/Academics/British.jsx";
 import NationalAcademics from './pages/Academics/National';
@@ -39,8 +32,6 @@ import NationalStaff from './pages/Academics/Staff/NationalStaff';
 import BritishStaff from './pages/Academics/Staff/BritishStaff';
 import AmericanStaff from './pages/Academics/Staff/AmericanStaff';
 import KindergartenStaff from './pages/Academics/Staff/KindergartenStaff';
-
-// Student life pages
 import StudentLife from "./pages/StudentsLife/StudentsLife.jsx";
 import StudentsUnion from './pages/StudentsLife/StudentsUnion';
 import Activities from './pages/StudentsLife/Activities';
@@ -53,8 +44,6 @@ import ArabicInformation from './pages/StudentsLife/Library/ArabicInformation';
 import ArabicGeneral from './pages/StudentsLife/Library/ArabicGeneral';
 import ArabicReligion from './pages/StudentsLife/Library/ArabicReligion';
 import ArabicStories from './pages/StudentsLife/Library/ArabicStories';
-
-// Events pages
 import Events from "./pages/Events/Events.jsx";
 import NationalCalendar from "./pages/Events/NationalCalendar.jsx";
 import BritishCalendar from './pages/Events/BritishCalendar';
@@ -66,21 +55,16 @@ import BookingMedia from "./pages/Events/Booking/BookingMedia.jsx";
 import BookingExtras from "./pages/Events/Booking/BookingExtras.jsx";
 import BookingStatusInfo from "./pages/Events/Booking/BookingStatusInfo.jsx";
 import BookingConfirmation from './pages/Events/Booking/BookingConfirmation.jsx';
-
-// Gallery pages
 import Gallery from "./pages/Gallery/Gallery.jsx";
 import PhotosGallery from './pages/Gallery/Photos';
 import VideosGallery from './pages/Gallery/Videos';
 import Tour360Gallery from './pages/Gallery/360Tour';
-
-// Covid pages
 import Covid19 from './pages/FAQs/Covid19.jsx';
+import NotFound from './pages/NotFound';
 
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 
-// Error page
-import NotFound from './pages/NotFound';
 
 function App() {
     const location = useLocation();

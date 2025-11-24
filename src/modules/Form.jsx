@@ -152,7 +152,7 @@ function Form({
     
     const resetFormCompletely = useCallback(() => {
         resetFormCommon(false);
-    }, []);
+    }, [fields]);
 
     useEffect(() => {
         setDynamicFields(currentFields =>

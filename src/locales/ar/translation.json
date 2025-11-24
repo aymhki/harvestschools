@@ -1861,6 +1861,11 @@
       "attachment-5": "اخرى: ثالثة"
     }
   },
+  "error-boundary-page": {
+    "title": "حدث خطأ غير متوقع",
+    "please-refresh-the-page-to-continue": "بالرجاء إعادة تحميل الصفحة للمتابعة",
+    "refresh-page-btn": "إعادة تحميل الصفحة"
+  },
   "admin": {
     "login-page": {
       "title": "تسجيل دخول الإدارة",
