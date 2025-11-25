@@ -377,7 +377,8 @@ function Vacancies() {
                     value: '',
                     setValue: null,
                     httpName: 'years-of-experience',
-                    displayLabel: t("vacancies-page.application-form.years-of-experience")
+                    displayLabel: t("vacancies-page.application-form.years-of-experience"),
+                    alwaysEnglish: true
                 },
                 {
                     id: 22,

@@ -236,6 +236,16 @@ tr:hover {
     flex-wrap: wrap;
 }
 
+.table-module-accordion-buttons:lang(ar) {
+    direction: ltr;
+
+}
+
+.table-module-accordion-content label:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+}
+
 .table-module-filter-search-input-field {
     width: 50%;
     padding: 0.5rem;

@@ -38,6 +38,7 @@ function Form({
                   formIsReadOnly,
                   footerButtonsSpaceBetween,
                   switchFooterButtonsOrder,
+                  forceEnglishForm
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -63,7 +64,7 @@ function Form({
     const enteredCaptcha = useRef('');
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
-    const { t } = useTranslation();
+    const { t } = useTranslation('translation', forceEnglishForm ? { lng: 'en' } : {});
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -109,6 +110,7 @@ function Form({
         }
         
     }, []);
+
     
     const resetFormCommon = (shouldClearFieldDefaults = false) => {
         
@@ -231,7 +233,7 @@ function Form({
         
         if (field.labelOutside && field.labelOnTop) {
             return (
-                <div className={`field-with-label-on-top ${widthClass}`}>
+                <div className={`field-with-label-on-top ${widthClass} ${field.alwaysEnglish ? 'always-english' : ''}`}>
                     {renderLabel(field)}
                     {children}
                 </div>
@@ -339,7 +341,7 @@ function Form({
         }
         
         const passwordField = (
-            <div className={`password-field-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''}`}>
+            <div className={`password-field-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.alwaysEnglish ? 'always-english' : ''}`}>
                 <input {...inputProps} />
                 <button
                     type="button"
@@ -416,8 +418,8 @@ function Form({
                 multiple={field.multiple}
                 className={
                     field.multiple ?
-                        `select-multiple-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''}` :
-                        `select-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''}`
+                        `select-multiple-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}` :
+                        `select-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`
                 }
             >
                 {!field.multiple && <option value="">{getLabelText(field)}</option>}
@@ -1081,7 +1083,7 @@ function Form({
                 </button>
             );
         }
-        
+
         return (
             <button type="submit" disabled={submitting} className="submit-button">
                 {submitting ? t('all-forms.submitting') : t('all-forms.submit')}
@@ -1318,6 +1320,7 @@ Form.propTypes = {
     formIsReadOnly: PropTypes.bool,
     footerButtonsSpaceBetween: PropTypes.bool,
     switchFooterButtonsOrder: PropTypes.bool,
+    forceEnglishForm: PropTypes.bool,
 };
 
 export default Form;

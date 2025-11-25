@@ -123,6 +123,7 @@ function BookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true
         },
         {
             id: confirmBookingPasswordFieldId,
@@ -140,6 +141,7 @@ function BookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true
         },
         {
             id: firstParentNameFieldId,
@@ -251,6 +253,7 @@ function BookingManagement() {
             defaultValue: '0',
             minimumValue: '0',
             maximumValue: '10',
+            alwaysEnglish: true
         },
         {
             id: additionalAttendeesFieldId,
@@ -269,6 +272,7 @@ function BookingManagement() {
             defaultValue: '0',
             minimumValue: '0',
             maximumValue: '10',
+            alwaysEnglish: true
         },
         {
             id: extrasPaymentStatusFieldId,
@@ -289,6 +293,7 @@ function BookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             defaultValue: 'Not Signed Up',
+            alwaysEnglish: true
         },
         {
             id: firstStudentSectionTitleId,
@@ -335,6 +340,7 @@ function BookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: firstStudentGradeId,
@@ -351,6 +357,7 @@ function BookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: secondStudentSectionTitleId,
@@ -397,6 +404,7 @@ function BookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: secondStudentGradeId,
@@ -413,6 +421,7 @@ function BookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: thirdStudentSectionTitleId,
@@ -459,6 +468,7 @@ function BookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: thirdStudentGradeId,
@@ -475,6 +485,7 @@ function BookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: fourthStudentSectionTitleId,
@@ -521,6 +532,7 @@ function BookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: fourthStudentGradeId,
@@ -537,6 +549,7 @@ function BookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: fifthStudentSectionTitleId,
@@ -583,6 +596,7 @@ function BookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
         {
             id: fifthStudentGradeId,
@@ -599,6 +613,7 @@ function BookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
+            alwaysEnglish: true
         },
     ]
 
@@ -915,6 +930,7 @@ function BookingManagement() {
                               formHasPasswordField={true}
                               footerButtonsSpaceBetween={true}
                               switchFooterButtonsOrder={true}
+                              forceEnglishForm={true}
                         />
                     </div>
 
@@ -1017,6 +1033,7 @@ function BookingManagement() {
                                   resetFormFromParent={resetEditBookingModal}
                                   setResetForFromParent={setResetEditBookingModal}
                                   thisFormIsEditingAnEntry={true}
+                                  forceEnglishForm={true}
                             />
                         )}
                     </div>

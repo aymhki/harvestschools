@@ -187,6 +187,10 @@
     letter-spacing: 0.1rem;
 }
 
+.navbar-quick-action-button.always-english-btn, .navbar-quick-action-button.always-english-btn:lang(ar) {
+    font-family: var(--english-normal-font-bold) !important;
+}
+
 @media (max-width: 1600px) {
     .nav-links li, .nav-links-mobile li {
         padding: 0.5rem;

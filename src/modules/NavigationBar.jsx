@@ -127,7 +127,7 @@ const NavigationBar = () => {
                         {t("nav.check-status")}
                     </button>
 
-                    <button className="navbar-quick-action-button" onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/') } >
+                    <button className={"navbar-quick-action-button always-english-btn"} onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/') } >
                         {t("nav.schooleverywhere")}
                     </button>
                 </div>

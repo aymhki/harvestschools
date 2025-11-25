@@ -6,6 +6,20 @@
     width: 100%;
 }
 
+.dashboard-page:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+}
+
+.dashboard-page button:lang(ar) {
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.3rem !important;
+}
+
+.dashboard-page p:lang(ar) {
+    font-family: var(--english-normal-font);
+}
+
 .job-applications-page {
     display: flex;
     justify-content: center;
@@ -15,6 +29,17 @@
     min-height: 100vh;
 }
 
+.job-applications-page:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+    text-align: left;
+}
+
+.job-applications-page button:lang(ar) {
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.3rem !important;
+}
+
 .booking-management-page {
     display: flex;
     justify-content: center;
@@ -22,6 +47,21 @@
     align-items: center;
     width: 100%;
     min-height: 100vh;
+}
+
+.booking-management-page:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+    text-align: left;
+}
+
+.booking-management-page button:lang(ar) {
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.3rem !important;
+}
+
+.booking-management-page td button:lang(ar) {
+    letter-spacing: 0.1rem !important;
 }
 
 .dashboard-page-footer {
@@ -45,6 +85,7 @@
     z-index: 1000;
 }
 
+
 .add-booking-modal-form-overlay, .edit-booking-modal-overlay {
     position: absolute;
     width: 100vw;
@@ -67,6 +108,51 @@
     z-index: 1001;
 }
 
+.add-booking-modal-form-container:lang(ar), .edit-booking-modal-container:lang(ar), .add-booking-modal:lang(ar), .edit-booking-modal:lang(ar) {
+    direction: ltr;
+    text-align: left;
+}
+
+.add-booking-modal-form-container h1:lang(ar), .add-booking-modal-form-container h2:lang(ar), .add-booking-modal-form-container h3:lang(ar), .edit-booking-modal-container h1:lang(ar), .edit-booking-modal-container h2:lang(ar), .edit-booking-modal-container h3:lang(ar) {
+    font-family: var(--english-title-font);
+}
+
+.add-booking-modal-form-container label:lang(ar), .add-booking-modal-form-container input:lang(ar), .edit-booking-modal-container label:lang(ar), .edit-booking-modal-container input:lang(ar) {
+    font-family: var(--english-normal-font);
+    text-align: left;
+    direction: ltr !important;
+}
+
+.add-booking-modal-form-container select:lang(ar), .edit-booking-modal-container select:lang(ar) {
+    font-family: var(--english-normal-font);
+    text-align: left !important;
+    direction: ltr !important;
+    background-position: right 0.7rem top 50% !important;
+}
+
+.add-booking-modal-form-container form:lang(ar), .edit-booking-modal-container form:lang(ar) {
+    direction: ltr;
+}
+
+.add-booking-modal-form-container button:lang(ar), .edit-booking-modal-container button:lang(ar) {
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.3rem !important;
+}
+
+
+.add-booking-modal-form-container .number-input-container .number-form-field:lang(ar), .edit-booking-modal-container .number-input-container .number-form-field:lang(ar) {
+    text-align: center;
+}
+
+.add-booking-modal-form-container .password-field-wrapper:lang(ar), .edit-booking-modal-container .password-field-wrapper:lang(ar) {
+    text-align: left;
+}
+
+.add-booking-modal-form-container .toggle-password-visibility:lang(ar), .edit-booking-modal-container .toggle-password-visibility:lang(ar) {
+    right: 2rem;
+    left: auto;
+}
+
 .add-booking-modal-form-header, .edit-booking-modal-header {
     margin: 0.5rem;
 }
@@ -85,6 +171,7 @@
     padding: 0;
     margin: 0;
 }
+
 
 .add-booking-modal-form-footer button, .edit-booking-modal-footer button {
     /*margin: 0.5rem;*/
