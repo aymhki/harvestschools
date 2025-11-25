@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --outDir dist/static && vite build --ssr src/entry-prerender.jsx --outDir dist/prerender && node prerender.js",
+    "build": "rm -rf dist && vite build --outDir dist/static && vite build --ssr src/entry-prerender.jsx --outDir dist/prerender && node prerender.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "clean": "rm -rf dist",
     "preview": "vite preview"
