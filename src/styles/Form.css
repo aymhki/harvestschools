@@ -47,6 +47,15 @@
     font-family: var(--english-normal-font);
 }
 
+.select-form-field.always-english, .select-multiple-form-field.always-english, .select-form-field.read-only-field, .select-multiple-form-field.read-only-field {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+}
+
+.select-form-field.always-english:lang(ar), .select-multiple-form-field.always-english:lang(ar), .select-form-field.read-only-field:lang(ar), .select-multiple-form-field.read-only-field:lang(ar) {
+    text-align: right;
+}
+
 .textarea-form-field {
     resize: vertical;
     overflow: auto;
