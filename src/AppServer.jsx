@@ -1,16 +1,18 @@
 import './styles/App.css';
 import { Route, Routes, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+
 import NavigationBar from "./modules/NavigationBar.jsx";
 import Footer from "./modules/Footer.jsx";
 import ErrorBoundary from "./modules/ErrorBoundary.jsx";
-
 import Home from './pages/Home';
 import Faqs from './pages/FAQs/FAQs.jsx';
 import MinimumStageAge from './pages/FAQs/MinimumStageAge.jsx';
 import Vacancies from './pages/Vacancies';
 import MoreInfo from "./pages/FAQs/MoreInfo.jsx";
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
-import Dashboard from "./pages/Admin/./AdminDashboard";
+import Dashboard from "./pages/Admin/AdminDashboard";
 import JobApplications from "./pages/Admin/JobApplications.jsx";
 import BookingManagement from "./pages/Admin/BookingManagement.jsx";
 import FileViewer from './pages/Admin/FileViewer.jsx';
@@ -62,41 +64,23 @@ import Tour360Gallery from './pages/Gallery/360Tour';
 import Covid19 from './pages/FAQs/Covid19.jsx';
 import NotFound from './pages/NotFound';
 
-import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
-
-
-function App() {
+function AppServer() {
     const location = useLocation();
     const { i18n } = useTranslation();
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const langParam = searchParams.get('lang');
-
         if (langParam && ['en', 'ar'].includes(langParam)) {
             if (i18n.language !== langParam) {
                 i18n.changeLanguage(langParam);
             }
         }
-        // else
-        // {
-        //     if (i18n.language !== 'en')
-        //     {
-        //         i18n.changeLanguage('en');
-        //     }
-        // }
-
         document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = i18n.language;
     }, [location.search, i18n]);
 
-
-    const excludePaths = [
-        '/academics/staff',
-        '/admin/view-job-application-file'
-    ];
-
+    const excludePaths = ['/academics/staff', '/admin/view-job-application-file'];
     const shouldExclude = excludePaths.includes(location.pathname);
 
     return (
@@ -107,20 +91,16 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
-
                         <Route path="/admin/login" element={<AdminLogin />} />
                         <Route path="/admin/dashboard" element={<Dashboard />} />
                         <Route path="/admin/job-applications" element={<JobApplications />} />
                         <Route path="/admin/view-job-application-file" element={<FileViewer />} />
                         <Route path="/admin/booking-management" element={<BookingManagement />} />
-
                         <Route path="/more-info" element={<MoreInfo />} />
                         <Route path="/faqs" element={<Faqs />} />
                         <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
                         <Route path="/covid-19" element={<Covid19 />} />
-
                         <Route path="/vacancies" element={<Vacancies />} />
-
                         <Route path="/admission" element={<Admission />} />
                         <Route path="/admission/admission-process" element={<AdmissionProcess />} />
                         <Route path="/admission/admission-requirements" element={<AdmissionRequirements />} />
@@ -128,7 +108,6 @@ function App() {
                         <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
                         <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
                         <Route path="/admission/admission-fees" element={<AdmissionFees />} />
-
                         <Route path="/academics" element={<Academics />} />
                         <Route path="/academics/british" element={<British />} />
                         <Route path="/academics/national" element={<NationalAcademics />} />
@@ -140,7 +119,6 @@ function App() {
                         <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
                         <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
                         <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
-
                         <Route path="/students-life" element={<StudentLife />} />
                         <Route path="/students-life/students-union" element={<StudentsUnion />} />
                         <Route path="/students-life/activities" element={<Activities />} />
@@ -153,7 +131,6 @@ function App() {
                         <Route path="/students-life/library/arabic-general" element={<ArabicGeneral />} />
                         <Route path="/students-life/library/arabic-religion" element={<ArabicReligion />} />
                         <Route path="/students-life/library/arabic-stories" element={<ArabicStories />} />
-
                         <Route path="/events" element={<Events />} />
                         <Route path="/events/national-calendar" element={<NationalCalendar />} />
                         <Route path="/events/british-calendar" element={<BritishCalendar />} />
@@ -165,12 +142,10 @@ function App() {
                         <Route path="/events/booking/extras" element={<BookingExtras />} />
                         <Route path="/events/booking/info" element={<BookingStatusInfo />} />
                         <Route path="/events/booking-confirmation" element={<BookingConfirmation />} />
-
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/gallery/photos" element={<PhotosGallery />} />
                         <Route path="/gallery/videos" element={<VideosGallery />} />
                         <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
-
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </ErrorBoundary>
@@ -180,4 +155,4 @@ function App() {
     );
 }
 
-export default App;
+export default AppServer;
