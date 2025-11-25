@@ -16,6 +16,7 @@
         url('../../public/assets/fonts/Futura/FuturaLT.woff') format('woff');
     font-weight: auto;
     font-style: auto;
+    font-display: swap;
 }
 
 @font-face {
@@ -24,6 +25,7 @@
         url('../../public/assets/fonts/Futura/FuturaLT-Bold.woff') format('woff');
     font-weight: auto;
     font-style: auto;
+    font-display: swap;
 }
 
 
@@ -33,6 +35,7 @@
         url('../../public/assets/fonts/American Typewriter/American Typewriter.woff') format('woff');
     font-weight: auto;
     font-style: auto;
+    font-display: swap;
 }
 
 @font-face {
@@ -41,6 +44,7 @@
     url('../../public/assets/fonts/Arian LT/Arian LT.woff') format('woff');
     font-weight: auto;
     font-style: auto;
+    font-display: swap;
 }
 
 @font-face {
@@ -49,6 +53,7 @@
     url('../../public/assets/fonts/Arian LT Demi/Arian LT Demi.woff') format('woff');
     font-weight: auto;
     font-style: auto;
+    font-display: swap;
 }
 
 @font-face {
@@ -57,14 +62,7 @@
         url('../../public/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff') format('woff');
     font-weight: auto;
     font-style: auto;
-}
-
-@font-face {
-    font-family: 'Reem Kufi';
-    src: url('../../public/assets/fonts/Reem Kufi/ReemKufi-Bold.woff2') format('woff2'),
-        url('../../public/assets/fonts/Reem Kufi/ReemKufi-Bold.woff') format('woff');
-    font-weight: auto;
-    font-style: auto;
+    font-display: swap;
 }
 
 @font-face {
@@ -73,6 +71,7 @@
         url('../../public/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff') format('woff');
     font-weight: auto;
     font-style: auto;
+    font-display: swap;
 }
 
 @font-face {
@@ -81,6 +80,7 @@
         url('../../public/assets/fonts/Janna LT Bold/Janna LT Bold.woff') format('woff');
     font-weight: auto;
     font-style: auto;
+    font-display: swap;
 }
 
 
