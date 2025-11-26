@@ -4,8 +4,9 @@ import {useEffect, useState} from "react";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
-import {headToBookingDashboardOnValidSession, validateBookingLogin} from "../../../services/Utils.jsx";
+import {validateBookingLogin} from "../../../services/MainParentsBookingServices.jsx";
 import {useTranslation} from "react-i18next";
+import {headToBookingDashboardOnValidSession} from "../../../services/BookingNavigationServices.jsx";
 
 function BookingLogin() {
     const navigate = useNavigate();

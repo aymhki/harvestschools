@@ -2,8 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
 import '../../../styles/Events.css';
-import {fetchBookingConfirmationRequest} from "../../../services/Utils.jsx";
-import {pendingPaymentStatus, notSignedUpStatus, confirmedStatus} from "../../../services/Utils.jsx";
+import {fetchBookingConfirmationRequest} from "../../../services/MainParentsBookingServices.jsx";
+import {pendingPaymentStatus, notSignedUpStatus} from "../../../services/GeneralUtils.jsx";
+import { confirmedStatus} from "../../../services/GeneralUtils.jsx";
 import {useTranslation} from "react-i18next";
 
 function BookingConfirmation() {

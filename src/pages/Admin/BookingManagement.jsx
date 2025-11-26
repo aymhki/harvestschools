@@ -1,18 +1,18 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {
-    headToAdminLoginOnInvalidSession,
-    fetchBookingsRequest,
-    handleAddBookingRequest,
-    handleDeleteBookingRequest,
-    msgTimeout,
-    handleEditBookingRequest
-} from "../../services/Utils.jsx";
+import {msgTimeout} from "../../services/GeneralUtils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import '../../styles/AdminDashboard.css';
+import {
+    fetchBookingsRequest,
+    handleAddBookingRequest,
+    handleDeleteBookingRequest,
+    handleEditBookingRequest
+} from "../../services/AdminBookingManagementServices.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
 
 function BookingManagement() {
     const navigate = useNavigate();

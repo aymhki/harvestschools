@@ -3,8 +3,9 @@ import '../../../styles/Events.css'
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
-import {headToBookingLoginOnInvalidSessionFromBookingDashboard, resetSession, bookingLoginPageUrl} from "../../../services/Utils.jsx";
+import {resetSession, bookingLoginPageUrl } from "../../../services/GeneralUtils.jsx"
 import {useTranslation} from "react-i18next";
+import {headToBookingLoginOnInvalidSessionFromBookingDashboard} from "../../../services/BookingNavigationServices.jsx";
 
 function BookingDashboard() {
     const {t} = useTranslation()

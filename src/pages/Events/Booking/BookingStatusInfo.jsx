@@ -1,10 +1,13 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {fetchBookingInfoBySessionRequest, formatDateFromPacific, headToBookingLoginOnInvalidSession, generateConfirmationPDF} from "../../../services/Utils.jsx";
+import {fetchBookingInfoBySessionRequest} from "../../../services/MainParentsBookingServices.jsx";
+import { formatDateFromPacific } from "../../../services/GeneralUtils.jsx"
+import {generateConfirmationPDF} from "../../../services/GeneratePDFLazyWrapper.jsx"
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
+import {headToBookingLoginOnInvalidSession} from "../../../services/BookingNavigationServices.jsx";
 
 function BookingStatusInfo() {
     const {t, i18n} =  useTranslation();
