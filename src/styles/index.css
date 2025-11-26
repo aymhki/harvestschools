@@ -160,6 +160,10 @@ h2 {
     font-weight: 400;
 }
 
+h2:lang(ar) {
+    line-height: 5rem;
+}
+
 h3 {
     font-family: var(--english-title-font);
     font-size: 2rem;
