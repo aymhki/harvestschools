@@ -1,7 +1,7 @@
 import {Helmet} from "react-helmet-async";
 import '../styles/Vacancies.css'
 import Form from "../modules/Form";
-import {submitJobApplicationRequest} from "../services/Utils.jsx";
+import {submitJobApplicationRequest} from "../services/JobApplicationsServices.jsx";
 import Spinner from "../modules/Spinner";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";

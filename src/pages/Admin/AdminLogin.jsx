@@ -3,7 +3,8 @@ import {useState, useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Form from '../../modules/Form.jsx'
-import {headToAdminDashboardOnValidSession, validateAdminLogin} from "../../services/Utils.jsx";
+import {headToAdminDashboardOnValidSession} from "../../services/AdminNavigationServices.jsx"
+import {validateAdminLogin} from "../../services/MainAdminServices.jsx";
 import {useTranslation} from "react-i18next";
 
 function AdminLogin() {

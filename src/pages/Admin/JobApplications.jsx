@@ -3,7 +3,8 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
-import {headToAdminLoginOnInvalidSession, fetchJobApplicationsRequest} from "../../services/Utils.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
+import {fetchJobApplicationsRequest} from "../../services/JobApplicationsServices.jsx";
 
 function JobApplications() {
     const navigate = useNavigate();

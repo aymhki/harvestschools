@@ -1,13 +1,15 @@
 import Spinner from "../../../modules/Spinner.jsx";
 import {useEffect, useState} from "react";
-import { fetchBookingInfoBySessionRequest, headToBookingLoginOnInvalidSession } from "../../../services/Utils.jsx";
+import { fetchBookingInfoBySessionRequest } from "../../../services/MainParentsBookingServices.jsx";
 import { useNavigate } from "react-router-dom";
 import ParallaxScrollSection from "../../../modules/ParallaxScrollSection.jsx";
 import Form from '../../../modules/Form.jsx';
 import '../../../styles/Events.css';
-import {submitUpdateBookingExtrasRequest, generateConfirmationPDF} from "../../../services/Utils.jsx";
-import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAttendeeCost, cdCost} from "../../../services/Utils.jsx";
+import {submitUpdateBookingExtrasRequest} from "../../../services/MainParentsBookingServices.jsx";
+import {generateConfirmationPDF} from "../../../services/GeneratePDFLazyWrapper.jsx"
+import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAttendeeCost, cdCost} from "../../../services/GeneralUtils.jsx";
 import {useTranslation} from "react-i18next";
+import {headToBookingLoginOnInvalidSession} from "../../../services/BookingNavigationServices.jsx";
 
 function BookingExtras() {
     const {t, i18n} = useTranslation();
@@ -21,6 +23,7 @@ function BookingExtras() {
     const [formAllowEdit, setAllowEdit] = useState(false);
     const [bookingId, setBookingId] = useState(null);
     const [bookingUsername, setBookingUsername] = useState(null);
+
 
     const additionalAttendeesFieldId = 1;
     const cdCountFieldId = 2;

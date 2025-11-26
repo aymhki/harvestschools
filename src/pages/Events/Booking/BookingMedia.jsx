@@ -1,10 +1,10 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {headToBookingLoginOnInvalidSession} from "../../../services/Utils.jsx";
 import Spinner from "../../../modules/Spinner.jsx";
 import PhotoCollage from "../../../modules/PhotoCollage.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
+import {headToBookingLoginOnInvalidSession} from "../../../services/BookingNavigationServices.jsx";
 
 function BookingMedia() {
     const {t} = useTranslation()

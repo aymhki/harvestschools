@@ -3,7 +3,7 @@ import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
-import {headToAdminLoginOnInvalidSessionFromAdminDashboard} from "../../services/Utils.jsx";
+import {headToAdminLoginOnInvalidSessionFromAdminDashboard} from "../../services/AdminNavigationServices.jsx";
 
 function AdminDashboard() {
     const navigate = useNavigate();
