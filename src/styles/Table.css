@@ -7,6 +7,23 @@
 
 }
 
+.table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.table-top-scroll-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    height: 20px;
+    margin-bottom: 0.5rem;
+}
+
+.table-top-scroll-content {
+    height: 1px;
+}
+
 .table-module-table {
     width: 100%;
 }

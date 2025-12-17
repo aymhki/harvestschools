@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState, useCallback, Fragment} from "react";
+import {useEffect, useMemo, useState, useCallback, Fragment, useRef} from "react";
 import PropTypes from "prop-types";
 import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
@@ -33,6 +33,8 @@ function Table({
     const [isMobile, setIsMobile] = useState(true);
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
+    const topScrollRef = useRef(null);
+    const tableWrapperRef = useRef(null);
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -141,6 +143,34 @@ function Table({
         setIsMobile(window.innerWidth < 768);
     }, []);
 
+    useEffect(() => {
+        if (scrollable && topScrollRef.current && tableWrapperRef.current) {
+            const topScroll = topScrollRef.current;
+            const tableWrapper = tableWrapperRef.current;
+            const table = tableWrapper.querySelector('table');
+
+            if (table) {
+                const topScrollContent = topScroll.querySelector('.table-top-scroll-content');
+                topScrollContent.style.width = `${table.scrollWidth}px`;
+            }
+
+            const syncTopScroll = () => {
+                tableWrapper.scrollLeft = topScroll.scrollLeft;
+            };
+
+            const syncTableScroll = () => {
+                topScroll.scrollLeft = tableWrapper.scrollLeft;
+            };
+
+            topScroll.addEventListener('scroll', syncTopScroll);
+            tableWrapper.addEventListener('scroll', syncTableScroll);
+
+            return () => {
+                topScroll.removeEventListener('scroll', syncTopScroll);
+                tableWrapper.removeEventListener('scroll', syncTableScroll);
+            };
+        }
+    }, [scrollable, finalTableData]);
 
 
     const requestSort = (columnIndex) => {
@@ -327,11 +357,17 @@ function Table({
                     }
                 </div>
             </div>
-            <table className={`${scrollable ? 'table-module-table-scrollable' : 'table-module-table'}`}
-                   // style={{
-                   //     marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
-                   // }}
-            >
+            {scrollable && finalTableData && finalTableData.length > 0 && (
+                <div className="table-top-scroll-wrapper" ref={topScrollRef}>
+                    <div className="table-top-scroll-content"></div>
+                </div>
+            )}
+            <div className="table-wrapper" ref={scrollable ? tableWrapperRef : null}>
+                <table className={`${scrollable ? 'table-module-table-scrollable' : 'table-module-table'}`}
+                       // style={{
+                       //     marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
+                       // }}
+                >
                 <tbody>
                 {tableHeader &&
                     <tr>
@@ -461,6 +497,7 @@ function Table({
                 ))}
                 </tbody>
             </table>
+            </div>
             <animated.div className="table-module-accordion" style={contentAnimation}>
                 <div className="table-module-accordion-overlay" onClick={() => {
                     setIsAccordionOpen(false)
