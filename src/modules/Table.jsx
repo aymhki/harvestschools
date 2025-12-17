@@ -147,12 +147,6 @@ function Table({
         if (scrollable && topScrollRef.current && tableWrapperRef.current) {
             const topScroll = topScrollRef.current;
             const tableWrapper = tableWrapperRef.current;
-            const table = tableWrapper.querySelector('table');
-
-            if (table) {
-                const topScrollContent = topScroll.querySelector('.table-top-scroll-content');
-                topScrollContent.style.width = `${table.scrollWidth}px`;
-            }
 
             const syncTopScroll = () => {
                 tableWrapper.scrollLeft = topScroll.scrollLeft;
@@ -169,6 +163,21 @@ function Table({
                 topScroll.removeEventListener('scroll', syncTopScroll);
                 tableWrapper.removeEventListener('scroll', syncTableScroll);
             };
+        }
+    }, [scrollable]);
+
+    useEffect(() => {
+        if (scrollable && topScrollRef.current && tableWrapperRef.current) {
+            const topScroll = topScrollRef.current;
+            const tableWrapper = tableWrapperRef.current;
+            const table = tableWrapper.querySelector('table');
+
+            if (table) {
+                const topScrollContent = topScroll.querySelector('.table-top-scroll-content');
+                if (topScrollContent) {
+                    topScrollContent.style.width = `${table.scrollWidth}px`;
+                }
+            }
         }
     }, [scrollable, finalTableData]);
 
