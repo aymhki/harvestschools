@@ -68,7 +68,7 @@ function Vacancies() {
 
             <Form sendPdf={false}
                   formTitle={'Job Application Submission'}
-                  mailTo={'info@harvestschools.com'}
+                  mailTo={'careers@harvestschools.com'}
                   fields={[
                 {
                     id: 1,
