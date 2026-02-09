@@ -37,16 +37,22 @@ jobs:
       - name: Install lftp
         run: sudo apt-get install -y lftp
 
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
       - name: Deploy to cPanel via lftp
         run: |
           lftp -e "
             set ssl:verify-certificate no;
-            set ftp:passive-mode yes;
             set ftp:ssl-allow yes;
-            set mirror:use-pget-n 5;
-            set mirror:parallel-transfer-count 2;
-            set xfer:log 1;
-            mirror -R --verbose --delete \
+            set ftp:ssl-force yes;
+            set ftp:ssl-protect-data yes;
+            set ftp:passive-mode yes;
+            set net:timeout 30;
+            set net:max-retries 3;
+            set net:reconnect-interval-base 5;
+            open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ftps://${{ secrets.FTP_SERVER }};
+            mirror -R --verbose \
               --exclude-glob .git* \
               --exclude-glob node_modules/ \
               --exclude-glob assets/fonts/ \
@@ -55,7 +61,7 @@ jobs:
               --exclude-glob assets/documents/ \
               dist/static/ /public_html/;
             quit
-          " -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+          " 
 
       - name: Update index.html
         run: |
