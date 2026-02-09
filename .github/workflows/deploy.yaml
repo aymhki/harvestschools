@@ -34,34 +34,28 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Install lftp
-        run: sudo apt-get install -y lftp
+      - name: Deploy to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/static/
+          server-dir: public_html/
+          dangerous-clean-slate: false
+          state-name: .ftp-deploy-sync-state.json
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            assets/fonts/**
+            assets/images/**
+            assets/videos/**
+            assets/documents/**
+          log-level: verbose
 
       - name: Install lftp
-        run: sudo apt-get install -y lftp
-
-      - name: Deploy to cPanel via lftp
-        run: |
-          lftp -e "
-            set ssl:verify-certificate no;
-            set ftp:ssl-allow yes;
-            set ftp:ssl-force yes;
-            set ftp:ssl-protect-data yes;
-            set ftp:passive-mode yes;
-            set net:timeout 30;
-            set net:max-retries 3;
-            set net:reconnect-interval-base 5;
-            open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ftps://${{ secrets.FTP_SERVER }};
-            mirror -R --verbose \
-              --exclude-glob .git* \
-              --exclude-glob node_modules/ \
-              --exclude-glob assets/fonts/ \
-              --exclude-glob assets/images/ \
-              --exclude-glob assets/videos/ \
-              --exclude-glob assets/documents/ \
-              dist/static/ /public_html/;
-            quit
-          " 
+        run: sudo apt-get install lftp
 
       - name: Update index.html
         run: |
