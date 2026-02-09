@@ -111,7 +111,7 @@ function Home() {
                     </p>
 
 
-                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'asmaa.samir@harvestschools.com'} formTitle={'Contact Us Form Submission'} lang={"en"} captchaLength={2}/>
+                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'inquiries@harvestschools.com'} formTitle={'Contact Us Form Submission'} lang={"en"} captchaLength={2}/>
                 </div>
 
                 <div className="home-page-visit-us-section">

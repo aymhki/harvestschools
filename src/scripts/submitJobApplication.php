@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $conn->begin_transaction();
 
-        $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'info@harvestschools.com';
+        $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'careers@harvestschools.com';
         $subject = isset($_POST['formTitle']) ? $_POST['formTitle'] : 'Job Application Submission';
         $emailText = "New Job Application Received:\n\n";
         $attachmentLinks = [];

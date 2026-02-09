@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: http://localhost:5173');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
-        $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'info@harvestschools.com';
+        $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'inquiries@harvestschools.com';
         $subject = isset($_POST['formTitle']) ? $_POST['formTitle'] : 'Form Submission';
         $boundary = md5(time());
         $headers = "From: no-reply@harvestschools.com\r\n";
