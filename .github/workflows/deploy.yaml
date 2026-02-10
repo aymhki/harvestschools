@@ -126,15 +126,13 @@ jobs:
 
       - name: Add Server to Known Hosts
         run: |
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          # Use the specific SSH_PORT to scan for keys
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy static files (excluding heavy assets)
         run: |
-          # Sync dist/static to public_html, excluding heavy assets and git files
-          # -a: archive mode (preserves permissions, times, etc.)
-          # -v: verbose
-          # -z: compress during transfer
-          rsync -avz \
+          # -e "ssh -p ..." tells rsync to use the custom port
+          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" \
             --exclude '.git*' \
             --exclude 'node_modules' \
             --exclude 'assets/fonts' \
@@ -145,20 +143,17 @@ jobs:
 
       - name: Update index.html
         run: |
-          # Explicitly sync index.html to ensure it's up to date
-          rsync -avz dist/static/index.html ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/index.html
+          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" dist/static/index.html ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/index.html
 
       - name: Sync assets folder (Conditional)
         if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
           echo "Syncing entire assets folder as changes were detected in excluded subfolders"
-          # Sync dist/static/assets/ to public_html/assets/
-          rsync -avz dist/static/assets/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/assets/
+          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" dist/static/assets/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/assets/
 
       - name: Debug - List workspace contents
         run: |
           echo "Current directory: $PWD"
-          echo "Listing root directory contents:"
           ls -la
           echo "Listing repository contents:"
           ls -la $GITHUB_WORKSPACE
@@ -166,5 +161,4 @@ jobs:
       - name: Sync scripts folder
         run: |
           echo "Syncing scripts folder to public_html/scripts"
-          # Sync src/scripts/ to public_html/scripts/
-          rsync -avz src/scripts/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/scripts/
+          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" src/scripts/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/scripts/
