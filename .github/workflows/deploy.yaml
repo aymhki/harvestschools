@@ -1,4 +1,89 @@
-name: Deploy Vite React App to cPanel
+#name: Deploy Vite React App to cPanel
+#on:
+#  push:
+#    branches:
+#      - main
+#jobs:
+#  build-and-deploy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 2
+#
+#      - name: Check for changes in asset subfolders
+#        id: check_assets_changes
+#        run: |
+#          if git diff --name-only HEAD^ HEAD | grep -q -E "public/assets/(fonts|images|videos|documents)/"; then
+#            echo "assets_changed=true" >> $GITHUB_OUTPUT
+#            echo "Changes detected in assets subfolders"
+#          else
+#            echo "assets_changed=false" >> $GITHUB_OUTPUT
+#            echo "No changes detected in assets subfolders"
+#          fi
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: 'latest'
+#
+#      - name: Install dependencies
+#        run: npm install
+#
+#      - name: Build project
+#        run: npm run build
+#
+#      - name: Deploy to cPanel via FTP
+#        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+#        with:
+#          security: loose
+#          server: ${{ secrets.FTP_SERVER }}
+#          username: ${{ secrets.FTP_USERNAME }}
+#          password: ${{ secrets.FTP_PASSWORD }}
+#          local-dir: dist/static/
+#          server-dir: public_html/
+#          dangerous-clean-slate: false
+#          state-name: .ftp-deploy-sync-state.json
+#          exclude: |
+#            **/.git*
+#            **/.git*/**
+#            **/node_modules/**
+#            assets/fonts/**
+#            assets/images/**
+#            assets/videos/**
+#            assets/documents/**
+#          log-level: verbose
+#
+#      - name: Install lftp
+#        run: sudo apt-get install lftp
+#
+#      - name: Update index.html
+#        run: |
+#          lftp -e "set ssl:verify-certificate no; put -O /public_html dist/static/index.html; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+#
+#      - name: Sync assets folder with lftp
+#        if: steps.check_assets_changes.outputs.assets_changed == 'true'
+#        run: |
+#          echo "Syncing entire assets folder as changes were detected in excluded subfolders"
+#          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=upload.log --parallel=2 dist/static/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+#
+#
+#      - name: Debug - List workspace contents
+#        run: |
+#          echo "Current directory: $PWD"
+#          echo "Listing root directory contents:"
+#          ls -la
+#          echo "Listing repository contents:"
+#          ls -la $GITHUB_WORKSPACE
+#
+#      - name: Sync scripts folder with lftp
+#        run: |
+#          echo "Syncing scripts folder to public_html/scripts"
+#          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=scripts_upload.log --parallel=2 $GITHUB_WORKSPACE/src/scripts /public_html/scripts; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+#
+
+name: Deploy Vite React App to cPanel via SSH
 on:
   push:
     branches:
@@ -34,40 +119,41 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to cPanel via FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          security: loose
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist/static/
-          server-dir: public_html/
-          dangerous-clean-slate: false
-          state-name: .ftp-deploy-sync-state.json
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            assets/fonts/**
-            assets/images/**
-            assets/videos/**
-            assets/documents/**
-          log-level: verbose
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Install lftp
-        run: sudo apt-get install lftp
+      - name: Add Server to Known Hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy static files (excluding heavy assets)
+        run: |
+          # Sync dist/static to public_html, excluding heavy assets and git files
+          # -a: archive mode (preserves permissions, times, etc.)
+          # -v: verbose
+          # -z: compress during transfer
+          rsync -avz \
+            --exclude '.git*' \
+            --exclude 'node_modules' \
+            --exclude 'assets/fonts' \
+            --exclude 'assets/images' \
+            --exclude 'assets/videos' \
+            --exclude 'assets/documents' \
+            dist/static/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/
 
       - name: Update index.html
         run: |
-          lftp -e "set ssl:verify-certificate no; put -O /public_html dist/static/index.html; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
+          # Explicitly sync index.html to ensure it's up to date
+          rsync -avz dist/static/index.html ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/index.html
 
-      - name: Sync assets folder with lftp
+      - name: Sync assets folder (Conditional)
         if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
           echo "Syncing entire assets folder as changes were detected in excluded subfolders"
-          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=upload.log --parallel=2 dist/static/assets /public_html/assets; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
-
+          # Sync dist/static/assets/ to public_html/assets/
+          rsync -avz dist/static/assets/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/assets/
 
       - name: Debug - List workspace contents
         run: |
@@ -77,8 +163,8 @@ jobs:
           echo "Listing repository contents:"
           ls -la $GITHUB_WORKSPACE
 
-      - name: Sync scripts folder with lftp
+      - name: Sync scripts folder
         run: |
           echo "Syncing scripts folder to public_html/scripts"
-          lftp -e "set ssl:verify-certificate no; set mirror:use-pget-n 5; set mirror:parallel-transfer-count 2; set xfer:log 1; mirror -R --verbose --log=scripts_upload.log --parallel=2 $GITHUB_WORKSPACE/src/scripts /public_html/scripts; quit" -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}
-          
+          # Sync src/scripts/ to public_html/scripts/
+          rsync -avz src/scripts/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/scripts/
