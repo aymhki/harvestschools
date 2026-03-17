@@ -1,4 +1,4 @@
-name: Deploy Vite React App to cPanel via SSH
+name: Deploy Vite React App to cPanel via FTP
 on:
   push:
     branches:
@@ -34,35 +34,45 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Install SSH Key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # NEW: Install lftp for FTP transfers
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Add Server to Known Hosts
-        run: |
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
+      # REPLACED: SSH sync is now FTP mirror
       - name: Deploy static files (excluding heavy assets)
         run: |
-          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" \
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose \
             --exclude '.git*' \
-            --exclude 'node_modules' \
-            --exclude 'assets/fonts' \
-            --exclude 'assets/images' \
-            --exclude 'assets/videos' \
-            --exclude 'assets/documents' \
-            dist/static/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/
+            --exclude 'node_modules/' \
+            --exclude 'assets/fonts/' \
+            --exclude 'assets/images/' \
+            --exclude 'assets/videos/' \
+            --exclude 'assets/documents/' \
+            dist/static/ public_html/
+          "
 
+      # REPLACED: Uploading a single file via FTP
       - name: Update index.html
         run: |
-          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" dist/static/index.html ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/index.html
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          put -O public_html/ dist/static/index.html
+          "
 
+      # REPLACED: Conditional FTP mirror for assets
       - name: Sync assets folder (Conditional)
         if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
           echo "Syncing entire assets folder as changes were detected in excluded subfolders"
-          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" dist/static/assets/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/assets/
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose dist/static/assets/ public_html/assets/
+          "
 
       - name: Debug - List workspace contents
         run: |
@@ -71,7 +81,12 @@ jobs:
           echo "Listing repository contents:"
           ls -la $GITHUB_WORKSPACE
 
+      # REPLACED: FTP mirror for scripts
       - name: Sync scripts folder
         run: |
           echo "Syncing scripts folder to public_html/scripts"
-          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" src/scripts/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:public_html/scripts/
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose src/scripts/ public_html/scripts/
+          "
