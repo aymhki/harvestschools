@@ -40,6 +40,8 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
             {method: 'POST', body: JSON.stringify({session_id: sessionId})});
 
 
+        console.log("Response status:", response);
+
         const result = await response.json();
 
         if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
