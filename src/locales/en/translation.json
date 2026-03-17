@@ -22,9 +22,9 @@
     "students-union": "Students Union",
     "activities": "Activities",
     "library": "Library",
-    "national-calendar": "National Calendar",
-    "british-calendar": "British Calendar",
-    "american-calendar": "American Calendar",
+    "national-calendar": "National School Calendar",
+    "british-calendar": "British School Calendar",
+    "american-calendar": "American School Calendar",
     "kg-calendar": "KG Calendar",
     "booking": "Booking",
     "photos": "Photos",
@@ -1303,11 +1303,11 @@
   "events-pages": {
     "options-page": {
         "title": "Events",
-        "national-calendar-option": "National Calendar",
+        "national-calendar-option": "National School Calendar",
         "national-calendar-option-description": "Detailed timeline of the National academic year",
-        "british-calendar-option": "British Calendar",
+        "british-calendar-option": "British School Calendar",
         "british-calendar-option-description": "Detailed timeline of the British academic year",
-        "american-calendar-option": "American Calendar",
+        "american-calendar-option": "American School Calendar",
         "american-calendar-option-description": "Detailed timeline of the American academic year",
         "kg-calendar-option": "KG Calendar",
         "kg-calendar-option-description": "Detailed timeline of the Kindergarten academic year",
@@ -1320,10 +1320,10 @@
       "holiday-shifted-notice": "Note: Any official holiday in the middle of the week will be shifted to Thursday according to the Prime Minister’s Decision."
     },
     "national-calendar-page": {
-      "title": "National Calendar"
+      "title": "National School Calendar"
     },
     "british-calendar-page": {
-      "title": "British Calendar",
+      "title": "British School Calendar",
       "calendar": [
         {"title": "Title", "start-date": "Start Date", "end-date": "End Date"},
         {"title": "1st School Day: Yr. 6, 7, 8, & 9", "start-date": "2021-09-01", "end-date": "2021-09-01"},
@@ -1348,7 +1348,7 @@
       ]
     },
     "american-calendar-page": {
-      "title": "American Calendar",
+      "title": "American School Calendar",
       "calendar": [
         {"title": "Title", "start-date": "Start Date", "end-date": "End Date"},
         {"title": "1st School Day: Gr. 1, 2, and 3", "start-date": "2021-09-05", "end-date": "2021-09-05"},
