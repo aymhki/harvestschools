@@ -45,12 +45,12 @@ jobs:
           set ssl:verify-certificate no;
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
           mirror -R --verbose \
-            --exclude '.git*' \
-            --exclude 'node_modules/' \
-            --exclude 'assets/fonts/' \
-            --exclude 'assets/images/' \
-            --exclude 'assets/videos/' \
-            --exclude 'assets/documents/' \
+            --exclude-glob '.git*' \
+            --exclude-glob 'node_modules/' \
+            --exclude-glob 'assets/fonts/' \
+            --exclude-glob 'assets/images/' \
+            --exclude-glob 'assets/videos/' \
+            --exclude-glob 'assets/documents/' \
             dist/static/ public_html/
           "
 
