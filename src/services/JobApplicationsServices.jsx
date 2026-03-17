@@ -36,7 +36,7 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
     const timestamp = new Date().getTime();
 
     try {
-        const response = await fetch(endpoints.getJobApplications + '?_=' + timestamp,
+        const response = await fetch(endpoints.getJobApplications,
             {method: 'POST', body: JSON.stringify({session_id: sessionId})});
 
 
