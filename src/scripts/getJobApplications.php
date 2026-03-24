@@ -1,4 +1,6 @@
 <?php
+ob_start();
+ob_clean();
 header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Access-Control-Allow-Origin: http://localhost:5173');
@@ -98,12 +100,8 @@ try {
         }
     }
 
-    error_log("SQL Query: " . $sql);
-    error_log("Result num_rows: " . $result->num_rows);
-    error_log("Data rows count: " . count($dataRows));
-
-    if (ob_get_length()) {
-        error_log("WARNING: Output buffer contains: " . ob_get_clean());
+    while (ob_get_level()) {
+        ob_end_clean();
     }
 
     echo json_encode([
