@@ -100,6 +100,14 @@ try {
         }
     }
 
+    error_log("SQL Query: " . $sql);
+    error_log("Result num_rows: " . $result->num_rows);
+    error_log("Data rows count: " . count($dataRows));
+
+    if (ob_get_length()) {
+        error_log("WARNING: Output buffer contains: " . ob_get_clean());
+    }
+
     echo json_encode([
         "success" => true,
         "message" => "Data retrieved successfully",
