@@ -32,7 +32,7 @@ try {
         exit;
     }
 
-    //$conn->set_charset("utf8mb4");
+    $conn->set_charset("utf8mb4");
 
 
     $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON LOWER(s.username) = LOWER(u.username) WHERE s.id = ?");

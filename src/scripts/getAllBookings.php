@@ -12,6 +12,7 @@ $dbname = $dbConfig['db_name'];
 try {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
+
     if (!isset($data['session_id'])) {
         echo json_encode([
             "success" => false,
@@ -20,9 +21,11 @@ try {
         ]);
         exit;
     }
+
     $sessionId = $data['session_id'];
     $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
+
     if ($conn->connect_error) {
         echo json_encode([
             'success' => false,
@@ -31,11 +34,16 @@ try {
         ]);
         exit;
     }
+
+    $conn->set_charset("utf8mb4");
+
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
                       JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
                       WHERE s.id = ?";
+
     $stmt = $conn->prepare($permissionSql);
+
     if (!$stmt) {
         echo json_encode([
             'success' => false,
@@ -44,10 +52,12 @@ try {
         ]);
         exit;
     }
+
     $stmt->bind_param("s", $sessionId);
     $stmt->execute();
     $permissionResult = $stmt->get_result();
     $stmt->close();
+
     if ($permissionResult->num_rows == 0) {
         echo json_encode([
             'success' => false,
@@ -56,12 +66,15 @@ try {
         ]);
         exit;
     }
+
     $permissionRow = $permissionResult->fetch_assoc();
     $permissionLevels = explode(',', $permissionRow['permission_level']);
     $cleanPermissionLevels = array_map(function ($level) {
         return intval(trim($level));
     }, $permissionLevels);
+
     $hasPermission = in_array(1, $cleanPermissionLevels);
+
     if (!$hasPermission) {
         echo json_encode([
             'success' => false,
@@ -70,6 +83,7 @@ try {
         ]);
         exit;
     }
+
     $bookingsSql = "SELECT 
                 b.booking_id,
                 b.created_at AS booking_created,
@@ -86,7 +100,9 @@ try {
             JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
             LEFT JOIN booking_extras e ON b.booking_id = e.booking_id
             ORDER BY b.booking_id";
+
     $bookingsResult = $conn->query($bookingsSql);
+
     if (!$bookingsResult) {
         echo json_encode([
             'success' => false,
@@ -95,6 +111,7 @@ try {
         ]);
         exit;
     }
+
     $data = [];
     $headers = [
         'Booking ID', 'Booking Created', 'Booking Date', 'Booking Time', 'Booking Status', 'Booking Notes',
@@ -105,7 +122,9 @@ try {
         'Total CD Cost', 'Total Additional Attendee(s) Cost', 'Total Extras Cost',
         'Total Paid for Base Fare', 'Total for Base and Extras'
     ];
+
     $data[] = $headers;
+
     while ($booking = $bookingsResult->fetch_assoc()) {
         $studentsSql = "SELECT s.student_id, s.name, s.school_division, s.grade, s.created_at
                        FROM booking_students s
@@ -122,6 +141,7 @@ try {
         $grades = [];
         $studentsCreated = [];
         $studentCount = 0;
+
         while ($student = $studentsResult->fetch_assoc()) {
             $studentIds[] = $student['student_id'];
             $studentNames[] = $student['name'];
@@ -130,12 +150,14 @@ try {
             $studentsCreated[] = $student['created_at'];
             $studentCount++;
         }
+
         $stmtStudents->close();
         $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number
                       FROM booking_parents p
                       JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
                       WHERE pl.booking_id = ?
                       ORDER BY p.parent_id";
+
         $stmtParents = $conn->prepare($parentsSql);
         $stmtParents->bind_param("i", $booking['booking_id']);
         $stmtParents->execute();
@@ -143,6 +165,7 @@ try {
         $parentNames = [];
         $parentEmails = [];
         $parentPhones = [];
+
         while ($parent = $parentsResult->fetch_assoc()) {
             if (!empty($parent['name'])) {
                 $parentNames[] = $parent['name'];
@@ -154,6 +177,7 @@ try {
                 $parentPhones[] = $parent['phone_number'];
             }
         }
+
         $stmtParents->close();
 
         $cdCount = intval($booking['cd_count'] ?? 0);
@@ -199,8 +223,10 @@ try {
             $totalBaseFairFormatted,
             $totalCostBaseAndExtrasFormatted
         ];
+
         $data[] = $rowData;
     }
+
     $endTime = microtime(true);
     $executionTime = ($endTime - $startTime) * 1000;
     echo json_encode([
@@ -208,13 +234,16 @@ try {
         'data' => $data,
         'executionTime' => $executionTime
     ]);
+
 } catch (Exception $e) {
     $statusCode = $e->getCode() ?: 500;
+
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage(),
         'code' => $statusCode
     ]);
+
 } finally {
     if ($conn) {
         $conn->close();

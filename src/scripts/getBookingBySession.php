@@ -30,6 +30,8 @@ try {
         ]);
         exit;
     }
+
+    $conn->set_charset("utf8mb4");
     $sessionSql = "SELECT username FROM booking_sessions WHERE id = ?";
     $stmt = $conn->prepare($sessionSql);
     if (!$stmt) {

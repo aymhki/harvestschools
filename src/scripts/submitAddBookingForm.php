@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-
+        $conn->set_charset("utf8mb4");
         $formData = [];
 
         $studentFieldMappings = [
