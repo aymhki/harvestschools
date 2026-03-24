@@ -39,14 +39,6 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
         const response = await fetch(endpoints.getJobApplications,
             {method: 'POST', body: JSON.stringify({session_id: sessionId})});
 
-
-        const blob = await response.blob();
-        const text = await blob.text();
-
-        console.log("Raw bytes:", new TextEncoder().encode(text));
-        console.log("First 200 chars:", text.substring(0, 200));
-        console.log("Hex dump:", [...new TextEncoder().encode(text)].map(x => x.toString(16)).join(' '));
-
         const result = await response.json();
 
         if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {

@@ -1,6 +1,4 @@
 <?php
-ob_start();
-ob_clean();
 header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Access-Control-Allow-Origin: http://localhost:5173');
@@ -33,6 +31,9 @@ try {
         echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error, "code" => 500]);
         exit;
     }
+
+    $conn->set_charset("utf8mb4");
+
 
     $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON LOWER(s.username) = LOWER(u.username) WHERE s.id = ?");
     if (!$stmt) {
@@ -100,16 +101,24 @@ try {
         }
     }
 
-    while (ob_get_level()) {
-        ob_end_clean();
-    }
-
-    echo json_encode([
+    $output = [
         "success" => true,
         "message" => "Data retrieved successfully",
         "code" => 200,
         "data" => array_merge([$headers], $dataRows)
-    ]);
+    ];
+
+    $json = json_encode($output);
+
+    if ($json === false) {
+        echo json_encode([
+            "success" => false,
+            "message" => "JSON Encode Error: " . json_last_error_msg(),
+            "code" => 500
+        ]);
+    } else {
+        echo $json;
+    }
 
 } catch (Exception $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
