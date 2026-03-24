@@ -1,4 +1,5 @@
 <?php
+ob_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 header('Content-Type: application/json');
@@ -108,6 +109,7 @@ try {
         error_log("WARNING: Output buffer contains: " . ob_get_clean());
     }
 
+
     echo json_encode([
         "success" => true,
         "message" => "Data retrieved successfully",
@@ -118,6 +120,7 @@ try {
 } catch (Exception $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {
+    ob_end_clean();
     if (isset($conn) ) {
         $conn->close();
     }
