@@ -42,6 +42,19 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
 
         console.log("Response status:", response);
 
+        // ADD THIS: Get the raw text first
+        const responseText = await response.text();
+        console.log("Raw response text:", responseText);
+        console.log("Response length:", responseText.length);
+        console.log("First 500 chars:", responseText.substring(0, 500));
+
+        // Now parse if not empty
+        if (!responseText) {
+            console.error("Empty response body received");
+            setJobApplications(null);
+            return;
+        }
+
         const result = await response.json();
 
         if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
