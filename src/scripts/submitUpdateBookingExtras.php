@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
+        $conn->set_charset("utf8mb4");
         $formData = [];
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {

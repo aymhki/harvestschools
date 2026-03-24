@@ -35,6 +35,8 @@ try {
         ]);
         exit;
     }
+
+    $conn->set_charset("utf8mb4");
     $validationSql = "SELECT 
                         b.booking_id,
                         b.auth_id,

@@ -21,6 +21,7 @@ try {
         exit;
     }
 
+    $conn->set_charset("utf8mb4");
     $data = json_decode(file_get_contents('php://input'), true);
 
     if (!isset($data['username']) || !isset($data['password'])) {

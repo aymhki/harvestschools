@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
 
+        $conn->set_charset("utf8mb4");
         $conn->begin_transaction();
 
         $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'careers@harvestschools.com';
