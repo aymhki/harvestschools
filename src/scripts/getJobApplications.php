@@ -1,5 +1,4 @@
 <?php
-ob_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 header('Content-Type: application/json');
@@ -12,6 +11,8 @@ $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
+echo json_encode(["test" => "script started"]);
+exit;
 
 try {
     $input = file_get_contents('php://input');
@@ -109,7 +110,6 @@ try {
         error_log("WARNING: Output buffer contains: " . ob_get_clean());
     }
 
-
     echo json_encode([
         "success" => true,
         "message" => "Data retrieved successfully",
@@ -120,7 +120,6 @@ try {
 } catch (Exception $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {
-    ob_end_clean();
     if (isset($conn) ) {
         $conn->close();
     }
