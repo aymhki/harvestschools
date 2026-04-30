@@ -79,7 +79,7 @@ function Home() {
                 <ParallaxScrollSection
                     title={t("home.elearning-and-academics")}
                     text={t("home.harvest-schools-elearning-and-academics")}
-                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.jpg"
+                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.v2.jpg"
                     darken={true}
                     buttonText={t("common.learn-more")}
                     buttonLink="/academics/partners"
