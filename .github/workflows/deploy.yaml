@@ -34,11 +34,9 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # NEW: Install lftp for FTP transfers
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      # REPLACED: SSH sync is now FTP mirror
       - name: Deploy static files (excluding heavy assets)
         run: |
           lftp -c "
@@ -54,7 +52,6 @@ jobs:
             dist/static/ public_html/
           "
 
-      # REPLACED: Uploading a single file via FTP
       - name: Update index.html
         run: |
           lftp -c "
@@ -63,7 +60,6 @@ jobs:
           put -O public_html/ dist/static/index.html
           "
 
-      # REPLACED: Conditional FTP mirror for assets
       - name: Sync assets folder (Conditional)
         if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
@@ -81,7 +77,6 @@ jobs:
           echo "Listing repository contents:"
           ls -la $GITHUB_WORKSPACE
 
-      # REPLACED: FTP mirror for scripts
       - name: Sync scripts folder
         run: |
           echo "Syncing scripts folder to public_html/scripts"
