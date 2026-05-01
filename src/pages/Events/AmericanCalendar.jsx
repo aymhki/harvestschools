@@ -6,6 +6,13 @@ import {useTranslation} from "react-i18next";
 
 function AmericanCalendar() {
     const {t, i18n} = useTranslation()
+    const lastUpdatedDate = new Date('2026-04-30');
+    const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'Africa/Cairo'
+    }).format(lastUpdatedDate);
 
     const calendarTableData = t("events-pages.american-calendar-page.calendar", { returnObjects: true }) || [];
     const tableRows = Array.isArray(calendarTableData) ? calendarTableData.map(member => [member.title, member['start-date'], member['end-date']]) : [];
@@ -47,12 +54,16 @@ function AmericanCalendar() {
             </p>
 
             <div className={"download-calendar-button-wrapper"} onClick={() => {
-                window.open("/assets/documents/Calendars/AmericanCalendar.pdf", "_blank");
+                window.open("/assets/documents/Calendars/american_calendar_2026.pdf", "_blank");
             }}>
                 <button className={"download-calendar-button"}>
                     {t("events-pages.common.download-calendar-btn")}
                 </button>
             </div>
+
+            <p>
+                {t('common.last-updated')} {formattedDate}
+            </p>
         </div>
     </div>
   );

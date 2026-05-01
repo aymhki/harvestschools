@@ -1,9 +1,33 @@
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import Table from "../../modules/Table.jsx";
 
 function NationalCalendar() {
+    const {t, i18n} = useTranslation()
+    const lastUpdatedDate = new Date('2026-04-30');
+    const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'Africa/Cairo'
+    }).format(lastUpdatedDate);
 
-    const {t} = useTranslation()
+    const calendarTableData = t("events-pages.national-calendar-page.calendar", { returnObjects: true }) || [];
+    const tableRows = Array.isArray(calendarTableData) ? calendarTableData.map(member => [member.title, member['start-date'], member['end-date']]) : [];
+    const finalTableData = [...tableRows];
+    const dateFormatter = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'Africa/Cairo'
+    })
+
+    for (let i = 1; i < finalTableData.length; i++) {
+        const startDate = new Date(finalTableData[i][1]);
+        const endDate = new Date(finalTableData[i][2]);
+        finalTableData[i][1] = dateFormatter.format(startDate);
+        finalTableData[i][2] = dateFormatter.format(endDate);
+    }
 
   return (
     <div style={{textAlign: "center"}}>
@@ -16,12 +40,25 @@ function NationalCalendar() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-      <h1>
-          {t("events-pages.national-calendar-page.title")}
-      </h1>
-        <p>
-            {t("common.this-page-is-under-construction")}
-        </p>
+        <div className={"extreme-padding-container"}>
+            <h1>
+                {t("events-pages.national-calendar-page.title")}
+            </h1>
+
+            <Table tableData={finalTableData} numCols={3}/>
+
+            <div className={"download-calendar-button-wrapper"} onClick={() => {
+                window.open("/assets/documents/Calendars/national_calendar_2026.pdf", "_blank");
+            }}>
+                <button className={"download-calendar-button"}>
+                    {t("events-pages.common.download-calendar-btn")}
+                </button>
+            </div>
+
+            <p>
+                {t('common.last-updated')} {formattedDate}
+            </p>
+        </div>
     </div>
   );
 }
