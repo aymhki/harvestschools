@@ -98,7 +98,7 @@
 .slider-photo {
     width: 100vw;
     height: calc(100vh + 3rem);
-    object-fit: contain;
+    object-fit: cover;
     min-width: 20rem;
 
 }
@@ -106,8 +106,8 @@
 .slider-photo-dark {
     width: 100vw;
     height: calc(100vh + 3rem);
-    object-fit: contain;
-    filter: brightness(0.5);
+    object-fit: cover;
+    filter: brightness(0.7);
     min-width: 20rem;
 
 }
