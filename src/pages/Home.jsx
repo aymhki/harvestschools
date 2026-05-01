@@ -11,8 +11,8 @@ function Home() {
     
 
     const homeSliderPhotos = [
-        { id: 1, url: '/assets/images/HomePage/VisionBackground.v5.jpg', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
-        { id: 2, url: '/assets/images/HomePage/MissionBckground.v5.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
+        { id: 1, url: '/assets/images/HomePage/VisionBackground.v6.jpg', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
+        { id: 2, url: '/assets/images/HomePage/MissionBckground.v6.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
     ]
 
     const contactUsFormFields = [
@@ -79,7 +79,7 @@ function Home() {
                 <ParallaxScrollSection
                     title={t("home.elearning-and-academics")}
                     text={t("home.harvest-schools-elearning-and-academics")}
-                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.v3.jpg"
+                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.v4.jpg"
                     darken={true}
                     buttonText={t("common.learn-more")}
                     buttonLink="/academics/partners"
@@ -88,7 +88,7 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v3.jpg'} darken={true} buttonText={t("common.explore")} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v5.jpg'} darken={true} buttonText={t("common.explore")} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">
