@@ -12,7 +12,7 @@ function Home() {
 
     const homeSliderPhotos = [
         { id: 1, url: '/assets/images/HomePage/VisionBackground.v5.jpg', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
-        { id: 2, url: '/assets/images/HomePage/MissionBackground.v5.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
+        { id: 2, url: '/assets/images/HomePage/MissionBckground.v5.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
     ]
 
     const contactUsFormFields = [
