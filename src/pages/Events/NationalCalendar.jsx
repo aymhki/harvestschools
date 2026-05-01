@@ -30,7 +30,7 @@ function NationalCalendar() {
     }
 
   return (
-    <div style={{textAlign: "center"}}>
+    <div className={"events-calendar-page"}>
         <Helmet>
             <title>Harvest International School | National School Calendar</title>
             <meta name="description" content="Learn more about the National academic year calendar at Harvest International School in Borg El Arab, Egypt."/>
