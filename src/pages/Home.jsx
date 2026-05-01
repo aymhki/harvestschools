@@ -11,8 +11,8 @@ function Home() {
     
 
     const homeSliderPhotos = [
-        { id: 1, url: '/assets/images/HomePage/VisionBackground.jpg', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
-        { id: 2, url: '/assets/images/HomePage/MissionBackground.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
+        { id: 1, url: '/assets/images/HomePage/VisionBackground.v2.jpg', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
+        { id: 2, url: '/assets/images/HomePage/MissionBackground.v2.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
     ]
 
     const contactUsFormFields = [
@@ -88,7 +88,7 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.jpg'} darken={true} buttonText={t("common.explore")} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v2.jpg'} darken={true} buttonText={t("common.explore")} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">
