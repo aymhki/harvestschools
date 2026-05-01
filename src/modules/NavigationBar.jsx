@@ -346,9 +346,9 @@ const NavigationBar = () => {
 
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
-                            navigate('/events/kg-calendar');
-                        }}><Link to="/events/kg-calendar">
-                            {t("nav.kg-calendar")}
+                            navigate('/events/kg-calendars');
+                        }}><Link to="/events/kg-calendars">
+                            {t("nav.kg-calendars")}
                         </Link></li>
 
                         <li onClick={() => {

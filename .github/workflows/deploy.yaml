@@ -68,7 +68,7 @@ jobs:
           lftp -c "
           set ssl:verify-certificate no;
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose dist/static/assets/ public_html/assets/
+          mirror -R --verbose --only-newer dist/static/assets/ public_html/assets/
           "
 
       - name: Debug - List workspace contents

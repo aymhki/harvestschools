@@ -50,7 +50,10 @@ import Events from "./pages/Events/Events.jsx";
 import NationalCalendar from "./pages/Events/NationalCalendar.jsx";
 import BritishCalendar from './pages/Events/BritishCalendar';
 import AmericanCalendar from './pages/Events/AmericanCalendar';
-import KgCalendarEvents from './pages/Events/KgCalendar';
+import KgCalendarEvents from './pages/Events/KGCalendars.jsx';
+import AmericanKGCalendar from "./pages/Events/AmericanKGCalendar.jsx";
+import BritishKGCalendar from "./pages/Events/BritishKGCalendar.jsx";
+import NationalKGCalendar from "./pages/Events/NationalKGCalendar.jsx";
 import BookingLogin from "./pages/Events/Booking/BookingLogin.jsx";
 import BookingDashboard from './pages/Events/Booking/BookingDashboard.jsx';
 import BookingMedia from "./pages/Events/Booking/BookingMedia.jsx";
@@ -135,7 +138,10 @@ function AppServer() {
                         <Route path="/events/national-calendar" element={<NationalCalendar />} />
                         <Route path="/events/british-calendar" element={<BritishCalendar />} />
                         <Route path="/events/american-calendar" element={<AmericanCalendar />} />
-                        <Route path="/events/kg-calendar" element={<KgCalendarEvents />} />
+                        <Route path="/events/kg-calendars" element={<KgCalendarEvents />} />
+                        <Route path="/events/american-kg-calendar" element={<AmericanKGCalendar />} />
+                        <Route path="/events/british-kg-calendar" element={<BritishKGCalendar />} />
+                        <Route path="/events/national-kg-calendar" element={<NationalKGCalendar />} />
                         <Route path="/events/booking" element={<BookingLogin />} />
                         <Route path="/events/booking/dashboard" element={<BookingDashboard />} />
                         <Route path="/events/booking/media" element={<BookingMedia />} />

@@ -51,7 +51,10 @@ const Events = lazy(() => import("./pages/Events/Events.jsx"));
 const NationalCalendar = lazy(() => import("./pages/Events/NationalCalendar.jsx"));
 const BritishCalendar = lazy(() => import('./pages/Events/BritishCalendar'));
 const AmericanCalendar = lazy(() => import('./pages/Events/AmericanCalendar'));
-const KgCalendarEvents = lazy(() => import('./pages/Events/KgCalendar'));
+const KgCalendarEvents = lazy(() => import('./pages/Events/KGCalendars.jsx'));
+const AmericanKGCalendar = lazy(() => import('./pages/Events/AmericanKGCalendar.jsx'));
+const BritishKGCalendar = lazy(() => import('./pages/Events/BritishKGCalendar.jsx'));
+const NationalKGCalendar = lazy(() => import('./pages/Events/NationalKGCalendar.jsx'));
 const BookingLogin = lazy(() => import("./pages/Events/Booking/BookingLogin.jsx"));
 const BookingDashboard = lazy(() => import('./pages/Events/Booking/BookingDashboard.jsx'));
 const BookingMedia = lazy(() => import("./pages/Events/Booking/BookingMedia.jsx"));
@@ -139,7 +142,10 @@ function AppClient() {
                             <Route path="/events/national-calendar" element={<NationalCalendar />} />
                             <Route path="/events/british-calendar" element={<BritishCalendar />} />
                             <Route path="/events/american-calendar" element={<AmericanCalendar />} />
-                            <Route path="/events/kg-calendar" element={<KgCalendarEvents />} />
+                            <Route path="/events/kg-calendars" element={<KgCalendarEvents />} />
+                            <Route path="/events/american-kg-calendar" element={<AmericanKGCalendar />} />
+                            <Route path="/events/british-kg-calendar" element={<BritishKGCalendar />} />
+                            <Route path="/events/national-kg-calendar" element={<NationalKGCalendar />} />
                             <Route path="/events/booking" element={<BookingLogin />} />
                             <Route path="/events/booking/dashboard" element={<BookingDashboard />} />
                             <Route path="/events/booking/media" element={<BookingMedia />} />

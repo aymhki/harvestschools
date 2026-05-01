@@ -36,10 +36,10 @@ function Events() {
             descriptionInArabic: false
         },
         {
-            title: t("events-pages.options-page.kg-calendar-option"),
+            title: t("events-pages.options-page.kg-calendars-option"),
             image: "/assets/images/EventsPages/Calendar1.png",
-            description: t("events-pages.options-page.kg-calendar-option-description"),
-            link: "/events/kg-calendar",
+            description: t("events-pages.options-page.kg-calendars-option-description"),
+            link: "/events/kg-calendars",
             buttonText: t("common.select"),
             titleInArabic: false,
             descriptionInArabic: false

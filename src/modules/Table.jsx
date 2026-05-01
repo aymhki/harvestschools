@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { useTranslation } from 'react-i18next';
 
 function Table({
                    tableHeader,
@@ -33,6 +34,7 @@ function Table({
     const [isMobile, setIsMobile] = useState(true);
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
+    const {t} = useTranslation();
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -277,7 +279,7 @@ function Table({
                         (!finalTableData || finalTableData.length === 0) && (
                             <div className={"table-module-header-empty-state"}>
                                 <h3>
-                                    No Table Entries Found.
+                                    {t("common.no-table-enteries-found")}
                                 </h3>
                             </div>
                         )
