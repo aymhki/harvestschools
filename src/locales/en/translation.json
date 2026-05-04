@@ -1775,12 +1775,16 @@
       "01097875407": "01097875407, ",
       "01028940675": "01028940675",
       "q-and-a-list": [
-        {"question": "Are there any foreign teachers at your school?", "answer": "Mostly Egyptians, Highly Qualified."},
+        {"question": "What educational systems are available at the school?", "answer": "We offer three different educational systems to meet the needs of all students:\nNational System\nBritish System\nAmerican System\n"},
+        {"question": "What are the school's accreditations?", "answer": "Each department is accredited by recognized educational authorities:\nNational Department: Accredited by the Egyptian Ministry of Education\nBritish Department: Accredited by Cambridge/Pearson Edexcel/Oxford\nAmerican Department: Accredited by Cognia"},
+        {"question": "Is the school mixed?", "answer": "Yes."},
+        {"question": "What is the admission age for each stage?", "answer": "Please refer to the {{Minimum Registration Age page here|/minimum-stage-age}} for detailed information on the age requirements for each stage."},
         {"question": "Does the school accept any transfer from other schools?", "answer": "Yes, we accept students from other schools as long as they pass an entry test held at the school."},
-        {"question": "Is the school mixed?", "answer":  "Yes."},
+        {"question": "What are the school fees?", "answer": "Our school fees vary depending on the educational stage and department.\nFor detailed and updated information, please contact the school administration or visit our admissions office."},
+        {"question": "Does the school fees change every year?", "answer": "No, we only apply Ministry of Education fees which can go up to 10%."},
+        {"question": "Are there any foreign teachers at your school?", "answer": "Mostly Egyptians, Highly Qualified."},
         {"question": "Does the school provide a transportation service?", "answer": "Yes, our buses cover every district in Alexandria."},
-        {"question": "Does the school provide any sport activities?", "answer": " Yes, Harvest Academy provides all kinds of sports available through out the year."},
-        {"question": "Does the school fees change every year?", "answer": "No, we only apply Ministry of Education fees which can go up to 10%."}
+        {"question": "Does the school provide any sport activities?", "answer": "Yes, Harvest Academy provides all kinds of sports available through out the year."}
       ],
       "?": "?"
     },

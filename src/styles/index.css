@@ -117,6 +117,12 @@
     font-family: var(--english-normal-font);
 }
 
+.custom-hyperlink-text {
+    color: var(--secondary-color) !important;
+    text-decoration: underline;
+    display: inline;
+}
+
 a {
     display: block;
     padding: 0;
