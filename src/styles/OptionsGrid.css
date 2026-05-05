@@ -21,6 +21,10 @@
     color: var(--primary-color);
 }
 
+.options-grid-container h2, .options-grid-container-dynamic h2 {
+    line-height: 1.5;
+}
+
 .options-grid-single, .options-grid-double, .options-grid-triple, .options-grid-quadruple {
     display: grid;
     gap: 1rem;

@@ -14,11 +14,28 @@
     align-items: center;
     width: 100%;
     min-height: 100vh;
-    text-align: center;
 
 }
 
 .american-academics-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.kindergarten-academics-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.british-academics-page {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -115,46 +132,6 @@
     color: var(--primary-color);
 }
 
-
-.national-academics-page-header {
-    position: relative;
-    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageHeaderBackground.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    color: var(--harvest-white-color);
-}
-
-.national-academics-page-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-}
-
-.national-academics-page-header > * {
-    position: relative;
-    z-index: 2;
-}
-
-.national-academics-page-header-title-logo {
-    width: 20%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 2rem;
-}
 
 .national-academics-vision-and-mission {
     display: flex;
@@ -257,36 +234,6 @@
     flex-direction: column;
 }
 
-.national-academics-page-covid-19-policy {
-    position: relative;
-    background-image: url('../../public/assets/images/AcademicsPages/NationalAcademicsPageFooterBackground.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    color: var(--harvest-white-color);
-}
-
-.national-academics-page-covid-19-policy::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-}
-
-.national-academics-page-covid-19-policy > * {
-    position: relative;
-    z-index: 2;
-}
 
 @media (max-width: 1600px) {
 
