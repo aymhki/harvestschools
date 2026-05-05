@@ -28,6 +28,10 @@ const Academics = lazy(() => import('./pages/Academics/Academics.jsx'));
 const British = lazy(() => import("./pages/Academics/British.jsx"));
 const NationalAcademics = lazy(() => import('./pages/Academics/National'));
 const AmericanAcademics = lazy(() => import('./pages/Academics/American'));
+const KindergartenAcademics = lazy(() => import('./pages/Academics/KindergartenAcademics'));
+const KindergartenInternationalAcademics = lazy(() => import('./pages/Academics/KindergartenInternationalAcademics'));
+const KindergartenNationalAcademics = lazy(() => import('./pages/Academics/KindergartenNationalAcademics'));
+const PreKindergartenAcademics = lazy(() => import('./pages/Academics/PreKindergartenAcademics'));
 const PartnersAcademics = lazy(() => import('./pages/Academics/Partners'));
 const Facilities = lazy(() => import("./pages/Academics/Facilities.jsx"));
 const StaffAcademics = lazy(() => import('./pages/Academics/Staff'));
@@ -115,7 +119,11 @@ function AppClient() {
                             <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
                             <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
                             <Route path="/admission/admission-fees" element={<AdmissionFees />} />
-                            <Route path="/academics" element={<Academics />} />
+                            <Route path="/academics" element={<Academics />} />\
+                            <Route path="/academics/kindergarten" element={<KindergartenAcademics />} />
+                            <Route path="/academics/kindergarten-international" element={<KindergartenInternationalAcademics />} />
+                            <Route path="/academics/kindergarten-national" element={<KindergartenNationalAcademics />} />
+                            <Route path="/academics/pre-kindergarten" element={<PreKindergartenAcademics />} />
                             <Route path="/academics/british" element={<British />} />
                             <Route path="/academics/national" element={<NationalAcademics />} />
                             <Route path="/academics/american" element={<AmericanAcademics />} />

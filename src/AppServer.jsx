@@ -25,6 +25,10 @@ import OutsideEgyptRequirementsForeigners from './pages/Admission/OutsideEgyptRe
 import AdmissionFees from "./pages/Admission/AdmissionFees.jsx";
 import Academics from './pages/Academics/Academics.jsx';
 import British from "./pages/Academics/British.jsx";
+import KindergartenAcademics from "./pages/Academics/KindergartenAcademics.jsx";
+import KindergartenNationalAcademics from "./pages/Academics/KindergartenNationalAcademics.jsx";
+import KindergartenInternationalAcademics from "./pages/Academics/KindergartenInternationalAcademics.jsx";
+import PreKindergartenAcademics from "./pages/Academics/PreKindergartenAcademics.jsx";
 import NationalAcademics from './pages/Academics/National';
 import AmericanAcademics from './pages/Academics/American';
 import PartnersAcademics from './pages/Academics/Partners';
@@ -112,6 +116,10 @@ function AppServer() {
                         <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
                         <Route path="/admission/admission-fees" element={<AdmissionFees />} />
                         <Route path="/academics" element={<Academics />} />
+                        <Route path="/academics/kindergarten" element={<KindergartenAcademics />} />
+                        <Route path="/academics/kindergarten-national" element={<KindergartenNationalAcademics />} />
+                        <Route path="/academics/kindergarten-international" element={<KindergartenInternationalAcademics />} />
+                        <Route path="/academics/pre-kindergarten" element={<PreKindergartenAcademics />} />
                         <Route path="/academics/british" element={<British />} />
                         <Route path="/academics/national" element={<NationalAcademics />} />
                         <Route path="/academics/american" element={<AmericanAcademics />} />

@@ -178,6 +178,16 @@ const NavigationBar = () => {
                     <ul className="dropdown-content" style={{display: academicsOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
+                            navigate('/academics/kindergarten');
+                        }}>
+                            <Link to={'/academics/kindergarten'}>
+                                {t("nav.kindergarten")}
+                            </Link>
+                        </li>
+
+
+                        <li onClick={() => {
+                            (isMobile ? toggleMenu() : null);
                             navigate('/academics/national');
                         }}><Link to="/academics/national">
                             {t("nav.national")}

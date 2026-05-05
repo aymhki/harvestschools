@@ -1,5 +1,6 @@
 import {Helmet} from "react-helmet-async";
 import OptionsGrid from "../../../modules/OptionsGrid.jsx";
+import '../../../styles/StudentsLife.css'
 import {useTranslation} from "react-i18next";
 
 function Library() {

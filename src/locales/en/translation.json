@@ -2,6 +2,7 @@
   "nav": {
     "home": "Home",
     "admission": "Admission",
+    "kindergarten": "Kindergarten",
     "academics": "Academics",
     "students-life": "Students Life",
     "events": "Events",
@@ -109,6 +110,8 @@
     "national-section": "National",
     "british-section": "British",
     "american-section": "American",
+    "kindergarten-section": "Kindergarten",
+    "kindergarten-description": "Information about the kindergarten curriculum",
     "national-description": "Information about the national curriculum",
     "british-description": "Information about the British curriculum",
     "american-description": "Information about the American curriculum",
@@ -117,55 +120,87 @@
     "facilities-description": "Information about our facilities",
     "web-mail-description": "Access your Harvest Schools email",
     "admin-login-description": "Web app administration portal",
+    "kindergarten": {
+      "national-kindergarten-option": "National Kindergarten",
+      "international-kindergarten-option": "International Kindergarten",
+      "pre-kindergarten-option": "Pre-K",
+      "national-kindergarten-description": "Information about the national kindergarten curriculum",
+      "international-kindergarten-description": "Information about the international kindergarten curriculum",
+      "pre-kindergarten-description": "Information about the pre-k curriculum",
+      "national-kindergarten-intro-paragraph": "At the KG National Section of Harvest International School, we proudly lay the first stones in the educational journey of our young learners. We believe that early childhood education is not merely the beginning of schooling, but the cornerstone upon which character, curiosity, and lifelong learning are built.",
+      "national-kindergarten-vision-paragraph": "With a clear vision of excellence, our section is committed to providing a rich, inspiring, and nurturing learning environment where every child is encouraged to explore, discover, and grow with confidence. We strive to cultivate young minds that are not only academically prepared, but also creative, compassionate, and socially responsible.",
+      "national-kindergarten-team-paragraph": "Guided by a dedicated team of passionate educators, we aim to instill strong values, encourage critical thinking, and develop the skills that empower our students to become confident individuals and future leaders. Our approach blends knowledge with creativity, discipline with joy, and learning with meaningful experiences.",
+      "national-kindergarten-outro-paragraph": "At Harvest International School, we believe that every child holds remarkable potential. Our mission is to nurture that potential with care, excellence, and pride, ensuring that our students take their first educational steps with confidence, enthusiasm, and a deep love for learning.",
+      "international-kindergarten-intro-paragraph": "In the Foundation Stage at Harvest International Schools, we believe that the early years of education are the most important in a child’s learning journey. Our programme provides a safe, nurturing, and stimulating environment where young learners develop curiosity, confidence, and a love for learning.",
+      "international-kindergarten-departments-paragraph": "The Foundation Stage at Harvest International Schools follows both the British and American early years frameworks, ensuring that children receive a balanced, high-quality international education. Through play-based learning, hands-on activities, and guided exploration, students develop essential skills in language, mathematics, social interaction, creativity, and problem-solving.",
+      "international-kindergarten-team-paragraph": "Our dedicated teachers at Harvest International Schools create engaging classrooms where children feel happy, secure, and valued. We focus on developing the whole child by encouraging independence, cooperation, and respect for others while building strong academic foundations.",
+      "international-kindergarten-outro-paragraph": "Through meaningful learning experiences, interactive activities, and strong collaboration with parents, Harvest International Schools aims to prepare our students for a successful transition to the next stages of their education. Our goal is to help every child grow into a confident, responsible, and enthusiastic learner who is ready to explore the world around them.",
+      "pre-kindergarten-intro-paragraph": "At Harvest International Schools, our Playschool and Preschool programmes provide a warm, caring, and joyful environment where young children begin their first steps in education. We believe that early childhood is a time for exploration, discovery, and building confidence.",
+      "pre-kindergarten-approach-paragraph": "Through play-based learning and hands-on activities, children develop important early skills in communication, social interaction, creativity, and independence. At Harvest International Schools, our classrooms are designed to encourage curiosity and imagination while helping children feel safe, happy, and supported.",
+      "pre-kindergarten-team-paragraph": "Our experienced teachers at Harvest International Schools guide children through engaging activities such as storytelling, music, art, movement, and early learning games that support their physical, emotional, and cognitive development.",
+      "pre-kindergarten-outro-paragraph": "At this stage, we focus on nurturing each child’s individuality while helping them build friendships, learn routines, and develop positive attitudes toward learning. The Playschool and Preschool programmes at Harvest International Schools create a strong foundation that prepares children for a smooth and successful transition into the Foundation Stage.",
+      "quote-by-ms-reham-sardina-head-of-kindergarten-department": "- Reham Sardina, Head of KG Department"
+    },
     "national": {
       "harvest-language-schools": "Harvest Language Schools",
-      "safe-environment": "Safe Environment",
-      "preparation-to-the-new-academic-year": "Preparation to the New Academic Year",
-      "science-labs": "Science Labs",
-      "new-english-syllabus": "New English Syllabus",
-      "new-science-syllabus": "New Science Syllabus",
-      "extra-worksheets": "Extra Worksheets",
-      "quran-syllabus": "Quran Syllabus",
-      "math-junior-one": "Math (Junior 1)",
-      "english-junior-one": "English (Junior 1)",
-      "english-junior-six": "English (Junior 6)",
-      "french-junior-one": "French (Junior 1)",
-      "science-middle-two": "Science (Middle 2)",
-      "arabic-junior-one": "Arabic (Junior 1)",
-      "precautions-for-covid-19": "Precautions for Covid-19",
-      "precautions-for-covid-19-description": "Follow our guide for a safe environment during school day",
-      "break-times-table": {
-        "grade": "Grade",
-        "break-time": "Break Time",
-        "junior-one": "Junior 1",
-        "junior-two-and-five": "Junior 2 & 5",
-        "junior-three-and-middle-grades-and-senior-grades": "Junior 3, Middle 1, 2, 3 & Senior 1, 2, 3",
-        "junior-four-and-six": "Junior 4 & 6",
-        "from-nine-twenty-am-to-ten-o-clock-am": "From 9:20 AM to 10:00 AM",
-        "from-ten-o-clock-am-to-ten-forty-am": "From 10:00 AM to 10:40 AM",
-        "from-ten-forty-am-to-eleven-twenty-am": "From 10:40 AM to 11:20 AM",
-        "from-eleven-twenty-am-to-twelve-o-clock-pm": "From 11:20 AM to 12:00 PM"
-      }
-
+      "national-school-intro-paragraph": "Harvest National School is built on a strong belief that quality education is the foundation for shaping confident, capable, and responsible individuals. Our program combines the strength of national curriculum with a modern educational approach that prepares students not only for academic success, but also for life.",
+      "national-school-commitment-paragraph": "We are committed to providing an outstanding learning environment where excellence, discipline, and creativity go hand in hand. Our students are encouraged to think critically, ask questions, and actively participate in their learning journey while developing strong values such as respect, responsibility, and perseverance.",
+      "national-school-high-quality-paragraph": "Our highly qualified and dedicated teachers work closely with every student, guiding them academically while nurturing their personal growth. Through engaging lessons, enriching activities, and continuous support, we strive to help each learner reach their full potential.",
+      "national-school-beyond-classroom-paragraph": "At Harvest National School, education goes beyond the classroom. We believe in developing the whole child through academic achievement, cultural awareness, extracurricular activities, and character building. Our goal is to prepare students who are confident in their knowledge, proud of their identity, and ready to contribute positively to their community and the world around them.",
+      "national-school-outro-paragraph": "Together with our parents, we build a supportive partnership that ensures every child feels valued, inspired, and empowered to succeed.",
+      "quote-by-ms-aya-abdelgawad-national-school-deputy": "- Aya A. Abdelgawad, National School Deputy"
     },
-    "british": {},
+    "british": {
+      "vision-of-the-british-department-title": "Vision of the British Department",
+      "vision-of-the-british-department-paragraph": "Our vision is to provide an outstanding British education that inspires students to\nbecome confident, responsible, and globally minded individuals. We aim to nurture lifelong learners who are equipped with the knowledge, skills and values needed to succeed in an ever-changing world.",
+      "vision-of-the-british-department-extension-paragraph": "At our British Department, we strive to create a positive and supportive learning environment where every student is encouraged to explore their potential, think critically and develop a passion for learning.",
+      "mission-of-the-british-department-title": "Mission of the British Department",
+      "mission-of-the-british-department-paragraph": "Our mission is to deliver the British curriculum with excellence while supporting the holistic development of our students. We are committed to providing a balanced\neducational experience that focuses not only on academic achievement but also on students’ emotional well-being, personal growth and creativity.",
+      "mission-of-the-british-department-extension-paragraph": "The British curriculum is delivered through internationally recognized and approved textbooks from Cambridge Assessment International Education, ensuring high academic standards and global recognition.",
+      "to-provide-intro": "To provide our students with wider academic opportunities, we prepare them through three internationally recognized examination boards",
+      "to-provide-list": [
+        "Cambridge Assessment International Education",
+        "Pearson Edexcel",
+        "OxfordAQA International Examinations"
+      ],
+      "to-provide-outro": "This diversity allows us to offer flexibility while maintaining the highest academic standards.",
+      "core-values-title": "Core Values",
+      "core-values-intro": "In the British Department, we believe in",
+      "core-values-list": [
+        "Academic Excellence – Encouraging students to achieve their highest potential.",
+        "Respect and Responsibility – Promoting positive values and mutual respect.",
+        "Confidence and Independence – Helping students become confident learners and decision makers.",
+        "Creativity and Innovation – Supporting curiosity, creativity, and critical thinking.",
+        "Well-being and Care – Supporting students academically, emotionally, and socially."
+      ],
+      "why-choose-our-british-department-title": "Why Choose Our British Department?",
+      "why-choose-our-british-department-intro": "Our department offers a distinctive learning experience through",
+      "why-choose-our-british-department-list": [
+        "A well-structured British curriculum aligned with international standards.",
+        "Teaching through Cambridge-approved resources and materials.",
+        "Preparation through three major international exam boards to ensure flexibility and academic excellence.",
+        "A supportive and nurturing environment that cares for students’ educational, psychological, and social development.",
+        "A wide range of educational and recreational activities that enrich students’ learning experience.",
+        "A strong commitment to the continuous professional development of our teachers to maintain high-quality teaching standards."
+      ],
+      "final-thoughts-paragraph": "We continuously strive to raise the standards of both our dedicated educators and our talented students, ensuring that our department remains a place where excellence, growth and opportunity thrive.",
+      "quote-by-ms-marwa-elsobky-british-school-head": "- Marwa ElSobky, Head of CIPP C Lower Secondary"
+    },
     "american": {
-      "dear-harvest-international-school-families": "Dear Harvest International School Families",
-      "quote-by-ms-salma-ehab-american-school-principal": "- Ms. Salma Ehab, American School Principal",
+      "welcome-paragraph": "Welcome to our American Department — a place where learning feels like home and every student is treated like family.",
+      "believe-paragraph": "We believe that education is not only about academics, but about nurturing confident, kind, and responsible young individuals. In our American Department, we combine a strong, internationally recognized curriculum with a warm, supportive environment where students feel safe, valued, and inspired to grow.",
+      "classroom-paragraph": "Our classrooms are filled with curiosity, creativity, and meaningful connections. Teachers work closely with students, guiding them academically while also supporting their personal development. We celebrate effort, encourage questions, and help every child discover their strengths and passions.",
+      "proud-to-offer-title": "We are proud to offer",
+      "proud-to-offer-list": [
+        "A well-balanced American curriculum that prepares students for university and beyond",
+        "Small community-focused classrooms where every child is known and supported",
+        "Engaging activities in arts, sports, leadership, and community service",
+        "Strong partnership with parents built on communication, trust, and shared goals"
+      ],
+      "final-thoughts-paragraph": "In our American Department, we believe that when school and family work hand in hand, children thrive. Together, we build not only successful students, but compassionate individuals ready to make a positive difference in the world.",
+      "goodbye-sentence": "We look forward to welcoming you into our family.",
+      "quote-by-ms-salma-ehab-american-school-head": "- Salma Ehab, Head of American Department"
 
-      "welcome-paragraph": "Welcome to our Harvest International School Website! We hope you will find the information you're looking for on this page. We also have an active HIS Facebook page account where you will find information, updates, and all of the fun and exciting things going on at HIS.",
-
-      "principal-introduction": "HIS is a special place with warm and friendly teachers, students, parents, and staff, and I am grateful for the opportunity to be your principal. I believe in working collaboratively with staff, students, parents, and community partners in order to continue the success. Through this collaboration, I believe we will keep moving our students and school forward, as we navigate our way through this ever changing world.",
-
-      "upper-school-description": "In the Upper School, students take great pride in challenging themselves and supporting one another academically while also developing and deepening their values and interests in and beyond the classroom.",
-
-      "curriculum-standards": "Harvest International School provides a high quality, rigorous, and student centered curriculum, which is aligned with Common Core State Standards (CCSS) and Next Generation Science Standards (NGSS) learning standards. It is our goal that every learner feels happy, safe, accepted and valued while receiving a quality education.",
-
-      "values-and-goals": "It is our aim to remain focused on Egyptian values while equipping our students with both a passion for learning and the ambition to make a difference to the local and global communities.",
-
-      "community-description": "Our school is made up of outstanding students across all grades. Our faculty and staff are dedicated, caring professionals, who love and support one another as both, friends and colleagues. HIS is also very lucky to have a group of parents who are an open, approachable, creative, dedicated, and committed to working together toward the success of their children at HIS.",
-
-      "lower-middle-school-description": "Students in our Lower School enjoy an environment in which they are encouraged by their teachers to explore new academic and social frontiers in a safe environment. Middle School students gain healthy confidence and character as they boldly expand their learning with elective courses in preparation for the Upper School."
     },
     "partners": {
       "schooleverywhere-title": "About SchoolEveryWhere",
@@ -294,7 +329,6 @@
         { "name": "Sarah Hamdy Hamed Ahmed", "subject": "Arabic & Religion", "title": "Teacher" }
       ]
     },
-
     "facilities": {
         "pageTitle": "Facilities",
         "imageAlts": [
@@ -401,7 +435,6 @@
           ]
         }
       }
-
   },
   "admission-pages": {
     "options-page" : {

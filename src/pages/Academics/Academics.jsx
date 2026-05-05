@@ -31,6 +31,13 @@ function Academics() {
             buttonText: t("common.learn-more"),
         },
         {
+            title: t("academics-pages.kindergarten-section"),
+            image: "/assets/images/AcademicsPages/Kindergarten1.png",
+            description: t("academics-pages.kindergarten-description"),
+            link: "/academics/kindergarten",
+            buttonText: t("common.learn-more"),
+        },
+        {
             title: t("nav.partners"),
             image: "/assets/images/AcademicsPages/Partners1.png",
             description: t("academics-pages.partners-description"),
@@ -73,7 +80,7 @@ function Academics() {
         <Helmet>
             <title>Harvest International School | Academics</title>
             <meta name="description" content="Learn more about the American, National, and British academics, the curriculums, partners, staff, and facilities at Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Kindergarten, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق، رياض الأطفال، رياض الاطفال"/>
             <meta name="author" content="Harvest International School"/>
             <meta name="robots" content="index, follow"/>
             <meta name="googlebot" content="index, follow"/>
