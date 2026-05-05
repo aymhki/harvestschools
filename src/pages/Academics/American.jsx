@@ -30,7 +30,7 @@ function American() {
               <p>{t("academics-pages.american.classroom-paragraph")}</p>
           </div>
 
-          <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageMiddle1.jpg"}/>
+          <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageMiddle1.v1.jpg"}/>
 
           <div className={"standard-padding-container"}>
               <p>{t("academics-pages.american.proud-to-offer-title")}:</p>
