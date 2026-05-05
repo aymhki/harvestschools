@@ -65,6 +65,7 @@ const BookingMedia = lazy(() => import("./pages/Events/Booking/BookingMedia.jsx"
 const BookingExtras = lazy(() => import("./pages/Events/Booking/BookingExtras.jsx"));
 const BookingStatusInfo = lazy(() => import("./pages/Events/Booking/BookingStatusInfo.jsx"));
 const BookingConfirmation = lazy(() => import('./pages/Events/Booking/BookingConfirmation.jsx'));
+const OpenDaySignup = lazy(() => import('./pages/Events/OpenDaySignup.jsx'))
 const Gallery = lazy(() => import("./pages/Gallery/Gallery.jsx"));
 const PhotosGallery = lazy(() => import('./pages/Gallery/Photos'));
 const VideosGallery = lazy(() => import('./pages/Gallery/Videos'));
@@ -160,6 +161,7 @@ function AppClient() {
                             <Route path="/events/booking/extras" element={<BookingExtras />} />
                             <Route path="/events/booking/info" element={<BookingStatusInfo />} />
                             <Route path="/events/booking-confirmation" element={<BookingConfirmation />} />
+                            <Route path="/events/open-day-signup" element={<OpenDaySignup />} />
                             <Route path="/gallery" element={<Gallery />} />
                             <Route path="/gallery/photos" element={<PhotosGallery />} />
                             <Route path="/gallery/videos" element={<VideosGallery />} />

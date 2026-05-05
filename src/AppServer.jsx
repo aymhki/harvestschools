@@ -64,6 +64,7 @@ import BookingMedia from "./pages/Events/Booking/BookingMedia.jsx";
 import BookingExtras from "./pages/Events/Booking/BookingExtras.jsx";
 import BookingStatusInfo from "./pages/Events/Booking/BookingStatusInfo.jsx";
 import BookingConfirmation from './pages/Events/Booking/BookingConfirmation.jsx';
+import OpenDaySignup from "./pages/Events/OpenDaySignup.jsx";
 import Gallery from "./pages/Gallery/Gallery.jsx";
 import PhotosGallery from './pages/Gallery/Photos';
 import VideosGallery from './pages/Gallery/Videos';
@@ -156,6 +157,7 @@ function AppServer() {
                         <Route path="/events/booking/extras" element={<BookingExtras />} />
                         <Route path="/events/booking/info" element={<BookingStatusInfo />} />
                         <Route path="/events/booking-confirmation" element={<BookingConfirmation />} />
+                        <Route path="/events/open-day-signup" element={<OpenDaySignup />} />
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/gallery/photos" element={<PhotosGallery />} />
                         <Route path="/gallery/videos" element={<VideosGallery />} />

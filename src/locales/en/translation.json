@@ -84,7 +84,16 @@
     "select": "Select",
     "access": "Access",
     "not-found-message": "404 Not Found",
-    "no-table-enteries-found": "No table entries found."
+    "no-table-enteries-found": "No table entries found.",
+    "please-come-back-in": "Please come back in",
+    "day": "day",
+    "days": "days",
+    "hour": "hour",
+    "hours": "hours",
+    "minute": "minute",
+    "minutes": "minutes",
+    "second": "second",
+    "seconds": "seconds"
   },
   "all-forms": {
     "submit": "Submit",
