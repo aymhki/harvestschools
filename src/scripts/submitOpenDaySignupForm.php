@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->set_charset("utf8mb4");
         $formData = [];
+
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
                 $fieldId = (int)substr($key, 6);
@@ -40,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $formData[$key] = $value;
                 }
+
             } else {
                 $formData[$key] = $value;
             }
@@ -50,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $numberOfChildrenAttending = $formData['numberOfAttendees'] ?? 1;
 
         $children = [];
+
         for ($i = 0; $i <= $numberOfChildrenAttending; $i++) {
             $childNameKey = "Child Name $i";
             $childAgeKey = "Child Age $i";
@@ -76,13 +79,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->begin_transaction();
 
-        $stmt = $conn->prepare("INSERT INTO open_day_registrations (parent_name, parent_phone, total_children, total_cost, payment_status) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssids", $parentName, $parentPhone, $totalChildren, $totalCost, $paymentStatus);
+        $stmt = $conn->prepare("SELECT registration_id FROM open_day_registrations WHERE parent_name = ? AND parent_phone = ?");
+        $stmt->bind_param("ss", $parentName, $parentPhone);
         $stmt->execute();
+        $result = $stmt->get_result();
 
-        $registrationId = $conn->insert_id;
+        $registrationId = null;
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $registrationId = $row['id'];
+
+            $checkStmt = $conn->prepare("SELECT child_id FROM open_day_children WHERE registration_id = ? AND child_name = ? AND age = ?");
+
+            foreach ($children as $child) {
+                $childName = $child['name'];
+                $childAge = $child['age'];
+
+                $checkStmt->bind_param("isi", $registrationId, $childName, $childAge);
+                $checkStmt->execute();
+
+                if ($checkStmt->get_result()->num_rows > 0) {
+                    $conn->rollback();
+                    $errorInfo['success'] = false;
+                    $errorInfo['message'] = 'Child already exists under this registration.';
+                    $errorInfo['code'] = 409;
+                    echo json_encode($errorInfo);
+                    return;
+                }
+
+            }
+
+            $updStmt = $conn->prepare("UPDATE open_day_registrations SET total_children = total_children + ?, total_cost = total_cost + ? WHERE registration_id = ?");
+            $updStmt->bind_param("idi", $totalChildren, $totalCost, $registrationId);
+            $updStmt->execute();
+        } else {
+            $insertStmt = $conn->prepare("INSERT INTO open_day_registrations (parent_name, parent_phone, total_children, total_cost, payment_status) VALUES (?, ?, ?, ?, ?)");
+            $insertStmt->bind_param("ssids", $parentName, $parentPhone, $totalChildren, $totalCost, $paymentStatus);
+            $insertStmt->execute();
+            $registrationId = $conn->insert_id;
+        }
 
         $stmt = $conn->prepare("INSERT INTO open_day_children (registration_id, child_name, age) VALUES (?, ?, ?)");
+
         foreach ($children as $child) {
             $childName = $child['name'];
             $childAge = $child['age'];
