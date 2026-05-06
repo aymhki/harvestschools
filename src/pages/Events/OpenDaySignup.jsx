@@ -10,8 +10,6 @@ function OpenDaySignup() {
     const { t } = useTranslation();
     const [numberOfAttendeesSelected, setNumberOfAttendeesSelected] = useState(false);
     const [openDaySignupFormFields, setOpenDaySignupFormFields] = useState([])
-    const [showErrorInFormFromParent, setShowErrorInFormFromParent] = useState(false);
-    const [errorToShowInFormFromParent, setErrorToShowInFormFromParent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [openDaySignupFormSubmitted, setOpenDaySignupFormSubmitted] = useState(false)
     const [numberOfAttendees, setNumberOfAttendees] = useState(1);
@@ -110,12 +108,7 @@ function OpenDaySignup() {
             setNumberOfAttendees(numberOfAttendeesFromForm);
             onNumberOfAttendeesSelected(numberOfAttendeesFromForm);
         } else {
-            setErrorToShowInFormFromParent('Please enter a valid number of attendees');
-            setShowErrorInFormFromParent(true);
-
-            setTimeout(() => {
-                setShowErrorInFormFromParent(false)
-            }, 3000)
+           throw new Error('Please enter a valid number of attendees');
         }
     }
 
@@ -137,12 +130,7 @@ function OpenDaySignup() {
             }
 
         } catch (error) {
-            setErrorToShowInFormFromParent(error);
-            setShowErrorInFormFromParent(true);
-
-            setTimeout(() => {
-                setShowErrorInFormFromParent(false)
-            }, 3000)
+            throw new Error(error.message || 'Error while submitting the form');
 
         } finally {
             setIsLoading(false);
@@ -194,8 +182,6 @@ function OpenDaySignup() {
                                   noInputFieldsCache={true}
                                   switchFooterButtonsOrder={true}
                                   footerButtonsSpaceBetween={true}
-                                  canSetErrorsFromParent={showErrorInFormFromParent}
-                                  generalFormErrorFromParent={errorToShowInFormFromParent}
 
                             />
                         </div>

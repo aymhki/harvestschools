@@ -41,8 +41,6 @@ function Form({
                   forceEnglishForm,
                   hasDifferentResetBehaviour,
                   differentResetBehaviour,
-                  canSetErrorsFromParent,
-                  generalFormErrorFromParent,
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -1037,11 +1035,6 @@ function Form({
         }
     }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
 
-    useEffect(() => {
-        if (canSetErrorsFromParent) {
-            setGeneralFormError(generalFormErrorFromParent);
-        }
-    }, [generalFormErrorFromParent, canSetErrorsFromParent]);
 
     
     const CaptchaField = () => {
@@ -1343,8 +1336,6 @@ Form.propTypes = {
     forceEnglishForm: PropTypes.bool,
     hasDifferentResetBehaviour: PropTypes.bool,
     differentResetBehaviour: PropTypes.func,
-    canSetErrorsFromParent: PropTypes.bool,
-    generalFormErrorFromParent: PropTypes.string,
 };
 
 export default Form;
