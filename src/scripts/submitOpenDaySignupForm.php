@@ -88,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $registrationId = $row['id'];
+            $registrationId = $row['registration_id'];
 
-            $checkStmt = $conn->prepare("SELECT child_id FROM open_day_children WHERE registration_id = ? AND child_name = ? AND age = ?");
+            $checkStmt = $conn->prepare("SELECT child_id FROM open_day_children WHERE registration_id = ? AND LOWER(child_name) = LOWER(?) AND age = ?");
 
             foreach ($children as $child) {
                 $childName = $child['name'];
