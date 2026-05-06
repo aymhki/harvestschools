@@ -261,7 +261,7 @@ const submitOpenDaySignupRequest = async (formData, numberOfAttendees) => {
                 return 'Signup failed. Please try again.';
             }
         } else {
-            return 'Signup failed. Please try again.';
+            return result.message || 'Signup failed. Please try again.';
         }
     } catch ( error ) {
         return error.message;
