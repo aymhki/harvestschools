@@ -1,4 +1,5 @@
 import {v6 as uuidv6} from "uuid";
+import i18n from '../i18n.jsx';
 
 const isDevelopment = () => {
     return !import.meta.env.PROD;
@@ -88,6 +89,11 @@ const getMimeType = (extension) => {
     }
 };
 
+const formatNumberByLocale = (number) => {
+    const currentLanguage = i18n.language;
+    return new Intl.NumberFormat(currentLanguage === 'ar' ? 'ar-SA' : 'en-US').format(number);
+};
+
 const EMBEDDABLE_EXTENSIONS = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
 const cdCost = 250;
 const additionalAttendeeCost = 100;
@@ -156,5 +162,6 @@ export {
     adminDashboardPageUrl,
     endpoints,
     BASE_URLS,
-    costPerChildInOpenDaySignup
+    costPerChildInOpenDaySignup,
+    formatNumberByLocale
 }

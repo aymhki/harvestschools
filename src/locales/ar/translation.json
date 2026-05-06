@@ -1708,6 +1708,19 @@
         "cd": "سي دي ",
         "additional-attendee": "ضيف إضافي "
       }
+    },
+    "open-day-signup-page": {
+      "welcome-to-open-day-signup": "مرحبًا بك في تسجيل يوم البيت المفتوح",
+      "please-enter-the-children-you-want-to-bring": "يرجى إدخال عدد الأطفال الذين تريد إحضارهم للبدء ({{costPerChildField}} جنيه لكل طفل)",
+      "number-of-attendees-field": "عدد الحضور",
+      "next-btn": "التالي",
+      "open-day-signup-form": "نموذج تسجيل يوم الأبواب المفتوحة",
+      "confirmation-message": "تم استلام طلبك، شكرًا لك!",
+      "please-pay-message": "يرجى دفع {{totalCostForAllChildren}} جنيه في المدرسة",
+      "parent-name-field": "اسم ولي الأمر",
+      "parent-phone-number-field": "رقم هاتف ولي الأمر",
+      "child-name-field": "اسم الطفل",
+      "child-age-field": "عمر الطفل"
     }
   },
   "gallery-pages": {

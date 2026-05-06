@@ -1708,6 +1708,19 @@
         "cd": "CD ",
         "additional-attendee": "Additional Attendee "
       }
+    },
+    "open-day-signup-page": {
+      "welcome-to-open-day-signup": "Welcome to the Open Day Signup",
+      "please-enter-the-children-you-want-to-bring": "Please enter the number of children you want to bring to start ({{costPerChildField}} EGP Per Child)",
+      "number-of-attendees-field": "Number of Attendees",
+      "next-btn": "Next",
+      "open-day-signup-form": "Open Day Signup Form",
+      "confirmation-message": "Your submission has been received, thank you!",
+      "please-pay-message": "Please pay {{totalCostForAllChildren}} EGP at the School",
+      "parent-name-field": "Parent Name",
+      "parent-phone-number-field": "Parent Phone Number",
+      "child-name-field": "Child Name",
+      "child-age-field": "Child Age"
     }
   },
   "gallery-pages": {

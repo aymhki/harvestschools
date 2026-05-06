@@ -290,6 +290,8 @@ function Form({
                     ( !isNaN(currentValue + delta) )
                 )) {
                     ref.current.value = currentValue + delta;
+                    ref.current.setCustomValidity('');
+
                     
                     processFieldOnChangeResult(field, currentValue + delta);
                     
@@ -723,7 +725,7 @@ function Form({
     const onChange = (e, field) => {
         const maxSizeInBytes = 2 * 1024 * 1024;
         const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
-        
+
         if (field.type === 'number' && (isNaN(value) || (field.minimumValue && Number(value) < field.minimumValue) || (field.maximumValue && Number(value) > field.maximumValue))) {
             e.target.setCustomValidity(`Value must be a number between ${field.minimumValue} and ${field.maximumValue}`);
         } else if (field.type === 'file' && e.target.files[0].size > maxSizeInBytes) {
@@ -743,6 +745,7 @@ function Form({
                 e.target.reportValidity();
             } else {
                 e.target.setCustomValidity('');
+                e.target.reportValidity();
                 setGeneralFormError('');
                 setSuccessMessage('');
                 
