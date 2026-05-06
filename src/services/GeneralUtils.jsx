@@ -101,6 +101,7 @@ const bookingLoginPageUrl = '/events/booking';
 const bookingDashboardPageUrl = '/events/booking/dashboard';
 const adminLoginPageUrl = '/admin/login';
 const adminDashboardPageUrl = '/admin/dashboard';
+const costPerChildInOpenDaySignup = 150;
 
 const ENDPOINTS = {
     checkBookingSession: '/scripts/checkBookingSession.php',
@@ -121,7 +122,8 @@ const ENDPOINTS = {
     getJobApplications: '/scripts/getJobApplications.php',
     updateBookingExtras: '/scripts/submitUpdateBookingExtras.php',
     getBookingConfirmation: '/scripts/getBookingConfirmation.php',
-    serveJobApplicationFile: '/scripts/serveJobApplicationFile.php?file='
+    serveJobApplicationFile: '/scripts/serveJobApplicationFile.php?file=',
+    submitOpenDaySignupForm: '/scripts/submitOpenDaySignupForm.php'
 };
 
 const BASE_URLS = {
@@ -153,5 +155,6 @@ export {
     adminLoginPageUrl,
     adminDashboardPageUrl,
     endpoints,
-    BASE_URLS
+    BASE_URLS,
+    costPerChildInOpenDaySignup
 }
