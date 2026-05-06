@@ -458,6 +458,10 @@
     width: calc(50%);
 }
 
+.number-input-container.half-width {
+    width: calc(50% - 2rem);
+}
+
 .field-with-label-on-top.third-width {
     width: calc(33.33333333334%);
 }
@@ -776,7 +780,7 @@
     }
 
     .number-input-container {
-        width: calc(100% - 2rem);
+        width: calc(100% - 0.8rem);
         margin: 0.5rem;
         padding: 0.5rem;
     }
@@ -844,6 +848,10 @@
         align-items: center;
         justify-content: center;
         width: calc(100% - 1rem);
+    }
+
+    .number-input-container.half-width {
+        width: calc(100%);
     }
 }
 

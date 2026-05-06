@@ -38,7 +38,11 @@ function Form({
                   formIsReadOnly,
                   footerButtonsSpaceBetween,
                   switchFooterButtonsOrder,
-                  forceEnglishForm
+                  forceEnglishForm,
+                  hasDifferentResetBehaviour,
+                  differentResetBehaviour,
+                  canSetErrorsFromParent,
+                  generalFormErrorFromParent,
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -178,6 +182,10 @@ function Form({
     const resetForm = () => {
         resetFormCompletely();
         clearCache();
+
+        if (hasDifferentResetBehaviour) {
+            differentResetBehaviour()
+        }
     }
     
     const generateCaptcha = useCallback(() => {
@@ -872,6 +880,7 @@ function Form({
                             setSuccessMessage('');
                             resetFormCompletely();
                             clearCache();
+
                         }, msgTimeout);
                     }
                 } catch (error) {
@@ -898,6 +907,7 @@ function Form({
                             }
                             resetFormCompletely();
                             clearCache();
+
                         }, msgTimeout);
                     } else {
                         setGeneralFormError( result.message || t('all-forms.general-error'));
@@ -1020,8 +1030,18 @@ function Form({
             if (setResetForFromParent) {
                 setResetForFromParent(false);
             }
+
+            if (hasDifferentResetBehaviour) {
+                differentResetBehaviour()
+            }
         }
     }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
+
+    useEffect(() => {
+        if (canSetErrorsFromParent) {
+            setGeneralFormError(generalFormErrorFromParent);
+        }
+    }, [generalFormErrorFromParent, canSetErrorsFromParent]);
 
     
     const CaptchaField = () => {
@@ -1321,6 +1341,10 @@ Form.propTypes = {
     footerButtonsSpaceBetween: PropTypes.bool,
     switchFooterButtonsOrder: PropTypes.bool,
     forceEnglishForm: PropTypes.bool,
+    hasDifferentResetBehaviour: PropTypes.bool,
+    differentResetBehaviour: PropTypes.func,
+    canSetErrorsFromParent: PropTypes.bool,
+    generalFormErrorFromParent: PropTypes.string,
 };
 
 export default Form;
