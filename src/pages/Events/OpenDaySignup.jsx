@@ -113,8 +113,6 @@ function OpenDaySignup() {
     }
 
     const onResetBehaviour = () => {
-        setShowErrorInFormFromParent(false);
-        setErrorToShowInFormFromParent('');
         setNumberOfAttendeesSelected(false);
     }
 
