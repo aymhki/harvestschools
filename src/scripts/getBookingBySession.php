@@ -163,7 +163,7 @@ try {
     $cdCount = $extras ? intval($extras['cd_count']) : 0;
     $additionalAttendees = $extras ? intval($extras['additional_attendees']) : 0;
     $totalCdCost = $cdCount * 150;
-    $totalAdditionalAttendeeCost = $additionalAttendees * 100;
+    $totalAdditionalAttendeeCost = $additionalAttendees * 150;
     $totalExtrasCost = $totalCdCost + $totalAdditionalAttendeeCost;
 
     $totalBaseFair = $studentCount * 1200;
