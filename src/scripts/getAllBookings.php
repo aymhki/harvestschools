@@ -183,7 +183,7 @@ try {
         $cdCount = intval($booking['cd_count'] ?? 0);
         $additionalAttendees = intval($booking['additional_attendees'] ?? 0);
         $totalCdCost = $cdCount * 150;
-        $totalAdditionalAttendeeCost = $additionalAttendees * 100;
+        $totalAdditionalAttendeeCost = $additionalAttendees * 150;
         $totalExtrasCost = $totalCdCost + $totalAdditionalAttendeeCost;
 
         $totalBaseFair = $studentCount * 1200;

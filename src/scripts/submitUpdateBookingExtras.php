@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $oldAdditionalAttendees = $currentExtras['additional_attendees'];
         $oldPaymentStatus = $currentExtras['payment_status'];
         $newCdCount = isset($formData['Requested After Party CD(s) (150 EGP Each):']) ? intval($formData['Requested After Party CD(s) (150 EGP Each):']) : $oldCdCount;
-        $newAdditionalAttendees = isset($formData['Requested Additional Attendee(s) (100 EGP Each):']) ? intval($formData['Requested Additional Attendee(s) (100 EGP Each):']) : $oldAdditionalAttendees;
+        $newAdditionalAttendees = isset($formData['Requested Additional Attendee(s) (150 EGP Each):']) ? intval($formData['Requested Additional Attendee(s) (150 EGP Each):']) : $oldAdditionalAttendees;
         $newPaymentStatus = isset($formData['Extras Payment Status:']) ? $formData['Extras Payment Status:'] : $oldPaymentStatus;
 
         if (($newCdCount > 0 || $newAdditionalAttendees > 0) && $newPaymentStatus === 'Not Signed Up') {

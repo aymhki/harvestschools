@@ -155,7 +155,7 @@ try {
     $cdCount = intval($confirmationData['cd_count']);
     $additionalAttendees = intval($confirmationData['additional_attendees']);
     $totalCdCost = $cdCount * 150;
-    $totalAdditionalAttendeeCost = $additionalAttendees * 100;
+    $totalAdditionalAttendeeCost = $additionalAttendees * 150;
     $totalExtrasCost = $totalCdCost + $totalAdditionalAttendeeCost;
 
     $totalBaseFair = $studentCount * 1200;

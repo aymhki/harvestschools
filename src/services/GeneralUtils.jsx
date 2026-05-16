@@ -96,7 +96,7 @@ const formatNumberByLocale = (number) => {
 
 const EMBEDDABLE_EXTENSIONS = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
 const cdCost = 150;
-const additionalAttendeeCost = 100;
+const additionalAttendeeCost = 150;
 const pendingPaymentStatus = 'Signed Up, pending payment';
 const notSignedUpStatus = 'Not Signed Up';
 const confirmedStatus = 'Confirmed';
