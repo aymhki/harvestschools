@@ -79,10 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->begin_transaction();
 
-        $stmt = $conn->prepare("SELECT registration_id FROM open_day_registrations WHERE parent_name = ? AND parent_phone = ?");
-        $stmt->bind_param("ss", $parentName, $parentPhone);
-        $stmt->execute();
-        $result = $stmt->get_result();
 
         $registrationId = null;
 

@@ -162,7 +162,7 @@ try {
     $studentCount = count($students);
     $cdCount = $extras ? intval($extras['cd_count']) : 0;
     $additionalAttendees = $extras ? intval($extras['additional_attendees']) : 0;
-    $totalCdCost = $cdCount * 250;
+    $totalCdCost = $cdCount * 150;
     $totalAdditionalAttendeeCost = $additionalAttendees * 100;
     $totalExtrasCost = $totalCdCost + $totalAdditionalAttendeeCost;
 
