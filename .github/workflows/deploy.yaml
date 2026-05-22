@@ -62,6 +62,7 @@ jobs:
           "
 
       - name: Sync assets folder (Conditional)
+        if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
           echo "Syncing entire assets folder as changes were detected in excluded subfolders"
           lftp -c "
