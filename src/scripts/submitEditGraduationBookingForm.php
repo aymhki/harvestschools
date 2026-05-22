@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (isset($formData['bookingId'])) {
             $data['bookingId'] = $formData['bookingId'];
-            $stmt = $conn->prepare("SELECT auth_id FROM bookings WHERE booking_id = ?");
+            $stmt = $conn->prepare("SELECT auth_id FROM graduation_bookings WHERE booking_id = ?");
 
             if (!$stmt) {
                 $errorInfo['success'] = false;
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
                 $data['authId'] = $row['auth_id'];
-                $stmt = $conn->prepare("SELECT parent_id, is_primary FROM booking_parents_linker WHERE booking_id = ?");
+                $stmt = $conn->prepare("SELECT parent_id, is_primary FROM graduation_booking_parents_linker WHERE booking_id = ?");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
 
-                $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE parent_id = ?");
+                $stmt = $conn->prepare("SELECT name, email, phone_number FROM graduation_booking_parents WHERE parent_id = ?");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 if ($data['secondParentId'] !== null) {
-                    $stmt = $conn->prepare("SELECT name, email, phone_number FROM booking_parents WHERE parent_id = ?");
+                    $stmt = $conn->prepare("SELECT name, email, phone_number FROM graduation_booking_parents WHERE parent_id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
@@ -253,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                $stmt = $conn->prepare("SELECT student_id FROM booking_students_linker WHERE booking_id = ?");
+                $stmt = $conn->prepare("SELECT student_id FROM graduation_booking_students_linker WHERE booking_id = ?");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -291,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 foreach ($data['oldStudentIds'] as $studentId) {
-                    $stmt = $conn->prepare("SELECT name, school_division, grade FROM booking_students WHERE student_id = ?");
+                    $stmt = $conn->prepare("SELECT name, school_division, grade FROM graduation_booking_students WHERE student_id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
@@ -361,7 +361,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
 
-                $stmt = $conn->prepare("SELECT extra_id, cd_count, additional_attendees, payment_status FROM booking_extras WHERE booking_id = ?");
+                $stmt = $conn->prepare("SELECT extra_id, cd_count, additional_attendees, payment_status FROM graduation_booking_extras WHERE booking_id = ?");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -410,7 +410,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($data['firstParentDataHaveChanged'] || $data['secondParentDataHaveChanged']) {
                         if ($data['firstParentId'] !== null && $data['secondParentId'] !== null) {
                             if (empty($secondParentName) && empty($secondParentEmail) && empty($secondParentPhone)) {
-                                $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE parent_id = ? AND booking_id = ? AND is_primary = 0");
+                                $stmt = $conn->prepare("DELETE FROM graduation_booking_parents_linker WHERE parent_id = ? AND booking_id = ? AND is_primary = 0");
 
                                 if (!$stmt) {
                                     $errorInfo['success'] = false;
@@ -432,7 +432,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     return;
                                 }
 
-                                $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+                                $stmt = $conn->prepare("DELETE FROM graduation_booking_parents WHERE parent_id = ?");
 
                                 if (!$stmt) {
                                     $errorInfo['success'] = false;
@@ -465,7 +465,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 }
 
                                 if ($data['firstParentDataHaveChanged']) {
-                                    $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
+                                    $stmt = $conn->prepare("UPDATE graduation_booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                                     if (!$stmt) {
                                         $errorInfo['success'] = false;
@@ -491,7 +491,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 if ($data['secondParentDataHaveChanged']) {
 
-                                    $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
+                                    $stmt = $conn->prepare("UPDATE graduation_booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                                     if (!$stmt) {
                                         $errorInfo['success'] = false;
@@ -517,7 +517,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         } else if ($data['firstParentId'] !== null && $data['secondParentId'] === null) {
                             if (!empty($secondParentName)) {
-                                $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
+                                $stmt = $conn->prepare("INSERT INTO graduation_booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
 
                                 if (!$stmt) {
                                     $errorInfo['success'] = false;
@@ -541,7 +541,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 $secondParentId = $stmt->insert_id;
 
-                                $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, 0)");
+                                $stmt = $conn->prepare("INSERT INTO graduation_booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, 0)");
 
                                 if (!$stmt) {
                                     $errorInfo['success'] = false;
@@ -574,7 +574,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     return;
                                 }
 
-                                $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
+                                $stmt = $conn->prepare("UPDATE graduation_booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                                 if (!$stmt) {
                                     $errorInfo['success'] = false;
@@ -606,7 +606,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 }
 
                                 if ($data['firstParentDataHaveChanged']) {
-                                    $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
+                                    $stmt = $conn->prepare("UPDATE graduation_booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                                     if (!$stmt) {
                                         $errorInfo['success'] = false;
@@ -645,7 +645,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($thereIsNewStudentInfo) {
 
-                        $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
+                        $stmt = $conn->prepare("DELETE FROM graduation_booking_students_linker WHERE booking_id = ?");
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
@@ -668,7 +668,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
 
                         foreach ($data['oldStudentIds'] as $studentId) {
-                            $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+                            $stmt = $conn->prepare("DELETE FROM graduation_booking_students WHERE student_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -718,7 +718,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $studentName = $studentData['Student Name'];
                                 $schoolDivision = $studentData['Student School Division'] ?? 'Other';
                                 $grade = $studentData['Student Grade'] ?? '';
-                                $stmt = $conn->prepare("INSERT INTO booking_students (name, school_division, grade) VALUES (?, ?, ?)");
+                                $stmt = $conn->prepare("INSERT INTO graduation_booking_students (name, school_division, grade) VALUES (?, ?, ?)");
 
                                 if (!$stmt) {
                                     $errorInfo['success'] = false;
@@ -742,7 +742,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 $studentId = $conn->insert_id;
                                 $data['newStudentIds'][] = $studentId;
-                                $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
+                                $stmt = $conn->prepare("INSERT INTO graduation_booking_students_linker (booking_id, student_id) VALUES (?, ?)");
 
                                 if (!$stmt) {
                                     $errorInfo['success'] = false;
@@ -808,7 +808,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         return;
                     }
 
-                    $stmt = $conn->prepare("SELECT cd_count, additional_attendees, payment_status FROM booking_extras WHERE booking_id = ?");
+                    $stmt = $conn->prepare("SELECT cd_count, additional_attendees, payment_status FROM graduation_booking_extras WHERE booking_id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
@@ -851,7 +851,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     if ($data['extrasDataHaveChanged']) {
-                        $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
+                        $stmt = $conn->prepare("UPDATE graduation_booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
@@ -891,7 +891,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         return;
                     }
 
-                    $stmt = $conn->prepare("SELECT username, password_hash FROM booking_auth_credentials WHERE auth_id = ?");
+                    $stmt = $conn->prepare("SELECT username, password_hash FROM graduation_booking_auth_credentials WHERE auth_id = ?");
 
                     if (!$stmt) {
                         $errorInfo['success'] = false;
@@ -924,7 +924,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $usernameHasChanged = $data['oldUsername'] !== $newUsername;
 
                     if ($usernameHasChanged) {
-                        $stmt = $conn->prepare("SELECT COUNT(*) as count FROM booking_auth_credentials WHERE username = ? AND auth_id != ?");
+                        $stmt = $conn->prepare("SELECT COUNT(*) as count FROM graduation_booking_auth_credentials WHERE username = ? AND auth_id != ?");
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
@@ -964,7 +964,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if ($usernameHasChanged) {
                             $data['authDataHaveChanged'] = true;
-                            $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ? WHERE auth_id = ?");
+                            $stmt = $conn->prepare("UPDATE graduation_booking_auth_credentials SET username = ? WHERE auth_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -990,7 +990,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } else {
                         if ($usernameHasChanged) {
                             $data['authDataHaveChanged'] = true;
-                            $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
+                            $stmt = $conn->prepare("UPDATE graduation_booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -1013,7 +1013,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         } else {
                             $data['authDataHaveChanged'] = true;
-                            $stmt = $conn->prepare("UPDATE booking_auth_credentials SET password_hash = SHA2(?, 256) WHERE auth_id = ?");
+                            $stmt = $conn->prepare("UPDATE graduation_booking_auth_credentials SET password_hash = SHA2(?, 256) WHERE auth_id = ?");
 
                             if (!$stmt) {
                                 $errorInfo['success'] = false;
@@ -1039,7 +1039,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($usernameHasChanged  || $newPassword !== '') {
 
-                        $stmt = $conn->prepare("DELETE FROM booking_sessions WHERE username = ?");
+                        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE username = ?");
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
@@ -1147,7 +1147,7 @@ function performRollback($conn, $data) {
         }
 
         if ($data['firstParentDataHaveChanged'] && $data['firstParentId'] !== null) {
-            $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
+            $stmt = $conn->prepare("UPDATE graduation_booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
             if (!$stmt) {
                 error_log("Prepare update booking parents failed: " . $conn->error);
@@ -1168,7 +1168,7 @@ function performRollback($conn, $data) {
 
             if ($data['oldSecondParentName'] === null) {
 
-                $stmt = $conn->prepare("UPDATE booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
+                $stmt = $conn->prepare("UPDATE graduation_booking_parents SET name = ?, email = ?, phone_number = ? WHERE parent_id = ?");
 
                 if (!$stmt) {
                     error_log("Prepare update booking parents failed: " . $conn->error);
@@ -1185,7 +1185,7 @@ function performRollback($conn, $data) {
                 }
 
             } else {
-                $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+                $stmt = $conn->prepare("DELETE FROM graduation_booking_parents WHERE parent_id = ?");
 
                 if (!$stmt) {
                     error_log("Prepare delete booking parents failed: " . $conn->error);
@@ -1201,7 +1201,7 @@ function performRollback($conn, $data) {
 
         if ($data['studentsInfoHaveChanged'] && $data['oldStudentIds'] !== null && $data['newStudentIds'] !== null && $data['oldStudentsInfo'] !== null) {
             foreach ($data['newStudentIds'] as $studentId) {
-                $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE student_id = ?");
+                $stmt = $conn->prepare("DELETE FROM graduation_booking_students_linker WHERE student_id = ?");
 
                 if (!$stmt) {
                     error_log("Prepare delete booking students linker failed: " . $conn->error);
@@ -1213,7 +1213,7 @@ function performRollback($conn, $data) {
                     error_log("Execute failed: " . $stmt->error);
                 }
 
-                $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+                $stmt = $conn->prepare("DELETE FROM graduation_booking_students WHERE student_id = ?");
 
                 if (!$stmt) {
                     error_log("Prepare delete booking students failed: " . $conn->error);
@@ -1235,7 +1235,7 @@ function performRollback($conn, $data) {
                     error_log("Student Name cannot be empty");
                 }
 
-                $stmt = $conn->prepare("INSERT INTO booking_students (student_id, name, school_division, grade) VALUES (?, ?, ?, ?)");
+                $stmt = $conn->prepare("INSERT INTO graduation_booking_students (student_id, name, school_division, grade) VALUES (?, ?, ?, ?)");
 
                 if (!$stmt) {
                     error_log("Database error preparing statement: " . $conn->error);
@@ -1248,7 +1248,7 @@ function performRollback($conn, $data) {
                 }
 
 
-                $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
+                $stmt = $conn->prepare("INSERT INTO graduation_booking_students_linker (booking_id, student_id) VALUES (?, ?)");
 
                 if (!$stmt) {
                     error_log("Database error preparing statement: " . $conn->error);
@@ -1263,7 +1263,7 @@ function performRollback($conn, $data) {
         }
 
         if ($data['extrasDataHaveChanged'] && $data['extrasId'] !== null) {
-            $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
+            $stmt = $conn->prepare("UPDATE graduation_booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
 
             if (!$stmt) {
                 error_log("Prepare update booking extras failed: " . $conn->error);
@@ -1281,7 +1281,7 @@ function performRollback($conn, $data) {
         }
 
         if ($data['authDataHaveChanged'] && $data['authId'] !== null) {
-            $stmt = $conn->prepare("UPDATE booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
+            $stmt = $conn->prepare("UPDATE graduation_booking_auth_credentials SET username = ?, password_hash = SHA2(?, 256) WHERE auth_id = ?");
 
             if (!$stmt) {
                 error_log("Prepare update booking auth credentials failed: " . $conn->error);

@@ -4,15 +4,15 @@ import Spinner from "../../../modules/Spinner.jsx";
 import PhotoCollage from "../../../modules/PhotoCollage.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
-import {headToBookingLoginOnInvalidSession} from "../../../services/BookingNavigationServices.jsx";
+import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
 
-function BookingMedia() {
+function GraduationBookingMedia() {
     const {t} = useTranslation()
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        headToBookingLoginOnInvalidSession(navigate, setIsLoading);
+        headToGraduationBookingLoginOnInvalidSession(navigate, setIsLoading);
     }, []);
 
     return (
@@ -23,7 +23,7 @@ function BookingMedia() {
                 <div className={'extreme-padding-container make-this-container-have-gaps'}>
                     
                     <h1>
-                        {t("events-pages.booking-pages.booking-media-page.title")}
+                        {t("events-pages.graduation-booking-pages.booking-media-page.title")}
                     </h1>
                     
                     <PhotoCollage type={'slider'} photos={
@@ -41,12 +41,12 @@ function BookingMedia() {
                             isVideo: true,
                         }
                     }
-                    title={t("events-pages.booking-pages.booking-media-page.rehearsals")}
+                    title={t("events-pages.graduation-booking-pages.booking-media-page.rehearsals")}
                     
                     />
                     
                     <p>
-                        {t("events-pages.booking-pages.booking-media-page.stay-tuned-for-more")}
+                        {t("events-pages.graduation-booking-pages.booking-media-page.stay-tuned-for-more")}
                     </p>
                 </div>
             </div>
@@ -54,5 +54,5 @@ function BookingMedia() {
     );
 }
 
-export default BookingMedia;
+export default GraduationBookingMedia;
 

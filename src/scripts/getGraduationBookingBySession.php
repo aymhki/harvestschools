@@ -32,7 +32,7 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionSql = "SELECT username FROM booking_sessions WHERE id = ?";
+    $sessionSql = "SELECT username FROM graduation_booking_sessions WHERE id = ?";
     $stmt = $conn->prepare($sessionSql);
     if (!$stmt) {
         echo json_encode([
@@ -57,8 +57,8 @@ try {
     $sessionRow = $sessionResult->fetch_assoc();
     $bookingUsername = $sessionRow['username'];
     $bookingSql = "SELECT b.booking_id 
-                   FROM bookings b
-                   JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
+                   FROM graduation_bookings b
+                   JOIN graduation_booking_auth_credentials ac ON b.auth_id = ac.auth_id
                    WHERE ac.username = ?";
     $stmt = $conn->prepare($bookingSql);
     if (!$stmt) {
@@ -96,8 +96,8 @@ try {
                             ac.password_hash,
                             ac.created_at AS auth_created_at,
                             ac.updated_at AS auth_updated_at
-                         FROM bookings b
-                         JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
+                         FROM graduation_bookings b
+                         JOIN graduation_booking_auth_credentials ac ON b.auth_id = ac.auth_id
                          WHERE b.booking_id = ?";
     $stmt = $conn->prepare($bookingDetailsSql);
     $stmt->bind_param("i", $bookingId);
@@ -120,7 +120,7 @@ try {
                     payment_status,
                     created_at,
                     updated_at
-                  FROM booking_extras
+                  FROM graduation_booking_extras
                   WHERE booking_id = ?";
     $stmt = $conn->prepare($extrasSql);
     $stmt->bind_param("i", $bookingId);
@@ -131,8 +131,8 @@ try {
     $parentsSql = "SELECT 
                      p.*,
                      pl.is_primary
-                   FROM booking_parents p
-                   JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
+                   FROM graduation_booking_parents p
+                   JOIN graduation_booking_parents_linker pl ON p.parent_id = pl.parent_id
                    WHERE pl.booking_id = ?
                    ORDER BY pl.is_primary DESC";
     $stmt = $conn->prepare($parentsSql);
@@ -146,8 +146,8 @@ try {
     }
     $studentsSql = "SELECT 
                      s.*
-                   FROM booking_students s
-                   JOIN booking_students_linker sl ON s.student_id = sl.student_id
+                   FROM graduation_booking_students s
+                   JOIN graduation_booking_students_linker sl ON s.student_id = sl.student_id
                    WHERE sl.booking_id = ?";
     $stmt = $conn->prepare($studentsSql);
     $stmt->bind_param("i", $bookingId);

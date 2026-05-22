@@ -15,7 +15,8 @@ const MoreInfo = lazy(() => import("./pages/FAQs/MoreInfo.jsx"));
 const AdminLogin = lazy(() => import("./pages/Admin/AdminLogin.jsx"));
 const Dashboard = lazy(() => import("./pages/Admin/AdminDashboard"));
 const JobApplications = lazy(() => import("./pages/Admin/JobApplications.jsx"));
-const BookingManagement = lazy(() => import("./pages/Admin/BookingManagement.jsx"));
+const GraduationBookingManagement = lazy(() => import("./pages/Admin/GraduationBookingManagement.jsx"));
+const OpenDaySignupsManagement = lazy(() => import('./pages/Admin/OpenDaySignupsManagement.jsx'));
 const FileViewer = lazy(() => import('./pages/Admin/FileViewer.jsx'));
 const Admission = lazy(() => import("./pages/Admission/Admission.jsx"));
 const AdmissionProcess = lazy(() => import('./pages/Admission/AdmissionProcess'));
@@ -59,12 +60,12 @@ const KgCalendarEvents = lazy(() => import('./pages/Events/KGCalendars.jsx'));
 const AmericanKGCalendar = lazy(() => import('./pages/Events/AmericanKGCalendar.jsx'));
 const BritishKGCalendar = lazy(() => import('./pages/Events/BritishKGCalendar.jsx'));
 const NationalKGCalendar = lazy(() => import('./pages/Events/NationalKGCalendar.jsx'));
-const BookingLogin = lazy(() => import("./pages/Events/Booking/BookingLogin.jsx"));
-const BookingDashboard = lazy(() => import('./pages/Events/Booking/BookingDashboard.jsx'));
-const BookingMedia = lazy(() => import("./pages/Events/Booking/BookingMedia.jsx"));
-const BookingExtras = lazy(() => import("./pages/Events/Booking/BookingExtras.jsx"));
-const BookingStatusInfo = lazy(() => import("./pages/Events/Booking/BookingStatusInfo.jsx"));
-const BookingConfirmation = lazy(() => import('./pages/Events/Booking/BookingConfirmation.jsx'));
+const GraduationBookingLogin = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingLogin"));
+const GraduationBookingDashboard = lazy(() => import('./pages/Events/GraduationBooking/GraduationBookingDashboard'));
+const GraduationBookingMedia = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingMedia"));
+const GraduationBookingExtras = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingExtras"));
+const GraduationBookingStatusInfo = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingStatusInfo"));
+const GraduationBookingConfirmation = lazy(() => import('./pages/Events/GraduationBooking/GraduationBookingConfirmation.jsx'));
 const OpenDaySignup = lazy(() => import('./pages/Events/OpenDaySignup.jsx'))
 const Gallery = lazy(() => import("./pages/Gallery/Gallery.jsx"));
 const PhotosGallery = lazy(() => import('./pages/Gallery/Photos'));
@@ -97,17 +98,16 @@ function AppClient() {
             {!shouldExclude && <NavigationBar />}
             <div className="content">
                 <ErrorBoundary>
-                    {/* Suspense is REQUIRED for React.lazy */}
                     <Suspense fallback={<div style={{minHeight: '50vh'}}></div>}>
                         <Routes>
-                            {/* Same routes as AppServer, but using the lazy components */}
                             <Route path="/" element={<Home />} />
                             <Route path="/home" element={<Home />} />
                             <Route path="/admin/login" element={<AdminLogin />} />
                             <Route path="/admin/dashboard" element={<Dashboard />} />
                             <Route path="/admin/job-applications" element={<JobApplications />} />
                             <Route path="/admin/view-job-application-file" element={<FileViewer />} />
-                            <Route path="/admin/booking-management" element={<BookingManagement />} />
+                            <Route path="/admin/graduation-booking-management" element={<GraduationBookingManagement />} />
+                            <Route path="/admin/open-day-signups-management" element={<OpenDaySignupsManagement />} />
                             <Route path="/more-info" element={<MoreInfo />} />
                             <Route path="/faqs" element={<Faqs />} />
                             <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
@@ -155,12 +155,12 @@ function AppClient() {
                             <Route path="/events/american-kg-calendar" element={<AmericanKGCalendar />} />
                             <Route path="/events/british-kg-calendar" element={<BritishKGCalendar />} />
                             <Route path="/events/national-kg-calendar" element={<NationalKGCalendar />} />
-                            <Route path="/events/booking" element={<BookingLogin />} />
-                            <Route path="/events/booking/dashboard" element={<BookingDashboard />} />
-                            <Route path="/events/booking/media" element={<BookingMedia />} />
-                            <Route path="/events/booking/extras" element={<BookingExtras />} />
-                            <Route path="/events/booking/info" element={<BookingStatusInfo />} />
-                            <Route path="/events/booking-confirmation" element={<BookingConfirmation />} />
+                            <Route path="/events/graduation-booking" element={<GraduationBookingLogin />} />
+                            <Route path="/events/graduation-booking/dashboard" element={<GraduationBookingDashboard />} />
+                            <Route path="/events/graduation-booking/media" element={<GraduationBookingMedia />} />
+                            <Route path="/events/graduation-booking/extras" element={<GraduationBookingExtras />} />
+                            <Route path="/events/graduation-booking/info" element={<GraduationBookingStatusInfo />} />
+                            <Route path="/events/graduation-booking-confirmation" element={<GraduationBookingConfirmation />} />
                             <Route path="/events/open-day-signup" element={<OpenDaySignup />} />
                             <Route path="/gallery" element={<Gallery />} />
                             <Route path="/gallery/photos" element={<PhotosGallery />} />

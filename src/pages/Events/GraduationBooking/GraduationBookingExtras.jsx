@@ -1,17 +1,17 @@
 import Spinner from "../../../modules/Spinner.jsx";
 import {useEffect, useState} from "react";
-import { fetchBookingInfoBySessionRequest } from "../../../services/MainParentsBookingServices.jsx";
+import { fetchGraduationBookingInfoBySessionRequest } from "../../../services/MainParentsGraduationBookingServices.jsx";
 import { useNavigate } from "react-router-dom";
 import ParallaxScrollSection from "../../../modules/ParallaxScrollSection.jsx";
 import Form from '../../../modules/Form.jsx';
 import '../../../styles/Events.css';
-import {submitUpdateBookingExtrasRequest} from "../../../services/MainParentsBookingServices.jsx";
-import {generateConfirmationPDF} from "../../../services/GeneratePDFLazyWrapper.jsx"
+import {submitUpdateGraduationBookingExtrasRequest} from "../../../services/MainParentsGraduationBookingServices.jsx";
+import {generateGraduationBookingConfirmationPDF} from "../../../services/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
 import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAttendeeCost, cdCost} from "../../../services/GeneralUtils.jsx";
 import {useTranslation} from "react-i18next";
-import {headToBookingLoginOnInvalidSession} from "../../../services/BookingNavigationServices.jsx";
+import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
 
-function BookingExtras() {
+function GraduationBookingExtras() {
     const {t, i18n} = useTranslation();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +35,7 @@ function BookingExtras() {
 
 
     useEffect(() => {
-        headToBookingLoginOnInvalidSession(navigate, setIsLoading).then(
+        headToGraduationBookingLoginOnInvalidSession(navigate, setIsLoading).then(
             () => {
                 fetchBookingBySessionId().then(
                     () => {
@@ -66,7 +66,7 @@ function BookingExtras() {
                     type: 'number',
                     name: 'extra-additional-attendees',
                     label: `Requested Additional Attendee(s) (${additionalAttendeeCost} EGP Each):`,
-                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-additional-attendees", {"cost-per-attendee": additionalAttendeeCost}),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-extras-page.extra-additional-attendees", {"cost-per-attendee": additionalAttendeeCost}),
                     required: false,
                     value: detailedData.extras.additional_attendees === 0 ? '0' : detailedData.extras.additional_attendees,
                     setValue: null,
@@ -112,7 +112,7 @@ function BookingExtras() {
                     type: 'text',
                     name: 'extra-additional-attendees-cost',
                     label: 'Total Additional Attendee(s) Cost:',
-                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-additional-attendees-cost"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-extras-page.extra-additional-attendees-cost"),
                     required: false,
                     value: detailedData.extras.additional_attendees === 0 ? '0' : `${(detailedData.extras.additional_attendees * additionalAttendeeCost)} EGP`,
                     setValue: null,
@@ -132,7 +132,7 @@ function BookingExtras() {
                     type: 'number',
                     name: 'extra-cd-count',
                     label: `Requested After Party CD(s) (${cdCost} EGP Each):`,
-                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-cd-count", {"cost-per-cd": cdCost}),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-extras-page.extra-cd-count", {"cost-per-cd": cdCost}),
                     required: false,
                     value: detailedData.extras.cd_count === 0 ? '0' : detailedData.extras.cd_count,
                     setValue: null,
@@ -178,7 +178,7 @@ function BookingExtras() {
                     type: 'text',
                     name: 'extra-cd-count-cost',
                     label: 'Total After Party CD(s) Cost:',
-                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-cd-count-cost"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-extras-page.extra-cd-count-cost"),
                     required: false,
                     value: detailedData.extras.cd_count === 0 ? '0' : `${(detailedData.extras.cd_count * cdCost)} EGP`,
                     setValue: null,
@@ -199,7 +199,7 @@ function BookingExtras() {
                     type: 'text',
                     name: 'extra-payment-status',
                     label: 'Extras Payment Status:',
-                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-payment-status"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-extras-page.extra-payment-status"),
                     required: false,
                     value: detailedData.extras.payment_status,
                     setValue: null,
@@ -219,7 +219,7 @@ function BookingExtras() {
                     type: 'text',
                     name: 'extra-total-cost',
                     label: 'Total Cost:',
-                    displayLabel: t("events-pages.booking-pages.booking-extras-page.extra-total-cost"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-extras-page.extra-total-cost"),
                     required: false,
                     value: `${(detailedData.extras.cd_count * cdCost) + (detailedData.extras.additional_attendees * additionalAttendeeCost)} EGP`,
                     setValue: null,
@@ -240,7 +240,7 @@ function BookingExtras() {
         try {
             setIsLoading(true);
 
-            const result = await fetchBookingInfoBySessionRequest(navigate);
+            const result = await fetchGraduationBookingInfoBySessionRequest(navigate);
 
             if (result.success) {
                 setDetailedData(result.detailedData);
@@ -264,7 +264,7 @@ function BookingExtras() {
                 setIsLoading(true);
                 setFetchBookingBySessionError(null);
 
-                const result = await submitUpdateBookingExtrasRequest(formData, detailedData.booking.booking_id, navigate);
+                const result = await submitUpdateGraduationBookingExtrasRequest(formData, detailedData.booking.booking_id, navigate);
 
                 if (result.success) {
                     setResetFormFromParent(true);
@@ -274,10 +274,10 @@ function BookingExtras() {
                     setDetailedData(null);
                     fetchBookingBySessionId();
                 } else {
-                    throw new Error(result.message || result || t("events-pages.booking-pages.booking-extras-page.error-while-submitting-the-form"));
+                    throw new Error(result.message || result || t("events-pages.graduation-booking-pages.booking-extras-page.error-while-submitting-the-form"));
                 }
             } else {
-                throw new Error(t("events-pages.booking-pages.booking-extras-page.booking-id-is-not-available"));
+                throw new Error(t("events-pages.graduation-booking-pages.booking-extras-page.booking-id-is-not-available"));
             }
         } catch (error) {
             throw new Error(error.message || 'Error while submitting the form');
@@ -314,13 +314,13 @@ function BookingExtras() {
                                                        ) : (
                                                            <div className={'booking-extras-form-wrapper'}>
                                                                <h3>
-                                                                   {t("events-pages.booking-pages.booking-extras-page.title")}
+                                                                   {t("events-pages.graduation-booking-pages.booking-extras-page.title")}
                                                                </h3>
                                                                { extrasFormField && extrasFormField.length > 0 &&
                                                                    (
                                                                        <>
                                                                            <Form fields={ extrasFormField }
-                                                                                 formTitle={ t("events-pages.booking-pages.booking-extras-page.title") }
+                                                                                 formTitle={ t("events-pages.graduation-booking-pages.booking-extras-page.title") }
                                                                                  mailTo={ '' }
                                                                                  noCaptcha={ true }
                                                                                  noInputFieldsCache={ true }
@@ -332,7 +332,7 @@ function BookingExtras() {
                                                                                  hasDifferentOnCancelBehaviour={true}
                                                                                  hasDifferentSubmitButtonText={true}
                                                                                  differentSubmitButtonText={[
-                                                                                     t("events-pages.booking-pages.booking-extras-page.save-btn"), t("events-pages.booking-pages.booking-extras-page.saving-btn")
+                                                                                     t("events-pages.graduation-booking-pages.booking-extras-page.save-btn"), t("events-pages.graduation-booking-pages.booking-extras-page.saving-btn")
                                                                                  ]}
                                                                                  resetFormFromParent={resetFormFromParent}
                                                                                  setResetFormFromParent={setResetFormFromParent}
@@ -342,7 +342,7 @@ function BookingExtras() {
                                                                                <div className={'confirmation-buttons-wrapper-in-booking-extras-page'}>
                                                                                    <button
                                                                                        className={'download-confirmation-button'}
-                                                                                       onClick={() => generateConfirmationPDF(
+                                                                                       onClick={() => generateGraduationBookingConfirmationPDF(
                                                                                            'download',
                                                                                            setIsLoading,
                                                                                            bookingId,
@@ -353,7 +353,7 @@ function BookingExtras() {
                                                                                        )}
                                                                                        disabled={isLoading}
                                                                                    >
-                                                                                       Download Confirmation
+                                                                                       {t("events-pages.graduation-booking-pages.booking-status-info-page.download-confirmation-btn")}
                                                                                    </button>
                                                                                    {/*<button*/}
                                                                                    {/*    className={'print-confirmation-button'}*/}
@@ -375,7 +375,7 @@ function BookingExtras() {
                                                                            {formAllowEdit && (
                                                                                ( formReadOnly ? (
                                                                                        <button className={'booking-extras-edit-form-button'} onClick={ () => {setFormReadOnly( false );}}>
-                                                                                           {t("events-pages.booking-pages.booking-extras-page.edit-btn")}
+                                                                                           {t("events-pages.graduation-booking-pages.booking-extras-page.edit-btn")}
                                                                                        </button>
                                                                                    ) : (
                                                                                        <button className={'booking-extras-cancel-form-button'} onClick={ () => {
@@ -386,7 +386,7 @@ function BookingExtras() {
                                                                                            fetchBookingBySessionId();
 
                                                                                        }}>
-                                                                                           {t("events-pages.booking-pages.booking-extras-page.cancel-btn")}
+                                                                                           {t("events-pages.graduation-booking-pages.booking-extras-page.cancel-btn")}
                                                                                        </button>
                                                                                    )
                                                                                )
@@ -406,4 +406,4 @@ function BookingExtras() {
     );
 }
 
-export default BookingExtras;
+export default GraduationBookingExtras;

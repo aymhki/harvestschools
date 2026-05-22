@@ -14,7 +14,8 @@ import MoreInfo from "./pages/FAQs/MoreInfo.jsx";
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 import Dashboard from "./pages/Admin/AdminDashboard";
 import JobApplications from "./pages/Admin/JobApplications.jsx";
-import BookingManagement from "./pages/Admin/BookingManagement.jsx";
+import GraduationBookingManagement from "./pages/Admin/GraduationBookingManagement.jsx";
+import OpenDaySignupsManagement from "./pages/Admin/OpenDaySignupsManagement.jsx";
 import FileViewer from './pages/Admin/FileViewer.jsx';
 import Admission from "./pages/Admission/Admission.jsx";
 import AdmissionProcess from './pages/Admission/AdmissionProcess';
@@ -58,12 +59,12 @@ import KgCalendarEvents from './pages/Events/KGCalendars.jsx';
 import AmericanKGCalendar from "./pages/Events/AmericanKGCalendar.jsx";
 import BritishKGCalendar from "./pages/Events/BritishKGCalendar.jsx";
 import NationalKGCalendar from "./pages/Events/NationalKGCalendar.jsx";
-import BookingLogin from "./pages/Events/Booking/BookingLogin.jsx";
-import BookingDashboard from './pages/Events/Booking/BookingDashboard.jsx';
-import BookingMedia from "./pages/Events/Booking/BookingMedia.jsx";
-import BookingExtras from "./pages/Events/Booking/BookingExtras.jsx";
-import BookingStatusInfo from "./pages/Events/Booking/BookingStatusInfo.jsx";
-import BookingConfirmation from './pages/Events/Booking/BookingConfirmation.jsx';
+import GraduationBookingLogin from "./pages/Events/GraduationBooking/GraduationBookingLogin.jsx";
+import GraduationBookingDashboard from './pages/Events/GraduationBooking/GraduationBookingDashboard.jsx';
+import GraduationBookingMedia from "./pages/Events/GraduationBooking/GraduationBookingMedia.jsx";
+import GraduationBookingExtras from "./pages/Events/GraduationBooking/GraduationBookingExtras.jsx";
+import GraduationBookingStatusInfo from "./pages/Events/GraduationBooking/GraduationBookingStatusInfo.jsx";
+import GraduationBookingConfirmation from './pages/Events/GraduationBooking/GraduationBookingConfirmation.jsx';
 import OpenDaySignup from "./pages/Events/OpenDaySignup.jsx";
 import Gallery from "./pages/Gallery/Gallery.jsx";
 import PhotosGallery from './pages/Gallery/Photos';
@@ -103,7 +104,8 @@ function AppServer() {
                         <Route path="/admin/dashboard" element={<Dashboard />} />
                         <Route path="/admin/job-applications" element={<JobApplications />} />
                         <Route path="/admin/view-job-application-file" element={<FileViewer />} />
-                        <Route path="/admin/booking-management" element={<BookingManagement />} />
+                        <Route path="/admin/graduation-booking-management" element={<GraduationBookingManagement />} />
+                        <Route path="/admin/open-day-signups-management" element={<OpenDaySignupsManagement />} />
                         <Route path="/more-info" element={<MoreInfo />} />
                         <Route path="/faqs" element={<Faqs />} />
                         <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
@@ -151,12 +153,12 @@ function AppServer() {
                         <Route path="/events/american-kg-calendar" element={<AmericanKGCalendar />} />
                         <Route path="/events/british-kg-calendar" element={<BritishKGCalendar />} />
                         <Route path="/events/national-kg-calendar" element={<NationalKGCalendar />} />
-                        <Route path="/events/booking" element={<BookingLogin />} />
-                        <Route path="/events/booking/dashboard" element={<BookingDashboard />} />
-                        <Route path="/events/booking/media" element={<BookingMedia />} />
-                        <Route path="/events/booking/extras" element={<BookingExtras />} />
-                        <Route path="/events/booking/info" element={<BookingStatusInfo />} />
-                        <Route path="/events/booking-confirmation" element={<BookingConfirmation />} />
+                        <Route path="/events/graduation-booking" element={<GraduationBookingLogin />} />
+                        <Route path="/events/graduation-booking/dashboard" element={<GraduationBookingDashboard />} />
+                        <Route path="/events/graduation-booking/media" element={<GraduationBookingMedia />} />
+                        <Route path="/events/graduation-booking/extras" element={<GraduationBookingExtras />} />
+                        <Route path="/events/graduation-booking/info" element={<GraduationBookingStatusInfo />} />
+                        <Route path="/events/graduation-booking-confirmation" element={<GraduationBookingConfirmation />} />
                         <Route path="/events/open-day-signup" element={<OpenDaySignup />} />
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/gallery/photos" element={<PhotosGallery />} />

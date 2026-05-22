@@ -103,21 +103,21 @@ const confirmedStatus = 'Confirmed';
 const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
-const bookingLoginPageUrl = '/events/booking';
-const bookingDashboardPageUrl = '/events/booking/dashboard';
+const graduationBookingLoginPageUrl = '/events/graduation-booking';
+const graduationBookingDashboardPageUrl = '/events/graduation-booking/dashboard';
 const adminLoginPageUrl = '/admin/login';
 const adminDashboardPageUrl = '/admin/dashboard';
 const costPerChildInOpenDaySignup = 150;
 
 const ENDPOINTS = {
-    checkBookingSession: '/scripts/checkBookingSession.php',
-    getAllBookings: '/scripts/getAllBookings.php',
-    validateBookingLogin: '/scripts/validateBookingLogin.php',
-    createBookingSession: '/scripts/createBookingSession.php',
-    deleteBookingEntry: '/scripts/deleteBookingEntry.php',
-    submitAddBookingForm: '/scripts/submitAddBookingForm.php',
-    getBookingInfoBySession: '/scripts/getBookingBySession.php',
-    submitEditBookingForm: '/scripts/submitEditBookingForm.php',
+    checkGraduationBookingSession: '/scripts/checkGraduationBookingSession.php',
+    getAllGraduationBookings: '/scripts/getAllGraduationBookings.php',
+    validateGraduationBookingLogin: '/scripts/validateGraduationBookingLogin.php',
+    createGraduationBookingSession: '/scripts/createGraduationBookingSession.php',
+    deleteGraduationBookingEntry: '/scripts/deleteGraduationBookingEntry.php',
+    submitAddGraduationBookingForm: '/scripts/submitAddGraduationBookingForm.php',
+    getGraduationBookingInfoBySession: '/scripts/getGraduationBookingBySession.php',
+    submitEditGraduationBookingForm: '/scripts/submitEditGraduationBookingForm.php',
     createAdminSession: '/scripts/createAdminSession.php',
     validateAdminSession: '/scripts/checkAdminSession.php',
     validateAdminLogin: '/scripts/validateAdminLogin.php',
@@ -126,8 +126,8 @@ const ENDPOINTS = {
     submitForm: '/scripts/submitForm.php',
     submitJobApplication: '/scripts/submitJobApplication.php',
     getJobApplications: '/scripts/getJobApplications.php',
-    updateBookingExtras: '/scripts/submitUpdateBookingExtras.php',
-    getBookingConfirmation: '/scripts/getBookingConfirmation.php',
+    updateGraduationBookingExtras: '/scripts/submitUpdateGraduationBookingExtras.php',
+    getGraduationBookingConfirmation: '/scripts/getGraduationBookingConfirmation.php',
     serveJobApplicationFile: '/scripts/serveJobApplicationFile.php?file=',
     submitOpenDaySignupForm: '/scripts/submitOpenDaySignupForm.php'
 };
@@ -156,8 +156,8 @@ export {
     confirmedStatus,
     sessionDuration,
     msgTimeout,
-    bookingLoginPageUrl,
-    bookingDashboardPageUrl,
+    graduationBookingLoginPageUrl,
+    graduationBookingDashboardPageUrl,
     adminLoginPageUrl,
     adminDashboardPageUrl,
     endpoints,

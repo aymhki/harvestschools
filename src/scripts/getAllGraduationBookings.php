@@ -96,9 +96,9 @@ try {
                 e.cd_count,
                 e.additional_attendees,
                 e.payment_status
-            FROM bookings b
-            JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
-            LEFT JOIN booking_extras e ON b.booking_id = e.booking_id
+            FROM graduation_bookings b
+            JOIN graduation_booking_auth_credentials ac ON b.auth_id = ac.auth_id
+            LEFT JOIN graduation_booking_extras e ON b.booking_id = e.booking_id
             ORDER BY b.booking_id";
 
     $bookingsResult = $conn->query($bookingsSql);
@@ -127,8 +127,8 @@ try {
 
     while ($booking = $bookingsResult->fetch_assoc()) {
         $studentsSql = "SELECT s.student_id, s.name, s.school_division, s.grade, s.created_at
-                       FROM booking_students s
-                       JOIN booking_students_linker sl ON s.student_id = sl.student_id
+                       FROM graduation_booking_students s
+                       JOIN graduation_booking_students_linker sl ON s.student_id = sl.student_id
                        WHERE sl.booking_id = ?
                        ORDER BY s.student_id";
         $stmtStudents = $conn->prepare($studentsSql);
@@ -153,8 +153,8 @@ try {
 
         $stmtStudents->close();
         $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number
-                      FROM booking_parents p
-                      JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
+                      FROM graduation_booking_parents p
+                      JOIN graduation_booking_parents_linker pl ON p.parent_id = pl.parent_id
                       WHERE pl.booking_id = ?
                       ORDER BY p.parent_id";
 
