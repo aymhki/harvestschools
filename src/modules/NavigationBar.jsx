@@ -363,8 +363,8 @@ const NavigationBar = () => {
 
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
-                            navigate('/events/booking');
-                        }}><Link to="/events/booking">
+                            navigate('/events/graduation-booking');
+                        }}><Link to="/events/graduation-booking">
                             {t("nav.booking")}
                         </Link></li>
                     </ul>

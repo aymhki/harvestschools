@@ -48,7 +48,7 @@ function Events() {
             title: t("events-pages.options-page.booking-login-option"),
             image: "/assets/images/EventsPages/Booking1.png",
             description: t("events-pages.options-page.booking-login-option-description"),
-            link: "/events/booking",
+            link: "/events/graduation-booking",
             buttonText: t("common.select"),
             titleInArabic: false,
             descriptionInArabic: false
