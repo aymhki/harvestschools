@@ -93,7 +93,7 @@ try {
                 "title" => "Graduation Bookings",
                 "image" => '/assets/images/Dashboard/GraduationBookingManagement.png',
                 "description" => "View & manage Graduatuin Bookings",
-                "link" => '/admin/booking-management',
+                "link" => '/admin/graduation-booking-management',
                 "buttonText" => 'View Bookings',
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
@@ -104,7 +104,7 @@ try {
                 "title" => "Open Day Signups",
                 "image" => "/assets/images/Dashboard/OpenDaySignups.png",
                 "description" => "View & manage open day signups",
-                "link" => "/admin/open-day-signups",
+                "link" => "/admin/open-day-signups-management",
                 "buttonText" => "View Signups",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
