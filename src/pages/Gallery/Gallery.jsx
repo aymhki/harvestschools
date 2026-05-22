@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 
 function Gallery() {
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(['gallery-pages']);
 
     const options = [
         {
@@ -13,21 +13,21 @@ function Gallery() {
             image: "/assets/images/GalleryPages/Photos1.png",
             description: t("gallery-pages.options-page.photo-gallery-option-description"),
             link: "/gallery/photos",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
         },
         {
             title: t("gallery-pages.options-page.video-gallery-option"),
             image: "/assets/images/GalleryPages/Videos1.png",
             description: t("gallery-pages.options-page.video-gallery-option-description"),
             link: "/gallery/videos",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
         },
         {
             title: t("gallery-pages.options-page.360-tour-option"),
             image: "/assets/images/GalleryPages/360Tour1.png",
             description: t("gallery-pages.options-page.360-tour-option-description"),
             link: "/gallery/360-tour",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
         },
     ];
 

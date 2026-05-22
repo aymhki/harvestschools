@@ -6,7 +6,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function Activities() {
-    const {t} = useTranslation();
+    const {t} = useTranslation(['students-life-pages']);
 
     const sportsTimesTableData = t('students-life-pages.activities-page.sports-times-table-data', { returnObjects: true }) || [];
     const tableRows = Array.isArray(sportsTimesTableData) ? sportsTimesTableData.map(member => [member.sports, member.days, member.time]) : [];

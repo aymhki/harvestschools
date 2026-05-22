@@ -66,7 +66,7 @@ function Form({
     const enteredCaptcha = useRef('');
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
-    const { t } = useTranslation('translation', forceEnglishForm ? { lng: 'en' } : {});
+    const { t } = useTranslation(['all-forms'], forceEnglishForm ? { lng: 'en' } : {});
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 

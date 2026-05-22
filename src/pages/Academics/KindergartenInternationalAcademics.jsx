@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 
 function KindergartenInternationalAcademics() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['academics-pages']);
 
     return (
         <div className={"kindergarten-academics-page"}>

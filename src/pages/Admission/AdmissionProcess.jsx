@@ -6,7 +6,7 @@ import {useTranslation} from "react-i18next";
 
 function AdmissionProcess() {
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['admission-pages']);
 
   return (
     <div className="admission-process-page">
@@ -41,7 +41,7 @@ function AdmissionProcess() {
                     <div className={"admission-process-button-wrapper"}>
 
                         <button className="admission-process-button" onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission.php', '_blank')}>
-                            {t("nav.apply-now")}
+                            {t("nav.apply-now", {ns: 'nav'})}
                         </button>
 
                     </div>

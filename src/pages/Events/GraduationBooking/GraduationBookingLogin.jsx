@@ -10,7 +10,7 @@ import {headToGraduationBookingDashboardOnValidSession} from "../../../services/
 
 function GraduationBookingLogin() {
     const navigate = useNavigate();
-    const {t} = useTranslation();
+    const {t} = useTranslation(['events-pages']);
     const [submittingLocal, setSubmittingLocal] = useState(false);
     const usernameFieldId = 1
     const passwordFieldId = 2

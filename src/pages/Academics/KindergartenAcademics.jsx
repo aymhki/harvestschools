@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet-async";
 import { useTranslation } from 'react-i18next';
 
 function KindergartenAcademics() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['academics-pages']);
 
     const options = [
         {
@@ -12,21 +12,21 @@ function KindergartenAcademics() {
             image: "/assets/images/AcademicsPages/National2.png",
             description: t("academics-pages.kindergarten.national-kindergarten-description"),
             link: "/academics/kindergarten-national",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.kindergarten.international-kindergarten-option"),
             image: "/assets/images/AcademicsPages/International1.png",
             description: t("academics-pages.kindergarten.international-kindergarten-description"),
             link: "/academics/kindergarten-international",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.kindergarten.pre-kindergarten-option"),
             image: "/assets/images/AcademicsPages/Pre-K1.png",
             description: t("academics-pages.kindergarten.pre-kindergarten-description"),
             link: "/academics/pre-kindergarten",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         }
     ]
 
@@ -41,7 +41,7 @@ function KindergartenAcademics() {
                 <meta name="googlebot" content="index, follow"/>
             </Helmet>
 
-            <OptionsGrid title={t("nav.kindergarten")}  options={options}/>
+            <OptionsGrid title={t("nav.kindergarten", {ns: 'nav'})}  options={options}/>
         </div>
     );
 }

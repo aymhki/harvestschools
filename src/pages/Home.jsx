@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 function Home() {
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(['home']);
     
 
     const homeSliderPhotos = [
@@ -81,14 +81,14 @@ function Home() {
                     text={t("home.harvest-schools-elearning-and-academics")}
                     backgroundImage="/assets/images/HomePage/E-Learning&Academics.v5.jpg"
                     darken={true}
-                    buttonText={t("common.learn-more")}
+                    buttonText={t("common.learn-more", {ns: 'common'})}
                     buttonLink="/academics/partners"
                 />
             </div>
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v5.jpg'} darken={true} buttonText={t("common.explore")} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v5.jpg'} darken={true} buttonText={t("common.explore", {ns: 'common'})} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">

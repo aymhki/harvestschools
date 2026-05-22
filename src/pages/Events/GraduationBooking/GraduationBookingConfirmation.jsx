@@ -8,7 +8,7 @@ import { confirmedStatus} from "../../../services/GeneralUtils.jsx";
 import {useTranslation} from "react-i18next";
 
 function GraduationBookingConfirmation() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['events-pages']);
     const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
     const [confirmationData, setConfirmationData] = useState(null);

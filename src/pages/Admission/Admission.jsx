@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 
 function Admission() {
 
-    const {t} = useTranslation();
+    const {t} = useTranslation(['admission-pages']);
 
     const options = [
         {
@@ -13,7 +13,7 @@ function Admission() {
             image: "/assets/images/AdmissionPages/AdmissionProcess1.png",
             description: t("admission-pages.options-page.admission-process-option-description"),
             link: "/admission/admission-process",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -22,7 +22,7 @@ function Admission() {
             image: "/assets/images/AdmissionPages/AdmissionChecklist2.png",
             description: t("admission-pages.options-page.admission-requirements-option-description"),
             link: "/admission/admission-requirements",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -31,7 +31,7 @@ function Admission() {
             image: "/assets/images/AdmissionPages/AdmissionFees1.png",
             description: t("admission-pages.options-page.admission-fees-option-description"),
             link: "/admission/admission-fees",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         }

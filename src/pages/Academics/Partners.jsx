@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 
 function Partners() {
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(['academics-pages']);
 
   return (
       <div className={"academics-partners-page"}>

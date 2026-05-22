@@ -18,7 +18,7 @@ const NavigationBar = () => {
     const [galleryOpen, setGalleryOpen] = useState(false);
     const [moreInfoOpen, setMoreInfoOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['nav']);
 
     // Set client-side flag
     useEffect(() => {

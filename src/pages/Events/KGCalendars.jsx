@@ -5,7 +5,7 @@ import OptionsGrid from "../../modules/OptionsGrid.jsx";
 
 
 function KGCalendars() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['events-pages']);
 
     const options = [
         {
@@ -13,7 +13,7 @@ function KGCalendars() {
             image: "/assets/images/EventsPages/Calendar1.png",
             description: t("events-pages.kg-calendars-pages.options-page.national-kg-calendar-option-description"),
             link: "/events/national-kg-calendar",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -22,7 +22,7 @@ function KGCalendars() {
             image: "/assets/images/EventsPages/Calendar1.png",
             description: t("events-pages.kg-calendars-pages.options-page.british-kg-calendar-option-description"),
             link: "/events/british-kg-calendar",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -31,7 +31,7 @@ function KGCalendars() {
             image: "/assets/images/EventsPages/Calendar1.png",
             description: t("events-pages.kg-calendars-pages.options-page.american-kg-calendar-option-description"),
             link: "/events/american-kg-calendar",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },

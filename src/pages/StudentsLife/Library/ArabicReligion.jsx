@@ -5,7 +5,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function ArabicReligion() {
-    const {t} = useTranslation();
+    const {t} = useTranslation(['students-life-pages']);
     const booksTable = t('students-life-pages.library-pages.arabic-religious-page.books', { returnObjects: true }) || [];
     const tableRows = Array.isArray(booksTable) ? booksTable.map(member => [member.title, member.series]) : [];
     const finalTableData = [...tableRows];

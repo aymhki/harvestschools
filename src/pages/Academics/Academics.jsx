@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 function Academics() {
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(['academics-pages']);
 
     const options = [
         {
@@ -14,64 +14,64 @@ function Academics() {
             image: "/assets/images/AcademicsPages/National1.png",
             description: t("academics-pages.national-description"),
             link: "/academics/national",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.british-section"),
             image: "/assets/images/AcademicsPages/British1.png",
             description: t("academics-pages.british-description"),
             link: "/academics/british",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.american-section"),
             image: "/assets/images/AcademicsPages/American1.png",
             description: t("academics-pages.american-description"),
             link: "/academics/american",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.kindergarten-section"),
             image: "/assets/images/AcademicsPages/Kindergarten1.png",
             description: t("academics-pages.kindergarten-description"),
             link: "/academics/kindergarten",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
-            title: t("nav.partners"),
+            title: t("nav.partners", {ns: 'nav'}),
             image: "/assets/images/AcademicsPages/Partners1.png",
             description: t("academics-pages.partners-description"),
             link: "/academics/partners",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
-            title: t("nav.staff"),
+            title: t("nav.staff", {ns: 'nav'}),
             image: "/assets/images/AcademicsPages/Staff1.png",
             description: t("academics-pages.staff-description"),
             link: "/academics/staff",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
-            title: t("nav.facilities"),
+            title: t("nav.facilities", {ns: 'nav'}),
             image: "/assets/images/AcademicsPages/Facilities1.png",
             description: t("academics-pages.facilities-description"),
             link: "/academics/facilities",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
-            title: t("nav.web-mail"),
+            title: t("nav.web-mail", {ns: 'nav'}),
             image: "/assets/images/AcademicsPages/WebMail1.png",
             description: t("academics-pages.web-mail-description"),
             link: "https://mail.harvestschools.com:2096/",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             externalLink: true
         },
         {
-            title: t("nav.admin-login"),
+            title: t("nav.admin-login", {ns: 'nav'}),
             image: "/assets/images/AcademicsPages/Login1.png",
             description: t("academics-pages.admin-login-description"),
             link: "/admin/login",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
         }
     ];
 
@@ -86,7 +86,7 @@ function Academics() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <OptionsGrid title={t("nav.academics")}  options={options}/>
+        <OptionsGrid title={t("nav.academics", {ns: 'nav'})}  options={options}/>
 
     </div>
   );

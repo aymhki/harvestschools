@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function Photos() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['gallery-pages']);
 
   return (
     <div className="gallery-photos-page">

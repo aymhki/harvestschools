@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 
 
 function Events() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['events-pages']);
 
     const options = [
         {
@@ -13,7 +13,7 @@ function Events() {
             image: "/assets/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.national-calendar-option-description"),
             link: "/events/national-calendar",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -22,7 +22,7 @@ function Events() {
             image: "/assets/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.british-calendar-option-description"),
             link: "/events/british-calendar",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -31,7 +31,7 @@ function Events() {
             image: "/assets/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.american-calendar-option-description"),
             link: "/events/american-calendar",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -40,7 +40,7 @@ function Events() {
             image: "/assets/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.kg-calendars-option-description"),
             link: "/events/kg-calendars",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -49,7 +49,7 @@ function Events() {
             image: "/assets/images/EventsPages/Booking1.png",
             description: t("events-pages.options-page.booking-login-option-description"),
             link: "/events/graduation-booking",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         }

@@ -1,0 +1,158 @@
+{
+  "admission-pages": {
+    "options-page" : {
+      "admission-title": "التسجيل",
+      "admission-process-option": "خطواط التسجيل",
+      "admission-process-option-description": "كيفية التسسجيل؟ اين يتم التسجيل؟",
+      "admission-requirements-option": "شروط التسجيل",
+      "admission-requirements-option-description": "ما هي الأوراق المطلوبة؟ ما هو الحد الأدنى للعمر في كل مرحلة؟",
+      "admission-fees-option": "مصاريف الدراسة",
+      "admission-fees-option-description": "ما هي مصاريف الدراسة لكل مرحلة؟ ما هي طرق الدفع؟ هل توجد تخفيضات؟"
+    },
+    "admission-process-page": {
+      "fill-an-application": "إملأ نموذج الطلب",
+      "fill-an-application-description": "يمكنك التقديم عبر الإنترنت بالضغط على الزر أدناه، أو زيارة مكتب الاستقبال في المدرسة لملء الطلب شخصيًا.",
+      "attend-your-interview": "حضور المقابلة",
+      "attend-your-interview-description": "سنراجع طلبك مباشرةً ونحجز موعدًا للمقابلة مع أولياء الأمور والطلاب. قد تشمل المقابلات اختبارات تحديد المستوى حسب المرحلة التعليمية للطالب ومدرسته الأصلية.",
+      "follow-up": "متابعة",
+      "follow-up-description": "بعد المقابلة، سيقوم قسم شؤون الطلاب بالتواصل مع المتقدمين المقبولين لبدء عملية التسجيل والتي تشمل توفير الأوراق المطلوبة ودفع الرسوم الدراسية.",
+      "required-documents-btn": "الأوراق المطلوبة",
+      "admission-fees-btn": "مصاريف الدراسة"
+    },
+    "admission-requirements-page": {
+      "options-page": {
+        "inside-egypt-option": "داخل مصر",
+        "inside-egypt-option-description": "الأوراق المطلوبة للطلاب داخل مصر",
+        "outside-egypt-option": "خارج مصر",
+        "outside-egypt-option-description": "الأوراق المطلوبة للطلاب خارج مصر",
+        "outside-egypt-foreigners-option": "خارج مصر - للأجانب",
+        "outside-egypt-foreigners-option-description": "الأوراق المطلوبة للطلاب الأجانب خارج مصر",
+        "admission-requirements-title": "شروط التسجيل"
+      },
+      "common": {
+        "admission-requirements-note": "ملحوظة بخصوص شروط التسجيل"
+      },
+      "inside-egypt-page": {
+        "admission-requirements-note-list": [
+          "بعد اجتياز اختبارات القبول، سيتم طلب الأوراق التالية لعملية التسجيل.",
+          "تطلب الأقسام الناشونال والدولية نفس الأوراق. ولكن، يجب على الطلاب الذين يتقدمون للقسم الدولي في المراحل العليا تقديم شهادات التسلسل التعليمي.",
+          "التحويل الإلكتروني هو عملية تتم من قبل المدرسة التي جاء الطالب."
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "من رياض الأطفال ١",
+          "from-kg-1-requirements-list": [
+            "أصل شهادة الميلاد",
+            "٦ صور شخصية",
+            "٢ صورة بطاقة لولي الامر"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+          "from-kg-2-to-junior-6-title": "من رياض الأطفال ٢ إلى الصف السادس الابتدائي",
+          "from-kg-2-to-junior-6-requirements-list": [
+            "استمارة تحويل من المدرسة المراد التحويل منها و بيان نجاح المرحلة",
+            "ملف الطالب",
+            "تحويل الكتروني"
+          ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+          "from-preparatory-1-to-preparatory-3-title": "من الصف الأول الإعدادي إلى الصف الثالث الإعدادي",
+          "from-preparatory-1-to-preparatory-3-requirements-list": [
+            "استمارة تحويل من المدرسة المراد التحويل منها و بيان نجاح المرحلة",
+            "شهادة الصف السادس الابتدائي",
+            "ملف الطالب",
+            "تحويل الكتروني"
+          ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+          "from-senior-1-to-senior-3-title": "من الصف الأول الثانوي إلى الصف الثالث الثانوي",
+          "from-senior-1-to-senior-3-requirements-list": [
+            "استمارة تحويل من المدرسة المراد التحويل منها و بيان نجاح المرحلة",
+            "شهادة الصف السادس الابتدائي و شهادة الصف الثالث الإعدادي",
+            "ملف الطالب",
+            "تحويل الكتروني"
+          ]
+        }
+      },
+      "outside-egypt-page": {
+        "admission-requirements-note-list": [
+          "بعد اجتياز اختبارات القبول، سيتم طلب الأوراق التالية لعملية التسجيل.",
+          "تطلب الأقسام الناشونال والدولية نفس الأوراق. ولكن ، يجب على الطلاب الذين يتقدمون للقسم الدولي في المراحل العليا تقديم شهادات التسلسل التعليمي مختومة من وزارة الخارجية المصرية.",
+          "بعد الحصول على قبول رسمي من قسم شؤون الطلاب ، يجب على أولياء الأمور ملء نموذج \"العودة / القدوم إلى مصر\" من وزارة الخارجية المصرية. يتطلب هذا النموذج صورتين شخصيتين وشهادة من آخر مرحلة اجتازها الطالب."
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "من رياض الأطفال ١",
+          "from-kg-1-requirements-list": [
+            "أصل شهادة الميلاد",
+            "٦ صور شخصية",
+            "٢ صورة بطاقة لولي الامر"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+          "from-kg-2-to-junior-6-title": "من رياض الأطفال ٢ إلى الصف السادس الابتدائي",
+          "from-kg-2-to-junior-6-requirements-list": [
+            "بيان نجاح اخر مرحلة مختومة من وزارة الخارجية المصرية",
+            "ملف الطالب"
+          ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+          "from-preparatory-1-to-preparatory-3-title": "من الصف الأول الإعدادي إلى الصف الثالث الإعدادي",
+          "from-preparatory-1-to-preparatory-3-requirements-list": [
+            "بيان نجاح اخر مرحلة مختومة من وزارة الخارجية المصرية",
+            "شهادة الصف السادس الابتدائي",
+            "ملف الطالب"
+          ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+          "from-senior-1-to-senior-3-title": "من الصف الأول الثانوي إلى الصف الثالث الثانوي",
+          "from-senior-1-to-senior-3-requirements-list": [
+            "بيان نجاح اخر مرحلة مختومة من وزارة الخارجية المصرية",
+            "شهادة الصف السادس الابتدائي و شهادة الصف الثالث الإعدادي",
+            "ملف الطالب"
+          ]
+        }
+      },
+      "outside-egypt-foreigners-page": {
+        "admission-requirements-note-list": [
+          "بعد اجتياز اختبارات القبول، سيتم طلب الأوراق التالية لعملية التسجيل.",
+          "تطلب الأقسام الناشونال والدولية نفس الأوراق. ولكن ، يجب على الطلاب الذين يتقدمون للقسم الدولي في المراحل العليا تقديم شهادات التسلسل التعليمي مختومة من وزارة الخارجية المصرية.",
+          "بعد الحصول على قبول رسمي من قسم شؤون الطلاب ، يجب على أولياء الأمور ملء نموذج \"العودة / القدوم إلى مصر\" من وزارة الخارجية المصرية. يتطلب هذا النموذج صورتين شخصيتين وشهادة من آخر مرحلة اجتازها الطالب.",
+          "يجب على أولياء الأمور تقديم جوازات سفر حديثة وبطاقات هوية شخصية لقسم شؤون الطلاب."
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "من رياض الأطفال ١",
+          "from-kg-1-requirements-list": [
+            "أصل شهادة الميلاد",
+            "٦ صور شخصية",
+            "٢ صورة بطاقة ولي الامر"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+          "from-kg-2-to-junior-6-title": "من رياض الأطفال ٢ إلى الصف السادس الابتدائي",
+          "from-kg-2-to-junior-6-requirements-list": [
+            "بيان نجاح اخر مرحلة مختومة من وزارة الخارجية المصرية",
+            "ملف الطالب"
+          ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+          "from-preparatory-1-to-preparatory-3-title": "من الصف الأول الإعدادي إلى الصف الثالث الإعدادي",
+          "from-preparatory-1-to-preparatory-3-requirements-list": [
+            "بيان نجاح اخر مرحلة مختومة من وزارة الخارجية المصرية",
+            "شهادة الصف السادس الابتدائي",
+            "ملف الطالب"
+          ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+          "from-senior-1-to-senior-3-title": "من الصف الأول الثانوي إلى الصف الثالث الثانوي",
+          "from-senior-1-to-senior-3-requirements-list": [
+            "بيان نجاح اخر مرحلة مختومة من وزارة الخارجية المصرية",
+            "شهادة الصف السادس الابتدائي و شهادة الصف الثالث الإعدادي",
+            "ملف الطالب"
+          ]
+        }
+      }
+    },
+    "admission-fees-page": {
+
+    }
+  }
+}

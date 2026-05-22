@@ -1,0 +1,24 @@
+{
+  "common": {
+    "learn-more": "Learn More",
+    "explore": "Explore",
+    "contact-us": "Contact Us",
+    "loading": "Loading...",
+    "this-page-is-under-construction": "This page is under construction",
+    "last-updated": "This page was last updated on",
+    "and-more": "and more...",
+    "select": "Select",
+    "access": "Access",
+    "not-found-message": "404 Not Found",
+    "no-table-enteries-found": "No table entries found.",
+    "please-come-back-in": "Please come back in",
+    "day": "day",
+    "days": "days",
+    "hour": "hour",
+    "hours": "hours",
+    "minute": "minute",
+    "minutes": "minutes",
+    "second": "second",
+    "seconds": "seconds"
+  }
+}

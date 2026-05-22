@@ -7,7 +7,7 @@ import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
 
 function GraduationBookingMedia() {
-    const {t} = useTranslation()
+    const {t} = useTranslation(['events-pages'])
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 

@@ -2,7 +2,7 @@ import {useTranslation} from "react-i18next";
 
 function NotFound() {
 
-    const {t} = useTranslation();
+    const {t} = useTranslation('common');
 
   return (
     <div>

@@ -1,0 +1,11 @@
+{
+  "admin": {
+    "login-page": {
+      "title": "تسجيل دخول الإدارة",
+      "login-btn": "تسجيل الدخول",
+      "logging-in-btn": "جارِ تسجيل الدخول...",
+      "username-field": "اسم المستخدم",
+      "password-field": "كلمة المرور"
+    }
+  }
+}

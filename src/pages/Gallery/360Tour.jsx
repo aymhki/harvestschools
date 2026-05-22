@@ -4,7 +4,7 @@ import {useState} from "react";
 import {useTranslation} from "react-i18next";
 
 function Tour360() {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['gallery-pages']);
 
     const sections = [
         { title: t("gallery-pages.360-tour-page.computer-lab"), src: "https://www.google.com/maps/embed?pb=!4v1717092186299!6m8!1m7!1sCAoSLEFGMVFpcE5RbGxsODJXalhJdkVCbGNUWFFqdmlRVHdsT3ZFVWJBRFg0UlBm!2m2!1d30.8717701!2d29.6004104!3f180!4f0!5f0.7820865974627469&z=0" },

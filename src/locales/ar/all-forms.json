@@ -1,0 +1,23 @@
+{
+  "all-forms": {
+    "submit": "إرسال",
+    "submitting": "جار الإرسال...",
+    "clear": "مسح",
+    "captcha": "رمز التحقق",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "captcha-error": "رمز التحقق غير صحيح",
+    "general-error": "حدث خطأ ما، يرجى المحاولة مرة أخرى لاحقًا",
+    "month": "الشهر",
+    "day": "اليوم",
+    "year": "السنة",
+    "fields-must-not-match-error": "'{{field1}}' يجب ألا يطابق '{{field2}}'",
+    "fields-must-match-error": "'{{field1}}' يجب أن يطابق '{{field2}}'",
+    "success-message": "تم إرسال النموذج بنجاح!",
+    "egp": "جنيه",
+    "upload": "رفع",
+    "remove": "إزالة",
+    "year-month-day": " (سنة-شهر-يوم) "
+
+  }
+}

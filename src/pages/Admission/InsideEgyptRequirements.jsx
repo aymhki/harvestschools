@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
 function InsideEgyptRequirements() {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['admission-pages']);
     const currentLang = i18n.language;
 
     return (
