@@ -28,7 +28,7 @@ function MoreInfo() {
         },
         {
             title: t("faqs-pages.options-page.covid-19-policy-option"),
-            image: "/assets/images/FAQsPages/Covid1.png",
+            image: "/assets/images/FAQsPages/Covid1.v1.png",
             description: t("faqs-pages.options-page.covid-19-policy-option-description"),
             link: "/covid-19",
             buttonText: t("common.learn-more", {ns: 'common'}),
