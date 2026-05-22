@@ -27,7 +27,7 @@
     "british-calendar": "British School Calendar",
     "american-calendar": "American School Calendar",
     "kg-calendars": "KG Calendars",
-    "booking": "Booking",
+    "booking": "Graduation Bookings",
     "photos": "Photos",
     "videos": "Videos",
     "360-tour": "360° Tour",
@@ -1355,8 +1355,8 @@
         "american-calendar-option-description": "Detailed timeline of the American academic year",
         "kg-calendars-option": "KG Calendars",
         "kg-calendars-option-description": "Detailed timelines of the Kindergarten academic year",
-        "booking-login-option": "Booking",
-        "booking-login-option-description": "Access booking info, extras, and media"
+        "booking-login-option": "Graduation Bookings",
+        "booking-login-option-description": "Access graduation booking info, extras, and media"
     },
     "common": {
       "download-calendar-btn": "Download Calendar",
@@ -1610,7 +1610,7 @@
         ]
       }
     },
-    "booking-pages": {
+    "graduation-booking-pages": {
       "login-page": {
         "title": "Booking Login",
         "username-field": "Username",
@@ -1720,7 +1720,8 @@
       "parent-name-field": "Parent Name",
       "parent-phone-number-field": "Parent Phone Number",
       "child-name-field": "Child Name",
-      "child-age-field": "Child Age"
+      "child-age-field": "Child Age",
+      "open-day-signups-not-open-message": "Open Day signups are not open at the moment. Please check back later."
     }
   },
   "gallery-pages": {

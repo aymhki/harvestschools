@@ -81,7 +81,7 @@ try {
             [
                 "title" => "Job Applications",
                 "image" => '/assets/images/Dashboard/JobApplications.png',
-                "description" => "View and manage job applications",
+                "description" => "View & manage job applications",
                 "link" => '/admin/job-applications',
                 "buttonText" => 'View Applications',
                 "titleInArabic" => false,
@@ -90,11 +90,22 @@ try {
         ],
         1 => [
             [
-                "title" => "Event Bookings",
-                "image" => '/assets/images/Dashboard/BookingManagement.png',
-                "description" => "View & Manage Bookings",
+                "title" => "Graduation Bookings",
+                "image" => '/assets/images/Dashboard/GraduationBookingManagement.png',
+                "description" => "View & manage Graduatuin Bookings",
                 "link" => '/admin/booking-management',
                 "buttonText" => 'View Bookings',
+                "titleInArabic" => false,
+                "descriptionInArabic" => false
+            ]
+        ],
+        2 => [
+            [
+                "title" => "Open Day Signups",
+                "image" => "/assets/images/Dashboard/OpenDaySignups.png",
+                "description" => "View & manage open day signups",
+                "link" => "/admin/open-day-signups",
+                "buttonText" => "View Signups",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
             ]

@@ -7,14 +7,14 @@ import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import '../../styles/AdminDashboard.css';
 import {
-    fetchBookingsRequest,
-    handleAddBookingRequest,
-    handleDeleteBookingRequest,
-    handleEditBookingRequest
-} from "../../services/AdminBookingManagementServices.jsx";
+    fetchGraduationBookingsRequest,
+    handleAddGraduationBookingRequest,
+    handleDeleteGraduationBookingRequest,
+    handleEditGraduationBookingRequest
+} from "../../services/AdminGraduationBookingManagementServices.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
 
-function BookingManagement() {
+function GraduationBookingManagement() {
     const navigate = useNavigate();
     const maxNumberOfStudents = 5;
     const [isLoading, setIsLoading] = useState(false);
@@ -626,7 +626,7 @@ function BookingManagement() {
         setIsLoading(true);
 
         try {
-            const result = await handleAddBookingRequest(formData);
+            const result = await handleAddGraduationBookingRequest(formData);
 
             if (result.success) {
                 setResetAddBookingModal(true)
@@ -655,7 +655,7 @@ function BookingManagement() {
         const bookingId = allBookings[rowIndexToDelete][colIndexForBookingId];
 
         try {
-            const response = await handleDeleteBookingRequest(bookingId);
+            const response = await handleDeleteGraduationBookingRequest(bookingId);
 
             if (response.success) {
                 setShowDeleteBookingModal(false);
@@ -777,7 +777,7 @@ function BookingManagement() {
 
         try {
             const bookingId = allBookings[rowIndexToEdit][colIndexForBookingId];
-            const result = await handleEditBookingRequest(formData, bookingId);
+            const result = await handleEditGraduationBookingRequest(formData, bookingId);
 
             if (result.success) {
                 setResetEditBookingModal(true);
@@ -809,7 +809,7 @@ function BookingManagement() {
         setIsLoading(true);
 
         try {
-            await fetchBookingsRequest(navigate, setAllBookings);
+            await fetchGraduationBookingsRequest(navigate, setAllBookings);
         } catch (error) {
             console.log(error.message || 'An error occurred while fetching the bookings.');
         } finally {
@@ -1052,5 +1052,5 @@ function BookingManagement() {
     );
 }
 
-export default BookingManagement;
+export default GraduationBookingManagement;
 

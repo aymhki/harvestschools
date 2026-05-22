@@ -7,7 +7,7 @@ import {
     msgTimeout
 } from "./GeneralUtils.jsx";
 
-const generateConfirmationPDF = async (action = 'download', setIsLoading, bookingId, bookingUsername, detailedData, setError) => {
+const generateGraduationBookingConfirmationPDF = async (action = 'download', setIsLoading, bookingId, bookingUsername, detailedData, setError) => {
     try {
         setIsLoading(true);
 
@@ -375,7 +375,7 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
 
         try {
             const baseQRUrl = isDevelopment() ? BASE_URLS.development : 'https://harvestschools.com';
-            const qrData = `${baseQRUrl}/events/booking-confirmation/?bookingId=${bookingId}&extrasId=${detailedData?.extras?.extra_id || ''}&authId=${detailedData?.booking?.password_hash || ''}&username=${bookingUsername}`;
+            const qrData = `${baseQRUrl}/events/graduation-booking-confirmation/?bookingId=${bookingId}&extrasId=${detailedData?.extras?.extra_id || ''}&authId=${detailedData?.booking?.password_hash || ''}&username=${bookingUsername}`;
             const qrCodeDataURL = await QRCode.toDataURL(qrData, {
                 width: 300,
                 margin: 2,
@@ -462,4 +462,4 @@ const generateConfirmationPDF = async (action = 'download', setIsLoading, bookin
 };
 
 
-export { generateConfirmationPDF };
+export { generateGraduationBookingConfirmationPDF };

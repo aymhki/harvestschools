@@ -1,15 +1,15 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {fetchBookingInfoBySessionRequest} from "../../../services/MainParentsBookingServices.jsx";
+import {fetchGraduationBookingInfoBySessionRequest} from "../../../services/MainParentsGraduationBookingServices.jsx";
 import { formatDateFromPacific } from "../../../services/GeneralUtils.jsx"
-import {generateConfirmationPDF} from "../../../services/GeneratePDFLazyWrapper.jsx"
+import {generateGraduationBookingConfirmationPDF} from "../../../services/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
-import {headToBookingLoginOnInvalidSession} from "../../../services/BookingNavigationServices.jsx";
+import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
 
-function BookingStatusInfo() {
+function GraduationBookingStatusInfo() {
     const {t, i18n} =  useTranslation();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,7 @@ function BookingStatusInfo() {
     const [bookingResult, setBookingResult] = useState(null);
 
     useEffect(() => {
-        headToBookingLoginOnInvalidSession(navigate, setIsLoading)
+        headToGraduationBookingLoginOnInvalidSession(navigate, setIsLoading)
             .then(
                 () => {
                     fetchBookingBySessionId();
@@ -32,7 +32,7 @@ function BookingStatusInfo() {
         try {
             setIsLoading(true);
 
-            const result = await  fetchBookingInfoBySessionRequest(navigate);
+            const result = await  fetchGraduationBookingInfoBySessionRequest(navigate);
 
             if (result.success) {
                 setBookingResult(result);
@@ -72,7 +72,7 @@ function BookingStatusInfo() {
                 type: 'text',
                 name: 'booking-id',
                 label: 'Booking ID:',
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.booking-id"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.booking-id"),
                 required: false,
                 value: result.bookingId,
                 setValue: null,
@@ -92,7 +92,7 @@ function BookingStatusInfo() {
                 type: 'text',
                 name: 'username',
                 label: 'Username:',
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.username"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.username"),
                 required: false,
                 value: result.bookingUsername,
                 setValue: null,
@@ -113,7 +113,7 @@ function BookingStatusInfo() {
                 name: 'auth-id',
                 label: 'Auth ID:',
                 required: false,
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.auth-id"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.auth-id"),
                 value: result.detailedData.booking.password_hash,
                 setValue: null,
                 widthOfField: 2,
@@ -133,7 +133,7 @@ function BookingStatusInfo() {
                 name: 'booking-status',
                 label: 'Booking Status:',
                 required: false,
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.booking-status"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.booking-status"),
                 value: result.detailedData.booking.status,
                 setValue: null,
                 widthOfField: 2,
@@ -155,7 +155,7 @@ function BookingStatusInfo() {
                     type: 'section',
                     name: 'new-parent',
                     label: 'Parent: ' + (i+1),
-                    displayLabel: t("events-pages.booking-pages.booking-status-info-page.parent", {"parent-number": formattedNumber}),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.parent", {"parent-number": formattedNumber}),
                     required: true,
                     widthOfField: 1,
                     httpName: 'new-parent',
@@ -168,7 +168,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'parent-id',
                         label: 'Parent Id: ',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.parent-id"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.parent-id"),
                         required: false,
                         value: result.detailedData.parents[i].parent_id,
                         setValue: null,
@@ -188,7 +188,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'parent-name',
                         label: 'Parent Name: ',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.parent-name"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.parent-name"),
                         required: false,
                         value: result.detailedData.parents[i].name,
                         setValue: null,
@@ -208,7 +208,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'parent-email',
                         label: 'Parent Email: ',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.parent-email"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.parent-email"),
                         required: false,
                         value: result.detailedData.parents[i].email,
                         setValue: null,
@@ -229,7 +229,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'parent-phone',
                         label: 'Parent Phone: ',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.parent-phone"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.parent-phone"),
                         required: false,
                         value: result.detailedData.parents[i].phone_number,
                         setValue: null,
@@ -253,7 +253,7 @@ function BookingStatusInfo() {
                     type: 'section',
                     name: 'new-student',
                     label: 'Student: ' + (i+1),
-                    displayLabel: t("events-pages.booking-pages.booking-status-info-page.student", {"student-number": formattedNumber}),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.student", {"student-number": formattedNumber}),
                     required: true,
                     widthOfField: 1,
                     httpName: 'new-student',
@@ -266,7 +266,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'student-id',
                         label: 'Student Id: ',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.student-id"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.student-id"),
                         required: false,
                         value: result.detailedData.students[i].student_id,
                         setValue: null,
@@ -286,7 +286,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'student-name',
                         label: 'Student Name:',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.student-name"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.student-name"),
                         required: false,
                         value: result.detailedData.students[i].name,
                         setValue: null,
@@ -306,7 +306,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'student-grade',
                         label: 'Student Grade:',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.student-grade"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.student-grade"),
                         required: false,
                         value: result.detailedData.students[i].grade,
                         setValue: null,
@@ -326,7 +326,7 @@ function BookingStatusInfo() {
                         type: 'text',
                         name: 'student-school-division',
                         label: 'Student School Division:',
-                        displayLabel: t("events-pages.booking-pages.booking-status-info-page.student-school-division"),
+                        displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.student-school-division"),
                         required: false,
                         value: result.detailedData.students[i].school_division,
                         setValue: null,
@@ -348,7 +348,7 @@ function BookingStatusInfo() {
                 type: 'section',
                 name: 'extras',
                 label: 'Extras',
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.extras"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.extras"),
                 required: true,
                 widthOfField: 1,
                 httpName: 'extras',
@@ -360,7 +360,7 @@ function BookingStatusInfo() {
                     type: 'text',
                     name: 'extra-id',
                     label: 'Extra Booking Id:',
-                    displayLabel: t("events-pages.booking-pages.booking-status-info-page.extra-id"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.extra-id"),
                     required: false,
                     value: result.detailedData.extras.extra_id,
                     setValue: null,
@@ -380,7 +380,7 @@ function BookingStatusInfo() {
                     type: 'text',
                     name: 'extra-payment-status',
                     label: 'Extras Payment Status:',
-                    displayLabel: t("events-pages.booking-pages.booking-status-info-page.extra-payment-status"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.extra-payment-status"),
                     required: false,
                     value: result.detailedData.extras.payment_status,
                     setValue: null,
@@ -400,7 +400,7 @@ function BookingStatusInfo() {
                     type: 'text',
                     name: 'extra-additional-attendees',
                     label: 'Requested Additional Attendee(s):',
-                    displayLabel: t("events-pages.booking-pages.booking-status-info-page.requested-additional-attendees"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.requested-additional-attendees"),
                     required: false,
                     value: result.detailedData.extras.additional_attendees == 0 ? 'No' : result.detailedData.extras.additional_attendees,
                     setValue: null,
@@ -420,7 +420,7 @@ function BookingStatusInfo() {
                     type: 'text',
                     name: 'extra-cd-count',
                     label: 'Requested After Party CD(s):',
-                    displayLabel: t("events-pages.booking-pages.booking-status-info-page.requested-after-party-cd"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.requested-after-party-cd"),
                     required: false,
                     value: result.detailedData.extras.cd_count == 0 ? 'No' : result.detailedData.extras.cd_count,
                     setValue: null,
@@ -440,7 +440,7 @@ function BookingStatusInfo() {
                     type: 'text',
                     name: 'extra-updated-at',
                     label: 'Last Updated At:',
-                    displayLabel: t("events-pages.booking-pages.booking-status-info-page.last-updated-at"),
+                    displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.last-updated-at"),
                     required: false,
                     value: formatDateFromPacific(result.detailedData.extras.updated_at),
                     setValue: null,
@@ -460,7 +460,7 @@ function BookingStatusInfo() {
             type: 'section',
             name: 'total-amounts',
             label: 'Total Amounts',
-            displayLabel: t("events-pages.booking-pages.booking-status-info-page.total-amounts"),
+            displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.total-amounts"),
             required: true,
             widthOfField: 1,
             httpName: 'total-amounts',
@@ -473,7 +473,7 @@ function BookingStatusInfo() {
                 type: 'text',
                 name: 'total-paid-for-base-fare',
                 label: 'Total Paid For Base Fare:',
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.total-for-base-fare"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.total-for-base-fare"),
                 required: false,
                 value: `${result.detailedData.booking.total_paid_for_base_fair}`,
                 setValue: null,
@@ -492,7 +492,7 @@ function BookingStatusInfo() {
                 type: 'text',
                 name: 'total-extras-cost',
                 label: 'Total Extras Cost:',
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.total-for-extras"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.total-for-extras"),
                 required: false,
                 value: `${result.detailedData.booking.total_extras_cost}`,
                 setValue: null,
@@ -512,7 +512,7 @@ function BookingStatusInfo() {
                 type: 'text',
                 name: 'total-paid-for-base-and-extras',
                 label: 'Total Cost For Base And Extras:',
-                displayLabel: t("events-pages.booking-pages.booking-status-info-page.total-cost-for-base-and-extras"),
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.total-cost-for-base-and-extras"),
                 required: false,
                 value: `${result.detailedData.booking.total_paid_for_base_and_extras}`,
                 setValue: null,
@@ -535,12 +535,12 @@ function BookingStatusInfo() {
                 <div className={'booking-info-page'}>
                     <div className={"extreme-padding-container"}>
                         <h1>
-                            {t("events-pages.booking-pages.booking-status-info-page.title")}
+                            {t("events-pages.graduation-booking-pages.booking-status-info-page.title")}
                         </h1>
 
                         {(finalFormFields && finalFormFields.length > 0 && !fetchBookingBySessionError) && (
                             <Form mailTo={''}
-                                  formTitle={t("events-pages.booking-pages.booking-status-info-page.title")}
+                                  formTitle={t("events-pages.graduation-booking-pages.booking-status-info-page.title")}
                                   sendPdf={false}
                                   noInputFieldsCache={true}
                                   noCaptcha={true}
@@ -553,7 +553,7 @@ function BookingStatusInfo() {
                             <div className={'confirmation-buttons-wrapper-in-booking-info-page'}>
                                 <button
                                     className={'download-confirmation-button'}
-                                    onClick={() => generateConfirmationPDF(
+                                    onClick={() => generateGraduationBookingConfirmationPDF(
                                         'download',
                                         setIsLoading,
                                         bookingId,
@@ -564,7 +564,7 @@ function BookingStatusInfo() {
                                     )}
                                     disabled={isLoading}
                                 >
-                                    {t("events-pages.booking-pages.booking-status-info-page.download-confirmation-btn")}
+                                    {t("events-pages.graduation-booking-pages.booking-status-info-page.download-confirmation-btn")}
                                 </button>
                                 {/*<button*/}
                                 {/*    className={'print-confirmation-button'}*/}
@@ -586,7 +586,7 @@ function BookingStatusInfo() {
                         {fetchBookingBySessionError && (
                             <>
                                 <h2>
-                                    {t("events-pages.booking-pages.booking-status-info-page.error-fetching-booking-info")}
+                                    {t("events-pages.graduation-booking-pages.booking-status-info-page.error-fetching-booking-info")}
                                 </h2>
                                 <p>
                                     {fetchBookingBySessionError}
@@ -595,7 +595,7 @@ function BookingStatusInfo() {
                                     setFetchBookingBySessionError(null);
                                     fetchBookingBySessionId();
                                 }}>
-                                    {t("events-pages.booking-pages.booking-status-info-page.retry-btn")}
+                                    {t("events-pages.graduation-booking-pages.booking-status-info-page.retry-btn")}
                                 </button>
                             </>
                         )}
@@ -606,4 +606,4 @@ function BookingStatusInfo() {
     );
 }
 
-export default BookingStatusInfo;
+export default GraduationBookingStatusInfo;

@@ -1,9 +1,9 @@
 
 
 import {
-    bookingLoginPageUrl,
+    graduationBookingLoginPageUrl,
     createSessions,
-    bookingDashboardPageUrl,
+    graduationBookingDashboardPageUrl,
     extendSession,
     sessionDuration,
     resetSession,
@@ -12,9 +12,9 @@ import {
 } from "./GeneralUtils.jsx";
 
 
-const fetchBookingConfirmationRequest = async (bookingId, extrasId, username, password_hash) => {
+const fetchGraduationBookingConfirmationRequest = async (bookingId, extrasId, username, password_hash) => {
     try {
-        const response = await fetch(endpoints.getBookingConfirmation, {
+        const response = await fetch(endpoints.getGraduationBookingConfirmation, {
             method: 'POST',
             body: JSON.stringify({bookingId: bookingId, username: username, password_hash: password_hash, extrasId: extrasId})
         })
@@ -32,15 +32,15 @@ const fetchBookingConfirmationRequest = async (bookingId, extrasId, username, pa
     }
 }
 
-const submitUpdateBookingExtrasRequest = async (formData, bookingId, navigate) => {
+const submitUpdateGraduationBookingExtrasRequest = async (formData, bookingId, navigate) => {
     try {
-        const sessionId = validateBookingSessionLocally();
+        const sessionId = validateGraduationBookingSessionLocally();
         
         if (!sessionId) {
             return 'Session expired';
         }
         
-        const response = await fetch (endpoints.checkBookingSession, {
+        const response = await fetch (endpoints.checkGraduationBookingSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         })
@@ -52,12 +52,12 @@ const submitUpdateBookingExtrasRequest = async (formData, bookingId, navigate) =
                 console.log(result.message);
             }
             
-            navigate(bookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl);
         }
         
         formData.append('bookingId', bookingId);
         
-        const updateResponse = await fetch(endpoints.updateBookingExtras, {
+        const updateResponse = await fetch(endpoints.updateGraduationBookingExtras, {
             method: 'POST',
             body: formData
         });
@@ -79,16 +79,16 @@ const submitUpdateBookingExtrasRequest = async (formData, bookingId, navigate) =
     
 }
 
-const fetchBookingInfoBySessionRequest = async (navigate) => {
+const fetchGraduationBookingInfoBySessionRequest = async (navigate) => {
     try {
-        const sessionId = validateBookingSessionLocally();
+        const sessionId = validateGraduationBookingSessionLocally();
 
         if (!sessionId) {
-            navigate(bookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl);
             return 'Session expired';
         }
 
-        const response = await fetch(endpoints.getBookingInfoBySession, {
+        const response = await fetch(endpoints.getGraduationBookingInfoBySession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -103,7 +103,7 @@ const fetchBookingInfoBySessionRequest = async (navigate) => {
             }
 
             if (result && result.code && (result.code === 401 || result.code === 403)) {
-                navigate(bookingLoginPageUrl);
+                navigate(graduationBookingLoginPageUrl);
             }
         }
     } catch (error) {
@@ -111,16 +111,16 @@ const fetchBookingInfoBySessionRequest = async (navigate) => {
     }
 }
 
-const checkBookingSessionFromBookingDashboard = async (navigate) => {
-    const sessionId = validateBookingSessionLocally();
+const checkGraduationBookingSessionFromBookingDashboard = async (navigate) => {
+    const sessionId = validateGraduationBookingSessionLocally();
 
     if (!sessionId) {
-        navigate(bookingLoginPageUrl);
+        navigate(graduationBookingLoginPageUrl);
         return;
     }
 
     try {
-        const response = await fetch(endpoints.checkBookingSession, {
+        const response = await fetch(endpoints.checkGraduationBookingSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -133,21 +133,21 @@ const checkBookingSessionFromBookingDashboard = async (navigate) => {
                 console.log(result.message);
             }
 
-            navigate(bookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl);
         }
     } catch (error) {
         console.log(error.message);
-        navigate(bookingLoginPageUrl);
+        navigate(graduationBookingLoginPageUrl);
     }
 }
 
-const validateBookingLogin = async (formData, usernameFieldId, passwordFieldId, navigate) => {
+const validateGraduationBookingLogin = async (formData, usernameFieldId, passwordFieldId, navigate) => {
     const formDataEntries = Array.from(formData.entries());
     const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
 
     try {
-        const response = await fetch(endpoints.validateBookingLogin, {
+        const response = await fetch(endpoints.validateGraduationBookingLogin, {
             method: 'POST',
             body: JSON.stringify({username, password})
         });
@@ -155,15 +155,15 @@ const validateBookingLogin = async (formData, usernameFieldId, passwordFieldId, 
         const result = await response.json();
 
         if (result.success) {
-            const sessionResponse = await fetch(endpoints.createBookingSession, {
+            const sessionResponse = await fetch(endpoints.createGraduationBookingSession, {
                 method: 'POST',
-                body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_booking')})
+                body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_graduation_booking')})
             });
 
             const sessionResult = await sessionResponse.json();
 
             if (sessionResult.success) {
-                navigate(bookingDashboardPageUrl);
+                navigate(graduationBookingDashboardPageUrl);
             } else {
                 return sessionResult;
             }
@@ -175,12 +175,12 @@ const validateBookingLogin = async (formData, usernameFieldId, passwordFieldId, 
     }
 }
 
-const checkBookingSessionFromBookingLogin = async (navigate) => {
-    const sessionId = validateBookingSessionLocally();
+const checkGraduationBookingSessionFromBookingLogin = async (navigate) => {
+    const sessionId = validateGraduationBookingSessionLocally();
     if (!sessionId) {return;}
 
     try {
-        const response = await fetch(endpoints.checkBookingSession, {
+        const response = await fetch(endpoints.checkGraduationBookingSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -188,7 +188,7 @@ const checkBookingSessionFromBookingLogin = async (navigate) => {
         const result = await response.json();
 
         if (result.success) {
-            navigate(bookingDashboardPageUrl);
+            navigate(graduationBookingDashboardPageUrl);
         } else {
            if (result.message) {
                 console.log(result.message);
@@ -199,16 +199,16 @@ const checkBookingSessionFromBookingLogin = async (navigate) => {
     }
 }
 
-const checkBookingSession = async (navigate) => {
-    const sessionId = validateBookingSessionLocally();
+const checkGraduationBookingSession = async (navigate) => {
+    const sessionId = validateGraduationBookingSessionLocally();
 
     if (!sessionId) {
-        navigate(bookingLoginPageUrl);
+        navigate(graduationBookingLoginPageUrl);
         return;
     }
 
     try {
-        const response = await fetch(endpoints.checkBookingSession, {
+        const response = await fetch(endpoints.checkGraduationBookingSession, {
             method: 'POST',
             body: JSON.stringify({session_id: sessionId})
         });
@@ -216,65 +216,40 @@ const checkBookingSession = async (navigate) => {
         const result = await response.json();
 
         if (result.success) {
-            extendSession('harvest_schools_booking', sessionId);
+            extendSession('harvest_schools_graduation_booking', sessionId);
         } else {
             if (result.message) {
                 console.log(result.message);
             }
 
-            navigate(bookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl);
         }
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const validateBookingSessionLocally = () => {
+const validateGraduationBookingSessionLocally = () => {
     const cookies = getCookies();
-    const sessionId = cookies.harvest_schools_booking_session_id;
-    const sessionTime = parseInt(cookies.harvest_schools_booking_session_time, 10);
+    const sessionId = cookies.harvest_schools_graduation_booking_session_id;
+    const sessionTime = parseInt(cookies.harvest_schools_graduation_booking_session_time, 10);
 
     if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
-        resetSession('harvest_schools_booking');
+        resetSession('harvest_schools_graduation_booking');
         return null;
     } else {
         return sessionId;
     }
 }
 
-const submitOpenDaySignupRequest = async (formData, numberOfAttendees) => {
-    try {
-        formData.append('numberOfAttendees', numberOfAttendees)
 
-        const response = await fetch(endpoints.submitOpenDaySignupForm, {
-            method: 'POST',
-            body: formData
-        })
-
-        const result = await response.json();
-
-        if (result && result.success) {
-            if (result.message) {
-                console.log(result.message);
-                return result;
-            } else {
-                return 'Signup failed. Please try again.';
-            }
-        } else {
-            return result.message || 'Signup failed. Please try again.';
-        }
-    } catch ( error ) {
-        return error.message;
-    }
-}
 
 export {
-    checkBookingSession,
-    checkBookingSessionFromBookingLogin,
-    validateBookingLogin,
-    checkBookingSessionFromBookingDashboard,
-    fetchBookingInfoBySessionRequest,
-    submitUpdateBookingExtrasRequest,
-    fetchBookingConfirmationRequest,
-    submitOpenDaySignupRequest
+    checkGraduationBookingSession,
+    checkGraduationBookingSessionFromBookingLogin,
+    validateGraduationBookingLogin,
+    checkGraduationBookingSessionFromBookingDashboard,
+    fetchGraduationBookingInfoBySessionRequest,
+    submitUpdateGraduationBookingExtrasRequest,
+    fetchGraduationBookingConfirmationRequest,
 };

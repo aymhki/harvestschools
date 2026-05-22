@@ -35,7 +35,7 @@ try {
 
     $user = $conn->real_escape_string($data['username']);
     $plainPassword = $conn->real_escape_string($data['password']);
-    $sql = "SELECT * FROM booking_auth_credentials WHERE username = '$user' AND password_hash = SHA2('$plainPassword', 256)";
+    $sql = "SELECT * FROM graduation_booking_auth_credentials WHERE username = '$user' AND password_hash = SHA2('$plainPassword', 256)";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -45,7 +45,7 @@ try {
             "code" => 200
         ]);
     } else {
-        $userCheckSql = "SELECT * FROM booking_auth_credentials WHERE username = '$user'";
+        $userCheckSql = "SELECT * FROM graduation_booking_auth_credentials WHERE username = '$user'";
         $userResult = $conn->query($userCheckSql);
 
         if ($userResult->num_rows > 0) {

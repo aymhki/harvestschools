@@ -27,7 +27,7 @@
     "british-calendar": "جدول القسم البريطاني",
     "american-calendar": "جدول القسم الأمريكي",
     "kg-calendars": "جداول رياض الأطفال",
-    "booking": "الحجوزات",
+    "booking": "حجوزات حفلة التخرج",
     "photos": "الصور",
     "videos": "الڤيديوهات",
     "360-tour": "جولة افتراضية",
@@ -1355,8 +1355,8 @@
       "american-calendar-option-description": "الجدول الزمني للسنة الدراسية في القسم الأمريكي",
       "kg-calendars-option": "جداول  رياض الأطفال",
       "kg-calendars-option-description": "الجداول الزمنية للسنة الدراسية في قسم رياض الأطفال",
-      "booking-login-option": "الحجوزات",
-      "booking-login-option-description": "دخول نظام الحجز والمواعيد"
+      "booking-login-option": "حجوزات حفلة التخرج",
+      "booking-login-option-description": "دخول نظام حجز حفلةالتخرج"
     },
     "common": {
       "download-calendar-btn": "تحميل الجدول",
@@ -1610,7 +1610,7 @@
         ]
       }
     },
-    "booking-pages": {
+    "graduation-booking-pages": {
       "login-page": {
         "title": "تسجيل دخول الحجوزات",
         "login-btn": "تسجيل الدخول",
@@ -1720,7 +1720,8 @@
       "parent-name-field": "اسم ولي الأمر",
       "parent-phone-number-field": "رقم هاتف ولي الأمر",
       "child-name-field": "اسم الطفل",
-      "child-age-field": "عمر الطفل"
+      "child-age-field": "عمر الطفل",
+      "open-day-signups-not-open-message": "تسجيل يوم البيت المفتوح غير مفتوح حاليًا"
     }
   },
   "gallery-pages": {

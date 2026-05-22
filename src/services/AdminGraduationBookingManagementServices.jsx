@@ -2,7 +2,7 @@ import {adminLoginPageUrl, endpoints} from "./GeneralUtils.jsx";
 import {validateAdminSessionLocally} from "./MainAdminServices.jsx"
 
 
-const fetchBookingsRequest = async (navigate, setAllBookings) => {
+const fetchGraduationBookingsRequest = async (navigate, setAllBookings) => {
     try {
         const sessionId = validateAdminSessionLocally();
 
@@ -11,7 +11,7 @@ const fetchBookingsRequest = async (navigate, setAllBookings) => {
             return;
         }
 
-        const response = await fetch(endpoints.getAllBookings,
+        const response = await fetch(endpoints.getAllGraduationBookings,
             {method: 'POST', body: JSON.stringify({session_id: sessionId})});
         const result = await response.json();
 
@@ -37,14 +37,14 @@ const fetchBookingsRequest = async (navigate, setAllBookings) => {
     return null;
 }
 
-const handleDeleteBookingRequest = async (bookingId) => {
+const handleDeleteGraduationBookingRequest = async (bookingId) => {
     try {
         const sessionId = validateAdminSessionLocally();
         if (!sessionId) {
             return 'Session expired'
         }
 
-        const response = await fetch(endpoints.deleteBookingEntry, {
+        const response = await fetch(endpoints.deleteGraduationBookingEntry, {
             method: 'POST',
             body: JSON.stringify({bookingId: bookingId, session_id: sessionId})
         });
@@ -62,7 +62,7 @@ const handleDeleteBookingRequest = async (bookingId) => {
     }
 }
 
-const handleAddBookingRequest = async (formData) => {
+const handleAddGraduationBookingRequest = async (formData) => {
     try {
         const sessionId = validateAdminSessionLocally();
 
@@ -70,7 +70,7 @@ const handleAddBookingRequest = async (formData) => {
             return 'Session expired';
         }
 
-        const response = await fetch(endpoints.submitAddBookingForm, {
+        const response = await fetch(endpoints.submitAddGraduationBookingForm, {
             method: 'POST',
             body: formData
         });
@@ -87,7 +87,7 @@ const handleAddBookingRequest = async (formData) => {
     }
 }
 
-const handleEditBookingRequest = async (formData, bookingId) => {
+const handleEditGraduationBookingRequest = async (formData, bookingId) => {
     try {
         const sessionId = validateAdminSessionLocally();
 
@@ -97,7 +97,7 @@ const handleEditBookingRequest = async (formData, bookingId) => {
 
         formData.append('bookingId', bookingId);
 
-        const response = await fetch(endpoints.submitEditBookingForm, {
+        const response = await fetch(endpoints.submitEditGraduationBookingForm, {
             method: 'POST',
             body: formData
         });
@@ -116,8 +116,8 @@ const handleEditBookingRequest = async (formData, bookingId) => {
 
 
 export {
-    fetchBookingsRequest,
-    handleDeleteBookingRequest,
-    handleAddBookingRequest,
-    handleEditBookingRequest
+    fetchGraduationBookingsRequest,
+    handleDeleteGraduationBookingRequest,
+    handleAddGraduationBookingRequest,
+    handleEditGraduationBookingRequest
 }

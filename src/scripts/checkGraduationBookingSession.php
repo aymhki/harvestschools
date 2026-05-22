@@ -42,7 +42,7 @@ try {
 
     $conn->set_charset("utf8mb4");
     $sessionId = $conn->real_escape_string($data['session_id']);
-    $sql = "SELECT username FROM booking_sessions WHERE id = '$sessionId'";
+    $sql = "SELECT username FROM graduation_booking_sessions WHERE id = '$sessionId'";
     $result = $conn->query($sql);
 
     if ($result->num_rows == 0) {

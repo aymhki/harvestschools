@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $bookingUsername = $formData['Booking Username'];
         $bookingPassword = $formData['Booking Password'];
-        $stmt = $conn->prepare("SELECT auth_id FROM booking_auth_credentials WHERE username = ?");
+        $stmt = $conn->prepare("SELECT auth_id FROM graduation_booking_auth_credentials WHERE username = ?");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        $stmt = $conn->prepare("INSERT INTO booking_auth_credentials (username, password_hash) VALUES (?, SHA2(?, 256))");
+        $stmt = $conn->prepare("INSERT INTO graduation_booking_auth_credentials (username, password_hash) VALUES (?, SHA2(?, 256))");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $data['authId'] = $conn->insert_id;
-        $stmt = $conn->prepare("INSERT INTO bookings (auth_id) VALUES (?)");
+        $stmt = $conn->prepare("INSERT INTO graduation_bookings (auth_id) VALUES (?)");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -206,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $firstParentName = $formData['First Parent Name'];
         $firstParentEmail = $formData['First Parent Email'] ?? '';
         $firstParentPhone = $formData['First Parent Phone Number'] ?? '';
-        $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO graduation_booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $data['firstParentId'] = $conn->insert_id;
         $isPrimary = 1;
-        $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO graduation_booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -256,7 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $secondParentName = $formData['Second Parent Name'];
             $secondParentEmail = $formData['Second Parent Email'] ?? '';
             $secondParentPhone = $formData['Second Parent Phone Number'] ?? '';
-            $stmt = $conn->prepare("INSERT INTO booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO graduation_booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
 
             if (!$stmt) {
                 $errorInfo['success'] = false;
@@ -280,7 +280,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $data['secondParentId'] = $conn->insert_id;
             $isPrimary = 0;
-            $stmt = $conn->prepare("INSERT INTO booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO graduation_booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
 
             if (!$stmt) {
                 $errorInfo['success'] = false;
@@ -311,7 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $studentName = $studentData['Student Name'];
                 $schoolDivision = $studentData['Student School Division'] ?? 'Other';
                 $grade = $studentData['Student Grade'] ?? '';
-                $stmt = $conn->prepare("INSERT INTO booking_students (name, school_division, grade) VALUES (?, ?, ?)");
+                $stmt = $conn->prepare("INSERT INTO graduation_booking_students (name, school_division, grade) VALUES (?, ?, ?)");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -335,7 +335,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $studentId = $conn->insert_id;
                 $data['studentIds'][] = $studentId;
-                $stmt = $conn->prepare("INSERT INTO booking_students_linker (booking_id, student_id) VALUES (?, ?)");
+                $stmt = $conn->prepare("INSERT INTO graduation_booking_students_linker (booking_id, student_id) VALUES (?, ?)");
 
                 if (!$stmt) {
                     $errorInfo['success'] = false;
@@ -382,7 +382,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        $stmt = $conn->prepare("INSERT INTO booking_extras (booking_id, cd_count, additional_attendees, payment_status) VALUES (?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO graduation_booking_extras (booking_id, cd_count, additional_attendees, payment_status) VALUES (?, ?, ?, ?)");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -452,7 +452,7 @@ function performRollback($conn, $data) {
         }
 
         if (!empty($data['bookingId'])) {
-            $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_extras WHERE booking_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $data['bookingId']);
@@ -461,7 +461,7 @@ function performRollback($conn, $data) {
         }
 
         if (!empty($data['bookingId'])) {
-            $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_students_linker WHERE booking_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $data['bookingId']);
@@ -470,7 +470,7 @@ function performRollback($conn, $data) {
         }
 
         foreach ($data['studentIds'] as $studentId) {
-            $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_students WHERE student_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $studentId);
@@ -479,7 +479,7 @@ function performRollback($conn, $data) {
         }
 
         if (!empty($data['bookingId'])) {
-            $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_parents_linker WHERE booking_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $data['bookingId']);
@@ -488,7 +488,7 @@ function performRollback($conn, $data) {
         }
 
         if (!empty($data['firstParentId'])) {
-            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_parents WHERE parent_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $data['firstParentId']);
@@ -497,7 +497,7 @@ function performRollback($conn, $data) {
         }
 
         if (!empty($data['secondParentId'])) {
-            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_parents WHERE parent_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $data['secondParentId']);
@@ -506,7 +506,7 @@ function performRollback($conn, $data) {
         }
 
         if (!empty($data['bookingId'])) {
-            $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_bookings WHERE booking_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $data['bookingId']);
@@ -515,7 +515,7 @@ function performRollback($conn, $data) {
         }
 
         if (!empty($data['authId'])) {
-            $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_auth_credentials WHERE auth_id = ?");
 
             if ($stmt) {
                 $stmt->bind_param("i", $data['authId']);
@@ -543,26 +543,26 @@ function performRollback($conn, $data) {
 function performFinalCleanup($conn, $data) {
     try {
         if (!empty($data['bookingId'])) {
-            $conn->query("DELETE FROM booking_extras WHERE booking_id = {$data['bookingId']}");
-            $conn->query("DELETE FROM booking_students_linker WHERE booking_id = {$data['bookingId']}");
-            $conn->query("DELETE FROM booking_parents_linker WHERE booking_id = {$data['bookingId']}");
-            $conn->query("DELETE FROM bookings WHERE booking_id = {$data['bookingId']}");
+            $conn->query("DELETE FROM graduation_booking_extras WHERE booking_id = {$data['bookingId']}");
+            $conn->query("DELETE FROM graduation_booking_students_linker WHERE booking_id = {$data['bookingId']}");
+            $conn->query("DELETE FROM graduation_booking_parents_linker WHERE booking_id = {$data['bookingId']}");
+            $conn->query("DELETE FROM graduation_bookings WHERE booking_id = {$data['bookingId']}");
         }
 
         foreach ($data['studentIds'] as $studentId) {
-            $conn->query("DELETE FROM booking_students WHERE student_id = $studentId");
+            $conn->query("DELETE FROM graduation_booking_students WHERE student_id = $studentId");
         }
 
         if (!empty($data['firstParentId'])) {
-            $conn->query("DELETE FROM booking_parents WHERE parent_id = {$data['firstParentId']}");
+            $conn->query("DELETE FROM graduation_booking_parents WHERE parent_id = {$data['firstParentId']}");
         }
 
         if (!empty($data['secondParentId'])) {
-            $conn->query("DELETE FROM booking_parents WHERE parent_id = {$data['secondParentId']}");
+            $conn->query("DELETE FROM graduation_booking_parents WHERE parent_id = {$data['secondParentId']}");
         }
 
         if (!empty($data['authId'])) {
-            $conn->query("DELETE FROM booking_auth_credentials WHERE auth_id = {$data['authId']}");
+            $conn->query("DELETE FROM graduation_booking_auth_credentials WHERE auth_id = {$data['authId']}");
         }
 
     } catch (Exception $e) {

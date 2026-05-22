@@ -43,9 +43,9 @@ try {
                         ac.username,
                         ac.password_hash,
                         be.extra_id
-                      FROM bookings b
-                      JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
-                      LEFT JOIN booking_extras be ON b.booking_id = be.booking_id
+                      FROM graduation_bookings b
+                      JOIN graduation_booking_auth_credentials ac ON b.auth_id = ac.auth_id
+                      LEFT JOIN graduation_booking_extras be ON b.booking_id = be.booking_id
                       WHERE b.booking_id = ? 
                         AND ac.username = ? 
                         AND ac.password_hash = ?
@@ -93,9 +93,9 @@ try {
                           COALESCE(be.payment_status, 'Not Signed Up') as payment_status,
                           be.extra_id,
                           be.created_at AS extras_created
-                        FROM bookings b
-                        JOIN booking_auth_credentials ac ON b.auth_id = ac.auth_id
-                        LEFT JOIN booking_extras be ON b.booking_id = be.booking_id
+                        FROM graduation_bookings b
+                        JOIN graduation_booking_auth_credentials ac ON b.auth_id = ac.auth_id
+                        LEFT JOIN graduation_booking_extras be ON b.booking_id = be.booking_id
                         WHERE b.booking_id = ?";
     $stmt = $conn->prepare($confirmationSql);
     $stmt->bind_param("i", $bookingId);
@@ -113,8 +113,8 @@ try {
     $confirmationData = $confirmationResult->fetch_assoc();
 
     $studentCountSql = "SELECT COUNT(*) as student_count
-                       FROM booking_students s
-                       JOIN booking_students_linker sl ON s.student_id = sl.student_id
+                       FROM graduation_booking_students s
+                       JOIN graduation_booking_students_linker sl ON s.student_id = sl.student_id
                        WHERE sl.booking_id = ?";
     $stmt = $conn->prepare($studentCountSql);
     $stmt->bind_param("i", $bookingId);
@@ -124,8 +124,8 @@ try {
     $stmt->close();
 
     $studentsSql = "SELECT s.student_id, s.name, s.school_division, s.grade
-                   FROM booking_students s
-                   JOIN booking_students_linker sl ON s.student_id = sl.student_id
+                   FROM graduation_booking_students s
+                   JOIN graduation_booking_students_linker sl ON s.student_id = sl.student_id
                    WHERE sl.booking_id = ?
                    ORDER BY s.student_id";
     $stmt = $conn->prepare($studentsSql);
@@ -138,8 +138,8 @@ try {
         $students[] = $student;
     }
     $parentsSql = "SELECT p.parent_id, p.name, p.email, p.phone_number, pl.is_primary
-                  FROM booking_parents p
-                  JOIN booking_parents_linker pl ON p.parent_id = pl.parent_id
+                  FROM graduation_booking_parents p
+                  JOIN graduation_booking_parents_linker pl ON p.parent_id = pl.parent_id
                   WHERE pl.booking_id = ?
                   ORDER BY pl.is_primary DESC, p.parent_id";
     $stmt = $conn->prepare($parentsSql);

@@ -35,11 +35,11 @@ try {
 
     $user = $conn->real_escape_string($input['username']);
     $sessionId = $conn->real_escape_string($input['session_id']);
-    $checkSql = "SELECT id FROM booking_sessions WHERE username = '$user'";
+    $checkSql = "SELECT id FROM graduation_booking_sessions WHERE username = '$user'";
     $checkResult = $conn->query($checkSql);
 
     if ($checkResult->num_rows > 0) {
-        $deleteSql = "DELETE FROM booking_sessions WHERE username = '$user'";
+        $deleteSql = "DELETE FROM graduation_booking_sessions WHERE username = '$user'";
 
         if (!$conn->query($deleteSql)) {
             echo json_encode([
@@ -51,7 +51,7 @@ try {
         }
     }
 
-    $insertSql = "INSERT INTO booking_sessions (username, id) VALUES ('$user', '$sessionId')";
+    $insertSql = "INSERT INTO graduation_booking_sessions (username, id) VALUES ('$user', '$sessionId')";
 
     if (!$conn->query($insertSql)) {
         echo json_encode([

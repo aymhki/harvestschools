@@ -89,7 +89,7 @@ try {
         exit;
     }
 
-    $bookingCheckSql = "SELECT booking_id, auth_id FROM bookings WHERE booking_id = ?";
+    $bookingCheckSql = "SELECT booking_id, auth_id FROM graduation_bookings WHERE booking_id = ?";
     $stmt = $conn->prepare($bookingCheckSql);
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
@@ -107,7 +107,7 @@ try {
     $bookingData = $result->fetch_assoc();
     $authId = $bookingData['auth_id'];
     $stmt->close();
-    $bookingAuthSql = "SELECT username FROM booking_auth_credentials WHERE auth_id = ?";
+    $bookingAuthSql = "SELECT username FROM graduation_booking_auth_credentials WHERE auth_id = ?";
     $stmt = $conn->prepare($bookingAuthSql);
     $stmt->bind_param("i", $authId);
     $stmt->execute();
@@ -115,7 +115,7 @@ try {
     $authRow = $authResult->fetch_assoc();
     $bookingAuthUsername = $authRow['username'];
     $stmt->close();
-    $parentSql = "SELECT parent_id FROM booking_parents_linker WHERE booking_id = ?";
+    $parentSql = "SELECT parent_id FROM graduation_booking_parents_linker WHERE booking_id = ?";
     $stmt = $conn->prepare($parentSql);
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
@@ -127,7 +127,7 @@ try {
     }
 
     $stmt->close();
-    $studentSql = "SELECT student_id FROM booking_students_linker WHERE booking_id = ?";
+    $studentSql = "SELECT student_id FROM graduation_booking_students_linker WHERE booking_id = ?";
     $stmt = $conn->prepare($studentSql);
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
@@ -143,7 +143,7 @@ try {
     $conn->begin_transaction();
 
     try {
-        $stmt = $conn->prepare("DELETE FROM booking_sessions WHERE username = ?");
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE username = ?");
         $stmt->bind_param("s", $bookingAuthUsername);
 
         if (!$stmt->execute()) {
@@ -156,7 +156,7 @@ try {
         }
 
         $stmt->close();
-        $stmt = $conn->prepare("DELETE FROM booking_students_linker WHERE booking_id = ?");
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_students_linker WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
 
         if (!$stmt->execute()) {
@@ -171,7 +171,7 @@ try {
         $stmt->close();
 
         foreach ($studentIds as $studentId) {
-            $stmt = $conn->prepare("DELETE FROM booking_students WHERE student_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_students WHERE student_id = ?");
             $stmt->bind_param("i", $studentId);
 
             if (!$stmt->execute()) {
@@ -186,7 +186,7 @@ try {
             $stmt->close();
         }
 
-        $stmt = $conn->prepare("DELETE FROM booking_parents_linker WHERE booking_id = ?");
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_parents_linker WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
 
         if (!$stmt->execute()) {
@@ -201,7 +201,7 @@ try {
         $stmt->close();
 
         foreach ($parentIds as $parentId) {
-            $stmt = $conn->prepare("DELETE FROM booking_parents WHERE parent_id = ?");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_parents WHERE parent_id = ?");
             $stmt->bind_param("i", $parentId);
 
             if (!$stmt->execute()) {
@@ -216,7 +216,7 @@ try {
             $stmt->close();
         }
 
-        $stmt = $conn->prepare("DELETE FROM booking_extras WHERE booking_id = ?");
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_extras WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
 
         if (!$stmt->execute()) {
@@ -229,7 +229,7 @@ try {
         }
 
         $stmt->close();
-        $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
+        $stmt = $conn->prepare("DELETE FROM graduation_bookings WHERE booking_id = ?");
         $stmt->bind_param("i", $bookingId);
 
         if (!$stmt->execute()) {
@@ -242,7 +242,7 @@ try {
         }
 
         $stmt->close();
-        $stmt = $conn->prepare("DELETE FROM booking_auth_credentials WHERE auth_id = ?");
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_auth_credentials WHERE auth_id = ?");
         $stmt->bind_param("i", $authId);
 
         if (!$stmt->execute()) {

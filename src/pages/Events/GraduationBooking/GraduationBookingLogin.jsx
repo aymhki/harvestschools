@@ -4,11 +4,11 @@ import {useEffect, useState} from "react";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
-import {validateBookingLogin} from "../../../services/MainParentsBookingServices.jsx";
+import {validateGraduationBookingLogin} from "../../../services/MainParentsGraduationBookingServices.jsx";
 import {useTranslation} from "react-i18next";
-import {headToBookingDashboardOnValidSession} from "../../../services/BookingNavigationServices.jsx";
+import {headToGraduationBookingDashboardOnValidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
 
-function BookingLogin() {
+function GraduationBookingLogin() {
     const navigate = useNavigate();
     const {t} = useTranslation();
     const [submittingLocal, setSubmittingLocal] = useState(false);
@@ -20,7 +20,7 @@ function BookingLogin() {
         setSubmittingLocal(true);
 
         try {
-            const result = await validateBookingLogin(formData, usernameFieldId, passwordFieldId, navigate);
+            const result = await validateGraduationBookingLogin(formData, usernameFieldId, passwordFieldId, navigate);
 
             if (result && !result.success) {
                 throw new Error(result.message || result);
@@ -35,7 +35,7 @@ function BookingLogin() {
     }
 
     useEffect (() => {
-        headToBookingDashboardOnValidSession(navigate, setSubmittingLocal)
+        headToGraduationBookingDashboardOnValidSession(navigate, setSubmittingLocal)
     }, [])
 
     return (
@@ -55,12 +55,12 @@ function BookingLogin() {
                 <div className={'booking-login-page-form-controller'}>
                     <div className={'booking-login-form-wrapper'}>
                         <h2>
-                            {t("events-pages.booking-pages.login-page.title")}
+                            {t("events-pages.graduation-booking-pages.login-page.title")}
                         </h2>
 
                         <Form mailTo={''}
                               sendPdf={false}
-                              formTitle={t("events-pages.booking-pages.login-page.title")}
+                              formTitle={t("events-pages.graduation-booking-pages.login-page.title")}
                               lang={'en'}
                               captchaLength={1}
                               noInputFieldsCache={true}
@@ -68,7 +68,7 @@ function BookingLogin() {
                               hasDifferentOnSubmitBehaviour={true}
                               differentOnSubmitBehaviour={handleBookingLogin}
                               hasDifferentSubmitButtonText={true}
-                              differentSubmitButtonText={[t("events-pages.booking-pages.login-page.login-btn"), t("events-pages.booking-pages.login-page.logging-in-btn")]}
+                              differentSubmitButtonText={[t("events-pages.graduation-booking-pages.login-page.login-btn"), t("events-pages.graduation-booking-pages.login-page.logging-in-btn")]}
                               noClearOption={true}
                               centerSubmitButton={true}
                               easySimpleCaptcha={true}
@@ -83,8 +83,8 @@ function BookingLogin() {
                                           name: 'username',
                                           label: 'Username',
                                           required: true,
-                                          displayLabel: t("events-pages.booking-pages.login-page.username-field"),
-                                          placeholder: t("events-pages.booking-pages.login-page.username-field"),
+                                          displayLabel: t("events-pages.graduation-booking-pages.login-page.username-field"),
+                                          placeholder: t("events-pages.graduation-booking-pages.login-page.username-field"),
                                           errorMsg: 'Please enter username',
                                           value: '',
                                           setValue: null,
@@ -99,8 +99,8 @@ function BookingLogin() {
                                           name: 'password',
                                           label: 'Password',
                                           required: true,
-                                          displayLabel: t("events-pages.booking-pages.login-page.password-field"),
-                                          placeholder: t("events-pages.booking-pages.login-page.password-field"),
+                                          displayLabel: t("events-pages.graduation-booking-pages.login-page.password-field"),
+                                          placeholder: t("events-pages.graduation-booking-pages.login-page.password-field"),
                                           errorMsg: 'Please enter password',
                                           widthOfField: 1,
                                           value: '',
@@ -117,6 +117,6 @@ function BookingLogin() {
     );
 }
 
-export default BookingLogin;
+export default GraduationBookingLogin;
 
 

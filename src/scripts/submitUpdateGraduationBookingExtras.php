@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bookingId = $formData['bookingId'];
         $conn->autocommit(false);
 
-        $stmt = $conn->prepare("SELECT extra_id, cd_count, additional_attendees, payment_status  FROM booking_extras WHERE booking_id = ?");
+        $stmt = $conn->prepare("SELECT extra_id, cd_count, additional_attendees, payment_status  FROM graduation_booking_extras WHERE booking_id = ?");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        $stmt = $conn->prepare("UPDATE booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
+        $stmt = $conn->prepare("UPDATE graduation_booking_extras SET cd_count = ?, additional_attendees = ?, payment_status = ? WHERE extra_id = ?");
 
         if (!$stmt) {
             $errorInfo['success'] = false;
