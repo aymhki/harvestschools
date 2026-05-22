@@ -42,7 +42,7 @@ function parseAnswer(text) {
 }
 
 function FAQs() {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['faqs-pages']);
     const faqsTableData = t("faqs-pages.faqs-page.q-and-a-list", { returnObjects: true }) || [];
 
     return (

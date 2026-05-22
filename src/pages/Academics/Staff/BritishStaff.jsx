@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function BritishStaff() {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['academics-pages']);
 
     const staffList = t('academics-pages.staff.british-staff-list', { returnObjects: true }) || [];
 
@@ -28,7 +28,7 @@ function BritishStaff() {
     return (
         <div className="academics-british-staff-page">
             <Helmet>
-                <title>{t('academics-pages.british-section')} | {t('nav.staff')}</title>
+                <title>{t('academics-pages.british-section')} | {t('nav.staff', {ns: 'nav'})}</title>
                 <meta name="description"
                       content="Learn more about the British Division Staff members, teachers, coordinators, and administrative staff at Harvest International School in Borg El Arab, Egypt."/>
                 <meta name="keywords"
@@ -49,7 +49,7 @@ function BritishStaff() {
                        sortConfigParam={{column: 1, direction: 'ascending'}}/>
 
                 <p>
-                    {t('common.last-updated')} {formattedDate}
+                    {t('common.last-updated', {ns: 'common'})} {formattedDate}
                 </p>
             </div>
         </div>

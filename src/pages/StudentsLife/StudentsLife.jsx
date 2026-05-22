@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function StudentsLife() {
-    const {t} = useTranslation();
+    const {t} = useTranslation(['students-life-pages']);
 
   const options = [
     {
@@ -12,7 +12,7 @@ function StudentsLife() {
         image: "/assets/images/StudentsLifePages/StudentsUnion1.png",
         description: t("students-life-pages.options-page.students-union-option-description"),
         link: "/students-life/students-union",
-        buttonText: t("common.learn-more"),
+        buttonText: t("common.learn-more", {ns: 'common'}),
         titleInArabic: false,
         descriptionInArabic: false
     },
@@ -21,7 +21,7 @@ function StudentsLife() {
         image: "/assets/images/StudentsLifePages/Library1.png",
         description: t("students-life-pages.options-page.library-option-description"),
         link: "/students-life/library",
-        buttonText: t("common.learn-more"),
+        buttonText: t("common.learn-more", {ns: 'common'}),
         titleInArabic: false,
         descriptionInArabic: false
     },
@@ -30,7 +30,7 @@ function StudentsLife() {
         image: "/assets/images/StudentsLifePages/Activities1.png",
         description: t("students-life-pages.options-page.activities-option-description"),
         link: "/students-life/activities",
-        buttonText: t("common.learn-more"),
+        buttonText: t("common.learn-more", {ns: 'common'}),
         titleInArabic: false,
         descriptionInArabic: false
     }

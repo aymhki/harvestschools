@@ -5,7 +5,7 @@ import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 
 
 function National() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['academics-pages']);
 
   return (
     <div className="national-academics-page">

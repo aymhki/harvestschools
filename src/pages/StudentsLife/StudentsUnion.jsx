@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function StudentsUnion() {
-    const {t, i18n} = useTranslation();
+    const {t, i18n} = useTranslation(['students-life-pages']);
 
     const lastUpdatedDate = new Date('2019-06-07');
     const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
@@ -52,7 +52,7 @@ function StudentsUnion() {
                 </ul>
 
                 <p>
-                    {t("common.and-more")}
+                    {t("common.and-more", {ns: 'common'})}
                 </p>
 
                 <h2>
@@ -70,7 +70,7 @@ function StudentsUnion() {
                 </ul>
 
                 <p>
-                    {t("common.and-more")}
+                    {t("common.and-more", {ns: 'common'})}
                 </p>
 
                 <h2>
@@ -88,7 +88,7 @@ function StudentsUnion() {
                 </ul>
 
                 <p>
-                    {t('common.last-updated')} {formattedDate}
+                    {t('common.last-updated', {ns: 'common'})} {formattedDate}
                 </p>
             </div>
         </div>

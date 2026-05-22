@@ -1,0 +1,156 @@
+{
+  "admission-pages": {
+    "options-page" : {
+      "admission-title": "Admission",
+      "admission-process-option": "Admission Process",
+      "admission-process-option-description": "How to apply? Where to apply? What should you do before and after you apply?",
+      "admission-requirements-option": "Admission Requirements",
+      "admission-requirements-option-description": "What are the required documents? What are the age requirements?",
+      "admission-fees-option": "Admission Fees",
+      "admission-fees-option-description": "How much are the tuition fees for each grade? What are the payment methods? Are there any discounts?"
+    },
+    "admission-process-page": {
+      "fill-an-application": "Fill An Application",
+      "fill-an-application-description": "You can apply online by clicking the button below, or visit the schools reception to fill the application in person.",
+      "attend-your-interview": "Attend Your Interview",
+      "attend-your-interview-description": "we will directly review your application and book an appointment for the interview with both the parents and the students. Interviews with students could involve entry level tests according to the educational stage of the student and his/her origin school.",
+      "follow-up": "Follow Up",
+      "follow-up-description": "After the interview, the students affairs department will get in touch with the accepted applicants to start the registration process, which include providing the required documents and paying the tuition fees.",
+      "required-documents-btn": "Required Documents",
+      "admission-fees-btn": "Admission Fees"
+    },
+    "admission-requirements-page": {
+      "options-page": {
+        "inside-egypt-option": "Inside Egypt",
+        "inside-egypt-option-description": "Information about admission requirements for students inside Egypt",
+        "outside-egypt-option": "Outside Egypt",
+        "outside-egypt-option-description": "Information about admission requirements for students outside Egypt",
+        "outside-egypt-foreigners-option": "Outside Egypt - Foreigners",
+        "outside-egypt-foreigners-option-description": "Information about admission requirements for foreign students outside Egypt",
+        "admission-requirements-title": "Admission Requirements"
+      },
+      "common": {
+        "admission-requirements-note": "Admission Requirements Note"
+      },
+      "inside-egypt-page": {
+        "admission-requirements-note-list": [
+          "After passing the entry tests, the following documents will be requested for the registration process.",
+          "The National and the International Departments request the same documents. However, students applying for the International department in upper stages should provide educational Sequence certificates",
+          "Online transfer is a process done by the School students originally came from"
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "From KG 1",
+          "from-kg-1-requirements-list": [
+            "Original Birth Certificate",
+            "6 Personal ID Photos",
+            "2 Copies From Parents ID Cards"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+          "from-kg-2-to-junior-6-title": "From KG 2 to Junior 6",
+          "from-kg-2-to-junior-6-requirements-list": [
+            "Old School transfer form & new Stage form",
+            "Student File",
+            "Online Transfer"
+          ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+          "from-preparatory-1-to-preparatory-3-title": "From Preparatory 1 to Preparatory 3",
+          "from-preparatory-1-to-preparatory-3-requirements-list": [
+            "Old School transfer form & new Stage form",
+            "Grade 6 Certificate",
+            "Student File",
+            "Online Transfer"
+          ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+          "from-senior-1-to-senior-3-title": "From Senior 1 to Senior 3",
+          "from-senior-1-to-senior-3-requirements-list": [
+            "Old School transfer form and new Stage form",
+            "Grade 6 Certificate & Preparatory Certificate",
+            "Student File",
+            "Online Transfer"
+          ]
+        }
+      },
+      "outside-egypt-page": {
+        "admission-requirements-note-list": [
+          "After passing the entry tests, the following documents will be requested for the registration process.",
+          "The National and the International Departments request the same documents. However, students applying for the International department in upper stages should provide educational Sequence certificates stamped by the Egyptian Ministry of Foreign Affairs.",
+          "After taking official acceptance from the student affairs department parents should fill the \"Returning/Coming to Egypt Form\" from the Egyptian Ministry of Foreign Affairs. This form requires 2 personal photos and a certificate of the last stage the student passed."
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "From KG 1",
+          "from-kg-1-requirements-list": [
+            "Original Birth Certificate",
+            "6 Personal ID Photos",
+            "2 Copies From Parents ID Cards"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+          "from-kg-2-to-junior-6-title": "From KG 2 to Junior 6",
+          "from-kg-2-to-junior-6-requirements-list": [
+            "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+            "Student File"
+          ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+          "from-preparatory-1-to-preparatory-3-title": "From Preparatory 1 to Preparatory 3",
+          "from-preparatory-1-to-preparatory-3-requirements-list": [
+            "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+            "Grade 6 Certificate",
+            "Student File"
+          ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+          "from-senior-1-to-senior-3-title": "From Senior 1 to Senior 3",
+          "from-senior-1-to-senior-3-requirements-list": [
+            "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+            "Grade 6 Certificate & Preparatory Certificate",
+            "Student File"
+          ]
+        }
+      },
+      "outside-egypt-foreigners-page": {
+        "admission-requirements-note-list": [
+          "After passing the entry tests, the following documents will be requested for the registration process.",
+          "The National and the International departments request the same documents. However, students applying for International departments in upper stages should provide educational sequence certificates stamped by the Egyptian Ministry of Foreign Affairs.",
+          "After taking official acceptance from the student affairs department parents should fill the \"Returning/Coming to Egypt Form\" from the Egyptian Ministry of Foreign Affairs. This form requires 2 personal photos and a certificate of the last stage the student passed.",
+          "Parents should provide recent passports and personal ID's for the students affairs department."
+        ],
+        "from-kg-1-requirements": {
+          "from-kg-1-title": "From KG 1",
+          "from-kg-1-requirements-list": [
+            "Original Birth Certificate",
+            "6 Personal ID Photos",
+            "2 Copies From Parent ID Cards"
+          ]
+        },
+        "from-kg-2-to-junior-6-requirements": {
+          "from-kg-2-to-junior-6-title": "From KG 2 to Junior 6",
+          "from-kg-2-to-junior-6-requirements-list": [
+            "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+            "Student File"
+          ]
+        },
+        "from-preparatory-1-to-preparatory-3-requirements": {
+          "from-preparatory-1-to-preparatory-3-title": "From Preparatory 1 to Preparatory 3",
+          "from-preparatory-1-to-preparatory-3-requirements-list": [
+            "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+            "Grade 6 Certificate",
+            "Student File"
+          ]
+        },
+        "from-senior-1-to-senior-3-requirements": {
+          "from-senior-1-to-senior-3-title": "From Senior 1 to Senior 3",
+          "from-senior-1-to-senior-3-requirements-list": [
+            "Last stage certificate stamped by the Egyptian Ministry of Foreign Affairs",
+            "Grade 6 Certificate & Preparatory Certificate",
+            "Student File"
+          ]
+        }
+      }
+    },
+    "admission-fees-page": {}
+  }
+}

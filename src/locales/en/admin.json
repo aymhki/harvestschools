@@ -1,0 +1,11 @@
+{
+  "admin": {
+    "login-page": {
+      "title": "Admin Login",
+      "login-btn": "Login",
+      "logging-in-btn": "Logging in...",
+      "username-field": "Username",
+      "password-field": "Password"
+    }
+  }
+}

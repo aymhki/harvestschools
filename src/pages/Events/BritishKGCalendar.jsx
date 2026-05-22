@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import Table from "../../modules/Table.jsx";
 
 function BritishKGCalendar() {
-    const {t, i18n} = useTranslation()
+    const {t, i18n} = useTranslation(['events-pages'])
     const lastUpdatedDate = new Date('2026-04-30');
     const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
         year: 'numeric',
@@ -58,7 +58,7 @@ function BritishKGCalendar() {
                 </div>
 
                 <p>
-                    {t('common.last-updated')} {formattedDate}
+                    {t('common.last-updated', {ns: 'common'})} {formattedDate}
                 </p>
             </div>
         </div>

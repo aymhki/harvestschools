@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function Videos() {
-    const {t} = useTranslation();
+    const {t} = useTranslation(['gallery-pages']);
 
   return (
     <div className={'gallery-videos-page'}>

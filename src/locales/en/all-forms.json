@@ -1,0 +1,22 @@
+{
+  "all-forms": {
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "clear": "Clear",
+    "captcha": "Captcha",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "captcha-error": "Captcha is incorrect",
+    "general-error": "Form submission failed. Please try again",
+    "month": "Month",
+    "day": "Day",
+    "year": "Year",
+    "fields-must-not-match-error": "Field '{{field1}}' must not match '{{field2}}'",
+    "fields-must-match-error": "Field '{{field1}}' must match '{{field2}}'",
+    "success-message": "Form submitted successfully!",
+    "egp": "EGP",
+    "upload": "Upload",
+    "remove": "Remove",
+    "year-month-day": " (YYYY-MM-DD)"
+  }
+}

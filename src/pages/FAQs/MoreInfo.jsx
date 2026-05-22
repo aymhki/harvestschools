@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 
 
 function MoreInfo() {
-    const {t} = useTranslation();
+    const {t} = useTranslation(['faqs-pages']);
 
     const options = [
         {
@@ -13,7 +13,7 @@ function MoreInfo() {
             image: "/assets/images/FAQsPages/FAQs1.png",
             description: t("faqs-pages.options-page.faqs-option-description"),
             link: "/faqs",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'} ),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -22,7 +22,7 @@ function MoreInfo() {
             image: "/assets/images/FAQsPages/Age2.png",
             description:  t("faqs-pages.options-page.minimum-registration-age-option-description"),
             link: "/minimum-stage-age",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -31,7 +31,7 @@ function MoreInfo() {
             image: "/assets/images/FAQsPages/Covid1.png",
             description: t("faqs-pages.options-page.covid-19-policy-option-description"),
             link: "/covid-19",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         }

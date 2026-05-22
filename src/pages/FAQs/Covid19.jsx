@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 
 function Covid19() {
 
-    const {t, i18n} = useTranslation();
+    const {t, i18n} = useTranslation(['faqs-pages']);
 
     return (
         <>

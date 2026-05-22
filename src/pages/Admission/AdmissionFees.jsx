@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 
 function AdmissionFees() {
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(['admission-pages']);
 
   return (
     <div style={{textAlign: "center"}}>
@@ -22,7 +22,7 @@ function AdmissionFees() {
       </h1>
 
         <p>
-            {t("common.this-page-is-under-construction")}
+            {t("common.this-page-is-under-construction", {ns: 'common'})}
         </p>
     </div>
   );

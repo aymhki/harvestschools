@@ -4,7 +4,7 @@ import '../../../styles/StudentsLife.css'
 import {useTranslation} from "react-i18next";
 
 function Library() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['students-life-pages']);
 
     const arabicLibraryOptions = [
         {
@@ -12,7 +12,7 @@ function Library() {
             image: "/assets/images/StudentsLifePages/Informative1.png",
             description: t("students-life-pages.library-pages.main-library-page.arabic-books-options.educational-option-description"),
             link: "/students-life/library/arabic-information",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: true,
             descriptionInArabic: true
 
@@ -22,7 +22,7 @@ function Library() {
             image: "/assets/images/StudentsLifePages/General1.png",
             description: t("students-life-pages.library-pages.main-library-page.arabic-books-options.general-option-description"),
             link: "/students-life/library/arabic-general",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: true,
             descriptionInArabic: true
         },
@@ -31,7 +31,7 @@ function Library() {
             image: "/assets/images/StudentsLifePages/Tales1.png",
             description: t("students-life-pages.library-pages.main-library-page.arabic-books-options.stories-option-description"),
             link: "/students-life/library/arabic-stories",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: true,
             descriptionInArabic: true
         },
@@ -40,7 +40,7 @@ function Library() {
             image: "/assets/images/StudentsLifePages/Religious1.png",
             description: t("students-life-pages.library-pages.main-library-page.arabic-books-options.religious-option-description"),
             link: "/students-life/library/arabic-religion",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: true,
             descriptionInArabic: true
 
@@ -53,7 +53,7 @@ function Library() {
             image: "/assets/images/StudentsLifePages/Tales2.png",
             description: t("students-life-pages.library-pages.main-library-page.english-books-options.fairy-tales-option-description"),
             link: "/students-life/library/english-fairy-tales",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -62,7 +62,7 @@ function Library() {
             image: "/assets/images/StudentsLifePages/Drama1.png",
             description: t("students-life-pages.library-pages.main-library-page.english-books-options.drama-option-description"),
             link: "/students-life/library/english-drama",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
 
@@ -72,14 +72,14 @@ function Library() {
             image: "/assets/images/StudentsLifePages/Levels1.png",
             description: t("students-life-pages.library-pages.main-library-page.english-books-options.levels-option-description"),
             link: "/students-life/library/english-levels",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
         },
         {
             title: t("students-life-pages.library-pages.main-library-page.english-books-options.general-option"),
             image: "/assets/images/StudentsLifePages/General1.png",
             description: t("students-life-pages.library-pages.main-library-page.english-books-options.general-option-description"),
             link: "/students-life/library/english-general",
-            buttonText: t("common.select"),
+            buttonText: t("common.select", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         }

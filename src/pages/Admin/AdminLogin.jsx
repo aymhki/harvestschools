@@ -12,7 +12,7 @@ function AdminLogin() {
     const [submittingLocal, setSubmittingLocal] = useState(false);
     const usernameFieldId = 1
     const passwordFieldId = 2
-    const { t } = useTranslation();
+    const { t } = useTranslation(['admin']);
 
     const handleAdminLogin = async (formData) => {
         if (submittingLocal) {return;}

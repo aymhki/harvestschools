@@ -71,7 +71,7 @@ ErrorBoundaryClass.propTypes = {
 };
 
 const ErrorBoundary = ({ children }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['error-boundary-page']);
     return <ErrorBoundaryClass t={t}>{children}</ErrorBoundaryClass>;
 };
 

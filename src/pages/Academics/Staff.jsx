@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function Staff() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['academics-pages']);
 
     const options = [
 

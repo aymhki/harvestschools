@@ -7,7 +7,7 @@ import {submitOpenDaySignupRequest} from "../../services/OpenDaySignupsServices.
 import Spinner from "../../modules/Spinner.jsx";
 
 function OpenDaySignup() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['events-pages']);
     const [numberOfAttendeesSelected, setNumberOfAttendeesSelected] = useState(false);
     const [openDaySignupFormFields, setOpenDaySignupFormFields] = useState([])
     const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ function OpenDaySignup() {
             setValue: null,
             widthOfField: 2,
             httpName: 'parent-name',
-            displayLabel: t("events-pages.open-day-signup.parent-name-field")
+            displayLabel: t("events-pages.open-day-signup-page.parent-name-field")
         },
         {
             id: 2,

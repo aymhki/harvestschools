@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
 
 function GraduationBookingExtras() {
-    const {t, i18n} = useTranslation();
+    const {t, i18n} = useTranslation(['events-pages']);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [fetchBookingBySessionError, setFetchBookingBySessionError] = useState(null);

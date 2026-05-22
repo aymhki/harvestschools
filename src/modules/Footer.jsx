@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 
 function Footer() {
     const [isMobile, setIsMobile] = useState(true);
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['footer']);
     const currentYear = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
         year: 'numeric',
         timeZone: 'Africa/Cairo'

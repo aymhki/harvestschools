@@ -8,7 +8,7 @@ import {useTranslation} from "react-i18next";
 import {headToBookingLoginOnInvalidSessionFromGraduationBookingDashboard} from "../../../services/GraduationBookingNavigationServices.jsx";
 
 function GraduationBookingDashboard() {
-    const {t} = useTranslation()
+    const {t} = useTranslation(['events-pages'])
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -31,7 +31,7 @@ function GraduationBookingDashboard() {
                                 image: "/assets/images/EventsPages/BookingExtras1.png",
                                 description: t("events-pages.graduation-booking-pages.dashboard-page.extras-option-description"),
                                 link: "/events/booking/extras",
-                                buttonText: t("common.access"),
+                                buttonText: t("common.access", {ns: 'common'}),
                                 titleInArabic: false,
                                 descriptionInArabic: false
                             },
@@ -40,7 +40,7 @@ function GraduationBookingDashboard() {
                                 image: "/assets/images/EventsPages/BookingInfo1.png",
                                 description: t("events-pages.graduation-booking-pages.dashboard-page.booking-info-option-description"),
                                 link: "/events/booking/info",
-                                buttonText: t("common.access"),
+                                buttonText: t("common.access", {ns: 'common'}),
                                 titleInArabic: false,
                                 descriptionInArabic: false
                             },
@@ -49,7 +49,7 @@ function GraduationBookingDashboard() {
                                 image: "/assets/images/EventsPages/BookingMedia1.png",
                                 description: t("events-pages.graduation-booking-pages.dashboard-page.media-option-description"),
                                 link: "/events/booking/media",
-                                buttonText: t("common.access"),
+                                buttonText: t("common.access", {ns: 'common'}),
                                 titleInArabic: false,
                                 descriptionInArabic: false
                             },

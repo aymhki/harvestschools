@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 
 function AdmissionRequirements() {
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(['admission-pages']);
 
     const options = [
         {
@@ -13,7 +13,7 @@ function AdmissionRequirements() {
             image: "/assets/images/AdmissionPages/Egypt1.png",
             description: t("admission-pages.admission-requirements-page.options-page.inside-egypt-option-description"),
             link: "/admission/inside-egypt-requirements",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -22,7 +22,7 @@ function AdmissionRequirements() {
             image: "/assets/images/AdmissionPages/Globe1.png",
             description: t("admission-pages.admission-requirements-page.options-page.outside-egypt-option-description"),
             link: "/admission/outside-egypt-requirements",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         },
@@ -31,7 +31,7 @@ function AdmissionRequirements() {
             image: "/assets/images/AdmissionPages/Foreigner1.png",
             description: t("admission-pages.admission-requirements-page.options-page.outside-egypt-foreigners-option-description"),
             link: "/admission/outside-egypt-requirements-foreigners",
-            buttonText: t("common.learn-more"),
+            buttonText: t("common.learn-more", {ns: 'common'}),
             titleInArabic: false,
             descriptionInArabic: false
         }

@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function MinimumStageAge() {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['faqs-pages']);
     const lastUpdatedDate = new Date('2023-01-02');
     const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
         year: 'numeric',
@@ -49,7 +49,7 @@ function MinimumStageAge() {
             } numCols={2} tableData={finalInternationalTableData}/>
 
             <p>
-                {t('common.last-updated')} {formattedDate}
+                {t('common.last-updated', {ns: 'common'})} {formattedDate}
             </p>
         </div>
     </div>

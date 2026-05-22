@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function Facilities() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['academics-pages']);
 
     const imageSources = [
         "/assets/images/AcademicsPages/Facilities/HandballField2.jpg",
@@ -34,7 +34,7 @@ function Facilities() {
     return (
         <div className="academics-facilities-page">
             <Helmet>
-                <title>{t('nav.facilities')} | {t('nav.home')}</title>
+                <title>{t('nav.facilities', {ns: 'nav'})} | {t('nav.home', {ns: 'nav'})}</title>
                 <meta name="description"
                       content="Learn more about the classrooms, labs, libraries, canteens, sports facilities, and more at Harvest International School in Borg El Arab, Egypt."/>
                 <meta name="keywords"

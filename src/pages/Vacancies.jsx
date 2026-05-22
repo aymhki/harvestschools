@@ -8,7 +8,7 @@ import {useTranslation} from "react-i18next";
 
 function Vacancies() {
     const [submittingLocal, setSubmittingLocal] = useState(false);
-    const {t} = useTranslation();
+    const {t} = useTranslation(['vacancies-page']);
 
     const handleSubmitJobApplication = async (formData) => {
         try {
