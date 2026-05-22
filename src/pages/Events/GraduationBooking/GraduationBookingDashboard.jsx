@@ -30,7 +30,7 @@ function GraduationBookingDashboard() {
                                 title: t("events-pages.graduation-booking-pages.dashboard-page.extras-option"),
                                 image: "/assets/images/EventsPages/BookingExtras1.png",
                                 description: t("events-pages.graduation-booking-pages.dashboard-page.extras-option-description"),
-                                link: "/events/booking/extras",
+                                link: "/events/graduation-booking/extras",
                                 buttonText: t("common.access", {ns: 'common'}),
                                 titleInArabic: false,
                                 descriptionInArabic: false
@@ -39,7 +39,7 @@ function GraduationBookingDashboard() {
                                 title: t("events-pages.graduation-booking-pages.dashboard-page.booking-info-option"),
                                 image: "/assets/images/EventsPages/BookingInfo1.png",
                                 description: t("events-pages.graduation-booking-pages.dashboard-page.booking-info-option-description"),
-                                link: "/events/booking/info",
+                                link: "/events/graduation-booking/info",
                                 buttonText: t("common.access", {ns: 'common'}),
                                 titleInArabic: false,
                                 descriptionInArabic: false
@@ -48,7 +48,7 @@ function GraduationBookingDashboard() {
                                 title: t("events-pages.graduation-booking-pages.dashboard-page.media-option"),
                                 image: "/assets/images/EventsPages/BookingMedia1.png",
                                 description: t("events-pages.graduation-booking-pages.dashboard-page.media-option-description"),
-                                link: "/events/booking/media",
+                                link: "/events/graduation-booking/media",
                                 buttonText: t("common.access", {ns: 'common'}),
                                 titleInArabic: false,
                                 descriptionInArabic: false
