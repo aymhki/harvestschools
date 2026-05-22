@@ -1,4 +1,4 @@
 export const generateGraduationBookingConfirmationPDF = async (... args) => {
-    const { generateGraduationBookingConfirmationPDF: generate } = await import('./GeneratePDF.jsx');
+    const { generateGraduationBookingConfirmationPDF: generate } = await import('./GenerateGraduationBookingConfirmationPDF.jsx');
     return generate(...args);
 };
