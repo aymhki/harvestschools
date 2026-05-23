@@ -24,7 +24,7 @@ function gemini_chat($systemPrompt, $history, $userMessage, $lang = 'en') {
         "contents" => $contents
     ];
 
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . GEMINI_API_KEY;
+    $url = "https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=" . GEMINI_API_KEY;
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
