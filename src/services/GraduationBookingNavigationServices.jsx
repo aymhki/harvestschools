@@ -18,7 +18,7 @@ const headToGraduationBookingLoginOnInvalidSession = async (navigate, setIsLoadi
     }
 }
 
-const headToBookingLoginOnInvalidSessionFromGraduationBookingDashboard = async (navigate, setIsLoading) => {
+const headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard = async (navigate, setIsLoading) => {
     setIsLoading(true);
 
     try {
@@ -44,6 +44,6 @@ const headToGraduationBookingDashboardOnValidSession = async (navigate, setIsLoa
 
 export {
     headToGraduationBookingLoginOnInvalidSession,
-    headToBookingLoginOnInvalidSessionFromGraduationBookingDashboard,
+    headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard,
     headToGraduationBookingDashboardOnValidSession
 }

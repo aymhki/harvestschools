@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
 import {resetSession, graduationBookingLoginPageUrl } from "../../../services/GeneralUtils.jsx"
 import {useTranslation} from "react-i18next";
-import {headToBookingLoginOnInvalidSessionFromGraduationBookingDashboard} from "../../../services/GraduationBookingNavigationServices.jsx";
+import {headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard} from "../../../services/GraduationBookingNavigationServices.jsx";
 
 function GraduationBookingDashboard() {
     const {t} = useTranslation(['events-pages'])
@@ -13,7 +13,7 @@ function GraduationBookingDashboard() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        headToBookingLoginOnInvalidSessionFromGraduationBookingDashboard(navigate, setIsLoading)
+        headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard(navigate, setIsLoading)
     }, [])
 
 
