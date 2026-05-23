@@ -5,14 +5,16 @@ import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
 import { useTranslation } from 'react-i18next';
 
+
+
 function Home() {
 
     const { t } = useTranslation(['home']);
     
 
     const homeSliderPhotos = [
-        { id: 1, url: '/assets/images/HomePage/VisionBackground.v6.jpg', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
-        { id: 2, url: '/assets/images/HomePage/MissionBckground.v6.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
+        { id: 1, url: '/assets/images/HomePage/VisionBackground.v6.avif', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
+        { id: 2, url: '/assets/images/HomePage/MissionBckground.v6.avif', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
     ]
 
     const contactUsFormFields = [
@@ -64,14 +66,15 @@ function Home() {
                             loading={"lazy"}
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+
                 </div>
             </div>
 
             <div className="home-page-accreditations-section-container">
                 <div className="home-page-accreditations-section">
-                    <img className="accreditation-photo" src="/assets/images/HomePage/AccreditedCognia.png"
+                    <img className="accreditation-photo" src="/assets/images/HomePage/AccreditedCognia.avif"
                          alt="Cognia Accredited"/>
-                    <img className="accreditation-photo" src="/assets/images/HomePage/CICIS.png" alt="University of Cambridge Accredited" />
+                    <img className="accreditation-photo" src="/assets/images/HomePage/CICIS.avif" alt="University of Cambridge Accredited" />
                 </div>
             </div>
 
@@ -79,7 +82,7 @@ function Home() {
                 <ParallaxScrollSection
                     title={t("home.elearning-and-academics")}
                     text={t("home.harvest-schools-elearning-and-academics")}
-                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.v6.jpg"
+                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.v6.avif"
                     darken={true}
                     buttonText={t("common.learn-more", {ns: 'common'})}
                     buttonLink="/academics/partners"
@@ -88,7 +91,7 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v5.jpg'} darken={true} buttonText={t("common.explore", {ns: 'common'})} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v5.avif'} darken={true} buttonText={t("common.explore", {ns: 'common'})} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">
