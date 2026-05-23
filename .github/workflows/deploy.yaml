@@ -91,3 +91,12 @@ jobs:
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
           mirror -R --verbose src/scripts/ public_html/scripts/
           "
+
+      - name: Sync whatsapp-bot folder
+        run: |
+          echo "Syncing whatsapp-bot folder to public_html/whatsapp-bot"
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose whatsapp-bot/ public_html/whatsapp-bot/
+          "
