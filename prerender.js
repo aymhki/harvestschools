@@ -74,48 +74,14 @@ if (fs.existsSync(originalIndexPath)) {
     fs.renameSync(originalIndexPath, tempIndexPath);
 }
 
-// for (const url of routesToPrerender) {
-//     const { appHtml, helmet } = render(url);
-//
-//     const currentTemplate = fs.readFileSync(tempIndexPath, 'utf-8');
-//
-//     const finalHtml = currentTemplate
-//         .replace(`<!--ssr-outlet-->`, appHtml)
-//         .replace(`<!--helmet-tags-->`, helmet);
-//
-//     const dirPath = `dist/static${url}`;
-//     const absoluteDirPath = toAbsolute(dirPath);
-//
-//     if (!fs.existsSync(absoluteDirPath)) {
-//         fs.mkdirSync(absoluteDirPath, { recursive: true });
-//     }
-//
-//     const filePath = path.join(absoluteDirPath, 'index.html');
-//     fs.writeFileSync(filePath, finalHtml);
-//     console.log('pre-rendered:', filePath);
-// }
-
 for (const url of routesToPrerender) {
     const { appHtml, helmet } = render(url);
 
     const currentTemplate = fs.readFileSync(tempIndexPath, 'utf-8');
 
-    let finalHtml = currentTemplate
-        .replace(``, appHtml)
-        .replace(``, helmet);
-
-    // --- ALTERNATIVE: DEFER CSS LOADING ---
-    finalHtml = finalHtml.replace(
-        /<link\s+rel="stylesheet"\s+([^>]*href="([^"]+)"[^>]*)>/gi,
-        (match, attributes, href) => {
-            return `
-    <link rel="preload" as="style" ${attributes}>
-    <link rel="stylesheet" media="print" onload="this.media='all'" ${attributes}>
-    <noscript><link rel="stylesheet" ${attributes}></noscript>
-            `.trim();
-        }
-    );
-    // --- END ALTERNATIVE ---
+    const finalHtml = currentTemplate
+        .replace(`<!--ssr-outlet-->`, appHtml)
+        .replace(`<!--helmet-tags-->`, helmet);
 
     const dirPath = `dist/static${url}`;
     const absoluteDirPath = toAbsolute(dirPath);
