@@ -9,6 +9,7 @@ $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
+
 try {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);

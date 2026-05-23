@@ -129,7 +129,8 @@ const ENDPOINTS = {
     updateGraduationBookingExtras: '/scripts/submitUpdateGraduationBookingExtras.php',
     getGraduationBookingConfirmation: '/scripts/getGraduationBookingConfirmation.php',
     serveJobApplicationFile: '/scripts/serveJobApplicationFile.php?file=',
-    submitOpenDaySignupForm: '/scripts/submitOpenDaySignupForm.php'
+    submitOpenDaySignupForm: '/scripts/submitOpenDaySignupForm.php',
+    getOpenDaySignups: '/scripts/getOpenDaySignups.php'
 };
 
 const BASE_URLS = {
