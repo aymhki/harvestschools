@@ -2,6 +2,17 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/PhotoSlider.css';
 
+const generateSrcSet = (url) => {
+    if (!url) return '';
+    const lastDotIndex = url.lastIndexOf('.');
+    if (lastDotIndex === -1) return url;
+
+    const basePath = url.substring(0, lastDotIndex);
+    const ext = url.substring(lastDotIndex);
+
+    return `${basePath}-560${ext} 560w, ${basePath}-1000${ext} 1000w, ${url} 2000w`;
+};
+
 function PhotoSlider({ photos, darken }) {
     const [current, setCurrent] = useState(0);
     const [exiting, setExiting] = useState(null);
@@ -42,6 +53,8 @@ function PhotoSlider({ photos, darken }) {
                     className={`slide ${index === current ? 'active' : index === exiting ? 'exiting' : 'not-active'}`}
                     key={photo.id}>
                     <img
+                        srcSet={generateSrcSet(photo.url)}
+                        sizes="(max-width: 600px) 560px, (max-width: 1200px) 1000px, 100vw"
                         src={photo.url}
                         alt={photo.text}
                         className={darken ? 'slider-photo-dark' : 'slider-photo'}

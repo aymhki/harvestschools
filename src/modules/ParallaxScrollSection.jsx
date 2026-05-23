@@ -4,6 +4,30 @@ import PropTypes from 'prop-types';
 import {Fragment} from "react";
 import {useEffect, useState} from "react";
 
+const generateSrcSet = (url) => {
+    if (!url) return '';
+    const lastDotIndex = url.lastIndexOf('.');
+    if (lastDotIndex === -1) return url;
+
+    const basePath = url.substring(0, lastDotIndex);
+    const ext = url.substring(lastDotIndex);
+
+    return `${basePath}-560${ext} 560w, ${basePath}-1000${ext} 1000w, ${url} 2000w`;
+};
+
+// Helper for CSS background images using image-set
+const generateImageSet = (url) => {
+    if (!url) return 'none';
+    const lastDotIndex = url.lastIndexOf('.');
+    if (lastDotIndex === -1) return `url(${url})`;
+
+    const basePath = url.substring(0, lastDotIndex);
+    const ext = url.substring(lastDotIndex);
+
+    // Uses the 560px version for 1x (standard mobile screens) and original for 2x (retina/desktop)
+    return `image-set(url("${basePath}-560${ext}") 1x, url("${url}") 2x)`;
+};
+
 function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonText, buttonLink, image, imageAlt, divElements, noParallax }) {
     const navigate = useNavigate();
     const [isSafari, setIsSafari] = useState(false);
@@ -11,7 +35,7 @@ function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonTex
 
 
     const style = {
-        backgroundImage: `url(${backgroundImage})`
+        backgroundImage: generateImageSet(backgroundImage)
     };
 
     useEffect(() => {
@@ -24,7 +48,15 @@ function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonTex
              style={style}>
             {darken && <div className="darken"></div>}
             <div className="content">
-                {image && imageAlt && (<img src={image} alt={imageAlt} className="parallax-section-image"/>)}
+                {image && imageAlt && (
+                    <img
+                        srcSet={generateSrcSet(image)}
+                        sizes="(max-width: 600px) 560px, (max-width: 1200px) 1000px, 100vw"
+                        src={image}
+                        alt={imageAlt}
+                        className="parallax-section-image"
+                    />
+                )}
                 {title && <h1>{title}</h1>}
 
                 {
