@@ -20,7 +20,6 @@ const NavigationBar = () => {
     const [isClient, setIsClient] = useState(false);
     const { t, i18n } = useTranslation(['nav']);
 
-    // Set client-side flag
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -115,7 +114,7 @@ const NavigationBar = () => {
         <nav className={`navbar`} >
             <div className="logo-container">
                 <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate('/home'); } }>
-                    <img src="/assets/images/HarvestLogos/HarvestLogoCropped.png" alt="Harvest Logo" className="logo" />
+                    <img src="/assets/images/HarvestLogos/HarvestLogoCropped.avif" alt="Harvest Logo" className="logo" fetchpriority="high"/>
                 </Link>
 
                 <div className="navbar-quick-action-buttons-container">
