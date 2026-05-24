@@ -47,11 +47,11 @@ function deepseek_chat($systemPrompt, $history, $userMessage, $lang = 'en') {
     $messages[] = ["role" => "user", "content" => $userMessage];
 
     $payload = [
-        "model" => "deepseek-chat",
+        "model" => "deepseek-v4-flash",
         "messages" => $messages
     ];
 
-    $ch = curl_init("https://api.deepseek.com/v1/chat/completions");
+    $ch = curl_init("https://api.deepseek.com/chat/completions");
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
