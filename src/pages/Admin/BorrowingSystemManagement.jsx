@@ -22,7 +22,7 @@ function BorrowingSystemManagement() {
 
 
                 <p>
-                    {t("common.this-page-is-under-construction", {ns: 'common'})}
+                   Hi  {t("common.this-page-is-under-construction", {ns: 'common'})}
                 </p>
 
             </div>
