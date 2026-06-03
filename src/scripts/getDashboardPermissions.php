@@ -109,8 +109,25 @@ try {
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
             ]
+
+        ],
+        3 => [
+            [
+                        "title" => "Borrowing  System",
+                        "image" => "/assets/images/Dashboard/BorrowingSystem.png",
+                        "description" => "View & manage open the borrowing system",
+                        "link" => "/admin/borrowing-system-management",
+                        "buttonText" => "View System",
+                        "titleInArabic" => false,
+                        "descriptionInArabic" => false
+
+            ]
+
         ]
+
+
     ];
+
 
     foreach ($cleanPermissionLevels as $level) {
         if (isset($allDashboardOptions[$level])) {
