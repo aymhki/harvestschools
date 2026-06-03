@@ -38,6 +38,15 @@
     min-height: 100vh;
 }
 
+.borrowing-system-management-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
 .job-applications-page:lang(ar) {
     direction: ltr;
     font-family: var(--english-normal-font);
