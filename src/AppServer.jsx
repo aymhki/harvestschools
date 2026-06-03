@@ -17,6 +17,7 @@ import JobApplications from "./pages/Admin/JobApplications.jsx";
 import GraduationBookingManagement from "./pages/Admin/GraduationBookingManagement.jsx";
 import OpenDaySignupsManagement from "./pages/Admin/OpenDaySignupsManagement.jsx";
 import FileViewer from './pages/Admin/FileViewer.jsx';
+import BorrowingSystemManagement from './pages/Admin/BorrowingSystemManagement.jsx';
 import Admission from "./pages/Admission/Admission.jsx";
 import AdmissionProcess from './pages/Admission/AdmissionProcess';
 import AdmissionRequirements from './pages/Admission/AdmissionRequirements';
@@ -106,6 +107,7 @@ function AppServer() {
                         <Route path="/admin/view-job-application-file" element={<FileViewer />} />
                         <Route path="/admin/graduation-booking-management" element={<GraduationBookingManagement />} />
                         <Route path="/admin/open-day-signups-management" element={<OpenDaySignupsManagement />} />
+                        <Route path="/admin/borrowing-system-management" element={<BorrowingSystemManagement />} />
                         <Route path="/more-info" element={<MoreInfo />} />
                         <Route path="/faqs" element={<Faqs />} />
                         <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
