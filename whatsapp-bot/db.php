@@ -71,7 +71,6 @@ function clearUserHistory($phone) {
     $stmt->execute([$phone]);
 }
 
-// Get history — either ALL (if config = 1) or only current session (if config = 0)
 function getRelevantHistory($phone, $session, $limit = 50) {
     if (USE_HISTORY_ACROSS_SESSIONS === 1) {
         $stmt = db()->prepare("SELECT role, message FROM chat_bot_user_chat_history WHERE phone_number = ? ORDER BY created_at ASC LIMIT $limit");
