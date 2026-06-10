@@ -47,7 +47,7 @@ function deepseek_chat($systemPrompt, $history, $userMessage, $lang = 'en') {
     $messages[] = ["role" => "user", "content" => $userMessage];
 
     $payload = [
-        "model" => "deepseek-v4-flash",
+        "model" => "deepseek-v4-pro",
         "messages" => $messages
     ];
 
