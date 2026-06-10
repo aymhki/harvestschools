@@ -2,13 +2,6 @@
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../whatsapp_api.php';
 
-/**
- * ========================================================================
- * SINGLE SOURCE OF TRUTH CONFIGURATION
- * Edit fees, ages, availability, and names here. The bot will automatically
- * update all localized menus and responses.
- * ========================================================================
- */
 function getSchoolConfig() {
     return [
         'ui' => [
@@ -17,8 +10,12 @@ function getSchoolConfig() {
             'main_btn' => ['en' => 'Options', 'ar' => 'الخيارات'],
             'dept_title' => ['en' => 'Choose Department', 'ar' => 'اختر القسم'],
             'dept_body' => ['en' => 'Please select the educational department:', 'ar' => 'يرجى اختيار القسم التعليمي:'],
-            'stage_title' => ['en' => 'Choose Stage/Grade', 'ar' => 'اختر المرحلة/الصف'],
-            'stage_body' => ['en' => 'Please select the grade:', 'ar' => 'يرجى اختيار الصف الدراسي:'],
+            'sec_title' => ['en' => 'Choose Stage Group', 'ar' => 'اختر المرحلة الدراسية'],
+            'sec_body' => ['en' => 'Please select the stage group:', 'ar' => 'يرجى اختيار المجموعة الدراسية:'],
+            'stage_title' => ['en' => 'Choose Grade', 'ar' => 'اختر الصف'],
+            'stage_body' => ['en' => 'Please select the specific grade:', 'ar' => 'يرجى اختيار الصف الدراسي بالتحديد:'],
+            'faq_title' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
+            'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
             'back_btn' => ['en' => '🔙 Main Menu', 'ar' => '🔙 القائمة الرئيسية'],
             'nav_section' => ['en' => 'Navigation', 'ar' => 'التنقل'],
         ],
@@ -30,12 +27,9 @@ function getSchoolConfig() {
             ['id' => 'menu_disc', 'en' => 'Discounts', 'ar' => 'الخصومات'],
             ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
             ['id' => 'menu_faqs', 'en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
+            ['id' => 'menu_careers', 'en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
         ],
         'static_content' => [
-            'menu_reqs' => [
-                'en' => "*Admission Requirements:*\n\n• Original Birth Certificate\n• 6 Recent Photos\n• Father and Mother ID copies\n• Updated Immunization Record\n• Medical Certificate (Health Insurance) - KG1 only\n• Previous School Report - KG2 through Senior 3",
-                'ar' => "*متطلبات التقديم:*\n\n• أصل شهادة الميلاد\n• 6 صور شخصية حديثة\n• صور بطاقة الرقم القومي للأب والأم\n• سجل التطعيمات محدث\n• شهادة طبية (التأمين الصحي) - KG1 فقط\n• بيان نجاح / شهادة من المدرسة السابقة - من KG2 حتى Senior 3"
-            ],
             'menu_disc' => [
                 'en' => "*Discounts:*\n\n• *Siblings Discount:* 10% off tuition fees\n• *Staff Discount:* 40% off tuition fees\n\n_For combined discount cases, please confirm directly with our Accounting department to get an accurate quote._",
                 'ar' => "*الخصومات:*\n\n• *خصم الأخوة:* 10% من المصروفات الدراسية\n• *خصم العاملين:* 40% من المصروفات الدراسية\n\n_في حالات الخصومات المجمعة، يرجى مراجعة قسم الحسابات مباشرة للحصول على التأكيد الدقيق._"
@@ -44,20 +38,41 @@ function getSchoolConfig() {
                 'en' => "*Accreditations:*\n\n• *National Dept:* Accredited by the Egyptian Ministry of Education\n• *British Dept:* Accredited by Cambridge / Pearson Edexcel / Oxford\n• *American Dept:* Accredited by Cognia",
                 'ar' => "*الاعتمادات:*\n\n• *القسم القومي:* معتمد من وزارة التربية والتعليم المصرية\n• *القسم البريطاني:* معتمد من Cambridge / Pearson Edexcel / Oxford\n• *القسم الأمريكي:* معتمد من Cognia"
             ],
-            'menu_faqs' => [
-                'en' => "*Frequently Asked Questions:*\n\n*Q: Is the school mixed?*\nA: Yes.\n\n*Q: Does the school accept transfers?*\nA: Yes, as long as they pass the entry test.\n\n*Q: Do fees change every year?*\nA: Only increases applied by the Ministry of Education (up to 10%).\n\n*Q: Are there foreign teachers?*\nA: Teachers are mostly Egyptian and highly qualified.\n\n*Q: Is there transportation?*\nA: Yes, school buses cover every district in Alexandria.\n\n*Q: Are there sports activities?*\nA: Yes, all kinds of sports throughout the year.",
-                'ar' => "*الأسئلة الشائعة:*\n\n*س: هل المدرسة مختلطة؟*\nج: نعم.\n\n*س: هل تقبل المدرسة التحويلات؟*\nج: نعم، بشرط اجتياز اختبار القبول بالمدرسة.\n\n*س: هل تتغير المصروفات سنوياً؟*\nج: تطبق فقط الزيادات المقررة من وزارة التربية والتعليم (حتى 10%).\n\n*س: هل يوجد مدرسين أجانب؟*\nج: المدرسون في الغالب مصريون ذوو كفاءة عالية.\n\n*س: هل يوجد باصات للمدرسة؟*\nج: نعم، تغطي الباصات جميع مناطق الإسكندرية.\n\n*س: هل توجد أنشطة رياضية؟*\nج: نعم، توفر المدرسة جميع أنواع الأنشطة الرياضية على مدار العام."
+            'menu_careers' => [
+                'en' => "We're always open to talented educators joining the Harvest family.\n\nYou can submit your application here:\n👉 https://harvestschools.com/vacancies",
+                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست.\n\nيمكنك تقديم طلب التوظيف من هنا:\n👉 https://harvestschools.com/vacancies"
             ],
             'fees_disclaimer' => [
                 'en' => "\n\n_Note: Tuition does NOT include uniforms, books, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
                 'ar' => "\n\n_ملاحظة: المصروفات لا تشمل الزي المدرسي، الكتب، الباص، أو الأنشطة. قد تكون مؤهلاً لخصومات الأخوة أو العاملين. يرجى مراجعة قسم الحسابات للتفاصيل._"
             ]
         ],
-        // =========================================================
-        // DEPARTMENTS & STAGES DATA
-        // Edit offered status, age, and tuition directly below.
-        // Sections group items properly for WhatsApp's 10-item limit.
-        // =========================================================
+        'faqs' => [
+            'faq_mixed' => [
+                'q' => ['en' => 'Is the school mixed?', 'ar' => 'هل المدرسة مختلطة؟'],
+                'a' => ['en' => 'Yes, Harvest International Schools is a mixed school.', 'ar' => 'نعم، مدارس هارڤست هي مدرسة مختلطة.']
+            ],
+            'faq_transfer' => [
+                'q' => ['en' => 'Accept transfers?', 'ar' => 'هل تقبل التحويلات؟'],
+                'a' => ['en' => 'Yes, transfer students are accepted as long as they pass an entry test held at the school.', 'ar' => 'نعم، تقبل المدرسة التحويلات بشرط اجتياز الطالب لاختبار القبول بالمدرسة.']
+            ],
+            'faq_fees' => [
+                'q' => ['en' => 'Do fees change yearly?', 'ar' => 'هل تتغير المصروفات سنوياً؟'],
+                'a' => ['en' => 'Only increases applied by the Ministry of Education are applied, which can be up to 10%.', 'ar' => 'تطبق فقط الزيادات المقررة من وزارة التربية والتعليم، والتي قد تصل إلى 10%.']
+            ],
+            'faq_teachers' => [
+                'q' => ['en' => 'Are there foreign teachers?', 'ar' => 'هل يوجد مدرسين أجانب؟'],
+                'a' => ['en' => 'Our teachers are mostly Egyptian and highly qualified.', 'ar' => 'المدرسون في الغالب مصريون ذوو كفاءة عالية جداً.']
+            ],
+            'faq_bus' => [
+                'q' => ['en' => 'Is there transportation?', 'ar' => 'هل يوجد باصات للمدرسة؟'],
+                'a' => ['en' => 'Yes, school buses cover every district in Alexandria.', 'ar' => 'نعم، تغطي الباصات جميع مناطق الإسكندرية.']
+            ],
+            'faq_sports' => [
+                'q' => ['en' => 'Are there sports?', 'ar' => 'هل توجد أنشطة رياضية؟'],
+                'a' => ['en' => 'Yes, Harvest Academy provides all kinds of sports activities throughout the year.', 'ar' => 'نعم، توفر المدرسة جميع أنواع الأنشطة الرياضية على مدار العام.']
+            ],
+        ],
         'departments' => [
             'early' => [
                 'name' => ['en' => 'Early Years', 'ar' => 'مرحلة ما قبل المدرسة'],
@@ -199,6 +214,33 @@ function findStageById($stageId) {
     return null;
 }
 
+function getRequirementsForStage($stageId, $stageName, $lang) {
+    $medicalStages = ['stg_nat_kg1', 'stg_brit_fs1', 'stg_am_prek'];
+    $noReportStages = ['stg_pre_play', 'stg_play', 'stg_nat_kg1', 'stg_brit_fs1', 'stg_am_prek'];
+
+    $needsMedical = in_array($stageId, $medicalStages);
+    $needsReport = !in_array($stageId, $noReportStages);
+
+    if ($lang === 'en') {
+        $text = "*Admission Requirements for {$stageName}:*\n\n";
+        $text .= "• Original Birth Certificate\n";
+        $text .= "• 6 Recent Photos\n";
+        $text .= "• Father and Mother ID copies\n";
+        $text .= "• Updated Immunization Record\n";
+        if ($needsMedical) $text .= "• Medical Certificate (issued by health insurance)\n";
+        if ($needsReport) $text .= "• Previous School Report Card\n";
+    } else {
+        $text = "*متطلبات التقديم لمرحلة {$stageName}:*\n\n";
+        $text .= "• أصل شهادة الميلاد\n";
+        $text .= "• 6 صور شخصية حديثة\n";
+        $text .= "• صور بطاقة الرقم القومي للأب والأم\n";
+        $text .= "• سجل التطعيمات محدث\n";
+        if ($needsMedical) $text .= "• شهادة طبية (مستخرجة من التأمين الصحي)\n";
+        if ($needsReport) $text .= "• بيان نجاح / شهادة من المدرسة السابقة\n";
+    }
+    return $text;
+}
+
 function handleIntermediateMode($from, $message) {
     $session = getSession($from);
     $type = $message['type'] ?? '';
@@ -239,19 +281,31 @@ function handleIntermediateMode($from, $message) {
         }
 
         if (strpos($replyId, 'menu_') === 0) {
-            // Direct text responses
-            if (in_array($replyId, ['menu_reqs', 'menu_disc', 'menu_accr', 'menu_faqs'])) {
+            if (in_array($replyId, ['menu_disc', 'menu_accr', 'menu_careers'])) {
                 $text = $config['static_content'][$replyId][$lang];
                 sendFinalTextWithMenuButton($from, $text, $lang);
                 return;
             }
 
-            // Requires Department selection
-            if (in_array($replyId, ['menu_stages', 'menu_age', 'menu_fees'])) {
+            if ($replyId === 'menu_faqs') {
+                sendFaqMenuIntermediate($from, $lang);
+                return;
+            }
+
+            if (in_array($replyId, ['menu_stages', 'menu_age', 'menu_fees', 'menu_reqs'])) {
                 $action = str_replace('menu_', '', $replyId);
                 sendDepartmentMenuIntermediate($from, $lang, $action);
                 return;
             }
+        }
+
+        if (strpos($replyId, 'faq_') === 0) {
+            $faq = $config['faqs'][$replyId] ?? null;
+            if ($faq) {
+                $text = "*" . $faq['q'][$lang] . "*\n\n" . $faq['a'][$lang];
+                sendFinalTextWithMenuButton($from, $text, $lang);
+            }
+            return;
         }
 
         if (strpos($replyId, 'act_') === 0) {
@@ -259,14 +313,25 @@ function handleIntermediateMode($from, $message) {
             if (count($parts) >= 3) {
                 $action = $parts[1];
                 $deptKey = $parts[2];
-                sendStageMenuIntermediate($from, $lang, $action, $deptKey);
+                sendSectionMenuIntermediate($from, $lang, $action, $deptKey);
+                return;
+            }
+        }
+
+        if (strpos($replyId, 'sec_') === 0) {
+            $parts = explode('_', $replyId, 4);
+            if (count($parts) == 4) {
+                $action = $parts[1];
+                $deptKey = $parts[2];
+                $secKey = $parts[3];
+                sendStageMenuIntermediate($from, $lang, $action, $deptKey, $secKey);
                 return;
             }
         }
 
         if (strpos($replyId, 'res_') === 0) {
             $parts = explode('_', $replyId);
-            $action = $parts[1]; // fees, age, stages
+            $action = $parts[1];
 
             array_shift($parts); array_shift($parts);
             $stageId = implode('_', $parts);
@@ -288,31 +353,27 @@ function handleIntermediateMode($from, $message) {
                         $responseText = ($lang === 'en') ? $enText : $arText;
                     }
                 }
-                elseif ($action === 'age') {
-                    if (!$stageData['offered']) {
-                        $responseText = ($lang === 'en')
-                            ? "❌ *{$stageName}* is currently not offered."
-                            : "❌ *{$stageName}* غير متاحة حالياً.";
-                    } else {
-                        $ageStr = $stageData['age'][$lang];
-                        $enText = "The minimum registration age for *{$stageName}* is:\n👉 {$ageStr}";
-                        $arText = "الحد الأدنى لسن القبول في مرحلة *{$stageName}* هو:\n👉 {$ageStr}";
-                        $responseText = ($lang === 'en') ? $enText : $arText;
-                    }
+                elseif ($action === 'reqs') {
+                    $responseText = getRequirementsForStage($stageId, $stageName, $lang);
                 }
-                elseif ($action === 'fees') {
+                elseif ($action === 'age' || $action === 'fees') {
                     if (!$stageData['offered']) {
                         $responseText = ($lang === 'en')
                             ? "❌ *{$stageName}* is currently not offered."
                             : "❌ *{$stageName}* غير متاحة حالياً.";
                     } else {
-                        $feesStr = number_format($stageData['fees']);
-                        $currency = ($lang === 'en') ? "EGP" : "ج.م";
-
-                        $enText = "The annual tuition fees for *{$stageName}* are:\n👉 *{$feesStr} {$currency}*";
-                        $arText = "المصروفات الدراسية السنوية لمرحلة *{$stageName}* هي:\n👉 *{$feesStr} {$currency}*";
-
-                        $responseText = (($lang === 'en') ? $enText : $arText) . $config['static_content']['fees_disclaimer'][$lang];
+                        if ($action === 'age') {
+                            $ageStr = $stageData['age'][$lang];
+                            $enText = "The minimum registration age for *{$stageName}* is:\n👉 {$ageStr}";
+                            $arText = "الحد الأدنى لسن القبول في مرحلة *{$stageName}* هو:\n👉 {$ageStr}";
+                            $responseText = ($lang === 'en') ? $enText : $arText;
+                        } else {
+                            $feesStr = number_format($stageData['fees']);
+                            $currency = ($lang === 'en') ? "EGP" : "ج.م";
+                            $enText = "The annual tuition fees for *{$stageName}* are:\n👉 *{$feesStr} {$currency}*";
+                            $arText = "المصروفات الدراسية السنوية لمرحلة *{$stageName}* هي:\n👉 *{$feesStr} {$currency}*";
+                            $responseText = (($lang === 'en') ? $enText : $arText) . $config['static_content']['fees_disclaimer'][$lang];
+                        }
                     }
                 }
 
@@ -347,13 +408,36 @@ function sendMainMenuIntermediate($to, $lang) {
     ]]);
 }
 
+function sendFaqMenuIntermediate($to, $lang) {
+    $config = getSchoolConfig();
+    $ui = $config['ui'];
+
+    $rows = [];
+    foreach ($config['faqs'] as $faqId => $faqData) {
+        $rows[] = ["id" => $faqId, "title" => mb_substr($faqData['q'][$lang], 0, 24)];
+    }
+
+    $sections = [
+        [
+            "title" => mb_substr($ui['faq_title'][$lang], 0, 24),
+            "rows" => $rows
+        ],
+        [
+            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+        ]
+    ];
+
+    sendList($to, $ui['faq_body'][$lang], $ui['main_btn'][$lang], $sections);
+}
+
 function sendDepartmentMenuIntermediate($to, $lang, $action) {
     $config = getSchoolConfig();
     $ui = $config['ui'];
 
     $deptRows = [];
     foreach ($config['departments'] as $deptKey => $deptData) {
-        $id = "act_" . $action . "_" . $deptKey;
+        $id = "act_{$action}_{$deptKey}";
         $deptRows[] = ["id" => $id, "title" => mb_substr($deptData['name'][$lang], 0, 24)];
     }
 
@@ -371,36 +455,54 @@ function sendDepartmentMenuIntermediate($to, $lang, $action) {
     sendList($to, $ui['dept_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 
-function sendStageMenuIntermediate($to, $lang, $action, $deptKey) {
+function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
     $config = getSchoolConfig();
     $ui = $config['ui'];
     $dept = $config['departments'][$deptKey] ?? null;
-
     if (!$dept) return;
 
-    $sections = [];
-
+    $secRows = [];
     foreach ($dept['sections'] as $secKey => $secData) {
-        $rows = [];
-        foreach ($secData['stages'] as $stageId => $stage) {
-            $id = "res_" . $action . "_" . $stageId; // e.g. res_fees_stg_am_g9
-
-            // Indicate if not offered in the row title (Optional but helpful UI touch)
-            $titleMark = $stage['offered'] ? '' : ($lang === 'en' ? ' (N/A)' : ' (غير متاح)');
-            $rows[] = ["id" => $id, "title" => mb_substr($stage['name'][$lang] . $titleMark, 0, 24)];
-        }
-
-        if (!empty($rows)) {
-            $sections[] = [
-                "title" => mb_substr($secData['title'][$lang], 0, 24),
-                "rows" => $rows
-            ];
-        }
+        $id = "sec_{$action}_{$deptKey}_{$secKey}";
+        $secRows[] = ["id" => $id, "title" => mb_substr($secData['title'][$lang], 0, 24)];
     }
 
-    $sections[] = [
-        "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-        "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+    $sections = [
+        [
+            "title" => mb_substr($ui['sec_title'][$lang], 0, 24),
+            "rows" => $secRows
+        ],
+        [
+            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+        ]
+    ];
+
+    sendList($to, $ui['sec_body'][$lang], $ui['main_btn'][$lang], $sections);
+}
+
+function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
+    $config = getSchoolConfig();
+    $ui = $config['ui'];
+    $stageData = $config['departments'][$deptKey]['sections'][$secKey] ?? null;
+    if (!$stageData) return;
+
+    $rows = [];
+    foreach ($stageData['stages'] as $stageId => $stage) {
+        $id = "res_{$action}_{$stageId}";
+        $titleMark = $stage['offered'] ? '' : ($lang === 'en' ? ' (N/A)' : ' (غير متاح)');
+        $rows[] = ["id" => $id, "title" => mb_substr($stage['name'][$lang] . $titleMark, 0, 24)];
+    }
+
+    $sections = [
+        [
+            "title" => mb_substr($stageData['title'][$lang], 0, 24),
+            "rows" => $rows
+        ],
+        [
+            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+        ]
     ];
 
     sendList($to, $ui['stage_body'][$lang], $ui['main_btn'][$lang], $sections);
