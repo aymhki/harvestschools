@@ -1,0 +1,25 @@
+Privacy Policy
+
+1. Introduction
+Welcome to the Harvest Schools WhatsApp Bot. This Privacy Policy explains how we collect, use, and protect your information when you interact with our automated WhatsApp assistant.
+
+2. Information We Collect
+When you use our WhatsApp bot, we collect and store the following information in our database:
+* Contact Information: Your WhatsApp phone number.
+* Chat History: The messages you send to the bot and the bot's responses.
+* Session Data: Your language preferences, current session state, and timestamps of your interactions.
+
+3. How We Use Your Information
+The data we collect is used strictly to operate and improve the bot's functionality, including:
+* Providing relevant and context-aware responses to your inquiries.
+* Maintaining chat history to support continuous conversations.
+* Routing your inquiries to the correct school department when necessary.
+
+4. Third-Party Data Processing
+To provide intelligent responses, your messages are processed by third-party services. By using the bot, you consent to your data being shared securely with:
+* Meta (WhatsApp API): For the transmission and delivery of messages.
+* AI/LLM Providers: Your chat history and prompts are sent to our AI partners (such as Google Gemini or Deepseek) strictly for generating conversational responses.
+
+5. Data Retention and Deletion
+We store your chat history and session data to improve your experience over time. 
+To request the deletion of your personal data and chat history, please email inquiries@harvestschools.com.

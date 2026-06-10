@@ -1,0 +1,25 @@
+Terms of Service
+
+1. Acceptance of Terms
+By sending a message to the Harvest Schools WhatsApp Bot, you agree to these Terms of Service and our Privacy Policy. If you do not agree, please do not interact with the bot.
+
+2. Description of Service
+The Harvest Schools WhatsApp Bot is an automated assistant designed to answer questions, provide information, and guide users to relevant school departments. The bot utilizes third-party Artificial Intelligence (AI) to generate responses.
+
+3. AI Disclaimer
+Because the bot is powered by Artificial Intelligence, its responses are generated automatically and may occasionally be inaccurate, incomplete, or inappropriate. The bot’s messages do not constitute official, binding statements from Harvest Schools. For critical issues, official enrollments, or definitive answers, please contact the school administration directly.
+
+4. User Conduct
+You agree to use the bot responsibly. You must not:
+* Send unlawful, abusive, harassing, or sexually explicit content.
+* Spam the bot or attempt to manipulate its underlying AI architecture (e.g., prompt injection).
+* Submit sensitive personal information (like financial details or passwords) that is not explicitly requested.
+
+5. Service Availability
+The bot is provided on an "as is" and "as available" basis. Harvest Schools reserves the right to modify, suspend, or discontinue the bot service at any time without prior notice.
+
+6. Limitation of Liability
+Harvest Schools shall not be held liable for any direct, indirect, incidental, or consequential damages resulting from your use of the bot, including reliance on the AI-generated responses or any temporary service outages.
+
+7. Contact Information
+If you have any questions or concerns regarding these terms, or if you need to request data deletion, please email inquiries@harvestschools.com.

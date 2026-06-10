@@ -29,16 +29,23 @@
       fbq('init', '1748518862818925');
       fbq('track', 'PageView');
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-                   src="https://www.facebook.com/tr?id=1748518862818925&ev=PageView&noscript=1"
-    /></noscript>
     <!-- End Meta Pixel Code -->
 
   </head>
   <body>
-  <div id="root">
-      <!--ssr-outlet-->
-  </div>
-  <script type="module" src="/src/index.jsx"></script>
+
+    <!-- Meta Pixel Code -->
+    <noscript>
+      <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1748518862818925&ev=PageView&noscript=1" />
+    </noscript>
+    <!-- End Meta Pixel Code -->
+
+
+    <div id="root">
+        <!--ssr-outlet-->
+    </div>
+
+    <script type="module" src="/src/index.jsx"></script>
+
   </body>
 </html>
