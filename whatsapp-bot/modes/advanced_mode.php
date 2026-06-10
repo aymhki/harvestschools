@@ -9,14 +9,13 @@ function handleAdvancedMode($from, $message) {
     $session = getSession($from);
     $type    = $message['type'] ?? '';
 
-    // ---------- 1. LANGUAGE SELECTION ----------
     if (!$session || !$session['language']) {
+
         if ($type === 'interactive') {
             $btnId = $message['interactive']['button_reply']['id'] ?? '';
             if ($btnId === 'lang_en' || $btnId === 'lang_ar') {
                 $lang = $btnId === 'lang_en' ? 'en' : 'ar';
 
-                // If user is brand new OR config says don't keep history → clear it
                 if (USE_HISTORY_ACROSS_SESSIONS === 0) clearUserHistory($from);
 
                 createOrUpdateSession($from, $lang, 'chatting');
@@ -28,16 +27,17 @@ function handleAdvancedMode($from, $message) {
                 return;
             }
         }
+
         sendButtons($from, $STRINGS['choose_lang'], [
             ["id" => "lang_en", "title" => "English"],
             ["id" => "lang_ar", "title" => "العربية"]
         ]);
+
         return;
     }
 
     $lang = $session['language'];
 
-    // ---------- 2. DETECT NEW SESSION (returning user) ----------
     if (isNewSession($session)) {
         if (USE_HISTORY_ACROSS_SESSIONS === 0) clearUserHistory($from);
         startNewSession($from);
@@ -45,15 +45,13 @@ function handleAdvancedMode($from, $message) {
     } else {
         touchSession($from);
     }
-    // Re-fetch session after update
+
     $session = getSession($from);
 
-    // ---------- 3. HANDLE BUTTON/LIST INTERACTIONS ----------
     if ($type === 'interactive') {
         $btnId  = $message['interactive']['button_reply']['id'] ?? '';
         $listId = $message['interactive']['list_reply']['id']   ?? '';
 
-        // Feedback: helpful
         if ($btnId === 'fb_helpful') {
             $msg = $STRINGS['anything_else'][$lang];
             sendText($from, $msg);
@@ -62,7 +60,6 @@ function handleAdvancedMode($from, $message) {
             return;
         }
 
-        // Feedback: not helpful → show department list
         if ($btnId === 'fb_not_helpful') {
             $msg = $STRINGS['escalate'][$lang];
             sendText($from, $msg);
@@ -72,7 +69,6 @@ function handleAdvancedMode($from, $message) {
             return;
         }
 
-        // Department picked from list
         if (isset($DEPARTMENTS[$listId])) {
             $dept = $DEPARTMENTS[$listId];
             $deptName = $dept[$lang];
@@ -85,8 +81,8 @@ function handleAdvancedMode($from, $message) {
         }
     }
 
-    // ---------- 4. NORMAL TEXT MESSAGE → CALL LLM ----------
     $userText = '';
+
     if ($type === 'text') {
         $userText = $message['text']['body'] ?? '';
     } elseif ($type === 'interactive') {
@@ -94,12 +90,13 @@ function handleAdvancedMode($from, $message) {
             ?? $message['interactive']['list_reply']['title']
             ?? '';
     }
+
     if (!$userText) return;
 
     saveMessage($from, 'user', $userText);
 
     $history = getRelevantHistory($from, $session, 50);
-    array_pop($history); // remove the just-saved user msg from history
+    array_pop($history);
 
     $systemPrompt = SCHOOL_SYSTEM_PROMPT . "\nUser's preferred language: " . $lang;
     $reply = llm_chat($systemPrompt, $history, $userText, $lang);
@@ -107,7 +104,6 @@ function handleAdvancedMode($from, $message) {
     saveMessage($from, 'assistant', $reply);
     sendText($from, $reply);
 
-    // After LLM reply → send feedback buttons
     sendFeedbackButtons($from, $lang);
 }
 

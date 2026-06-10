@@ -27,7 +27,6 @@ function sendText($to, $text) {
     ]);
 }
 
-// Reply buttons (max 3 per message)
 function sendButtons($to, $body, $buttons) {
     $btnArr = [];
     foreach ($buttons as $btn) {
@@ -48,7 +47,6 @@ function sendButtons($to, $body, $buttons) {
     ]);
 }
 
-// List message (for >3 options — used for departments)
 function sendList($to, $body, $buttonText, $sections) {
     return wa_request([
         "messaging_product" => "whatsapp",
