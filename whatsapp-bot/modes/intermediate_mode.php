@@ -298,10 +298,22 @@ function handleIntermediateMode($from, $message) {
         }
         if ($replyId === 'menu_apply') {
             $link = "https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php";
+
             $msg = ($lang === 'en')
-                ? "Thank you for your interest in Harvest International Schools. Please apply from here:\n{$link}"
-                : "شكراً لاهتمامكم بمدارس هارڤست الدولية. يرجى التقديم من هنا:\n{$link}";
-            sendFinalTextWithMenuButton($from, $msg, $lang, 'menu_apply');
+                ? "Thank you for your interest in Harvest International Schools. Please click the button below to apply:"
+                : "شكراً لاهتمامكم بمدارس هارڤست الدولية. يرجى الضغط على الزر أدناه للتقديم:";
+            $urlBtnTitle = ($lang === 'en') ? 'Apply Now' : 'تقدم الأن';
+
+            sendCtaUrlButton($from, $msg, $urlBtnTitle, $link);
+
+            $menuMsg = ($lang === 'en')
+                ? "Return to navigation:"
+                : "العودة للقائمة:";
+
+            sendButtons($from, $menuMsg, [
+                ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 20)]
+            ]);
+
             return;
         }
         if ($replyId === 'menu_contact') {
