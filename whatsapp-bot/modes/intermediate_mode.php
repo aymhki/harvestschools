@@ -486,10 +486,10 @@ function sendContactMenuIntermediate($to, $lang) {
             "title" => mb_substr($ui['contact_title'][$lang], 0, 24),
             "rows" => $rows
         ],
-        [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => getNavRows($lang, 'menu_contact')
-        ]
+//        [
+//            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+//            "rows" => getNavRows($lang, 'menu_contact')
+//        ]
     ];
     sendList($to, $ui['contact_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
