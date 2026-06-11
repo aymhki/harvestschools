@@ -28,6 +28,7 @@ function getSchoolConfig() {
             ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
             ['id' => 'menu_faqs', 'en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
             ['id' => 'menu_careers', 'en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
+            ['id' => 'menu_lang', 'en' => 'Change Language', 'ar' => 'تغيير اللغة'],
         ],
         'static_content' => [
             'menu_disc' => [
@@ -290,6 +291,11 @@ function handleIntermediateMode($from, $message) {
 
             if ($replyId === 'menu_faqs') {
                 sendFaqMenuIntermediate($from, $lang);
+                return;
+            }
+
+            if ($replyId === 'menu_lang') {
+                askLanguageMode($from);
                 return;
             }
 
