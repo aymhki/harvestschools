@@ -42,7 +42,7 @@ function getSchoolConfig() {
             ['id' => 'menu_disc', 'en' => 'Discounts', 'ar' => 'الخصومات'],
             ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
             ['id' => 'menu_faqs', 'en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
-            ['id' => 'menu_careers', 'en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
+//            ['id' => 'menu_careers', 'en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
             ['id' => 'menu_contact', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
 //            ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
         ],
