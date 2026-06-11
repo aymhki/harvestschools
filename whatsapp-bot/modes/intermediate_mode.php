@@ -44,7 +44,7 @@ function getSchoolConfig() {
             ['id' => 'menu_faqs', 'en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
             ['id' => 'menu_careers', 'en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
             ['id' => 'menu_contact', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
-            ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
+//            ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
         ],
         'static_content' => [
             'menu_disc' => [
