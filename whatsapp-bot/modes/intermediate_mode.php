@@ -18,7 +18,6 @@ function getSchoolConfig() {
             'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
             'back_btn' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
             'nav_section' => ['en' => 'Navigation', 'ar' => 'التنقل'],
-            'unoffered_note' => ['en' => "(Note: Unavailable stages are hidden)", 'ar' => "(ملاحظة: المراحل غير المتاحة لن تظهر هنا)"],
         ],
         'main_options' => [
             ['id' => 'menu_stages', 'en' => 'Stages Offered', 'ar' => 'المراحل المتاحة'],
@@ -29,17 +28,6 @@ function getSchoolConfig() {
             ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
             ['id' => 'menu_faqs', 'en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
             ['id' => 'menu_careers', 'en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
-            ['id' => 'menu_chat', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
-        ],
-        'chat_departments' => [
-            'reception'        => ['en' => 'Harvest Reception',          'ar' => 'الريسيبشن',           'number' => '201061894477'],
-            'student_affairs' => ['en' => 'Student Affairs', 'ar' => 'شئون الطلبة', 'number' => '201118900259'],
-            'accounting' => ['en' => 'Accounting', 'ar' => 'الحسابات', 'number' => '201118900946'],
-            'admissions'                => ['en' => 'Harvest Admissions',     'ar' => 'التقديمات',    'number' => '201062255862'],
-            'national'          => ['en' => 'National Department', 'ar' => 'قسم الناشونال',     'number' => '201028329668'],
-            'british'           => ['en' => 'IG Department',  'ar' => 'القسم البريطاني',    'number' => '201097875407'],
-            'kindergarten'          => ['en' => 'KG Department', 'ar' => 'قسم الكي جي',       'number' => '201028319440'],
-            'american'   => ['en' => 'American Department',     'ar' => 'القسم الامريكي',        'number' => '201028940675'],
         ],
         'static_content' => [
             'menu_disc' => [
@@ -288,38 +276,20 @@ function handleIntermediateMode($from, $message) {
     if ($type === 'interactive') {
         $replyId = $message['interactive']['list_reply']['id'] ?? $message['interactive']['button_reply']['id'] ?? '';
 
-        if ($replyId === 'lang_switch') {
-            $lang = ($lang === 'en') ? 'ar' : 'en';
-            createOrUpdateSession($from, $lang, $session['state']);
-            $replyId = $session['state'];
-            if (!$replyId || $replyId === 'new') {
-                $replyId = 'main_menu';
-            }
-        } elseif ($replyId === 'apply_now') {
-            $msg = ($lang === 'en')
-                ? "Thank you for your interest in Harvest International Schools.\nPlease apply from here: https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php"
-                : "شكراً لاهتمامكم بمدارس هارڤست الدولية.\nيرجى التقديم من هنا: https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php";
-            sendFinalTextWithMenuButton($from, $msg, $lang);
-            return;
-        } else {
-            // Save state for correct language switching
-            updateSessionState($from, $replyId);
-        }
-
         if ($replyId === 'main_menu') {
             sendMainMenuIntermediate($from, $lang);
             return;
         }
 
         if (strpos($replyId, 'menu_') === 0) {
-            if ($replyId === 'menu_chat') {
-                sendChatDepartmentMenuIntermediate($from, $lang);
-                return;
-            }
-
             if (in_array($replyId, ['menu_disc', 'menu_accr', 'menu_careers'])) {
                 $text = $config['static_content'][$replyId][$lang];
                 sendFinalTextWithMenuButton($from, $text, $lang);
+                return;
+            }
+
+            if ($replyId === 'menu_faqs') {
+                sendFaqMenuIntermediate($from, $lang);
                 return;
             }
 
@@ -328,21 +298,6 @@ function handleIntermediateMode($from, $message) {
                 sendDepartmentMenuIntermediate($from, $lang, $action);
                 return;
             }
-        }
-
-        if (strpos($replyId, 'chat_dept_') === 0) {
-            $deptKey = str_replace('chat_dept_', '', $replyId);
-            if (isset($config['chat_departments'][$deptKey])) {
-                $dept = $config['chat_departments'][$deptKey];
-                $deptName = $dept[$lang];
-                $waLink = "https://wa.me/" . $dept['number'];
-
-                $msg = ($lang === 'en')
-                    ? "Please click on the link below to start a chat with *{$deptName}*:\n{$waLink}"
-                    : "يرجى الضغط على الرابط أدناه لبدء المحادثة مع *{$deptName}*:\n{$waLink}";
-                sendFinalTextWithMenuButton($from, $msg, $lang);
-            }
-            return;
         }
 
         if (strpos($replyId, 'faq_') === 0) {
@@ -359,15 +314,6 @@ function handleIntermediateMode($from, $message) {
             if (count($parts) >= 3) {
                 $action = $parts[1];
                 $deptKey = $parts[2];
-                $deptConfig = $config['departments'][$deptKey] ?? null;
-
-                // If the department has exactly one section (e.g., early), skip section selection
-                if ($deptConfig && count($deptConfig['sections']) === 1) {
-                    $secKey = array_key_first($deptConfig['sections']);
-                    sendStageMenuIntermediate($from, $lang, $action, $deptKey, $secKey);
-                    return;
-                }
-
                 sendSectionMenuIntermediate($from, $lang, $action, $deptKey);
                 return;
             }
@@ -397,28 +343,38 @@ function handleIntermediateMode($from, $message) {
                 $stageName = $stageData['name'][$lang];
                 $responseText = "";
 
-                if (!$stageData['offered']) {
-                    $enText = "Sorry, *{$stageName}* is currently NOT offered at Harvest Schools.";
-                    $arText = "نعتذر، مرحلة *{$stageName}* غير متاحة حالياً في مدارس هارڤست.";
-                    $responseText = ($lang === 'en') ? $enText : $arText;
-                } else {
-                    $ageStr = $stageData['age'][$lang];
-                    $feesStr = number_format($stageData['fees']);
-                    $currency = ($lang === 'en') ? "EGP" : "ج.م";
-                    $reqs = getRequirementsForStage($stageId, $stageName, $lang);
-
-                    if ($lang === 'en') {
-                        $responseText = "*{$stageName}* is currently offered.\n\n";
-                        $responseText .= "*Minimum Age:* {$ageStr}\n";
-                        $responseText .= "*Tuition Fees:* {$feesStr} {$currency}\n";
-                        $responseText .= "\n" . $reqs;
-                        $responseText .= $config['static_content']['fees_disclaimer'][$lang];
+                if ($action === 'stages') {
+                    if ($stageData['offered']) {
+                        $enText = "*{$stageName}* is currently offered at Harvest Schools.";
+                        $arText = " مرحلة *{$stageName}* متاحة حالياً للتسجيل في مدارس هارڤست.";
+                        $responseText = ($lang === 'en') ? $enText : $arText;
                     } else {
-                        $responseText = "مرحلة *{$stageName}* متاحة حالياً للتسجيل.\n\n";
-                        $responseText .= "*الحد الأدنى لسن القبول:* {$ageStr}\n";
-                        $responseText .= "*المصروفات الدراسية السنوية:* {$feesStr} {$currency}\n";
-                        $responseText .= "\n" . $reqs;
-                        $responseText .= $config['static_content']['fees_disclaimer'][$lang];
+                        $enText = "Sorry, *{$stageName}* is currently NOT offered at Harvest Schools.";
+                        $arText = " نعتذر، مرحلة *{$stageName}* غير متاحة حالياً في مدارس هارڤست.";
+                        $responseText = ($lang === 'en') ? $enText : $arText;
+                    }
+                }
+                elseif ($action === 'reqs') {
+                    $responseText = getRequirementsForStage($stageId, $stageName, $lang);
+                }
+                elseif ($action === 'age' || $action === 'fees') {
+                    if (!$stageData['offered']) {
+                        $responseText = ($lang === 'en')
+                            ? "*{$stageName}* is currently not offered."
+                            : "*{$stageName}* غير متاحة حالياً.";
+                    } else {
+                        if ($action === 'age') {
+                            $ageStr = $stageData['age'][$lang];
+                            $enText = "The minimum registration age for *{$stageName}* is:\n{$ageStr}";
+                            $arText = "الحد الأدنى لسن القبول في مرحلة *{$stageName}* هو:\n{$ageStr}";
+                            $responseText = ($lang === 'en') ? $enText : $arText;
+                        } else {
+                            $feesStr = number_format($stageData['fees']);
+                            $currency = ($lang === 'en') ? "EGP" : "ج.م";
+                            $enText = "The annual tuition fees for *{$stageName}* are:\n*{$feesStr} {$currency}*";
+                            $arText = "المصروفات الدراسية السنوية لمرحلة *{$stageName}* هي:\n*{$feesStr} {$currency}*";
+                            $responseText = (($lang === 'en') ? $enText : $arText) . $config['static_content']['fees_disclaimer'][$lang];
+                        }
                     }
                 }
 
@@ -432,7 +388,7 @@ function handleIntermediateMode($from, $message) {
 }
 
 function askLanguageMode($to) {
-    sendButtons($to, "Please choose your language.\n.يرجى اختيار اللغة", [
+    sendButtons($to, "Please choose your language.\nيرجى اختيار اللغة.", [
         ["id" => "lang_en", "title" => "English"],
         ["id" => "lang_ar", "title" => "العربية"]
     ]);
@@ -447,44 +403,10 @@ function sendMainMenuIntermediate($to, $lang) {
         $rows[] = ["id" => $opt['id'], "title" => mb_substr($opt[$lang], 0, 24)];
     }
 
-    sendList($to, $ui['main_body'][$lang], $ui['main_btn'][$lang], [
-        [
-            "title" => mb_substr($ui['main_title'][$lang], 0, 24),
-            "rows" => $rows
-        ],
-        [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [
-                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
-                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
-            ]
-        ]
-    ]);
-}
-
-function sendChatDepartmentMenuIntermediate($to, $lang) {
-    $config = getSchoolConfig();
-    $ui = $config['ui'];
-
-    $rows = [];
-    foreach ($config['chat_departments'] as $key => $dept) {
-        $rows[] = ["id" => "chat_dept_" . $key, "title" => mb_substr($dept[$lang], 0, 24)];
-    }
-
-    sendList($to, $ui['dept_body'][$lang], $ui['main_btn'][$lang], [
-        [
-            "title" => mb_substr($ui['dept_title'][$lang], 0, 24),
-            "rows" => $rows
-        ],
-        [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [
-                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
-                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
-                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
-            ]
-        ]
-    ]);
+    sendList($to, $ui['main_body'][$lang], $ui['main_btn'][$lang], [[
+        "title" => mb_substr($ui['main_title'][$lang], 0, 24),
+        "rows" => $rows
+    ]]);
 }
 
 function sendFaqMenuIntermediate($to, $lang) {
@@ -503,11 +425,7 @@ function sendFaqMenuIntermediate($to, $lang) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [
-                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
-                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
-                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
-            ]
+            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
         ]
     ];
 
@@ -531,11 +449,7 @@ function sendDepartmentMenuIntermediate($to, $lang, $action) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [
-                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
-                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
-                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
-            ]
+            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
         ]
     ];
 
@@ -561,11 +475,7 @@ function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [
-                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
-                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
-                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
-            ]
+            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
         ]
     ];
 
@@ -579,19 +489,9 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     if (!$stageData) return;
 
     $rows = [];
-    $filteredOut = false;
     foreach ($stageData['stages'] as $stageId => $stage) {
-        if (($action === 'fees' || $action === 'reqs') && !$stage['offered']) {
-            $filteredOut = true;
-            continue;
-        }
         $id = "res_{$action}_{$stageId}";
         $rows[] = ["id" => $id, "title" => mb_substr($stage['name'][$lang], 0, 24)];
-    }
-
-    $body = $ui['stage_body'][$lang];
-    if ($filteredOut) {
-        $body .= " " . $ui['unoffered_note'][$lang];
     }
 
     $sections = [
@@ -601,26 +501,18 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [
-                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
-                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
-                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
-            ]
+            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
         ]
     ];
 
-    sendList($to, $body, $ui['main_btn'][$lang], $sections);
+    sendList($to, $ui['stage_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 
 function sendFinalTextWithMenuButton($to, $text, $lang) {
     $config = getSchoolConfig();
     $btnTitle = mb_substr($config['ui']['back_btn'][$lang], 0, 20);
-    $langBtn = mb_substr($lang === 'en' ? 'عربي' : 'English', 0, 20);
-    $applyBtn = mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 20);
 
     sendButtons($to, $text, [
-        ["id" => "main_menu", "title" => $btnTitle],
-        ["id" => "lang_switch", "title" => $langBtn],
-        ["id" => "apply_now", "title" => $applyBtn]
+        ["id" => "main_menu", "title" => $btnTitle]
     ]);
 }
