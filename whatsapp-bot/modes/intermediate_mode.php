@@ -16,6 +16,7 @@ function getSchoolConfig() {
         'ui' => [
             'main_title' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
             'main_body' => ['en' => 'Welcome to Harvest International Schools chat bot. Please choose a topic below:', 'ar' => 'مرحباً بكم في مدارس هارڤست الدولية. يرجى اختيار موضوع من القائمة:'],
+            'main_body_fallback' => ['en' => 'Please choose a topic from the menu below:', 'ar' => 'يرجى اختيار موضوع من القائمة أدناه:'],
             'main_btn' => ['en' => 'Options', 'ar' => 'الخيارات'],
             'dept_title' => ['en' => 'Choose Department', 'ar' => 'اختر القسم'],
             'dept_body' => ['en' => 'Please select the educational department:', 'ar' => 'يرجى اختيار القسم التعليمي:'],
@@ -23,7 +24,7 @@ function getSchoolConfig() {
             'sec_body' => ['en' => 'Please select the stage group:', 'ar' => 'يرجى اختيار المجموعة الدراسية:'],
             'stage_title' => ['en' => 'Choose Grade', 'ar' => 'اختر الصف'],
             'stage_body' => ['en' => 'Please select the specific grade:', 'ar' => 'يرجى اختيار الصف الدراسي بالتحديد:'],
-            'faq_title' => ['en' => 'Frequently Asked Questions', 'ar' => 'الأسئلة الشائعة'],
+            'faq_title' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
             'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
             'back_btn' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
             'apply_btn' => ['en' => 'Apply Now', 'ar' => 'تقدم الأن'],
@@ -37,7 +38,7 @@ function getSchoolConfig() {
             'disc_item' => ['en' => 'View Discounts', 'ar' => 'عرض الخصومات'],
             'info_title' => ['en' => 'Information', 'ar' => 'معلومات'],
             'info_body' => ['en' => 'Please select a topic:', 'ar' => 'يرجى اختيار موضوع:'],
-            'faqs_item' => ['en' => 'Frequently Asked Questions', 'ar' => 'الأسئلة الشائعة'],
+            'faqs_item' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
             'careers_item' => ['en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
         ],
         'main_options' => [
@@ -96,13 +97,13 @@ function getSchoolConfig() {
         ],
         'departments' => [
             'early' => [
-                'name' => ['en' => 'Pre-Play & Play', 'ar' => 'مرحلة ما قبل المدرسة'],
+                'name' => ['en' => 'Pre-Play & Playschool', 'ar' => 'مرحلة ما قبل المدرسة'],
                 'sections' => [
                     'early_stg' => [
-                        'title' => ['en' => 'Pre-Play & Play', 'ar' => 'Pre-Play & Play'],
+                        'title' => ['en' => 'Pre-Play & Playschool', 'ar' => 'Pre-Play & Playschool'],
                         'stages' => [
                             'stg_pre_play' => ['name' => ['en' => 'Pre-Play', 'ar' => 'Pre-Play'], 'offered' => true, 'age' => ['en' => '2 years and 4 months', 'ar' => 'سنتان و 4 شهور'], 'fees' => 24150],
-                            'stg_play' => ['name' => ['en' => 'Play', 'ar' => 'Playschool'], 'offered' => true, 'age' => ['en' => '2 years and 6 months', 'ar' => 'سنتان و 6 شهور'], 'fees' => 28750],
+                            'stg_play' => ['name' => ['en' => 'Playschool', 'ar' => 'Playschool'], 'offered' => true, 'age' => ['en' => '2 years and 6 months', 'ar' => 'سنتان و 6 شهور'], 'fees' => 28750],
                         ]
                     ]
                 ]
@@ -264,7 +265,7 @@ function handleIntermediateMode($from, $message) {
         $textBody = strtolower(trim($message['text']['body'] ?? ''));
         if (in_array($textBody, ['menu', 'القائمة', 'main menu'])) {
             if ($session && $session['language']) {
-                sendMainMenuIntermediate($from, $session['language']);
+                sendMainMenuIntermediate($from, $session['language'], true);
                 return;
             }
         }
@@ -275,7 +276,7 @@ function handleIntermediateMode($from, $message) {
             if ($btnId === 'lang_en' || $btnId === 'lang_ar') {
                 $lang = $btnId === 'lang_en' ? 'en' : 'ar';
                 createOrUpdateSession($from, $lang, 'menu');
-                sendMainMenuIntermediate($from, $lang);
+                sendMainMenuIntermediate($from, $lang, false);
                 return;
             }
         }
@@ -286,14 +287,13 @@ function handleIntermediateMode($from, $message) {
     $config = getSchoolConfig();
     if ($type === 'interactive') {
         $replyId = $message['interactive']['list_reply']['id'] ?? $message['interactive']['button_reply']['id'] ?? '';
-        // Intercept language toggle directly
         if (strpos($replyId, 'lang_toggle_') === 0) {
             $lang = ($lang === 'en') ? 'ar' : 'en';
             createOrUpdateSession($from, $lang, 'menu');
-            $replyId = substr($replyId, 12); // Strip prefix to replay the action immediately
+            $replyId = substr($replyId, 12);
         }
         if ($replyId === 'main_menu') {
-            sendMainMenuIntermediate($from, $lang);
+            sendMainMenuIntermediate($from, $lang, true);
             return;
         }
         if ($replyId === 'menu_apply') {
@@ -361,7 +361,6 @@ function handleIntermediateMode($from, $message) {
                 $action = $parts[1];
                 $deptKey = $parts[2];
                 if ($deptKey === 'early') {
-                    // Pre-Play & Play only has one section; skip section mapping
                     sendStageMenuIntermediate($from, $lang, $action, 'early', 'early_stg');
                     return;
                 }
@@ -416,7 +415,7 @@ function handleIntermediateMode($from, $message) {
             return;
         }
     }
-    sendMainMenuIntermediate($from, $lang);
+    sendMainMenuIntermediate($from, $lang, true);
 }
 function askLanguageMode($to) {
     sendButtons($to, "Please choose your language.\nيرجى اختيار اللغة.", [
@@ -432,15 +431,13 @@ function getNavRows($lang, $currentMenuId) {
         ["id" => "lang_toggle_" . $currentMenuId, "title" => mb_substr($config['ui']['change_lang_btn'][$lang], 0, 24)]
     ];
 }
-function sendMainMenuIntermediate($to, $lang) {
+function sendMainMenuIntermediate($to, $lang, $fallback) {
     $config = getSchoolConfig();
     $ui = $config['ui'];
     $rows = [];
     foreach ($config['main_options'] as $opt) {
         $rows[] = ["id" => $opt['id'], "title" => mb_substr($opt[$lang], 0, 24)];
     }
-    // Main menu nav: no "Main Menu" (redundant) and no "Apply Now" (already a main option)
-    // Only the language toggle is needed here
     $sections = [
         [
             "title" => mb_substr($ui['main_title'][$lang], 0, 24),
@@ -453,7 +450,12 @@ function sendMainMenuIntermediate($to, $lang) {
             ]
         ]
     ];
-    sendList($to, $ui['main_body'][$lang], $ui['main_btn'][$lang], $sections);
+
+    if ($fallback === true) {
+        sendList($to, $ui['main_body_fallback'][$lang], $ui['main_btn'][$lang], $sections);
+    } else {
+        sendList($to, $ui['main_body'][$lang], $ui['main_btn'][$lang], $sections);
+    }
 }
 function sendFaqMenuIntermediate($to, $lang) {
     $config = getSchoolConfig();
@@ -486,10 +488,12 @@ function sendContactMenuIntermediate($to, $lang) {
             "title" => mb_substr($ui['contact_title'][$lang], 0, 24),
             "rows" => $rows
         ],
-//        [
-//            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-//            "rows" => getNavRows($lang, 'menu_contact')
-//        ]
+        [
+            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "rows" => [
+                ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 24)],
+            ]
+        ]
     ];
     sendList($to, $ui['contact_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
@@ -500,7 +504,6 @@ function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
     foreach ($config['departments'] as $deptKey => $deptData) {
         $deptRows[] = ["id" => "act_fees_{$deptKey}", "title" => mb_substr($deptData['name'][$lang], 0, 24)];
     }
-    // 4 dept rows + 1 discounts row + 3 nav rows = 8 total (within the 10-row limit)
     $sections = [
         [
             "title" => mb_substr($ui['dept_title'][$lang], 0, 24),
@@ -522,7 +525,6 @@ function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
 function sendInfoMenuIntermediate($to, $lang) {
     $config = getSchoolConfig();
     $ui = $config['ui'];
-    // 2 info rows + 3 nav rows = 5 total
     $sections = [
         [
             "title" => mb_substr($ui['info_title'][$lang], 0, 24),
