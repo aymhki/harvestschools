@@ -62,3 +62,22 @@ function sendList($to, $body, $buttonText, $sections) {
         ]
     ]);
 }
+
+function sendCtaUrlButton($to, $text, $buttonTitle, $url) {
+    return wa_request([
+        "messaging_product" => "whatsapp",
+        "to" => $to,
+        "type" => "interactive",
+        "interactive" => [
+            "type" => "cta_url",
+            "body" => ["text" => $text],
+            "action" => [
+                "name" => "cta_url",
+                "parameters" => [
+                    "display_text" => mb_substr($buttonTitle, 0, 20),
+                    "url" => $url
+                ]
+            ]
+        ]
+    ]);
+}
