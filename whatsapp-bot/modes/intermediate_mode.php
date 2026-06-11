@@ -256,17 +256,18 @@ function handleIntermediateMode($from, $message) {
         }
     }
 
-    if (!$session || !$session['language']) {
-        if ($type === 'interactive') {
-            $btnId = $message['interactive']['button_reply']['id'] ?? '';
-            if ($btnId === 'lang_en' || $btnId === 'lang_ar') {
-                $lang = $btnId === 'lang_en' ? 'en' : 'ar';
-                createOrUpdateSession($from, $lang, 'menu');
-                sendMainMenuIntermediate($from, $lang);
-                return;
-            }
+    // Handle language selection (works with or without existing session)
+    if ($type === 'interactive') {
+        $btnId = $message['interactive']['button_reply']['id'] ?? '';
+        if ($btnId === 'lang_en' || $btnId === 'lang_ar') {
+            $lang = $btnId === 'lang_en' ? 'en' : 'ar';
+            createOrUpdateSession($from, $lang, 'menu');
+            sendMainMenuIntermediate($from, $lang);
+            return;
         }
+    }
 
+    if (!$session || !$session['language']) {
         askLanguageMode($from);
         return;
     }
