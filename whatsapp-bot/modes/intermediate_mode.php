@@ -6,7 +6,7 @@ function getSchoolConfig() {
     return [
         'ui' => [
             'main_title' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
-            'main_body' => ['en' => 'Welcome to Harvest International Schools! Please choose a topic below:', 'ar' => 'مرحباً بكم في مدارس هارڤست الدولية! يرجى اختيار موضوع من القائمة:'],
+            'main_body' => ['en' => 'Welcome to Harvest International Schools chat bot. Please choose a topic below:', 'ar' => 'مرحباً بكم في مدارس هارڤست الدولية. يرجى اختيار موضوع من القائمة:'],
             'main_btn' => ['en' => 'Options', 'ar' => 'الخيارات'],
             'dept_title' => ['en' => 'Choose Department', 'ar' => 'اختر القسم'],
             'dept_body' => ['en' => 'Please select the educational department:', 'ar' => 'يرجى اختيار القسم التعليمي:'],
@@ -14,20 +14,32 @@ function getSchoolConfig() {
             'sec_body' => ['en' => 'Please select the stage group:', 'ar' => 'يرجى اختيار المجموعة الدراسية:'],
             'stage_title' => ['en' => 'Choose Grade', 'ar' => 'اختر الصف'],
             'stage_body' => ['en' => 'Please select the specific grade:', 'ar' => 'يرجى اختيار الصف الدراسي بالتحديد:'],
-            'faq_title' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
+            'faq_title' => ['en' => 'Frequently Asked Questions (FAQs)', 'ar' => 'الأسئلة الشائعة'],
             'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
-            'back_btn' => ['en' => '🔙 Main Menu', 'ar' => '🔙 القائمة الرئيسية'],
+            'back_btn' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
             'nav_section' => ['en' => 'Navigation', 'ar' => 'التنقل'],
+            'unoffered_note' => ['en' => "(Note: Unavailable stages are hidden)", 'ar' => "(ملاحظة: المراحل غير المتاحة لن تظهر هنا)"],
         ],
         'main_options' => [
             ['id' => 'menu_stages', 'en' => 'Stages Offered', 'ar' => 'المراحل المتاحة'],
             ['id' => 'menu_age', 'en' => 'Minimum Age', 'ar' => 'سن القبول'],
-            ['id' => 'menu_reqs', 'en' => 'Admission Reqs', 'ar' => 'متطلبات التقديم'],
+            ['id' => 'menu_reqs', 'en' => 'Admission Requirements', 'ar' => 'متطلبات التقديم'],
             ['id' => 'menu_fees', 'en' => 'Tuition Fees', 'ar' => 'المصروفات الدراسية'],
             ['id' => 'menu_disc', 'en' => 'Discounts', 'ar' => 'الخصومات'],
             ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
             ['id' => 'menu_faqs', 'en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
             ['id' => 'menu_careers', 'en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
+            ['id' => 'menu_chat', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
+        ],
+        'chat_departments' => [
+            'reception'        => ['en' => 'Harvest Reception',          'ar' => 'الريسيبشن',           'number' => '201061894477'],
+            'student_affairs' => ['en' => 'Student Affairs', 'ar' => 'شئون الطلبة', 'number' => '201118900259'],
+            'accounting' => ['en' => 'Accounting', 'ar' => 'الحسابات', 'number' => '201118900946'],
+            'admissions'                => ['en' => 'Harvest Admissions',     'ar' => 'التقديمات',    'number' => '201062255862'],
+            'national'          => ['en' => 'National Department', 'ar' => 'قسم الناشونال',     'number' => '201028329668'],
+            'british'           => ['en' => 'IG Department',  'ar' => 'القسم البريطاني',    'number' => '201097875407'],
+            'kindergarten'          => ['en' => 'KG Department', 'ar' => 'قسم الكي جي',       'number' => '201028319440'],
+            'american'   => ['en' => 'American Department',     'ar' => 'القسم الامريكي',        'number' => '201028940675'],
         ],
         'static_content' => [
             'menu_disc' => [
@@ -39,8 +51,8 @@ function getSchoolConfig() {
                 'ar' => "*الاعتمادات:*\n\n• *القسم القومي:* معتمد من وزارة التربية والتعليم المصرية\n• *القسم البريطاني:* معتمد من Cambridge / Pearson Edexcel / Oxford\n• *القسم الأمريكي:* معتمد من Cognia"
             ],
             'menu_careers' => [
-                'en' => "We're always open to talented educators joining the Harvest family.\n\nYou can submit your application here:\n👉 https://harvestschools.com/vacancies",
-                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست.\n\nيمكنك تقديم طلب التوظيف من هنا:\n👉 https://harvestschools.com/vacancies"
+                'en' => "We're always open to talented educators joining the Harvest family.\n\nYou can submit your application here:\nhttps://harvestschools.com/vacancies",
+                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست.\n\nيمكنك تقديم طلب التوظيف من هنا:\nhttps://harvestschools.com/vacancies"
             ],
             'fees_disclaimer' => [
                 'en' => "\n\n_Note: Tuition does NOT include uniforms, books, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
@@ -75,13 +87,13 @@ function getSchoolConfig() {
         ],
         'departments' => [
             'early' => [
-                'name' => ['en' => 'Early Years', 'ar' => 'مرحلة ما قبل المدرسة'],
+                'name' => ['en' => 'Pre-Play & Play', 'ar' => 'مرحلة ما قبل المدرسة'],
                 'sections' => [
                     'early_stg' => [
                         'title' => ['en' => 'Pre-Play & Play', 'ar' => 'Pre-Play & Play'],
                         'stages' => [
-                            'stg_pre_play' => ['name' => ['en' => 'Pre-Playgroup', 'ar' => 'Pre-Playgroup'], 'offered' => true, 'age' => ['en' => '2 years and 4 months', 'ar' => 'سنتان و 4 شهور'], 'fees' => 24150],
-                            'stg_play' => ['name' => ['en' => 'Playgroup', 'ar' => 'Playgroup'], 'offered' => true, 'age' => ['en' => '2 years and 6 months', 'ar' => 'سنتان و 6 شهور'], 'fees' => 28750],
+                            'stg_pre_play' => ['name' => ['en' => 'Pre-Play', 'ar' => 'Pre-Play'], 'offered' => true, 'age' => ['en' => '2 years and 4 months', 'ar' => 'سنتان و 4 شهور'], 'fees' => 24150],
+                            'stg_play' => ['name' => ['en' => 'Play', 'ar' => 'Playschool'], 'offered' => true, 'age' => ['en' => '2 years and 6 months', 'ar' => 'سنتان و 6 شهور'], 'fees' => 28750],
                         ]
                     ]
                 ]
@@ -97,7 +109,7 @@ function getSchoolConfig() {
                         ]
                     ],
                     'nat_jr' => [
-                        'title' => ['en' => 'Primary (Junior)', 'ar' => 'الابتدائي (Junior)'],
+                        'title' => ['en' => 'Primary (Junior)', 'ar' => 'الابتدائي'],
                         'stages' => [
                             'stg_nat_jr1' => ['name' => ['en' => 'Junior 1', 'ar' => 'الصف الأول الابتدائي'], 'offered' => false, 'age' => ['en' => '6 years', 'ar' => '6 سنوات'], 'fees' => 32490],
                             'stg_nat_jr2' => ['name' => ['en' => 'Junior 2', 'ar' => 'الصف الثاني الابتدائي'], 'offered' => true, 'age' => ['en' => '7 years', 'ar' => '7 سنوات'], 'fees' => 32490],
@@ -108,7 +120,7 @@ function getSchoolConfig() {
                         ]
                     ],
                     'nat_mid' => [
-                        'title' => ['en' => 'Preparatory (Middle)', 'ar' => 'الإعدادي (Middle)'],
+                        'title' => ['en' => 'Preparatory (Middle)', 'ar' => 'الإعدادي'],
                         'stages' => [
                             'stg_nat_m1' => ['name' => ['en' => 'Middle 1', 'ar' => 'الصف الأول الإعدادي'], 'offered' => true, 'age' => ['en' => '12 years', 'ar' => '12 سنة'], 'fees' => 36490],
                             'stg_nat_m2' => ['name' => ['en' => 'Middle 2', 'ar' => 'الصف الثاني الإعدادي'], 'offered' => true, 'age' => ['en' => '13 years', 'ar' => '13 سنة'], 'fees' => 36490],
@@ -116,7 +128,7 @@ function getSchoolConfig() {
                         ]
                     ],
                     'nat_sr' => [
-                        'title' => ['en' => 'Secondary (Senior)', 'ar' => 'الثانوي (Senior)'],
+                        'title' => ['en' => 'Secondary (Senior)', 'ar' => 'الثانوي'],
                         'stages' => [
                             'stg_nat_sr1' => ['name' => ['en' => 'Senior 1', 'ar' => 'الصف الأول الثانوي'], 'offered' => true, 'age' => ['en' => '15 years', 'ar' => '15 سنة'], 'fees' => 35000],
                             'stg_nat_sr2' => ['name' => ['en' => 'Senior 2', 'ar' => 'الصف الثاني الثانوي'], 'offered' => true, 'age' => ['en' => '16 years', 'ar' => '16 سنة'], 'fees' => 35000],
@@ -129,7 +141,7 @@ function getSchoolConfig() {
                 'name' => ['en' => 'British (IG)', 'ar' => 'القسم البريطاني'],
                 'sections' => [
                     'brit_fs' => [
-                        'title' => ['en' => 'Foundation Stage', 'ar' => 'Foundation Stage'],
+                        'title' => ['en' => 'Foundation Stage', 'ar' => 'المرحلة التأسيسية'],
                         'stages' => [
                             'stg_brit_fs1' => ['name' => ['en' => 'FS 1', 'ar' => 'FS 1'], 'offered' => true, 'age' => ['en' => '3 years and 6 months', 'ar' => '3 سنوات و 6 شهور'], 'fees' => 52900],
                             'stg_brit_fs2' => ['name' => ['en' => 'FS 2', 'ar' => 'FS 2'], 'offered' => false, 'age' => ['en' => '4 years and 6 months', 'ar' => '4 سنوات و 6 شهور'], 'fees' => 55200],
@@ -265,6 +277,7 @@ function handleIntermediateMode($from, $message) {
                 return;
             }
         }
+
         askLanguageMode($from);
         return;
     }
@@ -275,20 +288,38 @@ function handleIntermediateMode($from, $message) {
     if ($type === 'interactive') {
         $replyId = $message['interactive']['list_reply']['id'] ?? $message['interactive']['button_reply']['id'] ?? '';
 
+        if ($replyId === 'lang_switch') {
+            $lang = ($lang === 'en') ? 'ar' : 'en';
+            createOrUpdateSession($from, $lang, $session['state']);
+            $replyId = $session['state'];
+            if (!$replyId || $replyId === 'new') {
+                $replyId = 'main_menu';
+            }
+        } elseif ($replyId === 'apply_now') {
+            $msg = ($lang === 'en')
+                ? "Thank you for your interest in Harvest International Schools.\nPlease apply from here: https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php"
+                : "شكراً لاهتمامكم بمدارس هارڤست الدولية.\nيرجى التقديم من هنا: https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php";
+            sendFinalTextWithMenuButton($from, $msg, $lang);
+            return;
+        } else {
+            // Save state for correct language switching
+            updateSessionState($from, $replyId);
+        }
+
         if ($replyId === 'main_menu') {
             sendMainMenuIntermediate($from, $lang);
             return;
         }
 
         if (strpos($replyId, 'menu_') === 0) {
-            if (in_array($replyId, ['menu_disc', 'menu_accr', 'menu_careers'])) {
-                $text = $config['static_content'][$replyId][$lang];
-                sendFinalTextWithMenuButton($from, $text, $lang);
+            if ($replyId === 'menu_chat') {
+                sendChatDepartmentMenuIntermediate($from, $lang);
                 return;
             }
 
-            if ($replyId === 'menu_faqs') {
-                sendFaqMenuIntermediate($from, $lang);
+            if (in_array($replyId, ['menu_disc', 'menu_accr', 'menu_careers'])) {
+                $text = $config['static_content'][$replyId][$lang];
+                sendFinalTextWithMenuButton($from, $text, $lang);
                 return;
             }
 
@@ -297,6 +328,21 @@ function handleIntermediateMode($from, $message) {
                 sendDepartmentMenuIntermediate($from, $lang, $action);
                 return;
             }
+        }
+
+        if (strpos($replyId, 'chat_dept_') === 0) {
+            $deptKey = str_replace('chat_dept_', '', $replyId);
+            if (isset($config['chat_departments'][$deptKey])) {
+                $dept = $config['chat_departments'][$deptKey];
+                $deptName = $dept[$lang];
+                $waLink = "https://wa.me/" . $dept['number'];
+
+                $msg = ($lang === 'en')
+                    ? "Please click on the link below to start a chat with *{$deptName}*:\n{$waLink}"
+                    : "يرجى الضغط على الرابط أدناه لبدء المحادثة مع *{$deptName}*:\n{$waLink}";
+                sendFinalTextWithMenuButton($from, $msg, $lang);
+            }
+            return;
         }
 
         if (strpos($replyId, 'faq_') === 0) {
@@ -313,6 +359,15 @@ function handleIntermediateMode($from, $message) {
             if (count($parts) >= 3) {
                 $action = $parts[1];
                 $deptKey = $parts[2];
+                $deptConfig = $config['departments'][$deptKey] ?? null;
+
+                // If the department has exactly one section (e.g., early), skip section selection
+                if ($deptConfig && count($deptConfig['sections']) === 1) {
+                    $secKey = array_key_first($deptConfig['sections']);
+                    sendStageMenuIntermediate($from, $lang, $action, $deptKey, $secKey);
+                    return;
+                }
+
                 sendSectionMenuIntermediate($from, $lang, $action, $deptKey);
                 return;
             }
@@ -342,38 +397,28 @@ function handleIntermediateMode($from, $message) {
                 $stageName = $stageData['name'][$lang];
                 $responseText = "";
 
-                if ($action === 'stages') {
-                    if ($stageData['offered']) {
-                        $enText = "✅ *{$stageName}* is currently offered at Harvest Schools.";
-                        $arText = "✅ مرحلة *{$stageName}* متاحة حالياً للتسجيل في مدارس هارڤست.";
-                        $responseText = ($lang === 'en') ? $enText : $arText;
+                if (!$stageData['offered']) {
+                    $enText = "Sorry, *{$stageName}* is currently NOT offered at Harvest Schools.";
+                    $arText = "نعتذر، مرحلة *{$stageName}* غير متاحة حالياً في مدارس هارڤست.";
+                    $responseText = ($lang === 'en') ? $enText : $arText;
+                } else {
+                    $ageStr = $stageData['age'][$lang];
+                    $feesStr = number_format($stageData['fees']);
+                    $currency = ($lang === 'en') ? "EGP" : "ج.م";
+                    $reqs = getRequirementsForStage($stageId, $stageName, $lang);
+
+                    if ($lang === 'en') {
+                        $responseText = "*{$stageName}* is currently offered.\n\n";
+                        $responseText .= "*Minimum Age:* {$ageStr}\n";
+                        $responseText .= "*Tuition Fees:* {$feesStr} {$currency}\n";
+                        $responseText .= "\n" . $reqs;
+                        $responseText .= $config['static_content']['fees_disclaimer'][$lang];
                     } else {
-                        $enText = "❌ Sorry, *{$stageName}* is currently NOT offered at Harvest Schools.";
-                        $arText = "❌ نعتذر، مرحلة *{$stageName}* غير متاحة حالياً في مدارس هارڤست.";
-                        $responseText = ($lang === 'en') ? $enText : $arText;
-                    }
-                }
-                elseif ($action === 'reqs') {
-                    $responseText = getRequirementsForStage($stageId, $stageName, $lang);
-                }
-                elseif ($action === 'age' || $action === 'fees') {
-                    if (!$stageData['offered']) {
-                        $responseText = ($lang === 'en')
-                            ? "❌ *{$stageName}* is currently not offered."
-                            : "❌ *{$stageName}* غير متاحة حالياً.";
-                    } else {
-                        if ($action === 'age') {
-                            $ageStr = $stageData['age'][$lang];
-                            $enText = "The minimum registration age for *{$stageName}* is:\n👉 {$ageStr}";
-                            $arText = "الحد الأدنى لسن القبول في مرحلة *{$stageName}* هو:\n👉 {$ageStr}";
-                            $responseText = ($lang === 'en') ? $enText : $arText;
-                        } else {
-                            $feesStr = number_format($stageData['fees']);
-                            $currency = ($lang === 'en') ? "EGP" : "ج.م";
-                            $enText = "The annual tuition fees for *{$stageName}* are:\n👉 *{$feesStr} {$currency}*";
-                            $arText = "المصروفات الدراسية السنوية لمرحلة *{$stageName}* هي:\n👉 *{$feesStr} {$currency}*";
-                            $responseText = (($lang === 'en') ? $enText : $arText) . $config['static_content']['fees_disclaimer'][$lang];
-                        }
+                        $responseText = "مرحلة *{$stageName}* متاحة حالياً للتسجيل.\n\n";
+                        $responseText .= "*الحد الأدنى لسن القبول:* {$ageStr}\n";
+                        $responseText .= "*المصروفات الدراسية السنوية:* {$feesStr} {$currency}\n";
+                        $responseText .= "\n" . $reqs;
+                        $responseText .= $config['static_content']['fees_disclaimer'][$lang];
                     }
                 }
 
@@ -387,7 +432,7 @@ function handleIntermediateMode($from, $message) {
 }
 
 function askLanguageMode($to) {
-    sendButtons($to, "Please choose your language / يرجى اختيار اللغة", [
+    sendButtons($to, "Please choose your language.\n.يرجى اختيار اللغة", [
         ["id" => "lang_en", "title" => "English"],
         ["id" => "lang_ar", "title" => "العربية"]
     ]);
@@ -402,10 +447,44 @@ function sendMainMenuIntermediate($to, $lang) {
         $rows[] = ["id" => $opt['id'], "title" => mb_substr($opt[$lang], 0, 24)];
     }
 
-    sendList($to, $ui['main_body'][$lang], $ui['main_btn'][$lang], [[
-        "title" => mb_substr($ui['main_title'][$lang], 0, 24),
-        "rows" => $rows
-    ]]);
+    sendList($to, $ui['main_body'][$lang], $ui['main_btn'][$lang], [
+        [
+            "title" => mb_substr($ui['main_title'][$lang], 0, 24),
+            "rows" => $rows
+        ],
+        [
+            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "rows" => [
+                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
+                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
+            ]
+        ]
+    ]);
+}
+
+function sendChatDepartmentMenuIntermediate($to, $lang) {
+    $config = getSchoolConfig();
+    $ui = $config['ui'];
+
+    $rows = [];
+    foreach ($config['chat_departments'] as $key => $dept) {
+        $rows[] = ["id" => "chat_dept_" . $key, "title" => mb_substr($dept[$lang], 0, 24)];
+    }
+
+    sendList($to, $ui['dept_body'][$lang], $ui['main_btn'][$lang], [
+        [
+            "title" => mb_substr($ui['dept_title'][$lang], 0, 24),
+            "rows" => $rows
+        ],
+        [
+            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "rows" => [
+                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
+                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
+                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
+            ]
+        ]
+    ]);
 }
 
 function sendFaqMenuIntermediate($to, $lang) {
@@ -424,7 +503,11 @@ function sendFaqMenuIntermediate($to, $lang) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+            "rows" => [
+                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
+                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
+                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
+            ]
         ]
     ];
 
@@ -448,7 +531,11 @@ function sendDepartmentMenuIntermediate($to, $lang, $action) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+            "rows" => [
+                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
+                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
+                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
+            ]
         ]
     ];
 
@@ -474,7 +561,11 @@ function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+            "rows" => [
+                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
+                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
+                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
+            ]
         ]
     ];
 
@@ -488,10 +579,19 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     if (!$stageData) return;
 
     $rows = [];
+    $filteredOut = false;
     foreach ($stageData['stages'] as $stageId => $stage) {
+        if (($action === 'fees' || $action === 'reqs') && !$stage['offered']) {
+            $filteredOut = true;
+            continue;
+        }
         $id = "res_{$action}_{$stageId}";
-        $titleMark = $stage['offered'] ? '' : ($lang === 'en' ? ' (N/A)' : ' (غير متاح)');
-        $rows[] = ["id" => $id, "title" => mb_substr($stage['name'][$lang] . $titleMark, 0, 24)];
+        $rows[] = ["id" => $id, "title" => mb_substr($stage['name'][$lang], 0, 24)];
+    }
+
+    $body = $ui['stage_body'][$lang];
+    if ($filteredOut) {
+        $body .= " " . $ui['unoffered_note'][$lang];
     }
 
     $sections = [
@@ -501,18 +601,26 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
         ],
         [
             "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
-            "rows" => [ ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)] ]
+            "rows" => [
+                ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 24)],
+                ["id" => "lang_switch", "title" => mb_substr($lang === 'en' ? 'تغيير اللغة الى العربية' : 'Change Lang to English', 0, 24)],
+                ["id" => "apply_now", "title" => mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 24)]
+            ]
         ]
     ];
 
-    sendList($to, $ui['stage_body'][$lang], $ui['main_btn'][$lang], $sections);
+    sendList($to, $body, $ui['main_btn'][$lang], $sections);
 }
 
 function sendFinalTextWithMenuButton($to, $text, $lang) {
     $config = getSchoolConfig();
     $btnTitle = mb_substr($config['ui']['back_btn'][$lang], 0, 20);
+    $langBtn = mb_substr($lang === 'en' ? 'عربي' : 'English', 0, 20);
+    $applyBtn = mb_substr($lang === 'en' ? 'Apply Now' : 'تقدم الأن', 0, 20);
 
     sendButtons($to, $text, [
-        ["id" => "main_menu", "title" => $btnTitle]
+        ["id" => "main_menu", "title" => $btnTitle],
+        ["id" => "lang_switch", "title" => $langBtn],
+        ["id" => "apply_now", "title" => $applyBtn]
     ]);
 }
