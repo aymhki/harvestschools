@@ -277,6 +277,112 @@ td button {
     border-radius: 0.5rem;
 }
 
+
+.custom-scrollbar-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 2rem;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+    user-select: none;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, height 0.3s ease;
+}
+
+.custom-scrollbar-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.custom-scrollbar-arrow {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    transition: all 0.2s;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+
+.custom-scrollbar-arrow:active {
+    transform: scale(0.95);
+}
+
+.custom-scrollbar-track {
+    flex: 1;
+    height: 1rem;
+    background: #e0e0e0;
+    border-radius: 0.5rem;
+    position: relative;
+    margin: 0 1rem;
+    cursor: pointer;
+}
+
+.custom-scrollbar-thumb {
+    position: absolute;
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 1rem;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0.1rem 0.2rem rgba(0,0,0,0.2);
+    transition: background 0.2s;
+}
+
+.custom-scrollbar-thumb:hover,
+.custom-scrollbar-thumb.dragging {
+    cursor: grabbing;
+}
+
+.thumb-grip {
+    display: flex;
+    gap: 0.5rem;
+    height: 60%;
+    align-items: center;
+    pointer-events: none;
+}
+
+.thumb-grip span {
+    display: block;
+    width: 0.1rem;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 0.1rem;
+}
+
+.table-scroll-container {
+    width: 100%;
+}
+
+.table-scroll-container.scrollable {
+    overflow-x: auto;
+    margin: 0 2rem 2rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.table-scroll-container.scrollable::-webkit-scrollbar {
+    display: none;
+}
+
+
+
 @media (max-width: 1600px) {
     .table-module-header-buttons-wrapper {
         flex-wrap: wrap;
@@ -353,6 +459,36 @@ td button {
         padding-top: 3rem;
         padding-bottom: 1rem;
     }
+
+    .custom-scrollbar-container {
+        padding: 0 1rem;
+    }
+
+    .custom-scrollbar-arrow {
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 2rem;
+    }
+
+    .custom-scrollbar-track {
+        height: 1rem;
+        margin: 0 0.5rem;
+    }
+
+    .custom-scrollbar-thumb {
+        width: 5rem;
+    }
+
+    .thumb-grip {
+        gap: 0.2rem;
+        height: 50%;
+    }
+
+    .thumb-grip span {
+        height: 70%;
+        gap: 0.1rem;
+        width: 0.1rem;
+    }
 }
 
 @media (max-height: 1440px) {
@@ -422,5 +558,19 @@ td button {
 
     .table-module-filter-search-input-field:hover {
         filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
+    }
+
+    .custom-scrollbar-track {
+        background: var(--dark-accent-color);
+    }
+    .custom-scrollbar-arrow {
+        background: var(--harvest-white-color);
+        color: var(--dark-accent-color);
+    }
+    .custom-scrollbar-thumb {
+        background: var(--harvest-white-color);
+    }
+    .thumb-grip span {
+        background: rgba(0, 0, 0, 0.5);
     }
 }
