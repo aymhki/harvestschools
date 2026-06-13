@@ -113,6 +113,14 @@ function handleIntermediateMode($from, $message) {
                     : "يرجى الضغط على الزر أدناه لبدء المحادثة مع *{$deptName}*:";
                 $btnTitle = ($lang === 'en') ? 'Start Chat' : 'ابدأ المحادثة';
                 sendCtaUrlButton($from, $msg, $btnTitle, $waLink);
+
+                $menuMsg = ($lang === 'en')
+                    ? "Return to navigation:"
+                    : "العودة للقائمة:";
+
+                sendButtons($from, $menuMsg, [
+                    ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 20)]
+                ]);
             }
             return;
         }
