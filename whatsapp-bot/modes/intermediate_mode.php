@@ -1,230 +1,10 @@
 <?php
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../whatsapp_api.php';
-function getSchoolConfig() {
-    return [
-        'contact_departments' => [
-            'reception' => ['en' => 'Harvest Reception', 'ar' => 'الريسيبشن', 'number' => '201061894477'],
-            'student_affairs' => ['en' => 'Student Affairs', 'ar' => 'شئون الطلبة', 'number' => '201118900259'],
-            'accounting' => ['en' => 'Accounting', 'ar' => 'الحسابات', 'number' => '201118900946'],
-            'admissions' => ['en' => 'Harvest Admissions', 'ar' => 'التقديمات', 'number' => '201062255862'],
-            'national' => ['en' => 'National Department', 'ar' => 'قسم الناشونال', 'number' => '201028329668'],
-            'british' => ['en' => 'IG Department', 'ar' => 'القسم البريطاني', 'number' => '201097875407'],
-            'kindergarten' => ['en' => 'KG Department', 'ar' => 'قسم الكي جي', 'number' => '201028319440'],
-            'american' => ['en' => 'American Department', 'ar' => 'القسم الامريكي', 'number' => '201028940675'],
-        ],
-        'ui' => [
-            'main_title' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
-            'main_body' => ['en' => 'Welcome to Harvest International Schools chat bot. Please choose a topic below:', 'ar' => 'مرحباً بكم في مدارس هارڤست الدولية. يرجى اختيار موضوع من القائمة:'],
-            'main_body_fallback' => ['en' => 'Please choose a topic from the menu below:', 'ar' => 'يرجى اختيار موضوع من القائمة أدناه:'],
-            'main_btn' => ['en' => 'Options', 'ar' => 'الخيارات'],
-            'dept_title' => ['en' => 'Choose Department', 'ar' => 'اختر القسم'],
-            'dept_body' => ['en' => 'Please select the educational department:', 'ar' => 'يرجى اختيار القسم التعليمي:'],
-            'sec_title' => ['en' => 'Choose Stage Group', 'ar' => 'اختر المرحلة الدراسية'],
-            'sec_body' => ['en' => 'Please select the stage group:', 'ar' => 'يرجى اختيار المجموعة الدراسية:'],
-            'stage_title' => ['en' => 'Choose Grade', 'ar' => 'اختر الصف'],
-            'stage_body' => ['en' => 'Please select the specific grade:', 'ar' => 'يرجى اختيار الصف الدراسي بالتحديد:'],
-            'faq_title' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
-            'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
-            'back_btn' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
-            'apply_btn' => ['en' => 'Apply Now', 'ar' => 'تقدم الأن'],
-            'change_lang_btn' => ['en' => 'تغيير للغة العربية', 'ar' => 'Change to English'],
-            'nav_section' => ['en' => 'Navigation', 'ar' => 'التنقل'],
-            'contact_title' => ['en' => 'Contact Departments', 'ar' => 'أقسام التواصل'],
-            'contact_body' => ['en' => 'Please select a department to chat with:', 'ar' => 'يرجى اختيار القسم للتحدث معه:'],
-            'unoffered_note' => ['en' => 'Please note that unavailable stages will not be shown here.', 'ar' => 'يرجى ملاحظة أنه لن يتم عرض المراحل غير المتاحة هنا.'],
-            'fees_disc_body' => ['en' => 'Select a department to view tuition fees, or view our discounts policy:', 'ar' => 'اختر القسم لعرض المصروفات أو اطلع على سياسة الخصومات:'],
-            'disc_section' => ['en' => 'Discounts', 'ar' => 'الخصومات'],
-            'disc_item' => ['en' => 'View Discounts', 'ar' => 'عرض الخصومات'],
-            'info_title' => ['en' => 'Information', 'ar' => 'معلومات'],
-            'info_body' => ['en' => 'Please select a topic:', 'ar' => 'يرجى اختيار موضوع:'],
-            'faqs_item' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
-            'careers_item' => ['en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
-        ],
-        'main_options' => [
-            ['id' => 'menu_stages', 'en' => 'Stages Offered', 'ar' => 'المراحل المتاحة'],
-            ['id' => 'menu_age', 'en' => 'Minimum Age', 'ar' => 'سن القبول'],
-            ['id' => 'menu_reqs', 'en' => 'Admission Requirements', 'ar' => 'متطلبات التقديم'],
-            ['id' => 'menu_fees', 'en' => 'Tuition Fees & Discounts', 'ar' => 'المصروفات والخصومات'],
-            ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
-            ['id' => 'menu_info', 'en' => 'FAQs & Careers', 'ar' => 'الأسئلة والوظائف'],
-            ['id' => 'menu_contact', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
-            ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
-        ],
-        'static_content' => [
-            'menu_disc' => [
-                'en' => "*Discounts:*\n\n• *Siblings Discount:* 10% off tuition fees\n• *Staff Discount:* 40% off tuition fees\n\n_For combined discount cases, please confirm directly with our Accounting department to get an accurate quote._",
-                'ar' => "*الخصومات:*\n\n• *خصم الأخوة:* 10% من المصروفات الدراسية\n• *خصم العاملين:* 40% من المصروفات الدراسية\n\n_في حالات الخصومات المجمعة، يرجى مراجعة قسم الحسابات مباشرة للحصول على التأكيد الدقيق._"
-            ],
-            'menu_accr' => [
-                'en' => "*Accreditations:*\n\n• *National Dept:* Accredited by the Egyptian Ministry of Education\n• *British Dept:* Accredited by Cambridge / Pearson Edexcel / Oxford\n• *American Dept:* Accredited by Cognia",
-                'ar' => "*الاعتمادات:*\n\n• *القسم القومي:* معتمد من وزارة التربية والتعليم المصرية\n• *القسم البريطاني:* معتمد من Cambridge / Pearson Edexcel / Oxford\n• *القسم الأمريكي:* معتمد من Cognia"
-            ],
-            'menu_careers' => [
-                'en' => "We're always open to talented educators joining the Harvest family.\n\nYou can submit your application here:\nhttps://harvestschools.com/vacancies",
-                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست.\n\nيمكنك تقديم طلب التوظيف من هنا:\nhttps://harvestschools.com/vacancies"
-            ],
-            'fees_disclaimer' => [
-                'en' => "\n\n_Note: Tuition does NOT include uniforms, books, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
-                'ar' => "\n\n_ملاحظة: المصروفات لا تشمل الزي المدرسي، الكتب، الباص، أو الأنشطة. قد تكون مؤهلاً لخصومات الأخوة أو العاملين. يرجى مراجعة قسم الحسابات للتفاصيل._"
-            ]
-        ],
-        'faqs' => [
-            'faq_mixed' => [
-                'q' => ['en' => 'Is the school mixed?', 'ar' => 'هل المدرسة مختلطة؟'],
-                'a' => ['en' => 'Yes, Harvest International Schools is a mixed school.', 'ar' => 'نعم، مدارس هارڤست هي مدرسة مختلطة.']
-            ],
-            'faq_transfer' => [
-                'q' => ['en' => 'Accept transfers?', 'ar' => 'هل تقبل التحويلات؟'],
-                'a' => ['en' => 'Yes, transfer students are accepted as long as they pass an entry test held at the school.', 'ar' => 'نعم، تقبل المدرسة التحويلات بشرط اجتياز الطالب لاختبار القبول بالمدرسة.']
-            ],
-            'faq_fees' => [
-                'q' => ['en' => 'Do fees change yearly?', 'ar' => 'هل تتغير المصروفات سنوياً؟'],
-                'a' => ['en' => 'Only increases applied by the Ministry of Education are applied, which can be up to 10%.', 'ar' => 'تطبق فقط الزيادات المقررة من وزارة التربية والتعليم، والتي قد تصل إلى 10%.']
-            ],
-            'faq_teachers' => [
-                'q' => ['en' => 'Are there foreign teachers?', 'ar' => 'هل يوجد مدرسين أجانب؟'],
-                'a' => ['en' => 'Our teachers are mostly Egyptian and highly qualified.', 'ar' => 'المدرسون في الغالب مصريون ذوو كفاءة عالية جداً.']
-            ],
-            'faq_bus' => [
-                'q' => ['en' => 'Is there transportation?', 'ar' => 'هل يوجد باصات للمدرسة؟'],
-                'a' => ['en' => 'Yes, school buses cover every district in Alexandria.', 'ar' => 'نعم، تغطي الباصات جميع مناطق الإسكندرية.']
-            ],
-            'faq_sports' => [
-                'q' => ['en' => 'Are there sports?', 'ar' => 'هل توجد أنشطة رياضية؟'],
-                'a' => ['en' => 'Yes, Harvest Academy provides all kinds of sports activities throughout the year.', 'ar' => 'نعم، توفر المدرسة جميع أنواع الأنشطة الرياضية على مدار العام.']
-            ],
-        ],
-        'departments' => [
-            'early' => [
-                'name' => ['en' => 'Pre-Play & Playschool', 'ar' => 'مرحلة ما قبل المدرسة'],
-                'sections' => [
-                    'early_stg' => [
-                        'title' => ['en' => 'Pre-Play & Playschool', 'ar' => 'Pre-Play & Playschool'],
-                        'stages' => [
-                            'stg_pre_play' => ['name' => ['en' => 'Pre-Play', 'ar' => 'Pre-Play'], 'offered' => true, 'age' => ['en' => '2 years and 4 months', 'ar' => 'سنتان و 4 شهور'], 'fees' => 24150],
-                            'stg_play' => ['name' => ['en' => 'Playschool', 'ar' => 'Playschool'], 'offered' => true, 'age' => ['en' => '2 years and 6 months', 'ar' => 'سنتان و 6 شهور'], 'fees' => 28750],
-                        ]
-                    ]
-                ]
-            ],
-            'national' => [
-                'name' => ['en' => 'National', 'ar' => 'القسم القومي'],
-                'sections' => [
-                    'nat_kg' => [
-                        'title' => ['en' => 'Kindergarten', 'ar' => 'رياض الأطفال'],
-                        'stages' => [
-                            'stg_nat_kg1' => ['name' => ['en' => 'KG 1', 'ar' => 'كي جي 1'], 'offered' => true, 'age' => ['en' => '4 years', 'ar' => '4 سنوات'], 'fees' => 35000],
-                            'stg_nat_kg2' => ['name' => ['en' => 'KG 2', 'ar' => 'كي جي 2'], 'offered' => true, 'age' => ['en' => '5 years', 'ar' => '5 سنوات'], 'fees' => 35000],
-                        ]
-                    ],
-                    'nat_jr' => [
-                        'title' => ['en' => 'Primary (Junior)', 'ar' => 'الابتدائي'],
-                        'stages' => [
-                            'stg_nat_jr1' => ['name' => ['en' => 'Junior 1', 'ar' => 'الصف الأول الابتدائي'], 'offered' => false, 'age' => ['en' => '6 years', 'ar' => '6 سنوات'], 'fees' => 32490],
-                            'stg_nat_jr2' => ['name' => ['en' => 'Junior 2', 'ar' => 'الصف الثاني الابتدائي'], 'offered' => true, 'age' => ['en' => '7 years', 'ar' => '7 سنوات'], 'fees' => 32490],
-                            'stg_nat_jr3' => ['name' => ['en' => 'Junior 3', 'ar' => 'الصف الثالث الابتدائي'], 'offered' => true, 'age' => ['en' => '8 years', 'ar' => '8 سنوات'], 'fees' => 32490],
-                            'stg_nat_jr4' => ['name' => ['en' => 'Junior 4', 'ar' => 'الصف الرابع الابتدائي'], 'offered' => true, 'age' => ['en' => '9 years', 'ar' => '9 سنوات'], 'fees' => 34490],
-                            'stg_nat_jr5' => ['name' => ['en' => 'Junior 5', 'ar' => 'الصف الخامس الابتدائي'], 'offered' => true, 'age' => ['en' => '10 years', 'ar' => '10 سنوات'], 'fees' => 34490],
-                            'stg_nat_jr6' => ['name' => ['en' => 'Junior 6', 'ar' => 'الصف السادس الابتدائي'], 'offered' => true, 'age' => ['en' => '11 years', 'ar' => '11 سنوات'], 'fees' => 34490],
-                        ]
-                    ],
-                    'nat_mid' => [
-                        'title' => ['en' => 'Preparatory (Middle)', 'ar' => 'الإعدادي'],
-                        'stages' => [
-                            'stg_nat_m1' => ['name' => ['en' => 'Middle 1', 'ar' => 'الصف الأول الإعدادي'], 'offered' => true, 'age' => ['en' => '12 years', 'ar' => '12 سنة'], 'fees' => 36490],
-                            'stg_nat_m2' => ['name' => ['en' => 'Middle 2', 'ar' => 'الصف الثاني الإعدادي'], 'offered' => true, 'age' => ['en' => '13 years', 'ar' => '13 سنة'], 'fees' => 36490],
-                            'stg_nat_m3' => ['name' => ['en' => 'Middle 3', 'ar' => 'الصف الثالث الإعدادي'], 'offered' => true, 'age' => ['en' => '14 years', 'ar' => '14 سنة'], 'fees' => 36490],
-                        ]
-                    ],
-                    'nat_sr' => [
-                        'title' => ['en' => 'Secondary (Senior)', 'ar' => 'الثانوي'],
-                        'stages' => [
-                            'stg_nat_sr1' => ['name' => ['en' => 'Senior 1', 'ar' => 'الصف الأول الثانوي'], 'offered' => true, 'age' => ['en' => '15 years', 'ar' => '15 سنة'], 'fees' => 35000],
-                            'stg_nat_sr2' => ['name' => ['en' => 'Senior 2', 'ar' => 'الصف الثاني الثانوي'], 'offered' => true, 'age' => ['en' => '16 years', 'ar' => '16 سنة'], 'fees' => 35000],
-                            'stg_nat_sr3' => ['name' => ['en' => 'Senior 3', 'ar' => 'الصف الثالث الثانوي'], 'offered' => true, 'age' => ['en' => '17 years', 'ar' => '17 سنة'], 'fees' => 35000],
-                        ]
-                    ]
-                ]
-            ],
-            'british' => [
-                'name' => ['en' => 'British (IG)', 'ar' => 'القسم البريطاني'],
-                'sections' => [
-                    'brit_fs' => [
-                        'title' => ['en' => 'Foundation Stage', 'ar' => 'المرحلة التأسيسية'],
-                        'stages' => [
-                            'stg_brit_fs1' => ['name' => ['en' => 'FS 1', 'ar' => 'FS 1'], 'offered' => true, 'age' => ['en' => '3 years and 6 months', 'ar' => '3 سنوات و 6 شهور'], 'fees' => 52900],
-                            'stg_brit_fs2' => ['name' => ['en' => 'FS 2', 'ar' => 'FS 2'], 'offered' => false, 'age' => ['en' => '4 years and 6 months', 'ar' => '4 سنوات و 6 شهور'], 'fees' => 55200],
-                        ]
-                    ],
-                    'brit_prim' => [
-                        'title' => ['en' => 'Primary (Years 1-6)', 'ar' => 'الابتدائي (Years 1-6)'],
-                        'stages' => [
-                            'stg_brit_y1' => ['name' => ['en' => 'Year 1', 'ar' => 'Year 1'], 'offered' => false, 'age' => ['en' => '5 years and 6 months', 'ar' => '5 سنوات و 6 شهور'], 'fees' => 68310],
-                            'stg_brit_y2' => ['name' => ['en' => 'Year 2', 'ar' => 'Year 2'], 'offered' => true, 'age' => ['en' => '6 years and 6 months', 'ar' => '6 سنوات و 6 شهور'], 'fees' => 68310],
-                            'stg_brit_y3' => ['name' => ['en' => 'Year 3', 'ar' => 'Year 3'], 'offered' => false, 'age' => ['en' => '7 years and 6 months', 'ar' => '7 سنوات و 6 شهور'], 'fees' => 68310],
-                            'stg_brit_y4' => ['name' => ['en' => 'Year 4', 'ar' => 'Year 4'], 'offered' => true, 'age' => ['en' => '8 years and 6 months', 'ar' => '8 سنوات و 6 شهور'], 'fees' => 72680],
-                            'stg_brit_y5' => ['name' => ['en' => 'Year 5', 'ar' => 'Year 5'], 'offered' => true, 'age' => ['en' => '9 years and 6 months', 'ar' => '9 سنوات و 6 شهور'], 'fees' => 72680],
-                            'stg_brit_y6' => ['name' => ['en' => 'Year 6', 'ar' => 'Year 6'], 'offered' => true, 'age' => ['en' => '10 years and 6 months', 'ar' => '10 سنوات و 6 شهور'], 'fees' => 72680],
-                        ]
-                    ],
-                    'brit_sec' => [
-                        'title' => ['en' => 'Secondary (Years 7-12)', 'ar' => 'الثانوي (Years 7-12)'],
-                        'stages' => [
-                            'stg_brit_y7' => ['name' => ['en' => 'Year 7', 'ar' => 'Year 7'], 'offered' => false, 'age' => ['en' => '11 years and 6 months', 'ar' => '11 سنة و 6 شهور'], 'fees' => 78315],
-                            'stg_brit_y8' => ['name' => ['en' => 'Year 8', 'ar' => 'Year 8'], 'offered' => true, 'age' => ['en' => '12 years and 6 months', 'ar' => '12 سنة و 6 شهور'], 'fees' => 78315],
-                            'stg_brit_y9' => ['name' => ['en' => 'Year 9', 'ar' => 'Year 9'], 'offered' => true, 'age' => ['en' => '13 years and 6 months', 'ar' => '13 سنة و 6 شهور'], 'fees' => 78315],
-                            'stg_brit_y10' => ['name' => ['en' => 'Year 10', 'ar' => 'Year 10'], 'offered' => true, 'age' => ['en' => '14 years and 6 months', 'ar' => '14 سنة و 6 شهور'], 'fees' => 86825],
-                            'stg_brit_y11' => ['name' => ['en' => 'Year 11', 'ar' => 'Year 11'], 'offered' => true, 'age' => ['en' => '15 years and 6 months', 'ar' => '15 سنة و 6 شهور'], 'fees' => 45425],
-                            'stg_brit_y12' => ['name' => ['en' => 'Year 12', 'ar' => 'Year 12'], 'offered' => true, 'age' => ['en' => '16 years and 6 months', 'ar' => '16 سنة و 6 شهور'], 'fees' => 37145],
-                        ]
-                    ]
-                ]
-            ],
-            'american' => [
-                'name' => ['en' => 'American', 'ar' => 'القسم الأمريكي'],
-                'sections' => [
-                    'am_kg' => [
-                        'title' => ['en' => 'Kindergarten', 'ar' => 'رياض الأطفال'],
-                        'stages' => [
-                            'stg_am_prek' => ['name' => ['en' => 'Pre-K', 'ar' => 'Pre-K'], 'offered' => true, 'age' => ['en' => '3 years and 6 months', 'ar' => '3 سنوات و 6 شهور'], 'fees' => 55200],
-                            'stg_am_k' => ['name' => ['en' => 'Kindergarten (K)', 'ar' => 'Kindergarten (K)'], 'offered' => true, 'age' => ['en' => '4 years and 6 months', 'ar' => '4 سنوات و 6 شهور'], 'fees' => 47500],
-                        ]
-                    ],
-                    'am_elem' => [
-                        'title' => ['en' => 'Elementary (Grades 1-5)', 'ar' => 'الابتدائي (Grades 1-5)'],
-                        'stages' => [
-                            'stg_am_g1' => ['name' => ['en' => 'Grade 1', 'ar' => 'Grade 1'], 'offered' => true, 'age' => ['en' => '5 years and 6 months', 'ar' => '5 سنوات و 6 شهور'], 'fees' => 72680],
-                            'stg_am_g2' => ['name' => ['en' => 'Grade 2', 'ar' => 'Grade 2'], 'offered' => true, 'age' => ['en' => '6 years and 6 months', 'ar' => '6 سنوات و 6 شهور'], 'fees' => 73600],
-                            'stg_am_g3' => ['name' => ['en' => 'Grade 3', 'ar' => 'Grade 3'], 'offered' => true, 'age' => ['en' => '7 years and 6 months', 'ar' => '7 سنوات و 6 شهور'], 'fees' => 75210],
-                            'stg_am_g4' => ['name' => ['en' => 'Grade 4', 'ar' => 'Grade 4'], 'offered' => true, 'age' => ['en' => '8 years and 6 months', 'ar' => '8 سنوات و 6 شهور'], 'fees' => 77165],
-                            'stg_am_g5' => ['name' => ['en' => 'Grade 5', 'ar' => 'Grade 5'], 'offered' => true, 'age' => ['en' => '9 years and 6 months', 'ar' => '9 سنوات و 6 شهور'], 'fees' => 78515],
-                        ]
-                    ],
-                    'am_mid' => [
-                        'title' => ['en' => 'Middle (Grades 6-8)', 'ar' => 'الإعدادي (Grades 6-8)'],
-                        'stages' => [
-                            'stg_am_g6' => ['name' => ['en' => 'Grade 6', 'ar' => 'Grade 6'], 'offered' => true, 'age' => ['en' => '10 years and 6 months', 'ar' => '10 سنوات و 6 شهور'], 'fees' => 78515],
-                            'stg_am_g7' => ['name' => ['en' => 'Grade 7', 'ar' => 'Grade 7'], 'offered' => true, 'age' => ['en' => '11 years and 6 months', 'ar' => '11 سنة و 6 شهور'], 'fees' => 82100],
-                            'stg_am_g8' => ['name' => ['en' => 'Grade 8', 'ar' => 'Grade 8'], 'offered' => true, 'age' => ['en' => '12 years and 6 months', 'ar' => '12 سنة و 6 شهور'], 'fees' => 82100],
-                        ]
-                    ],
-                    'am_high' => [
-                        'title' => ['en' => 'High School (Grades 9-12)', 'ar' => 'الثانوي (Grades 9-12)'],
-                        'stages' => [
-                            'stg_am_g9' => ['name' => ['en' => 'Grade 9', 'ar' => 'Grade 9'], 'offered' => true, 'age' => ['en' => '13 years and 6 months', 'ar' => '13 سنة و 6 شهور'], 'fees' => 82100],
-                            'stg_am_g10' => ['name' => ['en' => 'Grade 10', 'ar' => 'Grade 10'], 'offered' => true, 'age' => ['en' => '14 years and 6 months', 'ar' => '14 سنة و 6 شهور'], 'fees' => 91770],
-                            'stg_am_g11' => ['name' => ['en' => 'Grade 11', 'ar' => 'Grade 11'], 'offered' => true, 'age' => ['en' => '15 years and 6 months', 'ar' => '15 سنة و 6 شهور'], 'fees' => 93495],
-                            'stg_am_g12' => ['name' => ['en' => 'Grade 12', 'ar' => 'Grade 12'], 'offered' => true, 'age' => ['en' => '16 years and 6 months', 'ar' => '16 سنة و 6 شهور'], 'fees' => 95105],
-                        ]
-                    ]
-                ]
-            ],
-        ]
-    ];
-}
+require_once __DIR__ . '/../config.php';
 function findStageById($stageId) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     foreach ($config['departments'] as $deptKey => $dept) {
         foreach ($dept['sections'] as $secKey => $section) {
             if (isset($section['stages'][$stageId])) {
@@ -284,7 +64,8 @@ function handleIntermediateMode($from, $message) {
         return;
     }
     $lang = $session['language'];
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     if ($type === 'interactive') {
         $replyId = $message['interactive']['list_reply']['id'] ?? $message['interactive']['button_reply']['id'] ?? '';
         if (strpos($replyId, 'lang_toggle_') === 0) {
@@ -436,7 +217,8 @@ function askLanguageMode($to) {
     ]);
 }
 function getNavRows($lang, $currentMenuId) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     return [
         ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 24)],
         ["id" => "menu_apply", "title" => mb_substr($config['ui']['apply_btn'][$lang], 0, 24)],
@@ -444,7 +226,8 @@ function getNavRows($lang, $currentMenuId) {
     ];
 }
 function sendMainMenuIntermediate($to, $lang, $fallback) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $rows = [];
     foreach ($config['main_options'] as $opt) {
@@ -470,7 +253,8 @@ function sendMainMenuIntermediate($to, $lang, $fallback) {
     }
 }
 function sendFaqMenuIntermediate($to, $lang) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $rows = [];
     foreach ($config['faqs'] as $faqId => $faqData) {
@@ -489,7 +273,8 @@ function sendFaqMenuIntermediate($to, $lang) {
     sendList($to, $ui['faq_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 function sendContactMenuIntermediate($to, $lang) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $rows = [];
     foreach ($config['contact_departments'] as $id => $dept) {
@@ -510,7 +295,8 @@ function sendContactMenuIntermediate($to, $lang) {
     sendList($to, $ui['contact_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $deptRows = [];
     foreach ($config['departments'] as $deptKey => $deptData) {
@@ -535,7 +321,8 @@ function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
     sendList($to, $ui['fees_disc_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 function sendInfoMenuIntermediate($to, $lang) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $sections = [
         [
@@ -553,7 +340,8 @@ function sendInfoMenuIntermediate($to, $lang) {
     sendList($to, $ui['info_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 function sendDepartmentMenuIntermediate($to, $lang, $action) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $deptRows = [];
     foreach ($config['departments'] as $deptKey => $deptData) {
@@ -573,7 +361,8 @@ function sendDepartmentMenuIntermediate($to, $lang, $action) {
     sendList($to, $ui['dept_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $dept = $config['departments'][$deptKey] ?? null;
     if (!$dept) return;
@@ -595,7 +384,8 @@ function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
     sendList($to, $ui['sec_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
 function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $stageData = $config['departments'][$deptKey]['sections'][$secKey] ?? null;
     if (!$stageData) return;
@@ -623,7 +413,8 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     sendList($to, $bodyText, $ui['main_btn'][$lang], $sections);
 }
 function sendFinalTextWithMenuButton($to, $text, $lang, $currentMenuId) {
-    $config = getSchoolConfig();
+    global $SCHOOL_CONFIG;
+    $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     sendButtons($to, $text, [
         ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 20)],
