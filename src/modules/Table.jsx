@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState, useCallback, Fragment} from "react";
+import {useEffect, useMemo, useState, useCallback, Fragment, useRef} from "react";
 import PropTypes from "prop-types";
 import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
@@ -23,7 +23,7 @@ function Table({
                    columnsToWrap,
                    allowEditEntryOption,
                    onEditEntryOption,
-                     likelyUrlColumns,
+                   likelyUrlColumns,
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
@@ -36,6 +36,17 @@ function Table({
     const [rowMapping, setRowMapping] = useState([]);
     const {t} = useTranslation();
 
+    const scrollContainerRef = useRef(null);
+    const scrollbarTrackRef = useRef(null);
+    const scrollbarThumbRef = useRef(null);
+
+    const [isScrollbarVisible, setIsScrollbarVisible] = useState(false);
+    const [thumbWidth, setThumbWidth] = useState(0);
+    const [thumbLeft, setThumbLeft] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeftStart, setScrollLeftStart] = useState(0);
+
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
         transform: isAccordionOpen ? 'translateY(0)' : 'translateY(-100%)',
@@ -47,6 +58,189 @@ function Table({
         transform: isFilterPopupOpen ? 'translateY(0)' : 'translateY(-100%)',
         config: { duration: 300 },
     });
+
+    const handleTableScroll = useCallback(() => {
+        if (isDragging) return;
+        const container = scrollContainerRef.current;
+        const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
+        if (!container || trackWidth === 0) return;
+
+        const { scrollWidth, clientWidth } = container;
+        const maxScrollLeft = scrollWidth - clientWidth;
+        if (maxScrollLeft <= 0) return;
+
+        const ratio = container.scrollLeft / maxScrollLeft;
+        const maxThumbLeft = trackWidth - thumbWidth;
+        setThumbLeft(ratio * maxThumbLeft);
+    }, [isDragging, thumbWidth]);
+
+    const handleMouseDown = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+        setStartX(e.clientX);
+        setScrollLeftStart(scrollContainerRef.current.scrollLeft);
+    };
+
+    const handleMouseMove = useCallback((e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const dx = e.clientX - startX;
+        const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const { scrollWidth, clientWidth } = container;
+        const maxThumbLeft = trackWidth - thumbWidth;
+        const maxScrollLeft = scrollWidth - clientWidth;
+
+        if (maxThumbLeft <= 0 || maxScrollLeft <= 0) return;
+
+        const scrollRatio = dx / maxThumbLeft;
+        const newScrollLeft = scrollLeftStart + scrollRatio * maxScrollLeft;
+
+        container.scrollLeft = newScrollLeft;
+        const ratio = maxScrollLeft > 0 ? container.scrollLeft / maxScrollLeft : 0;
+        setThumbLeft(ratio * maxThumbLeft);
+    }, [isDragging, startX, scrollLeftStart, thumbWidth]);
+
+    const handleMouseUp = useCallback(() => {
+        setIsDragging(false);
+    }, []);
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        } else {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, handleMouseMove, handleMouseUp]);
+
+    const handleTouchStart = (e) => {
+        setIsDragging(true);
+        setStartX(e.touches[0].clientX);
+        setScrollLeftStart(scrollContainerRef.current.scrollLeft);
+    };
+
+    const handleTouchMove = useCallback((e) => {
+        if (!isDragging) return;
+        const dx = e.touches[0].clientX - startX;
+        const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const { scrollWidth, clientWidth } = container;
+        const maxThumbLeft = trackWidth - thumbWidth;
+        const maxScrollLeft = scrollWidth - clientWidth;
+
+        if (maxThumbLeft <= 0 || maxScrollLeft <= 0) return;
+
+        const scrollRatio = dx / maxThumbLeft;
+        const newScrollLeft = scrollLeftStart + scrollRatio * maxScrollLeft;
+
+        container.scrollLeft = newScrollLeft;
+        const ratio = maxScrollLeft > 0 ? container.scrollLeft / maxScrollLeft : 0;
+        setThumbLeft(ratio * maxThumbLeft);
+    }, [isDragging, startX, scrollLeftStart, thumbWidth]);
+
+    const handleTouchEnd = useCallback(() => {
+        setIsDragging(false);
+    }, []);
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleTouchEnd);
+        } else {
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+        }
+        return () => {
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, [isDragging, handleTouchMove, handleTouchEnd]);
+
+    const scrollBy = (amount) => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+        container.scrollBy({ left: amount, behavior: 'smooth' });
+    };
+
+    const handleTrackClick = (e) => {
+        if (e.target === scrollbarThumbRef.current || scrollbarThumbRef.current?.contains(e.target)) return;
+        const track = scrollbarTrackRef.current;
+        const container = scrollContainerRef.current;
+        if (!track || !container) return;
+
+        const rect = track.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const trackWidth = rect.width;
+
+        const { scrollWidth, clientWidth } = container;
+        const maxScrollLeft = scrollWidth - clientWidth;
+        const maxThumbLeft = trackWidth - thumbWidth;
+
+        const targetThumbLeft = clickX - (thumbWidth / 2);
+        const clampedThumbLeft = Math.max(0, Math.min(targetThumbLeft, maxThumbLeft));
+
+        const scrollRatio = maxThumbLeft > 0 ? clampedThumbLeft / maxThumbLeft : 0;
+        container.scrollTo({
+            left: scrollRatio * maxScrollLeft,
+            behavior: 'smooth'
+        });
+    };
+
+    useEffect(() => {
+        if (!scrollable) {
+            setIsScrollbarVisible(false);
+            return;
+        }
+
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const checkOverflow = () => {
+            const { scrollWidth, clientWidth } = container;
+            if (scrollWidth > clientWidth) {
+                setIsScrollbarVisible(true);
+                const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
+                if (trackWidth > 0) {
+                    const ratio = clientWidth / scrollWidth;
+                    const newThumbWidth = Math.max(ratio * trackWidth, 30);
+                    setThumbWidth(newThumbWidth);
+
+                    const maxScroll = scrollWidth - clientWidth;
+                    const scrollRatio = maxScroll > 0 ? container.scrollLeft / maxScroll : 0;
+                    const maxThumbLeft = trackWidth - newThumbWidth;
+                    setThumbLeft(scrollRatio * maxThumbLeft);
+                }
+            } else {
+                setIsScrollbarVisible(false);
+            }
+        };
+
+        const timeoutId = setTimeout(checkOverflow, 50);
+
+        const resizeObserver = new ResizeObserver(checkOverflow);
+        resizeObserver.observe(container);
+
+        const table = container.querySelector('table');
+        if (table) resizeObserver.observe(table);
+
+        window.addEventListener('resize', checkOverflow);
+
+        return () => {
+            clearTimeout(timeoutId);
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', checkOverflow);
+        };
+    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData]);
 
     const sortedDataWithIndices = useMemo(() => {
         if (!tableData || tableData.length === 0) {
@@ -63,7 +257,6 @@ function Table({
         const compare = (a, b) => {
             const valueA = a.row[sortConfig.column];
             const valueB = b.row[sortConfig.column];
-
             const numA = Number(valueA);
             const numB = Number(valueB);
             if (!isNaN(numA) && !isNaN(numB)) {
@@ -83,7 +276,6 @@ function Table({
 
         const headerRows = withIndices?.slice(0, startIndex);
         const dataRows = withIndices?.slice(startIndex).sort(compare);
-
         return [...headerRows, ...dataRows];
     }, [tableData, sortConfig, tableHeader]);
 
@@ -329,140 +521,185 @@ function Table({
                     }
                 </div>
             </div>
-            <table className={`${scrollable ? 'table-module-table-scrollable' : 'table-module-table'}`}
-                   // style={{
-                   //     marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
-                   // }}
+
+            {scrollable && (
+                <div className={`custom-scrollbar-container ${isScrollbarVisible ? 'visible' : ''}`}>
+
+                    <button className="custom-scrollbar-arrow" onClick={() => scrollBy(-150)} aria-label="Scroll Left">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <div className="custom-scrollbar-track" ref={scrollbarTrackRef} onClick={handleTrackClick}>
+
+                        <div
+                            className={`custom-scrollbar-thumb ${isDragging ? 'dragging' : ''}`}
+                            ref={scrollbarThumbRef}
+                            style={{ width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)` }}
+                            onMouseDown={handleMouseDown}
+                            onTouchStart={handleTouchStart}
+                        >
+
+                            <div className="thumb-grip">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <button className="custom-scrollbar-arrow" onClick={() => scrollBy(150)} aria-label="Scroll Right">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+
+                </div>
+            )}
+
+            <div
+                className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
+                ref={scrollContainerRef}
+                onScroll={handleTableScroll}
+                // style={{
+                //     marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
+                // }}
             >
-                <tbody>
-                {tableHeader &&
-                    <tr>
-                        <th colSpan={numCols}>
-                            <h1>{tableHeader}</h1>
-                        </th>
-                    </tr>
-                }
-                {finalTableData && finalTableData.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                        {row.map((cell, cellIndex) => (
-                            <td key={cellIndex}
-                                style={{
-                                    cursor: rowIndex === 0 ? 'pointer' : 'default',
-                                    whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
-                                }}>
-                                {rowIndex === (tableHeader ? 0 : 0) ? (
-                                    <>
-                                        {compact ? (
-                                            <div style={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
-                                                wrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
-                                                textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
-                                                padding: '0.5rem',
-                                            }}>
-                                                <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                    {cell}{getSortIndicator(cellIndex)}
-                                                </h3>
-                                                {(filterableColumns && finalTableData[0] &&
-                                                        filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                    <FilterAltIcon onClick={() =>
-                                                    {
-                                                        setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                        setSearchQuery('');
-                                                        setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                <table className="table-module-table">
+                    <tbody>
+                    {tableHeader &&
+                        <tr>
+                            <th colSpan={numCols}>
+                                <h1>{tableHeader}</h1>
+                            </th>
+                        </tr>
+                    }
+                    {finalTableData && finalTableData.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {row.map((cell, cellIndex) => (
+                                <td key={cellIndex}
+                                    style={{
+                                        cursor: rowIndex === 0 ? 'pointer' : 'default',
+                                        whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
+                                    }}>
+                                    {rowIndex === (tableHeader ? 0 : 0) ? (
+                                        <>
+                                            {compact ? (
+                                                <div style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                    wrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                    textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
+                                                    padding: '0.5rem',
+                                                }}>
+                                                    <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                        {cell}{getSortIndicator(cellIndex)}
+                                                    </h3>
+                                                    {(filterableColumns && finalTableData[0] &&
+                                                            filterableColumns.includes(finalTableData[0][cellIndex])) &&
+                                                        <FilterAltIcon onClick={() =>
+                                                        {
+                                                            setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                            setSearchQuery('');
+                                                            setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                                                        }
+                                                        }/>
                                                     }
-                                                    }/>
-                                                }
-                                            </div>
-                                        ) : (
-                                            <div style={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                padding: '0.5rem',
-                                            }}>
-                                                <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                    {cell}{getSortIndicator(cellIndex)}
-                                                </h2>
-                                                {(filterableColumns && finalTableData[0] &&
-                                                        filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                    <FilterAltIcon onClick={() =>
-                                                    {
-                                                        setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                        setSearchQuery('');
-                                                        setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                                                </div>
+                                            ) : (
+                                                <div style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    padding: '0.5rem',
+                                                }}>
+                                                    <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                        {cell}{getSortIndicator(cellIndex)}
+                                                    </h2>
+                                                    {(filterableColumns && finalTableData[0] &&
+                                                            filterableColumns.includes(finalTableData[0][cellIndex])) &&
+                                                        <FilterAltIcon onClick={() =>
+                                                        {
+                                                            setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                            setSearchQuery('');
+                                                            setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                                                        }
+                                                        }/>
                                                     }
-                                                    }/>
-                                                }
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <>
-                                        {compact ? (
-                                            <p
-                                                className={"compact-table-cell-text"}
-                                                lang={detectLang(cell)}
-                                            >
-                                                {
-                                                    // detectLink(cell)
-                                                    applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
-                                                }
-                                            </p>
-                                        ) : (
-                                            <p
-                                                lang={detectLang(cell)}
-                                            >
-                                                {
-                                                    // detectLink(cell)
-                                                    applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
-                                                }
-                                            </p>
-                                        )}
-                                    </>
-                                )}
-                            </td>
-                        ))}
-                        {allowEditEntryOption && onEditEntryOption && rowIndex === 0 && (
-                            <td style={{ textAlign: 'center' }}>
-                                <h3 className={"compact-table-header-text"}>
-                                    Edit
-                                </h3>
-                            </td>
-                        )}
-                        {allowEditEntryOption && onEditEntryOption && rowIndex !== 0 && (
-                            <td style={{ textAlign: 'center' }}>
-                                <button
-                                    onClick={() => onEditEntryOption(rowMapping[rowIndex])}
-                                    aria-label="Edit row"
-                                >
-                                    Edit
-                                </button>
-                            </td>
-                        )}
-                        {allowDeleteEntryOption && onDeleteEntry && rowIndex === 0 && (
-                            <td style={{ textAlign: 'center' }}>
-                                <h3 className={"compact-table-header-text"}>
-                                    Delete
-                                </h3>
-                            </td>
-                        )}
-                        {allowDeleteEntryOption && onDeleteEntry && rowIndex !== 0 && (
-                            <td style={{ textAlign: 'center' }}>
-                                <button
-                                    onClick={() => onDeleteEntry(rowMapping[rowIndex])}
-                                    aria-label="Delete row"
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        )}
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {compact ? (
+                                                <p
+                                                    className={"compact-table-cell-text"}
+                                                    lang={detectLang(cell)}
+                                                >
+                                                    {
+                                                        // detectLink(cell)
+                                                        applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
+                                                    }
+                                                </p>
+                                            ) : (
+                                                <p
+                                                   lang={detectLang(cell)}
+                                                >
+                                                    {
+                                                        // detectLink(cell)
+                                                        applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
+                                                    }
+                                                </p>
+                                            )}
+                                        </>
+                                    )}
+                                </td>
+                            ))}
+                            {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex === 0 &&  (
+                                <td style={{ textAlign: 'center' }}>
+                                    <h3 className={"compact-table-header-text"}>
+                                        Edit
+                                    </h3>
+                                </td>
+                            )}
+                            {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex !== 0 &&  (
+                                <td style={{ textAlign: 'center' }}>
+                                    <button
+                                        onClick={() => onEditEntryOption(rowMapping[rowIndex])}
+                                        aria-label="Edit row"
+                                    >
+                                        Edit
+                                    </button>
+                                </td>
+                            )}
+                            {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex === 0 && (
+                                <td style={{ textAlign: 'center' }}>
+                                    <h3 className={"compact-table-header-text"}>
+                                        Delete
+                                    </h3>
+                                </td>
+                            )}
+                            {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex !== 0 && (
+                                <td style={{ textAlign: 'center' }}>
+                                    <button
+                                        onClick={() => onDeleteEntry(rowMapping[rowIndex])}
+                                        aria-label="Delete row"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            )}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+
             <animated.div className="table-module-accordion" style={contentAnimation}>
                 <div className="table-module-accordion-overlay" onClick={() => {
                     setIsAccordionOpen(false)
@@ -480,7 +717,10 @@ function Table({
                             Default
                         </button>
                         <button onClick={() => setHiddenColumns(new Set())}>Show All</button>
-                        <button onClick={() => setHiddenColumns(new Set(tableData && tableData[0] ? tableData[0] : []))}>Hide All</button>
+                        <button onClick={() => {
+                            const allHeaders = tableData && tableData[0] ? [...tableData[0]] : [];
+                            setHiddenColumns(new Set([...allHeaders, "Edit", "Delete"]));
+                        }}>Hide All</button>
                         <button onClick={() => setIsAccordionOpen(false)}>Close</button>
                     </div>
                     {tableData && tableData[0] && tableData[0].map((header, index) => (
@@ -495,8 +735,35 @@ function Table({
                             </label>
                         </div>
                     ))}
+
+                    {allowEditEntryOption && onEditEntryOption && (
+                        <div>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={!hiddenColumns.has("Edit")}
+                                    onChange={() => toggleColumnVisibility("Edit")}
+                                />
+                                {'\tEdit Column'}
+                            </label>
+                        </div>
+                    )}
+
+                    {allowDeleteEntryOption && onDeleteEntry && (
+                        <div>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={!hiddenColumns.has("Delete")}
+                                    onChange={() => toggleColumnVisibility("Delete")}
+                                />
+                                {'\tDelete Column'}
+                            </label>
+                        </div>
+                    )}
                 </div>
             </animated.div>
+
             <animated.div className={"table-module-filter-popup-container"} style={popupAnimation}>
                 <div className={"table-module-filter-popup-background"} onClick={() => {
                     setIsFilterPopupOpen(false);
@@ -605,7 +872,6 @@ Table.propTypes = {
     allowEditEntryOption: PropTypes.bool,
     onEditEntryOption: PropTypes.func,
     likelyUrlColumns: PropTypes.objectOf(PropTypes.func),
-
 };
 
 export default Table;
