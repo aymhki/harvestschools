@@ -131,7 +131,7 @@ th, td {
 
 
 tr:hover {
-    background-color: #f1f1f1;
+    background-color: var(--harvest-off-white-color);
 }
 
 .sticky-control-widget {
@@ -684,5 +684,26 @@ td button {
     }
     .thumb-grip span {
         background: rgba(0, 0, 0, 0.5);
+    }
+
+    .table-module-table td,
+    .table-module-table th {
+        border-bottom: var(--harvest-white-color) 0.1rem solid;
+        border-right: var(--harvest-white-color) 0.1rem solid;
+        background-clip: padding-box;
+        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    }
+
+    .table-module-table tr td:first-child,
+    .table-module-table tr th:first-child {
+        border-left: var(--harvest-white-color) 0.1rem solid;
+    }
+    .table-module-table tr:first-child td,
+    .table-module-table tr:first-child th {
+        border-top: var(--harvest-white-color) 0.1rem solid;
+    }
+
+    .sticky-control-widget {
+        background-color: var(--light-dark-accent-color);
     }
 }
