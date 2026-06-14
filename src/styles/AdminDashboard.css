@@ -20,14 +20,6 @@
     font-family: var(--english-normal-font);
 }
 
-.job-applications-page {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    min-height: 100vh;
-}
 
 .open-day-signups-page {
     display: flex;
@@ -38,6 +30,17 @@
     min-height: 100vh;
 }
 
+.open-day-signups-page:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+    text-align: left;
+}
+
+.open-day-signups-page button:lang(ar) {
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.3rem !important;
+}
+
 .borrowing-system-management-page {
     display: flex;
     justify-content: center;
@@ -46,6 +49,27 @@
     width: 100%;
     min-height: 100vh;
 }
+
+.borrowing-system-management-page:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+    text-align: left;
+}
+
+.borrowing-system-management-page button:lang(ar) {
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.3rem !important;
+}
+
+.job-applications-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
 
 .job-applications-page:lang(ar) {
     direction: ltr;
@@ -79,6 +103,30 @@
 }
 
 .booking-management-page td button:lang(ar) {
+    letter-spacing: 0.1rem !important;
+}
+
+.info-system-management-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.info-system-management-page:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font);
+    text-align: left;
+}
+
+.info-system-management-page button:lang(ar) {
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.3rem !important;
+}
+
+.info-system-management-page td button:lang(ar) {
     letter-spacing: 0.1rem !important;
 }
 

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: http://localhost:5173');
-$dbConfig = require 'dbConfig.php';
+$dbConfig = require '../../dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -15,7 +15,7 @@ try {
     if ($conn->connect_error) {
         echo json_encode([
             "success" => false,
-            "message" => "Database connection failed",
+            "message" => "Connection failed: " . $conn->connect_error,
             "code" => 500
         ]);
         exit;
@@ -35,7 +35,7 @@ try {
 
     $user = $conn->real_escape_string($data['username']);
     $plainPassword = $conn->real_escape_string($data['password']);
-    $sql = "SELECT * FROM admin_users WHERE username = '$user' AND password_hash = SHA2('$plainPassword', 256)";
+    $sql = "SELECT * FROM graduation_booking_auth_credentials WHERE username = '$user' AND password_hash = SHA2('$plainPassword', 256)";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -45,7 +45,7 @@ try {
             "code" => 200
         ]);
     } else {
-        $userCheckSql = "SELECT * FROM admin_users WHERE username = '$user'";
+        $userCheckSql = "SELECT * FROM graduation_booking_auth_credentials WHERE username = '$user'";
         $userResult = $conn->query($userCheckSql);
 
         if ($userResult->num_rows > 0) {
@@ -54,19 +54,21 @@ try {
                 "message" => "Incorrect password",
                 "code" => 401
             ]);
+            exit;
         } else {
             echo json_encode([
                 "success" => false,
                 "message" => "Username not found",
                 "code" => 404
             ]);
+            exit;
         }
     }
 } catch (Exception $e) {
     echo json_encode([
         "success" => false,
         "message" => $e->getMessage(),
-        "code" => $e->getCode() ?: 500,
+        "code" => $e->getCode() ?: 500
     ]);
 } finally {
     if ($conn) {

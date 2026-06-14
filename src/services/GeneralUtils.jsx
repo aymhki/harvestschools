@@ -110,27 +110,27 @@ const adminDashboardPageUrl = '/admin/dashboard';
 const costPerChildInOpenDaySignup = 150;
 
 const ENDPOINTS = {
-    checkGraduationBookingSession: '/scripts/checkGraduationBookingSession.php',
-    getAllGraduationBookings: '/scripts/getAllGraduationBookings.php',
-    validateGraduationBookingLogin: '/scripts/validateGraduationBookingLogin.php',
-    createGraduationBookingSession: '/scripts/createGraduationBookingSession.php',
-    deleteGraduationBookingEntry: '/scripts/deleteGraduationBookingEntry.php',
-    submitAddGraduationBookingForm: '/scripts/submitAddGraduationBookingForm.php',
-    getGraduationBookingInfoBySession: '/scripts/getGraduationBookingBySession.php',
-    submitEditGraduationBookingForm: '/scripts/submitEditGraduationBookingForm.php',
-    createAdminSession: '/scripts/createAdminSession.php',
-    validateAdminSession: '/scripts/checkAdminSession.php',
-    validateAdminLogin: '/scripts/validateAdminLogin.php',
-    getDashboardPermissions: '/scripts/getDashboardPermissions.php',
-    getUserPermissions: '/scripts/getUserPermissions.php',
-    submitForm: '/scripts/submitForm.php',
-    submitJobApplication: '/scripts/submitJobApplication.php',
-    getJobApplications: '/scripts/getJobApplications.php',
-    updateGraduationBookingExtras: '/scripts/submitUpdateGraduationBookingExtras.php',
-    getGraduationBookingConfirmation: '/scripts/getGraduationBookingConfirmation.php',
-    serveJobApplicationFile: '/scripts/serveJobApplicationFile.php?file=',
-    submitOpenDaySignupForm: '/scripts/submitOpenDaySignupForm.php',
-    getOpenDaySignups: '/scripts/getOpenDaySignups.php'
+    checkGraduationBookingSession: '/scripts/Parents/GraduationBookings/checkGraduationBookingSession.php',
+    getAllGraduationBookings: '/scripts/Admin/GraduationBookings/getAllGraduationBookings.php',
+    validateGraduationBookingLogin: '/scripts/Parents/GraduationBookings/validateGraduationBookingLogin.php',
+    createGraduationBookingSession: '/scripts/Parents/GraduationBookings/createGraduationBookingSession.php',
+    deleteGraduationBookingEntry: '/scripts/Admin/GraduationBookings/deleteGraduationBookingEntry.php',
+    submitAddGraduationBookingForm: '/scripts/Admin/GraduationBookings/submitAddGraduationBookingForm.php',
+    getGraduationBookingInfoBySession: '/scripts/Parents/GraduationBookings/getGraduationBookingBySession.php',
+    submitEditGraduationBookingForm: '/scripts/Admin/GraduationBookings/submitEditGraduationBookingForm.php',
+    createAdminSession: '/scripts/Admin/Session/createAdminSession.php',
+    validateAdminSession: '/scripts/Admin/Session/checkAdminSession.php',
+    validateAdminLogin: '/scripts/Admin/Session/validateAdminLogin.php',
+    getDashboardPermissions: '/scripts/Admin/Session/getDashboardPermissions.php',
+    getUserPermissions: '/scripts/Admin/Session/getAdminUserPermissions.php',
+    submitForm: '/scripts/Public/General/submitForm.php',
+    submitJobApplication: '/scripts/Public/JobApplications/submitJobApplication.php',
+    getJobApplications: '/scripts/Admin/JobApplications/getJobApplications.php',
+    updateGraduationBookingExtras: '/scripts/Parents/GraduationBookings/submitUpdateGraduationBookingExtras.php',
+    getGraduationBookingConfirmation: '/scripts/Public/GraduationBookings/getGraduationBookingConfirmation.php',
+    serveJobApplicationFile: '/scripts/Admin/JobApplications/serveJobApplicationFile.php?file=',
+    submitOpenDaySignupForm: '/scripts/Public/OpenDaySignups/submitOpenDaySignupForm.php',
+    getOpenDaySignups: '/scripts/Admin/OpenDaySignups/getOpenDaySignups.php'
 };
 
 const BASE_URLS = {

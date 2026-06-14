@@ -1,3 +1,4 @@
+import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {msgTimeout} from "../../services/GeneralUtils.jsx";
@@ -5,7 +6,6 @@ import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
-import '../../styles/AdminDashboard.css';
 import {
     fetchGraduationBookingsRequest,
     handleAddGraduationBookingRequest,
@@ -62,7 +62,7 @@ function GraduationBookingManagement() {
     const fifthStudentNameId = 30;
     const fifthStudentSchoolDivisionId = 31;
     const fifthStudentGradeId = 32;
-    
+
     const colIndexForBookingId = 0;
     const colIndexForBookingUsername = 6;
     const colIndexForStudentIds = 8;
@@ -107,6 +107,7 @@ function GraduationBookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             dontLetTheBrowserSaveField: true,
+            displayLabel: 'Booking Username'
         },
         {
             id: bookingPasswordFieldId,
@@ -123,7 +124,8 @@ function GraduationBookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             dontLetTheBrowserSaveField: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Booking Password'
         },
         {
             id: confirmBookingPasswordFieldId,
@@ -141,7 +143,8 @@ function GraduationBookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             dontLetTheBrowserSaveField: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Confirm Booking Password'
         },
         {
             id: firstParentNameFieldId,
@@ -157,6 +160,7 @@ function GraduationBookingManagement() {
             httpName: 'first-parent-name',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'First Parent Name'
         },
         {
             id: firstParentEmailFieldId,
@@ -172,6 +176,7 @@ function GraduationBookingManagement() {
             httpName: 'first-parent-email',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'First Parent Email'
         },
         {
             id: firstParentPhoneNumberFieldId,
@@ -187,6 +192,7 @@ function GraduationBookingManagement() {
             httpName: 'first-parent-phone-number',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'First Parent Phone Number'
         },
         {
             id: secondParentNameFieldId,
@@ -203,6 +209,7 @@ function GraduationBookingManagement() {
             mustNotMatchFieldWithId: firstParentNameFieldId,
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Second Parent Name'
         },
         {
             id: secondParentEmailFieldId,
@@ -219,6 +226,7 @@ function GraduationBookingManagement() {
             // mustNotMatchFieldWithId: firstParentEmailFieldId,
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Second Parent Email'
         },
         {
             id: secondParentPhoneNumberFieldId,
@@ -235,6 +243,7 @@ function GraduationBookingManagement() {
             // mustNotMatchFieldWithId: firstParentPhoneNumberFieldId,
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Second Parent Phone Number'
         },
         {
             id: cdCountFieldId,
@@ -253,7 +262,8 @@ function GraduationBookingManagement() {
             defaultValue: '0',
             minimumValue: '0',
             maximumValue: '10',
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'CD Count'
         },
         {
             id: additionalAttendeesFieldId,
@@ -272,7 +282,8 @@ function GraduationBookingManagement() {
             defaultValue: '0',
             minimumValue: '0',
             maximumValue: '10',
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Additional Attendees'
         },
         {
             id: extrasPaymentStatusFieldId,
@@ -293,7 +304,8 @@ function GraduationBookingManagement() {
             labelOutside: true,
             labelOnTop: true,
             defaultValue: 'Not Signed Up',
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Extras Payment Status'
         },
         {
             id: firstStudentSectionTitleId,
@@ -309,6 +321,7 @@ function GraduationBookingManagement() {
             httpName: 'student-section',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Section',
         },
         {
             id: firstStudentNameId,
@@ -324,6 +337,7 @@ function GraduationBookingManagement() {
             httpName: 'student-name',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Name'
         },
         {
             id: firstStudentSchoolDivisionId,
@@ -340,7 +354,8 @@ function GraduationBookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student School Division'
         },
         {
             id: firstStudentGradeId,
@@ -357,7 +372,8 @@ function GraduationBookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student Grade'
         },
         {
             id: secondStudentSectionTitleId,
@@ -373,6 +389,7 @@ function GraduationBookingManagement() {
             httpName: 'student-section',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Section',
         },
         {
             id: secondStudentNameId,
@@ -388,6 +405,7 @@ function GraduationBookingManagement() {
             httpName: 'student-name',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Name'
         },
         {
             id: secondStudentSchoolDivisionId,
@@ -404,7 +422,8 @@ function GraduationBookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student School Division'
         },
         {
             id: secondStudentGradeId,
@@ -421,7 +440,8 @@ function GraduationBookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student Grade'
         },
         {
             id: thirdStudentSectionTitleId,
@@ -437,6 +457,7 @@ function GraduationBookingManagement() {
             httpName: 'student-section',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Section',
         },
         {
             id: thirdStudentNameId,
@@ -452,6 +473,7 @@ function GraduationBookingManagement() {
             httpName: 'student-name',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Name'
         },
         {
             id: thirdStudentSchoolDivisionId,
@@ -468,7 +490,8 @@ function GraduationBookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student School Division'
         },
         {
             id: thirdStudentGradeId,
@@ -485,7 +508,8 @@ function GraduationBookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student Grade'
         },
         {
             id: fourthStudentSectionTitleId,
@@ -501,6 +525,7 @@ function GraduationBookingManagement() {
             httpName: 'student-section',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Section',
         },
         {
             id: fourthStudentNameId,
@@ -516,6 +541,7 @@ function GraduationBookingManagement() {
             httpName: 'student-name',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Name'
         },
         {
             id: fourthStudentSchoolDivisionId,
@@ -532,7 +558,8 @@ function GraduationBookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student School Division'
         },
         {
             id: fourthStudentGradeId,
@@ -549,7 +576,8 @@ function GraduationBookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student Grade'
         },
         {
             id: fifthStudentSectionTitleId,
@@ -565,6 +593,7 @@ function GraduationBookingManagement() {
             httpName: 'student-section',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Section',
         },
         {
             id: fifthStudentNameId,
@@ -580,6 +609,7 @@ function GraduationBookingManagement() {
             httpName: 'student-name',
             labelOutside: true,
             labelOnTop: true,
+            displayLabel: 'Student Name'
         },
         {
             id: fifthStudentSchoolDivisionId,
@@ -596,7 +626,8 @@ function GraduationBookingManagement() {
             httpName: 'student-school-division',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student School Division'
         },
         {
             id: fifthStudentGradeId,
@@ -613,7 +644,8 @@ function GraduationBookingManagement() {
             httpName: 'student-grade',
             labelOutside: true,
             labelOnTop: true,
-            alwaysEnglish: true
+            alwaysEnglish: true,
+            displayLabel: 'Student Grade'
         },
     ]
 
@@ -683,7 +715,7 @@ function GraduationBookingManagement() {
 
     const handleEditBookingModalInitialization = (rowIndex) => {
         setRowIndexToEdit(rowIndex);
-        
+
         const bookingUsername = allBookings[rowIndex][colIndexForBookingUsername];
         const studentIds = allBookings[rowIndex][colIndexForStudentIds];
         const studentNames = allBookings[rowIndex][colIndexForStudentNames];
@@ -735,7 +767,7 @@ function GraduationBookingManagement() {
                 field.required = false;
                 field.value = '';
                 field.widthOfField = 2 ;
-                
+
                 if (field.id === bookingPasswordFieldId) {
                     field.label = '(Leave it empty if you do not want to change it)';
                 } else if (field.id === confirmBookingPasswordFieldId) {
@@ -754,9 +786,9 @@ function GraduationBookingManagement() {
                 { nameId: fourthStudentNameId, divisionId: fourthStudentSchoolDivisionId, gradeId: fourthStudentGradeId },
                 { nameId: fifthStudentNameId, divisionId: fifthStudentSchoolDivisionId, gradeId: fifthStudentGradeId }
             ];
-            
+
             const currentStudentFields = studentFieldIds[i];
-            
+
             editBookingModalCoreFields.forEach(field => {
                 if (field.id === currentStudentFields.nameId) {
                     field.value = studentNamesArray[i] || '';
@@ -767,7 +799,7 @@ function GraduationBookingManagement() {
                 }
             });
         }
-        
+
         setEditBookingModalPreFilledCoreFields(editBookingModalCoreFields);
         setShowEditBookingModal(true);
     }
@@ -847,6 +879,7 @@ function GraduationBookingManagement() {
                        scrollable={true}
                        compact={true}
                        allowHideColumns={true}
+                       allowSticky={true}
                        defaultHiddenColumns={
                        [
                            'Booking Status',

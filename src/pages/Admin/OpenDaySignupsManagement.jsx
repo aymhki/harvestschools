@@ -39,6 +39,7 @@ function OpenDaySignupsManagement() {
                        scrollable={true}
                        compact={true}
                        allowHideColumns={true}
+                       allowSticky={true}
                        defaultHiddenColumns={
                             [
                                 'Registration Created',

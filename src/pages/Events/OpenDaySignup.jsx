@@ -13,7 +13,7 @@ function OpenDaySignup() {
     const [isLoading, setIsLoading] = useState(false);
     const [openDaySignupFormSubmitted, setOpenDaySignupFormSubmitted] = useState(false)
     const [numberOfAttendees, setNumberOfAttendees] = useState(1);
-    const isOpenDaySignupsOpen = false;
+    const isOpenDaySignupsClosed = true;
 
     const basicConstantFields = useMemo(() => [
         {
@@ -143,7 +143,7 @@ function OpenDaySignup() {
         }
     }
 
-    if (isOpenDaySignupsOpen) {
+    if (isOpenDaySignupsClosed) {
         return (
             <>
                 {isLoading && (<Spinner/>)}

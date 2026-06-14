@@ -16,8 +16,9 @@ const AdminLogin = lazy(() => import("./pages/Admin/AdminLogin.jsx"));
 const Dashboard = lazy(() => import("./pages/Admin/AdminDashboard"));
 const JobApplications = lazy(() => import("./pages/Admin/JobApplications.jsx"));
 const GraduationBookingManagement = lazy(() => import("./pages/Admin/GraduationBookingManagement.jsx"));
-const BorrowingSystemManagement = lazy(() => import("./pages/Admin/BorrowingSystemManagement.jsx"));
 const OpenDaySignupsManagement = lazy(() => import('./pages/Admin/OpenDaySignupsManagement.jsx'));
+const BorrowingSystemManagement = lazy(() => import("./pages/Admin/BorrowingSystemManagement.jsx"));
+const InfoSystemManagement = lazy(() => import("./pages/Admin/InfoSystemManagement.jsx"));
 const FileViewer = lazy(() => import('./pages/Admin/FileViewer.jsx'));
 const Admission = lazy(() => import("./pages/Admission/Admission.jsx"));
 const AdmissionProcess = lazy(() => import('./pages/Admission/AdmissionProcess'));
@@ -110,6 +111,7 @@ function AppClient() {
                             <Route path="/admin/graduation-booking-management" element={<GraduationBookingManagement />} />
                             <Route path="/admin/open-day-signups-management" element={<OpenDaySignupsManagement />} />
                             <Route path="/admin/borrowing-system-management" element={<BorrowingSystemManagement />} />
+                            <Route path="/admin/info-system-management" element={<InfoSystemManagement />} />
                             <Route path="/more-info" element={<MoreInfo />} />
                             <Route path="/faqs" element={<Faqs />} />
                             <Route path="/minimum-stage-age" element={<MinimumStageAge />} />

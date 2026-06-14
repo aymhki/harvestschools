@@ -33,7 +33,12 @@ function Table({
     const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
     const [columnToFilterBasedOn, setColumnToFilterBasedOn] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isMobile, setIsMobile] = useState(true);
+    const [isMobile, setIsMobile] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return window.innerWidth < 768;
+        }
+        return true;
+    });
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
     const { t } = useTranslation();
@@ -387,7 +392,9 @@ function Table({
 
                     const ratio = container.clientWidth / (container.clientWidth + totalMax);
                     const minWidth = isMobile ? 80 : 30;
-                    const newThumbWidth = Math.max(ratio * trackWidth, minWidth);
+                    const maxWidth = isMobile ? (trackWidth * 0.6) : (trackWidth * 0.3);
+                    let newThumbWidth = ratio * trackWidth;
+                    newThumbWidth = Math.max(minWidth, Math.min(newThumbWidth, maxWidth));
                     setThumbWidth(newThumbWidth);
 
                     const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
@@ -760,7 +767,6 @@ function Table({
                                                             alignItems: 'center',
                                                             wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
                                                             textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
-                                                            padding: '0.5rem',
                                                         }}
                                                              className={"compact-table-header-row"}
                                                         >
@@ -780,7 +786,6 @@ function Table({
                                                             display: 'flex',
                                                             justifyContent: 'space-between',
                                                             alignItems: 'center',
-                                                            padding: '0.5rem',
                                                         }}
                                                              className={"compact-table-header-row"}
                                                         >
