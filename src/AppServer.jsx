@@ -18,6 +18,7 @@ import GraduationBookingManagement from "./pages/Admin/GraduationBookingManageme
 import OpenDaySignupsManagement from "./pages/Admin/OpenDaySignupsManagement.jsx";
 import FileViewer from './pages/Admin/FileViewer.jsx';
 import BorrowingSystemManagement from './pages/Admin/BorrowingSystemManagement.jsx';
+import InfoSystemManagement from "./pages/Admin/InfoSystemManagement.jsx";
 import Admission from "./pages/Admission/Admission.jsx";
 import AdmissionProcess from './pages/Admission/AdmissionProcess';
 import AdmissionRequirements from './pages/Admission/AdmissionRequirements';
@@ -108,6 +109,7 @@ function AppServer() {
                         <Route path="/admin/graduation-booking-management" element={<GraduationBookingManagement />} />
                         <Route path="/admin/open-day-signups-management" element={<OpenDaySignupsManagement />} />
                         <Route path="/admin/borrowing-system-management" element={<BorrowingSystemManagement />} />
+                        <Route path="/admin/info-system-management" element={<InfoSystemManagement />} />
                         <Route path="/more-info" element={<MoreInfo />} />
                         <Route path="/faqs" element={<Faqs />} />
                         <Route path="/minimum-stage-age" element={<MinimumStageAge />} />

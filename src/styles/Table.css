@@ -471,7 +471,9 @@ td button {
     display: none;
 }
 
-
+.compact-table-header-row {
+    padding: 0.5rem;
+}
 
 @media (max-width: 1600px) {
     .table-module-header-buttons-wrapper {
@@ -505,6 +507,7 @@ td button {
 }
 
 @media (max-width: 768px) {
+
     td p {
         font-size: 80%;
         min-font-size: 0.1rem;
@@ -597,9 +600,13 @@ td button {
         font-size: 80%;
     }
 
+
     .compact-table-header-row {
-        height: 2rem;
-        padding: 0.2rem;
+        padding: 0;
+    }
+
+    .table-module-table td {
+        padding: 0.5rem;
     }
 }
 
@@ -691,7 +698,6 @@ td button {
         border-bottom: var(--harvest-white-color) 0.1rem solid;
         border-right: var(--harvest-white-color) 0.1rem solid;
         background-clip: padding-box;
-        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     }
 
     .table-module-table tr td:first-child,

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: http://localhost:5173');
-$dbConfig = require 'dbConfig.php';
+$dbConfig = require '../../dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -34,7 +34,7 @@ try {
     if ($conn->connect_error) {
         echo json_encode([
             "success" => false,
-            "message" => "Database connection failed",
+            "message" => "Connection failed: " . $conn->connect_error,
             "code" => 500
         ]);
         exit;
@@ -42,7 +42,7 @@ try {
 
     $conn->set_charset("utf8mb4");
     $sessionId = $conn->real_escape_string($data['session_id']);
-    $sql = "SELECT username FROM admin_sessions WHERE id = '$sessionId'";
+    $sql = "SELECT username FROM graduation_booking_sessions WHERE id = '$sessionId'";
     $result = $conn->query($sql);
 
     if ($result->num_rows == 0) {

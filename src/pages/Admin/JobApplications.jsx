@@ -44,6 +44,7 @@ function JobApplications() {
                        scrollable={true}
                        compact={true}
                        allowHideColumns={true}
+                       allowSticky={true}
                        defaultHiddenColumns={
                            [
                                'Skills or Hobbies',
