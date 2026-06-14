@@ -282,7 +282,7 @@ td button {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 0 2rem;
+    padding: 2rem 2rem 0 2rem;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
     user-select: none;
@@ -297,7 +297,6 @@ td button {
     opacity: 1;
     pointer-events: auto;
     height: auto;
-    margin-bottom: 1rem;
 }
 
 .custom-scrollbar-arrow {
@@ -330,6 +329,13 @@ td button {
     position: relative;
     margin: 0 1rem;
     cursor: pointer;
+    transition: height 0.3s;
+}
+
+.custom-scrollbar-track:hover {
+    height: 1.5rem;
+    border-radius: 1rem;
+    transition: height 0.3s;
 }
 
 .custom-scrollbar-thumb {
@@ -425,6 +431,7 @@ td button {
         min-font-size: 0.1rem;
     }
 
+
     .table-module-accordion-content {
         width: 90%;
         height: 70%;
@@ -461,7 +468,7 @@ td button {
     }
 
     .custom-scrollbar-container {
-        padding: 0 1rem;
+        padding: 2rem 0.3rem 0 0.3rem;
     }
 
     .custom-scrollbar-arrow {
@@ -475,8 +482,9 @@ td button {
         margin: 0 0.5rem;
     }
 
-    .custom-scrollbar-thumb {
-        width: 5rem;
+    .custom-scrollbar-track:hover {
+        height: 1.3rem;
+        border-radius: 0.5rem;
     }
 
     .thumb-grip {
@@ -488,6 +496,21 @@ td button {
         height: 70%;
         gap: 0.1rem;
         width: 0.1rem;
+    }
+
+    .compact-table-header-text {
+        font-size: 0.8rem;
+        padding: 0;
+        margin: 0;
+    }
+
+    .compact-table-cell-text {
+        font-size: 80%;
+    }
+
+    .compact-table-header-row {
+        height: 2rem;
+        padding: 0.2rem;
     }
 }
 
