@@ -1,7 +1,7 @@
-import {useEffect, useMemo, useState, useCallback, Fragment, useRef} from "react";
+import { useEffect, useMemo, useState, useCallback, Fragment, useRef } from "react";
 import PropTypes from "prop-types";
 import '../styles/Table.css';
-import {animated, useSpring} from 'react-spring';
+import { animated, useSpring } from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useTranslation } from 'react-i18next';
 
@@ -24,6 +24,8 @@ function Table({
                    allowEditEntryOption,
                    onEditEntryOption,
                    likelyUrlColumns,
+                   allowSticky,
+                    bottomHorizontalScrollBar
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
@@ -34,12 +36,13 @@ function Table({
     const [isMobile, setIsMobile] = useState(true);
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const scrollContainerRef = useRef(null);
     const scrollbarTrackRef = useRef(null);
     const scrollbarThumbRef = useRef(null);
     const tableModuleRef = useRef(null);
+    const tableRef = useRef(null);
 
     const [isScrollbarVisible, setIsScrollbarVisible] = useState(false);
     const [thumbWidth, setThumbWidth] = useState(0);
@@ -47,6 +50,12 @@ function Table({
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeftStart, setScrollLeftStart] = useState(0);
+
+    const [stickyRows, setStickyRows] = useState(allowSticky ? 1 : 0);
+    const [stickyCols, setStickyCols] = useState(allowSticky ? 1 : 0);
+    const [hoveredCell, setHoveredCell] = useState({ r: null, c: null });
+    const [colWidths, setColWidths] = useState([]);
+    const [rowHeights, setRowHeights] = useState([]);
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -59,6 +68,32 @@ function Table({
         transform: isFilterPopupOpen ? 'translateY(0)' : 'translateY(-100%)',
         config: { duration: 300 },
     });
+
+    const updateStickyOffsets = useCallback(() => {
+        if (!tableRef.current) return;
+        const rows = Array.from(tableRef.current.querySelectorAll('tr'));
+        if (rows.length === 0) return;
+
+        const heights = rows.map(r => r.getBoundingClientRect().height);
+        const firstRowCells = Array.from(rows[0].children);
+        const widths = firstRowCells.map(c => c.getBoundingClientRect().width);
+
+        setRowHeights(heights);
+        setColWidths(widths);
+    }, [finalTableData, isAccordionOpen, isMobile, compact]);
+
+    useEffect(() => {
+        updateStickyOffsets();
+        const resizeObserver = new ResizeObserver(updateStickyOffsets);
+        if (scrollContainerRef.current) {
+            resizeObserver.observe(scrollContainerRef.current);
+        }
+        window.addEventListener('resize', updateStickyOffsets);
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', updateStickyOffsets);
+        };
+    }, [updateStickyOffsets]);
 
     const applyScroll = (element, amount, smooth = false) => {
         const behavior = smooth ? 'smooth' : 'auto';
@@ -135,21 +170,13 @@ function Table({
     }, [isDragging, thumbWidth]);
 
     useEffect(() => {
-        const handleExternalScroll = () => {
-            updateThumbPosition();
-        };
-
+        const handleExternalScroll = () => updateThumbPosition();
         window.addEventListener('scroll', handleExternalScroll);
         const moduleEl = tableModuleRef.current;
-        if (moduleEl) {
-            moduleEl.addEventListener('scroll', handleExternalScroll);
-        }
-
+        if (moduleEl) moduleEl.addEventListener('scroll', handleExternalScroll);
         return () => {
             window.removeEventListener('scroll', handleExternalScroll);
-            if (moduleEl) {
-                moduleEl.removeEventListener('scroll', handleExternalScroll);
-            }
+            if (moduleEl) moduleEl.removeEventListener('scroll', handleExternalScroll);
         };
     }, [updateThumbPosition]);
 
@@ -175,7 +202,6 @@ function Table({
         const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
         const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
         const totalMax = containerMax + moduleMax + windowMax;
-
         const maxThumbLeft = trackWidth - thumbWidth;
 
         if (maxThumbLeft <= 0 || totalMax <= 0) return;
@@ -193,9 +219,7 @@ function Table({
         setThumbLeft(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbLeft, maxThumbLeft)));
     }, [isDragging, startX, scrollLeftStart, thumbWidth, cascadeScroll]);
 
-    const handleMouseUp = useCallback(() => {
-        setIsDragging(false);
-    }, []);
+    const handleMouseUp = useCallback(() => setIsDragging(false), []);
 
     useEffect(() => {
         if (isDragging) {
@@ -231,14 +255,12 @@ function Table({
         const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
         const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
         const totalMax = containerMax + moduleMax + windowMax;
-
         const maxThumbLeft = trackWidth - thumbWidth;
 
         if (maxThumbLeft <= 0 || totalMax <= 0) return;
 
         const scrollRatio = dx / maxThumbLeft;
         const targetTotalScroll = scrollLeftStart + scrollRatio * totalMax;
-
         const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
         const currentWindow = window.scrollX || window.pageXOffset;
         const currentTotal = container.scrollLeft + currentModule + currentWindow;
@@ -249,9 +271,7 @@ function Table({
         setThumbLeft(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbLeft, maxThumbLeft)));
     }, [isDragging, startX, scrollLeftStart, thumbWidth, cascadeScroll]);
 
-    const handleTouchEnd = useCallback(() => {
-        setIsDragging(false);
-    }, []);
+    const handleTouchEnd = useCallback(() => setIsDragging(false), []);
 
     useEffect(() => {
         if (isDragging) {
@@ -275,15 +295,12 @@ function Table({
         const cols = finalTableData && finalTableData[0] ? finalTableData[0].length : 1;
         const step = Math.max(container.clientWidth / Math.max(cols / 2, 1), container.clientWidth / 4);
         const amount = step * direction;
-
         cascadeScroll(amount, true);
     }, [finalTableData, cascadeScroll]);
 
     const startScrolling = useCallback((direction) => {
         scrollBy(direction);
-        scrollIntervalRef.current = setInterval(() => {
-            scrollBy(direction);
-        }, 200);
+        scrollIntervalRef.current = setInterval(() => scrollBy(direction), 200);
     }, [scrollBy]);
 
     const stopScrolling = useCallback(() => {
@@ -295,15 +312,13 @@ function Table({
 
     useEffect(() => {
         return () => {
-            if (scrollIntervalRef.current) {
-                clearInterval(scrollIntervalRef.current);
-            }
+            if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
         };
     }, []);
 
     const handleTrackClick = (e) => {
-        if (e.target === scrollbarThumbRef.current || scrollbarThumbRef.current?.contains(e.target)) return;
-        const track = scrollbarTrackRef.current;
+        if (e.target.closest('.custom-scrollbar-thumb')) return;
+        const track = e.currentTarget;
         const container = scrollContainerRef.current;
         if (!track || !container) return;
 
@@ -315,12 +330,10 @@ function Table({
         const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
         const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
         const totalMax = containerMax + moduleMax + windowMax;
-
         const maxThumbLeft = trackWidth - thumbWidth;
 
         const targetThumbLeft = clickX - (thumbWidth / 2);
         const clampedThumbLeft = Math.max(0, Math.min(targetThumbLeft, maxThumbLeft));
-
         const scrollRatio = maxThumbLeft > 0 ? clampedThumbLeft / maxThumbLeft : 0;
         const targetTotalScroll = scrollRatio * totalMax;
 
@@ -337,13 +350,11 @@ function Table({
             setIsScrollbarVisible(false);
             return;
         }
-
         const container = scrollContainerRef.current;
         if (!container) return;
 
         const checkOverflow = () => {
             const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
-
             if (containerMax > 0) {
                 setIsScrollbarVisible(true);
                 const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
@@ -371,13 +382,10 @@ function Table({
         };
 
         const timeoutId = setTimeout(checkOverflow, 50);
-
         const resizeObserver = new ResizeObserver(checkOverflow);
         resizeObserver.observe(container);
-
         const table = container.querySelector('table');
         if (table) resizeObserver.observe(table);
-
         window.addEventListener('resize', checkOverflow);
 
         return () => {
@@ -388,16 +396,11 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
 
     const sortedDataWithIndices = useMemo(() => {
-        if (!tableData || tableData.length === 0) {
-            return [];
-        }
-
+        if (!tableData || tableData.length === 0) return [];
         const withIndices = tableData?.map((row, index) => ({ row, originalIndex: index }));
         const startIndex = tableHeader ? 2 : 1;
 
-        if (sortConfig.column === null || sortConfig.direction === 'neutral') {
-            return withIndices;
-        }
+        if (sortConfig.column === null || sortConfig.direction === 'neutral') return withIndices;
 
         const compare = (a, b) => {
             const valueA = a.row[sortConfig.column];
@@ -405,59 +408,42 @@ function Table({
             const numA = Number(valueA);
             const numB = Number(valueB);
             if (!isNaN(numA) && !isNaN(numB)) {
-                return sortConfig.direction === 'ascending'
-                    ? numA - numB
-                    : numB - numA;
+                return sortConfig.direction === 'ascending' ? numA - numB : numB - numA;
             }
-
-            if (valueA < valueB) {
-                return sortConfig.direction === 'ascending' ? -1 : 1;
-            }
-            if (valueA > valueB) {
-                return sortConfig.direction === 'ascending' ? 1 : -1;
-            }
+            if (valueA < valueB) return sortConfig.direction === 'ascending' ? -1 : 1;
+            if (valueA > valueB) return sortConfig.direction === 'ascending' ? 1 : -1;
             return 0;
         };
-
         const headerRows = withIndices?.slice(0, startIndex);
         const dataRows = withIndices?.slice(startIndex).sort(compare);
         return [...headerRows, ...dataRows];
     }, [tableData, sortConfig, tableHeader]);
 
-    const sortedData = useMemo(() => {
-        return sortedDataWithIndices?.map(item => item.row);
-    }, [sortedDataWithIndices]);
+    const sortedData = useMemo(() => sortedDataWithIndices?.map(item => item.row), [sortedDataWithIndices]);
 
     const getFilterUniqueValuesDict = useCallback(() => {
-            if (!tableData || !tableData.length || !tableData[0]) {
-                return {};
-            }
+        if (!tableData || !tableData.length || !tableData[0]) return {};
+        const filterUniqueValuesDict = {};
+        const startIndex = tableHeader ? 2 : 1;
 
-            const filterUniqueValuesDict = {};
-            const startIndex = tableHeader ? 2 : 1;
-
-            if (filterableColumns && filterableColumns.length > 0) {
-                for (let i = 0; i < tableData[0].length; i++) {
-                    const columnName = tableData[0][i];
-                    if (filterableColumns.includes(columnName)) {
-                        const uniqueValues = [...new Set(
-                            tableData?.slice(startIndex)
-                                .map(row => row[i])
-                                .filter(value => value !== undefined && value !== null)
-                        )];
-
-                        filterUniqueValuesDict[columnName] = {
-                            uniqueValues: uniqueValues,
-                            checked: new Array(uniqueValues.length).fill(true)
-                        };
-                    }
+        if (filterableColumns && filterableColumns.length > 0) {
+            for (let i = 0; i < tableData[0].length; i++) {
+                const columnName = tableData[0][i];
+                if (filterableColumns.includes(columnName)) {
+                    const uniqueValues = [...new Set(
+                        tableData?.slice(startIndex)
+                            .map(row => row[i])
+                            .filter(value => value !== undefined && value !== null)
+                    )];
+                    filterUniqueValuesDict[columnName] = {
+                        uniqueValues: uniqueValues,
+                        checked: new Array(uniqueValues.length).fill(true)
+                    };
                 }
             }
-
-            return filterUniqueValuesDict;
-        },
-        [tableHeader, tableData, filterableColumns]
-    );
+        }
+        return filterUniqueValuesDict;
+    }, [tableHeader, tableData, filterableColumns]);
 
     const [filterUniqueValuesDict, setFilterUniqueValuesDict] = useState({});
 
@@ -468,32 +454,20 @@ function Table({
     }, [tableData, getFilterUniqueValuesDict]);
 
     useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    useEffect(() => {
-        setIsMobile(window.innerWidth < 768);
-    }, []);
-
-
-
     const requestSort = (columnIndex) => {
         let direction = 'ascending';
-
         if (sortConfig.column === columnIndex) {
-            if (sortConfig.direction === 'ascending') {
-                direction = 'descending';
-            } else if (sortConfig.direction === 'descending') {
+            if (sortConfig.direction === 'ascending') direction = 'descending';
+            else if (sortConfig.direction === 'descending') {
                 direction = 'neutral';
                 columnIndex = null;
             }
         }
-
         setSortConfig({ column: columnIndex, direction });
     };
 
@@ -504,14 +478,9 @@ function Table({
         return ' ⇅';
     };
 
-
     const applyLikelyUrlFunction = (columnName, cellValue) => {
         if (likelyUrlColumns && likelyUrlColumns[columnName]) {
-            return <p className={"table-link"} lang={"en"}
-                      onClick={() => {
-                          likelyUrlColumns[columnName](cellValue);
-                      }}
-            >{cellValue}</p>;
+            return <p className={"table-link"} lang={"en"} onClick={() => likelyUrlColumns[columnName](cellValue)}>{cellValue}</p>;
         } else {
             return cellValue;
         }
@@ -520,19 +489,13 @@ function Table({
     const toggleColumnVisibility = (column) => {
         setHiddenColumns((prevHidden) => {
             const newHidden = new Set(prevHidden);
-            if (newHidden.has(column)) {
-                newHidden.delete(column);
-            } else {
-                newHidden.add(column);
-            }
+            if (newHidden.has(column)) newHidden.delete(column);
+            else newHidden.add(column);
             return newHidden;
         });
     };
 
-    const detectLang = (text) => {
-        const arabicRegex = /[\u0600-\u06FF]/;
-        return arabicRegex.test(text) ? 'ar' : 'en';
-    };
+    const detectLang = (text) => /[\u0600-\u06FF]/.test(text) ? 'ar' : 'en';
 
     const updateFinalTableData = useCallback(() => {
         if (!tableData || !tableData.length) {
@@ -542,24 +505,16 @@ function Table({
         }
 
         let filteredDataWithIndices = [...sortedDataWithIndices];
-
         if (filterableColumns && filterableColumns.length > 0) {
             for (let i = 0; i < tableData[0].length; i++) {
                 const columnName = tableData[0][i];
                 if (filterableColumns.includes(columnName) && filterUniqueValuesDict[columnName]) {
                     const columnFilter = filterUniqueValuesDict[columnName];
                     filteredDataWithIndices = filteredDataWithIndices.filter((item, rowIndex) => {
-                        if (rowIndex === 0 || (tableHeader && rowIndex === 1)) {
-                            return true;
-                        }
-
+                        if (rowIndex === 0 || (tableHeader && rowIndex === 1)) return true;
                         const cellValue = item.row[i];
                         const valueIndex = columnFilter.uniqueValues.indexOf(cellValue);
-
-                        if (valueIndex === -1) {
-                            return true;
-                        }
-
+                        if (valueIndex === -1) return true;
                         return columnFilter.checked[valueIndex];
                     });
                 }
@@ -568,13 +523,9 @@ function Table({
 
         const newRowMapping = filteredDataWithIndices?.map(item => item.originalIndex);
         setRowMapping(newRowMapping);
-
         const filteredData = filteredDataWithIndices?.map(item =>
-            item.row.filter((cell, colIndex) =>
-                !hiddenColumns.has(sortedData[0][colIndex])
-            )
+            item.row.filter((cell, colIndex) => !hiddenColumns.has(sortedData[0][colIndex]))
         );
-
         setFinalTableData(filteredData);
     }, [sortedDataWithIndices, sortedData, hiddenColumns, filterUniqueValuesDict, tableData, filterableColumns, tableHeader]);
 
@@ -588,39 +539,81 @@ function Table({
 
     const hasActiveFilters = useCallback(() => {
         if (!filterUniqueValuesDict) return false;
-
         return Object.keys(filterUniqueValuesDict).some(key =>
-            filterUniqueValuesDict[key] &&
-            filterUniqueValuesDict[key].checked &&
-            filterUniqueValuesDict[key].checked.includes(false)
+            filterUniqueValuesDict[key] && filterUniqueValuesDict[key].checked && filterUniqueValuesDict[key].checked.includes(false)
         );
     }, [filterUniqueValuesDict]);
 
     const resetAllFilters = useCallback(() => {
-        const updatedFilters = {...filterUniqueValuesDict};
-
+        const updatedFilters = { ...filterUniqueValuesDict };
         Object.keys(updatedFilters).forEach(key => {
             if (updatedFilters[key] && updatedFilters[key].checked) {
                 updatedFilters[key].checked = updatedFilters[key].checked.map(() => true);
             }
         });
-
         setFilterUniqueValuesDict(updatedFilters);
     }, [filterUniqueValuesDict]);
 
+    const renderCustomScrollbar = (isTop) => {
+        if (!scrollable) return null;
+        return (
+            <div className={`custom-scrollbar-container ${!isTop ? 'footer' : ''} ${isScrollbarVisible ? 'visible' : ''} ${isDragging ? 'is-dragging' : ''}`}>
+                <button
+                    className="custom-scrollbar-arrow"
+                    onMouseDown={() => startScrolling(-1)}
+                    onMouseUp={stopScrolling}
+                    onMouseLeave={stopScrolling}
+                    onTouchStart={() => startScrolling(-1)}
+                    onTouchEnd={stopScrolling}
+                    aria-label="Scroll Left"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+                <div
+                    className="custom-scrollbar-track"
+                    ref={isTop ? scrollbarTrackRef : null}
+                    onClick={handleTrackClick}
+                >
+                    <div
+                        className={`custom-scrollbar-thumb ${isDragging ? 'dragging' : ''}`}
+                        ref={isTop ? scrollbarThumbRef : null}
+                        style={{ width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)` }}
+                        onMouseDown={handleMouseDown}
+                        onTouchStart={handleTouchStart}
+                    >
+                        <div className="thumb-grip">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+                <button
+                    className="custom-scrollbar-arrow"
+                    onMouseDown={() => startScrolling(1)}
+                    onMouseUp={stopScrolling}
+                    onMouseLeave={stopScrolling}
+                    onTouchStart={() => startScrolling(1)}
+                    onTouchEnd={stopScrolling}
+                    aria-label="Scroll Right"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+
     return (
-        <div className="table-module" ref={tableModuleRef} style={{overflow: scrollable ? 'auto' : 'hidden'}}>
+        <div className="table-module" ref={tableModuleRef} style={{ overflow: scrollable ? 'auto' : 'hidden' }}>
             <div className={"table-module-header"}>
                 <div className={"table-module-header-buttons-wrapper"}>
-                    {
-                        (!finalTableData || finalTableData.length === 0) && (
-                            <div className={"table-module-header-empty-state"}>
-                                <h3>
-                                    {t("common.no-table-enteries-found", {ns: 'common'})}
-                                </h3>
-                            </div>
-                        )
-                    }
+                    {(!finalTableData || finalTableData.length === 0) && (
+                        <div className={"table-module-header-empty-state"}>
+                            <h3>{t("common.no-table-enteries-found", { ns: 'common' })}</h3>
+                        </div>
+                    )}
                     {finalTableData && allowHideColumns && (
                         <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
                             {isAccordionOpen ? 'Hide Columns' : 'Show Columns'}
@@ -628,24 +621,19 @@ function Table({
                     )}
                     {finalTableData && allowExport && (
                         <button onClick={() => {
-                            if (!finalTableData) {return;}
-
+                            if (!finalTableData) return;
                             const csv = finalTableData.map(row =>
                                 row.map(field => {
-                                        if (field && field !== null && field !== undefined && typeof field === 'string' && field.length > 0) {
-                                            return (field.includes(',') || field.includes(', ') || field.includes('\n') || field.includes('\r') || field.includes('\r\n') || field.includes('\n\r'))  ? `"${field}"` : field
-                                        } else {
-                                            return '';
-                                        }
-                                    }
-                                ).join(',')
+                                    if (field && typeof field === 'string' && field.length > 0) {
+                                        return (field.includes(',') || field.includes('\n')) ? `"${field}"` : field
+                                    } else return '';
+                                }).join(',')
                             ).join('\n');
-
-                            const blob = new Blob([csv], {type: 'text/csv'});
+                            const blob = new Blob([csv], { type: 'text/csv' });
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
                             a.href = url;
-                            a.download = `${exportFileName ? exportFileName : 'table'}-${new Date().toISOString().split('T')[0]}-${new Date().toLocaleTimeString().replace(/:/g, '-')}.csv`;
+                            a.download = `${exportFileName ? exportFileName : 'table'}-${new Date().toISOString().split('T')[0]}.csv`;
                             a.click();
                             window.URL.revokeObjectURL(url);
                         }}>
@@ -653,236 +641,193 @@ function Table({
                         </button>
                     )}
                     {finalTableData && hasActiveFilters() && (
-                        <button onClick={resetAllFilters}>
-                            Reset Filters
-                        </button>
+                        <button onClick={resetAllFilters}>Reset Filters</button>
                     )}
-                    {
-                        headerModuleElements && headerModuleElements.map((element, index) => (
-                            <Fragment key={index}>
-                                {element}
-                            </Fragment>
-                        ))
-                    }
+                    {headerModuleElements && headerModuleElements.map((element, index) => (
+                        <Fragment key={index}>{element}</Fragment>
+                    ))}
                 </div>
 
-                {scrollable && (
-                    <div className={`custom-scrollbar-container ${isScrollbarVisible ? 'visible' : ''}`}>
-
-                        <button
-                            className="custom-scrollbar-arrow"
-                            onMouseDown={() => startScrolling(-1)}
-                            onMouseUp={stopScrolling}
-                            onMouseLeave={stopScrolling}
-                            onTouchStart={() => startScrolling(-1)}
-                            onTouchEnd={stopScrolling}
-                            aria-label="Scroll Left"
-                        >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                        </button>
-
-                        <div className="custom-scrollbar-track" ref={scrollbarTrackRef} onClick={handleTrackClick}>
-
-                            <div
-                                className={`custom-scrollbar-thumb ${isDragging ? 'dragging' : ''}`}
-                                ref={scrollbarThumbRef}
-                                style={{ width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)` }}
-                                onMouseDown={handleMouseDown}
-                                onTouchStart={handleTouchStart}
-                            >
-
-                                <div className="thumb-grip">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <button
-                            className="custom-scrollbar-arrow"
-                            onMouseDown={() => startScrolling(1)}
-                            onMouseUp={stopScrolling}
-                            onMouseLeave={stopScrolling}
-                            onTouchStart={() => startScrolling(1)}
-                            onTouchEnd={stopScrolling}
-                            aria-label="Scroll Right"
-                        >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                        </button>
-
-                    </div>
-                )}
+                {renderCustomScrollbar(true)}
             </div>
-
-
 
             <div
                 className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
                 ref={scrollContainerRef}
                 onScroll={updateThumbPosition}
-                // style={{
-                //     marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
-                // }}
             >
-                <table className="table-module-table">
+                <table className="table-module-table" ref={tableRef}>
                     <tbody>
                     {tableHeader &&
                         <tr>
-                            <th colSpan={numCols}>
+                            <th colSpan={numCols} style={{
+                                position: stickyRows > 0 ? 'sticky' : 'relative',
+                                top: 0,
+                                zIndex: stickyRows > 0 ? 4 : undefined,
+                                backgroundColor: 'var(--harvest-white-color)'
+                            }}>
                                 <h1>{tableHeader}</h1>
                             </th>
                         </tr>
                     }
-                    {finalTableData && finalTableData.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {row.map((cell, cellIndex) => (
-                                <td key={cellIndex}
-                                    style={{
+                    {finalTableData && finalTableData.map((row, rowIndex) => {
+                        const actualRowIndex = tableHeader ? rowIndex + 1 : rowIndex;
+                        return (
+                            <tr key={rowIndex}>
+                                {row.map((cell, cellIndex) => {
+                                    const isStickyRow = actualRowIndex < stickyRows;
+                                    const isStickyCol = cellIndex < stickyCols;
+                                    const isCorner = isStickyRow && isStickyCol;
+
+                                    const isHovered = hoveredCell.r === actualRowIndex && hoveredCell.c === cellIndex;
+                                    const showColControl = isHovered && rowIndex === 0 && cellIndex < 1;
+                                    const showRowControl = isHovered && cellIndex === 0 && rowIndex < 1;
+
+                                    let inlineStyles = {
                                         cursor: rowIndex === 0 ? 'pointer' : 'default',
                                         whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
-                                    }}>
-                                    {rowIndex === (tableHeader ? 0 : 0) ? (
-                                        <>
-                                            {compact ? (
-                                                <div style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
-                                                    wrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
-                                                    textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
-                                                    padding: '0.5rem',
-                                                }}
-                                                    className={"compact-table-header-row"}
-                                                >
-                                                    <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                        {cell}{getSortIndicator(cellIndex)}
-                                                    </h3>
-                                                    {(filterableColumns && finalTableData[0] &&
-                                                            filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                        <FilterAltIcon onClick={() =>
-                                                        {
-                                                            setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                            setSearchQuery('');
-                                                            setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
-                                                        }
-                                                        }/>
-                                                    }
-                                                </div>
-                                            ) : (
-                                                <div style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    padding: '0.5rem',
-                                                }}
-                                                     className={"compact-table-header-row"}
-                                                >
-                                                    <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                        {cell}{getSortIndicator(cellIndex)}
-                                                    </h2>
-                                                    {(filterableColumns && finalTableData[0] &&
-                                                            filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                        <FilterAltIcon onClick={() =>
-                                                        {
-                                                            setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                            setSearchQuery('');
-                                                            setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
-                                                        }
-                                                        }/>
-                                                    }
+                                        position: (isStickyRow || isStickyCol) ? 'sticky' : 'relative',
+                                        zIndex: isCorner ? 3 : (isStickyRow || isStickyCol ? 2 : undefined),
+                                        backgroundColor: (isStickyRow || isStickyCol) ? 'var(--harvest-white-color)' : undefined,
+                                    };
+
+                                    if (isStickyRow) {
+                                        inlineStyles.top = rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0;
+                                    }
+                                    if (isStickyCol) {
+                                        inlineStyles.left = colWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) || 0;
+                                    }
+
+                                    return (
+                                        <td
+                                            key={cellIndex}
+                                            style={inlineStyles}
+                                            onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: cellIndex })}
+                                            onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                        >
+                                            {allowSticky && (showColControl || showRowControl) && (
+                                                <div className="sticky-control-widget">
+                                                    {showColControl && (
+                                                        <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyCols > cellIndex}
+                                                                onChange={(e) => setStickyCols(e.target.checked ? cellIndex + 1 : cellIndex)}
+                                                            /> Fix Col
+                                                        </label>
+                                                    )}
+                                                    {showRowControl && (
+                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyRows > actualRowIndex}
+                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                            /> Fix Row
+                                                        </label>
+                                                    )}
                                                 </div>
                                             )}
-                                        </>
-                                    ) : (
-                                        <>
-                                            {compact ? (
-                                                <p
-                                                    className={"compact-table-cell-text"}
-                                                    lang={detectLang(cell)}
-                                                >
-                                                    {
-                                                        // detectLink(cell)
-                                                        applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
-                                                    }
-                                                </p>
+
+                                            {rowIndex === 0 ? (
+                                                <>
+                                                    {compact ? (
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center',
+                                                            wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                            textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
+                                                            padding: '0.5rem',
+                                                        }}
+                                                             className={"compact-table-header-row"}
+                                                        >
+                                                            <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                                {cell}{getSortIndicator(cellIndex)}
+                                                            </h3>
+                                                            {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
+                                                                <FilterAltIcon onClick={() => {
+                                                                    setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                                    setSearchQuery('');
+                                                                    setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                                                                }} />
+                                                            }
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center',
+                                                            padding: '0.5rem',
+                                                        }}
+                                                             className={"compact-table-header-row"}
+                                                        >
+                                                            <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                                {cell}{getSortIndicator(cellIndex)}
+                                                            </h2>
+                                                            {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
+                                                                <FilterAltIcon onClick={() => {
+                                                                    setIsFilterPopupOpen(!isFilterPopupOpen);
+                                                                    setSearchQuery('');
+                                                                    setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
+                                                                }} />
+                                                            }
+                                                        </div>
+                                                    )}
+                                                </>
                                             ) : (
-                                                <p
-                                                    lang={detectLang(cell)}
-                                                >
-                                                    {
-                                                        // detectLink(cell)
-                                                        applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)
-                                                    }
-                                                </p>
+                                                <>
+                                                    {compact ? (
+                                                        <p className={"compact-table-cell-text"} lang={detectLang(cell)}>
+                                                            {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
+                                                        </p>
+                                                    ) : (
+                                                        <p lang={detectLang(cell)}>
+                                                            {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
+                                                        </p>
+                                                    )}
+                                                </>
                                             )}
-                                        </>
-                                    )}
-                                </td>
-                            ))}
-                            {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex === 0 &&  (
-                                <td style={{ textAlign: 'center' }}>
-                                    <h3 className={"compact-table-header-text"}>
-                                        Edit
-                                    </h3>
-                                </td>
-                            )}
-                            {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex !== 0 &&  (
-                                <td style={{ textAlign: 'center' }}>
-                                    <button
-                                        onClick={() => onEditEntryOption(rowMapping[rowIndex])}
-                                        aria-label="Edit row"
-                                    >
-                                        Edit
-                                    </button>
-                                </td>
-                            )}
-                            {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex === 0 && (
-                                <td style={{ textAlign: 'center' }}>
-                                    <h3 className={"compact-table-header-text"}>
-                                        Delete
-                                    </h3>
-                                </td>
-                            )}
-                            {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex !== 0 && (
-                                <td style={{ textAlign: 'center' }}>
-                                    <button
-                                        onClick={() => onDeleteEntry(rowMapping[rowIndex])}
-                                        aria-label="Delete row"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            )}
-                        </tr>
-                    ))}
+                                        </td>
+                                    );
+                                })}
+
+                                {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex === 0 && (
+                                    <td style={{textAlign: 'center',}}>
+                                        <h3 className={"compact-table-header-text"}>Edit</h3>
+                                    </td>
+                                )}
+                                {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex !== 0 && (
+                                    <td style={{ textAlign: 'center' }}>
+                                        <button onClick={() => onEditEntryOption(rowMapping[rowIndex])} aria-label="Edit row">Edit</button>
+                                    </td>
+                                )}
+                                {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex === 0 && (
+                                    <td style={{ textAlign: 'center' }}>
+                                        <h3 className={"compact-table-header-text"}>Delete</h3>
+                                    </td>
+                                )}
+                                {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex !== 0 && (
+                                    <td style={{ textAlign: 'center' }}>
+                                        <button onClick={() => onDeleteEntry(rowMapping[rowIndex])} aria-label="Delete row">Delete</button>
+                                    </td>
+                                )}
+                            </tr>
+                        )
+                    })}
                     </tbody>
                 </table>
             </div>
 
+            <div className={"table-module-footer"}>
+
+                {bottomHorizontalScrollBar && renderCustomScrollbar(false)}
+            </div>
+
             <animated.div className="table-module-accordion" style={contentAnimation}>
-                <div className="table-module-accordion-overlay" onClick={() => {
-                    setIsAccordionOpen(false)
-                }}/>
+                <div className="table-module-accordion-overlay" onClick={() => setIsAccordionOpen(false)} />
                 <div className="table-module-accordion-content">
                     <div className="table-module-accordion-buttons">
-                        <button
-                            onClick={() => {
-                                setHiddenColumns(new Set(tableData && tableData[0] ?
-                                    tableData[0].filter((header) => defaultHiddenColumns && defaultHiddenColumns.includes(header)) :
-                                    []
-                                ));
-                            }}
-                        >
-                            Default
-                        </button>
+                        <button onClick={() => setHiddenColumns(new Set(tableData && tableData[0] ? tableData[0].filter((header) => defaultHiddenColumns && defaultHiddenColumns.includes(header)) : []))}>Default</button>
                         <button onClick={() => setHiddenColumns(new Set())}>Show All</button>
                         <button onClick={() => {
                             const allHeaders = tableData && tableData[0] ? [...tableData[0]] : [];
@@ -892,123 +837,67 @@ function Table({
                     </div>
                     {tableData && tableData[0] && tableData[0].map((header, index) => (
                         <div key={index}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={!hiddenColumns.has(header)}
-                                    onChange={() => toggleColumnVisibility(header)}
-                                />
-                                {'\t' + header}
-                            </label>
+                            <label><input type="checkbox" checked={!hiddenColumns.has(header)} onChange={() => toggleColumnVisibility(header)} />{'\t' + header}</label>
                         </div>
                     ))}
-
                     {allowEditEntryOption && onEditEntryOption && (
                         <div>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={!hiddenColumns.has("Edit")}
-                                    onChange={() => toggleColumnVisibility("Edit")}
-                                />
-                                {'\tEdit Column'}
-                            </label>
+                            <label><input type="checkbox" checked={!hiddenColumns.has("Edit")} onChange={() => toggleColumnVisibility("Edit")} />{'\tEdit Column'}</label>
                         </div>
                     )}
-
                     {allowDeleteEntryOption && onDeleteEntry && (
                         <div>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={!hiddenColumns.has("Delete")}
-                                    onChange={() => toggleColumnVisibility("Delete")}
-                                />
-                                {'\tDelete Column'}
-                            </label>
+                            <label><input type="checkbox" checked={!hiddenColumns.has("Delete")} onChange={() => toggleColumnVisibility("Delete")} />{'\tDelete Column'}</label>
                         </div>
                     )}
                 </div>
             </animated.div>
 
             <animated.div className={"table-module-filter-popup-container"} style={popupAnimation}>
-                <div className={"table-module-filter-popup-background"} onClick={() => {
-                    setIsFilterPopupOpen(false);
-                    setSearchQuery('');
-                }}/>
+                <div className={"table-module-filter-popup-background"} onClick={() => { setIsFilterPopupOpen(false); setSearchQuery(''); }} />
                 <div className={"table-module-filter-popup"}>
                     <div className={"table-module-filter-popup-content"}>
                         <h2>Filter Options</h2>
                         <div>
                             <h3>Unique Values</h3>
-                            <input type="text" className={"table-module-filter-search-input-field"}
-                                   placeholder={"Search"} value={searchQuery}
-                                   onChange={(e) => setSearchQuery(e.target.value)}/>
+                            <input type="text" className={"table-module-filter-search-input-field"} placeholder={"Search"} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                             <div className={"table-module-filter-popup-values-list"}>
-                                {
-                                    columnToFilterBasedOn &&
-                                    filterUniqueValuesDict[columnToFilterBasedOn] &&
-                                    filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues
-                                        .filter(value => {
-                                            if (searchQuery) {
-                                                return value && value.toString().toLowerCase().includes(searchQuery.toLowerCase());
-                                            }
-                                            return true;
-                                        })
-                                        .map((value, index) => (
-                                            <label key={index}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={filterUniqueValuesDict[columnToFilterBasedOn].checked[
-                                                        filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues.indexOf(value)
-                                                        ]}
-                                                    onChange={() => {
-                                                        const updatedFilters = {...filterUniqueValuesDict};
-                                                        const valueIndex = updatedFilters[columnToFilterBasedOn].uniqueValues.indexOf(value);
-                                                        if (valueIndex !== -1) {
-                                                            updatedFilters[columnToFilterBasedOn].checked[valueIndex] =
-                                                                !updatedFilters[columnToFilterBasedOn].checked[valueIndex];
-                                                            setFilterUniqueValuesDict(updatedFilters);
-                                                        }
-                                                    }}
-                                                />
-                                                {value}
-                                            </label>
-                                        ))
-                                }
+                                {columnToFilterBasedOn && filterUniqueValuesDict[columnToFilterBasedOn] && filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues
+                                    .filter(value => searchQuery ? value && value.toString().toLowerCase().includes(searchQuery.toLowerCase()) : true)
+                                    .map((value, index) => (
+                                        <label key={index}>
+                                            <input type="checkbox" checked={filterUniqueValuesDict[columnToFilterBasedOn].checked[filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues.indexOf(value)]} onChange={() => {
+                                                const updatedFilters = { ...filterUniqueValuesDict };
+                                                const valueIndex = updatedFilters[columnToFilterBasedOn].uniqueValues.indexOf(value);
+                                                if (valueIndex !== -1) {
+                                                    updatedFilters[columnToFilterBasedOn].checked[valueIndex] = !updatedFilters[columnToFilterBasedOn].checked[valueIndex];
+                                                    setFilterUniqueValuesDict(updatedFilters);
+                                                }
+                                            }} />{value}
+                                        </label>
+                                    ))}
                             </div>
                         </div>
                         <div className={"table-module-filter-popup-buttons-wrapper"}>
                             {columnToFilterBasedOn && filterUniqueValuesDict[columnToFilterBasedOn] && (
                                 <>
-                                    <button
-                                        onClick={() => {
-                                            const updatedFilters = {...filterUniqueValuesDict};
-                                            if (updatedFilters[columnToFilterBasedOn]) {
-                                                updatedFilters[columnToFilterBasedOn].checked =
-                                                    updatedFilters[columnToFilterBasedOn].checked.map(() => true);
-                                                setFilterUniqueValuesDict(updatedFilters);
-                                            }
-                                        }}
-                                    >Check All
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            const updatedFilters = {...filterUniqueValuesDict};
-                                            if (updatedFilters[columnToFilterBasedOn]) {
-                                                updatedFilters[columnToFilterBasedOn].checked =
-                                                    updatedFilters[columnToFilterBasedOn].checked.map(() => false);
-                                                setFilterUniqueValuesDict(updatedFilters);
-                                            }
-                                        }}
-                                    >Uncheck All
-                                    </button>
+                                    <button onClick={() => {
+                                        const updatedFilters = { ...filterUniqueValuesDict };
+                                        if (updatedFilters[columnToFilterBasedOn]) {
+                                            updatedFilters[columnToFilterBasedOn].checked = updatedFilters[columnToFilterBasedOn].checked.map(() => true);
+                                            setFilterUniqueValuesDict(updatedFilters);
+                                        }
+                                    }}>Check All</button>
+                                    <button onClick={() => {
+                                        const updatedFilters = { ...filterUniqueValuesDict };
+                                        if (updatedFilters[columnToFilterBasedOn]) {
+                                            updatedFilters[columnToFilterBasedOn].checked = updatedFilters[columnToFilterBasedOn].checked.map(() => false);
+                                            setFilterUniqueValuesDict(updatedFilters);
+                                        }
+                                    }}>Uncheck All</button>
                                 </>
                             )}
-                            <button onClick={() => {
-                                setIsFilterPopupOpen(false);
-                                setSearchQuery('');
-                            }}>Close</button>
+                            <button onClick={() => { setIsFilterPopupOpen(false); setSearchQuery(''); }}>Close</button>
                         </div>
                     </div>
                 </div>
@@ -1039,6 +928,8 @@ Table.propTypes = {
     allowEditEntryOption: PropTypes.bool,
     onEditEntryOption: PropTypes.func,
     likelyUrlColumns: PropTypes.objectOf(PropTypes.func),
+    allowSticky: PropTypes.bool,
+    bottomHorizontalScrollBar: PropTypes.bool,
 };
 
 export default Table;

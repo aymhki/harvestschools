@@ -15,16 +15,48 @@
 
 .table-module-table {
     width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+}
+
+.table-module-table tr,
+.table-module-table td,
+.table-module-table th {
+    border: none;
+}
+
+.table-module-table td,
+.table-module-table th {
+    border-bottom: var(--primary-color) 0.1rem solid;
+    border-right: var(--primary-color) 0.1rem solid;
+    background-clip: padding-box;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+}
+
+.table-module-table tr td:first-child,
+.table-module-table tr th:first-child {
+    border-left: var(--primary-color) 0.1rem solid;
+}
+.table-module-table tr:first-child td,
+.table-module-table tr:first-child th {
+    border-top: var(--primary-color) 0.1rem solid;
 }
 
 .table-module-table-scrollable {
     width: 100%;
     table-layout: auto;
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 75vh;
     margin-top: 0;
     margin-bottom: 2rem;
     margin-left: 2rem;
     margin-right: 2rem;
+}
+
+.table-scroll-container.scrollable::-webkit-scrollbar {
+    display: none;
 }
 
 .table-module-header {
@@ -39,6 +71,19 @@
     padding-bottom: 2rem;
     padding-left: 0;
     padding-right: 0;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.table-module-footer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: sticky;
+    left: 0;
+    right: 0;
+    z-index: 10;
     align-content: center;
     justify-content: center;
     align-items: center;
@@ -87,6 +132,31 @@ th, td {
 
 tr:hover {
     background-color: #f1f1f1;
+}
+
+.sticky-control-widget {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--primary-color);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+.sticky-control-checkbox {
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    cursor: pointer;
+    margin: 0;
+    white-space: nowrap;
 }
 
 .wrap {
@@ -300,6 +370,12 @@ td button {
     transition: opacity 0.3s ease, height 0.3s ease;
 }
 
+.custom-scrollbar-container.footer {
+    box-shadow: none;
+    padding: 0 2rem 2rem 2rem;
+    margin-bottom: 0;
+}
+
 
 .custom-scrollbar-container.visible {
     opacity: 1;
@@ -337,13 +413,13 @@ td button {
     position: relative;
     margin: 0 1rem;
     cursor: pointer;
-    transition: height 0.3s;
+    transition: height 0.3s, border-radius 0.3s;
 }
 
-.custom-scrollbar-track:hover {
+.custom-scrollbar-container:hover .custom-scrollbar-track,
+.custom-scrollbar-container.is-dragging .custom-scrollbar-track {
     height: 1.5rem;
     border-radius: 1rem;
-    transition: height 0.3s;
 }
 
 .custom-scrollbar-thumb {
@@ -473,6 +549,11 @@ td button {
     .table-module-header {
         padding-top: 3rem;
         padding-bottom: 1rem;
+    }
+
+    .table-module-footer {
+        padding-top: 0;
+        padding-bottom: 0;
     }
 
     .custom-scrollbar-container {
