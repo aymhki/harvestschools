@@ -44,20 +44,6 @@
     align-items: center;
 }
 
-.table-module-footer {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    position: sticky;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0rem;
-    padding-bottom: 2rem;
-    align-content: center;
-}
 
 .table-module-header-buttons-wrapper {
     display: flex;
@@ -314,23 +300,8 @@ td button {
     transition: opacity 0.3s ease, height 0.3s ease;
 }
 
-.custom-scrollbar-container.footer {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    user-select: none;
-    opacity: 0;
-    pointer-events: none;
-    padding: 0;
-    margin-bottom: 0;
-    height: 0;
-    overflow: hidden;
-    transition: opacity 0.3s ease, height 0.3s ease;
-    box-shadow: none;
-}
 
-
-.custom-scrollbar-container.visible, .custom-scrollbar-container.footer.visible {
+.custom-scrollbar-container.visible {
     opacity: 1;
     pointer-events: auto;
     height: auto;
@@ -504,17 +475,8 @@ td button {
         padding-bottom: 1rem;
     }
 
-    .table-module-footer {
-        padding-top: 0rem;
-        padding-bottom: 2rem;
-    }
-
     .custom-scrollbar-container {
         padding: 2rem 0.3rem 0 0.3rem;
-    }
-
-    .custom-scrollbar-container.footer {
-        padding: 0;
     }
 
     .custom-scrollbar-arrow {
