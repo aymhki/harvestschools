@@ -25,7 +25,7 @@ function Table({
                    onEditEntryOption,
                    likelyUrlColumns,
                    allowSticky,
-                    bottomHorizontalScrollBar
+                   bottomHorizontalScrollBar
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
@@ -56,6 +56,14 @@ function Table({
     const [hoveredCell, setHoveredCell] = useState({ r: null, c: null });
     const [colWidths, setColWidths] = useState([]);
     const [rowHeights, setRowHeights] = useState([]);
+
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+
+        return false;
+    });
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -94,6 +102,20 @@ function Table({
             window.removeEventListener('resize', updateStickyOffsets);
         };
     }, [updateStickyOffsets]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        const handleChange = (event) => {
+            setIsDarkMode(event.matches);
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => mediaQuery.removeEventListener('change', handleChange);
+    }, []);
 
     const applyScroll = (element, amount, smooth = false) => {
         const behavior = smooth ? 'smooth' : 'auto';
@@ -688,12 +710,13 @@ function Table({
                                         whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
                                         position: (isStickyRow || isStickyCol) ? 'sticky' : 'relative',
                                         zIndex: isCorner ? 3 : (isStickyRow || isStickyCol ? 2 : undefined),
-                                        backgroundColor: (isStickyRow || isStickyCol) ? 'var(--harvest-white-color)' : undefined,
+                                        backgroundColor: (isStickyRow || isStickyCol) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
                                     };
 
                                     if (isStickyRow) {
                                         inlineStyles.top = rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0;
                                     }
+
                                     if (isStickyCol) {
                                         inlineStyles.left = colWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) || 0;
                                     }
@@ -790,25 +813,100 @@ function Table({
                                         </td>
                                     );
                                 })}
+                                {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && (
+                                    <td
+                                        onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length })}
+                                        onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                        style={{
+                                            textAlign: 'center',
+                                            position: (actualRowIndex < stickyRows || row.length < stickyCols) ? 'sticky' : 'relative',
+                                            zIndex: (actualRowIndex < stickyRows && row.length < stickyCols) ? 3 : ((actualRowIndex < stickyRows || row.length < stickyCols) ? 2 : undefined),
+                                            backgroundColor: (actualRowIndex < stickyRows || row.length < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                            top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                            left: row.length < stickyCols ? (colWidths.slice(0, row.length).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                        }}>
+                                        {(() => {
+                                            const editCellIndex = row.length;
+                                            const isHoveredEdit = hoveredCell.r === actualRowIndex && hoveredCell.c === editCellIndex;
+                                            const showColControlEdit = isHoveredEdit && rowIndex === 0 && editCellIndex < 1;
+                                            const showRowControlEdit = isHoveredEdit && editCellIndex === 0 && rowIndex < 1;
 
-                                {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex === 0 && (
-                                    <td style={{textAlign: 'center',}}>
-                                        <h3 className={"compact-table-header-text"}>Edit</h3>
+                                            return allowSticky && (showColControlEdit || showRowControlEdit) ? (
+                                                <div className="sticky-control-widget">
+                                                    {showColControlEdit && (
+                                                        <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyCols > editCellIndex}
+                                                                onChange={(e) => setStickyCols(e.target.checked ? editCellIndex + 1 : editCellIndex)}
+                                                            /> Fix Col
+                                                        </label>
+                                                    )}
+                                                    {showRowControlEdit && (
+                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyRows > actualRowIndex}
+                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                            /> Fix Row
+                                                        </label>
+                                                    )}
+                                                </div>
+                                            ) : null;
+                                        })()}
+                                        {rowIndex === 0 ? (
+                                            <h3 className={"compact-table-header-text"}>Edit</h3>
+                                        ) : (
+                                            <button onClick={() => onEditEntryOption(rowMapping[rowIndex])} aria-label="Edit row">Edit</button>
+                                        )}
                                     </td>
                                 )}
-                                {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && rowIndex !== 0 && (
-                                    <td style={{ textAlign: 'center' }}>
-                                        <button onClick={() => onEditEntryOption(rowMapping[rowIndex])} aria-label="Edit row">Edit</button>
-                                    </td>
-                                )}
-                                {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex === 0 && (
-                                    <td style={{ textAlign: 'center' }}>
-                                        <h3 className={"compact-table-header-text"}>Delete</h3>
-                                    </td>
-                                )}
-                                {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && rowIndex !== 0 && (
-                                    <td style={{ textAlign: 'center' }}>
-                                        <button onClick={() => onDeleteEntry(rowMapping[rowIndex])} aria-label="Delete row">Delete</button>
+                                {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && (
+                                    <td
+                                        onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0) })}
+                                        onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                        style={{
+                                            textAlign: 'center',
+                                            position: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 'sticky' : 'relative',
+                                            zIndex: (actualRowIndex < stickyRows && (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 3 : ((actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 2 : undefined),
+                                            backgroundColor: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                            top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                            left: (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols ? (colWidths.slice(0, row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                        }}>
+                                        {(() => {
+                                            const deleteCellIndex = row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0);
+                                            const isHoveredDelete = hoveredCell.r === actualRowIndex && hoveredCell.c === deleteCellIndex;
+                                            const showColControlDelete = isHoveredDelete && rowIndex === 0 && deleteCellIndex < 1;
+                                            const showRowControlDelete = isHoveredDelete && deleteCellIndex === 0 && rowIndex < 1;
+
+                                            return allowSticky && (showColControlDelete || showRowControlDelete) ? (
+                                                <div className="sticky-control-widget">
+                                                    {showColControlDelete && (
+                                                        <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyCols > deleteCellIndex}
+                                                                onChange={(e) => setStickyCols(e.target.checked ? deleteCellIndex + 1 : deleteCellIndex)}
+                                                            /> Fix Col
+                                                        </label>
+                                                    )}
+                                                    {showRowControlDelete && (
+                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyRows > actualRowIndex}
+                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                            /> Fix Row
+                                                        </label>
+                                                    )}
+                                                </div>
+                                            ) : null;
+                                        })()}
+                                        {rowIndex === 0 ? (
+                                            <h3 className={"compact-table-header-text"}>Delete</h3>
+                                        ) : (
+                                            <button onClick={() => onDeleteEntry(rowMapping[rowIndex])} aria-label="Delete row">Delete</button>
+                                        )}
                                     </td>
                                 )}
                             </tr>
