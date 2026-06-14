@@ -337,6 +337,8 @@ label:lang(ar) {
     button {
         font-size: small;
         letter-spacing: 0.1rem;
+        padding: 0.5rem 0.8rem 0.5rem 0.8rem;
+        margin: 0.5rem;
     }
 
     h1 {
