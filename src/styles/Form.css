@@ -322,6 +322,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    height: 3rem;
 }
 
 .captcha-wrapper:lang(ar), .captcha-wrapper-half-width:lang(ar), .captcha-wrapper-half-width-with-full-margin:lang(ar), .captcha-wrapper-with-full-margin:lang(ar), .captcha-input:lang(ar) {

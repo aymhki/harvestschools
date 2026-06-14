@@ -867,6 +867,63 @@ function Table({
                 </table>
             </div>
 
+            <div className={"table-module-footer"}>
+
+                {scrollable && (
+                    <div className={`custom-scrollbar-container  footer ${isScrollbarVisible ? 'visible' : ''}`}>
+
+                        <button
+                            className="custom-scrollbar-arrow"
+                            onMouseDown={() => startScrolling(-1)}
+                            onMouseUp={stopScrolling}
+                            onMouseLeave={stopScrolling}
+                            onTouchStart={() => startScrolling(-1)}
+                            onTouchEnd={stopScrolling}
+                            aria-label="Scroll Left"
+                        >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
+
+                        <div className="custom-scrollbar-track" ref={scrollbarTrackRef} onClick={handleTrackClick}>
+
+                            <div
+                                className={`custom-scrollbar-thumb ${isDragging ? 'dragging' : ''}`}
+                                ref={scrollbarThumbRef}
+                                style={{ width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)` }}
+                                onMouseDown={handleMouseDown}
+                                onTouchStart={handleTouchStart}
+                            >
+
+                                <div className="thumb-grip">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <button
+                            className="custom-scrollbar-arrow"
+                            onMouseDown={() => startScrolling(1)}
+                            onMouseUp={stopScrolling}
+                            onMouseLeave={stopScrolling}
+                            onTouchStart={() => startScrolling(1)}
+                            onTouchEnd={stopScrolling}
+                            aria-label="Scroll Right"
+                        >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
+
+                    </div>
+                )}
+            </div>
+
             <animated.div className="table-module-accordion" style={contentAnimation}>
                 <div className="table-module-accordion-overlay" onClick={() => {
                     setIsAccordionOpen(false)
