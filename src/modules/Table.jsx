@@ -39,6 +39,7 @@ function Table({
     const scrollContainerRef = useRef(null);
     const scrollbarTrackRef = useRef(null);
     const scrollbarThumbRef = useRef(null);
+    const tableModuleRef = useRef(null);
 
     const [isScrollbarVisible, setIsScrollbarVisible] = useState(false);
     const [thumbWidth, setThumbWidth] = useState(0);
@@ -59,26 +60,107 @@ function Table({
         config: { duration: 300 },
     });
 
-    const handleTableScroll = useCallback(() => {
+    const applyScroll = (element, amount, smooth = false) => {
+        const behavior = smooth ? 'smooth' : 'auto';
+        if (amount === 0) return 0;
+        if (!element) {
+            const maxScroll = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+            if (maxScroll <= 0) return amount;
+            const currentScroll = window.scrollX || window.pageXOffset;
+            let newScroll = currentScroll + amount;
+            let remainder = 0;
+            if (newScroll > maxScroll) {
+                remainder = newScroll - maxScroll;
+                window.scrollTo({ left: maxScroll, behavior });
+            } else if (newScroll < 0) {
+                remainder = newScroll;
+                window.scrollTo({ left: 0, behavior });
+            } else {
+                window.scrollTo({ left: newScroll, behavior });
+                remainder = 0;
+            }
+            return remainder;
+        }
+
+        const maxScroll = element.scrollWidth - element.clientWidth;
+        if (maxScroll <= 0) return amount;
+
+        const currentScroll = element.scrollLeft;
+        let newScroll = currentScroll + amount;
+        let remainder = 0;
+
+        if (newScroll > maxScroll) {
+            remainder = newScroll - maxScroll;
+            element.scrollTo({ left: maxScroll, behavior });
+        } else if (newScroll < 0) {
+            remainder = newScroll;
+            element.scrollTo({ left: 0, behavior });
+        } else {
+            element.scrollTo({ left: newScroll, behavior });
+            remainder = 0;
+        }
+        return remainder;
+    };
+
+    const cascadeScroll = useCallback((amount, smooth = false) => {
+        let rem = applyScroll(scrollContainerRef.current, amount, smooth);
+        if (rem !== 0) {
+            rem = applyScroll(tableModuleRef.current, rem, smooth);
+            if (rem !== 0) {
+                applyScroll(null, rem, smooth);
+            }
+        }
+    }, []);
+
+    const updateThumbPosition = useCallback(() => {
         if (isDragging) return;
         const container = scrollContainerRef.current;
         const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
         if (!container || trackWidth === 0) return;
 
-        const { scrollWidth, clientWidth } = container;
-        const maxScrollLeft = scrollWidth - clientWidth;
-        if (maxScrollLeft <= 0) return;
+        const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
 
-        const ratio = container.scrollLeft / maxScrollLeft;
+        if (totalMax <= 0) return;
+
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+        const currentWindow = window.scrollX || window.pageXOffset;
+        const currentTotal = container.scrollLeft + currentModule + currentWindow;
+
+        const ratio = currentTotal / totalMax;
         const maxThumbLeft = trackWidth - thumbWidth;
-        setThumbLeft(ratio * maxThumbLeft);
+        setThumbLeft(Math.max(0, Math.min(ratio * maxThumbLeft, maxThumbLeft)));
     }, [isDragging, thumbWidth]);
+
+    useEffect(() => {
+        const handleExternalScroll = () => {
+            updateThumbPosition();
+        };
+
+        window.addEventListener('scroll', handleExternalScroll);
+        const moduleEl = tableModuleRef.current;
+        if (moduleEl) {
+            moduleEl.addEventListener('scroll', handleExternalScroll);
+        }
+
+        return () => {
+            window.removeEventListener('scroll', handleExternalScroll);
+            if (moduleEl) {
+                moduleEl.removeEventListener('scroll', handleExternalScroll);
+            }
+        };
+    }, [updateThumbPosition]);
 
     const handleMouseDown = (e) => {
         e.preventDefault();
         setIsDragging(true);
         setStartX(e.clientX);
-        setScrollLeftStart(scrollContainerRef.current.scrollLeft);
+        const container = scrollContainerRef.current;
+        const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+        const windowScroll = window.scrollX || window.pageXOffset;
+        setScrollLeftStart(container ? container.scrollLeft + moduleScroll + windowScroll : 0);
     };
 
     const handleMouseMove = useCallback((e) => {
@@ -89,19 +171,27 @@ function Table({
         const container = scrollContainerRef.current;
         if (!container) return;
 
-        const { scrollWidth, clientWidth } = container;
-        const maxThumbLeft = trackWidth - thumbWidth;
-        const maxScrollLeft = scrollWidth - clientWidth;
+        const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
 
-        if (maxThumbLeft <= 0 || maxScrollLeft <= 0) return;
+        const maxThumbLeft = trackWidth - thumbWidth;
+
+        if (maxThumbLeft <= 0 || totalMax <= 0) return;
 
         const scrollRatio = dx / maxThumbLeft;
-        const newScrollLeft = scrollLeftStart + scrollRatio * maxScrollLeft;
+        const targetTotalScroll = scrollLeftStart + scrollRatio * totalMax;
 
-        container.scrollLeft = newScrollLeft;
-        const ratio = maxScrollLeft > 0 ? container.scrollLeft / maxScrollLeft : 0;
-        setThumbLeft(ratio * maxThumbLeft);
-    }, [isDragging, startX, scrollLeftStart, thumbWidth]);
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+        const currentWindow = window.scrollX || window.pageXOffset;
+        const currentTotal = container.scrollLeft + currentModule + currentWindow;
+
+        const delta = targetTotalScroll - currentTotal;
+        cascadeScroll(delta, false);
+
+        setThumbLeft(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbLeft, maxThumbLeft)));
+    }, [isDragging, startX, scrollLeftStart, thumbWidth, cascadeScroll]);
 
     const handleMouseUp = useCallback(() => {
         setIsDragging(false);
@@ -124,7 +214,10 @@ function Table({
     const handleTouchStart = (e) => {
         setIsDragging(true);
         setStartX(e.touches[0].clientX);
-        setScrollLeftStart(scrollContainerRef.current.scrollLeft);
+        const container = scrollContainerRef.current;
+        const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+        const windowScroll = window.scrollX || window.pageXOffset;
+        setScrollLeftStart(container ? container.scrollLeft + moduleScroll + windowScroll : 0);
     };
 
     const handleTouchMove = useCallback((e) => {
@@ -134,19 +227,27 @@ function Table({
         const container = scrollContainerRef.current;
         if (!container) return;
 
-        const { scrollWidth, clientWidth } = container;
-        const maxThumbLeft = trackWidth - thumbWidth;
-        const maxScrollLeft = scrollWidth - clientWidth;
+        const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
 
-        if (maxThumbLeft <= 0 || maxScrollLeft <= 0) return;
+        const maxThumbLeft = trackWidth - thumbWidth;
+
+        if (maxThumbLeft <= 0 || totalMax <= 0) return;
 
         const scrollRatio = dx / maxThumbLeft;
-        const newScrollLeft = scrollLeftStart + scrollRatio * maxScrollLeft;
+        const targetTotalScroll = scrollLeftStart + scrollRatio * totalMax;
 
-        container.scrollLeft = newScrollLeft;
-        const ratio = maxScrollLeft > 0 ? container.scrollLeft / maxScrollLeft : 0;
-        setThumbLeft(ratio * maxThumbLeft);
-    }, [isDragging, startX, scrollLeftStart, thumbWidth]);
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+        const currentWindow = window.scrollX || window.pageXOffset;
+        const currentTotal = container.scrollLeft + currentModule + currentWindow;
+
+        const delta = targetTotalScroll - currentTotal;
+        cascadeScroll(delta, false);
+
+        setThumbLeft(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbLeft, maxThumbLeft)));
+    }, [isDragging, startX, scrollLeftStart, thumbWidth, cascadeScroll]);
 
     const handleTouchEnd = useCallback(() => {
         setIsDragging(false);
@@ -166,11 +267,39 @@ function Table({
         };
     }, [isDragging, handleTouchMove, handleTouchEnd]);
 
-    const scrollBy = (amount) => {
+    const scrollIntervalRef = useRef(null);
+
+    const scrollBy = useCallback((direction) => {
         const container = scrollContainerRef.current;
         if (!container) return;
-        container.scrollBy({ left: amount, behavior: 'smooth' });
-    };
+        const cols = finalTableData && finalTableData[0] ? finalTableData[0].length : 1;
+        const step = Math.max(container.clientWidth / Math.max(cols / 2, 1), container.clientWidth / 4);
+        const amount = step * direction;
+
+        cascadeScroll(amount, true);
+    }, [finalTableData, cascadeScroll]);
+
+    const startScrolling = useCallback((direction) => {
+        scrollBy(direction);
+        scrollIntervalRef.current = setInterval(() => {
+            scrollBy(direction);
+        }, 200);
+    }, [scrollBy]);
+
+    const stopScrolling = useCallback(() => {
+        if (scrollIntervalRef.current) {
+            clearInterval(scrollIntervalRef.current);
+            scrollIntervalRef.current = null;
+        }
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+            }
+        };
+    }, []);
 
     const handleTrackClick = (e) => {
         if (e.target === scrollbarThumbRef.current || scrollbarThumbRef.current?.contains(e.target)) return;
@@ -182,18 +311,25 @@ function Table({
         const clickX = e.clientX - rect.left;
         const trackWidth = rect.width;
 
-        const { scrollWidth, clientWidth } = container;
-        const maxScrollLeft = scrollWidth - clientWidth;
+        const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
+
         const maxThumbLeft = trackWidth - thumbWidth;
 
         const targetThumbLeft = clickX - (thumbWidth / 2);
         const clampedThumbLeft = Math.max(0, Math.min(targetThumbLeft, maxThumbLeft));
 
         const scrollRatio = maxThumbLeft > 0 ? clampedThumbLeft / maxThumbLeft : 0;
-        container.scrollTo({
-            left: scrollRatio * maxScrollLeft,
-            behavior: 'smooth'
-        });
+        const targetTotalScroll = scrollRatio * totalMax;
+
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+        const currentWindow = window.scrollX || window.pageXOffset;
+        const currentTotal = container.scrollLeft + currentModule + currentWindow;
+
+        const delta = targetTotalScroll - currentTotal;
+        cascadeScroll(delta, true);
     };
 
     useEffect(() => {
@@ -206,17 +342,26 @@ function Table({
         if (!container) return;
 
         const checkOverflow = () => {
-            const { scrollWidth, clientWidth } = container;
-            if (scrollWidth > clientWidth) {
+            const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
+
+            if (containerMax > 0) {
                 setIsScrollbarVisible(true);
                 const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
                 if (trackWidth > 0) {
-                    const ratio = clientWidth / scrollWidth;
-                    const newThumbWidth = Math.max(ratio * trackWidth, 30);
+                    const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
+                    const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
+                    const totalMax = containerMax + moduleMax + windowMax;
+
+                    const ratio = container.clientWidth / (container.clientWidth + totalMax);
+                    const minWidth = isMobile ? 80 : 30;
+                    const newThumbWidth = Math.max(ratio * trackWidth, minWidth);
                     setThumbWidth(newThumbWidth);
 
-                    const maxScroll = scrollWidth - clientWidth;
-                    const scrollRatio = maxScroll > 0 ? container.scrollLeft / maxScroll : 0;
+                    const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+                    const windowScroll = window.scrollX || window.pageXOffset;
+                    const currentTotal = container.scrollLeft + moduleScroll + windowScroll;
+
+                    const scrollRatio = totalMax > 0 ? currentTotal / totalMax : 0;
                     const maxThumbLeft = trackWidth - newThumbWidth;
                     setThumbLeft(scrollRatio * maxThumbLeft);
                 }
@@ -240,7 +385,7 @@ function Table({
             resizeObserver.disconnect();
             window.removeEventListener('resize', checkOverflow);
         };
-    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData]);
+    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
 
     const sortedDataWithIndices = useMemo(() => {
         if (!tableData || tableData.length === 0) {
@@ -363,10 +508,10 @@ function Table({
     const applyLikelyUrlFunction = (columnName, cellValue) => {
         if (likelyUrlColumns && likelyUrlColumns[columnName]) {
             return <p className={"table-link"} lang={"en"}
-                        onClick={() => {
-                            likelyUrlColumns[columnName](cellValue);
-                        }}
-                >{cellValue}</p>;
+                      onClick={() => {
+                          likelyUrlColumns[columnName](cellValue);
+                      }}
+            >{cellValue}</p>;
         } else {
             return cellValue;
         }
@@ -464,7 +609,7 @@ function Table({
     }, [filterUniqueValuesDict]);
 
     return (
-        <div className="table-module" style={{overflow: scrollable ? 'auto' : 'hidden'}}>
+        <div className="table-module" ref={tableModuleRef} style={{overflow: scrollable ? 'auto' : 'hidden'}}>
             <div className={"table-module-header"}>
                 <div className={"table-module-header-buttons-wrapper"}>
                     {
@@ -520,50 +665,68 @@ function Table({
                         ))
                     }
                 </div>
-            </div>
 
-            {scrollable && (
-                <div className={`custom-scrollbar-container ${isScrollbarVisible ? 'visible' : ''}`}>
+                {scrollable && (
+                    <div className={`custom-scrollbar-container ${isScrollbarVisible ? 'visible' : ''}`}>
 
-                    <button className="custom-scrollbar-arrow" onClick={() => scrollBy(-150)} aria-label="Scroll Left">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                    </button>
-
-                    <div className="custom-scrollbar-track" ref={scrollbarTrackRef} onClick={handleTrackClick}>
-
-                        <div
-                            className={`custom-scrollbar-thumb ${isDragging ? 'dragging' : ''}`}
-                            ref={scrollbarThumbRef}
-                            style={{ width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)` }}
-                            onMouseDown={handleMouseDown}
-                            onTouchStart={handleTouchStart}
+                        <button
+                            className="custom-scrollbar-arrow"
+                            onMouseDown={() => startScrolling(-1)}
+                            onMouseUp={stopScrolling}
+                            onMouseLeave={stopScrolling}
+                            onTouchStart={() => startScrolling(-1)}
+                            onTouchEnd={stopScrolling}
+                            aria-label="Scroll Left"
                         >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
 
-                            <div className="thumb-grip">
-                                <span></span>
-                                <span></span>
-                                <span></span>
+                        <div className="custom-scrollbar-track" ref={scrollbarTrackRef} onClick={handleTrackClick}>
+
+                            <div
+                                className={`custom-scrollbar-thumb ${isDragging ? 'dragging' : ''}`}
+                                ref={scrollbarThumbRef}
+                                style={{ width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)` }}
+                                onMouseDown={handleMouseDown}
+                                onTouchStart={handleTouchStart}
+                            >
+
+                                <div className="thumb-grip">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+
                             </div>
 
                         </div>
 
+                        <button
+                            className="custom-scrollbar-arrow"
+                            onMouseDown={() => startScrolling(1)}
+                            onMouseUp={stopScrolling}
+                            onMouseLeave={stopScrolling}
+                            onTouchStart={() => startScrolling(1)}
+                            onTouchEnd={stopScrolling}
+                            aria-label="Scroll Right"
+                        >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
+
                     </div>
+                )}
+            </div>
 
-                    <button className="custom-scrollbar-arrow" onClick={() => scrollBy(150)} aria-label="Scroll Right">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                    </button>
 
-                </div>
-            )}
 
             <div
                 className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
                 ref={scrollContainerRef}
-                onScroll={handleTableScroll}
+                onScroll={updateThumbPosition}
                 // style={{
                 //     marginTop: `${(allowExport || allowHideColumns) ? (isMobile ? '10rem' : '10rem') : '0'}`,
                 // }}
@@ -596,7 +759,9 @@ function Table({
                                                     wrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
                                                     textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
                                                     padding: '0.5rem',
-                                                }}>
+                                                }}
+                                                    className={"compact-table-header-row"}
+                                                >
                                                     <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                         {cell}{getSortIndicator(cellIndex)}
                                                     </h3>
@@ -617,7 +782,9 @@ function Table({
                                                     justifyContent: 'space-between',
                                                     alignItems: 'center',
                                                     padding: '0.5rem',
-                                                }}>
+                                                }}
+                                                     className={"compact-table-header-row"}
+                                                >
                                                     <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                         {cell}{getSortIndicator(cellIndex)}
                                                     </h2>
@@ -648,7 +815,7 @@ function Table({
                                                 </p>
                                             ) : (
                                                 <p
-                                                   lang={detectLang(cell)}
+                                                    lang={detectLang(cell)}
                                                 >
                                                     {
                                                         // detectLink(cell)
