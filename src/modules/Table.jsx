@@ -5,6 +5,113 @@ import { animated, useSpring } from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useTranslation } from 'react-i18next';
 
+const parseDate = (val) => {
+    if (!val) return null;
+    let str = String(val).trim();
+    if (str.includes(' ') && !str.includes('T')) {
+        str = str.replace(' ', 'T');
+    }
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+};
+
+const parseNumberValue = (val) => {
+    if (val === null || val === undefined || val === '') return NaN;
+    let str = String(val).trim();
+    let isNegative = str.includes('-') || (str.includes('(') && str.includes(')'));
+    let cleaned = str.replace(/[^\d.,]/g, '');
+    const lastDot = cleaned.lastIndexOf('.');
+    const lastComma = cleaned.lastIndexOf(',');
+    if (lastDot > lastComma) {
+        cleaned = cleaned.replace(/,/g, '');
+    } else if (lastComma > lastDot) {
+        cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+    } else {
+        if (lastComma !== -1) {
+            const parts = cleaned.split(',');
+            if (parts.length > 1 && parts[parts.length - 1].length === 3) {
+                cleaned = cleaned.replace(/,/g, '');
+            } else {
+                cleaned = cleaned.replace(',', '.');
+            }
+        }
+    }
+    let num = parseFloat(cleaned);
+    if (!isNaN(num) && isNegative) {
+        num = -Math.abs(num);
+    }
+    return num;
+};
+
+const getColumnType = (columnName, dataTypes) => {
+    if (!dataTypes) return 'text';
+    for (const [type, columns] of Object.entries(dataTypes)) {
+        if (columns.includes(columnName)) {
+            return type;
+        }
+    }
+    return 'text';
+};
+
+const applyFilter = (cellValue, filter) => {
+    if (cellValue === undefined || cellValue === null || cellValue === '') {
+        return false;
+    }
+    const strValue = String(cellValue).trim();
+
+    if (filter.type === 'date') {
+        const cellDate = parseDate(cellValue);
+        const filterDate1 = filter.value ? parseDate(filter.value) : null;
+        const filterDate2 = filter.value2 ? parseDate(filter.value2) : null;
+
+        if (!cellDate || !filterDate1) return false;
+
+        const cTime = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate()).getTime();
+        const fTime1 = new Date(filterDate1.getFullYear(), filterDate1.getMonth(), filterDate1.getDate()).getTime();
+        const fTime2 = filterDate2 ? new Date(filterDate2.getFullYear(), filterDate2.getMonth(), filterDate2.getDate()).getTime() : null;
+
+        if (filter.operator === 'equals') {
+            return cTime === fTime1;
+        } else if (filter.operator === 'before') {
+            return cTime < fTime1;
+        } else if (filter.operator === 'after') {
+            return cTime > fTime1;
+        } else if (filter.operator === 'between') {
+            return fTime2 !== null && cTime >= fTime1 && cTime <= fTime2;
+        }
+    } else if (filter.type === 'number' || filter.type === 'currency') {
+        const cellNum = parseNumberValue(cellValue);
+        const filterNum1 = parseFloat(filter.value);
+        const filterNum2 = filter.value2 ? parseFloat(filter.value2) : null;
+
+        if (isNaN(cellNum) || isNaN(filterNum1)) return false;
+
+        if (filter.operator === 'equals') {
+            return cellNum === filterNum1;
+        } else if (filter.operator === 'less_than') {
+            return cellNum < filterNum1;
+        } else if (filter.operator === 'greater_than') {
+            return cellNum > filterNum1;
+        } else if (filter.operator === 'between') {
+            return filterNum2 !== null && !isNaN(filterNum2) && cellNum >= filterNum1 && cellNum <= filterNum2;
+        }
+    } else if (filter.type === 'text' || filter.type === 'phone') {
+        const lowerCell = strValue.toLowerCase();
+        const lowerFilter = filter.value ? String(filter.value).toLowerCase() : '';
+
+        if (filter.operator === 'contains') {
+            return lowerCell.includes(lowerFilter);
+        } else if (filter.operator === 'equals') {
+            return lowerCell === lowerFilter;
+        } else if (filter.operator === 'starts_with') {
+            return lowerCell.startsWith(lowerFilter);
+        } else if (filter.operator === 'ends_with') {
+            return lowerCell.endsWith(lowerFilter);
+        }
+    }
+    return true;
+};
+
 function Table({
                    tableHeader,
                    tableData,
@@ -25,14 +132,15 @@ function Table({
                    onEditEntryOption,
                    likelyUrlColumns,
                    allowSticky,
-                   bottomHorizontalScrollBar
+                   bottomHorizontalScrollBar,
+                   dataTypes
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
     const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
     const [columnToFilterBasedOn, setColumnToFilterBasedOn] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [uniqueValueSearch, setUniqueValueSearch] = useState('');
     const [isMobile, setIsMobile] = useState(() => {
         if (typeof window !== 'undefined') {
             return window.innerWidth < 768;
@@ -69,6 +177,8 @@ function Table({
 
         return false;
     });
+
+    const [columnFilters, setColumnFilters] = useState({});
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -450,38 +560,6 @@ function Table({
 
     const sortedData = useMemo(() => sortedDataWithIndices?.map(item => item.row), [sortedDataWithIndices]);
 
-    const getFilterUniqueValuesDict = useCallback(() => {
-        if (!tableData || !tableData.length || !tableData[0]) return {};
-        const filterUniqueValuesDict = {};
-        const startIndex = tableHeader ? 2 : 1;
-
-        if (filterableColumns && filterableColumns.length > 0) {
-            for (let i = 0; i < tableData[0].length; i++) {
-                const columnName = tableData[0][i];
-                if (filterableColumns.includes(columnName)) {
-                    const uniqueValues = [...new Set(
-                        tableData?.slice(startIndex)
-                            .map(row => row[i])
-                            .filter(value => value !== undefined && value !== null)
-                    )];
-                    filterUniqueValuesDict[columnName] = {
-                        uniqueValues: uniqueValues,
-                        checked: new Array(uniqueValues.length).fill(true)
-                    };
-                }
-            }
-        }
-        return filterUniqueValuesDict;
-    }, [tableHeader, tableData, filterableColumns]);
-
-    const [filterUniqueValuesDict, setFilterUniqueValuesDict] = useState({});
-
-    useEffect(() => {
-        if (tableData && tableData.length > 0) {
-            setFilterUniqueValuesDict(getFilterUniqueValuesDict());
-        }
-    }, [tableData, getFilterUniqueValuesDict]);
-
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
@@ -537,15 +615,26 @@ function Table({
         if (filterableColumns && filterableColumns.length > 0) {
             for (let i = 0; i < tableData[0].length; i++) {
                 const columnName = tableData[0][i];
-                if (filterableColumns.includes(columnName) && filterUniqueValuesDict[columnName]) {
-                    const columnFilter = filterUniqueValuesDict[columnName];
-                    filteredDataWithIndices = filteredDataWithIndices.filter((item, rowIndex) => {
-                        if (rowIndex === 0 || (tableHeader && rowIndex === 1)) return true;
-                        const cellValue = item.row[i];
-                        const valueIndex = columnFilter.uniqueValues.indexOf(cellValue);
-                        if (valueIndex === -1) return true;
-                        return columnFilter.checked[valueIndex];
-                    });
+                if (filterableColumns.includes(columnName) && columnFilters[columnName]) {
+                    const filter = columnFilters[columnName];
+                    const hasCondition = filter.value !== '';
+                    const hasListFilter = filter.checkedValues !== null;
+
+                    if (hasCondition || hasListFilter) {
+                        filteredDataWithIndices = filteredDataWithIndices.filter((item, rowIndex) => {
+                            if (rowIndex === 0 || (tableHeader && rowIndex === 1)) return true;
+                            const cellValue = item.row[i];
+
+                            if (hasCondition) {
+                                if (!applyFilter(cellValue, filter)) return false;
+                            }
+                            if (hasListFilter) {
+                                if (cellValue === undefined || cellValue === null || cellValue === '') return false;
+                                if (!filter.checkedValues.has(String(cellValue).trim())) return false;
+                            }
+                            return true;
+                        });
+                    }
                 }
             }
         }
@@ -556,32 +645,178 @@ function Table({
             item.row.filter((cell, colIndex) => !hiddenColumns.has(sortedData[0][colIndex]))
         );
         setFinalTableData(filteredData);
-    }, [sortedDataWithIndices, sortedData, hiddenColumns, filterUniqueValuesDict, tableData, filterableColumns, tableHeader]);
+    }, [sortedDataWithIndices, sortedData, hiddenColumns, columnFilters, tableData, filterableColumns, tableHeader]);
 
     useEffect(() => {
         updateFinalTableData();
-    }, [hiddenColumns, sortedDataWithIndices, filterUniqueValuesDict, updateFinalTableData]);
+    }, [hiddenColumns, sortedDataWithIndices, columnFilters, updateFinalTableData]);
 
     useEffect(() => {
         updateFinalTableData();
     }, [sortConfig, updateFinalTableData]);
 
-    const hasActiveFilters = useCallback(() => {
-        if (!filterUniqueValuesDict) return false;
-        return Object.keys(filterUniqueValuesDict).some(key =>
-            filterUniqueValuesDict[key] && filterUniqueValuesDict[key].checked && filterUniqueValuesDict[key].checked.includes(false)
-        );
-    }, [filterUniqueValuesDict]);
+    const smartFilterData = useMemo(() => {
+        if (!isFilterPopupOpen || !columnToFilterBasedOn || !tableData || tableData.length === 0) {
+            return { uniqueValues: [], min: null, max: null };
+        }
 
-    const resetAllFilters = useCallback(() => {
-        const updatedFilters = { ...filterUniqueValuesDict };
-        Object.keys(updatedFilters).forEach(key => {
-            if (updatedFilters[key] && updatedFilters[key].checked) {
-                updatedFilters[key].checked = updatedFilters[key].checked.map(() => true);
+        const columnName = columnToFilterBasedOn;
+        const colIndex = tableData[0].indexOf(columnName);
+        if (colIndex === -1) return { uniqueValues: [], min: null, max: null };
+
+        let filteredDataWithIndices = [...sortedDataWithIndices];
+        let baseFilteredDataWithIndices = [...sortedDataWithIndices];
+
+        if (filterableColumns && filterableColumns.length > 0) {
+            for (let i = 0; i < tableData[0].length; i++) {
+                const colName = tableData[0][i];
+                if (filterableColumns.includes(colName) && columnFilters[colName]) {
+                    const filter = columnFilters[colName];
+                    const hasCondition = filter.value !== '';
+                    const isCurrentColumn = colName === columnName;
+
+                    const hasListFilter = !isCurrentColumn && filter.checkedValues !== null;
+
+                    if (hasCondition || hasListFilter) {
+                        filteredDataWithIndices = filteredDataWithIndices.filter((item, idx) => {
+                            if (idx === 0 || (tableHeader && idx === 1)) return true;
+                            const cellValue = item.row[i];
+
+                            if (hasCondition) {
+                                if (!applyFilter(cellValue, filter)) return false;
+                            }
+                            if (hasListFilter) {
+                                if (cellValue === undefined || cellValue === null || cellValue === '') return false;
+                                if (!filter.checkedValues.has(String(cellValue).trim())) return false;
+                            }
+                            return true;
+                        });
+                    }
+
+                    if (!isCurrentColumn && (hasCondition || hasListFilter)) {
+                        baseFilteredDataWithIndices = baseFilteredDataWithIndices.filter((item, idx) => {
+                            if (idx === 0 || (tableHeader && idx === 1)) return true;
+                            const cellValue = item.row[i];
+
+                            if (hasCondition) {
+                                if (!applyFilter(cellValue, filter)) return false;
+                            }
+                            if (hasListFilter) {
+                                if (cellValue === undefined || cellValue === null || cellValue === '') return false;
+                                if (!filter.checkedValues.has(String(cellValue).trim())) return false;
+                            }
+                            return true;
+                        });
+                    }
+                }
+            }
+        }
+
+        const uniqueSet = new Set();
+        const baseUniqueSet = new Set();
+        let minVal = null;
+        let maxVal = null;
+        const type = getColumnType(columnName, dataTypes);
+
+        filteredDataWithIndices.forEach((item, idx) => {
+            if (idx === 0 || (tableHeader && idx === 1)) return;
+            const val = item.row[colIndex];
+            if (val !== undefined && val !== null && val !== '') {
+                uniqueSet.add(String(val));
+
+                if (type === 'number' || type === 'currency') {
+                    const num = parseNumberValue(val);
+                    if (!isNaN(num)) {
+                        if (minVal === null || num < minVal) minVal = num;
+                        if (maxVal === null || num > maxVal) maxVal = num;
+                    }
+                } else if (type === 'date') {
+                    const d = parseDate(val);
+                    if (d) {
+                        const time = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                        if (minVal === null || time < minVal) minVal = time;
+                        if (maxVal === null || time > maxVal) maxVal = time;
+                    }
+                }
             }
         });
-        setFilterUniqueValuesDict(updatedFilters);
-    }, [filterUniqueValuesDict]);
+
+        baseFilteredDataWithIndices.forEach((item, idx) => {
+            if (idx === 0 || (tableHeader && idx === 1)) return;
+            const val = item.row[colIndex];
+            if (val !== undefined && val !== null && val !== '') {
+                baseUniqueSet.add(String(val));
+            }
+        });
+
+        let uniqueValues = Array.from(uniqueSet);
+        let baseUniqueValues = Array.from(baseUniqueSet);
+
+        if (type === 'number' || type === 'currency') {
+            uniqueValues.sort((a, b) => parseNumberValue(a) - parseNumberValue(b));
+            baseUniqueValues.sort((a, b) => parseNumberValue(a) - parseNumberValue(b));
+        } else if (type === 'date') {
+            uniqueValues.sort((a, b) => {
+                const da = parseDate(a);
+                const db = parseDate(b);
+                const tA = da ? new Date(da.getFullYear(), da.getMonth(), da.getDate()).getTime() : 0;
+                const tB = db ? new Date(db.getFullYear(), db.getMonth(), db.getDate()).getTime() : 0;
+                return tA - tB;
+            });
+            baseUniqueValues.sort((a, b) => {
+                const da = parseDate(a);
+                const db = parseDate(b);
+                const tA = da ? new Date(da.getFullYear(), da.getMonth(), da.getDate()).getTime() : 0;
+                const tB = db ? new Date(db.getFullYear(), db.getMonth(), db.getDate()).getTime() : 0;
+                return tA - tB;
+            });
+        } else {
+            uniqueValues.sort();
+            baseUniqueValues.sort();
+        }
+
+        let displayMin = minVal;
+        let displayMax = maxVal;
+        if (type === 'date' && minVal !== null) {
+            displayMin = new Date(minVal).toLocaleDateString();
+            displayMax = new Date(maxVal).toLocaleDateString();
+        }
+
+        return { uniqueValues, baseUniqueValues, min: displayMin, max: displayMax };
+    }, [isFilterPopupOpen, columnToFilterBasedOn, tableData, sortedDataWithIndices, tableHeader, filterableColumns, columnFilters, dataTypes]);
+
+    const hasActiveFilters = useCallback(() => {
+        return Object.keys(columnFilters).some(key => {
+            const f = columnFilters[key];
+            return (f && f.value !== '') || (f && f.checkedValues !== null);
+        });
+    }, [columnFilters]);
+
+    const resetAllFilters = useCallback(() => {
+        setColumnFilters({});
+    }, []);
+
+    const openFilterPopup = (columnName) => {
+        setIsFilterPopupOpen(true);
+        setColumnToFilterBasedOn(columnName);
+        setUniqueValueSearch('');
+        const type = getColumnType(columnName, dataTypes);
+        if (!columnFilters[columnName]) {
+            let defaultOperator = 'contains';
+            if (type === 'date') defaultOperator = 'equals';
+            if (type === 'number' || type === 'currency') defaultOperator = 'equals';
+
+            setColumnFilters(prev => ({
+                ...prev,
+                [columnName]: { type, operator: defaultOperator, value: '', value2: '', checkedValues: null }
+            }));
+        } else {
+            setColumnFilters(prev => ({
+                ...prev,
+                [columnName]: { ...prev[columnName], type }
+            }));
+        }
+    };
 
     const renderCustomScrollbar = (isTop) => {
         if (!scrollable) return null;
@@ -774,11 +1009,7 @@ function Table({
                                                                 {cell}{getSortIndicator(cellIndex)}
                                                             </h3>
                                                             {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                                <FilterAltIcon onClick={() => {
-                                                                    setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                                    setSearchQuery('');
-                                                                    setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
-                                                                }} />
+                                                                <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
                                                             }
                                                         </div>
                                                     ) : (
@@ -793,11 +1024,7 @@ function Table({
                                                                 {cell}{getSortIndicator(cellIndex)}
                                                             </h2>
                                                             {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                                <FilterAltIcon onClick={() => {
-                                                                    setIsFilterPopupOpen(!isFilterPopupOpen);
-                                                                    setSearchQuery('');
-                                                                    setColumnToFilterBasedOn(finalTableData[0][cellIndex]);
-                                                                }} />
+                                                                <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
                                                             }
                                                         </div>
                                                     )}
@@ -957,51 +1184,171 @@ function Table({
             </animated.div>
 
             <animated.div className={"table-module-filter-popup-container"} style={popupAnimation}>
-                <div className={"table-module-filter-popup-background"} onClick={() => { setIsFilterPopupOpen(false); setSearchQuery(''); }} />
+                <div className={"table-module-filter-popup-background"} onClick={() => { setIsFilterPopupOpen(false); }} />
                 <div className={"table-module-filter-popup"}>
                     <div className={"table-module-filter-popup-content"}>
                         <h2>Filter Options</h2>
-                        <div>
-                            <h3>Unique Values</h3>
-                            <input type="text" className={"table-module-filter-search-input-field"} placeholder={"Search"} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                            <div className={"table-module-filter-popup-values-list"}>
-                                {columnToFilterBasedOn && filterUniqueValuesDict[columnToFilterBasedOn] && filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues
-                                    .filter(value => searchQuery ? value && value.toString().toLowerCase().includes(searchQuery.toLowerCase()) : true)
-                                    .map((value, index) => (
-                                        <label key={index}>
-                                            <input type="checkbox" checked={filterUniqueValuesDict[columnToFilterBasedOn].checked[filterUniqueValuesDict[columnToFilterBasedOn].uniqueValues.indexOf(value)]} onChange={() => {
-                                                const updatedFilters = { ...filterUniqueValuesDict };
-                                                const valueIndex = updatedFilters[columnToFilterBasedOn].uniqueValues.indexOf(value);
-                                                if (valueIndex !== -1) {
-                                                    updatedFilters[columnToFilterBasedOn].checked[valueIndex] = !updatedFilters[columnToFilterBasedOn].checked[valueIndex];
-                                                    setFilterUniqueValuesDict(updatedFilters);
-                                                }
-                                            }} />{value}
-                                        </label>
-                                    ))}
+                        {columnToFilterBasedOn && columnFilters[columnToFilterBasedOn] && (
+                            <div>
+                                <h3>Filter for "{columnToFilterBasedOn}"</h3>
+
+                                {smartFilterData.min !== null && smartFilterData.max !== null && (
+                                    <div style={{ marginBottom: '15px', fontSize: '0.9em', color: '#666', background: '#f9f9f9', padding: '8px', borderRadius: '4px' }}>
+                                        <strong>Min:</strong> {smartFilterData.min} &nbsp;|&nbsp; <strong>Max:</strong> {smartFilterData.max}
+                                    </div>
+                                )}
+
+                                <div style={{ marginBottom: '10px' }}>
+                                    <label>Condition: </label>
+                                    <select
+                                        className={"table-module-filter-search-input-field"}
+                                        value={columnFilters[columnToFilterBasedOn].operator}
+                                        onChange={(e) => setColumnFilters(prev => ({
+                                            ...prev,
+                                            [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], operator: e.target.value }
+                                        }))}
+                                        style={{ padding: '5px', marginLeft: '5px' }}
+                                    >
+                                        {columnFilters[columnToFilterBasedOn].type === 'text' || columnFilters[columnToFilterBasedOn].type === 'phone' ? (
+                                            <>
+                                                <option value="contains">Contains</option>
+                                                <option value="equals">Equals</option>
+                                                <option value="starts_with">Starts With</option>
+                                                <option value="ends_with">Ends With</option>
+                                            </>
+                                        ) : columnFilters[columnToFilterBasedOn].type === 'number' || columnFilters[columnToFilterBasedOn].type === 'currency' ? (
+                                            <>
+                                                <option value="equals">Equals</option>
+                                                <option value="greater_than">Greater Than</option>
+                                                <option value="less_than">Less Than</option>
+                                                <option value="between">Between</option>
+                                            </>
+                                        ) : columnFilters[columnToFilterBasedOn].type === 'date' ? (
+                                            <>
+                                                <option value="equals">Is Exactly</option>
+                                                <option value="before">Before</option>
+                                                <option value="after">After</option>
+                                                <option value="between">Between</option>
+                                            </>
+                                        ) : null}
+                                    </select>
+                                </div>
+
+                                <div style={{ marginBottom: '10px' }}>
+                                    <label>Value: </label>
+                                    <input
+                                        className={"table-module-filter-search-input-field"}
+                                        type={columnFilters[columnToFilterBasedOn].type === 'date' ? 'date' : (columnFilters[columnToFilterBasedOn].type === 'number' || columnFilters[columnToFilterBasedOn].type === 'currency' ? 'number' : 'text')}
+                                        value={columnFilters[columnToFilterBasedOn].value}
+                                        onChange={(e) => setColumnFilters(prev => ({
+                                            ...prev,
+                                            [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], value: e.target.value }
+                                        }))}
+                                        style={{ padding: '5px', marginLeft: '5px' }}
+                                    />
+                                </div>
+
+                                {columnFilters[columnToFilterBasedOn].operator === 'between' && (
+                                    <div style={{ marginBottom: '10px' }}>
+                                        <label>And: </label>
+                                        <input
+                                            className={"table-module-filter-search-input-field"}
+                                            type={columnFilters[columnToFilterBasedOn].type === 'date' ? 'date' : (columnFilters[columnToFilterBasedOn].type === 'number' || columnFilters[columnToFilterBasedOn].type === 'currency' ? 'number' : 'text')}
+                                            value={columnFilters[columnToFilterBasedOn].value2 || ''}
+                                            onChange={(e) => setColumnFilters(prev => ({
+                                                ...prev,
+                                                [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], value2: e.target.value }
+                                            }))}
+                                            style={{ padding: '5px', marginLeft: '5px' }}
+                                        />
+                                    </div>
+                                )}
+
+                                <div style={{ marginTop: '20px', borderTop: '1px solid #ccc', paddingTop: '10px' }}>
+                                    <h3>Filter by Unique Values</h3>
+                                    <input
+                                        type="text"
+                                        className={"table-module-filter-search-input-field"}
+                                        placeholder={"Search unique values..."}
+                                        value={uniqueValueSearch}
+                                        onChange={(e) => setUniqueValueSearch(e.target.value)}
+                                        style={{ width: '100%', marginBottom: '10px', boxSizing: 'border-box' }}
+                                    />
+                                    <div className={"table-module-filter-popup-values-list"}>
+                                        {smartFilterData.uniqueValues
+                                            .filter(v => uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true)
+                                            .map((value, index) => (
+                                                <label key={index} style={{ display: 'block', margin: '4px 0' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={(() => {
+                                                            const filter = columnFilters[columnToFilterBasedOn];
+                                                            if (!filter.checkedValues) return true;
+                                                            return filter.checkedValues.has(value);
+                                                        })()}
+                                                        onChange={() => {
+                                                            setColumnFilters(prev => {
+                                                                const filter = prev[columnToFilterBasedOn];
+                                                                let newChecked = filter.checkedValues ? new Set(filter.checkedValues) : new Set(smartFilterData.baseUniqueValues);
+                                                                if (newChecked.has(value)) {
+                                                                    newChecked.delete(value);
+                                                                } else {
+                                                                    newChecked.add(value);
+                                                                }
+                                                                if (newChecked.size === smartFilterData.baseUniqueValues.length) {
+                                                                    newChecked = null;
+                                                                }
+                                                                return {
+                                                                    ...prev,
+                                                                    [columnToFilterBasedOn]: { ...filter, checkedValues: newChecked }
+                                                                };
+                                                            });
+                                                        }}
+                                                    /> {value}
+                                                </label>
+                                            ))
+                                        }
+                                        {smartFilterData.uniqueValues.filter(v => uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true).length === 0 && (
+                                            <p style={{ color: '#999' }}>No matching values found.</p>
+                                        )}
+                                    </div>
+                                    <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                                        <button onClick={() => {
+                                            const visibleValues = smartFilterData.uniqueValues.filter(v =>
+                                                uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true
+                                            );
+                                            setColumnFilters(prev => {
+                                                const filter = prev[columnToFilterBasedOn];
+                                                let currentChecked = filter.checkedValues ? new Set(filter.checkedValues) : new Set(smartFilterData.baseUniqueValues);
+                                                visibleValues.forEach(v => currentChecked.add(v));
+                                                const newChecked = currentChecked.size === smartFilterData.baseUniqueValues.length ? null : currentChecked;
+                                                return {
+                                                    ...prev,
+                                                    [columnToFilterBasedOn]: { ...filter, checkedValues: newChecked }
+                                                };
+                                            });
+                                        }}>Check All</button>
+                                        <button onClick={() => {
+                                            const visibleValues = smartFilterData.uniqueValues.filter(v =>
+                                                uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true
+                                            );
+                                            setColumnFilters(prev => {
+                                                const filter = prev[columnToFilterBasedOn];
+                                                let currentChecked = filter.checkedValues ? new Set(filter.checkedValues) : new Set(smartFilterData.baseUniqueValues);
+                                                visibleValues.forEach(v => currentChecked.delete(v));
+                                                const newChecked = currentChecked.size === smartFilterData.baseUniqueValues.length ? null : currentChecked;
+                                                return {
+                                                    ...prev,
+                                                    [columnToFilterBasedOn]: { ...filter, checkedValues: newChecked }
+                                                };
+                                            });
+                                        }}>Uncheck All</button>
+
+                                        <button onClick={() => { setIsFilterPopupOpen(false); }}>Close</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className={"table-module-filter-popup-buttons-wrapper"}>
-                            {columnToFilterBasedOn && filterUniqueValuesDict[columnToFilterBasedOn] && (
-                                <>
-                                    <button onClick={() => {
-                                        const updatedFilters = { ...filterUniqueValuesDict };
-                                        if (updatedFilters[columnToFilterBasedOn]) {
-                                            updatedFilters[columnToFilterBasedOn].checked = updatedFilters[columnToFilterBasedOn].checked.map(() => true);
-                                            setFilterUniqueValuesDict(updatedFilters);
-                                        }
-                                    }}>Check All</button>
-                                    <button onClick={() => {
-                                        const updatedFilters = { ...filterUniqueValuesDict };
-                                        if (updatedFilters[columnToFilterBasedOn]) {
-                                            updatedFilters[columnToFilterBasedOn].checked = updatedFilters[columnToFilterBasedOn].checked.map(() => false);
-                                            setFilterUniqueValuesDict(updatedFilters);
-                                        }
-                                    }}>Uncheck All</button>
-                                </>
-                            )}
-                            <button onClick={() => { setIsFilterPopupOpen(false); setSearchQuery(''); }}>Close</button>
-                        </div>
+                        )}
                     </div>
                 </div>
             </animated.div>
@@ -1033,6 +1380,7 @@ Table.propTypes = {
     likelyUrlColumns: PropTypes.objectOf(PropTypes.func),
     allowSticky: PropTypes.bool,
     bottomHorizontalScrollBar: PropTypes.bool,
+    dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
 };
 
 export default Table;

@@ -870,6 +870,12 @@ function GraduationBookingManagement() {
         };
     }, [showAddBookingModal, showDeleteBookingModal, showEditBookingModal]);
 
+    const columnDataTypes = {
+        "date": ["Student Created", "Booking Created"],
+        "currency": ["Total CD Cost", "Total Additional Attendee(s) Cost", "Total Paid for Base Fare"],
+        "number": ["Booking ID", "Additional Attendees"],
+    };
+
     return (
         <>
             {isLoading && <Spinner/>}
@@ -909,6 +915,13 @@ function GraduationBookingManagement() {
                            'Parent Names',
                            'Parent Emails',
                            'Parent Phones',
+                           "Students Created",
+                           "Booking Created",
+                           "Total CD Cost",
+                           "Total Additional Attendee(s) Cost",
+                           "Total Paid for Base Fare",
+                           "Booking ID",
+                           "Additional Attendees",
                        ]}
                        headerModuleElements={[(
                            <button key={1} onClick={() => {
@@ -933,6 +946,9 @@ function GraduationBookingManagement() {
                        onEditEntryOption={(rowIndex) => {
                             handleEditBookingModalInitialization(rowIndex);
                        }}
+                       dataTypes={
+                           columnDataTypes
+                       }
                 />
             </div>
 
