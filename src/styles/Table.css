@@ -58,6 +58,8 @@
     overflow-y: auto;
     max-height: 75vh;
     overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /*touch-action: pan-y;*/
     margin: 0;
 }
 
