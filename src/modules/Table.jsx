@@ -134,8 +134,9 @@ function Table({
                    allowSticky,
                    bottomHorizontalScrollBar,
                    dataTypes,
-                    hideHorizontalScrollBar,
-                    hideVerticalScrollBar,
+                   hideHorizontalScrollBar,
+                   hideVerticalScrollBar,
+                   tablePages,
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
@@ -152,6 +153,38 @@ function Table({
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
     const { t } = useTranslation();
+
+    const isPaginated = tablePages === true || (tablePages === undefined && isMobile);
+    const pageSize = 30;
+    const headerRowCount = tableHeader ? 2 : 1;
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const dataRows = useMemo(() => {
+        if (!finalTableData || finalTableData.length <= headerRowCount) return [];
+        return finalTableData.slice(headerRowCount);
+    }, [finalTableData, headerRowCount]);
+
+    const totalPages = Math.ceil(dataRows.length / pageSize);
+
+    useEffect(() => {
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        } else if (totalPages === 0) {
+            setCurrentPage(1);
+        }
+    }, [totalPages, currentPage]);
+
+    const paginatedDataRows = useMemo(() => {
+        if (!isPaginated || totalPages <= 1) return dataRows;
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        return dataRows.slice(start, end);
+    }, [isPaginated, totalPages, currentPage, pageSize, dataRows]);
+
+    const displayedTableData = useMemo(() => {
+        if (!finalTableData) return [];
+        return [...finalTableData.slice(0, headerRowCount), ...paginatedDataRows];
+    }, [finalTableData, headerRowCount, paginatedDataRows]);
 
     const scrollContainerRef = useRef(null);
     const scrollbarTrackRef = useRef(null);
@@ -1231,6 +1264,65 @@ function Table({
         );
     };
 
+    const renderPagination = () => {
+        if (!isPaginated || totalPages <= 1) return null;
+
+        const handlePageChange = (page) => {
+            if (page >= 1 && page <= totalPages) {
+                setCurrentPage(page);
+            }
+        };
+
+        const maxButtons = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+        let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+        if (endPage - startPage + 1 < maxButtons) {
+            startPage = Math.max(1, endPage - maxButtons + 1);
+        }
+
+        const pageNumbers = [];
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
+        }
+
+        return (
+            <div className="table-pagination-controls">
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="pagination-btn">
+                    Previous
+                </button>
+
+                {startPage > 1 && (
+                    <>
+                        <button onClick={() => handlePageChange(1)} className={`pagination-btn ${1 === currentPage ? 'active' : ''}`}>1</button>
+                        {startPage > 2 && <span className="pagination-ellipsis">...</span>}
+                    </>
+                )}
+
+                {pageNumbers.map(page => (
+                    <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`pagination-btn ${page === currentPage ? 'active' : ''}`}
+                    >
+                        {page}
+                    </button>
+                ))}
+
+                {endPage < totalPages && (
+                    <>
+                        {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
+                        <button onClick={() => handlePageChange(totalPages)} className={`pagination-btn ${totalPages === currentPage ? 'active' : ''}`}>{totalPages}</button>
+                    </>
+                )}
+
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="pagination-btn">
+                    Next
+                </button>
+            </div>
+        );
+    };
+
     return (
         <div className="table-module" ref={tableModuleRef} style={{ overflow: scrollable ? 'auto' : 'hidden' }}>
             <div className={"table-module-header"}>
@@ -1298,8 +1390,11 @@ function Table({
                                 </th>
                             </tr>
                         }
-                        {finalTableData && finalTableData.map((row, rowIndex) => {
+                        {displayedTableData && displayedTableData.map((row, rowIndex) => {
                             const actualRowIndex = tableHeader ? rowIndex + 1 : rowIndex;
+                            const finalTableIndex = isPaginated && rowIndex >= headerRowCount
+                                ? headerRowCount + (currentPage - 1) * pageSize + (rowIndex - headerRowCount)
+                                : rowIndex;
                             return (
                                 <tr key={rowIndex}>
                                     {row.map((cell, cellIndex) => {
@@ -1364,16 +1459,16 @@ function Table({
                                                                 display: 'flex',
                                                                 justifyContent: 'space-between',
                                                                 alignItems: 'center',
-                                                                wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
-                                                                textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
+                                                                wordWrap: columnsToWrap && columnsToWrap.includes(displayedTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                                textWrap: columnsToWrap && columnsToWrap.includes(displayedTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
                                                             }}
                                                                  className={"compact-table-header-row"}
                                                             >
                                                                 <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                                     {cell}{getSortIndicator(cellIndex)}
                                                                 </h3>
-                                                                {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                                    <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
+                                                                {(filterableColumns && displayedTableData[0] && filterableColumns.includes(displayedTableData[0][cellIndex])) &&
+                                                                    <FilterAltIcon onClick={() => openFilterPopup(displayedTableData[0][cellIndex])} />
                                                                 }
                                                             </div>
                                                         ) : (
@@ -1387,8 +1482,8 @@ function Table({
                                                                 <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
                                                                     {cell}{getSortIndicator(cellIndex)}
                                                                 </h2>
-                                                                {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                                    <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
+                                                                {(filterableColumns && displayedTableData[0] && filterableColumns.includes(displayedTableData[0][cellIndex])) &&
+                                                                    <FilterAltIcon onClick={() => openFilterPopup(displayedTableData[0][cellIndex])} />
                                                                 }
                                                             </div>
                                                         )}
@@ -1397,11 +1492,11 @@ function Table({
                                                     <>
                                                         {compact ? (
                                                             <p className={"compact-table-cell-text"} lang={detectLang(cell)}>
-                                                                {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
+                                                                {applyLikelyUrlFunction(displayedTableData[0][cellIndex], cell)}
                                                             </p>
                                                         ) : (
                                                             <p lang={detectLang(cell)}>
-                                                                {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
+                                                                {applyLikelyUrlFunction(displayedTableData[0][cellIndex], cell)}
                                                             </p>
                                                         )}
                                                     </>
@@ -1453,7 +1548,7 @@ function Table({
                                             {rowIndex === 0 ? (
                                                 <h3 className={"compact-table-header-text"}>Edit</h3>
                                             ) : (
-                                                <button onClick={() => onEditEntryOption(rowMapping[rowIndex])} aria-label="Edit row">Edit</button>
+                                                <button onClick={() => onEditEntryOption(rowMapping[finalTableIndex])} aria-label="Edit row">Edit</button>
                                             )}
                                         </td>
                                     )}
@@ -1501,7 +1596,7 @@ function Table({
                                             {rowIndex === 0 ? (
                                                 <h3 className={"compact-table-header-text"}>Delete</h3>
                                             ) : (
-                                                <button onClick={() => onDeleteEntry(rowMapping[rowIndex])} aria-label="Delete row">Delete</button>
+                                                <button onClick={() => onDeleteEntry(rowMapping[finalTableIndex])} aria-label="Delete row">Delete</button>
                                             )}
                                         </td>
                                     )}
@@ -1516,6 +1611,7 @@ function Table({
             <div className={"table-module-footer"}>
 
                 {bottomHorizontalScrollBar && renderCustomScrollbar(false)}
+                {renderPagination()}
             </div>
 
             <animated.div className="table-module-accordion" style={contentAnimation}>
@@ -1748,7 +1844,7 @@ Table.propTypes = {
     dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     hideHorizontalScrollBar: PropTypes.bool,
     hideVerticalScrollBar: PropTypes.bool,
-
+    tablePages: PropTypes.bool,
 };
 
 export default Table;
