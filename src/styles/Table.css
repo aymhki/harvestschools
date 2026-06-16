@@ -600,6 +600,49 @@ td button {
     border-radius: 0.1rem;
 }
 
+.table-pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+.table-pagination-controls .pagination-btn {
+    background: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-size: small;
+    letter-spacing: 0.05rem;
+}
+
+.table-pagination-controls .pagination-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: var(--harvest-white-color);
+}
+
+.table-pagination-controls .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.table-pagination-controls .pagination-btn.active {
+    background-color: var(--primary-color);
+    color: var(--harvest-white-color);
+}
+
+.table-pagination-controls .pagination-ellipsis {
+    color: var(--primary-color);
+    padding: 0 0.5rem;
+    user-select: none;
+}
+
 @media (max-width: 1600px) {
     .table-module-header-buttons-wrapper {
         flex-wrap: wrap;
@@ -873,5 +916,24 @@ td button {
 
     .sticky-control-widget {
         background-color: var(--light-dark-accent-color);
+    }
+
+    .table-pagination-controls .pagination-btn {
+        color: var(--harvest-white-color);
+        border-color: var(--harvest-white-color);
+    }
+
+    .table-pagination-controls .pagination-btn:hover:not(:disabled) {
+        background: var(--harvest-white-color);
+        color: var(--dark-accent-color);
+    }
+
+    .table-pagination-controls .pagination-btn.active {
+        background-color: var(--harvest-white-color);
+        color: var(--dark-accent-color);
+    }
+
+    .table-pagination-controls .pagination-ellipsis {
+        color: var(--harvest-white-color);
     }
 }
