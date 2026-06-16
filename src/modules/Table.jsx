@@ -133,7 +133,9 @@ function Table({
                    likelyUrlColumns,
                    allowSticky,
                    bottomHorizontalScrollBar,
-                   dataTypes
+                   dataTypes,
+                    hideHorizontalScrollBar,
+                    hideVerticalScrollBar,
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
@@ -740,7 +742,7 @@ function Table({
     };
 
     useEffect(() => {
-        if (!scrollable || isMobile) {
+        if (!scrollable || isMobile || hideHorizontalScrollBar) {
             setIsScrollbarVisible(false);
             return;
         }
@@ -792,7 +794,7 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
 
     useEffect(() => {
-        if (!scrollable || isMobile) {
+        if (!scrollable || isMobile || hideVerticalScrollBar) {
             setIsVerticalScrollbarVisible(false);
             return;
         }
@@ -1128,7 +1130,7 @@ function Table({
     };
 
     const renderCustomScrollbar = (isTop) => {
-        if (!scrollable || isMobile) return null;
+        if (!scrollable || isMobile || hideHorizontalScrollBar) return null;
         return (
             <div className={`custom-scrollbar-container ${!isTop ? 'footer' : ''} ${isScrollbarVisible ? 'visible' : ''} ${isDragging ? 'is-dragging' : ''}`}>
                 <button
@@ -1179,7 +1181,7 @@ function Table({
     };
 
     const renderVerticalCustomScrollbar = () => {
-        if (!scrollable || isMobile) return null;
+        if (!scrollable || isMobile || hideVerticalScrollBar) return null;
         return (
             <div className={`custom-scrollbar-container-vertical ${isVerticalScrollbarVisible ? 'visible' : ''} ${isVerticalDragging ? 'is-dragging' : ''}`}>
                 <button
@@ -1744,6 +1746,9 @@ Table.propTypes = {
     allowSticky: PropTypes.bool,
     bottomHorizontalScrollBar: PropTypes.bool,
     dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
+    hideHorizontalScrollBar: PropTypes.bool,
+    hideVerticalScrollBar: PropTypes.bool,
+
 };
 
 export default Table;
