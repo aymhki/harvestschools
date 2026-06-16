@@ -1204,7 +1204,6 @@ function Form({
                                 className="select-form-field third-width"
                                 onChange={(e) => setSelectedDateYear(e.target.value)}
                                 value={selectedDateYear}
-                                autoFocus={showSelectDateModal}
                             >
                                 <option value="">
                                     {t('all-forms.year')}
