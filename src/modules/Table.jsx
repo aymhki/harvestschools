@@ -740,7 +740,7 @@ function Table({
     };
 
     useEffect(() => {
-        if (!scrollable) {
+        if (!scrollable || isMobile) {
             setIsScrollbarVisible(false);
             return;
         }
@@ -792,7 +792,7 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
 
     useEffect(() => {
-        if (!scrollable) {
+        if (!scrollable || isMobile) {
             setIsVerticalScrollbarVisible(false);
             return;
         }
