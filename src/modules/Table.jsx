@@ -157,12 +157,22 @@ function Table({
     const tableModuleRef = useRef(null);
     const tableRef = useRef(null);
 
+    const verticalScrollbarTrackRef = useRef(null);
+    const verticalScrollbarThumbRef = useRef(null);
+
     const [isScrollbarVisible, setIsScrollbarVisible] = useState(false);
     const [thumbWidth, setThumbWidth] = useState(0);
     const [thumbLeft, setThumbLeft] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeftStart, setScrollLeftStart] = useState(0);
+
+    const [isVerticalScrollbarVisible, setIsVerticalScrollbarVisible] = useState(false);
+    const [thumbHeight, setThumbHeight] = useState(0);
+    const [thumbTop, setThumbTop] = useState(0);
+    const [isVerticalDragging, setIsVerticalDragging] = useState(false);
+    const [startY, setStartY] = useState(0);
+    const [scrollTopStart, setScrollTopStart] = useState(0);
 
     const [stickyRows, setStickyRows] = useState(allowSticky ? 1 : 0);
     const [stickyCols, setStickyCols] = useState(allowSticky ? 1 : 0);
@@ -274,12 +284,64 @@ function Table({
         return remainder;
     };
 
+    const applyVerticalScroll = (element, amount, smooth = false) => {
+        const behavior = smooth ? 'smooth' : 'auto';
+        if (amount === 0) return 0;
+        if (!element) {
+            const maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (maxScroll <= 0) return amount;
+            const currentScroll = window.scrollY || window.pageYOffset;
+            let newScroll = currentScroll + amount;
+            let remainder = 0;
+            if (newScroll > maxScroll) {
+                remainder = newScroll - maxScroll;
+                window.scrollTo({ top: maxScroll, behavior });
+            } else if (newScroll < 0) {
+                remainder = newScroll;
+                window.scrollTo({ top: 0, behavior });
+            } else {
+                window.scrollTo({ top: newScroll, behavior });
+                remainder = 0;
+            }
+            return remainder;
+        }
+
+        const maxScroll = element.scrollHeight - element.clientHeight;
+        if (maxScroll <= 0) return amount;
+
+        const currentScroll = element.scrollTop;
+        let newScroll = currentScroll + amount;
+        let remainder = 0;
+
+        if (newScroll > maxScroll) {
+            remainder = newScroll - maxScroll;
+            element.scrollTo({ top: maxScroll, behavior });
+        } else if (newScroll < 0) {
+            remainder = newScroll;
+            element.scrollTo({ top: 0, behavior });
+        } else {
+            element.scrollTo({ top: newScroll, behavior });
+            remainder = 0;
+        }
+        return remainder;
+    };
+
     const cascadeScroll = useCallback((amount, smooth = false) => {
         let rem = applyScroll(scrollContainerRef.current, amount, smooth);
         if (rem !== 0) {
             rem = applyScroll(tableModuleRef.current, rem, smooth);
             if (rem !== 0) {
                 applyScroll(null, rem, smooth);
+            }
+        }
+    }, []);
+
+    const cascadeVerticalScroll = useCallback((amount, smooth = false) => {
+        let rem = applyVerticalScroll(scrollContainerRef.current, amount, smooth);
+        if (rem !== 0) {
+            rem = applyVerticalScroll(tableModuleRef.current, rem, smooth);
+            if (rem !== 0) {
+                applyVerticalScroll(null, rem, smooth);
             }
         }
     }, []);
@@ -306,6 +368,28 @@ function Table({
         setThumbLeft(Math.max(0, Math.min(ratio * maxThumbLeft, maxThumbLeft)));
     }, [isDragging, thumbWidth]);
 
+    const updateVerticalThumbPosition = useCallback(() => {
+        if (isVerticalDragging) return;
+        const container = scrollContainerRef.current;
+        const trackHeight = verticalScrollbarTrackRef.current?.clientHeight || 0;
+        if (!container || trackHeight === 0) return;
+
+        const containerMax = Math.max(container.scrollHeight - container.clientHeight, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollHeight - tableModuleRef.current.clientHeight, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollHeight - document.documentElement.clientHeight, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
+
+        if (totalMax <= 0) return;
+
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+        const currentWindow = window.scrollY || window.pageYOffset;
+        const currentTotal = container.scrollTop + currentModule + currentWindow;
+
+        const ratio = currentTotal / totalMax;
+        const maxThumbTop = trackHeight - thumbHeight;
+        setThumbTop(Math.max(0, Math.min(ratio * maxThumbTop, maxThumbTop)));
+    }, [isVerticalDragging, thumbHeight]);
+
     useEffect(() => {
         const handleExternalScroll = () => updateThumbPosition();
         window.addEventListener('scroll', handleExternalScroll);
@@ -317,6 +401,17 @@ function Table({
         };
     }, [updateThumbPosition]);
 
+    useEffect(() => {
+        const handleExternalVerticalScroll = () => updateVerticalThumbPosition();
+        window.addEventListener('scroll', handleExternalVerticalScroll);
+        const moduleEl = tableModuleRef.current;
+        if (moduleEl) moduleEl.addEventListener('scroll', handleExternalVerticalScroll);
+        return () => {
+            window.removeEventListener('scroll', handleExternalVerticalScroll);
+            if (moduleEl) moduleEl.removeEventListener('scroll', handleExternalVerticalScroll);
+        };
+    }, [updateVerticalThumbPosition]);
+
     const handleMouseDown = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -325,6 +420,16 @@ function Table({
         const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
         const windowScroll = window.scrollX || window.pageXOffset;
         setScrollLeftStart(container ? container.scrollLeft + moduleScroll + windowScroll : 0);
+    };
+
+    const handleVerticalMouseDown = (e) => {
+        e.preventDefault();
+        setIsVerticalDragging(true);
+        setStartY(e.clientY);
+        const container = scrollContainerRef.current;
+        const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+        const windowScroll = window.scrollY || window.pageYOffset;
+        setScrollTopStart(container ? container.scrollTop + moduleScroll + windowScroll : 0);
     };
 
     const handleMouseMove = useCallback((e) => {
@@ -356,7 +461,37 @@ function Table({
         setThumbLeft(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbLeft, maxThumbLeft)));
     }, [isDragging, startX, scrollLeftStart, thumbWidth, cascadeScroll]);
 
+    const handleVerticalMouseMove = useCallback((e) => {
+        if (!isVerticalDragging) return;
+        e.preventDefault();
+        const dy = e.clientY - startY;
+        const trackHeight = verticalScrollbarTrackRef.current?.clientHeight || 0;
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const containerMax = Math.max(container.scrollHeight - container.clientHeight, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollHeight - tableModuleRef.current.clientHeight, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollHeight - document.documentElement.clientHeight, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
+        const maxThumbTop = trackHeight - thumbHeight;
+
+        if (maxThumbTop <= 0 || totalMax <= 0) return;
+
+        const scrollRatio = dy / maxThumbTop;
+        const targetTotalScroll = scrollTopStart + scrollRatio * totalMax;
+
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+        const currentWindow = window.scrollY || window.pageYOffset;
+        const currentTotal = container.scrollTop + currentModule + currentWindow;
+
+        const delta = targetTotalScroll - currentTotal;
+        cascadeVerticalScroll(delta, false);
+
+        setThumbTop(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbTop, maxThumbTop)));
+    }, [isVerticalDragging, startY, scrollTopStart, thumbHeight, cascadeVerticalScroll]);
+
     const handleMouseUp = useCallback(() => setIsDragging(false), []);
+    const handleVerticalMouseUp = useCallback(() => setIsVerticalDragging(false), []);
 
     useEffect(() => {
         if (isDragging) {
@@ -372,6 +507,20 @@ function Table({
         };
     }, [isDragging, handleMouseMove, handleMouseUp]);
 
+    useEffect(() => {
+        if (isVerticalDragging) {
+            window.addEventListener('mousemove', handleVerticalMouseMove);
+            window.addEventListener('mouseup', handleVerticalMouseUp);
+        } else {
+            window.removeEventListener('mousemove', handleVerticalMouseMove);
+            window.removeEventListener('mouseup', handleVerticalMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleVerticalMouseMove);
+            window.removeEventListener('mouseup', handleVerticalMouseUp);
+        };
+    }, [isVerticalDragging, handleVerticalMouseMove, handleVerticalMouseUp]);
+
     const handleTouchStart = (e) => {
         setIsDragging(true);
         setStartX(e.touches[0].clientX);
@@ -379,6 +528,15 @@ function Table({
         const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
         const windowScroll = window.scrollX || window.pageXOffset;
         setScrollLeftStart(container ? container.scrollLeft + moduleScroll + windowScroll : 0);
+    };
+
+    const handleVerticalTouchStart = (e) => {
+        setIsVerticalDragging(true);
+        setStartY(e.touches[0].clientY);
+        const container = scrollContainerRef.current;
+        const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+        const windowScroll = window.scrollY || window.pageYOffset;
+        setScrollTopStart(container ? container.scrollTop + moduleScroll + windowScroll : 0);
     };
 
     const handleTouchMove = useCallback((e) => {
@@ -408,7 +566,35 @@ function Table({
         setThumbLeft(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbLeft, maxThumbLeft)));
     }, [isDragging, startX, scrollLeftStart, thumbWidth, cascadeScroll]);
 
+    const handleVerticalTouchMove = useCallback((e) => {
+        if (!isVerticalDragging) return;
+        const dy = e.touches[0].clientY - startY;
+        const trackHeight = verticalScrollbarTrackRef.current?.clientHeight || 0;
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const containerMax = Math.max(container.scrollHeight - container.clientHeight, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollHeight - tableModuleRef.current.clientHeight, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollHeight - document.documentElement.clientHeight, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
+        const maxThumbTop = trackHeight - thumbHeight;
+
+        if (maxThumbTop <= 0 || totalMax <= 0) return;
+
+        const scrollRatio = dy / maxThumbTop;
+        const targetTotalScroll = scrollTopStart + scrollRatio * totalMax;
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+        const currentWindow = window.scrollY || window.pageYOffset;
+        const currentTotal = container.scrollTop + currentModule + currentWindow;
+
+        const delta = targetTotalScroll - currentTotal;
+        cascadeVerticalScroll(delta, false);
+
+        setThumbTop(Math.max(0, Math.min((targetTotalScroll / totalMax) * maxThumbTop, maxThumbTop)));
+    }, [isVerticalDragging, startY, scrollTopStart, thumbHeight, cascadeVerticalScroll]);
+
     const handleTouchEnd = useCallback(() => setIsDragging(false), []);
+    const handleVerticalTouchEnd = useCallback(() => setIsVerticalDragging(false), []);
 
     useEffect(() => {
         if (isDragging) {
@@ -424,7 +610,22 @@ function Table({
         };
     }, [isDragging, handleTouchMove, handleTouchEnd]);
 
+    useEffect(() => {
+        if (isVerticalDragging) {
+            window.addEventListener('touchmove', handleVerticalTouchMove, { passive: false });
+            window.addEventListener('touchend', handleVerticalTouchEnd);
+        } else {
+            window.removeEventListener('touchmove', handleVerticalTouchMove);
+            window.removeEventListener('touchend', handleVerticalTouchEnd);
+        }
+        return () => {
+            window.removeEventListener('touchmove', handleVerticalTouchMove);
+            window.removeEventListener('touchend', handleVerticalTouchEnd);
+        };
+    }, [isVerticalDragging, handleVerticalTouchMove, handleVerticalTouchEnd]);
+
     const scrollIntervalRef = useRef(null);
+    const verticalScrollIntervalRef = useRef(null);
 
     const scrollBy = useCallback((direction) => {
         const container = scrollContainerRef.current;
@@ -435,10 +636,24 @@ function Table({
         cascadeScroll(amount, true);
     }, [finalTableData, cascadeScroll]);
 
+    const scrollVerticalBy = useCallback((direction) => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+        const rows = finalTableData ? finalTableData.length : 1;
+        const step = Math.max(container.clientHeight / Math.max(rows / 2, 1), container.clientHeight / 4);
+        const amount = step * direction;
+        cascadeVerticalScroll(amount, true);
+    }, [finalTableData, cascadeVerticalScroll]);
+
     const startScrolling = useCallback((direction) => {
         scrollBy(direction);
         scrollIntervalRef.current = setInterval(() => scrollBy(direction), 200);
     }, [scrollBy]);
+
+    const startVerticalScrolling = useCallback((direction) => {
+        scrollVerticalBy(direction);
+        verticalScrollIntervalRef.current = setInterval(() => scrollVerticalBy(direction), 200);
+    }, [scrollVerticalBy]);
 
     const stopScrolling = useCallback(() => {
         if (scrollIntervalRef.current) {
@@ -447,9 +662,22 @@ function Table({
         }
     }, []);
 
+    const stopVerticalScrolling = useCallback(() => {
+        if (verticalScrollIntervalRef.current) {
+            clearInterval(verticalScrollIntervalRef.current);
+            verticalScrollIntervalRef.current = null;
+        }
+    }, []);
+
     useEffect(() => {
         return () => {
             if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
+        };
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (verticalScrollIntervalRef.current) clearInterval(verticalScrollIntervalRef.current);
         };
     }, []);
 
@@ -482,6 +710,35 @@ function Table({
         cascadeScroll(delta, true);
     };
 
+    const handleVerticalTrackClick = (e) => {
+        if (e.target.closest('.custom-scrollbar-thumb-vertical')) return;
+        const track = e.currentTarget;
+        const container = scrollContainerRef.current;
+        if (!track || !container) return;
+
+        const rect = track.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        const trackHeight = rect.height;
+
+        const containerMax = Math.max(container.scrollHeight - container.clientHeight, 0);
+        const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollHeight - tableModuleRef.current.clientHeight, 0) : 0;
+        const windowMax = Math.max(document.documentElement.scrollHeight - document.documentElement.clientHeight, 0);
+        const totalMax = containerMax + moduleMax + windowMax;
+        const maxThumbTop = trackHeight - thumbHeight;
+
+        const targetThumbTop = clickY - (thumbHeight / 2);
+        const clampedThumbTop = Math.max(0, Math.min(targetThumbTop, maxThumbTop));
+        const scrollRatio = maxThumbTop > 0 ? clampedThumbTop / maxThumbTop : 0;
+        const targetTotalScroll = scrollRatio * totalMax;
+
+        const currentModule = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+        const currentWindow = window.scrollY || window.pageYOffset;
+        const currentTotal = container.scrollTop + currentModule + currentWindow;
+
+        const delta = targetTotalScroll - currentTotal;
+        cascadeVerticalScroll(delta, true);
+    };
+
     useEffect(() => {
         if (!scrollable) {
             setIsScrollbarVisible(false);
@@ -501,8 +758,8 @@ function Table({
                     const totalMax = containerMax + moduleMax + windowMax;
 
                     const ratio = container.clientWidth / (container.clientWidth + totalMax);
-                    const minWidth = isMobile ? 80 : 30;
-                    const maxWidth = isMobile ? (trackWidth * 0.6) : (trackWidth * 0.3);
+                    const minWidth = isMobile ? 80 : 10;
+                    const maxWidth = isMobile ? (trackWidth * 0.6) : (trackWidth * 0.1);
                     let newThumbWidth = ratio * trackWidth;
                     newThumbWidth = Math.max(minWidth, Math.min(newThumbWidth, maxWidth));
                     setThumbWidth(newThumbWidth);
@@ -531,6 +788,58 @@ function Table({
             clearTimeout(timeoutId);
             resizeObserver.disconnect();
             window.removeEventListener('resize', checkOverflow);
+        };
+    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
+
+    useEffect(() => {
+        if (!scrollable) {
+            setIsVerticalScrollbarVisible(false);
+            return;
+        }
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const checkVerticalOverflow = () => {
+            const containerMax = Math.max(container.scrollHeight - container.clientHeight, 0);
+            if (containerMax > 0) {
+                setIsVerticalScrollbarVisible(true);
+                const trackHeight = verticalScrollbarTrackRef.current?.clientHeight || 0;
+                if (trackHeight > 0) {
+                    const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollHeight - tableModuleRef.current.clientHeight, 0) : 0;
+                    const windowMax = Math.max(document.documentElement.scrollHeight - document.documentElement.clientHeight, 0);
+                    const totalMax = containerMax + moduleMax + windowMax;
+
+                    const ratio = container.clientHeight / (container.clientHeight + totalMax);
+                    const minHeight = isMobile ? 100 : 100;
+                    const maxHeight = isMobile ? (trackHeight * 1) : (trackHeight * 0.5);
+                    let newThumbHeight = ratio * trackHeight;
+                    newThumbHeight = Math.max(minHeight, Math.min(newThumbHeight, maxHeight));
+                    setThumbHeight(newThumbHeight);
+
+                    const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+                    const windowScroll = window.scrollY || window.pageYOffset;
+                    const currentTotal = container.scrollTop + moduleScroll + windowScroll;
+
+                    const scrollRatio = totalMax > 0 ? currentTotal / totalMax : 0;
+                    const maxThumbTop = trackHeight - newThumbHeight;
+                    setThumbTop(scrollRatio * maxThumbTop);
+                }
+            } else {
+                setIsVerticalScrollbarVisible(false);
+            }
+        };
+
+        const timeoutId = setTimeout(checkVerticalOverflow, 50);
+        const resizeObserver = new ResizeObserver(checkVerticalOverflow);
+        resizeObserver.observe(container);
+        const table = container.querySelector('table');
+        if (table) resizeObserver.observe(table);
+        window.addEventListener('resize', checkVerticalOverflow);
+
+        return () => {
+            clearTimeout(timeoutId);
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', checkVerticalOverflow);
         };
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
 
@@ -819,7 +1128,7 @@ function Table({
     };
 
     const renderCustomScrollbar = (isTop) => {
-        if (!scrollable) return null;
+        if (!scrollable || isMobile) return null;
         return (
             <div className={`custom-scrollbar-container ${!isTop ? 'footer' : ''} ${isScrollbarVisible ? 'visible' : ''} ${isDragging ? 'is-dragging' : ''}`}>
                 <button
@@ -863,6 +1172,57 @@ function Table({
                 >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                         <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+
+    const renderVerticalCustomScrollbar = () => {
+        if (!scrollable || isMobile) return null;
+        return (
+            <div className={`custom-scrollbar-container-vertical ${isVerticalScrollbarVisible ? 'visible' : ''} ${isVerticalDragging ? 'is-dragging' : ''}`}>
+                <button
+                    className="custom-scrollbar-arrow-vertical"
+                    onMouseDown={() => startVerticalScrolling(-1)}
+                    onMouseUp={stopVerticalScrolling}
+                    onMouseLeave={stopVerticalScrolling}
+                    onTouchStart={() => startVerticalScrolling(-1)}
+                    onTouchEnd={stopVerticalScrolling}
+                    aria-label="Scroll Up"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 15L12 9L6 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+                <div
+                    className="custom-scrollbar-track-vertical"
+                    ref={verticalScrollbarTrackRef}
+                    onClick={handleVerticalTrackClick}
+                >
+                    <div
+                        className={`custom-scrollbar-thumb-vertical ${isVerticalDragging ? 'dragging' : ''}`}
+                        ref={verticalScrollbarThumbRef}
+                        style={{ height: `${thumbHeight}px`, transform: `translateY(${thumbTop}px)` }}
+                        onMouseDown={handleVerticalMouseDown}
+                        onTouchStart={handleVerticalTouchStart}
+                    >
+                        <div className="thumb-grip-vertical">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+                <button
+                    className="custom-scrollbar-arrow-vertical"
+                    onMouseDown={() => startVerticalScrolling(1)}
+                    onMouseUp={stopVerticalScrolling}
+                    onMouseLeave={stopVerticalScrolling}
+                    onTouchStart={() => startVerticalScrolling(1)}
+                    onTouchEnd={stopVerticalScrolling}
+                    aria-label="Scroll Down"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </button>
             </div>
@@ -915,237 +1275,240 @@ function Table({
                 {renderCustomScrollbar(true)}
             </div>
 
-            <div
-                className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
-                ref={scrollContainerRef}
-                onScroll={updateThumbPosition}
-            >
-                <table className="table-module-table" ref={tableRef}>
-                    <tbody>
-                    {tableHeader &&
-                        <tr>
-                            <th colSpan={numCols} style={{
-                                position: stickyRows > 0 ? 'sticky' : 'relative',
-                                top: 0,
-                                zIndex: stickyRows > 0 ? 4 : undefined,
-                                backgroundColor: 'var(--harvest-white-color)'
-                            }}>
-                                <h1>{tableHeader}</h1>
-                            </th>
-                        </tr>
-                    }
-                    {finalTableData && finalTableData.map((row, rowIndex) => {
-                        const actualRowIndex = tableHeader ? rowIndex + 1 : rowIndex;
-                        return (
-                            <tr key={rowIndex}>
-                                {row.map((cell, cellIndex) => {
-                                    const isStickyRow = actualRowIndex < stickyRows;
-                                    const isStickyCol = cellIndex < stickyCols;
-                                    const isCorner = isStickyRow && isStickyCol;
+            <div className="table-with-vertical-scrollbar-wrapper">
+                {renderVerticalCustomScrollbar()}
+                <div
+                    className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
+                    ref={scrollContainerRef}
+                    onScroll={() => { updateThumbPosition(); updateVerticalThumbPosition(); }}
+                >
+                    <table className="table-module-table" ref={tableRef}>
+                        <tbody>
+                        {tableHeader &&
+                            <tr>
+                                <th colSpan={numCols} style={{
+                                    position: stickyRows > 0 ? 'sticky' : 'relative',
+                                    top: 0,
+                                    zIndex: stickyRows > 0 ? 4 : undefined,
+                                    backgroundColor: 'var(--harvest-white-color)'
+                                }}>
+                                    <h1>{tableHeader}</h1>
+                                </th>
+                            </tr>
+                        }
+                        {finalTableData && finalTableData.map((row, rowIndex) => {
+                            const actualRowIndex = tableHeader ? rowIndex + 1 : rowIndex;
+                            return (
+                                <tr key={rowIndex}>
+                                    {row.map((cell, cellIndex) => {
+                                        const isStickyRow = actualRowIndex < stickyRows;
+                                        const isStickyCol = cellIndex < stickyCols;
+                                        const isCorner = isStickyRow && isStickyCol;
 
-                                    const isHovered = hoveredCell.r === actualRowIndex && hoveredCell.c === cellIndex;
-                                    const showColControl = isHovered && rowIndex === 0 && cellIndex < 1;
-                                    const showRowControl = isHovered && cellIndex === 0 && rowIndex < 1;
+                                        const isHovered = hoveredCell.r === actualRowIndex && hoveredCell.c === cellIndex;
+                                        const showColControl = isHovered && rowIndex === 0 && cellIndex < 1;
+                                        const showRowControl = isHovered && cellIndex === 0 && rowIndex < 1;
 
-                                    let inlineStyles = {
-                                        cursor: rowIndex === 0 ? 'pointer' : 'default',
-                                        whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
-                                        position: (isStickyRow || isStickyCol) ? 'sticky' : 'relative',
-                                        zIndex: isCorner ? 3 : (isStickyRow || isStickyCol ? 2 : undefined),
-                                        backgroundColor: (isStickyRow || isStickyCol) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
-                                    };
+                                        let inlineStyles = {
+                                            cursor: rowIndex === 0 ? 'pointer' : 'default',
+                                            whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
+                                            position: (isStickyRow || isStickyCol) ? 'sticky' : 'relative',
+                                            zIndex: isCorner ? 3 : (isStickyRow || isStickyCol ? 2 : undefined),
+                                            backgroundColor: (isStickyRow || isStickyCol) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                        };
 
-                                    if (isStickyRow) {
-                                        inlineStyles.top = rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0;
-                                    }
+                                        if (isStickyRow) {
+                                            inlineStyles.top = rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0;
+                                        }
 
-                                    if (isStickyCol) {
-                                        inlineStyles.left = colWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) || 0;
-                                    }
+                                        if (isStickyCol) {
+                                            inlineStyles.left = colWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) || 0;
+                                        }
 
-                                    return (
+                                        return (
+                                            <td
+                                                key={cellIndex}
+                                                style={inlineStyles}
+                                                onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: cellIndex })}
+                                                onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                            >
+                                                {allowSticky && (showColControl || showRowControl) && (
+                                                    <div className="sticky-control-widget">
+                                                        {showColControl && (
+                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyCols > cellIndex}
+                                                                    onChange={(e) => setStickyCols(e.target.checked ? cellIndex + 1 : cellIndex)}
+                                                                /> Fix Col
+                                                            </label>
+                                                        )}
+                                                        {showRowControl && (
+                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyRows > actualRowIndex}
+                                                                    onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                                /> Fix Row
+                                                            </label>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {rowIndex === 0 ? (
+                                                    <>
+                                                        {compact ? (
+                                                            <div style={{
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between',
+                                                                alignItems: 'center',
+                                                                wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
+                                                                textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
+                                                            }}
+                                                                 className={"compact-table-header-row"}
+                                                            >
+                                                                <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                                    {cell}{getSortIndicator(cellIndex)}
+                                                                </h3>
+                                                                {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
+                                                                    <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
+                                                                }
+                                                            </div>
+                                                        ) : (
+                                                            <div style={{
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between',
+                                                                alignItems: 'center',
+                                                            }}
+                                                                 className={"compact-table-header-row"}
+                                                            >
+                                                                <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                                    {cell}{getSortIndicator(cellIndex)}
+                                                                </h2>
+                                                                {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
+                                                                    <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
+                                                                }
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {compact ? (
+                                                            <p className={"compact-table-cell-text"} lang={detectLang(cell)}>
+                                                                {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
+                                                            </p>
+                                                        ) : (
+                                                            <p lang={detectLang(cell)}>
+                                                                {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
+                                                            </p>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </td>
+                                        );
+                                    })}
+                                    {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && (
                                         <td
-                                            key={cellIndex}
-                                            style={inlineStyles}
-                                            onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: cellIndex })}
+                                            onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length })}
                                             onMouseLeave={() => setHoveredCell({ r: null, c: null })}
-                                        >
-                                            {allowSticky && (showColControl || showRowControl) && (
-                                                <div className="sticky-control-widget">
-                                                    {showColControl && (
-                                                        <label className="sticky-control-checkbox" title="Fix all columns up to this one">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={stickyCols > cellIndex}
-                                                                onChange={(e) => setStickyCols(e.target.checked ? cellIndex + 1 : cellIndex)}
-                                                            /> Fix Col
-                                                        </label>
-                                                    )}
-                                                    {showRowControl && (
-                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={stickyRows > actualRowIndex}
-                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
-                                                            /> Fix Row
-                                                        </label>
-                                                    )}
-                                                </div>
-                                            )}
+                                            style={{
+                                                textAlign: 'center',
+                                                position: (actualRowIndex < stickyRows || row.length < stickyCols) ? 'sticky' : 'relative',
+                                                zIndex: (actualRowIndex < stickyRows && row.length < stickyCols) ? 3 : ((actualRowIndex < stickyRows || row.length < stickyCols) ? 2 : undefined),
+                                                backgroundColor: (actualRowIndex < stickyRows || row.length < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                                top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                                left: row.length < stickyCols ? (colWidths.slice(0, row.length).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                            }}>
+                                            {(() => {
+                                                const editCellIndex = row.length;
+                                                const isHoveredEdit = hoveredCell.r === actualRowIndex && hoveredCell.c === editCellIndex;
+                                                const showColControlEdit = isHoveredEdit && rowIndex === 0 && editCellIndex < 1;
+                                                const showRowControlEdit = isHoveredEdit && editCellIndex === 0 && rowIndex < 1;
 
+                                                return allowSticky && (showColControlEdit || showRowControlEdit) ? (
+                                                    <div className="sticky-control-widget">
+                                                        {showColControlEdit && (
+                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyCols > editCellIndex}
+                                                                    onChange={(e) => setStickyCols(e.target.checked ? editCellIndex + 1 : editCellIndex)}
+                                                                /> Fix Col
+                                                            </label>
+                                                        )}
+                                                        {showRowControlEdit && (
+                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyRows > actualRowIndex}
+                                                                    onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                                /> Fix Row
+                                                            </label>
+                                                        )}
+                                                    </div>
+                                                ) : null;
+                                            })()}
                                             {rowIndex === 0 ? (
-                                                <>
-                                                    {compact ? (
-                                                        <div style={{
-                                                            display: 'flex',
-                                                            justifyContent: 'space-between',
-                                                            alignItems: 'center',
-                                                            wordWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'break-word' : 'normal',
-                                                            textWrap: columnsToWrap && columnsToWrap.includes(finalTableData[0][cellIndex]) ? 'wrap' : 'nowrap',
-                                                        }}
-                                                             className={"compact-table-header-row"}
-                                                        >
-                                                            <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                                {cell}{getSortIndicator(cellIndex)}
-                                                            </h3>
-                                                            {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                                <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
-                                                            }
-                                                        </div>
-                                                    ) : (
-                                                        <div style={{
-                                                            display: 'flex',
-                                                            justifyContent: 'space-between',
-                                                            alignItems: 'center',
-                                                        }}
-                                                             className={"compact-table-header-row"}
-                                                        >
-                                                            <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
-                                                                {cell}{getSortIndicator(cellIndex)}
-                                                            </h2>
-                                                            {(filterableColumns && finalTableData[0] && filterableColumns.includes(finalTableData[0][cellIndex])) &&
-                                                                <FilterAltIcon onClick={() => openFilterPopup(finalTableData[0][cellIndex])} />
-                                                            }
-                                                        </div>
-                                                    )}
-                                                </>
+                                                <h3 className={"compact-table-header-text"}>Edit</h3>
                                             ) : (
-                                                <>
-                                                    {compact ? (
-                                                        <p className={"compact-table-cell-text"} lang={detectLang(cell)}>
-                                                            {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
-                                                        </p>
-                                                    ) : (
-                                                        <p lang={detectLang(cell)}>
-                                                            {applyLikelyUrlFunction(finalTableData[0][cellIndex], cell)}
-                                                        </p>
-                                                    )}
-                                                </>
+                                                <button onClick={() => onEditEntryOption(rowMapping[rowIndex])} aria-label="Edit row">Edit</button>
                                             )}
                                         </td>
-                                    );
-                                })}
-                                {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && (
-                                    <td
-                                        onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length })}
-                                        onMouseLeave={() => setHoveredCell({ r: null, c: null })}
-                                        style={{
-                                            textAlign: 'center',
-                                            position: (actualRowIndex < stickyRows || row.length < stickyCols) ? 'sticky' : 'relative',
-                                            zIndex: (actualRowIndex < stickyRows && row.length < stickyCols) ? 3 : ((actualRowIndex < stickyRows || row.length < stickyCols) ? 2 : undefined),
-                                            backgroundColor: (actualRowIndex < stickyRows || row.length < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
-                                            top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                            left: row.length < stickyCols ? (colWidths.slice(0, row.length).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                        }}>
-                                        {(() => {
-                                            const editCellIndex = row.length;
-                                            const isHoveredEdit = hoveredCell.r === actualRowIndex && hoveredCell.c === editCellIndex;
-                                            const showColControlEdit = isHoveredEdit && rowIndex === 0 && editCellIndex < 1;
-                                            const showRowControlEdit = isHoveredEdit && editCellIndex === 0 && rowIndex < 1;
+                                    )}
+                                    {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && (
+                                        <td
+                                            onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0) })}
+                                            onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                            style={{
+                                                textAlign: 'center',
+                                                position: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 'sticky' : 'relative',
+                                                zIndex: (actualRowIndex < stickyRows && (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 3 : ((actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 2 : undefined),
+                                                backgroundColor: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                                top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                                left: (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols ? (colWidths.slice(0, row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                            }}>
+                                            {(() => {
+                                                const deleteCellIndex = row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0);
+                                                const isHoveredDelete = hoveredCell.r === actualRowIndex && hoveredCell.c === deleteCellIndex;
+                                                const showColControlDelete = isHoveredDelete && rowIndex === 0 && deleteCellIndex < 1;
+                                                const showRowControlDelete = isHoveredDelete && deleteCellIndex === 0 && rowIndex < 1;
 
-                                            return allowSticky && (showColControlEdit || showRowControlEdit) ? (
-                                                <div className="sticky-control-widget">
-                                                    {showColControlEdit && (
-                                                        <label className="sticky-control-checkbox" title="Fix all columns up to this one">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={stickyCols > editCellIndex}
-                                                                onChange={(e) => setStickyCols(e.target.checked ? editCellIndex + 1 : editCellIndex)}
-                                                            /> Fix Col
-                                                        </label>
-                                                    )}
-                                                    {showRowControlEdit && (
-                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={stickyRows > actualRowIndex}
-                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
-                                                            /> Fix Row
-                                                        </label>
-                                                    )}
-                                                </div>
-                                            ) : null;
-                                        })()}
-                                        {rowIndex === 0 ? (
-                                            <h3 className={"compact-table-header-text"}>Edit</h3>
-                                        ) : (
-                                            <button onClick={() => onEditEntryOption(rowMapping[rowIndex])} aria-label="Edit row">Edit</button>
-                                        )}
-                                    </td>
-                                )}
-                                {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && (
-                                    <td
-                                        onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0) })}
-                                        onMouseLeave={() => setHoveredCell({ r: null, c: null })}
-                                        style={{
-                                            textAlign: 'center',
-                                            position: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 'sticky' : 'relative',
-                                            zIndex: (actualRowIndex < stickyRows && (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 3 : ((actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 2 : undefined),
-                                            backgroundColor: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
-                                            top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                            left: (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols ? (colWidths.slice(0, row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                        }}>
-                                        {(() => {
-                                            const deleteCellIndex = row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0);
-                                            const isHoveredDelete = hoveredCell.r === actualRowIndex && hoveredCell.c === deleteCellIndex;
-                                            const showColControlDelete = isHoveredDelete && rowIndex === 0 && deleteCellIndex < 1;
-                                            const showRowControlDelete = isHoveredDelete && deleteCellIndex === 0 && rowIndex < 1;
-
-                                            return allowSticky && (showColControlDelete || showRowControlDelete) ? (
-                                                <div className="sticky-control-widget">
-                                                    {showColControlDelete && (
-                                                        <label className="sticky-control-checkbox" title="Fix all columns up to this one">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={stickyCols > deleteCellIndex}
-                                                                onChange={(e) => setStickyCols(e.target.checked ? deleteCellIndex + 1 : deleteCellIndex)}
-                                                            /> Fix Col
-                                                        </label>
-                                                    )}
-                                                    {showRowControlDelete && (
-                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={stickyRows > actualRowIndex}
-                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
-                                                            /> Fix Row
-                                                        </label>
-                                                    )}
-                                                </div>
-                                            ) : null;
-                                        })()}
-                                        {rowIndex === 0 ? (
-                                            <h3 className={"compact-table-header-text"}>Delete</h3>
-                                        ) : (
-                                            <button onClick={() => onDeleteEntry(rowMapping[rowIndex])} aria-label="Delete row">Delete</button>
-                                        )}
-                                    </td>
-                                )}
-                            </tr>
-                        )
-                    })}
-                    </tbody>
-                </table>
+                                                return allowSticky && (showColControlDelete || showRowControlDelete) ? (
+                                                    <div className="sticky-control-widget">
+                                                        {showColControlDelete && (
+                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyCols > deleteCellIndex}
+                                                                    onChange={(e) => setStickyCols(e.target.checked ? deleteCellIndex + 1 : deleteCellIndex)}
+                                                                /> Fix Col
+                                                            </label>
+                                                        )}
+                                                        {showRowControlDelete && (
+                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyRows > actualRowIndex}
+                                                                    onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                                /> Fix Row
+                                                            </label>
+                                                        )}
+                                                    </div>
+                                                ) : null;
+                                            })()}
+                                            {rowIndex === 0 ? (
+                                                <h3 className={"compact-table-header-text"}>Delete</h3>
+                                            ) : (
+                                                <button onClick={() => onDeleteEntry(rowMapping[rowIndex])} aria-label="Delete row">Delete</button>
+                                            )}
+                                        </td>
+                                    )}
+                                </tr>
+                            )
+                        })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div className={"table-module-footer"}>
@@ -1190,7 +1553,7 @@ function Table({
                         <h2>Filter Options</h2>
                         {columnToFilterBasedOn && columnFilters[columnToFilterBasedOn] && (
                             <div>
-                                <h3>Filter for "{columnToFilterBasedOn}"</h3>
+                                <h3>Filter for {columnToFilterBasedOn}</h3>
 
                                 {smartFilterData.min !== null && smartFilterData.max !== null && (
                                     <div style={{ marginBottom: '15px', fontSize: '0.9em', color: '#666', background: '#f9f9f9', padding: '8px', borderRadius: '4px' }}>
