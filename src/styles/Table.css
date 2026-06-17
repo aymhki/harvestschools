@@ -153,16 +153,16 @@ tr:hover {
 
 .sticky-control-widget {
     position: absolute;
-    top: 4px;
-    left: 4px;
+    top: 0.1rem;
+    left: 0.1rem;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
     background: rgba(255, 255, 255, 0.95);
-    border: 1px solid var(--primary-color);
+    border: 0.1rem solid var(--primary-color);
     padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+    border-radius: 0.1rem;
+    box-shadow: 0 0.1rem 0.1rem rgba(0,0,0,0.2);
     z-index: 100;
 }
 
@@ -297,7 +297,7 @@ tr:hover {
 .table-module-filter-popup {
     position: relative;
     width: 80%;
-    max-width: 1200px;
+    max-width: 90vw;
     max-height: 85vh;
     height: auto;
     background-color: var(--harvest-white-color);
@@ -326,7 +326,7 @@ tr:hover {
     align-items: flex-start;
     overflow-y: auto;
     background-color: var(--harvest-white-gradient);
-    border: 1px solid #ccc;
+    border: 0.1rem solid #ccc;
     border-radius: 0.5rem;
     flex: 1;
     min-height: 8rem;
@@ -355,7 +355,7 @@ tr:hover {
 }
 
 .table-module-filter-search-input-field {
-    width: 50%;
+    width: 100%;
     padding: 0.5rem;
     border-radius: 0.5rem;
     border: 0.1rem solid var(--primary-color);
@@ -363,6 +363,23 @@ tr:hover {
     font-size: 1rem;
     transition: all 0.3s;
     margin-bottom: 1rem;
+    margin-left: 0.1rem;
+    box-sizing: border-box;
+}
+
+.unique-values-list-item-label-in-filter-popup {
+    display: block;
+    margin: 0.3rem 0;
+}
+
+.unique-values-no-items-in-list-body-text-in-filter-popup {
+    color: #999;
+}
+
+.unique-values-action-buttons-wrapper-in-filter-popup {
+    display: flex;
+    gap: 0.2rem;
+    margin-top: 0.2rem;
 }
 
 .table-module-filter-search-input-field:focus {
@@ -502,6 +519,9 @@ td button {
 
 .compact-table-header-row {
     padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .custom-scrollbar-container-vertical {
@@ -521,6 +541,24 @@ td button {
     touch-action: none;
 }
 
+.min-max-banner-in-filter-popup {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    background-color: #f9f9f9;
+    padding: 0.5rem;
+    border-radius: 0.1rem;
+}
+
+.advanced-filter-search-container-in-filter-popup {
+    margin-bottom: 0.5rem;
+}
+
+.unique-values-search-and-list-container-in-filter-popup {
+    margin-top: 1rem;
+    border-top: 0.1rem solid #ccc;
+    padding-top: 1rem;
+}
 
 .custom-scrollbar-container-vertical.visible {
     opacity: 1;
@@ -616,7 +654,7 @@ td button {
 .table-pagination-controls .pagination-btn {
     background: transparent;
     color: var(--primary-color);
-    border: 1px solid var(--primary-color);
+    border: 0.1rem solid var(--primary-color);
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
     cursor: pointer;
@@ -852,7 +890,7 @@ td button {
 
     .table-module-filter-popup-values-list {
         background-color: var(--dark-accent-color);
-        border: 1px solid var(--harvest-white-color);
+        border: 0.1rem solid var(--harvest-white-color);
     }
 
     .table-module-accordion-content {

@@ -155,8 +155,12 @@ function Table({
     const { t } = useTranslation();
 
     const showPaginationOnMobile = true
-    const isPaginated = tablePages === true || (tablePages === undefined && (isMobile && showPaginationOnMobile) );
-    const pageSize = 30;
+    
+    const maxItemsBeforePagination = 300;
+
+    const mobilePageSize = 30;
+    const desktopPageSize = 50;
+    const [pageSize, setPageSize] = useState(isMobile ? mobilePageSize : desktopPageSize);
     const headerRowCount = tableHeader ? 2 : 1;
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -165,7 +169,31 @@ function Table({
         return finalTableData.slice(headerRowCount);
     }, [finalTableData, headerRowCount]);
 
-    const totalPages = Math.ceil(dataRows.length / pageSize);
+    const [isPaginated, setIsPaginated] = useState(
+        (tablePages === true) || (tablePages === undefined && (isMobile && showPaginationOnMobile) ) || (dataRows && dataRows.length > maxItemsBeforePagination)
+    )
+
+    const [totalPages, setTotalPage] = useState(Math.ceil(dataRows.length / pageSize));
+
+    useEffect(() => {
+        if ( (dataRows && dataRows.length  > maxItemsBeforePagination) || isMobile) {
+            setIsPaginated(true);
+        } else {
+            setIsPaginated(false);
+        }
+    }, [tableData, isMobile, dataRows])
+
+    useEffect(() => {
+        if (isMobile) {
+            setPageSize(mobilePageSize)
+        } else {
+            setPageSize(desktopPageSize)
+        }
+    }, [isMobile])
+    
+    useEffect(() => {
+        setTotalPage(Math.ceil(dataRows.length / pageSize));
+    }, [dataRows.length, pageSize])
 
     useEffect(() => {
         if (currentPage > totalPages && totalPages > 0) {
@@ -1514,11 +1542,7 @@ function Table({
                                                                 }
                                                             </div>
                                                         ) : (
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                justifyContent: 'space-between',
-                                                                alignItems: 'center',
-                                                            }}
+                                                            <div
                                                                  className={"compact-table-header-row"}
                                                             >
                                                                 <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
@@ -1696,12 +1720,12 @@ function Table({
                                 <h3>Filter for {columnToFilterBasedOn}</h3>
 
                                 {smartFilterData.min !== null && smartFilterData.max !== null && (
-                                    <div style={{ marginBottom: '15px', fontSize: '0.9em', color: '#666', background: '#f9f9f9', padding: '8px', borderRadius: '4px' }}>
+                                    <div className={"min-max-banner-in-filter-popup"}>
                                         <strong>Min:</strong> {smartFilterData.min} &nbsp;|&nbsp; <strong>Max:</strong> {smartFilterData.max}
                                     </div>
                                 )}
 
-                                <div style={{ marginBottom: '10px' }}>
+                                <div className={"advanced-filter-search-container-in-filter-popup"} >
                                     <label>Condition: </label>
                                     <select
                                         className={"table-module-filter-search-input-field"}
@@ -1710,7 +1734,6 @@ function Table({
                                             ...prev,
                                             [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], operator: e.target.value }
                                         }))}
-                                        style={{ padding: '5px', marginLeft: '5px' }}
                                     >
                                         {columnFilters[columnToFilterBasedOn].type === 'text' || columnFilters[columnToFilterBasedOn].type === 'phone' ? (
                                             <>
@@ -1737,7 +1760,7 @@ function Table({
                                     </select>
                                 </div>
 
-                                <div style={{ marginBottom: '10px' }}>
+                                <div className={"advanced-filter-search-container-in-filter-popup"} >
                                     <label>Value: </label>
                                     <input
                                         className={"table-module-filter-search-input-field"}
@@ -1747,12 +1770,11 @@ function Table({
                                             ...prev,
                                             [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], value: e.target.value }
                                         }))}
-                                        style={{ padding: '5px', marginLeft: '5px' }}
                                     />
                                 </div>
 
                                 {columnFilters[columnToFilterBasedOn].operator === 'between' && (
-                                    <div style={{ marginBottom: '10px' }}>
+                                    <div className={"advanced-filter-search-container-in-filter-popup"}>
                                         <label>And: </label>
                                         <input
                                             className={"table-module-filter-search-input-field"}
@@ -1762,12 +1784,13 @@ function Table({
                                                 ...prev,
                                                 [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], value2: e.target.value }
                                             }))}
-                                            style={{ padding: '5px', marginLeft: '5px' }}
                                         />
                                     </div>
                                 )}
 
-                                <div style={{ marginTop: '20px', borderTop: '1px solid #ccc', paddingTop: '10px' }}>
+                                <div
+                                    className={"unique-values-search-and-list-container-in-filter-popup"}
+                                >
                                     <h3>Filter by Unique Values</h3>
                                     <input
                                         type="text"
@@ -1775,13 +1798,12 @@ function Table({
                                         placeholder={"Search unique values..."}
                                         value={uniqueValueSearch}
                                         onChange={(e) => setUniqueValueSearch(e.target.value)}
-                                        style={{ width: '100%', marginBottom: '10px', boxSizing: 'border-box' }}
                                     />
                                     <div className={"table-module-filter-popup-values-list"}>
                                         {smartFilterData.uniqueValues
                                             .filter(v => uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true)
                                             .map((value, index) => (
-                                                <label key={index} style={{ display: 'block', margin: '4px 0' }}>
+                                                <label key={index} className={"unique-values-list-item-label-in-filter-popup"}>
                                                     <input
                                                         type="checkbox"
                                                         checked={(() => {
@@ -1812,10 +1834,16 @@ function Table({
                                             ))
                                         }
                                         {smartFilterData.uniqueValues.filter(v => uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true).length === 0 && (
-                                            <p style={{ color: '#999' }}>No matching values found.</p>
+                                            <p
+                                                className={"unique-values-no-items-in-list-body-text-in-filter-popup"}
+                                            >
+                                                No unique values found
+                                            </p>
                                         )}
                                     </div>
-                                    <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                                    <div
+                                        className={"unique-values-action-buttons-wrapper-in-filter-popup"}
+                                    >
                                         <button onClick={() => {
                                             const visibleValues = smartFilterData.uniqueValues.filter(v =>
                                                 uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true
