@@ -106,6 +106,7 @@
     align-content: center;
     justify-content: center;
     align-items: center;
+    margin-bottom: 1rem;
 }
 
 .table-module-header-buttons-wrapper {
@@ -420,8 +421,8 @@ td button {
 
 .custom-scrollbar-container.footer {
     box-shadow: none;
-    padding: 0 2rem 2rem 2rem;
     margin-bottom: 0;
+    padding-top: 0;
 }
 
 .custom-scrollbar-container.visible {
@@ -539,6 +540,11 @@ td button {
     transition: opacity 0.3s ease, width 0.3s ease;
     margin-right: 2rem;
     touch-action: none;
+}
+
+.custom-scrollbar-container-vertical.right {
+    margin-left: 3rem;
+    margin-right: 0;
 }
 
 .min-max-banner-in-filter-popup {
