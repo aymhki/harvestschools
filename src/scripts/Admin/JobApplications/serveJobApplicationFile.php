@@ -18,7 +18,7 @@ function sendErrorResponse(string $message, int $code = 500): void {
 
 try {
     $dbConfig = require '../../dbConfig.php';
-    $privateUploadsBasePath = '../../../../../files_uploaded_from_harvestschools_webapp/job_applications/';
+    $privateUploadsBasePath = '../../../../files_uploaded_from_harvestschools_webapp/job_applications/';
     $requiredPermissionLevel = 0;
     $sessionDurationInHours = 12;
 
@@ -90,8 +90,7 @@ try {
         $conn->close();
     }
 
-    ob_clean();
-    flush();
+    ob_end_clean();
 
     $filenameForBrowser = basename($full_file_path);
     $ascii_filename = preg_replace('/[^\x20-\x7E]/', '', $filenameForBrowser);
