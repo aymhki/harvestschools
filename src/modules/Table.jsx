@@ -5,113 +5,6 @@ import { animated, useSpring } from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useTranslation } from 'react-i18next';
 
-const parseDate = (val) => {
-    if (!val) return null;
-    let str = String(val).trim();
-    if (str.includes(' ') && !str.includes('T')) {
-        str = str.replace(' ', 'T');
-    }
-    const d = new Date(str);
-    return isNaN(d.getTime()) ? null : d;
-};
-
-const parseNumberValue = (val) => {
-    if (val === null || val === undefined || val === '') return NaN;
-    let str = String(val).trim();
-    let isNegative = str.includes('-') || (str.includes('(') && str.includes(')'));
-    let cleaned = str.replace(/[^\d.,]/g, '');
-    const lastDot = cleaned.lastIndexOf('.');
-    const lastComma = cleaned.lastIndexOf(',');
-    if (lastDot > lastComma) {
-        cleaned = cleaned.replace(/,/g, '');
-    } else if (lastComma > lastDot) {
-        cleaned = cleaned.replace(/\./g, '').replace(',', '.');
-    } else {
-        if (lastComma !== -1) {
-            const parts = cleaned.split(',');
-            if (parts.length > 1 && parts[parts.length - 1].length === 3) {
-                cleaned = cleaned.replace(/,/g, '');
-            } else {
-                cleaned = cleaned.replace(',', '.');
-            }
-        }
-    }
-    let num = parseFloat(cleaned);
-    if (!isNaN(num) && isNegative) {
-        num = -Math.abs(num);
-    }
-    return num;
-};
-
-const getColumnType = (columnName, dataTypes) => {
-    if (!dataTypes) return 'text';
-    for (const [type, columns] of Object.entries(dataTypes)) {
-        if (columns.includes(columnName)) {
-            return type;
-        }
-    }
-    return 'text';
-};
-
-const applyFilter = (cellValue, filter) => {
-    if (cellValue === undefined || cellValue === null || cellValue === '') {
-        return false;
-    }
-    const strValue = String(cellValue).trim();
-
-    if (filter.type === 'date') {
-        const cellDate = parseDate(cellValue);
-        const filterDate1 = filter.value ? parseDate(filter.value) : null;
-        const filterDate2 = filter.value2 ? parseDate(filter.value2) : null;
-
-        if (!cellDate || !filterDate1) return false;
-
-        const cTime = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate()).getTime();
-        const fTime1 = new Date(filterDate1.getFullYear(), filterDate1.getMonth(), filterDate1.getDate()).getTime();
-        const fTime2 = filterDate2 ? new Date(filterDate2.getFullYear(), filterDate2.getMonth(), filterDate2.getDate()).getTime() : null;
-
-        if (filter.operator === 'equals') {
-            return cTime === fTime1;
-        } else if (filter.operator === 'before') {
-            return cTime < fTime1;
-        } else if (filter.operator === 'after') {
-            return cTime > fTime1;
-        } else if (filter.operator === 'between') {
-            return fTime2 !== null && cTime >= fTime1 && cTime <= fTime2;
-        }
-    } else if (filter.type === 'number' || filter.type === 'currency') {
-        const cellNum = parseNumberValue(cellValue);
-        const filterNum1 = parseFloat(filter.value);
-        const filterNum2 = filter.value2 ? parseFloat(filter.value2) : null;
-
-        if (isNaN(cellNum) || isNaN(filterNum1)) return false;
-
-        if (filter.operator === 'equals') {
-            return cellNum === filterNum1;
-        } else if (filter.operator === 'less_than') {
-            return cellNum < filterNum1;
-        } else if (filter.operator === 'greater_than') {
-            return cellNum > filterNum1;
-        } else if (filter.operator === 'between') {
-            return filterNum2 !== null && !isNaN(filterNum2) && cellNum >= filterNum1 && cellNum <= filterNum2;
-        }
-    } else if (filter.type === 'text' || filter.type === 'phone') {
-        const lowerCell = strValue.toLowerCase();
-        const lowerFilter = filter.value ? String(filter.value).toLowerCase() : '';
-
-        if (filter.operator === 'contains') {
-            return lowerCell.includes(lowerFilter);
-        } else if (filter.operator === 'equals') {
-            return lowerCell === lowerFilter;
-        } else if (filter.operator === 'starts_with') {
-            return lowerCell.startsWith(lowerFilter);
-        } else if (filter.operator === 'ends_with') {
-            return lowerCell.endsWith(lowerFilter);
-        }
-    }
-    return true;
-};
-
 function Table({
                    tableHeader,
                    tableData,
@@ -153,55 +46,52 @@ function Table({
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
     const { t } = useTranslation();
-
     const showPaginationOnMobile = true
-    
     const maxItemsBeforePagination = 300;
-
     const mobilePageSize = 30;
     const desktopPageSize = 50;
     const [pageSize, setPageSize] = useState(isMobile ? mobilePageSize : desktopPageSize);
     const headerRowCount = tableHeader ? 2 : 1;
     const [currentPage, setCurrentPage] = useState(1);
-
+    const scrollContainerRef = useRef(null);
+    const scrollbarTrackRef = useRef(null);
+    const scrollbarThumbRef = useRef(null);
+    const tableModuleRef = useRef(null);
+    const tableRef = useRef(null);
+    const verticalScrollbarTrackRef = useRef(null);
+    const verticalScrollbarThumbRef = useRef(null);
+    const [isScrollbarVisible, setIsScrollbarVisible] = useState(false);
+    const [thumbWidth, setThumbWidth] = useState(0);
+    const [thumbLeft, setThumbLeft] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeftStart, setScrollLeftStart] = useState(0);
+    const [isVerticalScrollbarVisible, setIsVerticalScrollbarVisible] = useState(false);
+    const [thumbHeight, setThumbHeight] = useState(0);
+    const [thumbTop, setThumbTop] = useState(0);
+    const [isVerticalDragging, setIsVerticalDragging] = useState(false);
+    const [startY, setStartY] = useState(0);
+    const [scrollTopStart, setScrollTopStart] = useState(0);
+    const [stickyRows, setStickyRows] = useState(allowSticky ? 1 : 0);
+    const [stickyCols, setStickyCols] = useState(allowSticky ? 1 : 0);
+    const [hoveredCell, setHoveredCell] = useState({ r: null, c: null });
+    const [colWidths, setColWidths] = useState([]);
+    const [rowHeights, setRowHeights] = useState([]);
+    const [columnFilters, setColumnFilters] = useState({});
+    const showVerticalScrollBarInMobile = true
+    const showHorizontalScrollBarInMobile = true
+    const scrollIntervalRef = useRef(null);
+    const verticalScrollIntervalRef = useRef(null);
+    
     const dataRows = useMemo(() => {
         if (!finalTableData || finalTableData.length <= headerRowCount) return [];
         return finalTableData.slice(headerRowCount);
     }, [finalTableData, headerRowCount]);
-
+    
     const [isPaginated, setIsPaginated] = useState(
         (tablePages === true) || (tablePages === undefined && (isMobile && showPaginationOnMobile) ) || (dataRows && dataRows.length > maxItemsBeforePagination)
     )
-
     const [totalPages, setTotalPage] = useState(Math.ceil(dataRows.length / pageSize));
-
-    useEffect(() => {
-        if ( (dataRows && dataRows.length  > maxItemsBeforePagination) || isMobile) {
-            setIsPaginated(true);
-        } else {
-            setIsPaginated(false);
-        }
-    }, [tableData, isMobile, dataRows])
-
-    useEffect(() => {
-        if (isMobile) {
-            setPageSize(mobilePageSize)
-        } else {
-            setPageSize(desktopPageSize)
-        }
-    }, [isMobile])
-    
-    useEffect(() => {
-        setTotalPage(Math.ceil(dataRows.length / pageSize));
-    }, [dataRows.length, pageSize])
-
-    useEffect(() => {
-        if (currentPage > totalPages && totalPages > 0) {
-            setCurrentPage(totalPages);
-        } else if (totalPages === 0) {
-            setCurrentPage(1);
-        }
-    }, [totalPages, currentPage]);
 
     const paginatedDataRows = useMemo(() => {
         if (!isPaginated || totalPages <= 1) return dataRows;
@@ -214,36 +104,7 @@ function Table({
         if (!finalTableData) return [];
         return [...finalTableData.slice(0, headerRowCount), ...paginatedDataRows];
     }, [finalTableData, headerRowCount, paginatedDataRows]);
-
-    const scrollContainerRef = useRef(null);
-    const scrollbarTrackRef = useRef(null);
-    const scrollbarThumbRef = useRef(null);
-    const tableModuleRef = useRef(null);
-    const tableRef = useRef(null);
-
-    const verticalScrollbarTrackRef = useRef(null);
-    const verticalScrollbarThumbRef = useRef(null);
-
-    const [isScrollbarVisible, setIsScrollbarVisible] = useState(false);
-    const [thumbWidth, setThumbWidth] = useState(0);
-    const [thumbLeft, setThumbLeft] = useState(0);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeftStart, setScrollLeftStart] = useState(0);
-
-    const [isVerticalScrollbarVisible, setIsVerticalScrollbarVisible] = useState(false);
-    const [thumbHeight, setThumbHeight] = useState(0);
-    const [thumbTop, setThumbTop] = useState(0);
-    const [isVerticalDragging, setIsVerticalDragging] = useState(false);
-    const [startY, setStartY] = useState(0);
-    const [scrollTopStart, setScrollTopStart] = useState(0);
-
-    const [stickyRows, setStickyRows] = useState(allowSticky ? 1 : 0);
-    const [stickyCols, setStickyCols] = useState(allowSticky ? 1 : 0);
-    const [hoveredCell, setHoveredCell] = useState({ r: null, c: null });
-    const [colWidths, setColWidths] = useState([]);
-    const [rowHeights, setRowHeights] = useState([]);
-
+    
     const [isDarkMode, setIsDarkMode] = useState(() => {
         if (typeof window !== 'undefined') {
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -251,10 +112,6 @@ function Table({
 
         return false;
     });
-
-    const [columnFilters, setColumnFilters] = useState({});
-    const showVerticalScrollBarInMobile = true
-    const showHorizontalScrollBarInMobile = true
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -279,74 +136,115 @@ function Table({
 
         setRowHeights(heights);
         setColWidths(widths);
-    }, [finalTableData, isAccordionOpen, isMobile, compact]);
-
-    useEffect(() => {
-        updateStickyOffsets();
-        const resizeObserver = new ResizeObserver(updateStickyOffsets);
-        if (scrollContainerRef.current) {
-            resizeObserver.observe(scrollContainerRef.current);
-        }
-        window.addEventListener('resize', updateStickyOffsets);
-        return () => {
-            resizeObserver.disconnect();
-            window.removeEventListener('resize', updateStickyOffsets);
-        };
-    }, [updateStickyOffsets]);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-        const handleChange = (event) => {
-            setIsDarkMode(event.matches);
-        };
-
-        mediaQuery.addEventListener('change', handleChange);
-
-        return () => mediaQuery.removeEventListener('change', handleChange);
     }, []);
 
-    useEffect(() => {
-        if (!isMobile) return;
+    const parseDate = (val) => {
+        if (!val) return null;
+        let str = String(val).trim();
+        if (str.includes(' ') && !str.includes('T')) {
+            str = str.replace(' ', 'T');
+        }
+        const d = new Date(str);
+        return isNaN(d.getTime()) ? null : d;
+    };
 
-        const prevent = (e) => e.preventDefault();
+    const parseNumberValue = (val) => {
+        if (val === null || val === undefined || val === '') return NaN;
+        let str = String(val).trim();
+        let isNegative = str.includes('-') || (str.includes('(') && str.includes(')'));
+        let cleaned = str.replace(/[^\d.,]/g, '');
+        const lastDot = cleaned.lastIndexOf('.');
+        const lastComma = cleaned.lastIndexOf(',');
+        if (lastDot > lastComma) {
+            cleaned = cleaned.replace(/,/g, '');
+        } else if (lastComma > lastDot) {
+            cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+        } else {
+            if (lastComma !== -1) {
+                const parts = cleaned.split(',');
+                if (parts.length > 1 && parts[parts.length - 1].length === 3) {
+                    cleaned = cleaned.replace(/,/g, '');
+                } else {
+                    cleaned = cleaned.replace(',', '.');
+                }
+            }
+        }
+        let num = parseFloat(cleaned);
+        if (!isNaN(num) && isNegative) {
+            num = -Math.abs(num);
+        }
+        return num;
+    };
 
-        const thumbs = [
-            verticalScrollbarThumbRef.current,
-            scrollbarThumbRef.current,
-        ];
+    const getColumnType = (columnName, dataTypes) => {
+        if (!dataTypes) return 'text';
+        for (const [type, columns] of Object.entries(dataTypes)) {
+            if (columns.includes(columnName)) {
+                return type;
+            }
+        }
+        return 'text';
+    };
 
-        const tracks = [
-            verticalScrollbarTrackRef.current,
-            scrollbarTrackRef.current,
-        ];
+    const applyFilter = useCallback((cellValue, filter) => {
+        if (cellValue === undefined || cellValue === null || cellValue === '') {
+            return false;
+        }
+        const strValue = String(cellValue).trim();
 
-        thumbs.forEach((el) => {
-            if (!el) return;
-            el.addEventListener("touchstart", prevent, { passive: false });
-            el.addEventListener("touchmove",  prevent, { passive: false });
-        });
+        if (filter.type === 'date') {
+            const cellDate = parseDate(cellValue);
+            const filterDate1 = filter.value ? parseDate(filter.value) : null;
+            const filterDate2 = filter.value2 ? parseDate(filter.value2) : null;
 
-        tracks.forEach((el) => {
-            if (!el) return;
-            el.addEventListener("touchmove", prevent, { passive: false });
-        });
+            if (!cellDate || !filterDate1) return false;
 
-        return () => {
-            thumbs.forEach((el) => {
-                if (!el) return;
-                el.removeEventListener("touchstart", prevent);
-                el.removeEventListener("touchmove",  prevent);
-            });
-            tracks.forEach((el) => {
-                if (!el) return;
-                el.removeEventListener("touchmove", prevent);
-            });
-        };
-    }, [isMobile]);
+            const cTime = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate()).getTime();
+            const fTime1 = new Date(filterDate1.getFullYear(), filterDate1.getMonth(), filterDate1.getDate()).getTime();
+            const fTime2 = filterDate2 ? new Date(filterDate2.getFullYear(), filterDate2.getMonth(), filterDate2.getDate()).getTime() : null;
 
+            if (filter.operator === 'equals') {
+                return cTime === fTime1;
+            } else if (filter.operator === 'before') {
+                return cTime < fTime1;
+            } else if (filter.operator === 'after') {
+                return cTime > fTime1;
+            } else if (filter.operator === 'between') {
+                return fTime2 !== null && cTime >= fTime1 && cTime <= fTime2;
+            }
+        } else if (filter.type === 'number' || filter.type === 'currency') {
+            const cellNum = parseNumberValue(cellValue);
+            const filterNum1 = parseFloat(filter.value);
+            const filterNum2 = filter.value2 ? parseFloat(filter.value2) : null;
+
+            if (isNaN(cellNum) || isNaN(filterNum1)) return false;
+
+            if (filter.operator === 'equals') {
+                return cellNum === filterNum1;
+            } else if (filter.operator === 'less_than') {
+                return cellNum < filterNum1;
+            } else if (filter.operator === 'greater_than') {
+                return cellNum > filterNum1;
+            } else if (filter.operator === 'between') {
+                return filterNum2 !== null && !isNaN(filterNum2) && cellNum >= filterNum1 && cellNum <= filterNum2;
+            }
+        } else if (filter.type === 'text' || filter.type === 'phone') {
+            const lowerCell = strValue.toLowerCase();
+            const lowerFilter = filter.value ? String(filter.value).toLowerCase() : '';
+
+            if (filter.operator === 'contains') {
+                return lowerCell.includes(lowerFilter);
+            } else if (filter.operator === 'equals') {
+                return lowerCell === lowerFilter;
+            } else if (filter.operator === 'starts_with') {
+                return lowerCell.startsWith(lowerFilter);
+            } else if (filter.operator === 'ends_with') {
+                return lowerCell.endsWith(lowerFilter);
+            }
+        }
+        return true;
+    }, []);
+    
     const applyScroll = (element, amount, smooth = false) => {
         const behavior = smooth ? 'smooth' : 'auto';
         if (amount === 0) return 0;
@@ -355,7 +253,7 @@ function Table({
             if (maxScroll <= 0) return amount;
             const currentScroll = window.scrollX || window.pageXOffset;
             let newScroll = currentScroll + amount;
-            let remainder = 0;
+            let remainder;
             if (newScroll > maxScroll) {
                 remainder = newScroll - maxScroll;
                 window.scrollTo({ left: maxScroll, behavior });
@@ -374,7 +272,7 @@ function Table({
 
         const currentScroll = element.scrollLeft;
         let newScroll = currentScroll + amount;
-        let remainder = 0;
+        let remainder;
 
         if (newScroll > maxScroll) {
             remainder = newScroll - maxScroll;
@@ -397,7 +295,7 @@ function Table({
             if (maxScroll <= 0) return amount;
             const currentScroll = window.scrollY || window.pageYOffset;
             let newScroll = currentScroll + amount;
-            let remainder = 0;
+            let remainder;
             if (newScroll > maxScroll) {
                 remainder = newScroll - maxScroll;
                 window.scrollTo({ top: maxScroll, behavior });
@@ -416,7 +314,7 @@ function Table({
 
         const currentScroll = element.scrollTop;
         let newScroll = currentScroll + amount;
-        let remainder = 0;
+        let remainder;
 
         if (newScroll > maxScroll) {
             remainder = newScroll - maxScroll;
@@ -494,29 +392,7 @@ function Table({
         const maxThumbTop = trackHeight - thumbHeight;
         setThumbTop(Math.max(0, Math.min(ratio * maxThumbTop, maxThumbTop)));
     }, [isVerticalDragging, thumbHeight]);
-
-    useEffect(() => {
-        const handleExternalScroll = () => updateThumbPosition();
-        window.addEventListener('scroll', handleExternalScroll);
-        const moduleEl = tableModuleRef.current;
-        if (moduleEl) moduleEl.addEventListener('scroll', handleExternalScroll);
-        return () => {
-            window.removeEventListener('scroll', handleExternalScroll);
-            if (moduleEl) moduleEl.removeEventListener('scroll', handleExternalScroll);
-        };
-    }, [updateThumbPosition]);
-
-    useEffect(() => {
-        const handleExternalVerticalScroll = () => updateVerticalThumbPosition();
-        window.addEventListener('scroll', handleExternalVerticalScroll);
-        const moduleEl = tableModuleRef.current;
-        if (moduleEl) moduleEl.addEventListener('scroll', handleExternalVerticalScroll);
-        return () => {
-            window.removeEventListener('scroll', handleExternalVerticalScroll);
-            if (moduleEl) moduleEl.removeEventListener('scroll', handleExternalVerticalScroll);
-        };
-    }, [updateVerticalThumbPosition]);
-
+    
     const handleMouseDown = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -596,36 +472,9 @@ function Table({
     }, [isVerticalDragging, startY, scrollTopStart, thumbHeight, cascadeVerticalScroll]);
 
     const handleMouseUp = useCallback(() => setIsDragging(false), []);
+
     const handleVerticalMouseUp = useCallback(() => setIsVerticalDragging(false), []);
-
-    useEffect(() => {
-        if (isDragging) {
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
-        } else {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-        }
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [isDragging, handleMouseMove, handleMouseUp]);
-
-    useEffect(() => {
-        if (isVerticalDragging) {
-            window.addEventListener('mousemove', handleVerticalMouseMove);
-            window.addEventListener('mouseup', handleVerticalMouseUp);
-        } else {
-            window.removeEventListener('mousemove', handleVerticalMouseMove);
-            window.removeEventListener('mouseup', handleVerticalMouseUp);
-        }
-        return () => {
-            window.removeEventListener('mousemove', handleVerticalMouseMove);
-            window.removeEventListener('mouseup', handleVerticalMouseUp);
-        };
-    }, [isVerticalDragging, handleVerticalMouseMove, handleVerticalMouseUp]);
-
+    
     const handleTouchStart = (e) => {
         setIsDragging(true);
         setStartX(e.touches[0].clientX);
@@ -699,38 +548,8 @@ function Table({
     }, [isVerticalDragging, startY, scrollTopStart, thumbHeight, cascadeVerticalScroll]);
 
     const handleTouchEnd = useCallback(() => setIsDragging(false), []);
+
     const handleVerticalTouchEnd = useCallback(() => setIsVerticalDragging(false), []);
-
-    useEffect(() => {
-        if (isDragging) {
-            window.addEventListener('touchmove', handleTouchMove, { passive: false });
-            window.addEventListener('touchend', handleTouchEnd);
-        } else {
-            window.removeEventListener('touchmove', handleTouchMove);
-            window.removeEventListener('touchend', handleTouchEnd);
-        }
-        return () => {
-            window.removeEventListener('touchmove', handleTouchMove);
-            window.removeEventListener('touchend', handleTouchEnd);
-        };
-    }, [isDragging, handleTouchMove, handleTouchEnd]);
-
-    useEffect(() => {
-        if (isVerticalDragging) {
-            window.addEventListener('touchmove', handleVerticalTouchMove, { passive: false });
-            window.addEventListener('touchend', handleVerticalTouchEnd);
-        } else {
-            window.removeEventListener('touchmove', handleVerticalTouchMove);
-            window.removeEventListener('touchend', handleVerticalTouchEnd);
-        }
-        return () => {
-            window.removeEventListener('touchmove', handleVerticalTouchMove);
-            window.removeEventListener('touchend', handleVerticalTouchEnd);
-        };
-    }, [isVerticalDragging, handleVerticalTouchMove, handleVerticalTouchEnd]);
-
-    const scrollIntervalRef = useRef(null);
-    const verticalScrollIntervalRef = useRef(null);
 
     const scrollBy = useCallback((direction) => {
         const container = scrollContainerRef.current;
@@ -745,7 +564,7 @@ function Table({
         const container = scrollContainerRef.current;
         if (!container) return;
         const rows = finalTableData ? finalTableData.length : 1;
-        const step = Math.max(container.clientHeight / Math.max(rows / 2, 1), container.clientHeight / 4);
+        const step = Math.max(container.clientHeight / Math.max(rows / 2, 1), container.clientHeight / 2);
         const amount = step * direction;
         cascadeVerticalScroll(amount, true);
     }, [finalTableData, cascadeVerticalScroll]);
@@ -773,19 +592,7 @@ function Table({
             verticalScrollIntervalRef.current = null;
         }
     }, []);
-
-    useEffect(() => {
-        return () => {
-            if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
-        };
-    }, []);
-
-    useEffect(() => {
-        return () => {
-            if (verticalScrollIntervalRef.current) clearInterval(verticalScrollIntervalRef.current);
-        };
-    }, []);
-
+    
     const handleTrackClick = (e) => {
         if (e.target.closest('.custom-scrollbar-thumb')) return;
         const track = e.currentTarget;
@@ -843,111 +650,7 @@ function Table({
         const delta = targetTotalScroll - currentTotal;
         cascadeVerticalScroll(delta, true);
     };
-
-    useEffect(() => {
-        if (!scrollable || (isMobile && !showHorizontalScrollBarInMobile) || hideHorizontalScrollBar) {
-            setIsScrollbarVisible(false);
-            return;
-        }
-        const container = scrollContainerRef.current;
-        if (!container) return;
-
-        const checkOverflow = () => {
-            const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
-            if (containerMax > 0) {
-                setIsScrollbarVisible(true);
-                const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
-                if (trackWidth > 0) {
-                    const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
-                    const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
-                    const totalMax = containerMax + moduleMax + windowMax;
-
-                    const ratio = container.clientWidth / (container.clientWidth + totalMax);
-                    const minWidth = isMobile ? 80 : 10;
-                    const maxWidth = isMobile ? (trackWidth * 0.6) : (trackWidth * 0.1);
-                    let newThumbWidth = ratio * trackWidth;
-                    newThumbWidth = Math.max(minWidth, Math.min(newThumbWidth, maxWidth));
-                    setThumbWidth(newThumbWidth);
-
-                    const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
-                    const windowScroll = window.scrollX || window.pageXOffset;
-                    const currentTotal = container.scrollLeft + moduleScroll + windowScroll;
-
-                    const scrollRatio = totalMax > 0 ? currentTotal / totalMax : 0;
-                    const maxThumbLeft = trackWidth - newThumbWidth;
-                    setThumbLeft(scrollRatio * maxThumbLeft);
-                }
-            } else {
-                setIsScrollbarVisible(false);
-            }
-        };
-
-        const timeoutId = setTimeout(checkOverflow, 50);
-        const resizeObserver = new ResizeObserver(checkOverflow);
-        resizeObserver.observe(container);
-        const table = container.querySelector('table');
-        if (table) resizeObserver.observe(table);
-        window.addEventListener('resize', checkOverflow);
-
-        return () => {
-            clearTimeout(timeoutId);
-            resizeObserver.disconnect();
-            window.removeEventListener('resize', checkOverflow);
-        };
-    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
-
-    useEffect(() => {
-        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar ) {
-            setIsVerticalScrollbarVisible(false);
-            return;
-        }
-        const container = scrollContainerRef.current;
-        if (!container) return;
-
-        const checkVerticalOverflow = () => {
-            const containerMax = Math.max(container.scrollHeight - container.clientHeight, 0);
-            if (containerMax > 0) {
-                setIsVerticalScrollbarVisible(true);
-                const trackHeight = verticalScrollbarTrackRef.current?.clientHeight || 0;
-                if (trackHeight > 0) {
-                    const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollHeight - tableModuleRef.current.clientHeight, 0) : 0;
-                    const windowMax = Math.max(document.documentElement.scrollHeight - document.documentElement.clientHeight, 0);
-                    const totalMax = containerMax + moduleMax + windowMax;
-
-                    const ratio = container.clientHeight / (container.clientHeight + totalMax);
-                    const minHeight = isMobile ? 100 : 100;
-                    const maxHeight = isMobile ? (trackHeight * 1) : (trackHeight * 0.5);
-                    let newThumbHeight = ratio * trackHeight;
-                    newThumbHeight = Math.max(minHeight, Math.min(newThumbHeight, maxHeight));
-                    setThumbHeight(newThumbHeight);
-
-                    const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
-                    const windowScroll = window.scrollY || window.pageYOffset;
-                    const currentTotal = container.scrollTop + moduleScroll + windowScroll;
-
-                    const scrollRatio = totalMax > 0 ? currentTotal / totalMax : 0;
-                    const maxThumbTop = trackHeight - newThumbHeight;
-                    setThumbTop(scrollRatio * maxThumbTop);
-                }
-            } else {
-                setIsVerticalScrollbarVisible(false);
-            }
-        };
-
-        const timeoutId = setTimeout(checkVerticalOverflow, 50);
-        const resizeObserver = new ResizeObserver(checkVerticalOverflow);
-        resizeObserver.observe(container);
-        const table = container.querySelector('table');
-        if (table) resizeObserver.observe(table);
-        window.addEventListener('resize', checkVerticalOverflow);
-
-        return () => {
-            clearTimeout(timeoutId);
-            resizeObserver.disconnect();
-            window.removeEventListener('resize', checkVerticalOverflow);
-        };
-    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
-
+    
     const sortedDataWithIndices = useMemo(() => {
         if (!tableData || tableData.length === 0) return [];
         const withIndices = tableData?.map((row, index) => ({ row, originalIndex: index }));
@@ -973,12 +676,6 @@ function Table({
     }, [tableData, sortConfig, tableHeader]);
 
     const sortedData = useMemo(() => sortedDataWithIndices?.map(item => item.row), [sortedDataWithIndices]);
-
-    useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     const requestSort = (columnIndex) => {
         let direction = 'ascending';
@@ -1059,16 +756,8 @@ function Table({
             item.row.filter((cell, colIndex) => !hiddenColumns.has(sortedData[0][colIndex]))
         );
         setFinalTableData(filteredData);
-    }, [sortedDataWithIndices, sortedData, hiddenColumns, columnFilters, tableData, filterableColumns, tableHeader]);
-
-    useEffect(() => {
-        updateFinalTableData();
-    }, [hiddenColumns, sortedDataWithIndices, columnFilters, updateFinalTableData]);
-
-    useEffect(() => {
-        updateFinalTableData();
-    }, [sortConfig, updateFinalTableData]);
-
+    }, [tableData, sortedDataWithIndices, filterableColumns, columnFilters, tableHeader, applyFilter, hiddenColumns, sortedData]);
+    
     const smartFilterData = useMemo(() => {
         if (!isFilterPopupOpen || !columnToFilterBasedOn || !tableData || tableData.length === 0) {
             return { uniqueValues: [], min: null, max: null };
@@ -1197,7 +886,7 @@ function Table({
         }
 
         return { uniqueValues, baseUniqueValues, min: displayMin, max: displayMax };
-    }, [isFilterPopupOpen, columnToFilterBasedOn, tableData, sortedDataWithIndices, tableHeader, filterableColumns, columnFilters, dataTypes]);
+    }, [isFilterPopupOpen, columnToFilterBasedOn, tableData, sortedDataWithIndices, filterableColumns, dataTypes, columnFilters, tableHeader, applyFilter]);
 
     const hasActiveFilters = useCallback(() => {
         return Object.keys(columnFilters).some(key => {
@@ -1393,6 +1082,308 @@ function Table({
         );
     };
 
+    useEffect(() => {
+        return () => {
+            if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
+        };
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (verticalScrollIntervalRef.current) clearInterval(verticalScrollIntervalRef.current);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        const handleChange = (event) => {
+            setIsDarkMode(event.matches);
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => mediaQuery.removeEventListener('change', handleChange);
+    }, []);
+
+    useEffect(() => {
+        if (isMobile) {
+            setPageSize(mobilePageSize)
+        } else {
+            setPageSize(desktopPageSize)
+        }
+    }, [isMobile]);
+
+    useEffect(() => {
+        if (!isMobile) return;
+
+        const prevent = (e) => e.preventDefault();
+
+        const thumbs = [
+            verticalScrollbarThumbRef.current,
+            scrollbarThumbRef.current,
+        ];
+
+        const tracks = [
+            verticalScrollbarTrackRef.current,
+            scrollbarTrackRef.current,
+        ];
+
+        thumbs.forEach((el) => {
+            if (!el) return;
+            el.addEventListener("touchstart", prevent, { passive: false });
+            el.addEventListener("touchmove",  prevent, { passive: false });
+        });
+
+        tracks.forEach((el) => {
+            if (!el) return;
+            el.addEventListener("touchmove", prevent, { passive: false });
+        });
+
+        return () => {
+            thumbs.forEach((el) => {
+                if (!el) return;
+                el.removeEventListener("touchstart", prevent);
+                el.removeEventListener("touchmove",  prevent);
+            });
+            tracks.forEach((el) => {
+                if (!el) return;
+                el.removeEventListener("touchmove", prevent);
+            });
+        };
+    }, [isMobile]);
+
+    useEffect(() => {
+        updateStickyOffsets();
+        const resizeObserver = new ResizeObserver(updateStickyOffsets);
+        if (scrollContainerRef.current) {
+            resizeObserver.observe(scrollContainerRef.current);
+        }
+        window.addEventListener('resize', updateStickyOffsets);
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', updateStickyOffsets);
+        };
+    }, [updateStickyOffsets]);
+
+    useEffect(() => {
+        const handleExternalScroll = () => updateThumbPosition();
+        window.addEventListener('scroll', handleExternalScroll);
+        const moduleEl = tableModuleRef.current;
+        if (moduleEl) moduleEl.addEventListener('scroll', handleExternalScroll);
+        return () => {
+            window.removeEventListener('scroll', handleExternalScroll);
+            if (moduleEl) moduleEl.removeEventListener('scroll', handleExternalScroll);
+        };
+    }, [updateThumbPosition]);
+
+    useEffect(() => {
+        const handleExternalVerticalScroll = () => updateVerticalThumbPosition();
+        window.addEventListener('scroll', handleExternalVerticalScroll);
+        const moduleEl = tableModuleRef.current;
+        if (moduleEl) moduleEl.addEventListener('scroll', handleExternalVerticalScroll);
+        return () => {
+            window.removeEventListener('scroll', handleExternalVerticalScroll);
+            if (moduleEl) moduleEl.removeEventListener('scroll', handleExternalVerticalScroll);
+        };
+    }, [updateVerticalThumbPosition]);
+
+    useEffect(() => {
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        } else if (totalPages === 0) {
+            setCurrentPage(1);
+        }
+    }, [totalPages, currentPage]);
+
+    useEffect(() => {
+        updateFinalTableData();
+    }, [sortConfig, updateFinalTableData]);
+
+    useEffect(() => {
+        if ( (dataRows && dataRows.length  > maxItemsBeforePagination) || isMobile) {
+            setIsPaginated(true);
+        } else {
+            setIsPaginated(false);
+        }
+    }, [tableData, isMobile, dataRows])
+
+    useEffect(() => {
+        setTotalPage(Math.ceil(dataRows.length / pageSize));
+    }, [dataRows.length, pageSize])
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleTouchEnd);
+        } else {
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+        }
+        return () => {
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, [isDragging, handleTouchMove, handleTouchEnd]);
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        } else {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, handleMouseMove, handleMouseUp]);
+
+    useEffect(() => {
+        if (isVerticalDragging) {
+            window.addEventListener('mousemove', handleVerticalMouseMove);
+            window.addEventListener('mouseup', handleVerticalMouseUp);
+        } else {
+            window.removeEventListener('mousemove', handleVerticalMouseMove);
+            window.removeEventListener('mouseup', handleVerticalMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleVerticalMouseMove);
+            window.removeEventListener('mouseup', handleVerticalMouseUp);
+        };
+    }, [isVerticalDragging, handleVerticalMouseMove, handleVerticalMouseUp]);
+
+    useEffect(() => {
+        if (isVerticalDragging) {
+            window.addEventListener('touchmove', handleVerticalTouchMove, { passive: false });
+            window.addEventListener('touchend', handleVerticalTouchEnd);
+        } else {
+            window.removeEventListener('touchmove', handleVerticalTouchMove);
+            window.removeEventListener('touchend', handleVerticalTouchEnd);
+        }
+        return () => {
+            window.removeEventListener('touchmove', handleVerticalTouchMove);
+            window.removeEventListener('touchend', handleVerticalTouchEnd);
+        };
+    }, [isVerticalDragging, handleVerticalTouchMove, handleVerticalTouchEnd]);
+
+    useEffect(() => {
+        updateFinalTableData();
+    }, [hiddenColumns, sortedDataWithIndices, columnFilters, updateFinalTableData]);
+
+    useEffect(() => {
+        if (!scrollable || (isMobile && !showHorizontalScrollBarInMobile) || hideHorizontalScrollBar) {
+            setIsScrollbarVisible(false);
+            return;
+        }
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const checkOverflow = () => {
+            const containerMax = Math.max(container.scrollWidth - container.clientWidth, 0);
+            if (containerMax > 0) {
+                setIsScrollbarVisible(true);
+                const trackWidth = scrollbarTrackRef.current?.clientWidth || 0;
+                if (trackWidth > 0) {
+                    const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollWidth - tableModuleRef.current.clientWidth, 0) : 0;
+                    const windowMax = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0);
+                    const totalMax = containerMax + moduleMax + windowMax;
+
+                    const ratio = container.clientWidth / (container.clientWidth + totalMax);
+                    const minWidth = isMobile ? 80 : 10;
+                    const maxWidth = isMobile ? (trackWidth * 0.6) : (trackWidth * 0.1);
+                    let newThumbWidth = ratio * trackWidth;
+                    newThumbWidth = Math.max(minWidth, Math.min(newThumbWidth, maxWidth));
+                    setThumbWidth(newThumbWidth);
+
+                    const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollLeft : 0;
+                    const windowScroll = window.scrollX || window.pageXOffset;
+                    const currentTotal = container.scrollLeft + moduleScroll + windowScroll;
+
+                    const scrollRatio = totalMax > 0 ? currentTotal / totalMax : 0;
+                    const maxThumbLeft = trackWidth - newThumbWidth;
+                    setThumbLeft(scrollRatio * maxThumbLeft);
+                }
+            } else {
+                setIsScrollbarVisible(false);
+            }
+        };
+
+        const timeoutId = setTimeout(checkOverflow, 50);
+        const resizeObserver = new ResizeObserver(checkOverflow);
+        resizeObserver.observe(container);
+        const table = container.querySelector('table');
+        if (table) resizeObserver.observe(table);
+        window.addEventListener('resize', checkOverflow);
+
+        return () => {
+            clearTimeout(timeoutId);
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', checkOverflow);
+        };
+    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showHorizontalScrollBarInMobile, hideHorizontalScrollBar]);
+
+    useEffect(() => {
+        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar ) {
+            setIsVerticalScrollbarVisible(false);
+            return;
+        }
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const checkVerticalOverflow = () => {
+            const containerMax = Math.max(container.scrollHeight - container.clientHeight, 0);
+            if (containerMax > 0) {
+                setIsVerticalScrollbarVisible(true);
+                const trackHeight = verticalScrollbarTrackRef.current?.clientHeight || 0;
+                if (trackHeight > 0) {
+                    const moduleMax = tableModuleRef.current ? Math.max(tableModuleRef.current.scrollHeight - tableModuleRef.current.clientHeight, 0) : 0;
+                    const windowMax = Math.max(document.documentElement.scrollHeight - document.documentElement.clientHeight, 0);
+                    const totalMax = containerMax + moduleMax + windowMax;
+
+                    const ratio = container.clientHeight / (container.clientHeight + totalMax);
+                    const minHeight = isMobile ? 100 : 100;
+                    const maxHeight = isMobile ? (trackHeight * 1) : (trackHeight * 0.5);
+                    let newThumbHeight = ratio * trackHeight;
+                    newThumbHeight = Math.max(minHeight, Math.min(newThumbHeight, maxHeight));
+                    setThumbHeight(newThumbHeight);
+
+                    const moduleScroll = tableModuleRef.current ? tableModuleRef.current.scrollTop : 0;
+                    const windowScroll = window.scrollY || window.pageYOffset;
+                    const currentTotal = container.scrollTop + moduleScroll + windowScroll;
+
+                    const scrollRatio = totalMax > 0 ? currentTotal / totalMax : 0;
+                    const maxThumbTop = trackHeight - newThumbHeight;
+                    setThumbTop(scrollRatio * maxThumbTop);
+                }
+            } else {
+                setIsVerticalScrollbarVisible(false);
+            }
+        };
+
+        const timeoutId = setTimeout(checkVerticalOverflow, 50);
+        const resizeObserver = new ResizeObserver(checkVerticalOverflow);
+        resizeObserver.observe(container);
+        const table = container.querySelector('table');
+        if (table) resizeObserver.observe(table);
+        window.addEventListener('resize', checkVerticalOverflow);
+
+        return () => {
+            clearTimeout(timeoutId);
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', checkVerticalOverflow);
+        };
+    }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
+    
     return (
         <div className="table-module" ref={tableModuleRef} style={{ overflow: scrollable ? 'auto' : 'hidden' }}>
             <div className={"table-module-header"}>
