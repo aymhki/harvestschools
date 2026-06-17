@@ -718,6 +718,7 @@ td button {
 
     .table-module-table-scrollable {
         margin: 0;
+        max-height: 50vh;
     }
 
     .table-with-vertical-scrollbar-wrapper {
