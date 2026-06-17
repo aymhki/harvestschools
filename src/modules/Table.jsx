@@ -224,6 +224,7 @@ function Table({
     });
 
     const [columnFilters, setColumnFilters] = useState({});
+    const showVerticalScrollBarInMobile = true
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -827,7 +828,7 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile]);
 
     useEffect(() => {
-        if (!scrollable || isMobile || hideVerticalScrollBar) {
+        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar ) {
             setIsVerticalScrollbarVisible(false);
             return;
         }
@@ -1214,7 +1215,7 @@ function Table({
     };
 
     const renderVerticalCustomScrollbar = () => {
-        if (!scrollable || isMobile || hideVerticalScrollBar) return null;
+        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar ) return null;
         return (
             <div className={`custom-scrollbar-container-vertical ${isVerticalScrollbarVisible ? 'visible' : ''} ${isVerticalDragging ? 'is-dragging' : ''}`}>
                 <button
