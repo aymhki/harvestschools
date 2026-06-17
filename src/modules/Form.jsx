@@ -1209,7 +1209,7 @@ function Form({
                                     {t('all-forms.year')}
                                 </option>
 
-                                {Array.from({length: new Date().getFullYear() - 1970 + 1}, (v, k) => k + 1970).map(year => (
+                                {Array.from({length: new Date().getFullYear() - 1950 + 1}, (v, k) => k + 1950).map(year => (
                                     <option key={year} value={year}>{year}</option>
                                 ))}
                             </select>
