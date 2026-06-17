@@ -920,7 +920,6 @@ function GraduationBookingManagement() {
                            "Total CD Cost",
                            "Total Additional Attendee(s) Cost",
                            "Total Paid for Base Fare",
-                           "Booking ID",
                            "Additional Attendees",
                        ]}
                        headerModuleElements={[
