@@ -1704,11 +1704,10 @@ function Table({
 
             <div className={"table-module-footer"}>
                 {renderCustomScrollbar(false)}
+                {renderPagination()}
                 {footerModuleElements && footerModuleElements.map((element, index) => (
                     <Fragment key={index}>{element}</Fragment>
                 ))}
-                {renderPagination()}
-
             </div>
 
             <animated.div className="table-module-accordion" style={contentAnimation}>
