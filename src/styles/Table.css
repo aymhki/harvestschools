@@ -517,6 +517,7 @@ td button {
     overflow: hidden;
     transition: opacity 0.3s ease, width 0.3s ease;
     margin-right: 2rem;
+    touch-action: none;
 }
 
 

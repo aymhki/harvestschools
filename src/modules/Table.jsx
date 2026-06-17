@@ -278,6 +278,30 @@ function Table({
         return () => mediaQuery.removeEventListener('change', handleChange);
     }, []);
 
+    useEffect(() => {
+        const thumb = verticalScrollbarThumbRef.current;
+        const track = verticalScrollbarTrackRef.current;
+        if (!thumb) return;
+
+        const prevent = (e) => e.preventDefault();
+
+        thumb.addEventListener("touchstart", prevent, { passive: false });
+        thumb.addEventListener("touchmove", prevent, { passive: false });
+
+        if (!track) return;
+
+        track.addEventListener("touchstart", prevent, { passive: false });
+        track.addEventListener("touchmove", prevent, { passive: false });
+
+        return () => {
+            thumb.removeEventListener("touchstart", prevent);
+            thumb.removeEventListener("touchmove", prevent);
+
+            track.removeEventListener("touchstart", prevent);
+            track.removeEventListener("touchmove", prevent);
+        };
+    }, []);
+
     const applyScroll = (element, amount, smooth = false) => {
         const behavior = smooth ? 'smooth' : 'auto';
         if (amount === 0) return 0;
