@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState, useCallback, Fragment, useRef } from "react";
+import {useEffect, useMemo, useState, useCallback, Fragment, useRef} from "react";
 import PropTypes from "prop-types";
 import '../styles/Table.css';
-import { animated, useSpring } from 'react-spring';
+import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 
 function Table({
                    tableHeader,
@@ -18,6 +18,7 @@ function Table({
                    exportFileName,
                    filterableColumns,
                    headerModuleElements,
+                    footerModuleElements,
                    onDeleteEntry,
                    allowDeleteEntryOption,
                    columnsToWrap,
@@ -25,13 +26,15 @@ function Table({
                    onEditEntryOption,
                    likelyUrlColumns,
                    allowSticky,
-                   bottomHorizontalScrollBar,
                    dataTypes,
                    hideHorizontalScrollBar,
                    hideVerticalScrollBar,
                    tablePages,
                }) {
-    const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : { column: null, direction: 'neutral' });
+    const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : {
+        column: null,
+        direction: 'neutral'
+    });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
     const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
@@ -45,7 +48,7 @@ function Table({
     });
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const showPaginationOnMobile = true
     const maxItemsBeforePagination = 300;
     const mobilePageSize = 30;
@@ -74,7 +77,7 @@ function Table({
     const [scrollTopStart, setScrollTopStart] = useState(0);
     const [stickyRows, setStickyRows] = useState(allowSticky ? 1 : 0);
     const [stickyCols, setStickyCols] = useState(allowSticky ? 1 : 0);
-    const [hoveredCell, setHoveredCell] = useState({ r: null, c: null });
+    const [hoveredCell, setHoveredCell] = useState({r: null, c: null});
     const [colWidths, setColWidths] = useState([]);
     const [rowHeights, setRowHeights] = useState([]);
     const [columnFilters, setColumnFilters] = useState({});
@@ -82,14 +85,14 @@ function Table({
     const showHorizontalScrollBarInMobile = true
     const scrollIntervalRef = useRef(null);
     const verticalScrollIntervalRef = useRef(null);
-    
+
     const dataRows = useMemo(() => {
         if (!finalTableData || finalTableData.length <= headerRowCount) return [];
         return finalTableData.slice(headerRowCount);
     }, [finalTableData, headerRowCount]);
-    
+
     const [isPaginated, setIsPaginated] = useState(
-        (tablePages === true) || (tablePages === undefined && (isMobile && showPaginationOnMobile) ) || (dataRows && dataRows.length > maxItemsBeforePagination)
+        (tablePages === true) || (tablePages === undefined && (isMobile && showPaginationOnMobile)) || (dataRows && dataRows.length > maxItemsBeforePagination)
     )
     const [totalPages, setTotalPage] = useState(Math.ceil(dataRows.length / pageSize));
 
@@ -104,7 +107,7 @@ function Table({
         if (!finalTableData) return [];
         return [...finalTableData.slice(0, headerRowCount), ...paginatedDataRows];
     }, [finalTableData, headerRowCount, paginatedDataRows]);
-    
+
     const [isDarkMode, setIsDarkMode] = useState(() => {
         if (typeof window !== 'undefined') {
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -116,13 +119,13 @@ function Table({
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
         transform: isAccordionOpen ? 'translateY(0)' : 'translateY(-100%)',
-        config: { duration: 300 },
+        config: {duration: 300},
     });
 
     const popupAnimation = useSpring({
         opacity: isFilterPopupOpen ? 1 : 0,
         transform: isFilterPopupOpen ? 'translateY(0)' : 'translateY(-100%)',
-        config: { duration: 300 },
+        config: {duration: 300},
     });
 
     const updateStickyOffsets = useCallback(() => {
@@ -244,7 +247,7 @@ function Table({
         }
         return true;
     }, []);
-    
+
     const applyScroll = (element, amount, smooth = false) => {
         const behavior = smooth ? 'smooth' : 'auto';
         if (amount === 0) return 0;
@@ -256,12 +259,12 @@ function Table({
             let remainder;
             if (newScroll > maxScroll) {
                 remainder = newScroll - maxScroll;
-                window.scrollTo({ left: maxScroll, behavior });
+                window.scrollTo({left: maxScroll, behavior});
             } else if (newScroll < 0) {
                 remainder = newScroll;
-                window.scrollTo({ left: 0, behavior });
+                window.scrollTo({left: 0, behavior});
             } else {
-                window.scrollTo({ left: newScroll, behavior });
+                window.scrollTo({left: newScroll, behavior});
                 remainder = 0;
             }
             return remainder;
@@ -276,12 +279,12 @@ function Table({
 
         if (newScroll > maxScroll) {
             remainder = newScroll - maxScroll;
-            element.scrollTo({ left: maxScroll, behavior });
+            element.scrollTo({left: maxScroll, behavior});
         } else if (newScroll < 0) {
             remainder = newScroll;
-            element.scrollTo({ left: 0, behavior });
+            element.scrollTo({left: 0, behavior});
         } else {
-            element.scrollTo({ left: newScroll, behavior });
+            element.scrollTo({left: newScroll, behavior});
             remainder = 0;
         }
         return remainder;
@@ -298,12 +301,12 @@ function Table({
             let remainder;
             if (newScroll > maxScroll) {
                 remainder = newScroll - maxScroll;
-                window.scrollTo({ top: maxScroll, behavior });
+                window.scrollTo({top: maxScroll, behavior});
             } else if (newScroll < 0) {
                 remainder = newScroll;
-                window.scrollTo({ top: 0, behavior });
+                window.scrollTo({top: 0, behavior});
             } else {
-                window.scrollTo({ top: newScroll, behavior });
+                window.scrollTo({top: newScroll, behavior});
                 remainder = 0;
             }
             return remainder;
@@ -318,12 +321,12 @@ function Table({
 
         if (newScroll > maxScroll) {
             remainder = newScroll - maxScroll;
-            element.scrollTo({ top: maxScroll, behavior });
+            element.scrollTo({top: maxScroll, behavior});
         } else if (newScroll < 0) {
             remainder = newScroll;
-            element.scrollTo({ top: 0, behavior });
+            element.scrollTo({top: 0, behavior});
         } else {
-            element.scrollTo({ top: newScroll, behavior });
+            element.scrollTo({top: newScroll, behavior});
             remainder = 0;
         }
         return remainder;
@@ -392,7 +395,7 @@ function Table({
         const maxThumbTop = trackHeight - thumbHeight;
         setThumbTop(Math.max(0, Math.min(ratio * maxThumbTop, maxThumbTop)));
     }, [isVerticalDragging, thumbHeight]);
-    
+
     const handleMouseDown = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -474,7 +477,7 @@ function Table({
     const handleMouseUp = useCallback(() => setIsDragging(false), []);
 
     const handleVerticalMouseUp = useCallback(() => setIsVerticalDragging(false), []);
-    
+
     const handleTouchStart = (e) => {
         setIsDragging(true);
         setStartX(e.touches[0].clientX);
@@ -592,7 +595,7 @@ function Table({
             verticalScrollIntervalRef.current = null;
         }
     }, []);
-    
+
     const handleTrackClick = (e) => {
         if (e.target.closest('.custom-scrollbar-thumb')) return;
         const track = e.currentTarget;
@@ -650,10 +653,10 @@ function Table({
         const delta = targetTotalScroll - currentTotal;
         cascadeVerticalScroll(delta, true);
     };
-    
+
     const sortedDataWithIndices = useMemo(() => {
         if (!tableData || tableData.length === 0) return [];
-        const withIndices = tableData?.map((row, index) => ({ row, originalIndex: index }));
+        const withIndices = tableData?.map((row, index) => ({row, originalIndex: index}));
         const startIndex = tableHeader ? 2 : 1;
 
         if (sortConfig.column === null || sortConfig.direction === 'neutral') return withIndices;
@@ -686,7 +689,7 @@ function Table({
                 columnIndex = null;
             }
         }
-        setSortConfig({ column: columnIndex, direction });
+        setSortConfig({column: columnIndex, direction});
     };
 
     const getSortIndicator = (columnIndex) => {
@@ -698,7 +701,8 @@ function Table({
 
     const applyLikelyUrlFunction = (columnName, cellValue) => {
         if (likelyUrlColumns && likelyUrlColumns[columnName]) {
-            return <p className={"table-link"} lang={"en"} onClick={() => likelyUrlColumns[columnName](cellValue)}>{cellValue}</p>;
+            return <p className={"table-link"} lang={"en"}
+                      onClick={() => likelyUrlColumns[columnName](cellValue)}>{cellValue}</p>;
         } else {
             return cellValue;
         }
@@ -757,15 +761,15 @@ function Table({
         );
         setFinalTableData(filteredData);
     }, [tableData, sortedDataWithIndices, filterableColumns, columnFilters, tableHeader, applyFilter, hiddenColumns, sortedData]);
-    
+
     const smartFilterData = useMemo(() => {
         if (!isFilterPopupOpen || !columnToFilterBasedOn || !tableData || tableData.length === 0) {
-            return { uniqueValues: [], min: null, max: null };
+            return {uniqueValues: [], min: null, max: null};
         }
 
         const columnName = columnToFilterBasedOn;
         const colIndex = tableData[0].indexOf(columnName);
-        if (colIndex === -1) return { uniqueValues: [], min: null, max: null };
+        if (colIndex === -1) return {uniqueValues: [], min: null, max: null};
 
         let filteredDataWithIndices = [...sortedDataWithIndices];
         let baseFilteredDataWithIndices = [...sortedDataWithIndices];
@@ -885,7 +889,7 @@ function Table({
             displayMax = new Date(maxVal).toLocaleDateString();
         }
 
-        return { uniqueValues, baseUniqueValues, min: displayMin, max: displayMax };
+        return {uniqueValues, baseUniqueValues, min: displayMin, max: displayMax};
     }, [isFilterPopupOpen, columnToFilterBasedOn, tableData, sortedDataWithIndices, filterableColumns, dataTypes, columnFilters, tableHeader, applyFilter]);
 
     const hasActiveFilters = useCallback(() => {
@@ -911,12 +915,12 @@ function Table({
 
             setColumnFilters(prev => ({
                 ...prev,
-                [columnName]: { type, operator: defaultOperator, value: '', value2: '', checkedValues: null }
+                [columnName]: {type, operator: defaultOperator, value: '', value2: '', checkedValues: null}
             }));
         } else {
             setColumnFilters(prev => ({
                 ...prev,
-                [columnName]: { ...prev[columnName], type }
+                [columnName]: {...prev[columnName], type}
             }));
         }
     };
@@ -924,7 +928,8 @@ function Table({
     const renderCustomScrollbar = (isTop) => {
         if (!scrollable || (isMobile && !showHorizontalScrollBarInMobile) || hideHorizontalScrollBar) return null;
         return (
-            <div className={`custom-scrollbar-container ${!isTop ? 'footer' : ''} ${isScrollbarVisible ? 'visible' : ''} ${isDragging ? 'is-dragging' : ''}`}>
+            <div
+                className={`custom-scrollbar-container ${!isTop ? 'footer' : ''} ${isScrollbarVisible ? 'visible' : ''} ${isDragging ? 'is-dragging' : ''}`}>
                 <button
                     className="custom-scrollbar-arrow"
                     onMouseDown={() => startScrolling(-1)}
@@ -935,7 +940,8 @@ function Table({
                     aria-label="Scroll Left"
                 >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+                              strokeLinejoin="round"/>
                     </svg>
                 </button>
                 <div
@@ -946,7 +952,7 @@ function Table({
                     <div
                         className={`custom-scrollbar-thumb ${isDragging ? 'dragging' : ''}`}
                         ref={isTop ? scrollbarThumbRef : null}
-                        style={{ width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)` }}
+                        style={{width: `${thumbWidth}px`, transform: `translateX(${thumbLeft}px)`}}
                         onMouseDown={handleMouseDown}
                         onTouchStart={handleTouchStart}
                     >
@@ -965,17 +971,19 @@ function Table({
                     aria-label="Scroll Right"
                 >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+                              strokeLinejoin="round"/>
                     </svg>
                 </button>
             </div>
         );
     };
 
-    const renderVerticalCustomScrollbar = () => {
-        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar ) return null;
+    const renderVerticalCustomScrollbar = (left) => {
+        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar) return null;
         return (
-            <div className={`custom-scrollbar-container-vertical ${isVerticalScrollbarVisible ? 'visible' : ''} ${isVerticalDragging ? 'is-dragging' : ''}`}>
+            <div
+                className={`custom-scrollbar-container-vertical ${!left ? 'right' : ''} ${isVerticalScrollbarVisible ? 'visible' : ''} ${isVerticalDragging ? 'is-dragging' : ''}`}>
                 <button
                     className="custom-scrollbar-arrow-vertical"
                     onMouseDown={() => startVerticalScrolling(-1)}
@@ -986,7 +994,8 @@ function Table({
                     aria-label="Scroll Up"
                 >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 15L12 9L6 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M18 15L12 9L6 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+                              strokeLinejoin="round"/>
                     </svg>
                 </button>
                 <div
@@ -997,7 +1006,7 @@ function Table({
                     <div
                         className={`custom-scrollbar-thumb-vertical ${isVerticalDragging ? 'dragging' : ''}`}
                         ref={verticalScrollbarThumbRef}
-                        style={{ height: `${thumbHeight}px`, transform: `translateY(${thumbTop}px)` }}
+                        style={{height: `${thumbHeight}px`, transform: `translateY(${thumbTop}px)`}}
                         onMouseDown={handleVerticalMouseDown}
                         onTouchStart={handleVerticalTouchStart}
                     >
@@ -1016,7 +1025,8 @@ function Table({
                     aria-label="Scroll Down"
                 >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+                              strokeLinejoin="round"/>
                     </svg>
                 </button>
             </div>
@@ -1047,13 +1057,16 @@ function Table({
 
         return (
             <div className="table-pagination-controls">
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="pagination-btn">
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
+                        className="pagination-btn">
                     Previous
                 </button>
 
                 {startPage > 1 && (
                     <>
-                        <button onClick={() => handlePageChange(1)} className={`pagination-btn ${1 === currentPage ? 'active' : ''}`}>1</button>
+                        <button onClick={() => handlePageChange(1)}
+                                className={`pagination-btn ${1 === currentPage ? 'active' : ''}`}>1
+                        </button>
                         {startPage > 2 && <span className="pagination-ellipsis">...</span>}
                     </>
                 )}
@@ -1071,11 +1084,13 @@ function Table({
                 {endPage < totalPages && (
                     <>
                         {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
-                        <button onClick={() => handlePageChange(totalPages)} className={`pagination-btn ${totalPages === currentPage ? 'active' : ''}`}>{totalPages}</button>
+                        <button onClick={() => handlePageChange(totalPages)}
+                                className={`pagination-btn ${totalPages === currentPage ? 'active' : ''}`}>{totalPages}</button>
                     </>
                 )}
 
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="pagination-btn">
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}
+                        className="pagination-btn">
                     Next
                 </button>
             </div>
@@ -1139,20 +1154,20 @@ function Table({
 
         thumbs.forEach((el) => {
             if (!el) return;
-            el.addEventListener("touchstart", prevent, { passive: false });
-            el.addEventListener("touchmove",  prevent, { passive: false });
+            el.addEventListener("touchstart", prevent, {passive: false});
+            el.addEventListener("touchmove", prevent, {passive: false});
         });
 
         tracks.forEach((el) => {
             if (!el) return;
-            el.addEventListener("touchmove", prevent, { passive: false });
+            el.addEventListener("touchmove", prevent, {passive: false});
         });
 
         return () => {
             thumbs.forEach((el) => {
                 if (!el) return;
                 el.removeEventListener("touchstart", prevent);
-                el.removeEventListener("touchmove",  prevent);
+                el.removeEventListener("touchmove", prevent);
             });
             tracks.forEach((el) => {
                 if (!el) return;
@@ -1209,7 +1224,7 @@ function Table({
     }, [sortConfig, updateFinalTableData]);
 
     useEffect(() => {
-        if ( (dataRows && dataRows.length  > maxItemsBeforePagination) || isMobile) {
+        if ((dataRows && dataRows.length > maxItemsBeforePagination) || isMobile) {
             setIsPaginated(true);
         } else {
             setIsPaginated(false);
@@ -1222,7 +1237,7 @@ function Table({
 
     useEffect(() => {
         if (isDragging) {
-            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchmove', handleTouchMove, {passive: false});
             window.addEventListener('touchend', handleTouchEnd);
         } else {
             window.removeEventListener('touchmove', handleTouchMove);
@@ -1264,7 +1279,7 @@ function Table({
 
     useEffect(() => {
         if (isVerticalDragging) {
-            window.addEventListener('touchmove', handleVerticalTouchMove, { passive: false });
+            window.addEventListener('touchmove', handleVerticalTouchMove, {passive: false});
             window.addEventListener('touchend', handleVerticalTouchEnd);
         } else {
             window.removeEventListener('touchmove', handleVerticalTouchMove);
@@ -1333,7 +1348,7 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showHorizontalScrollBarInMobile, hideHorizontalScrollBar]);
 
     useEffect(() => {
-        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar ) {
+        if (!scrollable || (isMobile && !showVerticalScrollBarInMobile) || hideVerticalScrollBar) {
             setIsVerticalScrollbarVisible(false);
             return;
         }
@@ -1383,16 +1398,19 @@ function Table({
             window.removeEventListener('resize', checkVerticalOverflow);
         };
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
-    
+
     return (
-        <div className="table-module" ref={tableModuleRef} style={{ overflow: scrollable ? 'auto' : 'hidden' }}>
+        <div className="table-module" ref={tableModuleRef} style={{overflow: scrollable ? 'auto' : 'hidden'}}>
             <div className={"table-module-header"}>
                 <div className={"table-module-header-buttons-wrapper"}>
                     {(!finalTableData || finalTableData.length === 0) && (
                         <div className={"table-module-header-empty-state"}>
-                            <h3>{t("common.no-table-enteries-found", { ns: 'common' })}</h3>
+                            <h3>{t("common.no-table-enteries-found", {ns: 'common'})}</h3>
                         </div>
                     )}
+                    {headerModuleElements && headerModuleElements.map((element, index) => (
+                        <Fragment key={index}>{element}</Fragment>
+                    ))}
                     {finalTableData && allowHideColumns && (
                         <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
                             {isAccordionOpen ? 'Hide Columns' : 'Show Columns'}
@@ -1408,7 +1426,7 @@ function Table({
                                     } else return '';
                                 }).join(',')
                             ).join('\n');
-                            const blob = new Blob([csv], { type: 'text/csv' });
+                            const blob = new Blob([csv], {type: 'text/csv'});
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
                             a.href = url;
@@ -1422,20 +1440,20 @@ function Table({
                     {finalTableData && hasActiveFilters() && (
                         <button onClick={resetAllFilters}>Reset Filters</button>
                     )}
-                    {headerModuleElements && headerModuleElements.map((element, index) => (
-                        <Fragment key={index}>{element}</Fragment>
-                    ))}
                 </div>
 
                 {renderCustomScrollbar(true)}
             </div>
 
             <div className="table-with-vertical-scrollbar-wrapper">
-                {renderVerticalCustomScrollbar()}
+                {renderVerticalCustomScrollbar(true)}
                 <div
                     className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
                     ref={scrollContainerRef}
-                    onScroll={() => { updateThumbPosition(); updateVerticalThumbPosition(); }}
+                    onScroll={() => {
+                        updateThumbPosition();
+                        updateVerticalThumbPosition();
+                    }}
                 >
                     <table className="table-module-table" ref={tableRef}>
                         <tbody>
@@ -1487,13 +1505,14 @@ function Table({
                                             <td
                                                 key={cellIndex}
                                                 style={inlineStyles}
-                                                onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: cellIndex })}
-                                                onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                                onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: cellIndex})}
+                                                onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             >
                                                 {allowSticky && (showColControl || showRowControl) && (
                                                     <div className="sticky-control-widget">
                                                         {showColControl && (
-                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                            <label className="sticky-control-checkbox"
+                                                                   title="Fix all columns up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyCols > cellIndex}
@@ -1502,7 +1521,8 @@ function Table({
                                                             </label>
                                                         )}
                                                         {showRowControl && (
-                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <label className="sticky-control-checkbox"
+                                                                   title="Fix all rows up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyRows > actualRowIndex}
@@ -1525,22 +1545,27 @@ function Table({
                                                             }}
                                                                  className={"compact-table-header-row"}
                                                             >
-                                                                <h3 className={"compact-table-header-text"} lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                                <h3 className={"compact-table-header-text"}
+                                                                    lang={detectLang(cell)}
+                                                                    onClick={() => requestSort(cellIndex)}>
                                                                     {cell}{getSortIndicator(cellIndex)}
                                                                 </h3>
                                                                 {(filterableColumns && displayedTableData[0] && filterableColumns.includes(displayedTableData[0][cellIndex])) &&
-                                                                    <FilterAltIcon onClick={() => openFilterPopup(displayedTableData[0][cellIndex])} />
+                                                                    <FilterAltIcon
+                                                                        onClick={() => openFilterPopup(displayedTableData[0][cellIndex])}/>
                                                                 }
                                                             </div>
                                                         ) : (
                                                             <div
-                                                                 className={"compact-table-header-row"}
+                                                                className={"compact-table-header-row"}
                                                             >
-                                                                <h2 lang={detectLang(cell)} onClick={() => requestSort(cellIndex)}>
+                                                                <h2 lang={detectLang(cell)}
+                                                                    onClick={() => requestSort(cellIndex)}>
                                                                     {cell}{getSortIndicator(cellIndex)}
                                                                 </h2>
                                                                 {(filterableColumns && displayedTableData[0] && filterableColumns.includes(displayedTableData[0][cellIndex])) &&
-                                                                    <FilterAltIcon onClick={() => openFilterPopup(displayedTableData[0][cellIndex])} />
+                                                                    <FilterAltIcon
+                                                                        onClick={() => openFilterPopup(displayedTableData[0][cellIndex])}/>
                                                                 }
                                                             </div>
                                                         )}
@@ -1548,7 +1573,8 @@ function Table({
                                                 ) : (
                                                     <>
                                                         {compact ? (
-                                                            <p className={"compact-table-cell-text"} lang={detectLang(cell)}>
+                                                            <p className={"compact-table-cell-text"}
+                                                               lang={detectLang(cell)}>
                                                                 {applyLikelyUrlFunction(displayedTableData[0][cellIndex], cell)}
                                                             </p>
                                                         ) : (
@@ -1563,8 +1589,8 @@ function Table({
                                     })}
                                     {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && (
                                         <td
-                                            onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length })}
-                                            onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                            onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: row.length})}
+                                            onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             style={{
                                                 textAlign: 'center',
                                                 position: (actualRowIndex < stickyRows || row.length < stickyCols) ? 'sticky' : 'relative',
@@ -1582,7 +1608,8 @@ function Table({
                                                 return allowSticky && (showColControlEdit || showRowControlEdit) ? (
                                                     <div className="sticky-control-widget">
                                                         {showColControlEdit && (
-                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                            <label className="sticky-control-checkbox"
+                                                                   title="Fix all columns up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyCols > editCellIndex}
@@ -1591,7 +1618,8 @@ function Table({
                                                             </label>
                                                         )}
                                                         {showRowControlEdit && (
-                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <label className="sticky-control-checkbox"
+                                                                   title="Fix all rows up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyRows > actualRowIndex}
@@ -1605,14 +1633,18 @@ function Table({
                                             {rowIndex === 0 ? (
                                                 <h3 className={"compact-table-header-text"}>Edit</h3>
                                             ) : (
-                                                <button onClick={() => onEditEntryOption(rowMapping[finalTableIndex])} aria-label="Edit row">Edit</button>
+                                                <button onClick={() => onEditEntryOption(rowMapping[finalTableIndex])}
+                                                        aria-label="Edit row">Edit</button>
                                             )}
                                         </td>
                                     )}
                                     {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && (
                                         <td
-                                            onMouseEnter={() => setHoveredCell({ r: actualRowIndex, c: row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0) })}
-                                            onMouseLeave={() => setHoveredCell({ r: null, c: null })}
+                                            onMouseEnter={() => setHoveredCell({
+                                                r: actualRowIndex,
+                                                c: row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)
+                                            })}
+                                            onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             style={{
                                                 textAlign: 'center',
                                                 position: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 'sticky' : 'relative',
@@ -1630,7 +1662,8 @@ function Table({
                                                 return allowSticky && (showColControlDelete || showRowControlDelete) ? (
                                                     <div className="sticky-control-widget">
                                                         {showColControlDelete && (
-                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                            <label className="sticky-control-checkbox"
+                                                                   title="Fix all columns up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyCols > deleteCellIndex}
@@ -1639,7 +1672,8 @@ function Table({
                                                             </label>
                                                         )}
                                                         {showRowControlDelete && (
-                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <label className="sticky-control-checkbox"
+                                                                   title="Fix all rows up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyRows > actualRowIndex}
@@ -1653,7 +1687,8 @@ function Table({
                                             {rowIndex === 0 ? (
                                                 <h3 className={"compact-table-header-text"}>Delete</h3>
                                             ) : (
-                                                <button onClick={() => onDeleteEntry(rowMapping[finalTableIndex])} aria-label="Delete row">Delete</button>
+                                                <button onClick={() => onDeleteEntry(rowMapping[finalTableIndex])}
+                                                        aria-label="Delete row">Delete</button>
                                             )}
                                         </td>
                                     )}
@@ -1663,67 +1698,83 @@ function Table({
                         </tbody>
                     </table>
                 </div>
+
+                {renderVerticalCustomScrollbar(false)}
             </div>
 
             <div className={"table-module-footer"}>
-
-                {bottomHorizontalScrollBar && renderCustomScrollbar(false)}
+                {renderCustomScrollbar(false)}
+                {footerModuleElements && footerModuleElements.map((element, index) => (
+                    <Fragment key={index}>{element}</Fragment>
+                ))}
                 {renderPagination()}
+
             </div>
 
             <animated.div className="table-module-accordion" style={contentAnimation}>
-                <div className="table-module-accordion-overlay" onClick={() => setIsAccordionOpen(false)} />
+                <div className="table-module-accordion-overlay" onClick={() => setIsAccordionOpen(false)}/>
                 <div className="table-module-accordion-content">
                     <div className="table-module-accordion-buttons">
-                        <button onClick={() => setHiddenColumns(new Set(tableData && tableData[0] ? tableData[0].filter((header) => defaultHiddenColumns && defaultHiddenColumns.includes(header)) : []))}>Default</button>
+                        <button
+                            onClick={() => setHiddenColumns(new Set(tableData && tableData[0] ? tableData[0].filter((header) => defaultHiddenColumns && defaultHiddenColumns.includes(header)) : []))}>Default
+                        </button>
                         <button onClick={() => setHiddenColumns(new Set())}>Show All</button>
                         <button onClick={() => {
                             const allHeaders = tableData && tableData[0] ? [...tableData[0]] : [];
                             setHiddenColumns(new Set([...allHeaders, "Edit", "Delete"]));
-                        }}>Hide All</button>
+                        }}>Hide All
+                        </button>
                         <button onClick={() => setIsAccordionOpen(false)}>Close</button>
                     </div>
                     {tableData && tableData[0] && tableData[0].map((header, index) => (
                         <div key={index}>
-                            <label><input type="checkbox" checked={!hiddenColumns.has(header)} onChange={() => toggleColumnVisibility(header)} />{'\t' + header}</label>
+                            <label><input type="checkbox" checked={!hiddenColumns.has(header)}
+                                          onChange={() => toggleColumnVisibility(header)}/>{'\t' + header}</label>
                         </div>
                     ))}
                     {allowEditEntryOption && onEditEntryOption && (
                         <div>
-                            <label><input type="checkbox" checked={!hiddenColumns.has("Edit")} onChange={() => toggleColumnVisibility("Edit")} />{'\tEdit Column'}</label>
+                            <label><input type="checkbox" checked={!hiddenColumns.has("Edit")}
+                                          onChange={() => toggleColumnVisibility("Edit")}/>{'\tEdit Column'}</label>
                         </div>
                     )}
                     {allowDeleteEntryOption && onDeleteEntry && (
                         <div>
-                            <label><input type="checkbox" checked={!hiddenColumns.has("Delete")} onChange={() => toggleColumnVisibility("Delete")} />{'\tDelete Column'}</label>
+                            <label><input type="checkbox" checked={!hiddenColumns.has("Delete")}
+                                          onChange={() => toggleColumnVisibility("Delete")}/>{'\tDelete Column'}</label>
                         </div>
                     )}
                 </div>
             </animated.div>
 
             <animated.div className={"table-module-filter-popup-container"} style={popupAnimation}>
-                <div className={"table-module-filter-popup-background"} onClick={() => { setIsFilterPopupOpen(false); }} />
+                <div className={"table-module-filter-popup-background"} onClick={() => {
+                    setIsFilterPopupOpen(false);
+                }}/>
                 <div className={"table-module-filter-popup"}>
                     <div className={"table-module-filter-popup-content"}>
-                        <h2>Filter Options</h2>
                         {columnToFilterBasedOn && columnFilters[columnToFilterBasedOn] && (
                             <div>
                                 <h3>Filter for {columnToFilterBasedOn}</h3>
 
                                 {smartFilterData.min !== null && smartFilterData.max !== null && (
                                     <div className={"min-max-banner-in-filter-popup"}>
-                                        <strong>Min:</strong> {smartFilterData.min} &nbsp;|&nbsp; <strong>Max:</strong> {smartFilterData.max}
+                                        <strong>Min:</strong> {smartFilterData.min} &nbsp;|&nbsp;
+                                        <strong>Max:</strong> {smartFilterData.max}
                                     </div>
                                 )}
 
-                                <div className={"advanced-filter-search-container-in-filter-popup"} >
+                                <div className={"advanced-filter-search-container-in-filter-popup"}>
                                     <label>Condition: </label>
                                     <select
                                         className={"table-module-filter-search-input-field"}
                                         value={columnFilters[columnToFilterBasedOn].operator}
                                         onChange={(e) => setColumnFilters(prev => ({
                                             ...prev,
-                                            [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], operator: e.target.value }
+                                            [columnToFilterBasedOn]: {
+                                                ...prev[columnToFilterBasedOn],
+                                                operator: e.target.value
+                                            }
                                         }))}
                                     >
                                         {columnFilters[columnToFilterBasedOn].type === 'text' || columnFilters[columnToFilterBasedOn].type === 'phone' ? (
@@ -1751,7 +1802,7 @@ function Table({
                                     </select>
                                 </div>
 
-                                <div className={"advanced-filter-search-container-in-filter-popup"} >
+                                <div className={"advanced-filter-search-container-in-filter-popup"}>
                                     <label>Value: </label>
                                     <input
                                         className={"table-module-filter-search-input-field"}
@@ -1759,7 +1810,10 @@ function Table({
                                         value={columnFilters[columnToFilterBasedOn].value}
                                         onChange={(e) => setColumnFilters(prev => ({
                                             ...prev,
-                                            [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], value: e.target.value }
+                                            [columnToFilterBasedOn]: {
+                                                ...prev[columnToFilterBasedOn],
+                                                value: e.target.value
+                                            }
                                         }))}
                                     />
                                 </div>
@@ -1773,7 +1827,10 @@ function Table({
                                             value={columnFilters[columnToFilterBasedOn].value2 || ''}
                                             onChange={(e) => setColumnFilters(prev => ({
                                                 ...prev,
-                                                [columnToFilterBasedOn]: { ...prev[columnToFilterBasedOn], value2: e.target.value }
+                                                [columnToFilterBasedOn]: {
+                                                    ...prev[columnToFilterBasedOn],
+                                                    value2: e.target.value
+                                                }
                                             }))}
                                         />
                                     </div>
@@ -1794,7 +1851,8 @@ function Table({
                                         {smartFilterData.uniqueValues
                                             .filter(v => uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true)
                                             .map((value, index) => (
-                                                <label key={index} className={"unique-values-list-item-label-in-filter-popup"}>
+                                                <label key={index}
+                                                       className={"unique-values-list-item-label-in-filter-popup"}>
                                                     <input
                                                         type="checkbox"
                                                         checked={(() => {
@@ -1816,7 +1874,10 @@ function Table({
                                                                 }
                                                                 return {
                                                                     ...prev,
-                                                                    [columnToFilterBasedOn]: { ...filter, checkedValues: newChecked }
+                                                                    [columnToFilterBasedOn]: {
+                                                                        ...filter,
+                                                                        checkedValues: newChecked
+                                                                    }
                                                                 };
                                                             });
                                                         }}
@@ -1846,10 +1907,12 @@ function Table({
                                                 const newChecked = currentChecked.size === smartFilterData.baseUniqueValues.length ? null : currentChecked;
                                                 return {
                                                     ...prev,
-                                                    [columnToFilterBasedOn]: { ...filter, checkedValues: newChecked }
+                                                    [columnToFilterBasedOn]: {...filter, checkedValues: newChecked}
                                                 };
                                             });
-                                        }}>Check All</button>
+                                        }}>Check All
+                                        </button>
+
                                         <button onClick={() => {
                                             const visibleValues = smartFilterData.uniqueValues.filter(v =>
                                                 uniqueValueSearch ? String(v).toLowerCase().includes(uniqueValueSearch.toLowerCase()) : true
@@ -1861,12 +1924,16 @@ function Table({
                                                 const newChecked = currentChecked.size === smartFilterData.baseUniqueValues.length ? null : currentChecked;
                                                 return {
                                                     ...prev,
-                                                    [columnToFilterBasedOn]: { ...filter, checkedValues: newChecked }
+                                                    [columnToFilterBasedOn]: {...filter, checkedValues: newChecked}
                                                 };
                                             });
-                                        }}>Uncheck All</button>
+                                        }}>Uncheck All
+                                        </button>
 
-                                        <button onClick={() => { setIsFilterPopupOpen(false); }}>Close</button>
+                                        <button onClick={() => {
+                                            setIsFilterPopupOpen(false);
+                                        }}>Close
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1894,6 +1961,7 @@ Table.propTypes = {
     exportFileName: PropTypes.string,
     filterableColumns: PropTypes.arrayOf(PropTypes.string),
     headerModuleElements: PropTypes.array,
+    footerModuleElements: PropTypes.array,
     onDeleteEntry: PropTypes.func,
     allowDeleteEntryOption: PropTypes.bool,
     columnsToWrap: PropTypes.arrayOf(PropTypes.string),
@@ -1901,7 +1969,6 @@ Table.propTypes = {
     onEditEntryOption: PropTypes.func,
     likelyUrlColumns: PropTypes.objectOf(PropTypes.func),
     allowSticky: PropTypes.bool,
-    bottomHorizontalScrollBar: PropTypes.bool,
     dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     hideHorizontalScrollBar: PropTypes.bool,
     hideVerticalScrollBar: PropTypes.bool,

@@ -923,18 +923,42 @@ function GraduationBookingManagement() {
                            "Booking ID",
                            "Additional Attendees",
                        ]}
-                       headerModuleElements={[(
-                           <button key={1} onClick={() => {
-                                setShowAddBookingModal(true);
-                           }}>
-                               Add Booking
-                           </button>
-                       ),
-                       (
-                             <button key={2} onClick={fetchBookings} disabled={isLoading}>
-                                    {isLoading ? 'Loading...' : 'Reload Table Data'}
-                             </button>
-                       )
+                       headerModuleElements={[
+                           (
+                               <button key={1} onClick={() => {
+                                   navigate('/admin/dashboard');
+                               }}>
+                                   Back
+                               </button>
+                           ),
+                           (
+                               <button key={2} onClick={() => {
+                                   window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+                               }}>
+                                   Down
+                               </button>
+                           ),
+                           (
+                               <button key={3} onClick={() => {
+                                    setShowAddBookingModal(true);
+                               }}>
+                                   Add Booking
+                               </button>
+                           ),
+                           (
+                                 <button key={4} onClick={fetchBookings} disabled={isLoading}>
+                                        {isLoading ? 'Loading...' : 'Reload Table Data'}
+                                 </button>
+                           )
+                       ]}
+                       footerModuleElements={[
+                           (
+                               <button key={1} onClick={() => {
+                                   window.scrollTo({top: 0, behavior: 'smooth'});
+                               }}>
+                                   Up
+                               </button>
+                           )
                        ]}
                        onDeleteEntry={(rowIndex) => {
                            setRowIndexToDelete(rowIndex);
