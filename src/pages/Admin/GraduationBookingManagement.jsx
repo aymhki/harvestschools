@@ -873,7 +873,7 @@ function GraduationBookingManagement() {
     const columnDataTypes = {
         "date": ["Student Created", "Booking Created"],
         "currency": ["Total CD Cost", "Total Additional Attendee(s) Cost", "Total Paid for Base Fare"],
-        "number": ["Booking ID", "Additional Attendees"],
+        "number": ["ID", "Additional Attendees"],
     };
 
     return (
