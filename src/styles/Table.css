@@ -398,6 +398,7 @@ td button {
     height: 0;
     overflow: hidden;
     transition: opacity 0.3s ease, height 0.3s ease;
+    touch-action: none;
 }
 
 .custom-scrollbar-container.footer {

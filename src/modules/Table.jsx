@@ -154,7 +154,8 @@ function Table({
     const [rowMapping, setRowMapping] = useState([]);
     const { t } = useTranslation();
 
-    const isPaginated = tablePages === true || (tablePages === undefined && isMobile);
+    const showPaginationOnMobile = true
+    const isPaginated = tablePages === true || (tablePages === undefined && (isMobile && showPaginationOnMobile) );
     const pageSize = 30;
     const headerRowCount = tableHeader ? 2 : 1;
     const [currentPage, setCurrentPage] = useState(1);
@@ -225,6 +226,7 @@ function Table({
 
     const [columnFilters, setColumnFilters] = useState({});
     const showVerticalScrollBarInMobile = true
+    const showHorizontalScrollBarInMobile = true
 
     const contentAnimation = useSpring({
         opacity: isAccordionOpen ? 1 : 0,
@@ -281,26 +283,41 @@ function Table({
     useEffect(() => {
         if (!isMobile) return;
 
-        const thumb = verticalScrollbarThumbRef.current;
-        const track = verticalScrollbarTrackRef.current;
-        if (!thumb) return;
-
         const prevent = (e) => e.preventDefault();
 
-        thumb.addEventListener("touchstart", prevent, { passive: false });
-        thumb.addEventListener("touchmove", prevent, { passive: false });
+        const thumbs = [
+            verticalScrollbarThumbRef.current,
+            scrollbarThumbRef.current,
+        ];
 
-        if (!track) return;
+        const tracks = [
+            verticalScrollbarTrackRef.current,
+            scrollbarTrackRef.current,
+        ];
 
-        track.addEventListener("touchmove", prevent, { passive: false });
+        thumbs.forEach((el) => {
+            if (!el) return;
+            el.addEventListener("touchstart", prevent, { passive: false });
+            el.addEventListener("touchmove",  prevent, { passive: false });
+        });
+
+        tracks.forEach((el) => {
+            if (!el) return;
+            el.addEventListener("touchmove", prevent, { passive: false });
+        });
 
         return () => {
-            thumb.removeEventListener("touchstart", prevent);
-            thumb.removeEventListener("touchmove", prevent);
-
-            track.removeEventListener("touchmove", prevent);
+            thumbs.forEach((el) => {
+                if (!el) return;
+                el.removeEventListener("touchstart", prevent);
+                el.removeEventListener("touchmove",  prevent);
+            });
+            tracks.forEach((el) => {
+                if (!el) return;
+                el.removeEventListener("touchmove", prevent);
+            });
         };
-    }, []);
+    }, [isMobile]);
 
     const applyScroll = (element, amount, smooth = false) => {
         const behavior = smooth ? 'smooth' : 'auto';
@@ -800,7 +817,7 @@ function Table({
     };
 
     useEffect(() => {
-        if (!scrollable || isMobile || hideHorizontalScrollBar) {
+        if (!scrollable || (isMobile && !showHorizontalScrollBarInMobile) || hideHorizontalScrollBar) {
             setIsScrollbarVisible(false);
             return;
         }
@@ -1188,7 +1205,7 @@ function Table({
     };
 
     const renderCustomScrollbar = (isTop) => {
-        if (!scrollable || isMobile || hideHorizontalScrollBar) return null;
+        if (!scrollable || (isMobile && !showHorizontalScrollBarInMobile) || hideHorizontalScrollBar) return null;
         return (
             <div className={`custom-scrollbar-container ${!isTop ? 'footer' : ''} ${isScrollbarVisible ? 'visible' : ''} ${isDragging ? 'is-dragging' : ''}`}>
                 <button
