@@ -18,7 +18,7 @@ function sendErrorResponse(string $message, int $code = 500): void {
 
 try {
     $dbConfig = require '../../dbConfig.php';
-    $privateUploadsBasePath = '../../files_uploaded_from_harvestschools_webapp/job_applications/';
+    $privateUploadsBasePath = '../../../../files_uploaded_from_harvestschools_webapp/job_applications/';
     $requiredPermissionLevel = 0;
     $sessionDurationInHours = 12;
 
