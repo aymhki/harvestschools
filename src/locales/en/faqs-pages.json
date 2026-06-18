@@ -32,6 +32,7 @@
       ],
       "international-division-table-header": "International Division",
       "international-division-table-data": [
+        {"stage": "Stage", "minimum-registration-age": "Minimum Registration Age"},
         {"stage": "FS 1, Pre - K", "minimum-registration-age": "3 Years & 6 Months"},
         {"stage": "FS 2, K", "minimum-registration-age": "4 Years & 6 Months"},
         {"stage": "Y 1, G 1", "minimum-registration-age": "5 Years & 6 Months"},
