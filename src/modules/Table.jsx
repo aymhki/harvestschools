@@ -1401,51 +1401,56 @@ function Table({
 
     return (
         <div className="table-module" ref={tableModuleRef} style={{overflow: scrollable ? 'auto' : 'hidden'}}>
-            <div className={"table-module-header"}>
-                <div className={"table-module-header-buttons-wrapper"}>
-                    {(!finalTableData || finalTableData.length === 0) && (
-                        <div className={"table-module-header-empty-state"}>
-                            <h3>{t("common.no-table-enteries-found", {ns: 'common'})}</h3>
-                        </div>
-                    )}
-                    {headerModuleElements && headerModuleElements.map((element, index) => (
-                        <Fragment key={index}>{element}</Fragment>
-                    ))}
-                    {finalTableData && allowHideColumns && (
-                        <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
-                            {isAccordionOpen ? 'Hide Columns' : 'Show Columns'}
-                        </button>
-                    )}
-                    {finalTableData && allowExport && (
-                        <button onClick={() => {
-                            if (!finalTableData) return;
-                            const csv = finalTableData.map(row =>
-                                row.map(field => {
-                                    if (field && typeof field === 'string' && field.length > 0) {
-                                        return (field.includes(',') || field.includes('\n')) ? `"${field}"` : field
-                                    } else return '';
-                                }).join(',')
-                            ).join('\n');
-                            const blob = new Blob([csv], {type: 'text/csv'});
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `${exportFileName ? exportFileName : 'table'}-${new Date().toISOString().split('T')[0]}.csv`;
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                        }}>
-                            Export to CSV
-                        </button>
-                    )}
-                    {finalTableData && hasActiveFilters() && (
-                        <button onClick={resetAllFilters}>Reset Filters</button>
-                    )}
+
+
+            { (headerModuleElements || allowHideColumns || allowExport || hasActiveFilters() || isScrollbarVisible) && (
+
+                    <div className={"table-module-header"}>
+                    <div className={"table-module-header-buttons-wrapper"}>
+                        {(!finalTableData || finalTableData.length === 0) && (
+                            <div className={"table-module-header-empty-state"}>
+                                <h3>{t("common.no-table-enteries-found", {ns: 'common'})}</h3>
+                            </div>
+                        )}
+                        {headerModuleElements && headerModuleElements.map((element, index) => (
+                            <Fragment key={index}>{element}</Fragment>
+                        ))}
+                        {finalTableData && allowHideColumns && (
+                            <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
+                                {isAccordionOpen ? 'Hide Columns' : 'Show Columns'}
+                            </button>
+                        )}
+                        {finalTableData && allowExport && (
+                            <button onClick={() => {
+                                if (!finalTableData) return;
+                                const csv = finalTableData.map(row =>
+                                    row.map(field => {
+                                        if (field && typeof field === 'string' && field.length > 0) {
+                                            return (field.includes(',') || field.includes('\n')) ? `"${field}"` : field
+                                        } else return '';
+                                    }).join(',')
+                                ).join('\n');
+                                const blob = new Blob([csv], {type: 'text/csv'});
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `${exportFileName ? exportFileName : 'table'}-${new Date().toISOString().split('T')[0]}.csv`;
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                            }}>
+                                Export to CSV
+                            </button>
+                        )}
+                        {finalTableData && hasActiveFilters() && (
+                            <button onClick={resetAllFilters}>Reset Filters</button>
+                        )}
+                    </div>
+
+                    {renderCustomScrollbar(true)}
                 </div>
+            )}
 
-                {renderCustomScrollbar(true)}
-            </div>
-
-            <div className="table-with-vertical-scrollbar-wrapper">
+            <div className={`table-with-vertical-scrollbar-wrapper ${!isVerticalScrollbarVisible ? 'fixed' : ''}`}>
                 {renderVerticalCustomScrollbar(true)}
                 <div
                     className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
@@ -1463,7 +1468,6 @@ function Table({
                                     position: stickyRows > 0 ? 'sticky' : 'relative',
                                     top: 0,
                                     zIndex: stickyRows > 0 ? 4 : undefined,
-                                    backgroundColor: 'var(--harvest-white-color)'
                                 }}>
                                     <h1>{tableHeader}</h1>
                                 </th>
@@ -1702,13 +1706,15 @@ function Table({
                 {renderVerticalCustomScrollbar(false)}
             </div>
 
-            <div className={"table-module-footer"}>
-                {renderCustomScrollbar(false)}
-                {renderPagination()}
-                {footerModuleElements && footerModuleElements.map((element, index) => (
-                    <Fragment key={index}>{element}</Fragment>
-                ))}
-            </div>
+            { (isScrollbarVisible || isPaginated || footerModuleElements) && (
+                    <div className={"table-module-footer"}>
+                        {renderCustomScrollbar(false)}
+                        {renderPagination()}
+                        {footerModuleElements && footerModuleElements.map((element, index) => (
+                            <Fragment key={index}>{element}</Fragment>
+                        ))}
+                    </div>
+            )}
 
             <animated.div className="table-module-accordion" style={contentAnimation}>
                 <div className="table-module-accordion-overlay" onClick={() => setIsAccordionOpen(false)}/>

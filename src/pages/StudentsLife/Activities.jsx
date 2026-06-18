@@ -23,7 +23,7 @@ function Activities() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={'/assets/images/AcademicsPages/AmericanAcademicsPageMiddle1.jpg'} darken={true}
+            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={'/assets/images/Gallery/Photos/HarvestAcademy/HarvestAcademy5.jpg'} darken={true}
                                    divElements={[
                                        (
                                              <div className={'students-life-activities-page-content'} key={1}>

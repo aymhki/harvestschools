@@ -29,6 +29,7 @@
 .table-module-table th {
     border-bottom: var(--primary-color) 0.1rem solid;
     border-right: var(--primary-color) 0.1rem solid;
+    border-left: var(--primary-color) 0.1rem solid;
     background-clip: padding-box;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
 }
@@ -49,6 +50,10 @@
     position: relative;
     margin: 0 2rem 2rem 2rem;
     align-items: stretch;
+}
+
+.table-with-vertical-scrollbar-wrapper.fixed {
+    margin: 2rem 0 2rem 0;
 }
 
 .table-module-table-scrollable {
@@ -951,6 +956,7 @@ td button {
     .table-module-table th {
         border-bottom: var(--harvest-white-color) 0.1rem solid;
         border-right: var(--harvest-white-color) 0.1rem solid;
+        border-left: var(--harvest-white-color) 0.1rem solid;
         background-clip: padding-box;
     }
 
