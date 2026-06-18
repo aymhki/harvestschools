@@ -6,9 +6,6 @@
     padding: 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: auto;
 }
 
 .table-module::-webkit-scrollbar {
@@ -21,9 +18,6 @@
     border-collapse: separate;
     border-spacing: 0;
     border: none;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: auto;
 }
 
 .table-module-table tr,
@@ -57,9 +51,6 @@
     position: relative;
     margin: 0 2rem 2rem 2rem;
     align-items: stretch;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: auto;
 }
 
 .table-with-vertical-scrollbar-wrapper.fixed {
