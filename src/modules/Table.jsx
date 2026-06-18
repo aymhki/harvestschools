@@ -1534,7 +1534,6 @@ function Table({
         const onTouchMove = (e) => {
             if (e.target.closest(excluded)) return;
             if (!samples.length) return;
-            e.preventDefault();
 
             const touch = e.touches[0];
             const now   = performance.now();
@@ -1546,7 +1545,38 @@ function Table({
             samples.push({ x: touch.clientX, y: touch.clientY, t: now });
             while (samples.length > 2 && samples[0].t < now - SAMPLE_WINDOW * 2) samples.shift();
 
-            cascade(deltaX, deltaY);
+            let remX = deltaX;
+            let remY = deltaY;
+
+            const testAbsorb = (el, prop, sizeKey, clientKey, delta) => {
+                if (!el) return delta;
+                const max = el[sizeKey] - el[clientKey];
+                if (max <= 0) return delta;
+                const prev = el[prop];
+                if (delta > 0) {
+                    const available = max - prev;
+                    return delta > available ? delta - available : 0;
+                } else if (delta < 0) {
+                    const available = prev;
+                    return -delta > available ? delta + available : 0;
+                }
+                return delta;
+            };
+
+            remX = testAbsorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+            remY = testAbsorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+
+            if (container) {
+                remX = testAbsorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+                remY = testAbsorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+            }
+
+            const canAbsorb = Math.abs(remX) < Math.abs(deltaX) || Math.abs(remY) < Math.abs(deltaY);
+
+            if (canAbsorb) {
+                if (e.cancelable) e.preventDefault();
+                cascade(deltaX, deltaY);
+            }
         };
 
         const onTouchEnd = () => {
