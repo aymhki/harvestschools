@@ -50,8 +50,8 @@ function Table({
     const [rowMapping, setRowMapping] = useState([]);
     const {t} = useTranslation();
     const showPaginationOnMobile = true
-    const maxItemsBeforePagination = 300;
-    const mobilePageSize = 80;
+    const maxItemsBeforePagination = 100;
+    const mobilePageSize = 50;
     const desktopPageSize = 100;
     const [pageSize, setPageSize] = useState(isMobile ? mobilePageSize : desktopPageSize);
     const headerRowCount = tableHeader ? 2 : 1;
