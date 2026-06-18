@@ -22,6 +22,7 @@ function AdminDashboard() {
                 <>
                     <OptionsGrid
                         options={dashboardOptions}
+                        compact={true}
                         title={"Dashboard"}
                         divElements={[(
                             <div className={"dashboard-page-footer"} key={1}>

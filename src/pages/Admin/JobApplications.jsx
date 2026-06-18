@@ -67,36 +67,12 @@ function JobApplications() {
                        exportFileName={'job-applications'}
                        headerModuleElements={[
                            (
-                               <button key={2} onClick={() => {
-                                   navigate('/admin/dashboard/');
-                               }}>
-                                   Back
-                               </button>
-                           ),
-                           (
                                <button key={1} onClick={loadTableData} disabled={isLoading}>
                                    {isLoading ? 'Loading...' : 'Reload Table Data'}
                                </button>
                            ),
-                           (
-                               <button key={3} onClick={() => {
-                                   window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
-                               }}>
-                                   Down
-                               </button>
-                           )
-
                        ]}
-                       footerModuleElements={[
-                           (
-                               <button key={1} onClick={() => {
-                                   window.scrollTo({top: 0, behavior: 'smooth'});
-                               }}>
-                                   Up
-                               </button>
-                           )
-
-                       ]}
+                       footerModuleElements={[]}
                        dataTypes={columnDataTypes}
                        sortConfigParam={{column: 0, direction: 'descending'}}
                        filterableColumns={

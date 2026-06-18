@@ -1,11 +1,14 @@
 import './styles/App.css';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, lazy, Suspense, useState } from 'react';
 
 import NavigationBar from "./modules/NavigationBar.jsx";
+import AdminSidebar from "./modules/AdminSidebar.jsx";
 import Footer from "./modules/Footer.jsx";
 import ErrorBoundary from "./modules/ErrorBoundary.jsx";
+import AdminFooter from "./modules/AdminFooter.jsx";
+import path from "node:path";
 
 const Home = lazy(() => import('./pages/Home'));
 const Faqs = lazy(() => import('./pages/FAQs/FAQs.jsx'));
@@ -92,13 +95,56 @@ function AppClient() {
         document.documentElement.lang = i18n.language;
     }, [location.search, i18n]);
 
-    const excludePaths = ['/academics/staff', '/admin/view-job-application-file'];
+    const excludePaths = ['/academics/staff'];
     const shouldExclude = excludePaths.includes(location.pathname);
+
+    const isAdminRoute = location.pathname.startsWith('/admin') && !location.pathname.includes('/admin/login');
+
+    const showStandardNav = !isAdminRoute && !shouldExclude;
+
+    const showAdminSidebar = isAdminRoute;
+
+    const [isMobile, setIsMobile] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return window.innerWidth < 768;
+        }
+        return true;
+    });
+
+    const [contentStyle, setContentStyle] = useState((showAdminSidebar && !isMobile) ? {
+        [i18n.language === 'ar' ? 'paddingRight' : 'paddingLeft']: isMobile ? '0' : '3.5rem',
+        transition: 'padding 0.3s ease'
+    } : {});
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        if (showAdminSidebar && !isMobile) {
+            setContentStyle({
+                [i18n.language === 'ar' ? 'paddingRight' : 'paddingLeft']: '3.5rem',
+                transition: 'padding 0.3s ease'
+            });
+        } else {
+            setContentStyle({
+                [i18n.language === 'ar' ? 'paddingRight' : 'paddingLeft']: '0',
+                transition: 'padding 0.3s ease'
+            });
+        }
+    }, [showAdminSidebar, isMobile, i18n.language])
+
 
     return (
         <div className="App">
-            {!shouldExclude && <NavigationBar />}
-            <div className="content">
+            {showStandardNav && <NavigationBar />}
+            <div className="content" style={contentStyle}>
+                {showAdminSidebar && <AdminSidebar />}
                 <ErrorBoundary>
                     <Suspense fallback={<div style={{minHeight: '50vh'}}></div>}>
                         <Routes>
@@ -175,7 +221,8 @@ function AppClient() {
                     </Suspense>
                 </ErrorBoundary>
             </div>
-            {!shouldExclude && <Footer />}
+            {showStandardNav && <Footer />}
+            {showAdminSidebar && <AdminFooter />}
         </div>
     );
 }

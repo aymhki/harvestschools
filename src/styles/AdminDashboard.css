@@ -4,6 +4,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    min-height: 100vh;
 }
 
 .dashboard-page:lang(ar) {
@@ -22,7 +23,6 @@
 
 
 .open-day-signups-page {
-    display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
@@ -62,7 +62,6 @@
 }
 
 .job-applications-page {
-    display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
@@ -83,7 +82,6 @@
 }
 
 .booking-management-page {
-    display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;

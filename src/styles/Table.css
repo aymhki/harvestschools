@@ -61,7 +61,7 @@
     table-layout: auto;
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 75vh;
+    max-height: 60vh;
     overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     margin: 0;
@@ -91,7 +91,7 @@
     left: 0;
     right: 0;
     z-index: 10;
-    padding-top: 5rem;
+    padding-top: 2rem;
     padding-bottom: 2rem;
     padding-left: 0;
     padding-right: 0;
@@ -776,7 +776,7 @@ td button {
     }
 
     .table-module-header {
-        padding-top: 3rem;
+        padding-top: 1rem;
         padding-bottom: 1rem;
     }
 
@@ -860,6 +860,12 @@ td button {
     .table-module-table td {
         padding: 0.5rem;
     }
+
+    .custom-scrollbar-container-vertical {
+        margin-right: 1rem;
+    }
+
+
 }
 
 @media (max-height: 600px) {

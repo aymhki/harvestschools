@@ -66,7 +66,7 @@ function Events() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <OptionsGrid title={t("events-pages.options-page.title")} titleInArabic={false} options={options}/>
+        <OptionsGrid title={t("events-pages.options-page.title")} titleInArabic={false} options={options} compact={true}/>
     </div>
   );
 }
