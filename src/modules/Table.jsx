@@ -1467,6 +1467,16 @@ function Table({
         const container = scrollContainerRef.current;
         if (!module) return;
 
+        // Disable native touch scrolling to prevent double-scrolling conflicts with the manual cascade
+        const originalModuleTouchAction = module.style.touchAction;
+        module.style.touchAction = 'none';
+
+        let originalContainerTouchAction = '';
+        if (container) {
+            originalContainerTouchAction = container.style.touchAction;
+            container.style.touchAction = 'none';
+        }
+
         const absorb = (el, prop, sizeKey, clientKey, delta) => {
             const max = el[sizeKey] - el[clientKey];
             if (max <= 0) return delta;
@@ -1486,7 +1496,6 @@ function Table({
                 remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
                 remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
             }
-
 
             if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
         };
@@ -1535,7 +1544,7 @@ function Table({
         const onTouchMove = (e) => {
             if (e.target.closest(excluded)) return;
             if (!samples.length) return;
-            e.preventDefault();
+            if (e.cancelable) e.preventDefault();
 
             const touch = e.touches[0];
             const now   = performance.now();
@@ -1572,15 +1581,25 @@ function Table({
             }
         };
 
+        const globalTouchStart = () => cancelMomentum();
+
         module.addEventListener('touchstart', onTouchStart, { passive: true });
         module.addEventListener('touchmove',  onTouchMove,  { passive: false });
         module.addEventListener('touchend',   onTouchEnd,   { passive: true });
 
+        // Cancel momentum if the user touches anywhere else on the screen
+        document.addEventListener('touchstart', globalTouchStart, { passive: true });
+
         return () => {
             cancelMomentum();
+            module.style.touchAction = originalModuleTouchAction;
+            if (container) container.style.touchAction = originalContainerTouchAction;
+
             module.removeEventListener('touchstart', onTouchStart);
             module.removeEventListener('touchmove',  onTouchMove);
             module.removeEventListener('touchend',   onTouchEnd);
+
+            document.removeEventListener('touchstart', globalTouchStart);
         };
     }, []);
 
