@@ -1478,20 +1478,23 @@ function Table({
         const cascade = (dx, dy) => {
             let remX = dx;
             let remY = dy;
+
+            remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+            remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+
             if (container) {
                 remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
                 remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
             }
-            remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
-            remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+
             if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
         };
 
-        const FRICTION        = 0.95;  // decay per frame — 0.95 closely matches iOS feel
-        const MIN_VELOCITY    = 0.3;   // px/frame threshold to stop the loop
-        const MAX_VELOCITY    = 30;    // cap to prevent extreme flick overshoots
-        const VELOCITY_SCALE  = 16;    // normalises velocity to ~60fps frame time (ms)
-        const SAMPLE_WINDOW   = 80;    // ms — only use recent gesture for velocity
+        const FRICTION        = 0.95;
+        const MIN_VELOCITY    = 0.3;
+        const MAX_VELOCITY    = 30;
+        const VELOCITY_SCALE  = 16;
+        const SAMPLE_WINDOW   = 80;
 
         let samples   = [];
         let velocityX = 0;
@@ -1530,7 +1533,7 @@ function Table({
 
         const onTouchMove = (e) => {
             if (e.target.closest(excluded)) return;
-            if (!samples.length) return; // touchstart was filtered, bail safely
+            if (!samples.length) return;
             e.preventDefault();
 
             const touch = e.touches[0];
@@ -1541,7 +1544,6 @@ function Table({
             const deltaY = last.y - touch.clientY;
 
             samples.push({ x: touch.clientX, y: touch.clientY, t: now });
-            // trim samples older than 2x the window — keeps memory tiny
             while (samples.length > 2 && samples[0].t < now - SAMPLE_WINDOW * 2) samples.shift();
 
             cascade(deltaX, deltaY);
