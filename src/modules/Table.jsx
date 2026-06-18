@@ -1462,6 +1462,62 @@ function Table({
         return () => module.removeEventListener('wheel', handleWheel);
     }, []);
 
+    useEffect(() => {
+        const module = tableModuleRef.current;
+        const container = scrollContainerRef.current;
+        if (!module) return;
+
+        const absorb = (el, prop, sizeKey, clientKey, delta) => {
+            const max = el[sizeKey] - el[clientKey];
+            if (max <= 0) return delta;
+            const prev = el[prop];
+            el[prop] = Math.max(0, Math.min(prev + delta, max));
+            return delta - (el[prop] - prev);
+        };
+
+        let lastX = 0;
+        let lastY = 0;
+
+        const onTouchStart = (e) => {
+            if (e.target.closest('.custom-scrollbar-thumb, .custom-scrollbar-thumb-vertical, .table-module-filter-popup-container, .table-module-accordion')) return;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+        };
+
+        const onTouchMove = (e) => {
+            if (e.target.closest('.custom-scrollbar-thumb, .custom-scrollbar-thumb-vertical, .table-module-filter-popup-container, .table-module-accordion')) return;
+
+            const touch = e.touches[0];
+            const deltaX = lastX - touch.clientX;
+            const deltaY = lastY - touch.clientY;
+            lastX = touch.clientX;
+            lastY = touch.clientY;
+
+            e.preventDefault();
+
+            let remX = deltaX;
+            let remY = deltaY;
+
+            if (container) {
+                remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+                remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+            }
+
+            remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+            remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+
+            if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
+        };
+
+        module.addEventListener('touchstart', onTouchStart, { passive: true });
+        module.addEventListener('touchmove', onTouchMove, { passive: false });
+
+        return () => {
+            module.removeEventListener('touchstart', onTouchStart);
+            module.removeEventListener('touchmove', onTouchMove);
+        };
+    }, []);
+
     return (
         <div className="table-module" ref={tableModuleRef} style={{overflow: 'auto'}}>
 
