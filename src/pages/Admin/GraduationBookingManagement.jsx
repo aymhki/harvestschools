@@ -924,20 +924,6 @@ function GraduationBookingManagement() {
                        ]}
                        headerModuleElements={[
                            (
-                               <button key={1} onClick={() => {
-                                   navigate('/admin/dashboard');
-                               }}>
-                                   Back
-                               </button>
-                           ),
-                           (
-                               <button key={2} onClick={() => {
-                                   window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
-                               }}>
-                                   Down
-                               </button>
-                           ),
-                           (
                                <button key={3} onClick={() => {
                                     setShowAddBookingModal(true);
                                }}>
@@ -950,15 +936,7 @@ function GraduationBookingManagement() {
                                  </button>
                            )
                        ]}
-                       footerModuleElements={[
-                           (
-                               <button key={1} onClick={() => {
-                                   window.scrollTo({top: 0, behavior: 'smooth'});
-                               }}>
-                                   Up
-                               </button>
-                           )
-                       ]}
+                       footerModuleElements={[]}
                        onDeleteEntry={(rowIndex) => {
                            setRowIndexToDelete(rowIndex);
                            setShowDeleteBookingModal(true);

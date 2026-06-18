@@ -18,14 +18,14 @@ function Academics() {
         },
         {
             title: t("academics-pages.british-section"),
-            image: "/assets/images/AcademicsPages/British1.png",
+            image: "/assets/images/HomePage/CICIS.avif",
             description: t("academics-pages.british-description"),
             link: "/academics/british",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.american-section"),
-            image: "/assets/images/AcademicsPages/American1.png",
+            image: "/assets/images/HomePage/AccreditedCognia.avif",
             description: t("academics-pages.american-description"),
             link: "/academics/american",
             buttonText: t("common.learn-more", {ns: 'common'}),
@@ -86,7 +86,7 @@ function Academics() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-        <OptionsGrid title={t("nav.academics", {ns: 'nav'})}  options={options}/>
+        <OptionsGrid title={t("nav.academics", {ns: 'nav'})}  options={options} compact={true}/>
 
     </div>
   );

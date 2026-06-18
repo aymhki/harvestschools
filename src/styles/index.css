@@ -216,12 +216,12 @@ h3:lang(ar) {
 button {
     border-radius: 1rem;
     border: 0;
-    padding: 1rem;
-    margin: 1rem;
-    font-size: x-large;
+    padding: 0.8rem;
+    margin: 0.8rem;
+    font-size: large;
     font-weight: bold;
     font-family: var(--english-normal-font-bold);
-    letter-spacing: 0.3rem;
+    letter-spacing: 0.1rem;
     line-height: 1.5;
     background-color: var(--harvest-white-color);
     color: var(--primary-color);
@@ -285,16 +285,12 @@ label:lang(ar) {
 
 @media (max-width: 1600px) {
     button {
-        font-size: x-large;
+        font-size: large;
     }
 
 }
 
 @media (max-width: 1200px) {
-    button {
-        font-size: large;
-    }
-
     h1 {
         font-size: 3rem;
         font-weight: 400;

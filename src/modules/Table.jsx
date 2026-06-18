@@ -51,8 +51,8 @@ function Table({
     const {t} = useTranslation();
     const showPaginationOnMobile = true
     const maxItemsBeforePagination = 300;
-    const mobilePageSize = 30;
-    const desktopPageSize = 50;
+    const mobilePageSize = 80;
+    const desktopPageSize = 100;
     const [pageSize, setPageSize] = useState(isMobile ? mobilePageSize : desktopPageSize);
     const headerRowCount = tableHeader ? 2 : 1;
     const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +92,7 @@ function Table({
     }, [finalTableData, headerRowCount]);
 
     const [isPaginated, setIsPaginated] = useState(
-        (tablePages === true) || (tablePages === undefined && (isMobile && showPaginationOnMobile)) || (dataRows && dataRows.length > maxItemsBeforePagination)
+        (tablePages === true) || (tablePages === undefined && (isMobile && showPaginationOnMobile && scrollable)) || (dataRows && dataRows.length > maxItemsBeforePagination)
     )
     const [totalPages, setTotalPage] = useState(Math.ceil(dataRows.length / pageSize));
 
@@ -848,6 +848,30 @@ function Table({
             }
         });
 
+        let globalMinVal = null;
+        let globalMaxVal = null;
+
+        sortedDataWithIndices.forEach((item, idx) => {
+            if (idx === 0 || (tableHeader && idx === 1)) return;
+            const val = item.row[colIndex];
+            if (val !== undefined && val !== null && val !== '') {
+                if (type === 'number' || type === 'currency') {
+                    const num = parseNumberValue(val);
+                    if (!isNaN(num)) {
+                        if (globalMinVal === null || num < globalMinVal) globalMinVal = num;
+                        if (globalMaxVal === null || num > globalMaxVal) globalMaxVal = num;
+                    }
+                } else if (type === 'date') {
+                    const d = parseDate(val);
+                    if (d) {
+                        const time = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                        if (globalMinVal === null || time < globalMinVal) globalMinVal = time;
+                        if (globalMaxVal === null || time > globalMaxVal) globalMaxVal = time;
+                    }
+                }
+            }
+        });
+
         baseFilteredDataWithIndices.forEach((item, idx) => {
             if (idx === 0 || (tableHeader && idx === 1)) return;
             const val = item.row[colIndex];
@@ -882,11 +906,18 @@ function Table({
             baseUniqueValues.sort();
         }
 
-        let displayMin = minVal;
-        let displayMax = maxVal;
-        if (type === 'date' && minVal !== null) {
-            displayMin = new Date(minVal).toLocaleDateString();
-            displayMax = new Date(maxVal).toLocaleDateString();
+        let displayMin = globalMinVal;
+        let displayMax = globalMaxVal;
+        if (type === 'date' && globalMinVal !== null) {
+            const formatGlobalDate = (timestamp) => {
+                const d = new Date(timestamp);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            displayMin = formatGlobalDate(globalMinVal);
+            displayMax = formatGlobalDate(globalMaxVal);
         }
 
         return {uniqueValues, baseUniqueValues, min: displayMin, max: displayMax};
@@ -1220,10 +1251,6 @@ function Table({
     }, [totalPages, currentPage]);
 
     useEffect(() => {
-        updateFinalTableData();
-    }, [sortConfig, updateFinalTableData]);
-
-    useEffect(() => {
         if ((dataRows && dataRows.length > maxItemsBeforePagination) || isMobile) {
             setIsPaginated(true);
         } else {
@@ -1293,7 +1320,7 @@ function Table({
 
     useEffect(() => {
         updateFinalTableData();
-    }, [hiddenColumns, sortedDataWithIndices, columnFilters, updateFinalTableData]);
+    }, [hiddenColumns, sortedDataWithIndices, columnFilters, updateFinalTableData, sortConfig]);
 
     useEffect(() => {
         if (!scrollable || (isMobile && !showHorizontalScrollBarInMobile) || hideHorizontalScrollBar) {
@@ -1407,11 +1434,6 @@ function Table({
 
                     <div className={"table-module-header"}>
                     <div className={"table-module-header-buttons-wrapper"}>
-                        {(!finalTableData || finalTableData.length === 0) && (
-                            <div className={"table-module-header-empty-state"}>
-                                <h3>{t("common.no-table-enteries-found", {ns: 'common'})}</h3>
-                            </div>
-                        )}
                         {headerModuleElements && headerModuleElements.map((element, index) => (
                             <Fragment key={index}>{element}</Fragment>
                         ))}
@@ -1460,7 +1482,12 @@ function Table({
                         updateVerticalThumbPosition();
                     }}
                 >
-                    <table className="table-module-table" ref={tableRef}>
+                    { (!finalTableData || finalTableData.length === 0) ? (
+                        <div className={"table-module-header-empty-state"}>
+                            <h3>{t("common.no-table-enteries-found", {ns: 'common'})}</h3>
+                        </div>
+                    ) : (
+                        <table className="table-module-table" ref={tableRef}>
                         <tbody>
                         {tableHeader &&
                             <tr>
@@ -1701,14 +1728,12 @@ function Table({
                         })}
                         </tbody>
                     </table>
+                    )}
                 </div>
-
-                {renderVerticalCustomScrollbar(false)}
             </div>
 
             { (isScrollbarVisible || isPaginated || footerModuleElements) && (
                     <div className={"table-module-footer"}>
-                        {renderCustomScrollbar(false)}
                         {renderPagination()}
                         {footerModuleElements && footerModuleElements.map((element, index) => (
                             <Fragment key={index}>{element}</Fragment>

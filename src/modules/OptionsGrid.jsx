@@ -4,16 +4,54 @@ import {useNavigate} from "react-router-dom";
 import {Fragment} from "react";
 
 
-function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInThePage})
+function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInThePage, compact})
 {
     const navigate = useNavigate();
 
-    return (
-        <div className= {thisOptionsGridIsNotAloneInThePage ? "options-grid-container-dynamic" : "options-grid-container"}>
-            <h1>{title}</h1>
+    if (compact) {
+        return (
+            <div className="options-grid-container-compact">
+                <h2>{title}</h2>
 
-            {options.length > 0 ? (
-                    <div className={  options.length === 1 ? "options-grid-single" : options.length === 2 ? "options-grid-double" : options.length === 3 ? "options-grid-triple" : options.length === 4 ? "options-grid-quadruple" : "options-grid-double" }>
+                {options.length > 0 ? (
+                    <div className={"options-grid-quadruple"}>
+                        {options.map((option, index) => (
+                            <div key={index} className="options-grid-compact-items-container" onClick={() => {
+                                if (option.externalLink) {
+                                    window.open(option.link, '_blank')
+                                } else {
+                                    navigate(option.link)
+                                }
+                            }}>
+                                <p> {option.title} </p>
+
+                                <img src={option.image} alt={option.title}/>
+                            </div>
+                        ))}
+                    </div>
+                    ) : (
+                        <p>
+                            No Options available.
+                        </p>
+                    )}
+
+                {divElements && divElements.map((element, index) => (
+                    <Fragment key={index}>
+                        {element}
+                    </Fragment>
+                ))}
+
+            </div>
+        )
+    } else {
+        return (
+            <div
+                className={thisOptionsGridIsNotAloneInThePage ? "options-grid-container-dynamic" : "options-grid-container"}>
+                <h1>{title}</h1>
+
+                {options.length > 0 ? (
+                    <div
+                        className={options.length === 1 ? "options-grid-single" : options.length === 2 ? "options-grid-double" : options.length === 3 ? "options-grid-triple" : options.length === 4 ? "options-grid-quadruple" : "options-grid-double"}>
                         {options.map((option, index) => (
                             <div key={index} className="options-grid-items-container" onClick={() => {
                                 if (option.externalLink) {
@@ -25,7 +63,7 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
                             }}>
 
                                 {<h2>{option.title}</h2>}
-                                    <img src={option.image} alt={option.title}/>
+                                <img src={option.image} alt={option.title}/>
                                 {<p>{option.description}</p>}
 
                                 <button
@@ -48,15 +86,16 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
                         No Options available.
                     </p>
                 )
-            }
+                }
 
-            {divElements && divElements.map((element, index) => (
-                <Fragment key={index}>
-                    {element}
-                </Fragment>
-            ))}
-        </div>
-    );
+                {divElements && divElements.map((element, index) => (
+                    <Fragment key={index}>
+                        {element}
+                    </Fragment>
+                ))}
+            </div>
+        );
+    }
 }
 
 OptionsGrid.propTypes = {
@@ -72,7 +111,8 @@ OptionsGrid.propTypes = {
         })
     ).isRequired,
     divElements: PropTypes.array,
-    thisOptionsGridIsNotAloneInThePage: PropTypes.bool
+    thisOptionsGridIsNotAloneInThePage: PropTypes.bool,
+    compact: PropTypes.bool
 };
 
 export default OptionsGrid;

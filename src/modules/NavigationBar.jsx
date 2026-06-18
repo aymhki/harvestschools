@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 
-const NavigationBar = () => {
+function NavigationBar(){
     const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
@@ -457,6 +457,6 @@ const NavigationBar = () => {
             </animated.ul>
         </nav>
     );
-};
+}
 
 export default NavigationBar;
