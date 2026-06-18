@@ -8,7 +8,7 @@
     -ms-overflow-style: none;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    overscroll-behavior: auto;
 }
 
 .table-module::-webkit-scrollbar {
