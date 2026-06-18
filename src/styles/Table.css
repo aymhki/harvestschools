@@ -8,6 +8,7 @@
     -ms-overflow-style: none;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: auto;
 }
 
 .table-module::-webkit-scrollbar {
@@ -22,6 +23,7 @@
     border: none;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: auto;
 }
 
 .table-module-table tr,
@@ -57,6 +59,7 @@
     align-items: stretch;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: auto;
 }
 
 .table-with-vertical-scrollbar-wrapper.fixed {
