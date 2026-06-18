@@ -1440,6 +1440,7 @@ function Table({
         };
 
         const handleWheel = (e) => {
+            if (isMobile) return;
             if (e.ctrlKey) return;
             if (e.target.closest('.table-module-filter-popup-container, .table-module-accordion')) return;
             e.preventDefault();
@@ -1519,7 +1520,7 @@ function Table({
     // }, []);
 
     return (
-        <div className="table-module" ref={tableModuleRef} style={{overflow: 'auto'}}>
+        <div className="table-module" ref={tableModuleRef} >
 
 
             { (headerModuleElements || allowHideColumns || allowExport || hasActiveFilters() || isScrollbarVisible) && (
