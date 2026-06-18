@@ -62,7 +62,7 @@
     overflow-x: auto;
     overflow-y: auto;
     max-height: 65vh;
-    overscroll-behavior-y: auto;
+    overscroll-behavior: auto;
     -webkit-overflow-scrolling: touch;
     margin: 0;
 }

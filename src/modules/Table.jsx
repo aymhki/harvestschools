@@ -1426,8 +1426,44 @@ function Table({
         };
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
 
+    useEffect(() => {
+        const module = tableModuleRef.current;
+        const container = scrollContainerRef.current;
+        if (!module) return;
+
+        const absorb = (el, prop, sizeKey, clientKey, delta) => {
+            const max = el[sizeKey] - el[clientKey];
+            if (max <= 0) return delta;
+            const prev = el[prop];
+            el[prop] = Math.max(0, Math.min(prev + delta, max));
+            return delta - (el[prop] - prev);
+        };
+
+        const handleWheel = (e) => {
+            if (e.ctrlKey) return;
+            if (e.target.closest('.table-module-filter-popup-container, .table-module-accordion')) return;
+            e.preventDefault();
+
+            let remX = e.deltaX;
+            let remY = e.deltaY;
+
+            if (container) {
+                remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+                remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+            }
+
+            remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+            remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+
+            if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
+        };
+
+        module.addEventListener('wheel', handleWheel, { passive: false });
+        return () => module.removeEventListener('wheel', handleWheel);
+    }, []);
+
     return (
-        <div className="table-module" ref={tableModuleRef} style={{overflow: scrollable ? 'auto' : 'hidden'}}>
+        <div className="table-module" ref={tableModuleRef} style={{overflow: 'auto'}}>
 
 
             { (headerModuleElements || allowHideColumns || allowExport || hasActiveFilters() || isScrollbarVisible) && (
