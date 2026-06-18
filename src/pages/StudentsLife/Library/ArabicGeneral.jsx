@@ -45,6 +45,7 @@ function ArabicGeneral() {
                                   type: 'text',
                                   label: 'Name',
                                   name: 'name',
+                                  value: '',
                                   required: true,
                                   labelOutside: false,
                                   httpName: 'Name',
@@ -57,6 +58,7 @@ function ArabicGeneral() {
                                   type: 'email',
                                   label: 'Email',
                                   name: 'email',
+                                  value: '',
                                   required: true,
                                   labelOutside: false,
                                   httpName: 'Email',
@@ -69,6 +71,7 @@ function ArabicGeneral() {
                                   type: 'text',
                                   label: 'Book Title',
                                   name: 'book_title',
+                                  value: '',
                                   required: true,
                                   labelOutside: false,
                                   httpName: 'Book Title',
@@ -81,6 +84,7 @@ function ArabicGeneral() {
                                   type: 'text',
                                   label: 'Author or Writer',
                                   name: 'author',
+                                  value: '',
                                   required: true,
                                   labelOutside: false,
                                   httpName: 'Author',
@@ -93,6 +97,7 @@ function ArabicGeneral() {
                                   type: 'text',
                                   label: 'Series or Distributor',
                                   name: 'series',
+                                  value: '',
                                   required: false,
                                   labelOutside: false,
                                   httpName: 'Series',
@@ -111,7 +116,8 @@ function ArabicGeneral() {
                                   httpName: 'Reason',
                                   displayLabel: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
                                   placeholder: t("students-life-pages.library-pages.suggest-book-form.why-do-you-think-this-book-should-be-added-to-the-library"),
-                                  widthOfField: 1
+                                  widthOfField: 1,
+                                  value: ''
                               },
                           ]
                       }

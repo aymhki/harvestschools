@@ -46,7 +46,9 @@ function Form({
     const [submitting, setSubmitting] = useState(false);
     const [generalFormError, setGeneralFormError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const [dynamicFields, setDynamicFields] = useState(fields);
+    const [dynamicFields, setDynamicFields] = useState(() =>
+        fields.map(field => ({ ...field, value: field.value !== undefined ? field.value : '' }))
+    );
     const captchaMaxLength = easySimpleCaptcha ? 4 : 6;
     const characters = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghkmnopqrstuvwxyz0123456789@#$%&';
     const [fileInputs, setFileInputs] = useState({});
@@ -170,6 +172,7 @@ function Form({
                         placeholder: newFieldData.placeholder,
                         errorMsg: newFieldData.errorMsg,
                         choices: newFieldData.choices,
+                        value: newFieldData.value !== undefined ? newFieldData.value : currentField.value,
                     };
                 }
                 return currentField;
@@ -984,7 +987,7 @@ function Form({
             if (!fieldRefs.current[field.id]) {
                 fieldRefs.current[field.id] = createRef();
                 
-                if (field.value !== '') {
+                if (field.value !== undefined && field.value !== null && field.value !== '') {
                     const ref = fieldRefs.current[field.id];
                     if (ref && ref.current) {
                         if (field.type === 'checkbox' || field.type === 'radio') {
@@ -1003,7 +1006,7 @@ function Form({
     useEffect(() => {
         if (refsHaveBeenSet) {
             dynamicFields.forEach(field => {
-                if (field.value !== '') {
+                if (field.value !== undefined && field.value !== null && field.value !== '') {
                     const ref = fieldRefs.current[ field.id ];
                     
                     if ( ref && ref.current ) {

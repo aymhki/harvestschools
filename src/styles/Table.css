@@ -61,7 +61,7 @@
     table-layout: auto;
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 60vh;
+    max-height: 65vh;
     overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     margin: 0;
@@ -412,7 +412,7 @@ td button {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 2rem 2rem 0 2rem;
+    padding: 0 4rem 0 2rem;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
     user-select: none;

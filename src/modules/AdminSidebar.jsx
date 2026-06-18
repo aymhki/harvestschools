@@ -47,7 +47,19 @@ function AdminSidebar() {
     };
 
     const toggleLanguage = () => {
-        i18n.changeLanguage(i18n.language === 'en' ? 'ar' : 'en');
+        const lng = i18n.language === 'en' ? 'ar' : 'en';
+        i18n.changeLanguage(lng);
+
+        const searchParams = new URLSearchParams(location.search);
+        searchParams.set('lang', lng);
+
+        navigate({
+            pathname: location.pathname,
+            search: searchParams.toString()
+        }, { replace: true });
+
+        document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = lng;
     };
 
     const showText = isExpanded || isMobileOpen;
@@ -118,7 +130,7 @@ function AdminSidebar() {
                         <li onClick={toggleLanguage}>
                             <div className="nav-item-content" title={!isExpanded ? 'Change Language' : ''}>
                                 <span className="icon"><LanguageIcon /></span>
-                                {showText && <span className="label">{i18n.language === 'en' ? 'العربية' : 'English'}</span>}
+                                {showText && <span className={`label admin-sidebar-language-switcher ${i18n.language === 'en' ? 'ar' : 'en'}`}>{i18n.language === 'en' ? 'العربية' : 'English'}</span>}
                             </div>
                         </li>
                         <li>
