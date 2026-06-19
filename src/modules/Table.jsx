@@ -1472,133 +1472,142 @@ function Table({
         };
 
         const cascade = (dx, dy) => {
-            let remX = absorb(container, 'scrollLeft', 'scrollWidth',  'clientWidth',  dx);
-            let remY = absorb(container, 'scrollTop',  'scrollHeight', 'clientHeight', dy);
+            let rx = absorb(container, 'scrollLeft', 'scrollWidth',  'clientWidth',  dx);
+            let ry = absorb(container, 'scrollTop',  'scrollHeight', 'clientHeight', dy);
             if (module) {
-                remX = absorb(module, 'scrollLeft', 'scrollWidth',  'clientWidth',  remX);
-                remY = absorb(module, 'scrollTop',  'scrollHeight', 'clientHeight', remY);
+                rx = absorb(module, 'scrollLeft', 'scrollWidth',  'clientWidth',  rx);
+                ry = absorb(module, 'scrollTop',  'scrollHeight', 'clientHeight', ry);
             }
-            if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
+            if (rx !== 0 || ry !== 0) window.scrollBy(rx, ry);
         };
 
-        const FRICTION            = 0.95;
-        const MIN_VELOCITY        = 0.3;
-        const MAX_VELOCITY        = 30;
-        const VELOCITY_SCALE      = 16;
-        const SAMPLE_WINDOW       = 80;
-        const AXIS_LOCK_THRESHOLD = 5; // px of movement before committing to one axis
+        // LAYER 1: CSS injection
+        // touch-action is NOT inherited — every td/tr/table child defaults to
+        // touch-action:auto, which lets the browser compositor pan the page
+        // independently of anything JS does. Injecting on every descendant
+        // kills that compositor path at the source.
+        const uid = Math.random().toString(36).slice(2, 9);
+        container.dataset.scrollId = uid;
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `[data-scroll-id="${uid}"],[data-scroll-id="${uid}"] *{touch-action:pinch-zoom!important}`;
+        document.head.appendChild(styleEl);
 
-        let samples     = [];
-        let velocityX   = 0;
-        let velocityY   = 0;
-        let rafId       = null;
-        let lockedAxis  = null; // 'x' | 'y' | null
+        const FRICTION       = 0.95;
+        const MIN_VEL        = 0.3;
+        const MAX_VEL        = 30;
+        const VEL_SCALE      = 16;
+        const SAMPLE_WIN     = 80;
+        const AXIS_THRESHOLD = 5;
 
-        const cancelMomentum = () => {
+        let active     = false;
+        let moveBound  = false;
+        let samples    = [];
+        let vx = 0, vy = 0;
+        let rafId      = null;
+        let lockedAxis = null;
+
+        const stopMomentum = () => {
             if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
         };
 
-        const runMomentum = () => {
-            velocityX *= FRICTION;
-            velocityY *= FRICTION;
-            if (Math.abs(velocityX) < MIN_VELOCITY && Math.abs(velocityY) < MIN_VELOCITY) {
-                rafId = null;
-                return;
-            }
-            cascade(
-                lockedAxis === 'y' ? 0 : velocityX,
-                lockedAxis === 'x' ? 0 : velocityY
-            );
-            rafId = requestAnimationFrame(runMomentum);
+        const tick = () => {
+            vx *= FRICTION; vy *= FRICTION;
+            if (Math.abs(vx) < MIN_VEL && Math.abs(vy) < MIN_VEL) { rafId = null; return; }
+            cascade(lockedAxis === 'y' ? 0 : vx, lockedAxis === 'x' ? 0 : vy);
+            rafId = requestAnimationFrame(tick);
         };
 
-        const onTouchStart = (e) => {
-            cancelMomentum();
-            lockedAxis = null;
-            if (e.touches.length > 1) { samples = []; return; }
-            velocityX = 0;
-            velocityY = 0;
-            samples = [{ x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() }];
-        };
-
-        const onTouchMove = (e) => {
-            // two fingers: browser handles pinch-zoom natively, don't interfere
-            if (e.touches.length > 1) return;
-
-            // FIX 1: preventDefault BEFORE any early return — if this line is ever
-            // skipped, the browser gets the event and scrolls the page natively
-            e.preventDefault();
+        // LAYER 2: document-level non-passive touchmove
+        // Registered dynamically so normal page scrolling (outside the table)
+        // pays zero performance cost — the non-passive listener only exists
+        // for the exact duration of a touch on the table.
+        const onMove = (e) => {
+            if (!active || e.touches.length > 1) return; // let pinch-zoom through
+            e.preventDefault(); // at document level this always lands before the browser scrolls
 
             if (!samples.length) return;
 
-            const touch    = e.touches[0];
-            const now      = performance.now();
-            const last     = samples[samples.length - 1];
-            const rawDeltaX = last.x - touch.clientX;
-            const rawDeltaY = last.y - touch.clientY;
+            const touch = e.touches[0];
+            const now   = performance.now();
+            const prev  = samples[samples.length - 1];
+            const dx    = prev.x - touch.clientX;
+            const dy    = prev.y - touch.clientY;
 
-            // FIX 2: lock to primary axis once the user has moved enough to reveal intent.
-            // Without this, a near-vertical swipe always has a small rawDeltaX which
-            // absorb() passes straight through to window.scrollBy(), scrolling the page
-            // horizontally even though the user was scrolling vertically.
-            if (!lockedAxis) {
-                const totalMoved = Math.abs(rawDeltaX) + Math.abs(rawDeltaY);
-                if (totalMoved >= AXIS_LOCK_THRESHOLD) {
-                    lockedAxis = Math.abs(rawDeltaX) > Math.abs(rawDeltaY) ? 'x' : 'y';
-                }
+            if (!lockedAxis && Math.abs(dx) + Math.abs(dy) >= AXIS_THRESHOLD) {
+                lockedAxis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
             }
 
             samples.push({ x: touch.clientX, y: touch.clientY, t: now });
-            while (samples.length > 2 && samples[0].t < now - SAMPLE_WINDOW * 2) samples.shift();
+            while (samples.length > 2 && samples[0].t < now - SAMPLE_WIN * 2) samples.shift();
 
-            cascade(
-                lockedAxis === 'y' ? 0 : rawDeltaX,
-                lockedAxis === 'x' ? 0 : rawDeltaY
-            );
+            cascade(lockedAxis === 'y' ? 0 : dx, lockedAxis === 'x' ? 0 : dy);
         };
 
-        const onTouchEnd = (e) => {
-            if (e.touches.length > 0) return;
-            if (!samples.length) return;
+        const bindMove = () => {
+            if (moveBound) return;
+            document.addEventListener('touchmove', onMove, { passive: false });
+            moveBound = true;
+        };
+
+        const unbindMove = () => {
+            if (!moveBound) return;
+            document.removeEventListener('touchmove', onMove);
+            moveBound = false;
+        };
+
+        const onStart = (e) => {
+            stopMomentum();
+            active = container.contains(e.target);
+
+            if (!active) { unbindMove(); return; }
+
+            bindMove();
+
+            if (e.touches.length > 1) { samples = []; return; } // pinch — clear samples, keep listener
+
+            lockedAxis = null; vx = 0; vy = 0;
+            samples = [{ x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() }];
+        };
+
+        const onEnd = (e) => {
+            if (!active) return;
+
+            if (e.type === 'touchcancel') {
+                unbindMove(); samples = []; active = false; return;
+            }
+
+            if (e.touches.length > 0) return; // another finger still down
+
+            unbindMove();
 
             const now    = performance.now();
-            const recent = samples.filter(s => s.t >= now - SAMPLE_WINDOW);
+            const recent = samples.filter(s => s.t >= now - SAMPLE_WIN);
 
             if (recent.length >= 2) {
-                const first = recent[0];
-                const last  = recent[recent.length - 1];
-                const dt    = last.t - first.t;
+                const f = recent[0], l = recent[recent.length - 1];
+                const dt = l.t - f.t;
                 if (dt > 0) {
-                    velocityX = lockedAxis === 'y' ? 0 : Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.x - last.x) / dt) * VELOCITY_SCALE));
-                    velocityY = lockedAxis === 'x' ? 0 : Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.y - last.y) / dt) * VELOCITY_SCALE));
+                    vx = lockedAxis === 'y' ? 0 : Math.max(-MAX_VEL, Math.min(MAX_VEL, ((f.x - l.x) / dt) * VEL_SCALE));
+                    vy = lockedAxis === 'x' ? 0 : Math.max(-MAX_VEL, Math.min(MAX_VEL, ((f.y - l.y) / dt) * VEL_SCALE));
                 }
             }
 
-            samples = [];
-            if (Math.abs(velocityX) > MIN_VELOCITY || Math.abs(velocityY) > MIN_VELOCITY) {
-                rafId = requestAnimationFrame(runMomentum);
-            }
+            samples = []; active = false;
+            if (Math.abs(vx) > MIN_VEL || Math.abs(vy) > MIN_VEL) rafId = requestAnimationFrame(tick);
         };
 
-        const onWindowTouchStart = (e) => {
-            if (!container.contains(e.target)) cancelMomentum();
-        };
-
-        const prevTouchAction = container.style.touchAction;
-        container.style.touchAction = 'pinch-zoom';
-
-        container.addEventListener('touchstart', onTouchStart,       { passive: false });
-        container.addEventListener('touchmove',  onTouchMove,        { passive: false });
-        container.addEventListener('touchend',   onTouchEnd,         { passive: true  });
-        window.addEventListener   ('touchstart', onWindowTouchStart, { passive: true  });
+        window.addEventListener('touchstart',  onStart, { passive: true });
+        window.addEventListener('touchend',    onEnd,   { passive: true });
+        window.addEventListener('touchcancel', onEnd,   { passive: true });
 
         return () => {
-            cancelMomentum();
-            container.style.touchAction = prevTouchAction;
-            container.removeEventListener('touchstart', onTouchStart);
-            container.removeEventListener('touchmove',  onTouchMove);
-            container.removeEventListener('touchend',   onTouchEnd);
-            window.removeEventListener   ('touchstart', onWindowTouchStart);
+            stopMomentum();
+            unbindMove();
+            styleEl.remove();
+            delete container.dataset.scrollId;
+            window.removeEventListener('touchstart',  onStart);
+            window.removeEventListener('touchend',    onEnd);
+            window.removeEventListener('touchcancel', onEnd);
         };
     }, []);
 
