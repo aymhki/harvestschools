@@ -6,6 +6,7 @@
     padding: 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    overflow: auto;
 }
 
 .table-module::-webkit-scrollbar {
