@@ -6,7 +6,16 @@
     padding: 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    /* 1. Restore horizontal scrolling to fix the clipping and custom scrollbar */
     overflow-x: auto;
+    overflow-y: auto; /* CSS forces this to auto when overflow-x is auto */
+
+    /* 2. Disable the iOS native momentum touch trap */
+    -webkit-overflow-scrolling: auto;
+
+    /* 3. Crucial: Isolate horizontal scroll, but allow vertical scroll to chain to the page */
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
 }
 
 .table-module::-webkit-scrollbar {
