@@ -71,6 +71,7 @@
 .table-scroll-container {
     width: 100%;
     flex: 1;
+    touch-action: pinch-zoom;
 }
 
 .table-scroll-container.scrollable {

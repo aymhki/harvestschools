@@ -1509,13 +1509,22 @@ function Table({
 
         const onTouchStart = (e) => {
             cancelMomentum();
+            // two fingers: let the browser handle pinch-zoom, reset state and bail
+            if (e.touches.length > 1) {
+                samples = [];
+                return;
+            }
             velocityX = 0;
             velocityY = 0;
             samples = [{ x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() }];
         };
 
         const onTouchMove = (e) => {
+            // two fingers: pass through entirely — browser handles pinch-zoom
+            if (e.touches.length > 1) return;
             if (!samples.length) return;
+
+            // single finger: we own this gesture, stop the browser from also scrolling the page
             e.preventDefault();
 
             const touch  = e.touches[0];
@@ -1530,8 +1539,11 @@ function Table({
             cascade(deltaX, deltaY);
         };
 
-        const onTouchEnd = () => {
+        const onTouchEnd = (e) => {
+            // fingers still on screen (e.g. lifted one during pinch), wait for full release
+            if (e.touches.length > 0) return;
             if (!samples.length) return;
+
             const now    = performance.now();
             const recent = samples.filter(s => s.t >= now - SAMPLE_WINDOW);
 
@@ -1556,7 +1568,12 @@ function Table({
         };
 
         const prevTouchAction = container.style.touchAction;
-        container.style.touchAction = 'none';
+        // pinch-zoom: browser compositor handles 2-finger pinch natively,
+        // but will NOT attempt any 1-finger panning — our cascade owns that entirely.
+        // This is the actual reason the page was scrolling alongside the table:
+        // touch-action: none killed pinch-zoom too, and with no value at all the
+        // compositor was free to pan everything in parallel with our JS.
+        container.style.touchAction = 'pinch-zoom';
 
         container.addEventListener('touchstart', onTouchStart,       { passive: false });
         container.addEventListener('touchmove',  onTouchMove,        { passive: false });
