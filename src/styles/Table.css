@@ -6,16 +6,10 @@
     padding: 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    overflow-x: auto;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: auto;
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
 }
 
 .table-module::-webkit-scrollbar {
     display: none;
-
 }
 
 .table-module-table {
@@ -23,9 +17,6 @@
     border-collapse: separate;
     border-spacing: 0;
     border: none;
-    overflow: visible;
-    -webkit-overflow-scrolling: auto;
-    overscroll-behavior: auto;
 }
 
 .table-module-table tr,
@@ -59,9 +50,6 @@
     position: relative;
     margin: 0 2rem 2rem 2rem;
     align-items: stretch;
-    overflow: visible;
-    -webkit-overflow-scrolling: auto;
-    overscroll-behavior: auto;
 }
 
 .table-with-vertical-scrollbar-wrapper.fixed {
@@ -74,10 +62,9 @@
     overflow-x: auto;
     overflow-y: auto;
     max-height: 65vh;
-    margin: 0;
-    -webkit-overflow-scrolling: auto;
-    overscroll-behavior-x: contain;
     overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0;
 }
 
 .table-scroll-container {

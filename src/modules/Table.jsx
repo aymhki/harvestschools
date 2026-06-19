@@ -1463,61 +1463,122 @@ function Table({
         return () => module.removeEventListener('wheel', handleWheel);
     }, []);
 
-    // useEffect(() => {
-    //     const module = tableModuleRef.current;
-    //     const container = scrollContainerRef.current;
-    //     if (!module) return;
-    //
-    //     const absorb = (el, prop, sizeKey, clientKey, delta) => {
-    //         const max = el[sizeKey] - el[clientKey];
-    //         if (max <= 0) return delta;
-    //         const prev = el[prop];
-    //         el[prop] = Math.max(0, Math.min(prev + delta, max));
-    //         return delta - (el[prop] - prev);
-    //     };
-    //
-    //     let lastX = 0;
-    //     let lastY = 0;
-    //
-    //     const onTouchStart = (e) => {
-    //         if (e.target.closest('.custom-scrollbar-thumb, .custom-scrollbar-thumb-vertical, .table-module-filter-popup-container, .table-module-accordion')) return;
-    //         lastX = e.touches[0].clientX;
-    //         lastY = e.touches[0].clientY;
-    //     };
-    //
-    //     const onTouchMove = (e) => {
-    //         if (e.target.closest('.custom-scrollbar-thumb, .custom-scrollbar-thumb-vertical, .table-module-filter-popup-container, .table-module-accordion')) return;
-    //
-    //         const touch = e.touches[0];
-    //         const deltaX = lastX - touch.clientX;
-    //         const deltaY = lastY - touch.clientY;
-    //         lastX = touch.clientX;
-    //         lastY = touch.clientY;
-    //
-    //         e.preventDefault();
-    //
-    //         let remX = deltaX;
-    //         let remY = deltaY;
-    //
-    //         if (container) {
-    //             remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
-    //             remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
-    //         }
-    //
-    //         remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
-    //         remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
-    //
-    //         if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
-    //     };
-    //
-    //     module.addEventListener('touchstart', onTouchStart, { passive: true });
-    //     module.addEventListener('touchmove', onTouchMove, { passive: false });
-    //
-    //     return () => {
-    //         module.removeEventListener('touchstart', onTouchStart);
-    //         module.removeEventListener('touchmove', onTouchMove);
-    //     };
-    // }, []);
+    useEffect(() => {
+        const module = tableModuleRef.current;
+        const container = scrollContainerRef.current;
+        if (!module) return;
+
+        const absorb = (el, prop, sizeKey, clientKey, delta) => {
+            const max = el[sizeKey] - el[clientKey];
+            if (max <= 0) return delta;
+            const prev = el[prop];
+            el[prop] = Math.max(0, Math.min(prev + delta, max));
+            return delta - (el[prop] - prev);
+        };
+
+        const cascade = (dx, dy) => {
+            let remX = dx;
+            let remY = dy;
+            if (container) {
+                remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+                remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+            }
+            remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
+            remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+            if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
+        };
+
+        const FRICTION       = 0.95;
+        const MIN_VELOCITY   = 0.3;
+        const MAX_VELOCITY   = 30;
+        const VELOCITY_SCALE = 16;
+        const SAMPLE_WINDOW  = 80;
+
+        let samples   = [];
+        let velocityX = 0;
+        let velocityY = 0;
+        let rafId     = null;
+
+        const cancelMomentum = () => {
+            if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+        };
+
+        const runMomentum = () => {
+            velocityX *= FRICTION;
+            velocityY *= FRICTION;
+            if (Math.abs(velocityX) < MIN_VELOCITY && Math.abs(velocityY) < MIN_VELOCITY) {
+                rafId = null;
+                return;
+            }
+            cascade(velocityX, velocityY);
+            rafId = requestAnimationFrame(runMomentum);
+        };
+
+        const excluded = '.custom-scrollbar-thumb, .custom-scrollbar-thumb-vertical, .table-module-filter-popup-container, .table-module-accordion';
+
+        const onTouchStart = (e) => {
+            if (e.target.closest(excluded)) return;
+            cancelMomentum();
+            velocityX = 0;
+            velocityY = 0;
+            samples = [{ x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() }];
+        };
+
+        const onTouchMove = (e) => {
+            if (e.target.closest(excluded)) return;
+            if (!samples.length) return;
+            e.preventDefault();
+
+            const touch  = e.touches[0];
+            const now    = performance.now();
+            const last   = samples[samples.length - 1];
+            const deltaX = last.x - touch.clientX;
+            const deltaY = last.y - touch.clientY;
+
+            samples.push({ x: touch.clientX, y: touch.clientY, t: now });
+            while (samples.length > 2 && samples[0].t < now - SAMPLE_WINDOW * 2) samples.shift();
+
+            cascade(deltaX, deltaY);
+        };
+
+        const onTouchEnd = () => {
+            if (!samples.length) return;
+            const now    = performance.now();
+            const recent = samples.filter(s => s.t >= now - SAMPLE_WINDOW);
+
+            if (recent.length >= 2) {
+                const first = recent[0];
+                const last  = recent[recent.length - 1];
+                const dt    = last.t - first.t;
+                if (dt > 0) {
+                    velocityX = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.x - last.x) / dt) * VELOCITY_SCALE));
+                    velocityY = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.y - last.y) / dt) * VELOCITY_SCALE));
+                }
+            }
+
+            samples = [];
+            if (Math.abs(velocityX) > MIN_VELOCITY || Math.abs(velocityY) > MIN_VELOCITY) {
+                rafId = requestAnimationFrame(runMomentum);
+            }
+        };
+
+        const onWindowTouchStart = (e) => {
+            if (!module.contains(e.target)) cancelMomentum();
+        };
+
+        module.addEventListener('touchstart', onTouchStart,       { passive: false });
+        module.addEventListener('touchmove',  onTouchMove,        { passive: false });
+        module.addEventListener('touchend',   onTouchEnd,         { passive: true  });
+        window.addEventListener('touchstart', onWindowTouchStart, { passive: true  });
+
+        return () => {
+            cancelMomentum();
+            module.removeEventListener('touchstart', onTouchStart);
+            module.removeEventListener('touchmove',  onTouchMove);
+            module.removeEventListener('touchend',   onTouchEnd);
+            window.removeEventListener('touchstart', onWindowTouchStart);
+        };
+    }, []);
 
     return (
         <div className="table-module" ref={tableModuleRef} >
