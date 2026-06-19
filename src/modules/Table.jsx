@@ -1427,9 +1427,9 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
 
     useEffect(() => {
-        const module = tableModuleRef.current;
         const container = scrollContainerRef.current;
-        if (!module) return;
+        const module    = tableModuleRef.current;
+        if (!container) return;
 
         const absorb = (el, prop, sizeKey, clientKey, delta) => {
             const max = el[sizeKey] - el[clientKey];
@@ -1440,33 +1440,28 @@ function Table({
         };
 
         const handleWheel = (e) => {
-            if (isMobile) return;
             if (e.ctrlKey) return;
-            if (e.target.closest('.table-module-filter-popup-container, .table-module-accordion')) return;
             e.preventDefault();
 
-            let remX = e.deltaX;
-            let remY = e.deltaY;
+            let remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth',  e.deltaX);
+            let remY = absorb(container, 'scrollTop',  'scrollHeight', 'clientHeight', e.deltaY);
 
-            if (container) {
-                remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
-                remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+            if (module) {
+                remX = absorb(module, 'scrollLeft', 'scrollWidth',  'clientWidth',  remX);
+                remY = absorb(module, 'scrollTop',  'scrollHeight', 'clientHeight', remY);
             }
-
-            remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
-            remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
 
             if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
         };
 
-        module.addEventListener('wheel', handleWheel, { passive: false });
-        return () => module.removeEventListener('wheel', handleWheel);
+        container.addEventListener('wheel', handleWheel, { passive: false });
+        return () => container.removeEventListener('wheel', handleWheel);
     }, []);
 
     useEffect(() => {
-        const module = tableModuleRef.current;
         const container = scrollContainerRef.current;
-        if (!module) return;
+        const module    = tableModuleRef.current;
+        if (!container) return;
 
         const absorb = (el, prop, sizeKey, clientKey, delta) => {
             const max = el[sizeKey] - el[clientKey];
@@ -1477,14 +1472,12 @@ function Table({
         };
 
         const cascade = (dx, dy) => {
-            let remX = dx;
-            let remY = dy;
-            if (container) {
-                remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
-                remY = absorb(container, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
+            let remX = absorb(container, 'scrollLeft', 'scrollWidth',  'clientWidth',  dx);
+            let remY = absorb(container, 'scrollTop',  'scrollHeight', 'clientHeight', dy);
+            if (module) {
+                remX = absorb(module, 'scrollLeft', 'scrollWidth',  'clientWidth',  remX);
+                remY = absorb(module, 'scrollTop',  'scrollHeight', 'clientHeight', remY);
             }
-            remX = absorb(module, 'scrollLeft', 'scrollWidth', 'clientWidth', remX);
-            remY = absorb(module, 'scrollTop', 'scrollHeight', 'clientHeight', remY);
             if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
         };
 
@@ -1514,10 +1507,7 @@ function Table({
             rafId = requestAnimationFrame(runMomentum);
         };
 
-        const excluded = '.custom-scrollbar-thumb, .custom-scrollbar-thumb-vertical, .table-module-filter-popup-container, .table-module-accordion';
-
         const onTouchStart = (e) => {
-            if (e.target.closest(excluded)) return;
             cancelMomentum();
             velocityX = 0;
             velocityY = 0;
@@ -1525,7 +1515,6 @@ function Table({
         };
 
         const onTouchMove = (e) => {
-            if (e.target.closest(excluded)) return;
             if (!samples.length) return;
             e.preventDefault();
 
@@ -1563,20 +1552,24 @@ function Table({
         };
 
         const onWindowTouchStart = (e) => {
-            if (!module.contains(e.target)) cancelMomentum();
+            if (!container.contains(e.target)) cancelMomentum();
         };
 
-        module.addEventListener('touchstart', onTouchStart,       { passive: false });
-        module.addEventListener('touchmove',  onTouchMove,        { passive: false });
-        module.addEventListener('touchend',   onTouchEnd,         { passive: true  });
-        window.addEventListener('touchstart', onWindowTouchStart, { passive: true  });
+        const prevTouchAction = container.style.touchAction;
+        container.style.touchAction = 'none';
+
+        container.addEventListener('touchstart', onTouchStart,       { passive: false });
+        container.addEventListener('touchmove',  onTouchMove,        { passive: false });
+        container.addEventListener('touchend',   onTouchEnd,         { passive: true  });
+        window.addEventListener   ('touchstart', onWindowTouchStart, { passive: true  });
 
         return () => {
             cancelMomentum();
-            module.removeEventListener('touchstart', onTouchStart);
-            module.removeEventListener('touchmove',  onTouchMove);
-            module.removeEventListener('touchend',   onTouchEnd);
-            window.removeEventListener('touchstart', onWindowTouchStart);
+            container.style.touchAction = prevTouchAction;
+            container.removeEventListener('touchstart', onTouchStart);
+            container.removeEventListener('touchmove',  onTouchMove);
+            container.removeEventListener('touchend',   onTouchEnd);
+            window.removeEventListener   ('touchstart', onWindowTouchStart);
         };
     }, []);
 
