@@ -1481,16 +1481,18 @@ function Table({
             if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
         };
 
-        const FRICTION       = 0.95;
-        const MIN_VELOCITY   = 0.3;
-        const MAX_VELOCITY   = 30;
-        const VELOCITY_SCALE = 16;
-        const SAMPLE_WINDOW  = 80;
+        const FRICTION            = 0.95;
+        const MIN_VELOCITY        = 0.3;
+        const MAX_VELOCITY        = 30;
+        const VELOCITY_SCALE      = 16;
+        const SAMPLE_WINDOW       = 80;
+        const AXIS_LOCK_THRESHOLD = 5; // px of movement before committing to one axis
 
-        let samples   = [];
-        let velocityX = 0;
-        let velocityY = 0;
-        let rafId     = null;
+        let samples     = [];
+        let velocityX   = 0;
+        let velocityY   = 0;
+        let rafId       = null;
+        let lockedAxis  = null; // 'x' | 'y' | null
 
         const cancelMomentum = () => {
             if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
@@ -1503,44 +1505,59 @@ function Table({
                 rafId = null;
                 return;
             }
-            cascade(velocityX, velocityY);
+            cascade(
+                lockedAxis === 'y' ? 0 : velocityX,
+                lockedAxis === 'x' ? 0 : velocityY
+            );
             rafId = requestAnimationFrame(runMomentum);
         };
 
         const onTouchStart = (e) => {
             cancelMomentum();
-            // two fingers: let the browser handle pinch-zoom, reset state and bail
-            if (e.touches.length > 1) {
-                samples = [];
-                return;
-            }
+            lockedAxis = null;
+            if (e.touches.length > 1) { samples = []; return; }
             velocityX = 0;
             velocityY = 0;
             samples = [{ x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() }];
         };
 
         const onTouchMove = (e) => {
-            // two fingers: pass through entirely — browser handles pinch-zoom
+            // two fingers: browser handles pinch-zoom natively, don't interfere
             if (e.touches.length > 1) return;
-            if (!samples.length) return;
 
-            // single finger: we own this gesture, stop the browser from also scrolling the page
+            // FIX 1: preventDefault BEFORE any early return — if this line is ever
+            // skipped, the browser gets the event and scrolls the page natively
             e.preventDefault();
 
-            const touch  = e.touches[0];
-            const now    = performance.now();
-            const last   = samples[samples.length - 1];
-            const deltaX = last.x - touch.clientX;
-            const deltaY = last.y - touch.clientY;
+            if (!samples.length) return;
+
+            const touch    = e.touches[0];
+            const now      = performance.now();
+            const last     = samples[samples.length - 1];
+            const rawDeltaX = last.x - touch.clientX;
+            const rawDeltaY = last.y - touch.clientY;
+
+            // FIX 2: lock to primary axis once the user has moved enough to reveal intent.
+            // Without this, a near-vertical swipe always has a small rawDeltaX which
+            // absorb() passes straight through to window.scrollBy(), scrolling the page
+            // horizontally even though the user was scrolling vertically.
+            if (!lockedAxis) {
+                const totalMoved = Math.abs(rawDeltaX) + Math.abs(rawDeltaY);
+                if (totalMoved >= AXIS_LOCK_THRESHOLD) {
+                    lockedAxis = Math.abs(rawDeltaX) > Math.abs(rawDeltaY) ? 'x' : 'y';
+                }
+            }
 
             samples.push({ x: touch.clientX, y: touch.clientY, t: now });
             while (samples.length > 2 && samples[0].t < now - SAMPLE_WINDOW * 2) samples.shift();
 
-            cascade(deltaX, deltaY);
+            cascade(
+                lockedAxis === 'y' ? 0 : rawDeltaX,
+                lockedAxis === 'x' ? 0 : rawDeltaY
+            );
         };
 
         const onTouchEnd = (e) => {
-            // fingers still on screen (e.g. lifted one during pinch), wait for full release
             if (e.touches.length > 0) return;
             if (!samples.length) return;
 
@@ -1552,8 +1569,8 @@ function Table({
                 const last  = recent[recent.length - 1];
                 const dt    = last.t - first.t;
                 if (dt > 0) {
-                    velocityX = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.x - last.x) / dt) * VELOCITY_SCALE));
-                    velocityY = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.y - last.y) / dt) * VELOCITY_SCALE));
+                    velocityX = lockedAxis === 'y' ? 0 : Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.x - last.x) / dt) * VELOCITY_SCALE));
+                    velocityY = lockedAxis === 'x' ? 0 : Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, ((first.y - last.y) / dt) * VELOCITY_SCALE));
                 }
             }
 
@@ -1568,11 +1585,6 @@ function Table({
         };
 
         const prevTouchAction = container.style.touchAction;
-        // pinch-zoom: browser compositor handles 2-finger pinch natively,
-        // but will NOT attempt any 1-finger panning — our cascade owns that entirely.
-        // This is the actual reason the page was scrolling alongside the table:
-        // touch-action: none killed pinch-zoom too, and with no value at all the
-        // compositor was free to pan everything in parallel with our JS.
         container.style.touchAction = 'pinch-zoom';
 
         container.addEventListener('touchstart', onTouchStart,       { passive: false });
