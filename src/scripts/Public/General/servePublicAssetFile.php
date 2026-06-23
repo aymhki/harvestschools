@@ -2,11 +2,34 @@
 
 // ── Config ───────────────────────────────────────────────────────────────────
 
-//$ASSETS_BASE = realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/assets') . DIRECTORY_SEPARATOR;
-//$CACHE_BASE  = realpath(dirname($_SERVER['DOCUMENT_ROOT'])) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
+$ASSETS_BASE = realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/assets') . DIRECTORY_SEPARATOR;
+$CACHE_BASE  = realpath(dirname($_SERVER['DOCUMENT_ROOT'])) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
 
-$ASSETS_BASE = '/home/harvest/assets/';
-$CACHE_BASE  = '/home/harvest/assets-cache/';
+//$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+//
+//$ASSETS_BASE = false;
+//$possible_paths = [
+//    $doc_root . '/assets',
+//    dirname($doc_root) . '/assets',
+//    dirname($doc_root, 2) . '/assets'
+//];
+//
+//foreach ($possible_paths as $path) {
+//    if (is_dir($path)) {
+//        $ASSETS_BASE = realpath($path) . DIRECTORY_SEPARATOR;
+//        break;
+//    }
+//}
+//
+//if (!$ASSETS_BASE) {
+//    http_response_code(500);
+//    exit('Assets base directory not found');
+//}
+//
+//$CACHE_BASE = realpath(dirname($ASSETS_BASE)) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
+
+//$ASSETS_BASE = '/home/harvest/assets/';
+//$CACHE_BASE  = '/home/harvest/assets-cache/';
 
 $ALLOWED_MIME = [
     'jpg'  => 'image/jpeg',  'jpeg' => 'image/jpeg',
