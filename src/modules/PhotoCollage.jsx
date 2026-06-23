@@ -61,7 +61,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
             <div className="photo-slider">
                 {photos && (
                     (photos[maxIndex].isVideo) ? (
-                        <video src={ `${servePublicAsset(photos[maxIndex].src)}#t=0.1` } alt={photos[maxIndex].alt}  onClick={() => openLightBox(maxIndex)}
+                        <video src={ `${servePublicAsset(photos[maxIndex].src)}` } alt={photos[maxIndex].alt}  onClick={() => openLightBox(maxIndex)}
                         className={'video-slider-preview'} playsInline
                         />
                     ) : (
@@ -77,7 +77,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         <div className="photo-collage">
             {collagePreview && (
                 (collagePreview.isVideo) ? (
-                    <video src={`${servePublicAsset(collagePreview.src)}#t=0.1`} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} controls playsInline />
+                    <video src={`${servePublicAsset(collagePreview.src)}`} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} controls playsInline />
                     ) : (
                     <img src={servePublicAsset(collagePreview.src)} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
                 )
@@ -107,7 +107,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                     
                     {photos[currentIndex].isVideo ? (
                         <video
-                            src={`${servePublicAsset(photos[currentIndex].src)}#t=0.1`}
+                            src={`${servePublicAsset(photos[currentIndex].src)}`}
                             alt={photos[currentIndex].alt}
                             className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
                             controls
