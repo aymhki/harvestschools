@@ -6,7 +6,6 @@ import {
     isDevelopment,
     msgTimeout
 } from "../../General/GeneralUtils.jsx";
-import {servePublicAsset} from "../../General/GeneralServices.jsx"
 
 const generateGraduationBookingConfirmationPDF = async (action = 'download', setIsLoading, bookingId, bookingUsername, detailedData, setError) => {
     try {
@@ -19,11 +18,11 @@ const generateGraduationBookingConfirmationPDF = async (action = 'download', set
         ]);
 
         await Promise.all([
-            import(servePublicAsset('/fonts/American Typewriter/american-typewriter-bold-bold.js')),
-            import(servePublicAsset('/fonts/Futura/Futura Book font-normal.js')),
-            import(servePublicAsset('/fonts/American Typewriter/American Typewriter Regular-normal.js')),
-            import(servePublicAsset('/fonts/Futura/futur-bold.js')),
-            import(servePublicAsset('/fonts/Futura/Futura Book Italic font-italic.js'))
+            import('/assets/fonts/American Typewriter/american-typewriter-bold-bold.js'),
+            import('/assets/fonts/Futura/Futura Book font-normal.js'),
+            import('/assets/fonts/American Typewriter/American Typewriter Regular-normal.js'),
+            import('/assets/fonts/Futura/futur-bold.js'),
+            import('/assets/fonts/Futura/Futura Book Italic font-italic.js')
         ]);
 
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -67,7 +66,7 @@ const generateGraduationBookingConfirmationPDF = async (action = 'download', set
             await new Promise((resolve, reject) => {
                 logoImg.onload = resolve;
                 logoImg.onerror = reject;
-                logoImg.src = servePublicAsset('/images/HarvestLogos/HarvestLogo-01.png');
+                logoImg.src = '/assets/images/HarvestLogos/HarvestLogo-01.png';
             });
 
             const logoWidth = 60;
