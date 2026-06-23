@@ -2,6 +2,7 @@ import '../../styles/Academics.css';
 import {Helmet} from "react-helmet-async";
 import { useTranslation } from 'react-i18next';
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 function KindergartenNationalAcademics() {
     const { t } = useTranslation(['academics-pages']);
@@ -18,9 +19,9 @@ function KindergartenNationalAcademics() {
             </Helmet>
 
             <ParallaxScrollSection
-                backgroundImage={"../../assets/images/AcademicsPages/NationalKindergartenAcademicsPageHeader1.jpg"}
+                backgroundImage={servePublicAsset("/images/AcademicsPages/NationalKindergartenAcademicsPageHeader1.jpg")}
                 darken={true}
-                image={"../../assets/images/AcademicsPages/OpeningQuote.png"}
+                image={servePublicAsset("/images/AcademicsPages/OpeningQuote.png")}
                 imageAlt={"Academics Page Header Opening Quote"}
             />
 
@@ -33,7 +34,7 @@ function KindergartenNationalAcademics() {
                 </p>
             </div>
 
-            <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/NationalKindergartenAcademicsPageMiddle1.jpg"}/>
+            <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/NationalKindergartenAcademicsPageMiddle1.jpg")}/>
 
             <div className={"standard-padding-container"}>
                 <p>
@@ -45,10 +46,10 @@ function KindergartenNationalAcademics() {
             </div>
 
             <ParallaxScrollSection
-                backgroundImage={"../../assets/images/AcademicsPages/NationalKindergartenAcademicsPageFooter1.jpg"}
+                backgroundImage={servePublicAsset("/images/AcademicsPages/NationalKindergartenAcademicsPageFooter1.jpg")}
                 darken={true}
                 text={t("academics-pages.kindergarten.quote-by-ms-reham-sardina-head-of-kindergarten-department")}
-                image={"../../assets/images/AcademicsPages/ClosingQuote.png"}
+                image={servePublicAsset("/images/AcademicsPages/ClosingQuote.png")}
                 imageAlt={"Academics Page Footer Closing Quote"}
             />
         </div>

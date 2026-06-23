@@ -1,0 +1,113 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 1. Rule for /assets/
+  # Drops the "assets" folder from the path since PHP already adds it
+  RewriteRule ^assets/(.+)$ /scripts/Public/General/serve-asset.php?path=$1 [QSA,L]
+
+  # 2. Rule for /images, /videos, /documents, /fonts
+  # Keeps the folder name so PHP knows which subfolder to look in
+  RewriteRule ^(images|videos|documents|fonts)/(.+)$ /scripts/Public/General/serve-asset.php?path=$1/$2 [QSA,L]
+
+  # Serve the directory's index.html file for directory requests
+  DirectoryIndex index.html
+
+  # Rewrite rule to serve SPA for non-file/directory requests
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+
+  # Rules to remove .html extension from URLs
+  # Redirect requests for /path/to/page.html to /path/to/page
+  RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L]
+
+  # Internally rewrite /path/to/page to /path/to/page.html
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_URI}.html -f
+  RewriteRule ^(.*?)/?$ /$1.html [L]
+
+</IfModule>
+
+# --- BEGIN NEW CACHING RULES ---
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Images (Cache for 1 year)
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+
+  # Video (Cache for 1 year)
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType video/mpeg "access plus 1 year"
+
+  # CSS & JS (Cache for 1 year)
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType application/x-javascript "access plus 1 year"
+
+  # Fonts (Cache for 1 year)
+  ExpiresByType application/font-woff2 "access plus 1 year"
+  ExpiresByType application/font-woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Disable caching for HTML files (Critical for React updates)
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>
+# --- END NEW CACHING RULES ---
+
+<IfModule mod_headers.c>
+  <FilesMatch ".*">
+      Header set Link "</favicon.ico>; rel=icon" env=IS_ASSET
+  </FilesMatch>
+</IfModule>
+
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php84” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php84 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
+
+# BEGIN cPanel-generated php ini directives, do not edit
+# Manual editing of this file may result in unexpected behavior.
+# To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
+# For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
+<IfModule php8_module>
+   php_flag display_errors Off
+   php_value upload_max_filesize 128M
+   php_value post_max_size 128M
+   php_value max_execution_time 120
+   php_value max_input_time 190
+   php_value max_input_vars 1000
+   php_value memory_limit 512M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/ea-php84"
+   php_flag zlib.output_compression Off
+</IfModule>
+<IfModule lsapi_module>
+   php_flag display_errors Off
+   php_value upload_max_filesize 128M
+   php_value post_max_size 128M
+   php_value max_execution_time 120
+   php_value max_input_time 190
+   php_value max_input_vars 1000
+   php_value memory_limit 512M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/ea-php84"
+   php_flag zlib.output_compression Off
+</IfModule>
+# END cPanel-generated php ini directives, do not edit

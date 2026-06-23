@@ -1,5 +1,6 @@
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 function Covid19() {
 
@@ -22,9 +23,9 @@ function Covid19() {
                         <button onClick={
                             () => {
                                 if (i18n.language === 'en') {
-                                    window.open('/assets/documents/Covid-19/Covid-19_Parents_Guide.pdf', '_blank')
+                                    window.open(servePublicAsset('/documents/Covid-19/Covid-19_Parents_Guide.pdf', {download:true}), '_blank')
                                 } else {
-                                    window.open('/assets/documents/Covid-19/Covid-19_Parent_Guide_(Arabic).pdf', '_blank');
+                                    window.open(servePublicAsset('/documents/Covid-19/Covid-19_Parent_Guide_(Arabic).pdf', {download:true}), '_blank');
                                 }
                             }
                         }>
@@ -507,9 +508,9 @@ function Covid19() {
                         <button onClick={
                             () => {
                                 if (i18n.language === 'en') {
-                                    window.open('/assets/documents/Covid-19/Covid-19_Parents_Guide.pdf', '_blank')
+                                    window.open(servePublicAsset('/documents/Covid-19/Covid-19_Parents_Guide.pdf', {download:true}), '_blank')
                                 } else {
-                                    window.open('/assets/documents/Covid-19/Covid-19_Parent_Guide_(Arabic).pdf', '_blank');
+                                    window.open(servePublicAsset('/documents/Covid-19/Covid-19_Parent_Guide_(Arabic).pdf', {download:true}), '_blank');
                                 }
                             }
                         }>

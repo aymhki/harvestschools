@@ -6,8 +6,12 @@ import {useNavigate} from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
+import PropTypes from "prop-types";
+import TranslateIcon from '@mui/icons-material/Translate';
+import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
+import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 
-function NavigationBar(){
+function NavigationBar({compactOrAdmin}){
     const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
@@ -19,6 +23,7 @@ function NavigationBar(){
     const [moreInfoOpen, setMoreInfoOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const { t, i18n } = useTranslation(['nav']);
+    const toggleLanguage = useToggleLanguage();
 
     useEffect(() => {
         setIsClient(true);
@@ -111,12 +116,13 @@ function NavigationBar(){
     });
 
     return (
-        <nav className={`navbar`} >
-            <div className="logo-container">
+        <nav className={`navbar ${compactOrAdmin ? 'compact-navbar' : ''}`} >
+            <div className={`logo-container ${compactOrAdmin ? 'compact-logo-container' : ''}`}>
                 <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate('/home'); } }>
-                    <img src="/assets/images/HarvestLogos/HarvestLogoCropped.avif" alt="Harvest Logo" className="logo" fetchpriority="high"/>
+                    <img src={servePublicAsset("/images/HarvestLogos/HarvestLogoCropped.avif")} alt="Harvest Logo" className={`logo ${compactOrAdmin ? 'compact-logo' : ''}`}/>
                 </Link>
 
+                {!compactOrAdmin && (
                 <div className="navbar-quick-action-buttons-container">
                     <button className="navbar-quick-action-button" onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission.php', '_blank')} >
                         {t("nav.apply-now")}
@@ -130,23 +136,33 @@ function NavigationBar(){
                         {t("nav.schooleverywhere")}
                     </button>
                 </div>
+                )}
 
-                {!isMobile && (
-                    <div className={"language-switcher-desktop-container"}>
+                {!isMobile  && (
+                    <div className={`language-switcher-desktop-container ${compactOrAdmin ? 'compact-language-switcher-desktop-container' : ''}`}>
                         <LanguageSwitcher />
                     </div>
                 )
                 }
 
-                {isMobile && (
+                {(isMobile && !compactOrAdmin) && (
                     <button className={"menu-icon-container"} onClick={toggleMenu}>
                         <div className={isOpen ? "menu-icon open" : "menu-icon"}>
                             {isOpen ? '+' : '☰'}
                         </div>
                     </button>
                 )}
+
+                {(isMobile && compactOrAdmin) && (
+                    <button className={"translate-menu-icon-container"} onClick={() => {
+                       toggleLanguage();
+                    }}>
+                        <TranslateIcon />
+                    </button>
+                )}
             </div>
 
+            {!compactOrAdmin && (
             <animated.ul style={{
                 transform: menuAnimation.transform,
                 opacity: menuAnimation.opacity,
@@ -237,10 +253,9 @@ function NavigationBar(){
                         </li>
 
                         <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/admin/login');
+                            navigate(`https://admin.harvestschools.com?lang=${i18n.language}/`);
                         }}>
-                            <Link to={'/admin/login'}>
+                            <Link to={`https://admin.harvestschools.com?lang=${i18n.language}/`}>
                                 {t("nav.admin-login")}
                             </Link>
                         </li>
@@ -455,8 +470,13 @@ function NavigationBar(){
                     </div>
                 )}
             </animated.ul>
+                )}
         </nav>
     );
+}
+
+NavigationBar.propTypes = {
+    compactOrAdmin: PropTypes.bool.isRequired
 }
 
 export default NavigationBar;

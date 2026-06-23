@@ -2,9 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
 import '../../../styles/Events.css';
-import {fetchGraduationBookingConfirmationRequest} from "../../../services/MainParentsGraduationBookingServices.jsx";
-import {pendingPaymentStatus, notSignedUpStatus} from "../../../services/GeneralUtils.jsx";
-import { confirmedStatus} from "../../../services/GeneralUtils.jsx";
+import {fetchGraduationBookingConfirmationRequest} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
+import {pendingPaymentStatus, notSignedUpStatus} from "../../../services/General/GeneralUtils.jsx";
+import { confirmedStatus} from "../../../services/General/GeneralUtils.jsx";
 import {useTranslation} from "react-i18next";
 
 function GraduationBookingConfirmation() {

@@ -2,6 +2,7 @@ import '../../styles/Admission.css';
 import {useNavigate} from "react-router-dom";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
 
 
 function AdmissionProcess() {
@@ -22,8 +23,8 @@ function AdmissionProcess() {
         <div className="extreme-padding-container">
             <img
                 src={
-                    i18n.language === 'ar' ? '/assets/images/AdmissionPages/harvest-schools-admission-process-diagram-ar.png' :
-                                             '/assets/images/AdmissionPages/harvest-schools-admission-process-diagram-en.png'
+                    i18n.language === 'ar' ? servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-ar.png') :
+                                            servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-en.png')
                 }
                 className={"admission-process-image"} alt="Admission Process"
             />

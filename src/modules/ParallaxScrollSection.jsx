@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import PropTypes from 'prop-types';
 import {Fragment} from "react";
 import {useEffect, useState} from "react";
+import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 
 function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonText, buttonLink, image, imageAlt, divElements, noParallax }) {
     const navigate = useNavigate();

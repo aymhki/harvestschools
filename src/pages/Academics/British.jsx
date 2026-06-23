@@ -1,7 +1,7 @@
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
-
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
 
 function British() {
 
@@ -19,9 +19,9 @@ function British() {
         </Helmet>
 
         <ParallaxScrollSection
-            backgroundImage={"../../assets/images/AcademicsPages/BritishAcademicsPageHeader1.jpg"}
+            backgroundImage={servePublicAsset("/images/AcademicsPages/BritishAcademicsPageHeader1.jpg")}
             darken={true}
-            image={"../../assets/images/AcademicsPages/OpeningQuote.png"}
+            image={servePublicAsset("/images/AcademicsPages/OpeningQuote.png")}
             imageAlt={"Academics Page Header Opening Quote"}
         />
 
@@ -49,7 +49,7 @@ function British() {
             </p>
         </div>
 
-        <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/BritishAcademicsPageMiddle1.jpg"}/>
+        <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/BritishAcademicsPageMiddle1.jpg")}/>
 
 
         <div className={"standard-padding-container"}>
@@ -93,7 +93,7 @@ function British() {
 
         </div>
 
-        <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/BritishAcademicsPageMiddle2.jpg"}/>
+        <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/BritishAcademicsPageMiddle2.jpg")}/>
 
         <div className={"standard-padding-container"}>
             <h2>
@@ -123,10 +123,10 @@ function British() {
         </div>
 
         <ParallaxScrollSection
-            backgroundImage={"../../assets/images/AcademicsPages/BritishAcademicsPageFooter1.jpg"}
+            backgroundImage={servePublicAsset("/images/AcademicsPages/BritishAcademicsPageFooter1.jpg")}
             darken={true}
             text={t("academics-pages.british.quote-by-ms-marwa-elsobky-british-school-head")}
-            image={"../../assets/images/AcademicsPages/ClosingQuote.png"}
+            image={servePublicAsset("/images/AcademicsPages/ClosingQuote.png")}
             imageAlt={"Academics Page Footer Closing Quote"}
         />
     </div>

@@ -4,6 +4,7 @@ import Table from "../../modules/Table.jsx";
 import Form from "../../modules/Form.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
 
 function Activities() {
     const {t} = useTranslation(['students-life-pages']);
@@ -23,7 +24,7 @@ function Activities() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={'/assets/images/Gallery/Photos/HarvestAcademy/HarvestAcademy5.jpg'} darken={true}
+            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={servePublicAsset('/images/Gallery/Photos/HarvestAcademy/HarvestAcademy5.jpg')} darken={true}
                                    divElements={[
                                        (
                                              <div className={'students-life-activities-page-content'} key={1}>

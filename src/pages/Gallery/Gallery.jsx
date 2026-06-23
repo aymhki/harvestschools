@@ -10,21 +10,21 @@ function Gallery() {
     const options = [
         {
             title: t("gallery-pages.options-page.photo-gallery-option"),
-            image: "/assets/images/GalleryPages/Photos1.png",
+            image: "/images/GalleryPages/Photos1.png",
             description: t("gallery-pages.options-page.photo-gallery-option-description"),
             link: "/gallery/photos",
             buttonText: t("common.select", {ns: 'common'}),
         },
         {
             title: t("gallery-pages.options-page.video-gallery-option"),
-            image: "/assets/images/GalleryPages/Videos1.png",
+            image: "/images/GalleryPages/Videos1.png",
             description: t("gallery-pages.options-page.video-gallery-option-description"),
             link: "/gallery/videos",
             buttonText: t("common.select", {ns: 'common'}),
         },
         {
             title: t("gallery-pages.options-page.360-tour-option"),
-            image: "/assets/images/GalleryPages/360Tour1.png",
+            image: "/images/GalleryPages/360Tour1.png",
             description: t("gallery-pages.options-page.360-tour-option-description"),
             link: "/gallery/360-tour",
             buttonText: t("common.select", {ns: 'common'}),

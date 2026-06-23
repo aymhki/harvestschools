@@ -80,9 +80,9 @@ try {
         0 => [
             [
                 "title" => "Job Applications",
-                "image" => '/assets/images/Dashboard/JobApplications.png',
+                "image" => '/images/Dashboard/JobApplications.png',
                 "description" => "View & manage job applications",
-                "link" => '/admin/job-applications',
+                "link" => '/job-applications',
                 "buttonText" => 'View Applications',
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
@@ -91,9 +91,9 @@ try {
         1 => [
             [
                 "title" => "Graduation Bookings",
-                "image" => '/assets/images/Dashboard/GraduationBookingManagement.png',
+                "image" => '/images/Dashboard/GraduationBookingManagement.png',
                 "description" => "View & manage Graduatuin Bookings",
-                "link" => '/admin/graduation-booking-management',
+                "link" => '/graduation-booking-management',
                 "buttonText" => 'View Bookings',
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
@@ -102,9 +102,9 @@ try {
         2 => [
             [
                 "title" => "Open Day Signups",
-                "image" => "/assets/images/Dashboard/OpenDaySignups.png",
+                "image" => "/images/Dashboard/OpenDaySignups.png",
                 "description" => "View & manage open day signups",
-                "link" => "/admin/open-day-signups-management",
+                "link" => "/open-day-signups-management",
                 "buttonText" => "View Signups",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
@@ -114,9 +114,9 @@ try {
         3 => [
             [
                 "title" => "Borrowing  System",
-                "image" => "/assets/images/Dashboard/BorrowingSystem.png",
+                "image" => "/images/Dashboard/BorrowingSystem.png",
                 "description" => "View the borrowing system",
-                "link" => "/admin/borrowing-system-management",
+                "link" => "/borrowing-system-management",
                 "buttonText" => "View System",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
@@ -125,9 +125,9 @@ try {
         7 => [
             [
                 "title" => "Info System",
-                "image" => "/assets/images/Dashboard/InfoSystem.png",
+                "image" => "/images/Dashboard/InfoSystem.png",
                 "description" => "View & manage the school's info system",
-                "link" => "/admin/info-system-management",
+                "link" => "/info-system-management",
                 "buttonText" => "View System",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false

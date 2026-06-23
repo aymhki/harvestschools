@@ -4,9 +4,9 @@ import {useEffect, useState} from "react";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
-import {validateGraduationBookingLogin} from "../../../services/MainParentsGraduationBookingServices.jsx";
+import {validateGraduationBookingLogin} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
 import {useTranslation} from "react-i18next";
-import {headToGraduationBookingDashboardOnValidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
+import {headToGraduationBookingDashboardOnValidSession} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
 
 function GraduationBookingLogin() {
     const navigate = useNavigate();

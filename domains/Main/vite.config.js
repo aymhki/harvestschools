@@ -1,0 +1,26 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { serveLocalAssets } from '../../vite-plugins/serve-local-assets.jsx'
+import path from 'path'
+
+export default defineConfig({
+    plugins: [
+        react(),
+        serveLocalAssets(path.resolve(process.cwd(), '../../assets'))
+    ],
+    ssr: {
+        noExternal: ['react-helmet-async'],
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        return 'vendor'
+                    }
+                }
+            }
+        }
+    },
+    cacheDir: '../../node_modules/.vite-main',
+})

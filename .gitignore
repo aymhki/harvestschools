@@ -33,7 +33,6 @@ PopulateBookingDataScript/All 2026 KG Graduation Bookings.csv
 PopulateBookingDataScript/.venv
 PopulateBookingDataScript/main.py
 
-.htaccess
 dev.md
 
 whatsapp-bot/config.php

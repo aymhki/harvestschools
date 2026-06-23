@@ -2,6 +2,7 @@ import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import '../../styles/Admission.css';
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 function OutsideEgyptRequirementsForeigners() {
     const { t, i18n } = useTranslation(['admission-pages']);
@@ -19,7 +20,7 @@ function OutsideEgyptRequirementsForeigners() {
             </Helmet>
 
             <ParallaxScrollSection
-                backgroundImage={'/assets/images/AdmissionPages/OutsideEgyptForeignersRequirementsHeaderBackground.jpg'}
+                backgroundImage={servePublicAsset('/images/AdmissionPages/OutsideEgyptForeignersRequirementsHeaderBackground.jpg')}
                 title={t('admission-pages.admission-requirements-page.common.admission-requirements-note')}
                 titleInArabic={false}
                 darken={true}

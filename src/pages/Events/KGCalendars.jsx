@@ -10,7 +10,7 @@ function KGCalendars() {
     const options = [
         {
             title: t("events-pages.kg-calendars-pages.options-page.national-kg-calendar-option"),
-            image: "/assets/images/EventsPages/Calendar1.png",
+            image: "/images/EventsPages/Calendar1.png",
             description: t("events-pages.kg-calendars-pages.options-page.national-kg-calendar-option-description"),
             link: "/events/national-kg-calendar",
             buttonText: t("common.select", {ns: 'common'}),
@@ -19,7 +19,7 @@ function KGCalendars() {
         },
         {
             title: t("events-pages.kg-calendars-pages.options-page.british-kg-calendar-option"),
-            image: "/assets/images/EventsPages/Calendar1.png",
+            image: "/images/EventsPages/Calendar1.png",
             description: t("events-pages.kg-calendars-pages.options-page.british-kg-calendar-option-description"),
             link: "/events/british-kg-calendar",
             buttonText: t("common.select", {ns: 'common'}),
@@ -28,7 +28,7 @@ function KGCalendars() {
         },
         {
             title: t("events-pages.kg-calendars-pages.options-page.american-kg-calendar-option"),
-            image: "/assets/images/EventsPages/Calendar1.png",
+            image: "/images/EventsPages/Calendar1.png",
             description: t("events-pages.kg-calendars-pages.options-page.american-kg-calendar-option-description"),
             link: "/events/american-kg-calendar",
             buttonText: t("common.select", {ns: 'common'}),

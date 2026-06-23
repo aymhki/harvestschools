@@ -1,7 +1,7 @@
 import {Helmet} from "react-helmet-async";
 import '../styles/Vacancies.css'
 import Form from "../modules/Form";
-import {submitJobApplicationRequest} from "../services/JobApplicationsServices.jsx";
+import {submitJobApplicationRequest} from "../services/Public/JobApplications/JobApplicationsServices.jsx";
 import Spinner from "../modules/Spinner";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
@@ -59,7 +59,7 @@ function Vacancies() {
             {/*</p>*/}
 
             {/*<div className={"download-cv-button-wrapper"} >*/}
-            {/*    <button className={"download-cv-button"} onClick={() => {window.open("/assets/documents/Vacancies/ResumeExample.pdf", "_blank")}}>Download CV Example</button>*/}
+            {/*    <button className={"download-cv-button"} onClick={() => {window.open(servePublicAsset("/documents/Vacancies/ResumeExample.pdf", {download:true}), "_blank")}}>Download CV Example</button>*/}
             {/*</div>*/}
 
             <p>

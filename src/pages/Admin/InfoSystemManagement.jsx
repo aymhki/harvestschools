@@ -6,7 +6,7 @@ import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import Table from "../../modules/Table.jsx";
 import {useTranslation} from "react-i18next";
-import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 
 
 function InfoSystemManagement() {

@@ -3,8 +3,8 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
-import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
-import {fetchJobApplicationsRequest} from "../../services/JobApplicationsServices.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
+import {fetchJobApplicationsRequest} from "../../services/Public/JobApplications/JobApplicationsServices.jsx";
 
 function JobApplications() {
     const navigate = useNavigate();
@@ -32,7 +32,7 @@ function JobApplications() {
     }, []);
 
     function onJobApplicationFileUrlClick(cellValue) {
-        const url = `/admin/view-job-application-file?file=${encodeURIComponent(cellValue)}`;
+        const url = `/view-job-application-file?file=${encodeURIComponent(cellValue)}`;
         window.open(url, '_blank');
     }
 

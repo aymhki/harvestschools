@@ -11,14 +11,6 @@ import Faqs from './pages/FAQs/FAQs.jsx';
 import MinimumStageAge from './pages/FAQs/MinimumStageAge.jsx';
 import Vacancies from './pages/Vacancies';
 import MoreInfo from "./pages/FAQs/MoreInfo.jsx";
-import AdminLogin from "./pages/Admin/AdminLogin.jsx";
-import Dashboard from "./pages/Admin/AdminDashboard";
-import JobApplications from "./pages/Admin/JobApplications.jsx";
-import GraduationBookingManagement from "./pages/Admin/GraduationBookingManagement.jsx";
-import OpenDaySignupsManagement from "./pages/Admin/OpenDaySignupsManagement.jsx";
-import FileViewer from './pages/Admin/FileViewer.jsx';
-import BorrowingSystemManagement from './pages/Admin/BorrowingSystemManagement.jsx';
-import InfoSystemManagement from "./pages/Admin/InfoSystemManagement.jsx";
 import Admission from "./pages/Admission/Admission.jsx";
 import AdmissionProcess from './pages/Admission/AdmissionProcess';
 import AdmissionRequirements from './pages/Admission/AdmissionRequirements';
@@ -91,25 +83,17 @@ function AppServer() {
         document.documentElement.lang = i18n.language;
     }, [location.search, i18n]);
 
-    const excludePaths = ['/academics/staff', '/admin/view-job-application-file'];
+    const excludePaths = ['/academics/staff'];
     const shouldExclude = excludePaths.includes(location.pathname);
 
     return (
         <div className="App">
-            {!shouldExclude && <NavigationBar />}
+            {!shouldExclude && <NavigationBar compactOrAdmin={false}/>}
             <div className="content">
                 <ErrorBoundary>
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
-                        <Route path="/admin/login" element={<AdminLogin />} />
-                        <Route path="/admin/dashboard" element={<Dashboard />} />
-                        <Route path="/admin/job-applications" element={<JobApplications />} />
-                        <Route path="/admin/view-job-application-file" element={<FileViewer />} />
-                        <Route path="/admin/graduation-booking-management" element={<GraduationBookingManagement />} />
-                        <Route path="/admin/open-day-signups-management" element={<OpenDaySignupsManagement />} />
-                        <Route path="/admin/borrowing-system-management" element={<BorrowingSystemManagement />} />
-                        <Route path="/admin/info-system-management" element={<InfoSystemManagement />} />
                         <Route path="/more-info" element={<MoreInfo />} />
                         <Route path="/faqs" element={<Faqs />} />
                         <Route path="/minimum-stage-age" element={<MinimumStageAge />} />

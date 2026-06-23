@@ -1,13 +1,13 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {fetchGraduationBookingInfoBySessionRequest} from "../../../services/MainParentsGraduationBookingServices.jsx";
-import { formatDateFromPacific } from "../../../services/GeneralUtils.jsx"
-import {generateGraduationBookingConfirmationPDF} from "../../../services/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
+import {fetchGraduationBookingInfoBySessionRequest} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
+import { formatDateFromPacific } from "../../../services/General/GeneralUtils.jsx"
+import {generateGraduationBookingConfirmationPDF} from "../../../services/Parents/GraduationBookings/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
-import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
+import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
 
 function GraduationBookingStatusInfo() {
     const {t, i18n} =  useTranslation(['events-pages']);

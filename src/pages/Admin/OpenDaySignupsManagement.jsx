@@ -3,8 +3,8 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
-import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
-import { fetchAllOpenDaySignups } from "../../services/OpenDaySignupsServices.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
+import { fetchAllOpenDaySignups } from "../../services/Public/OpenDaySignups/OpenDaySignupsServices.jsx";
 
 
 function OpenDaySignupsManagement() {

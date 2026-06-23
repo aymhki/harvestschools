@@ -10,7 +10,7 @@ function AdmissionRequirements() {
     const options = [
         {
             title: t("admission-pages.admission-requirements-page.options-page.inside-egypt-option"),
-            image: "/assets/images/AdmissionPages/Egypt1.png",
+            image: "/images/AdmissionPages/Egypt1.png",
             description: t("admission-pages.admission-requirements-page.options-page.inside-egypt-option-description"),
             link: "/admission/inside-egypt-requirements",
             buttonText: t("common.learn-more", {ns: 'common'}),
@@ -19,7 +19,7 @@ function AdmissionRequirements() {
         },
         {
             title: t("admission-pages.admission-requirements-page.options-page.outside-egypt-option"),
-            image: "/assets/images/AdmissionPages/Globe1.png",
+            image: "/images/AdmissionPages/Globe1.png",
             description: t("admission-pages.admission-requirements-page.options-page.outside-egypt-option-description"),
             link: "/admission/outside-egypt-requirements",
             buttonText: t("common.learn-more", {ns: 'common'}),
@@ -28,7 +28,7 @@ function AdmissionRequirements() {
         },
         {
             title: t("admission-pages.admission-requirements-page.options-page.outside-egypt-foreigners-option"),
-            image: "/assets/images/AdmissionPages/Foreigner1.png",
+            image: "/images/AdmissionPages/Foreigner1.png",
             description: t("admission-pages.admission-requirements-page.options-page.outside-egypt-foreigners-option-description"),
             link: "/admission/outside-egypt-requirements-foreigners",
             buttonText: t("common.learn-more", {ns: 'common'}),

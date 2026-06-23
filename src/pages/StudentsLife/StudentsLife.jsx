@@ -9,7 +9,7 @@ function StudentsLife() {
   const options = [
     {
         title: t("students-life-pages.options-page.students-union-option"),
-        image: "/assets/images/StudentsLifePages/StudentsUnion1.png",
+        image: "/images/StudentsLifePages/StudentsUnion1.png",
         description: t("students-life-pages.options-page.students-union-option-description"),
         link: "/students-life/students-union",
         buttonText: t("common.learn-more", {ns: 'common'}),
@@ -18,7 +18,7 @@ function StudentsLife() {
     },
     {
         title: t("students-life-pages.options-page.library-option"),
-        image: "/assets/images/StudentsLifePages/Library1.png",
+        image: "/images/StudentsLifePages/Library1.png",
         description: t("students-life-pages.options-page.library-option-description"),
         link: "/students-life/library",
         buttonText: t("common.learn-more", {ns: 'common'}),
@@ -27,7 +27,7 @@ function StudentsLife() {
     },
     {
         title: t("students-life-pages.options-page.activities-option"),
-        image: "/assets/images/StudentsLifePages/Activities1.png",
+        image: "/images/StudentsLifePages/Activities1.png",
         description: t("students-life-pages.options-page.activities-option-description"),
         link: "/students-life/activities",
         buttonText: t("common.learn-more", {ns: 'common'}),

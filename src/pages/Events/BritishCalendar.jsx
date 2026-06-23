@@ -2,6 +2,7 @@ import '../../styles/Events.css'
 import Table from "../../modules/Table.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 
 function BritishCalendar() {
@@ -55,7 +56,7 @@ function BritishCalendar() {
               </p>
 
               <div className={"download-calendar-button-wrapper"}  onClick={() => {
-                  window.open("/assets/documents/Calendars/british_calendar_2026.pdf", "_blank");
+                  window.open(servePublicAsset("/documents/Calendars/british_calendar_2026.pdf", {download: true}), "_blank");
               }}>
                   <button className={"download-calendar-button"}>
                         {t("events-pages.common.download-calendar-btn")}

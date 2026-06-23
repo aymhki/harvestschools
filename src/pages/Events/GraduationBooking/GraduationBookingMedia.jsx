@@ -4,7 +4,7 @@ import Spinner from "../../../modules/Spinner.jsx";
 import PhotoCollage from "../../../modules/PhotoCollage.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
-import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
+import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
 
 function GraduationBookingMedia() {
     const {t} = useTranslation(['events-pages'])
@@ -29,14 +29,14 @@ function GraduationBookingMedia() {
                     <PhotoCollage type={'slider'} photos={
                         [
                             {
-                                src: '/assets/videos/EventsPages/BookingMedia1.mp4',
+                                src: '/videos/EventsPages/BookingMedia1.mp4',
                                 alt: 'Booking Media 1',
                                 isVideo: true,
                             }
                         ]
                     } collagePreview={
                         {
-                            src: '/assets/videos/EventsPages/BookingMedia1.mp4',
+                            src: '/videos/EventsPages/BookingMedia1.mp4',
                             alt: 'Booking Media 1',
                             isVideo: true,
                         }

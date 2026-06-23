@@ -11,56 +11,56 @@ function Academics() {
     const options = [
         {
             title: t("academics-pages.national-section"),
-            image: "/assets/images/AcademicsPages/National1.png",
+            image: "/images/AcademicsPages/National1.png",
             description: t("academics-pages.national-description"),
             link: "/academics/national",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.british-section"),
-            image: "/assets/images/HomePage/CICIS.avif",
+            image: "/images/HomePage/CICIS.avif",
             description: t("academics-pages.british-description"),
             link: "/academics/british",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.american-section"),
-            image: "/assets/images/HomePage/AccreditedCognia.avif",
+            image: "/images/HomePage/AccreditedCognia.avif",
             description: t("academics-pages.american-description"),
             link: "/academics/american",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.kindergarten-section"),
-            image: "/assets/images/AcademicsPages/Kindergarten1.png",
+            image: "/images/AcademicsPages/Kindergarten1.png",
             description: t("academics-pages.kindergarten-description"),
             link: "/academics/kindergarten",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("nav.partners", {ns: 'nav'}),
-            image: "/assets/images/AcademicsPages/Partners1.png",
+            image: "/images/AcademicsPages/Partners1.png",
             description: t("academics-pages.partners-description"),
             link: "/academics/partners",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("nav.staff", {ns: 'nav'}),
-            image: "/assets/images/AcademicsPages/Staff1.png",
+            image: "/images/AcademicsPages/Staff1.png",
             description: t("academics-pages.staff-description"),
             link: "/academics/staff",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("nav.facilities", {ns: 'nav'}),
-            image: "/assets/images/AcademicsPages/Facilities1.png",
+            image: "/images/AcademicsPages/Facilities1.png",
             description: t("academics-pages.facilities-description"),
             link: "/academics/facilities",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("nav.web-mail", {ns: 'nav'}),
-            image: "/assets/images/AcademicsPages/WebMail1.png",
+            image: "/images/AcademicsPages/WebMail1.png",
             description: t("academics-pages.web-mail-description"),
             link: "https://mail.harvestschools.com:2096/",
             buttonText: t("common.learn-more", {ns: 'common'}),
@@ -68,10 +68,11 @@ function Academics() {
         },
         {
             title: t("nav.admin-login", {ns: 'nav'}),
-            image: "/assets/images/AcademicsPages/Login1.png",
+            image: "/images/AcademicsPages/Login1.png",
             description: t("academics-pages.admin-login-description"),
-            link: "/admin/login",
+            link: "https://admin.harvestschools.com/",
             buttonText: t("common.learn-more", {ns: 'common'}),
+            externalLink: true
         }
     ];
 
