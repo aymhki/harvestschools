@@ -2,7 +2,7 @@
   RewriteEngine On
 
     # Ensure we don't loop if the request is already for the script
-    RewriteCond %{REQUEST_URI} !^/scripts/Public/General/servePublicAssetFile\.php
+    # RewriteCond %{REQUEST_URI} !^/scripts/Public/General/servePublicAssetFile\.php
 
     # 1. Rule for /assets/
     # Check that the file DOES NOT physically exist in the public directory (allows Vite chunks to load)
