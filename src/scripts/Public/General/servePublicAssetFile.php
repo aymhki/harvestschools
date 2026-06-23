@@ -1,27 +1,12 @@
 <?php
 
 // ── Config ───────────────────────────────────────────────────────────────────
-$ASSETS_BASE = false;
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+$ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
 
-$possible_paths = [
-    dirname($doc_root) . '/public_html/assets',
-    dirname($doc_root, 2) . '/assets',
-    dirname($doc_root) . '/assets',
-    $doc_root . '/assets',
-];
-
-if (!empty($requested)) {
-    foreach ($possible_paths as $path) {
-        $real_path = realpath($path);
-        if ($real_path && is_dir($real_path)) {
-            $test_file = $real_path . DIRECTORY_SEPARATOR . $requested;
-            if (is_file($test_file)) {
-                $ASSETS_BASE = $real_path . DIRECTORY_SEPARATOR;
-                break;
-            }
-        }
-    }
+if (!is_dir($ASSETS_BASE)) {
+    http_response_code(500);
+    exit('CRITICAL ERROR: Forced root assets directory not found at: ' . $ASSETS_BASE);
 }
 
 
