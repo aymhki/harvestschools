@@ -77,7 +77,7 @@ function AdminSidebar({ adminLinks}) {
                         <MenuIcon />
                     </div>
                     <div className="menu-toggle mobile-only" onClick={() => setIsMobileOpen(false)}>
-                        <CloseIcon />
+                        <MenuIcon />
                     </div>
                     {showText && <span className="logo-text">Admin</span>}
                 </div>
@@ -128,6 +128,14 @@ function AdminSidebar({ adminLinks}) {
                                 {showText && <span className="label">Logout</span>}
                             </div>
                         </li>
+                        {isMobileOpen && (
+                            <li className="close-admin-sidebar-mobile" onClick={() => setIsMobileOpen(false)}>
+                                <div className={"nav-item-content"} title={!isExpanded ? 'Close Sidebar' : ''}>
+                                    <span className="icon"><CloseIcon /></span>
+                                    {showText && <span className="label">Close Sidebar</span>}
+                                </div>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </aside>
