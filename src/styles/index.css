@@ -217,7 +217,7 @@ button {
     border-radius: 1rem;
     border: 0;
     padding: 0.8rem;
-    margin: 0.8rem;
+    margin: 1rem;
     font-size: large;
     font-weight: bold;
     font-family: var(--english-normal-font-bold);
@@ -335,7 +335,7 @@ label:lang(ar) {
         font-size: small;
         letter-spacing: 0.1rem;
         padding: 0.5rem 0.8rem 0.5rem 0.8rem;
-        margin: 0.5rem;
+        margin: 1rem;
     }
 
     h1 {
