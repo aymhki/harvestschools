@@ -1,6 +1,6 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: http://localhost:5173');
+require_once '../../headers.php';
+set_cors_headers();
 $dbConfig = require '../../dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];

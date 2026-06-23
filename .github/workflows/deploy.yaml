@@ -139,6 +139,7 @@ jobs:
           set ssl:verify-certificate no;
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
           mirror -R --verbose src/scripts/Admin/ admin.harvestschools.com/scripts/Admin/;
-          mirror -R --verbose src/scripts/Public/ admin.harvestschools.com/scripts/Public/;
+          mirror -R --verbose src/scripts/Public/General/ admin.harvestschools.com/scripts/Public/General/;
+          mirror -R --verbose src/scripts/headers.php admin.harvestschools.com/scripts/headers.php;
           "
 
