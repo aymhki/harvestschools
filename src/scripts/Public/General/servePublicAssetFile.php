@@ -1,9 +1,31 @@
 <?php
 
 // ── Config ───────────────────────────────────────────────────────────────────
+$ASSETS_BASE = false;
+$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 
-$ASSETS_BASE = realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/assets') . DIRECTORY_SEPARATOR;
-$CACHE_BASE  = realpath(dirname($_SERVER['DOCUMENT_ROOT'])) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
+$possible_paths = [
+    dirname($doc_root, 2) . '/assets',
+    dirname($doc_root) . '/assets',
+    $doc_root . '/assets',
+];
+
+foreach ($possible_paths as $path) {
+    $real_path = realpath($path);
+    if ($real_path && is_dir($real_path)) {
+        $ASSETS_BASE = $real_path . DIRECTORY_SEPARATOR;
+        break;
+    }
+}
+
+if (!$ASSETS_BASE) {
+    http_response_code(500);
+    exit('Assets base directory not found. Checked: ' . implode(', ', $possible_paths));
+}
+
+$CACHE_BASE = dirname($ASSETS_BASE) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
+//$ASSETS_BASE = realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/assets') . DIRECTORY_SEPARATOR;
+//$CACHE_BASE  = realpath(dirname($_SERVER['DOCUMENT_ROOT'])) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
 
 //$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 //
@@ -27,7 +49,7 @@ $CACHE_BASE  = realpath(dirname($_SERVER['DOCUMENT_ROOT'])) . DIRECTORY_SEPARATO
 //}
 //
 //$CACHE_BASE = realpath(dirname($ASSETS_BASE)) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
-
+//
 //$ASSETS_BASE = '/home/harvest/assets/';
 //$CACHE_BASE  = '/home/harvest/assets-cache/';
 
