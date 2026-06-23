@@ -10,7 +10,7 @@ function Events() {
     const options = [
         {
             title: t("events-pages.options-page.national-calendar-option"),
-            image: "/assets/images/EventsPages/Calendar1.png",
+            image: "/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.national-calendar-option-description"),
             link: "/events/national-calendar",
             buttonText: t("common.select", {ns: 'common'}),
@@ -19,7 +19,7 @@ function Events() {
         },
         {
             title: t("events-pages.options-page.british-calendar-option"),
-            image: "/assets/images/EventsPages/Calendar1.png",
+            image: "/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.british-calendar-option-description"),
             link: "/events/british-calendar",
             buttonText: t("common.select", {ns: 'common'}),
@@ -28,7 +28,7 @@ function Events() {
         },
         {
             title: t("events-pages.options-page.american-calendar-option"),
-            image: "/assets/images/EventsPages/Calendar1.png",
+            image: "/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.american-calendar-option-description"),
             link: "/events/american-calendar",
             buttonText: t("common.select", {ns: 'common'}),
@@ -37,7 +37,7 @@ function Events() {
         },
         {
             title: t("events-pages.options-page.kg-calendars-option"),
-            image: "/assets/images/EventsPages/Calendar1.png",
+            image: "/images/EventsPages/Calendar1.png",
             description: t("events-pages.options-page.kg-calendars-option-description"),
             link: "/events/kg-calendars",
             buttonText: t("common.select", {ns: 'common'}),
@@ -46,7 +46,7 @@ function Events() {
         },
         {
             title: t("events-pages.options-page.booking-login-option"),
-            image: "/assets/images/EventsPages/Booking1.png",
+            image: "/images/EventsPages/Booking1.png",
             description: t("events-pages.options-page.booking-login-option-description"),
             link: "/events/graduation-booking",
             buttonText: t("common.select", {ns: 'common'}),

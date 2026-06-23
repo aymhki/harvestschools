@@ -2,6 +2,7 @@ import '../../styles/Events.css'
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import Table from "../../modules/Table.jsx";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 function NationalKGCalendar() {
     const {t, i18n} = useTranslation(['events-pages'])
@@ -49,7 +50,7 @@ function NationalKGCalendar() {
                 <Table tableData={finalTableData} numCols={3}/>
 
                 <div className={"download-calendar-button-wrapper"} onClick={() => {
-                    window.open("/assets/documents/Calendars/national_kg_calendar_2026.pdf", "_blank");
+                    window.open(servePublicAsset("/documents/Calendars/national_kg_calendar_2026.pdf", {download:true}), "_blank");
                 }}>
                     <button className={"download-calendar-button"}>
                         {t("events-pages.common.download-calendar-btn")}

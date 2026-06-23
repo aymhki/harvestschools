@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../styles/AdminSidebar.css';
-import {headToAdminLoginOnInvalidSessionFromAdminDashboard} from "../services/AdminNavigationServices.jsx";
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import WorkIcon from '@mui/icons-material/Work';
@@ -15,27 +14,24 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
 import CloseIcon from '@mui/icons-material/Close';
+import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
+import PropTypes from "prop-types";
 
-function AdminSidebar() {
+function AdminSidebar({ adminLinks}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const [adminLinks, setAdminLinks] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const {  i18n } = useTranslation(['nav']);
-
-    useEffect(() => {
-        headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsLoading)
-    }, []);
+    const toggleLanguage = useToggleLanguage();
+    const {  i18n } = useTranslation();
 
     const getIconForLink = (linkPath) => {
         switch(linkPath) {
-            case '/admin/job-applications': return <WorkIcon />;
-            case '/admin/graduation-booking-management': return <SchoolIcon />;
-            case '/admin/open-day-signups-management': return <EventIcon />;
-            case '/admin/borrowing-system-management': return <LibraryBooksIcon />;
-            case '/admin/info-system-management': return <InfoIcon />;
+            case '/job-applications': return <WorkIcon />;
+            case '/graduation-booking-management': return <SchoolIcon />;
+            case '/open-day-signups-management': return <EventIcon />;
+            case '/borrowing-system-management': return <LibraryBooksIcon />;
+            case '/info-system-management': return <InfoIcon />;
             default: return <DashboardIcon />;
         }
     };
@@ -43,23 +39,7 @@ function AdminSidebar() {
     const handleLogout = () => {
         document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        navigate('/admin/login');
-    };
-
-    const toggleLanguage = () => {
-        const lng = i18n.language === 'en' ? 'ar' : 'en';
-        i18n.changeLanguage(lng);
-
-        const searchParams = new URLSearchParams(location.search);
-        searchParams.set('lang', lng);
-
-        navigate({
-            pathname: location.pathname,
-            search: searchParams.toString()
-        }, { replace: true });
-
-        document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = lng;
+        navigate('/login');
     };
 
     const showText = isExpanded || isMobileOpen;
@@ -104,8 +84,8 @@ function AdminSidebar() {
 
                 <nav className="sidebar-nav">
                     <ul className="sidebar-links">
-                        <li className={location.pathname === '/admin/dashboard' ? 'active' : ''}>
-                            <Link to="/admin/dashboard" title={!isExpanded ? 'Dashboard' : ''} onClick={() => setIsMobileOpen(false)}>
+                        <li className={location.pathname === '/dashboard' ? 'active' : ''}>
+                            <Link to="/dashboard" title={!isExpanded ? 'Dashboard' : ''} onClick={() => setIsMobileOpen(false)}>
                                 <span className="icon"><DashboardIcon /></span>
                                 {showText && <span className="label">Dashboard</span>}
                             </Link>
@@ -127,14 +107,17 @@ function AdminSidebar() {
 
                 <div className="sidebar-footer">
                     <ul className="sidebar-links">
-                        <li onClick={toggleLanguage}>
+                        <li onClick={() => toggleLanguage()}>
                             <div className="nav-item-content" title={!isExpanded ? 'Change Language' : ''}>
                                 <span className="icon"><LanguageIcon /></span>
                                 {showText && <span className={`label admin-sidebar-language-switcher ${i18n.language === 'en' ? 'ar' : 'en'}`}>{i18n.language === 'en' ? 'العربية' : 'English'}</span>}
                             </div>
                         </li>
                         <li>
-                            <Link to="/" title={!isExpanded ? 'Return to Main Site' : ''}>
+                            <Link
+                                to={`https://harvestschools.com?lang=${i18n.language}`}
+                                title={!isExpanded ? 'Return to Main Site' : ''}
+                            >
                                 <span className="icon"><PublicIcon /></span>
                                 {showText && <span className="label">Main Site</span>}
                             </Link>
@@ -150,6 +133,15 @@ function AdminSidebar() {
             </aside>
         </>
     );
+}
+
+AdminSidebar.propTypes = {
+    adminLinks: PropTypes.arrayOf(
+        PropTypes.shape({
+            link: PropTypes.string.isRequired,
+            title: PropTypes.string.isRequired,
+        })
+    ).isRequired,
 }
 
 export default AdminSidebar;

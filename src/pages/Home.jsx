@@ -4,7 +4,7 @@ import {Helmet} from "react-helmet-async";
 import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
 import { useTranslation } from 'react-i18next';
-
+import { servePublicAsset } from "../services/General/GeneralServices.jsx";
 
 
 function Home() {
@@ -13,8 +13,8 @@ function Home() {
     
 
     const homeSliderPhotos = [
-        { id: 1, url: '/assets/images/HomePage/VisionBackground.v6.avif', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
-        { id: 2, url: '/assets/images/HomePage/MissionBckground.v6.avif', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
+        { id: 1, url: '/images/HomePage/VisionBackground.v6.avif', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
+        { id: 2, url: '/images/HomePage/MissionBckground.v6.avif', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
     ]
 
     const contactUsFormFields = [
@@ -59,22 +59,32 @@ function Home() {
                     {/*        allowFullScreen/>*/}
 
 
-                    <iframe
-                            className={"home-page-about-us-video"}
-                            src="https://www.youtube-nocookie.com/embed/BoRMW82VEIc?si=2pP32Q9CJSw-zx_F"
-                            title="YouTube video player" frameBorder="0"
-                            loading={"lazy"}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                    {/*<iframe*/}
+                    {/*        className={"home-page-about-us-video"}*/}
+                    {/*        src="https://www.youtube-nocookie.com/embed/BoRMW82VEIc?si=2pP32Q9CJSw-zx_F"*/}
+                    {/*        title="YouTube video player" frameBorder="0"*/}
+                    {/*        loading={"lazy"}*/}
+                    {/*        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"*/}
+                    {/*        referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>*/}
+
+                    <video
+                        src={`${servePublicAsset("/videos/HomePage/Intro.mp4")}#t=0.1`}
+                        controls
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="home-page-about-us-video"
+                    />
 
                 </div>
             </div>
 
             <div className="home-page-accreditations-section-container">
                 <div className="home-page-accreditations-section">
-                    <img className="accreditation-photo" src="/assets/images/HomePage/AccreditedCognia.avif"
+                    <img className="accreditation-photo" src={servePublicAsset("/images/HomePage/AccreditedCognia.avif")}
                          alt="Cognia Accredited"/>
-                    <img className="accreditation-photo" src="/assets/images/HomePage/CICIS.avif" alt="University of Cambridge Accredited" />
+                    <img className="accreditation-photo" src={servePublicAsset("/images/HomePage/CICIS.avif")} alt="University of Cambridge Accredited" />
                 </div>
             </div>
 
@@ -82,7 +92,7 @@ function Home() {
                 <ParallaxScrollSection
                     title={t("home.elearning-and-academics")}
                     text={t("home.harvest-schools-elearning-and-academics")}
-                    backgroundImage="/assets/images/HomePage/E-Learning&Academics.v6.avif"
+                    backgroundImage={servePublicAsset("/images/HomePage/E-Learning&Academics.v6.avif")}
                     darken={true}
                     buttonText={t("common.learn-more", {ns: 'common'})}
                     buttonLink="/academics/partners"
@@ -91,7 +101,7 @@ function Home() {
 
 
             <div className="home-page-explore-section">
-                <ParallaxScrollSection title={null} text={null} backgroundImage={'/assets/images/HomePage/Explore360.v5.avif'} darken={true} buttonText={t("common.explore", {ns: 'common'})} buttonLink={'/gallery/360-tour'} />
+                <ParallaxScrollSection title={null} text={null} backgroundImage={servePublicAsset('/images/HomePage/Explore360.v5.avif')} darken={true} buttonText={t("common.explore", {ns: 'common'})} buttonLink={'/gallery/360-tour'} />
             </div>
 
             <div className="home-page-contact-and-visit-us-container">

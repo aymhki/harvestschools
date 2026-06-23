@@ -2,6 +2,7 @@ import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import '../../styles/Academics.css';
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 function American() {
     const {t} = useTranslation(['academics-pages'])
@@ -18,9 +19,9 @@ function American() {
           </Helmet>
 
           <ParallaxScrollSection
-              backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageHeader1.jpg"}
+              backgroundImage={servePublicAsset("/images/AcademicsPages/AmericanAcademicsPageHeader1.jpg")}
               darken={true}
-              image={"../../assets/images/AcademicsPages/OpeningQuote.png"}
+              image={servePublicAsset("/images/AcademicsPages/OpeningQuote.png")}
               imageAlt={"Academics Page Header Opening Quote"}
           />
 
@@ -30,7 +31,7 @@ function American() {
               <p>{t("academics-pages.american.classroom-paragraph")}</p>
           </div>
 
-          <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageMiddle1.v1.jpg"}/>
+          <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/AmericanAcademicsPageMiddle1.v1.jpg")}/>
 
           <div className={"standard-padding-container"}>
               <p>{t("academics-pages.american.proud-to-offer-title")}:</p>
@@ -50,10 +51,10 @@ function American() {
           </div>
 
           <ParallaxScrollSection
-              backgroundImage={"../../assets/images/AcademicsPages/AmericanAcademicsPageFooter1.jpg"}
+              backgroundImage={servePublicAsset("/images/AcademicsPages/AmericanAcademicsPageFooter1.jpg")}
               darken={true}
               text={t("academics-pages.american.quote-by-ms-salma-ehab-american-school-head")}
-              image={"../../assets/images/AcademicsPages/ClosingQuote.png"}
+              image={servePublicAsset("/images/AcademicsPages/ClosingQuote.png")}
               imageAlt={"Academics Page Footer Closing Quote"}
           />
       </div>

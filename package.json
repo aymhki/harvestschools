@@ -1,11 +1,17 @@
 {
   "name": "harvestschools",
   "private": true,
-  "version": "0.0.0",
+  "workspaces": [
+    "domains/Admin",
+    "domains/Main"
+  ],
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "rm -rf dist && vite build --outDir dist/static && vite build --ssr src/entry-prerender.jsx --outDir dist/prerender && node prerender.js",
+    "dev": "npm run dev --workspace=domains/Main",
+    "dev:admin": "npm run dev --workspace=domains/Admin",
+    "build:main": "npm run build --workspace=domains/Main",
+    "build:admin": "npm run build --workspace=domains/Admin",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "clean": "rm -rf dist",
     "preview": "vite preview"

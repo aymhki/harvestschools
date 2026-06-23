@@ -2,6 +2,7 @@ import { useState } from 'react';
 import '../styles/PhotoCollage.css';
 import PropTypes from "prop-types";
 import { useSpring, animated } from 'react-spring';
+import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 
 const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -60,11 +61,11 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
             <div className="photo-slider">
                 {photos && (
                     (photos[maxIndex].isVideo) ? (
-                        <video src={ `${photos[maxIndex].src}#t=0.1` } alt={photos[maxIndex].alt}  onClick={() => openLightBox(maxIndex)}
+                        <video src={ `${servePublicAsset(photos[maxIndex].src)}#t=0.1` } alt={photos[maxIndex].alt}  onClick={() => openLightBox(maxIndex)}
                         className={'video-slider-preview'} playsInline
                         />
                     ) : (
-                        <img src={photos[maxIndex].src} alt={photos[maxIndex].alt} className="photo-slider-main-photo" onClick={() => openLightBox(maxIndex)} />
+                        <img src={servePublicAsset(photos[maxIndex].src)} alt={photos[maxIndex].alt} className="photo-slider-main-photo" onClick={() => openLightBox(maxIndex)} />
                     )
                 )}
                 {title && <h2>{title}</h2>}
@@ -76,9 +77,9 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         <div className="photo-collage">
             {collagePreview && (
                 (collagePreview.isVideo) ? (
-                    <video src={`${collagePreview.src}#t=0.1`} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} controls playsInline />
+                    <video src={`${servePublicAsset(collagePreview.src)}#t=0.1`} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} controls playsInline />
                     ) : (
-                    <img src={collagePreview.src} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
+                    <img src={servePublicAsset(collagePreview.src)} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
                 )
             )}
         </div>
@@ -106,7 +107,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                     
                     {photos[currentIndex].isVideo ? (
                         <video
-                            src={`${photos[currentIndex].src}#t=0.1`}
+                            src={`${servePublicAsset(photos[currentIndex].src)}#t=0.1`}
                             alt={photos[currentIndex].alt}
                             className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
                             controls
@@ -114,7 +115,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                         ) : (
                     
                         <img
-                            src={photos[currentIndex].src}
+                            src={servePublicAsset(photos[currentIndex].src)}
                             alt={photos[currentIndex].alt}
                             className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
                             onLoad={handleImageLoad}

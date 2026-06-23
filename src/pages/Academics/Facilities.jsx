@@ -2,23 +2,24 @@ import '../../styles/Academics.css'
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
 
 function Facilities() {
     const { t } = useTranslation(['academics-pages']);
 
     const imageSources = [
-        "/assets/images/AcademicsPages/Facilities/HandballField2.jpg",
-        "/assets/images/AcademicsPages/Facilities/FootballField.jpg",
-        "/assets/images/AcademicsPages/Facilities/Library.jpg",
-        "/assets/images/AcademicsPages/Facilities/Gym1.jpg",
-        "/assets/images/AcademicsPages/Facilities/BasketballField.jpg",
-        "/assets/images/AcademicsPages/Facilities/Lab1.jpg",
-        "/assets/images/AcademicsPages/Facilities/Lab2.jpg",
-        "/assets/images/AcademicsPages/Facilities/Toys.jpg",
-        "/assets/images/AcademicsPages/Facilities/HandballField1.jpg",
-        "/assets/images/AcademicsPages/Facilities/BasketballField1.jpg",
-        "/assets/images/AcademicsPages/Facilities/Lab3.jpg",
-        "/assets/images/AcademicsPages/Facilities/Gym2.jpg",
+        "/images/AcademicsPages/Facilities/HandballField2.jpg",
+        "/images/AcademicsPages/Facilities/FootballField.jpg",
+        "/images/AcademicsPages/Facilities/Library.jpg",
+        "/images/AcademicsPages/Facilities/Gym1.jpg",
+        "/images/AcademicsPages/Facilities/BasketballField.jpg",
+        "/images/AcademicsPages/Facilities/Lab1.jpg",
+        "/images/AcademicsPages/Facilities/Lab2.jpg",
+        "/images/AcademicsPages/Facilities/Toys.jpg",
+        "/images/AcademicsPages/Facilities/HandballField1.jpg",
+        "/images/AcademicsPages/Facilities/BasketballField1.jpg",
+        "/images/AcademicsPages/Facilities/Lab3.jpg",
+        "/images/AcademicsPages/Facilities/Gym2.jpg",
     ];
 
     const imageAlts = t('academics-pages.facilities.imageAlts', { returnObjects: true }) || [];
@@ -48,13 +49,13 @@ function Facilities() {
 
                 <div className="facilities-show-case-grid">
                     {imageSources.map((src, index) => (
-                        <img key={index} src={src} alt={imageAlts[index] || ''} className="facilities-show-case-image"/>
+                        <img key={index} src={servePublicAsset(src)} alt={imageAlts[index] || ''} className="facilities-show-case-image"/>
                     ))}
                 </div>
 
             </div>
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/ComputerLab.jpg"} title={t('academics-pages.facilities.computerLab.title')} darken={true}
+            <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/Facilities/ComputerLab.jpg")} title={t('academics-pages.facilities.computerLab.title')} darken={true}
                                    divElements={[
                                        (
                                            <div className={"computer-lab-policy"} key={"computer-lab-policy"}>
@@ -70,7 +71,7 @@ function Facilities() {
                                            </div>
                                        )]}/>
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Library.jpg"} title={t('academics-pages.facilities.library.title')} darken={true}
+            <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/Facilities/Library.jpg")} title={t('academics-pages.facilities.library.title')} darken={true}
                                    divElements={[(
                                        <div className={"library-policy"} key={"library-policy"}>
                                            <p>{t('academics-pages.facilities.library.lessons')}</p>
@@ -82,7 +83,7 @@ function Facilities() {
                                    )]}/>
 
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Canteen.jpg"} title={t('academics-pages.facilities.canteen.title')} darken={true}
+            <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/Facilities/Canteen.jpg")} title={t('academics-pages.facilities.canteen.title')} darken={true}
                                    divElements={[(
                                        <div className={"canteen-policy"} key={"canteen-policy"}>
                                            <p>{t('academics-pages.facilities.canteen.intro')}</p>
@@ -93,14 +94,14 @@ function Facilities() {
                                        </div>
                                    )]}/>
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Classroom.jpg"} title={t('academics-pages.facilities.smartClasses.title')} darken={true}
+            <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/Facilities/Classroom.jpg")} title={t('academics-pages.facilities.smartClasses.title')} darken={true}
                                    divElements={[(
                                        <div className={"smart-classes-policy"} key={"smart-classes-policy"}>
                                            <p>{t('academics-pages.facilities.smartClasses.description')}</p>
                                        </div>
                                    )]}/>
 
-            <ParallaxScrollSection backgroundImage={"/assets/images/AcademicsPages/Facilities/Gym2.jpg"} title={t('academics-pages.facilities.sports.title')} darken={true}
+            <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/Facilities/Gym2.jpg")} title={t('academics-pages.facilities.sports.title')} darken={true}
                                    divElements={[(
                                        <div className={"sports-policy"} key={"sports-policy"}>
                                            <p>{t('academics-pages.facilities.sports.intro')}</p>

@@ -1,0 +1,8 @@
+{
+  "name": "Admin",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "rm -rf ../../dist/admin && vite build --outDir ../../dist/admin"
+  }
+}

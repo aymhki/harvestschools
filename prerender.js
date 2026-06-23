@@ -63,7 +63,6 @@ const routesToPrerender = [
     '/gallery/360-tour',
     '/covid-19',
     '/not-found',
-
 ];
 
 console.log('Starting pre-rendering...');

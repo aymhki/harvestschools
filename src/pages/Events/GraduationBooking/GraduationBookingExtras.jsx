@@ -1,15 +1,16 @@
 import Spinner from "../../../modules/Spinner.jsx";
 import {useEffect, useState} from "react";
-import { fetchGraduationBookingInfoBySessionRequest } from "../../../services/MainParentsGraduationBookingServices.jsx";
+import { fetchGraduationBookingInfoBySessionRequest } from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
 import { useNavigate } from "react-router-dom";
 import ParallaxScrollSection from "../../../modules/ParallaxScrollSection.jsx";
 import Form from '../../../modules/Form.jsx';
 import '../../../styles/Events.css';
-import {submitUpdateGraduationBookingExtrasRequest} from "../../../services/MainParentsGraduationBookingServices.jsx";
-import {generateGraduationBookingConfirmationPDF} from "../../../services/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
-import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAttendeeCost, cdCost} from "../../../services/GeneralUtils.jsx";
+import {submitUpdateGraduationBookingExtrasRequest} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
+import {generateGraduationBookingConfirmationPDF} from "../../../services/Parents/GraduationBookings/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
+import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAttendeeCost, cdCost} from "../../../services/General/GeneralUtils.jsx";
 import {useTranslation} from "react-i18next";
-import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/GraduationBookingNavigationServices.jsx";
+import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
+import {servePublicAsset} from "../../../services/General/GeneralServices.jsx";
 
 function GraduationBookingExtras() {
     const {t, i18n} = useTranslation(['events-pages']);
@@ -302,7 +303,7 @@ function GraduationBookingExtras() {
         <>
             {isLoading && (<Spinner/>)}
             <div className={'booking-extras-page'}>
-                <ParallaxScrollSection backgroundImage={'/assets/images/AcademicsPages/Facilities/Toys.jpg'} title={''} darken={true}
+                <ParallaxScrollSection backgroundImage={servePublicAsset('/images/AcademicsPages/Facilities/Toys.jpg')} title={''} darken={true}
                                        divElements={[
                                            (
                                                <>

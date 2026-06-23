@@ -1,7 +1,7 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {msgTimeout} from "../../services/GeneralUtils.jsx";
+import {msgTimeout} from "../../services/General/GeneralUtils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
@@ -11,8 +11,8 @@ import {
     handleAddGraduationBookingRequest,
     handleDeleteGraduationBookingRequest,
     handleEditGraduationBookingRequest
-} from "../../services/AdminGraduationBookingManagementServices.jsx";
-import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
+} from "../../services/Admin/GraduationBookings/AdminGraduationBookingManagementServices.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 
 function GraduationBookingManagement() {
     const navigate = useNavigate();

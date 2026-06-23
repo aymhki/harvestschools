@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import '../../styles/Events.css';
 import {useState, useEffect, useMemo} from "react";
 import Form from "../../modules/Form.jsx";
-import {costPerChildInOpenDaySignup, formatNumberByLocale} from "../../services/GeneralUtils.jsx";
-import {submitOpenDaySignupRequest} from "../../services/OpenDaySignupsServices.jsx";
+import {costPerChildInOpenDaySignup, formatNumberByLocale} from "../../services/General/GeneralUtils.jsx";
+import {submitOpenDaySignupRequest} from "../../services/Public/OpenDaySignups/OpenDaySignupsServices.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 
 function OpenDaySignup() {

@@ -2,7 +2,7 @@ import '../../styles/Academics.css';
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
-
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 function National() {
     const { t } = useTranslation(['academics-pages']);
@@ -19,9 +19,9 @@ function National() {
         </Helmet>
 
         <ParallaxScrollSection
-            backgroundImage={"../../assets/images/AcademicsPages/NationalAcademicsPageHeader1.jpg"}
+            backgroundImage={servePublicAsset("/images/AcademicsPages/NationalAcademicsPageHeader1.jpg")}
             darken={true}
-            image={"../../assets/images/AcademicsPages/OpeningQuote.png"}
+            image={servePublicAsset("/images/AcademicsPages/OpeningQuote.png")}
            imageAlt={"Academics Page Header Opening Quote"}
         />
 
@@ -31,7 +31,7 @@ function National() {
             <p>{t("academics-pages.national.national-school-high-quality-paragraph")}</p>
         </div>
 
-        <ParallaxScrollSection backgroundImage={"../../assets/images/AcademicsPages/NationalAcademicsPageMiddleVisual1.jpg"}/>
+        <ParallaxScrollSection backgroundImage={servePublicAsset("/images/AcademicsPages/NationalAcademicsPageMiddleVisual1.jpg")}/>
 
         <div className={"standard-padding-container"}>
             <p>{t("academics-pages.national.national-school-beyond-classroom-paragraph")}</p>
@@ -39,10 +39,10 @@ function National() {
         </div>
 
         <ParallaxScrollSection
-            backgroundImage={"../../assets/images/AcademicsPages/NationalAcademicsPageFooter1.jpg"}
+            backgroundImage={servePublicAsset("/images/AcademicsPages/NationalAcademicsPageFooter1.jpg")}
             text={t("academics-pages.national.quote-by-ms-aya-abdelgawad-national-school-deputy")}
             darken={true}
-            image={"../../assets/images/AcademicsPages/ClosingQuote.png"}
+            image={servePublicAsset("/images/AcademicsPages/ClosingQuote.png")}
             imageAlt={"Academics Page Footer Closing Quote"}
         />
 

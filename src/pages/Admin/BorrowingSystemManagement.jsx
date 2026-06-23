@@ -2,7 +2,7 @@ import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
-import {headToAdminLoginOnInvalidSession} from "../../services/AdminNavigationServices.jsx";
+import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {useTranslation} from "react-i18next";
 
 function BorrowingSystemManagement() {

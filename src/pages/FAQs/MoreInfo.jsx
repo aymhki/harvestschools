@@ -10,7 +10,7 @@ function MoreInfo() {
     const options = [
         {
             title: t("faqs-pages.options-page.faqs-option"),
-            image: "/assets/images/FAQsPages/FAQs1.png",
+            image: "/images/FAQsPages/FAQs1.png",
             description: t("faqs-pages.options-page.faqs-option-description"),
             link: "/faqs",
             buttonText: t("common.learn-more", {ns: 'common'} ),
@@ -19,7 +19,7 @@ function MoreInfo() {
         },
         {
             title: t("faqs-pages.options-page.minimum-registration-age-option"),
-            image: "/assets/images/FAQsPages/Age2.png",
+            image: "/images/FAQsPages/Age2.png",
             description:  t("faqs-pages.options-page.minimum-registration-age-option-description"),
             link: "/minimum-stage-age",
             buttonText: t("common.learn-more", {ns: 'common'}),
@@ -28,7 +28,7 @@ function MoreInfo() {
         },
         {
             title: t("faqs-pages.options-page.covid-19-policy-option"),
-            image: "/assets/images/FAQsPages/Covid1.v1.png",
+            image: "/images/FAQsPages/Covid1.v1.png",
             description: t("faqs-pages.options-page.covid-19-policy-option-description"),
             link: "/covid-19",
             buttonText: t("common.learn-more", {ns: 'common'}),

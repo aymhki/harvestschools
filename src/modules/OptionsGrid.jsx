@@ -2,6 +2,7 @@ import '../styles/OptionsGrid.css';
 import PropTypes from "prop-types";
 import {useNavigate} from "react-router-dom";
 import {Fragment} from "react";
+import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 
 
 function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInThePage, compact})
@@ -25,7 +26,7 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
                             }}>
                                 <p> {option.title} </p>
 
-                                <img src={option.image} alt={option.title}/>
+                                <img src={servePublicAsset(option.image)} alt={option.title}/>
                             </div>
                         ))}
                     </div>
@@ -63,7 +64,7 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
                             }}>
 
                                 {<h2>{option.title}</h2>}
-                                <img src={option.image} alt={option.title}/>
+                                <img src={servePublicAsset(option.image)} alt={option.title}/>
                                 {<p>{option.description}</p>}
 
                                 <button

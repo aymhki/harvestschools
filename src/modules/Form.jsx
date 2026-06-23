@@ -9,9 +9,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
-import {useFormCache} from "../services/UseFormCache.jsx";
-import {msgTimeout} from "../services/GeneralUtils.jsx";
-import {submitFormRequest} from "../services/GeneralServices.jsx";
+import {useFormCache} from "../services/General/UseFormCache.jsx";
+import {msgTimeout} from "../services/General/GeneralUtils.jsx";
+import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 
 function Form({

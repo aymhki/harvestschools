@@ -1,5 +1,4 @@
 name: Deploy Vite React App to cPanel via FTP
-
 concurrency:
   group: production-deployment
   cancel-in-progress: false
@@ -8,41 +7,51 @@ on:
   push:
     branches:
       - main
+
 jobs:
-  build-and-deploy:
+  sync-global-assets:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 2
 
       - name: Check for changes in asset subfolders
         id: check_assets_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q -E "public/assets/(fonts|images|videos|documents|raw)/"; then
+          if git diff --name-only HEAD^ HEAD | grep -q -E "/assets/(fonts|images|videos|documents|raw)/"; then
             echo "assets_changed=true" >> $GITHUB_OUTPUT
-            echo "Changes detected in assets subfolders"
           else
             echo "assets_changed=false" >> $GITHUB_OUTPUT
-            echo "No changes detected in assets subfolders"
           fi
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Sync assets to server home directory (conditional)
+        if: steps.check_assets_changes.outputs.assets_changed == 'true'
+        run: |
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose --only-newer assets/ assets/
+          "
+
+  build-and-deploy-main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v3
         with:
           node-version: 'latest'
 
-      - name: Install dependencies
-        run: npm install
 
-      - name: Build project
-        run: npm run build
+      - run: npm install
+      - run: npm run build:main
+      - run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Deploy static files (excluding heavy assets)
+      - name: Deploy main static files
         run: |
           lftp -c "
           set ssl:verify-certificate no;
@@ -58,7 +67,24 @@ jobs:
             dist/static/ public_html/
           "
 
-      - name: Update index.html
+      - name: Deploy Main .htaccess
+        run: |
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          put -O public_html/ domains/Main/.htaccess
+          "
+
+      - name: Check for changes in asset subfolders
+        id: check_assets_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q -E "public/assets/fonts/"; then
+            echo "assets_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "assets_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update main index.html
         run: |
           lftp -c "
           set ssl:verify-certificate no;
@@ -73,15 +99,8 @@ jobs:
           lftp -c "
           set ssl:verify-certificate no;
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose --only-newer dist/static/assets/ public_html/assets/
+          mirror -R --verbose --only-newer dist/static/assets/fonts/ public_html/assets/fonts/
           "
-
-      - name: Debug - List workspace contents
-        run: |
-          echo "Current directory: $PWD"
-          ls -la
-          echo "Listing repository contents:"
-          ls -la $GITHUB_WORKSPACE
 
       - name: Sync scripts folder
         run: |
@@ -89,14 +108,54 @@ jobs:
           lftp -c "
           set ssl:verify-certificate no;
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose src/scripts/ public_html/scripts/
+          mirror -R --verbose -x '^Admin/' src/scripts/ public_html/scripts/
           "
 
       - name: Sync whatsapp-bot folder
         run: |
-          echo "Syncing whatsapp-bot folder to public_html/whatsapp-bot"
           lftp -c "
           set ssl:verify-certificate no;
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
           mirror -R --verbose whatsapp-bot/ public_html/whatsapp-bot/
           "
+
+  build-and-deploy-admin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 'latest'
+
+      - run: npm install
+      - run: npm run build:admin
+      - run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy admin portal
+        run: |
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose \
+            --exclude-glob '.git*' \
+            dist/admin/ admin.harvestschools.com/
+          "
+
+      - name: Deploy Admin .htaccess
+        run: |
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          put -O admin.harvestschools.com/ domains/Admin/.htaccess
+          "
+
+      - name: Sync scripts
+        run: |
+          lftp -c "
+          set ssl:verify-certificate no;
+          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose src/scripts/Admin/ admin.harvestschools.com/scripts/Admin/;
+          mirror -R --verbose src/scripts/Public/ admin.harvestschools.com/scripts/Public/;
+          "
+

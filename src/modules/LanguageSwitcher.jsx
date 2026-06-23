@@ -1,12 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/LanguageSwitcher.css'
 import { useState, useEffect } from 'react';
+import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 
 const LanguageSwitcher = () => {
+    const toggleLanguage = useToggleLanguage();
     const { i18n } = useTranslation();
-    const navigate = useNavigate();
-    const location = useLocation();
     const [isMobile, setIsMobile] = useState(true);
 
     useEffect(() => {
@@ -28,29 +27,11 @@ const LanguageSwitcher = () => {
         setIsMobile(window.innerWidth < 768);
     }, [])
 
-    const changeLanguage = (lng) => {
-        if (i18n.language === lng) return;
-
-        i18n.changeLanguage(lng);
-
-        const searchParams = new URLSearchParams(location.search);
-        searchParams.set('lang', lng);
-
-        navigate({
-            pathname: location.pathname,
-            search: searchParams.toString()
-        }, { replace: true });
-
-        document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = lng;
-
-
-    };
 
     return (
         <div className="language-switcher">
 
-            <div onClick={() => changeLanguage('en')}
+            <div onClick={() => toggleLanguage('en')}
                  className={`en ${(i18n.language === 'en' || i18n.language !== 'ar') ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 English
@@ -61,7 +42,7 @@ const LanguageSwitcher = () => {
             </span>
 
             <div
-                onClick={() => changeLanguage('ar')}
+                onClick={() => toggleLanguage('ar')}
                 className={`ar ${i18n.language === 'ar' ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 العربية

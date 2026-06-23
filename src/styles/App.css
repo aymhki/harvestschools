@@ -25,12 +25,25 @@
     min-height: 100vh;
 }
 
+.content.admin-content {
+    padding-left: 3.5rem
+}
+
 .logo {
     height: 6rem;
     width: 6rem;
     margin: 1rem;
     will-change: filter;
     transition: filter 0.25s;
+}
+
+.logo.compact-logo {
+    height: 3rem;
+    width: 3rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
 }
 
 .logo:hover {
@@ -88,6 +101,7 @@
         height: 5rem;
         width: 5rem;
     }
+
 }
 
 @media (max-width: 1024px) {
@@ -137,6 +151,10 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
+    }
+
+    .content.admin-content {
+        padding-left: 0;
     }
 
     body {

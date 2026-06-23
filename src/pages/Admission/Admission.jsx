@@ -10,7 +10,7 @@ function Admission() {
     const options = [
         {
             title: t("admission-pages.options-page.admission-process-option"),
-            image: "/assets/images/AdmissionPages/AdmissionProcess1.png",
+            image: "/images/AdmissionPages/AdmissionProcess1.png",
             description: t("admission-pages.options-page.admission-process-option-description"),
             link: "/admission/admission-process",
             buttonText: t("common.learn-more", {ns: 'common'}),
@@ -19,7 +19,7 @@ function Admission() {
         },
         {
             title: t("admission-pages.options-page.admission-requirements-option"),
-            image: "/assets/images/AdmissionPages/AdmissionChecklist2.png",
+            image: "/images/AdmissionPages/AdmissionChecklist2.png",
             description: t("admission-pages.options-page.admission-requirements-option-description"),
             link: "/admission/admission-requirements",
             buttonText: t("common.learn-more", {ns: 'common'}),
@@ -28,7 +28,7 @@ function Admission() {
         },
         {
             title: t("admission-pages.options-page.admission-fees-option"),
-            image: "/assets/images/AdmissionPages/AdmissionFees1.png",
+            image: "/images/AdmissionPages/AdmissionFees1.png",
             description: t("admission-pages.options-page.admission-fees-option-description"),
             link: "/admission/admission-fees",
             buttonText: t("common.learn-more", {ns: 'common'}),

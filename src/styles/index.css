@@ -12,8 +12,8 @@
 
 @font-face {
     font-family: 'Futura';
-    src: url('../../public/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
-        url('../../public/assets/fonts/Futura/FuturaLT.woff') format('woff');
+    src: url('/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
+        url('/assets/fonts/Futura/FuturaLT.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -21,8 +21,8 @@
 
 @font-face {
     font-family: 'Futura-Bold';
-    src: url('../../public/assets/fonts/Futura/FuturaLT-Bold.woff2') format('woff2'),
-        url('../../public/assets/fonts/Futura/FuturaLT-Bold.woff') format('woff');
+    src: url('/assets/fonts/Futura/FuturaLT-Bold.woff2') format('woff2'),
+        url('/assets/fonts/Futura/FuturaLT-Bold.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -31,8 +31,8 @@
 
 @font-face {
     font-family: 'American Typewriter';
-    src: url('../../public/assets/fonts/American Typewriter/American Typewriter.woff2') format('woff2'),
-        url('../../public/assets/fonts/American Typewriter/American Typewriter.woff') format('woff');
+    src: url('/assets/fonts/American Typewriter/American Typewriter.woff2') format('woff2'),
+        url('/assets/fonts/American Typewriter/American Typewriter.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -40,8 +40,8 @@
 
 @font-face {
     font-family: 'Arian Lt';
-    src: url('../../public/assets/fonts/Arian LT/Arian LT.woff2') format('woff2'),
-    url('../../public/assets/fonts/Arian LT/Arian LT.woff') format('woff');
+    src: url('/assets/fonts/Arian LT/Arian LT.woff2') format('woff2'),
+    url('/assets/fonts/Arian LT/Arian LT.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -49,8 +49,8 @@
 
 @font-face {
     font-family: 'Arian LT Demi';
-    src: url('../../public/assets/fonts/Arian LT Demi/Arian LT Demi.woff2') format('woff2'),
-    url('../../public/assets/fonts/Arian LT Demi/Arian LT Demi.woff') format('woff');
+    src: url('/assets/fonts/Arian LT Demi/Arian LT Demi.woff2') format('woff2'),
+    url('/assets/fonts/Arian LT Demi/Arian LT Demi.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -58,8 +58,8 @@
 
 @font-face {
     font-family: 'American Typewriter Light';
-    src: url('../../public/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff2') format('woff2'),
-        url('../../public/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff') format('woff');
+    src: url('/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff2') format('woff2'),
+        url('/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -67,8 +67,8 @@
 
 @font-face {
     font-family: 'Arslan Wessam A';
-    src: url('../../public/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff2') format('woff2'),
-        url('../../public/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff') format('woff');
+    src: url('/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff2') format('woff2'),
+        url('/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -76,8 +76,8 @@
 
 @font-face {
     font-family: 'Janna LT Bold';
-    src: url('../../public/assets/fonts/Janna LT Bold/Janna LT Bold.woff2') format('woff2'),
-        url('../../public/assets/fonts/Janna LT Bold/Janna LT Bold.woff') format('woff');
+    src: url('/assets/fonts/Janna LT Bold/Janna LT Bold.woff2') format('woff2'),
+        url('/assets/fonts/Janna LT Bold/Janna LT Bold.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;

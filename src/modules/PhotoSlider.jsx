@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/PhotoSlider.css';
+import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 
 function PhotoSlider({ photos, darken }) {
     const [current, setCurrent] = useState(0);
@@ -42,7 +43,7 @@ function PhotoSlider({ photos, darken }) {
                     className={`slide ${index === current ? 'active' : index === exiting ? 'exiting' : 'not-active'}`}
                     key={photo.id}>
                     <img
-                        src={photo.url}
+                        src={servePublicAsset(photo.url)}
                         alt={photo.text}
                         className={darken ? 'slider-photo-dark' : 'slider-photo'}
                     />

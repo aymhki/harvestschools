@@ -9,21 +9,21 @@ function KindergartenAcademics() {
     const options = [
         {
             title: t("academics-pages.kindergarten.national-kindergarten-option"),
-            image: "/assets/images/AcademicsPages/National2.png",
+            image: "/images/AcademicsPages/National2.png",
             description: t("academics-pages.kindergarten.national-kindergarten-description"),
             link: "/academics/kindergarten-national",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.kindergarten.international-kindergarten-option"),
-            image: "/assets/images/AcademicsPages/International1.png",
+            image: "/images/AcademicsPages/International1.png",
             description: t("academics-pages.kindergarten.international-kindergarten-description"),
             link: "/academics/kindergarten-international",
             buttonText: t("common.learn-more", {ns: 'common'}),
         },
         {
             title: t("academics-pages.kindergarten.pre-kindergarten-option"),
-            image: "/assets/images/AcademicsPages/Pre-K1.png",
+            image: "/images/AcademicsPages/Pre-K1.png",
             description: t("academics-pages.kindergarten.pre-kindergarten-description"),
             link: "/academics/pre-kindergarten",
             buttonText: t("common.learn-more", {ns: 'common'}),
