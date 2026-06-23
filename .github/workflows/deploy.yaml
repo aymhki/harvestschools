@@ -140,6 +140,6 @@ jobs:
           open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
           mirror -R --verbose src/scripts/Admin/ admin.harvestschools.com/scripts/Admin/;
           mirror -R --verbose src/scripts/Public/General/ admin.harvestschools.com/scripts/Public/General/;
-          mirror -R --verbose src/scripts/headers.php admin.harvestschools.com/scripts/headers.php;
+          put -O admin.harvestschools.com/scripts/ src/scripts/headers.php
           "
 
