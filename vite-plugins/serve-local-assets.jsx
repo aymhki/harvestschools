@@ -9,6 +9,7 @@ const MIME_TYPES = {
     mp4: 'video/mp4',  webm: 'video/webm',
     pdf: 'application/pdf',
     woff2: 'font/woff2', woff: 'font/woff', ttf: 'font/ttf', otf: 'font/otf',
+    js: 'application/javascript'
 }
 
 export function serveLocalAssets(localAssetsDir, options = {}) {
