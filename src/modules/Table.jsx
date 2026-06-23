@@ -1428,6 +1428,7 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
 
     useEffect(() => {
+        if (isMobile) return;
         const container = scrollContainerRef.current;
         const module    = tableModuleRef.current;
         if (!container) return;
@@ -1442,6 +1443,17 @@ function Table({
 
         const handleWheel = (e) => {
             if (e.ctrlKey) return;
+
+            const isHorizontalScroll = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+            const atLeftEdge = container.scrollLeft <= 0;
+            const atRightEdge = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 1;
+
+            if (isHorizontalScroll) {
+                if ((atLeftEdge && e.deltaX < 0) || (atRightEdge && e.deltaX > 0)) {
+                    return;
+                }
+            }
+
             e.preventDefault();
 
             let remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth',  e.deltaX);

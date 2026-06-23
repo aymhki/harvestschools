@@ -6,7 +6,8 @@
     padding: 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    overflow: visible;
+    overflow-x: clip;     
+    overflow-y: visible;
 }
 
 .table-module::-webkit-scrollbar {
@@ -47,7 +48,7 @@
 .table-with-vertical-scrollbar-wrapper {
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: auto;
     position: relative;
     margin: 0 2rem 2rem 2rem;
     align-items: stretch;
