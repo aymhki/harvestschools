@@ -2,7 +2,7 @@
   "name": "Admin",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5174",
     "build": "rm -rf ../../dist/admin && vite build --outDir ../../dist/admin"
   }
 }
