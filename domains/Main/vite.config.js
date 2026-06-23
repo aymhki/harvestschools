@@ -19,7 +19,8 @@ export default defineConfig({
                         return 'vendor'
                     }
                 }
-            }
+            },
+            external: ['generateGraduationBookingConfirmationPDF'],
         }
     },
     cacheDir: '../../node_modules/.vite-main',
