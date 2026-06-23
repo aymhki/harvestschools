@@ -45,15 +45,26 @@ $PROCESSABLE = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 $requested = isset($_GET['path']) ? trim($_GET['path'], '/') : '';
 if (empty($requested)) { http_response_code(400); exit('Missing path'); }
 
-$full_path = realpath($ASSETS_BASE . $requested);
+$raw_path = $ASSETS_BASE . $requested;
+$full_path = realpath($raw_path);
 
-if (!$full_path || strpos($full_path, $ASSETS_BASE) !== 0) {
-    http_response_code(403); exit('Access denied');
+if (!$full_path || !is_file($full_path)) {
+    http_response_code(404);
+    exit('Not found');
 }
-if (!is_file($full_path)) { http_response_code(404); exit('Not found'); }
+
+if (strpos($full_path, $ASSETS_BASE) !== 0) {
+    http_response_code(403);
+    exit('Access denied');
+}
 
 $src_ext = strtolower(pathinfo($full_path, PATHINFO_EXTENSION));
-if (!isset($ALLOWED_MIME[$src_ext])) { http_response_code(403); exit('Type not permitted'); }
+
+if (!isset($ALLOWED_MIME[$src_ext])) {
+    http_response_code(403);
+    exit('Type not permitted');
+}
+
 
 // ── Optional parameters ───────────────────────────────────────────────────────
 
