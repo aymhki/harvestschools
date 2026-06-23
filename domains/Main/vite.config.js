@@ -20,7 +20,7 @@ export default defineConfig({
                     }
                 }
             },
-            external: ['GenerateGraduationBookingConfirmationPDF.jsx'],
+            external: (id) => id.includes('/fonts/')
         }
     },
     cacheDir: '../../node_modules/.vite-main',
