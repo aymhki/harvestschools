@@ -100,6 +100,7 @@ function JobApplications() {
                                 'Other Documents Link Third': onJobApplicationFileUrlClick,
                             }
                        }
+                       isLoading={isLoading}
                 />
             </div>
         </>

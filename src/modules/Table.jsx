@@ -18,7 +18,7 @@ function Table({
                    exportFileName,
                    filterableColumns,
                    headerModuleElements,
-                    footerModuleElements,
+                   footerModuleElements,
                    onDeleteEntry,
                    allowDeleteEntryOption,
                    columnsToWrap,
@@ -30,6 +30,7 @@ function Table({
                    hideHorizontalScrollBar,
                    hideVerticalScrollBar,
                    tablePages,
+                    isLoading
                }) {
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : {
         column: null,
@@ -1514,7 +1515,7 @@ function Table({
                         updateVerticalThumbPosition();
                     }}
                 >
-                    { (!finalTableData || finalTableData.length === 0) ? (
+                    { ( (!finalTableData || finalTableData.length === 0) && !isLoading) ? (
                         <div className={"table-module-header-empty-state"}>
                             <h3>{t("common.no-table-enteries-found", {ns: 'common'})}</h3>
                         </div>
@@ -2035,6 +2036,7 @@ Table.propTypes = {
     hideHorizontalScrollBar: PropTypes.bool,
     hideVerticalScrollBar: PropTypes.bool,
     tablePages: PropTypes.bool,
+    isLoading: PropTypes.bool
 };
 
 export default Table;

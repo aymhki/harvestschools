@@ -62,6 +62,7 @@ function OpenDaySignupsManagement() {
                                'Payment Status'
                            ]
                        }
+                       isLoading={isLoading}
                 />
             </div>
         </>

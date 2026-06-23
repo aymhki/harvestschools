@@ -950,6 +950,7 @@ function GraduationBookingManagement() {
                        dataTypes={
                            columnDataTypes
                        }
+                       isLoading={isLoading}
                 />
             </div>
 
