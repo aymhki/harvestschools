@@ -4,12 +4,12 @@
     # 1. Rule for /assets/
     # Check that the file DOES NOT physically exist in the public directory (allows Vite chunks to load)
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^assets/(.+)$ /scripts/Public/General/serve-asset.php?path=$1 [QSA,L]
+    RewriteRule ^assets/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1 [QSA,L]
 
     # 2. Rule for /images, /videos, /documents, /fonts
     # Check that the file DOES NOT physically exist in the public directory
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(images|videos|documents|fonts)/(.+)$ /scripts/Public/General/serve-asset.php?path=$1/$2 [QSA,L]
+    RewriteRule ^(images|videos|documents|fonts)/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1/$2 [QSA,L]
 
   # Serve the directory's index.html file for directory requests
   DirectoryIndex index.html
