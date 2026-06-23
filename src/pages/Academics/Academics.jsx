@@ -18,7 +18,7 @@ function Academics() {
         },
         {
             title: t("academics-pages.british-section"),
-            image: "/images/HomePage/CICIS.avif",
+            image: "/images/AcademicsPages/British1.png",
             description: t("academics-pages.british-description"),
             link: "/academics/british",
             buttonText: t("common.learn-more", {ns: 'common'}),
