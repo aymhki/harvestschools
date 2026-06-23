@@ -68,7 +68,7 @@ function Home() {
                     {/*        referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>*/}
 
                     <video
-                        src={`${servePublicAsset("/videos/HomePage/Intro.mp4")}#t=0.1`}
+                        src={`${servePublicAsset("/videos/HomePage/Intro.mp4")}`}
                         controls
                         autoPlay
                         loop
