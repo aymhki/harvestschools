@@ -23,6 +23,7 @@ $ALLOWED_MIME = [
     'woff'  => 'font/woff',
     'ttf'   => 'font/ttf',
     'otf'   => 'font/otf',
+    'js'    => 'application/javascript',
 ];
 
 $PROCESSABLE = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
