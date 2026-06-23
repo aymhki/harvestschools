@@ -18,15 +18,35 @@ const generateGraduationBookingConfirmationPDF = async (action = 'download', set
             import('qrcode')
         ]);
 
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        const loadRawFontFile = async (path, fontName, fontStyle, vfsFileName) => {
+            const url = servePublicAsset(path);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Failed to fetch font asset: ${path}`);
+
+            const buffer = await response.arrayBuffer();
+
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            const base64FontData = window.btoa(binary);
+
+            pdf.addFileToVFS(vfsFileName, base64FontData);
+            pdf.addFont(vfsFileName, fontName, fontStyle);
+        };
+
         await Promise.all([
-            import(servePublicAsset('/fonts/American Typewriter/american-typewriter-bold-bold.js')),
-            import(servePublicAsset('/fonts/Futura/Futura Book font-normal.js')),
-            import(servePublicAsset('/fonts/American Typewriter/American Typewriter Regular-normal.js')),
-            import(servePublicAsset('/fonts/Futura/futur-bold.js')),
-            import(servePublicAsset('/fonts/Futura/Futura Book Italic font-italic.js'))
+            loadRawFontFile('/fonts/American Typewriter/american-typewriter-bold.ttf', 'american-typewriter-bold', 'bold', 'american-typewriter-bold.ttf'),
+            loadRawFontFile('/fonts/Futura/Futura Book font.ttf', 'Futura Book font', 'normal', 'Futura-Book.ttf'),
+            loadRawFontFile('/fonts/American Typewriter/American Typewriter Regular.ttf', 'American Typewriter Regular', 'normal', 'American-Typewriter-Regular.otf'),
+            loadRawFontFile('/fonts/Futura/futur.ttf', 'futur', 'bold', 'futur-bold.ttf'),
+            loadRawFontFile('/fonts/Futura/Futura Book Italic font.ttf', 'Futura Book Italic font', 'italic', 'Futura-Book-Italic.ttf')
         ]);
 
-        const pdf = new jsPDF('p', 'mm', 'a4');
+
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
         const margin = 20;
