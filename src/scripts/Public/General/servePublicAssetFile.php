@@ -5,16 +5,33 @@ $ASSETS_BASE = false;
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 
 $possible_paths = [
+    dirname($doc_root) . '/public_html/assets',
     dirname($doc_root, 2) . '/assets',
     dirname($doc_root) . '/assets',
     $doc_root . '/assets',
 ];
 
-foreach ($possible_paths as $path) {
-    $real_path = realpath($path);
-    if ($real_path && is_dir($real_path)) {
-        $ASSETS_BASE = $real_path . DIRECTORY_SEPARATOR;
-        break;
+if (!empty($requested)) {
+    foreach ($possible_paths as $path) {
+        $real_path = realpath($path);
+        if ($real_path && is_dir($real_path)) {
+            $test_file = $real_path . DIRECTORY_SEPARATOR . $requested;
+            if (is_file($test_file)) {
+                $ASSETS_BASE = $real_path . DIRECTORY_SEPARATOR;
+                break;
+            }
+        }
+    }
+}
+
+
+if (!$ASSETS_BASE) {
+    foreach ($possible_paths as $path) {
+        $real_path = realpath($path);
+        if ($real_path && is_dir($real_path)) {
+            $ASSETS_BASE = $real_path . DIRECTORY_SEPARATOR;
+            break;
+        }
     }
 }
 
@@ -50,7 +67,7 @@ $full_path = realpath($raw_path);
 
 if (!$full_path || !is_file($full_path)) {
     http_response_code(404);
-    exit('Not found');
+    exit('Not found. PHP is looking for: ' . $raw_path);
 }
 
 if (strpos($full_path, $ASSETS_BASE) !== 0) {
