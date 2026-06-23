@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import TranslateIcon from '@mui/icons-material/Translate';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
+import {isDevelopment} from "../services/General/GeneralUtils.jsx"
 
 function NavigationBar({compactOrAdmin}){
     const [isMobile, setIsMobile] = useState(true);
@@ -253,9 +254,9 @@ function NavigationBar({compactOrAdmin}){
                         </li>
 
                         <li onClick={() => {
-                            navigate(`https://admin.harvestschools.com?lang=${i18n.language}/`);
+                            navigate(isDevelopment() ? `http://localhost:5174?lang=${i18n.language}/` : `https://admin.harvestschools.com?lang=${i18n.language}/`);
                         }}>
-                            <Link to={`https://admin.harvestschools.com?lang=${i18n.language}/`}>
+                            <Link to={isDevelopment() ? `http://localhost:5174?lang=${i18n.language}/` : `https://admin.harvestschools.com?lang=${i18n.language}/`}>
                                 {t("nav.admin-login")}
                             </Link>
                         </li>
