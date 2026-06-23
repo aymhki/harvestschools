@@ -2,11 +2,12 @@ import '../../styles/Academics.css';
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
 import {Helmet} from "react-helmet-async";
 import { useTranslation } from 'react-i18next';
+import {isDevelopment} from "../../services/General/GeneralUtils.jsx";
 
 
 function Academics() {
 
-    const { t } = useTranslation(['academics-pages']);
+    const { t, i18n } = useTranslation(['academics-pages']);
 
     const options = [
         {
@@ -70,7 +71,7 @@ function Academics() {
             title: t("nav.admin-login", {ns: 'nav'}),
             image: "/images/AcademicsPages/Login1.png",
             description: t("academics-pages.admin-login-description"),
-            link: "https://admin.harvestschools.com/",
+            link: isDevelopment() ? `http://localhost:5174?lang=${i18n.language}/` : `https://admin.harvestschools.com?lang=${i18n.language}/`,
             buttonText: t("common.learn-more", {ns: 'common'}),
             externalLink: true
         }

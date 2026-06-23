@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../styles/AdminSidebar.css';
+import {isDevelopment} from "../services/General/GeneralUtils.jsx";
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import WorkIcon from '@mui/icons-material/Work';
@@ -115,7 +116,7 @@ function AdminSidebar({ adminLinks}) {
                         </li>
                         <li>
                             <Link
-                                to={`https://harvestschools.com?lang=${i18n.language}`}
+                                to={ `${ isDevelopment() ? `http://localhost:5173?lang=${i18n.language}` : `https://harvestschools.com?lang=${i18n.language}` }` }
                                 title={!isExpanded ? 'Return to Main Site' : ''}
                             >
                                 <span className="icon"><PublicIcon /></span>
