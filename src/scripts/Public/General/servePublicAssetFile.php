@@ -10,21 +10,6 @@ if (!is_dir($ASSETS_BASE)) {
 }
 
 
-if (!$ASSETS_BASE) {
-    foreach ($possible_paths as $path) {
-        $real_path = realpath($path);
-        if ($real_path && is_dir($real_path)) {
-            $ASSETS_BASE = $real_path . DIRECTORY_SEPARATOR;
-            break;
-        }
-    }
-}
-
-if (!$ASSETS_BASE) {
-    http_response_code(500);
-    exit('Assets base directory not found. Checked: ' . implode(', ', $possible_paths));
-}
-
 $CACHE_BASE = dirname($ASSETS_BASE) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
 
 $ALLOWED_MIME = [
