@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from '../../src/AppClient.jsx'
+import App from '../../src/app/AppClient.jsx'
 import '../../src/styles/index.css'
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import '../../src/i18n.jsx'
+import '../../src/i18n/i18n-client.jsx'
 
 
 window.addEventListener('error', (event) => {
