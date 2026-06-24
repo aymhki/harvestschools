@@ -30,7 +30,8 @@ function Table({
                    hideHorizontalScrollBar,
                    hideVerticalScrollBar,
                    tablePages,
-                   isLoading
+                   isLoading,
+                   forceEnglishTable
     }) {
 
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : {
@@ -50,7 +51,7 @@ function Table({
     });
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
-    const {t} = useTranslation();
+    const {t} = useTranslation('common', forceEnglishTable ? {lng: 'en'} : {});
     const showPaginationOnMobile = true
     const maxItemsBeforePagination = 300;
     const mobilePageSize = 50;
@@ -2005,7 +2006,8 @@ Table.propTypes = {
     hideHorizontalScrollBar: PropTypes.bool,
     hideVerticalScrollBar: PropTypes.bool,
     tablePages: PropTypes.bool,
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    forceEnglishTable: PropTypes.bool
 };
 
 export default Table;

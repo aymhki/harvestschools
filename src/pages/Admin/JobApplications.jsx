@@ -49,6 +49,7 @@ function JobApplications() {
                        compact={true}
                        allowHideColumns={true}
                        allowSticky={true}
+                       forceEnglishTable={true}
                        defaultHiddenColumns={
                            [
                                'Skills or Hobbies',
