@@ -160,7 +160,6 @@
     .admin-sidebar.mobile-open {
         display: flex;
         width: 100vw;
-        min-height: 100vh;
         transform: translateX(0);
         color: var(--primary-color);
     }
