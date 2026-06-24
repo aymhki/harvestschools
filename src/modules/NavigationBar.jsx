@@ -24,7 +24,7 @@ function NavigationBar({compactOrAdmin}){
     const [moreInfoOpen, setMoreInfoOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const { t, i18n } = useTranslation(['nav']);
-    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: false});
+    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: compactOrAdmin});
 
     useEffect(() => {
         setIsClient(true);
