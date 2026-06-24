@@ -162,6 +162,7 @@
         min-height: 100vh;
         transform: translateX(0);
         color: var(--primary-color);
+        position: absolute;
     }
 
     .sidebar-overlay {
