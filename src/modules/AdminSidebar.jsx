@@ -59,6 +59,18 @@ function AdminSidebar({ adminLinks, loggedInUsername}) {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        if (isMobileOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isMobileOpen]);
+
     return (
         <>
             <button className="floating-mobile-menu" onClick={() => setIsMobileOpen(true)}>
