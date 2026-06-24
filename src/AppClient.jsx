@@ -91,7 +91,7 @@ function AppClient() {
         <div className="App">
             {!shouldExclude && <NavigationBar compactOrAdmin={false}/>}
             <div className="content">
-                <ErrorBoundary>
+                <ErrorBoundary ignoreLngUpdate={false}>
                     <Suspense fallback={<div style={{minHeight: '50vh'}}></div>}>
                         <Routes>
                             <Route path="/" element={<Home />} />

@@ -141,7 +141,7 @@ function NavigationBar({compactOrAdmin}){
 
                 {!isMobile  && (
                     <div className={`language-switcher-desktop-container ${compactOrAdmin ? 'compact-language-switcher-desktop-container' : ''}`}>
-                        <LanguageSwitcher />
+                        <LanguageSwitcher ignoreDocUpdate={compactOrAdmin} />
                     </div>
                 )
                 }
@@ -467,7 +467,7 @@ function NavigationBar({compactOrAdmin}){
 
                 {isMobile && (
                     <div className={"language-switcher-mobile-container"}>
-                        <LanguageSwitcher />
+                        <LanguageSwitcher ignoreDocUpdate={compactOrAdmin}/>
                     </div>
                 )}
             </animated.ul>

@@ -90,7 +90,7 @@ function AppServer() {
         <div className="App">
             {!shouldExclude && <NavigationBar compactOrAdmin={false}/>}
             <div className="content">
-                <ErrorBoundary>
+                <ErrorBoundary ignoreLngUpdate={false}>
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
