@@ -8,12 +8,13 @@ const MIME_TYPES = {
     avif: 'image/avif', ico: 'image/x-icon',
     mp4: 'video/mp4',  webm: 'video/webm',
     pdf: 'application/pdf',
-    woff2: 'font/woff2', woff: 'font/woff', ttf: 'font/ttf', otf: 'font/otf'
+    woff2: 'font/woff2', woff: 'font/woff', ttf: 'font/ttf', otf: 'font/otf',
+    json: 'application/json',
 }
 
 export function serveLocalAssets(localAssetsDir, options = {}) {
     const resolvedBase = path.resolve(localAssetsDir)
-    const prefixes = options.prefixes || ['/assets', '/images', '/videos', '/fonts', '/documents']
+    const prefixes = options.prefixes || ['/assets', '/images', '/videos', '/fonts', '/documents', '/locales']
 
     return {
         name: 'serve-local-assets',
