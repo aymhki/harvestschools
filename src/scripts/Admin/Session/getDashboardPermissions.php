@@ -41,12 +41,25 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionId = $conn->real_escape_string($data['session_id']);
-    $sql = "SELECT u.permission_level 
-            FROM admin_sessions s
-            JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
-            WHERE s.id = '$sessionId'";
-    $result = $conn->query($sql);
+    $sessionId = $data['session_id'];
+    $stmt = $conn->prepare("SELECT u.permission_level 
+                          FROM admin_sessions s
+                          JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
+                          WHERE s.id = ?");
+
+    if (!$stmt) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Prepare failed: " . $conn->error,
+            "code" => 500
+        ]);
+        exit;
+    }
+
+    $stmt->bind_param("s", $sessionId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
     if ($result->num_rows == 0) {
         echo json_encode([

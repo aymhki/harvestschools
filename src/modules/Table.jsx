@@ -702,8 +702,8 @@ function Table({
 
     const applyLikelyUrlFunction = (columnName, cellValue) => {
         if (likelyUrlColumns && likelyUrlColumns[columnName]) {
-            return <p className={"table-link"} lang={"en"}
-                      onClick={() => likelyUrlColumns[columnName](cellValue)}>{cellValue}</p>;
+            return <a className={"table-link"} lang={"en"}
+                      onClick={() => likelyUrlColumns[columnName](cellValue)}>{cellValue}</a>;
         } else {
             return cellValue;
         }

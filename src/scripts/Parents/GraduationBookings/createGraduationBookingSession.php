@@ -33,34 +33,40 @@ try {
         exit;
     }
 
-    $user = $conn->real_escape_string($input['username']);
-    $sessionId = $conn->real_escape_string($input['session_id']);
-    $checkSql = "SELECT id FROM graduation_booking_sessions WHERE username = '$user'";
-    $checkResult = $conn->query($checkSql);
+    $user      = $input['username'];
+    $sessionId = $input['session_id'];
+
+    $stmt = $conn->prepare("SELECT id FROM graduation_booking_sessions WHERE username = ?");
+    $stmt->bind_param("s", $user);
+    $stmt->execute();
+    $checkResult = $stmt->get_result();
+    $stmt->close();
 
     if ($checkResult->num_rows > 0) {
-        $deleteSql = "DELETE FROM graduation_booking_sessions WHERE username = '$user'";
-
-        if (!$conn->query($deleteSql)) {
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE username = ?");
+        $stmt->bind_param("s", $user);
+        if (!$stmt->execute()) {
             echo json_encode([
                 "success" => false,
-                "message" => "Internal Server Error: " . $conn->error,
+                "message" => "Failed to delete existing session: " . $stmt->error,
                 "code" => 500
             ]);
             exit;
         }
+        $stmt->close();
     }
 
-    $insertSql = "INSERT INTO graduation_booking_sessions (username, id) VALUES ('$user', '$sessionId')";
-
-    if (!$conn->query($insertSql)) {
+    $stmt = $conn->prepare("INSERT INTO graduation_booking_sessions (username, id) VALUES (?, ?)");
+    $stmt->bind_param("ss", $user, $sessionId);
+    if (!$stmt->execute()) {
         echo json_encode([
             "success" => false,
-            "message" => "Internal Server Error: " . $conn->error,
+            "message" => "Failed to create session: " . $stmt->error,
             "code" => 500
         ]);
         exit;
     }
+    $stmt->close();
 
     echo json_encode([
         "success" => true,

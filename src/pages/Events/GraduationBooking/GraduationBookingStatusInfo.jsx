@@ -482,7 +482,8 @@ function GraduationBookingStatusInfo() {
                 labelOnTop: true,
                 dontLetTheBrowserSaveField: true,
                 readOnlyField: true,
-                alwaysEnglish: true
+                alwaysEnglish: true,
+                httpName: 'total-paid-for-base-fare'
             })
         }
 
@@ -501,7 +502,8 @@ function GraduationBookingStatusInfo() {
                 labelOnTop: true,
                 dontLetTheBrowserSaveField: true,
                 readOnlyField: true,
-                alwaysEnglish: true
+                alwaysEnglish: true,
+                httpName: 'total-extras-cost'
 
             })
         }
@@ -521,7 +523,8 @@ function GraduationBookingStatusInfo() {
                 labelOnTop: true,
                 dontLetTheBrowserSaveField: true,
                 readOnlyField: true,
-                alwaysEnglish: true
+                alwaysEnglish: true,
+                httpName: 'total-paid-for-base-and-extras'
             })
         }
 

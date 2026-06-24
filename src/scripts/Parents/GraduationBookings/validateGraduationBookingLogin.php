@@ -33,10 +33,23 @@ try {
         exit;
     }
 
-    $user = $conn->real_escape_string($data['username']);
-    $plainPassword = $conn->real_escape_string($data['password']);
-    $sql = "SELECT * FROM graduation_booking_auth_credentials WHERE username = '$user' AND password_hash = SHA2('$plainPassword', 256)";
-    $result = $conn->query($sql);
+    $user          = $data['username'];
+    $plainPassword = $data['password'];
+    $stmt = $conn->prepare("SELECT * FROM graduation_booking_auth_credentials WHERE username = ? AND password_hash = SHA2(?, 256)");
+
+    if (!$stmt) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Prepare failed: " . $conn->error,
+            "code" => 500
+        ]);
+        exit;
+    }
+
+    $stmt->bind_param("ss", $user, $plainPassword);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
     if ($result->num_rows > 0) {
         echo json_encode([
@@ -45,8 +58,11 @@ try {
             "code" => 200
         ]);
     } else {
-        $userCheckSql = "SELECT * FROM graduation_booking_auth_credentials WHERE username = '$user'";
-        $userResult = $conn->query($userCheckSql);
+        $stmt = $conn->prepare("SELECT * FROM graduation_booking_auth_credentials WHERE username = ?");
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+        $userResult = $stmt->get_result();
+        $stmt->close();
 
         if ($userResult->num_rows > 0) {
             echo json_encode([

@@ -34,6 +34,8 @@ PopulateBookingDataScript/.venv
 PopulateBookingDataScript/main.py
 
 dev.md
+tmp.md
+tmp.sql
 
 whatsapp-bot/config.php
 whatsapp-bot/sql
