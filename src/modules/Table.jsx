@@ -1445,14 +1445,24 @@ function Table({
             if (e.ctrlKey) return;
 
             const isHorizontalScroll = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-            const atLeftEdge = container.scrollLeft <= 0;
-            const atRightEdge = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 1;
+            const scrollableWidth = Math.round(Math.max(0, container.scrollWidth - container.clientWidth));
+            const currentScrollLeft = Math.round(container.scrollLeft);
+            const atLeftEdge = scrollableWidth <= 0 || currentScrollLeft <= 0;
+            const atRightEdge = scrollableWidth <= 0 || currentScrollLeft >= scrollableWidth - 1;
+            const maxWindowScrollX = Math.round(Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth));
+            const currentWindowScrollX = Math.round(window.scrollX || window.pageXOffset);
+            const isWindowAtLeftEdge = currentWindowScrollX <= 0;
+            const isWindowAtRightEdge = currentWindowScrollX >= maxWindowScrollX - 1;
 
             if (isHorizontalScroll) {
-                if ((atLeftEdge && e.deltaX < 0) || (atRightEdge && e.deltaX > 0)) {
+                if (
+                    (atLeftEdge && isWindowAtLeftEdge && e.deltaX < 0) ||
+                    (atRightEdge && isWindowAtRightEdge && e.deltaX > 0)
+                ) {
                     return;
                 }
             }
+
 
             e.preventDefault();
 

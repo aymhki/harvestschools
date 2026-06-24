@@ -116,6 +116,15 @@ function AdminSidebar({ adminLinks}) {
                         </li>
                         <li>
                             <Link
+                                to={ "https://schooleverywhere-harvest.com/schooleverywhere/" }
+                                title={!isExpanded ? 'SchoolEverywhere' : ''}
+                            >
+                                <span className="icon"><PublicIcon /></span>
+                                {showText && <span className="label">SchoolEverywhere</span>}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
                                 to={ `${ isDevelopment() ? `http://localhost:5173?lang=${i18n.language}` : `https://harvestschools.com?lang=${i18n.language}` }` }
                                 title={!isExpanded ? 'Return to Main Site' : ''}
                             >

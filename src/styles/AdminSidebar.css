@@ -16,10 +16,6 @@
     justify-content: center;
 }
 
-[dir="rtl"] .floating-mobile-menu {
-    left: auto;
-    right: 1rem;
-}
 
 .admin-sidebar {
     position: fixed;
@@ -39,12 +35,6 @@
     letter-spacing: 0.1rem;
 }
 
-[dir="rtl"] .admin-sidebar {
-    left: auto;
-    right: 0;
-    box-shadow: -0.1rem 0 0.2rem rgba(0,0,0,0.2);
-    font-family: var(--arabic-normal-font);
-}
 
 .admin-sidebar.expanded {
     width: 15rem;
@@ -87,10 +77,6 @@
     color: var(--harvest-white-color);
 }
 
-[dir="rtl"] .logo-text {
-    margin-left: 0;
-    margin-right: 1rem;
-}
 
 .sidebar-nav {
     flex-grow: 1;
@@ -170,13 +156,11 @@
         width: 16rem;
     }
 
-    [dir="rtl"] .admin-sidebar {
-        transform: translateX(100%);
-    }
-
     .admin-sidebar.mobile-open {
+        display: flex;
+        width: 100vw;
+        min-height: 100vh;
         transform: translateX(0);
-        width: 100%;
         color: var(--primary-color);
     }
 
@@ -202,11 +186,6 @@
 
     .floating-mobile-menu {
         box-shadow: 0 0 1rem rgba(255, 255, 255, 0.5);
-    }
-
-    [dir="rtl"] .admin-sidebar {
-        border-right: none;
-        border-left: 0.1rem solid rgba(255, 255, 255, 0.05);
     }
 
     .sidebar-links li:hover a,
