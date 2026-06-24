@@ -27,6 +27,9 @@ jobs:
             echo "assets_changed=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Sync assets to server home directory (conditional)
         if: steps.check_assets_changes.outputs.assets_changed == 'true'
         run: |
