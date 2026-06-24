@@ -22,6 +22,7 @@ export default function AppAdmin() {
     const location = useLocation();
     const navigate = useNavigate();
     const [adminLinks, setAdminLinks] = useState([]);
+    const [loggedInUsername, setLoggedInUsername] = useState('Admin');
     const [isAuthLoading, setIsAuthLoading] = useState(false);
 
     const excludePaths = ['/login'];
@@ -31,7 +32,7 @@ export default function AppAdmin() {
         if (shouldExclude) {
             setAdminLinks([]);
         } else if (adminLinks.length === 0) {
-            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading);
+            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInUsername);
         }
     }, [shouldExclude, navigate, adminLinks.length]);
 
@@ -39,13 +40,13 @@ export default function AppAdmin() {
         <div className="App admin-app">
             {shouldExclude && <NavigationBar compactOrAdmin={true}/>}
             <div className={`content ${!shouldExclude ?  'admin-content' : '' }`}>
-                {!shouldExclude && <AdminSidebar adminLinks={adminLinks} />}
+                {!shouldExclude && <AdminSidebar adminLinks={adminLinks} loggedInUsername={loggedInUsername}/>}
                 <ErrorBoundary ignoreLngUpdate={true}>
                     <Suspense fallback={<div style={{minHeight: '50vh'}}><Spinner /></div>}>
                         <Routes>
                             <Route path="/" element={<Navigate to="/login" replace />} />
                             <Route path="/login" element={<AdminLogin />} />
-                            <Route path="/dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading}/>} />
+                            <Route path="/dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInUsername={loggedInUsername}/>} />
                             <Route path="/job-applications" element={<JobApplications />} />
                             <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
                             <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />

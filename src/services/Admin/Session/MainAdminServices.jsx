@@ -65,7 +65,7 @@ const checkAdminSession = async (navigate, allowedPermission) => {
     }
 }
 
-const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions) => {
+const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions, setLoggedInUsername) => {
     const sessionId = validateAdminSessionLocally();
 
     if (!sessionId) {
@@ -88,6 +88,8 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
 
             navigate(adminLoginPageUrl);
         }
+
+        setLoggedInUsername(sessionResult.username)
 
         const permissionsResponse = await fetch(endpoints.getDashboardPermissions, {
             method: 'POST',

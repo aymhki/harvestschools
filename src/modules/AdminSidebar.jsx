@@ -18,7 +18,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import PropTypes from "prop-types";
 
-function AdminSidebar({ adminLinks}) {
+function AdminSidebar({ adminLinks, loggedInUsername}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const location = useLocation();
@@ -80,7 +80,9 @@ function AdminSidebar({ adminLinks}) {
                     <div className="menu-toggle mobile-only" onClick={() => setIsMobileOpen(false)}>
                         <MenuIcon />
                     </div>
-                    {showText && <span className="logo-text">Admin</span>}
+                    {showText && <span className="logo-text">
+                        {loggedInUsername}
+                    </span>}
                 </div>
 
                 <nav className="sidebar-nav">
@@ -160,6 +162,7 @@ AdminSidebar.propTypes = {
             title: PropTypes.string.isRequired,
         })
     ).isRequired,
+    loggedInUsername: PropTypes.string.isRequired,
 }
 
 export default AdminSidebar;
