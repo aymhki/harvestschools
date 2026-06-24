@@ -332,6 +332,7 @@
 
     .navbar {
         border-color: inherit;
+        box-shadow: 0 0.1rem 0.3rem 0 rgba(255,255,255,0.5);
     }
 
     .nav-links li, .dropdown-content li, .nav-links-mobile li {
@@ -373,9 +374,7 @@
         background-color: var(--light-dark-accent-color);
     }
 
-    .navbar {
-        box-shadow: 0 0.1rem 0.3rem 0 rgba(255,255,255,0.5);
-    }
+
 
     .translate-menu-icon-container {
         background-color: var(--light-dark-accent-color);
