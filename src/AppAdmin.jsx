@@ -34,8 +34,6 @@ export default function AppAdmin() {
                 i18n.changeLanguage(langParam);
             }
         }
-        document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = i18n.language;
     }, [location.search, i18n]);
 
     const excludePaths = ['/login'];

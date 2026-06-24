@@ -9,7 +9,7 @@ function AdminFooter() {
     return (
         <div className="admin-footer">
             <div className="admin-copy-right-text">
-                {t("footer.all-rights-reserved", { year: currentYear })}.
+                {t("footer.all-rights-reserved", { year: currentYear, lng: 'en' })}.
             </div>
         </div>
     );

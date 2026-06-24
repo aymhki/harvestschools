@@ -108,7 +108,7 @@ function AdminSidebar({ adminLinks}) {
 
                 <div className="sidebar-footer">
                     <ul className="sidebar-links">
-                        <li onClick={() => toggleLanguage()}>
+                        <li onClick={() => toggleLanguage({lng: undefined, ignoreDocUpdate: true})}>
                             <div className="nav-item-content" title={!isExpanded ? 'Change Language' : ''}>
                                 <span className="icon"><LanguageIcon /></span>
                                 {showText && <span className={`label admin-sidebar-language-switcher ${i18n.language === 'en' ? 'ar' : 'en'}`}>{i18n.language === 'en' ? 'العربية' : 'English'}</span>}

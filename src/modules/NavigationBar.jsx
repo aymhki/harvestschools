@@ -156,7 +156,7 @@ function NavigationBar({compactOrAdmin}){
 
                 {(isMobile && compactOrAdmin) && (
                     <button className={"translate-menu-icon-container"} onClick={() => {
-                       toggleLanguage();
+                       toggleLanguage({lng: undefined, ignoreDocUpdate: false});
                     }}>
                         <TranslateIcon />
                     </button>
