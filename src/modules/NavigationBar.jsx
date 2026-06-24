@@ -24,7 +24,7 @@ function NavigationBar({compactOrAdmin}){
     const [moreInfoOpen, setMoreInfoOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const { t, i18n } = useTranslation(['nav']);
-    const toggleLanguage = useToggleLanguage();
+    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: false});
 
     useEffect(() => {
         setIsClient(true);
@@ -156,7 +156,7 @@ function NavigationBar({compactOrAdmin}){
 
                 {(isMobile && compactOrAdmin) && (
                     <button className={"translate-menu-icon-container"} onClick={() => {
-                       toggleLanguage({lng: undefined, ignoreDocUpdate: false});
+                       toggleLanguage({lng: undefined});
                     }}>
                         <TranslateIcon />
                     </button>
