@@ -7,7 +7,7 @@
   RewriteRule ^assets/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1 [B,QSA,L]
 
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(images|videos|documents|fonts)/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1/$2 [B,QSA,L]
+  RewriteRule ^(images|videos|documents|fonts|locales)/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1/$2 [B,QSA,L]
 
   # Serve the directory's index.html file for directory requests
   DirectoryIndex index.html

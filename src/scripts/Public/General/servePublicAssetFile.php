@@ -22,7 +22,8 @@ $ALLOWED_MIME = [
     'woff2' => 'font/woff2',
     'woff'  => 'font/woff',
     'ttf'   => 'font/ttf',
-    'otf'   => 'font/otf'
+    'otf'   => 'font/otf',
+    'json'  => 'application/json'
 ];
 
 $PROCESSABLE = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
