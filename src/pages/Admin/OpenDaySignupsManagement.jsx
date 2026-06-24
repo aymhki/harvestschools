@@ -40,6 +40,7 @@ function OpenDaySignupsManagement() {
                        compact={true}
                        allowHideColumns={true}
                        allowSticky={true}
+                       forceEnglishTable={true}
                        defaultHiddenColumns={
                             [
                                 'Registration Created',

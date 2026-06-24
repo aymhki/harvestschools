@@ -66,6 +66,7 @@ function AdminLogin() {
                                   fullMarginField={true}
                                   hasSetSubmittingLocal={true}
                                   setSubmittingLocal={setSubmittingLocal}
+                                  forceEnglishForm={true}
                                   fields={
                                     [
                                         {

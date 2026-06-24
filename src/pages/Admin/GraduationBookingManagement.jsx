@@ -886,6 +886,7 @@ function GraduationBookingManagement() {
                        compact={true}
                        allowHideColumns={true}
                        allowSticky={true}
+                       forceEnglishTable={true}
                        defaultHiddenColumns={
                        [
                            'Booking Status',
