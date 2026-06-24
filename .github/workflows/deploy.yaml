@@ -29,7 +29,6 @@ jobs:
           fi
 
       - name: Install lftp
-        if: steps.check_assets_changes.outputs.changed == 'true'
         run: sudo apt-get update -qq && sudo apt-get install -y lftp
 
       - name: Sync assets
@@ -46,6 +45,20 @@ jobs:
           set net:reconnect-interval-base 5
           open -u "$FTP_USER","$FTP_PASS" "$FTP_HOST"
           mirror -R --verbose --only-newer --parallel=5 assets/ assets/
+          bye
+          LFTP
+
+      - name: Sync locales
+        env:
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+        run: |
+          lftp << LFTP
+          set ssl:verify-certificate yes
+          set ftp:passive-mode yes
+          open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST'
+          mirror -R --verbose --only-newer --parallel=5 assets/locales/ assets/locales/;
           bye
           LFTP
 
