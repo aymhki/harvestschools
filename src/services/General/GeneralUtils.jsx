@@ -1,6 +1,7 @@
 import {v6 as uuidv6} from "uuid";
 import i18n from '../../i18n/i18n-client.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
+import {useEffect} from "react";
 
 const isDevelopment = () => {
     return !import.meta.env.PROD;
@@ -145,6 +146,12 @@ const endpoints = generateEndpoints();
 const useToggleLanguage = () => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        document.documentElement.lang = i18n.language;
+        document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+
+    }, [i18n.language]);
 
     return ({lng, ignoreDocUpdate}) => {
         if (lng === undefined) {
