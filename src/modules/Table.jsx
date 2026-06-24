@@ -1427,60 +1427,6 @@ function Table({
         };
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
 
-    useEffect(() => {
-        if (isMobile) return;
-        const container = scrollContainerRef.current;
-        const module    = tableModuleRef.current;
-        if (!container) return;
-
-        const absorb = (el, prop, sizeKey, clientKey, delta) => {
-            const max = el[sizeKey] - el[clientKey];
-            if (max <= 0) return delta;
-            const prev = el[prop];
-            el[prop] = Math.max(0, Math.min(prev + delta, max));
-            return delta - (el[prop] - prev);
-        };
-
-        const handleWheel = (e) => {
-            if (e.ctrlKey) return;
-
-            const isHorizontalScroll = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-            const scrollableWidth = Math.round(Math.max(0, container.scrollWidth - container.clientWidth));
-            const currentScrollLeft = Math.round(container.scrollLeft);
-            const atLeftEdge = scrollableWidth <= 0 || currentScrollLeft <= 0;
-            const atRightEdge = scrollableWidth <= 0 || currentScrollLeft >= scrollableWidth - 1;
-            const maxWindowScrollX = Math.round(Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth));
-            const currentWindowScrollX = Math.round(window.scrollX || window.pageXOffset);
-            const isWindowAtLeftEdge = currentWindowScrollX <= 0;
-            const isWindowAtRightEdge = currentWindowScrollX >= maxWindowScrollX - 1;
-
-            if (isHorizontalScroll) {
-                if (
-                    (atLeftEdge && isWindowAtLeftEdge && e.deltaX < 0) ||
-                    (atRightEdge && isWindowAtRightEdge && e.deltaX > 0)
-                ) {
-                    return;
-                }
-            }
-
-
-            e.preventDefault();
-
-            let remX = absorb(container, 'scrollLeft', 'scrollWidth', 'clientWidth',  e.deltaX);
-            let remY = absorb(container, 'scrollTop',  'scrollHeight', 'clientHeight', e.deltaY);
-
-            if (module) {
-                remX = absorb(module, 'scrollLeft', 'scrollWidth',  'clientWidth',  remX);
-                remY = absorb(module, 'scrollTop',  'scrollHeight', 'clientHeight', remY);
-            }
-
-            if (remX !== 0 || remY !== 0) window.scrollBy(remX, remY);
-        };
-
-        container.addEventListener('wheel', handleWheel, { passive: false });
-        return () => container.removeEventListener('wheel', handleWheel);
-    }, []);
-
     return (
         <div className="table-module" ref={tableModuleRef} >
 
