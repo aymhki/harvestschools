@@ -1,24 +1,24 @@
 import {Suspense, lazy, useEffect, useState} from 'react'
 import {Routes, Route, Navigate, useLocation, useNavigate} from 'react-router-dom'
-import Spinner from './modules/Spinner'
-import ErrorBoundary from "./modules/ErrorBoundary.jsx";
-import AdminSidebar from "./modules/AdminSidebar.jsx";
-import AdminFooter from "./modules/AdminFooter.jsx";
-import NavigationBar from "./modules/NavigationBar.jsx";
-import './styles/App.css';
-import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from "./services/Admin/Session/AdminNavigationServices.jsx";
+import Spinner from '../modules/Spinner.jsx'
+import ErrorBoundary from "../modules/ErrorBoundary.jsx";
+import AdminSidebar from "../modules/AdminSidebar.jsx";
+import AdminFooter from "../modules/AdminFooter.jsx";
+import NavigationBar from "../modules/NavigationBar.jsx";
+import '../styles/App.css';
+import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from "../services/Admin/Session/AdminNavigationServices.jsx";
 
-const NotFound = lazy(() => import('./pages/NotFound'))
-const AdminLogin = lazy(() => import('./pages/Admin/AdminLogin'))
-const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'))
-const BorrowingSystemManagement = lazy(() => import('./pages/Admin/BorrowingSystemManagement'))
-const GraduationBookingManagement = lazy(() => import('./pages/Admin/GraduationBookingManagement'))
-const InfoSystemManagement = lazy(() => import('./pages/Admin/InfoSystemManagement'))
-const JobApplications = lazy(() => import('./pages/Admin/JobApplications'))
-const OpenDaySignupsManagement = lazy(() => import('./pages/Admin/OpenDaySignupsManagement'))
-const FileViewer = lazy(() => import('./pages/Admin/FileViewer'))
-const AdminUsersManagement = lazy(() => import('./pages/Admin/AdminUsersManagement'))
-const AlumniStudentsManagement = lazy(() => import('./pages/Admin/AlumniStudentsManagement'))
+const NotFound = lazy(() => import('../pages/NotFound.jsx'))
+const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin.jsx'))
+const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard.jsx'))
+const BorrowingSystemManagement = lazy(() => import('../pages/Admin/BorrowingSystemManagement.jsx'))
+const GraduationBookingManagement = lazy(() => import('../pages/Admin/GraduationBookingManagement.jsx'))
+const InfoSystemManagement = lazy(() => import('../pages/Admin/InfoSystemManagement.jsx'))
+const JobApplications = lazy(() => import('../pages/Admin/JobApplications.jsx'))
+const OpenDaySignupsManagement = lazy(() => import('../pages/Admin/OpenDaySignupsManagement.jsx'))
+const FileViewer = lazy(() => import('../pages/Admin/FileViewer.jsx'))
+const AdminUsersManagement = lazy(() => import('../pages/Admin/AdminUsersManagement.jsx'))
+const AlumniStudentsManagement = lazy(() => import('../pages/Admin/AlumniStudentsManagement.jsx'))
 
 export default function AppAdmin() {
     const location = useLocation();
@@ -44,7 +44,7 @@ export default function AppAdmin() {
             <div className={`content ${!shouldExclude ?  'admin-content' : '' }`}>
                 {!shouldExclude && <AdminSidebar adminLinks={adminLinks} loggedInUsername={loggedInUsername}/>}
                 <ErrorBoundary ignoreLngUpdate={true}>
-                    <Suspense fallback={<div style={{minHeight: '50vh'}}><Spinner /></div>}>
+                    <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
                         <Routes>
                             <Route path="/" element={<Navigate to="/login" replace />} />
                             <Route path="/login" element={<AdminLogin />} />

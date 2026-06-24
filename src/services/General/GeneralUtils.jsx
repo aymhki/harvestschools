@@ -1,5 +1,5 @@
 import {v6 as uuidv6} from "uuid";
-import i18n from '../../i18n.jsx';
+import i18n from '../../i18n/i18n-client.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
 
 const isDevelopment = () => {

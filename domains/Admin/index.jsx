@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import AppAdmin from '../../src/AppAdmin.jsx'
+import AppAdmin from '../../src/app/AppAdmin.jsx'
 import '../../src/styles/index.css'
 import { BrowserRouter } from 'react-router-dom'
-import '../../src/i18n.jsx'
+import '../../src/i18n/i18n-client.jsx'
 
 window.addEventListener('error', (event) => {
     const error = event.error;

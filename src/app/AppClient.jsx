@@ -1,72 +1,72 @@
-import './styles/App.css';
+import '../styles/App.css';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import {lazy, Suspense, useEffect} from 'react';
 
-import NavigationBar from "./modules/NavigationBar.jsx";
-import Footer from "./modules/Footer.jsx";
-import ErrorBoundary from "./modules/ErrorBoundary.jsx";
+import NavigationBar from "../modules/NavigationBar.jsx";
+import Footer from "../modules/Footer.jsx";
+import ErrorBoundary from "../modules/ErrorBoundary.jsx";
 import {useTranslation} from "react-i18next";
 
-const Home = lazy(() => import('./pages/Home'));
-const Faqs = lazy(() => import('./pages/FAQs/FAQs.jsx'));
-const MinimumStageAge = lazy(() => import('./pages/FAQs/MinimumStageAge.jsx'));
-const Vacancies = lazy(() => import('./pages/Vacancies'));
-const MoreInfo = lazy(() => import("./pages/FAQs/MoreInfo.jsx"));
-const Admission = lazy(() => import("./pages/Admission/Admission.jsx"));
-const AdmissionProcess = lazy(() => import('./pages/Admission/AdmissionProcess'));
-const AdmissionRequirements = lazy(() => import('./pages/Admission/AdmissionRequirements'));
-const InsideEgyptRequirements = lazy(() => import('./pages/Admission/InsideEgyptRequirements'));
-const OutsideEgyptRequirements = lazy(() => import('./pages/Admission/OutsideEgyptRequirements'));
-const OutsideEgyptRequirementsForeigners = lazy(() => import('./pages/Admission/OutsideEgyptRequirementsForeigners'));
-const AdmissionFees = lazy(() => import("./pages/Admission/AdmissionFees.jsx"));
-const Academics = lazy(() => import('./pages/Academics/Academics.jsx'));
-const British = lazy(() => import("./pages/Academics/British.jsx"));
-const NationalAcademics = lazy(() => import('./pages/Academics/National'));
-const AmericanAcademics = lazy(() => import('./pages/Academics/American'));
-const KindergartenAcademics = lazy(() => import('./pages/Academics/KindergartenAcademics'));
-const KindergartenInternationalAcademics = lazy(() => import('./pages/Academics/KindergartenInternationalAcademics'));
-const KindergartenNationalAcademics = lazy(() => import('./pages/Academics/KindergartenNationalAcademics'));
-const PreKindergartenAcademics = lazy(() => import('./pages/Academics/PreKindergartenAcademics'));
-const PartnersAcademics = lazy(() => import('./pages/Academics/Partners'));
-const Facilities = lazy(() => import("./pages/Academics/Facilities.jsx"));
-const StaffAcademics = lazy(() => import('./pages/Academics/Staff'));
-const NationalStaff = lazy(() => import('./pages/Academics/Staff/NationalStaff'));
-const BritishStaff = lazy(() => import('./pages/Academics/Staff/BritishStaff'));
-const AmericanStaff = lazy(() => import('./pages/Academics/Staff/AmericanStaff'));
-const KindergartenStaff = lazy(() => import('./pages/Academics/Staff/KindergartenStaff'));
-const StudentLife = lazy(() => import("./pages/StudentsLife/StudentsLife.jsx"));
-const StudentsUnion = lazy(() => import('./pages/StudentsLife/StudentsUnion'));
-const Activities = lazy(() => import('./pages/StudentsLife/Activities'));
-const Library = lazy(() => import('./pages/StudentsLife/Library/Library.jsx'));
-const EnglishFairyTales = lazy(() => import('./pages/StudentsLife/Library/EnglishFairyTales'));
-const EnglishDrama = lazy(() => import('./pages/StudentsLife/Library/EnglishDrama'));
-const EnglishLevels = lazy(() => import('./pages/StudentsLife/Library/EnglishLevels'));
-const EnglishGeneral = lazy(() => import('./pages/StudentsLife/Library/EnglishGeneral'));
-const ArabicInformation = lazy(() => import('./pages/StudentsLife/Library/ArabicInformation'));
-const ArabicGeneral = lazy(() => import('./pages/StudentsLife/Library/ArabicGeneral'));
-const ArabicReligion = lazy(() => import('./pages/StudentsLife/Library/ArabicReligion'));
-const ArabicStories = lazy(() => import('./pages/StudentsLife/Library/ArabicStories'));
-const Events = lazy(() => import("./pages/Events/Events.jsx"));
-const NationalCalendar = lazy(() => import("./pages/Events/NationalCalendar.jsx"));
-const BritishCalendar = lazy(() => import('./pages/Events/BritishCalendar'));
-const AmericanCalendar = lazy(() => import('./pages/Events/AmericanCalendar'));
-const KgCalendarEvents = lazy(() => import('./pages/Events/KGCalendars.jsx'));
-const AmericanKGCalendar = lazy(() => import('./pages/Events/AmericanKGCalendar.jsx'));
-const BritishKGCalendar = lazy(() => import('./pages/Events/BritishKGCalendar.jsx'));
-const NationalKGCalendar = lazy(() => import('./pages/Events/NationalKGCalendar.jsx'));
-const GraduationBookingLogin = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingLogin"));
-const GraduationBookingDashboard = lazy(() => import('./pages/Events/GraduationBooking/GraduationBookingDashboard'));
-const GraduationBookingMedia = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingMedia"));
-const GraduationBookingExtras = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingExtras"));
-const GraduationBookingStatusInfo = lazy(() => import("./pages/Events/GraduationBooking/GraduationBookingStatusInfo"));
-const GraduationBookingConfirmation = lazy(() => import('./pages/Events/GraduationBooking/GraduationBookingConfirmation.jsx'));
-const OpenDaySignup = lazy(() => import('./pages/Events/OpenDaySignup.jsx'))
-const Gallery = lazy(() => import("./pages/Gallery/Gallery.jsx"));
-const PhotosGallery = lazy(() => import('./pages/Gallery/Photos'));
-const VideosGallery = lazy(() => import('./pages/Gallery/Videos'));
-const Tour360Gallery = lazy(() => import('./pages/Gallery/360Tour'));
-const Covid19 = lazy(() => import('./pages/FAQs/Covid19.jsx'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+const Home = lazy(() => import('../pages/Home.jsx'));
+const Faqs = lazy(() => import('../pages/FAQs/FAQs.jsx'));
+const MinimumStageAge = lazy(() => import('../pages/FAQs/MinimumStageAge.jsx'));
+const Vacancies = lazy(() => import('../pages/Vacancies.jsx'));
+const MoreInfo = lazy(() => import("../pages/FAQs/MoreInfo.jsx"));
+const Admission = lazy(() => import("../pages/Admission/Admission.jsx"));
+const AdmissionProcess = lazy(() => import('../pages/Admission/AdmissionProcess.jsx'));
+const AdmissionRequirements = lazy(() => import('../pages/Admission/AdmissionRequirements.jsx'));
+const InsideEgyptRequirements = lazy(() => import('../pages/Admission/InsideEgyptRequirements.jsx'));
+const OutsideEgyptRequirements = lazy(() => import('../pages/Admission/OutsideEgyptRequirements.jsx'));
+const OutsideEgyptRequirementsForeigners = lazy(() => import('../pages/Admission/OutsideEgyptRequirementsForeigners.jsx'));
+const AdmissionFees = lazy(() => import("../pages/Admission/AdmissionFees.jsx"));
+const Academics = lazy(() => import('../pages/Academics/Academics.jsx'));
+const British = lazy(() => import("../pages/Academics/British.jsx"));
+const NationalAcademics = lazy(() => import('../pages/Academics/National.jsx'));
+const AmericanAcademics = lazy(() => import('../pages/Academics/American.jsx'));
+const KindergartenAcademics = lazy(() => import('../pages/Academics/KindergartenAcademics.jsx'));
+const KindergartenInternationalAcademics = lazy(() => import('../pages/Academics/KindergartenInternationalAcademics.jsx'));
+const KindergartenNationalAcademics = lazy(() => import('../pages/Academics/KindergartenNationalAcademics.jsx'));
+const PreKindergartenAcademics = lazy(() => import('../pages/Academics/PreKindergartenAcademics.jsx'));
+const PartnersAcademics = lazy(() => import('../pages/Academics/Partners.jsx'));
+const Facilities = lazy(() => import("../pages/Academics/Facilities.jsx"));
+const StaffAcademics = lazy(() => import('../pages/Academics/Staff.jsx'));
+const NationalStaff = lazy(() => import('../pages/Academics/Staff/NationalStaff.jsx'));
+const BritishStaff = lazy(() => import('../pages/Academics/Staff/BritishStaff.jsx'));
+const AmericanStaff = lazy(() => import('../pages/Academics/Staff/AmericanStaff.jsx'));
+const KindergartenStaff = lazy(() => import('../pages/Academics/Staff/KindergartenStaff.jsx'));
+const StudentLife = lazy(() => import("../pages/StudentsLife/StudentsLife.jsx"));
+const StudentsUnion = lazy(() => import('../pages/StudentsLife/StudentsUnion.jsx'));
+const Activities = lazy(() => import('../pages/StudentsLife/Activities.jsx'));
+const Library = lazy(() => import('../pages/StudentsLife/Library/Library.jsx'));
+const EnglishFairyTales = lazy(() => import('../pages/StudentsLife/Library/EnglishFairyTales.jsx'));
+const EnglishDrama = lazy(() => import('../pages/StudentsLife/Library/EnglishDrama.jsx'));
+const EnglishLevels = lazy(() => import('../pages/StudentsLife/Library/EnglishLevels.jsx'));
+const EnglishGeneral = lazy(() => import('../pages/StudentsLife/Library/EnglishGeneral.jsx'));
+const ArabicInformation = lazy(() => import('../pages/StudentsLife/Library/ArabicInformation.jsx'));
+const ArabicGeneral = lazy(() => import('../pages/StudentsLife/Library/ArabicGeneral.jsx'));
+const ArabicReligion = lazy(() => import('../pages/StudentsLife/Library/ArabicReligion.jsx'));
+const ArabicStories = lazy(() => import('../pages/StudentsLife/Library/ArabicStories.jsx'));
+const Events = lazy(() => import("../pages/Events/Events.jsx"));
+const NationalCalendar = lazy(() => import("../pages/Events/NationalCalendar.jsx"));
+const BritishCalendar = lazy(() => import('../pages/Events/BritishCalendar.jsx'));
+const AmericanCalendar = lazy(() => import('../pages/Events/AmericanCalendar.jsx'));
+const KgCalendarEvents = lazy(() => import('../pages/Events/KGCalendars.jsx'));
+const AmericanKGCalendar = lazy(() => import('../pages/Events/AmericanKGCalendar.jsx'));
+const BritishKGCalendar = lazy(() => import('../pages/Events/BritishKGCalendar.jsx'));
+const NationalKGCalendar = lazy(() => import('../pages/Events/NationalKGCalendar.jsx'));
+const GraduationBookingLogin = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingLogin.jsx"));
+const GraduationBookingDashboard = lazy(() => import('../pages/Events/GraduationBooking/GraduationBookingDashboard.jsx'));
+const GraduationBookingMedia = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingMedia.jsx"));
+const GraduationBookingExtras = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingExtras.jsx"));
+const GraduationBookingStatusInfo = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingStatusInfo.jsx"));
+const GraduationBookingConfirmation = lazy(() => import('../pages/Events/GraduationBooking/GraduationBookingConfirmation.jsx'));
+const OpenDaySignup = lazy(() => import('../pages/Events/OpenDaySignup.jsx'))
+const Gallery = lazy(() => import("../pages/Gallery/Gallery.jsx"));
+const PhotosGallery = lazy(() => import('../pages/Gallery/Photos.jsx'));
+const VideosGallery = lazy(() => import('../pages/Gallery/Videos.jsx'));
+const Tour360Gallery = lazy(() => import('../pages/Gallery/360Tour.jsx'));
+const Covid19 = lazy(() => import('../pages/FAQs/Covid19.jsx'));
+const NotFound = lazy(() => import('../pages/NotFound.jsx'));
 
 function AppClient() {
     const location = useLocation();
@@ -92,7 +92,7 @@ function AppClient() {
             {!shouldExclude && <NavigationBar compactOrAdmin={false}/>}
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
-                    <Suspense fallback={<div style={{minHeight: '50vh'}}></div>}>
+                    <Suspense fallback={<div style={{minHeight: '100vh'}}></div>}>
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/home" element={<Home />} />
