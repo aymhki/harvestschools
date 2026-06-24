@@ -55,7 +55,8 @@ try {
         echo json_encode([
             "success" => true,
             "message" => "Login successful",
-            "code" => 200
+            "code" => 200,
+            "id" => $result->fetch_assoc()['id'],
         ]);
     } else {
         $stmt = $conn->prepare("SELECT * FROM graduation_booking_auth_credentials WHERE username = ?");

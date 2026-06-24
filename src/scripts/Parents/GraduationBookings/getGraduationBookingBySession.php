@@ -29,7 +29,7 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionSql = "SELECT username FROM graduation_booking_sessions WHERE id = ?";
+    $sessionSql = "SELECT auth_id, username FROM graduation_booking_sessions WHERE id = ?";
     $stmt = $conn->prepare($sessionSql);
     if (!$stmt) {
         echo json_encode([
@@ -52,11 +52,12 @@ try {
         exit;
     }
     $sessionRow = $sessionResult->fetch_assoc();
+    $bookingAuthId = $sessionRow['auth_id'];
     $bookingUsername = $sessionRow['username'];
     $bookingSql = "SELECT b.booking_id 
                    FROM graduation_bookings b
                    JOIN graduation_booking_auth_credentials ac ON b.auth_id = ac.auth_id
-                   WHERE ac.username = ?";
+                   WHERE ac.auth_id = ?";
     $stmt = $conn->prepare($bookingSql);
     if (!$stmt) {
         echo json_encode([
@@ -66,7 +67,7 @@ try {
         ]);
         exit;
     }
-    $stmt->bind_param("s", $bookingUsername);
+    $stmt->bind_param("i", $bookingAuthId);
     $stmt->execute();
     $bookingResult = $stmt->get_result();
     $stmt->close();

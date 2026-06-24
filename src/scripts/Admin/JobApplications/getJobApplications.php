@@ -32,7 +32,7 @@ try {
     $conn->set_charset("utf8mb4");
 
 
-    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON LOWER(s.username) = LOWER(u.username) WHERE s.id = ?");
+    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
     if (!$stmt) {
         echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error, "code" => 500]);
         exit;

@@ -157,7 +157,7 @@ const validateGraduationBookingLogin = async (formData, usernameFieldId, passwor
         if (result.success) {
             const sessionResponse = await fetch(endpoints.createGraduationBookingSession, {
                 method: 'POST',
-                body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_graduation_booking')})
+                body: JSON.stringify({username: username, session_id: createSessions('harvest_schools_graduation_booking'), user_id: result.id})
             });
 
             const sessionResult = await sessionResponse.json();

@@ -1039,7 +1039,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($usernameHasChanged  || $newPassword !== '') {
 
-                        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE username = ?");
+                        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE auth_id = ?");
 
                         if (!$stmt) {
                             $errorInfo['success'] = false;
@@ -1050,7 +1050,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             return;
                         }
 
-                        $stmt->bind_param("s", $data['oldUsername']);
+                        $stmt->bind_param("i", $data['authId']);
 
                         if (!$stmt->execute()) {
                             $errorInfo['success'] = false;

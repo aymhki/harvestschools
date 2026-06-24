@@ -43,7 +43,7 @@ try {
     $conn->set_charset("utf8mb4");
     $permissionSql = "SELECT u.permission_level
                       FROM admin_sessions s
-                      JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
+                      JOIN admin_users u ON s.user_id = u.id
                       WHERE s.id = ?";
 
     $stmt = $conn->prepare($permissionSql);
@@ -104,14 +104,7 @@ try {
     $bookingData = $result->fetch_assoc();
     $authId = $bookingData['auth_id'];
     $stmt->close();
-    $bookingAuthSql = "SELECT username FROM graduation_booking_auth_credentials WHERE auth_id = ?";
-    $stmt = $conn->prepare($bookingAuthSql);
-    $stmt->bind_param("i", $authId);
-    $stmt->execute();
-    $authResult = $stmt->get_result();
-    $authRow = $authResult->fetch_assoc();
-    $bookingAuthUsername = $authRow['username'];
-    $stmt->close();
+
     $parentSql = "SELECT parent_id FROM graduation_booking_parents_linker WHERE booking_id = ?";
     $stmt = $conn->prepare($parentSql);
     $stmt->bind_param("i", $bookingId);
@@ -140,8 +133,8 @@ try {
     $conn->begin_transaction();
 
     try {
-        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE username = ?");
-        $stmt->bind_param("s", $bookingAuthUsername);
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE auth_id = ?");
+        $stmt->bind_param("i", $authId);
 
         if (!$stmt->execute()) {
             echo json_encode([

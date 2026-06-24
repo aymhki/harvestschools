@@ -22,24 +22,31 @@ try {
     $conn->set_charset("utf8mb4");
     $input = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($input['username']) || !isset($input['session_id'])) {
+    if (!isset($input['username']) || !isset($input['session_id']) || !isset($input['user_id'])) {
         echo json_encode([
             "success" => false,
-            "message" => "Bad Request: Missing username or session_id",
+            "message" => "Bad Request: Missing username or session_id or user_id",
             "code" => 405
         ]);
         exit;
     }
 
-    $user = $conn->real_escape_string($input['username']);
-    $sessionId = $conn->real_escape_string($input['session_id']);
-    $checkSql = "SELECT id FROM admin_sessions WHERE username = '$user'";
-    $checkResult = $conn->query($checkSql);
+    $user = $input['username'];
+    $sessionId = $input['session_id'];
+    $userId = $input['user_id'];
+
+    $stmt = $conn->prepare("SELECT id FROM admin_sessions WHERE user_id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $checkResult = $stmt->get_result();
+    $stmt->close();
+
 
     if ($checkResult->num_rows > 0) {
-        $deleteSql = "DELETE FROM admin_sessions WHERE username = '$user'";
+        $stmt = $conn->prepare("DELETE FROM admin_sessions WHERE user_id = ?");
+        $stmt->bind_param("i", $userId);
 
-        if (!$conn->query($deleteSql)) {
+        if (!$stmt->execute()) {
             echo json_encode([
                 "success" => false,
                 "message" => "Internal Server Error: " . $conn->error,
@@ -47,11 +54,14 @@ try {
             ]);
             exit;
         }
+
+        $stmt->close();
     }
 
-    $insertSql = "INSERT INTO admin_sessions (username, id) VALUES ('$user', '$sessionId')";
+    $stmt = $conn->prepare("INSERT INTO admin_sessions (username, id, user_id) VALUES (?, ?, ?)");
+    $stmt->bind_param("ssi", $user, $sessionId, $userId);
 
-    if (!$conn->query($insertSql)) {
+    if (!$stmt->execute()) {
         echo json_encode([
             "success" => false,
             "message" => "Internal Server Error: " . $conn->error,
@@ -59,6 +69,8 @@ try {
         ]);
         exit;
     }
+
+    $stmt->close();
 
     echo json_encode([
         "success" => true,
