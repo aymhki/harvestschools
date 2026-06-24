@@ -42,7 +42,7 @@ try {
 
     $conn->set_charset("utf8mb4");
     $sessionId = $data['session_id'];
-    $stmt = $conn->prepare("SELECT username FROM graduation_booking_sessions WHERE id = ?");
+    $stmt = $conn->prepare("SELECT auth_id FROM graduation_booking_sessions WHERE id = ?");
 
     if (!$stmt) {
         echo json_encode([

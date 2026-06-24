@@ -128,10 +128,10 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
 
         const result = await response.json();
 
-        if (result.success) {
+        if (result && result.success) {
             const sessionResponse = await fetch(endpoints.createAdminSession, {
                 method: 'POST',
-                body: JSON.stringify({ username: username, session_id: createSessions('harvest_schools_admin') })
+                body: JSON.stringify({ username: username, session_id: createSessions('harvest_schools_admin'), user_id: result.id })
             });
 
             const sessionResult = await sessionResponse.json();

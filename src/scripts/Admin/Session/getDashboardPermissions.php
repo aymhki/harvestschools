@@ -44,7 +44,7 @@ try {
     $sessionId = $data['session_id'];
     $stmt = $conn->prepare("SELECT u.permission_level 
                           FROM admin_sessions s
-                          JOIN admin_users u ON LOWER(s.username) = LOWER(u.username)
+                          JOIN admin_users u ON s.user_id = u.id
                           WHERE s.id = ?");
 
     if (!$stmt) {

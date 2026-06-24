@@ -24,7 +24,7 @@ try {
     $conn->set_charset("utf8mb4");
     $input = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($input['username']) || !isset($input['session_id'])) {
+    if (!isset($input['username']) || !isset($input['session_id']) || !isset($input['user_id'])) {
         echo json_encode([
             "success" => false,
             "message" => "Bad Request: Missing username or session_id",
@@ -35,16 +35,17 @@ try {
 
     $user      = $input['username'];
     $sessionId = $input['session_id'];
+    $userId    = $input['user_id'];
 
-    $stmt = $conn->prepare("SELECT id FROM graduation_booking_sessions WHERE username = ?");
-    $stmt->bind_param("s", $user);
+    $stmt = $conn->prepare("SELECT id FROM graduation_booking_sessions WHERE auth_id = ?");
+    $stmt->bind_param("i", $userId);
     $stmt->execute();
     $checkResult = $stmt->get_result();
     $stmt->close();
 
     if ($checkResult->num_rows > 0) {
-        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE username = ?");
-        $stmt->bind_param("s", $user);
+        $stmt = $conn->prepare("DELETE FROM graduation_booking_sessions WHERE auth_id = ?");
+        $stmt->bind_param("i", $userId);
         if (!$stmt->execute()) {
             echo json_encode([
                 "success" => false,
@@ -56,8 +57,8 @@ try {
         $stmt->close();
     }
 
-    $stmt = $conn->prepare("INSERT INTO graduation_booking_sessions (username, id) VALUES (?, ?)");
-    $stmt->bind_param("ss", $user, $sessionId);
+    $stmt = $conn->prepare("INSERT INTO graduation_booking_sessions (username, id, auth_id) VALUES (?, ?, ?)");
+    $stmt->bind_param("ssi", $user, $sessionId, $userId);
     if (!$stmt->execute()) {
         echo json_encode([
             "success" => false,

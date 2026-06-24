@@ -66,7 +66,7 @@ try {
         throw new Exception("Database connection failed: " . $conn->connect_error, 500);
     }
 
-    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON LOWER(s.username) = LOWER(u.username) WHERE s.id = ?");
+    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
     if (!$stmt) {
         throw new Exception("Database statement preparation failed.", 500);
     }
