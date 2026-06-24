@@ -18,6 +18,8 @@ jobs:
 
       - name: Check for changes in asset subfolders
         id: check_assets_changes
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           if git diff --name-only HEAD^ HEAD | grep -q -E "(^|/)assets/(fonts|images|videos|documents|raw)/" || [[ "$COMMIT_MSG" == *"[force-assets-sync]"* ]]; then
             echo "assets_changed=true" >> $GITHUB_OUTPUT
