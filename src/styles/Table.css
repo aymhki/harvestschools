@@ -74,6 +74,7 @@
     width: 100%;
     flex: 1;
     min-width: 0;
+    box-shadow: 0 0 0.5rem 0 var(--primary-color);
 }
 
 .table-scroll-container.scrollable {
@@ -1002,5 +1003,9 @@ td button {
 
     .table-pagination-controls .pagination-ellipsis {
         color: var(--harvest-white-color);
+    }
+
+    .table-scroll-container {
+        box-shadow: 0 0 0.5rem 0 var(--harvest-white-color);
     }
 }
