@@ -17,6 +17,8 @@ const InfoSystemManagement = lazy(() => import('./pages/Admin/InfoSystemManageme
 const JobApplications = lazy(() => import('./pages/Admin/JobApplications'))
 const OpenDaySignupsManagement = lazy(() => import('./pages/Admin/OpenDaySignupsManagement'))
 const FileViewer = lazy(() => import('./pages/Admin/FileViewer'))
+const AdminUsersManagement = lazy(() => import('./pages/Admin/AdminUsersManagement'))
+const AlumniStudentsManagement = lazy(() => import('./pages/Admin/AlumniStudentsManagement'))
 
 export default function AppAdmin() {
     const location = useLocation();
@@ -53,6 +55,8 @@ export default function AppAdmin() {
                             <Route path="/borrowing-system-management" element={<BorrowingSystemManagement />} />
                             <Route path="/info-system-management" element={<InfoSystemManagement />} />
                             <Route path="/view-job-application-file" element={<FileViewer />} />
+                            <Route path="/admin-users-management" element={<AdminUsersManagement />} />
+                            <Route path="/alumni-students-management" element={<AlumniStudentsManagement />} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
                     </Suspense>

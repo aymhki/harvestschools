@@ -30,8 +30,9 @@ function Table({
                    hideHorizontalScrollBar,
                    hideVerticalScrollBar,
                    tablePages,
-                    isLoading
-               }) {
+                   isLoading
+    }) {
+
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : {
         column: null,
         direction: 'neutral'

@@ -7,7 +7,7 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     overflow-y: visible;
-    max-width: 96vw;
+    max-width: 95vw;
 }
 
 .table-module::-webkit-scrollbar {
@@ -19,7 +19,6 @@
     border-collapse: separate;
     border-spacing: 0;
     border: none;
-
 }
 
 .table-module-table tr,

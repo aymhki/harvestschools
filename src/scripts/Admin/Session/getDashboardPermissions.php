@@ -90,6 +90,16 @@ try {
 
     $dashboardOptions = [];
     $allDashboardOptions = [
+        1000 => [
+            [
+                "title" => "Admin Users",
+                "image" => "/images/Dashboard/AdminUsers.png",
+                "description" => "View & manage admin users",
+                "link" => "/admin-users-management",
+                "buttonText" => "View Users",
+                "titleInArabic" => false
+            ]
+        ],
         0 => [
             [
                 "title" => "Job Applications",
@@ -144,6 +154,16 @@ try {
                 "buttonText" => "View System",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
+            ]
+        ],
+        13 => [
+            [
+                "title" => "Alumni Students",
+                "image" => "/images/Dashboard/AlumniStudents.png",
+                "description" => "View & manage alumni students' accounts",
+                "link" => "/alumni-students-management",
+                "buttonText" => "View Students",
+                "titleInArabic" => false
             ]
         ]
     ];
