@@ -162,7 +162,6 @@
         width: 100vw;
         transform: translateX(0);
         color: var(--primary-color);
-        overscroll-behavior: none;
     }
 
     .sidebar-overlay {
