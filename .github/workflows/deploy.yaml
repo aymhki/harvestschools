@@ -1,4 +1,5 @@
 name: Deploy Vite React App to cPanel via FTP
+
 concurrency:
   group: production-deployment
   cancel-in-progress: false
@@ -16,30 +17,39 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Check for changes in asset subfolders
+      - name: Detect asset changes
         id: check_assets_changes
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q -E "(^|/)assets/(fonts|images|videos|documents|raw)/" || [[ "$COMMIT_MSG" == *"[force-assets-sync]"* ]]; then
-            echo "assets_changed=true" >> $GITHUB_OUTPUT
+          if git diff --name-only HEAD^ HEAD | grep -qE "(^|/)assets/(fonts|images|videos|documents|raw)/" || [[ "$COMMIT_MSG" == *"[force-assets-sync]"* ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
           else
-            echo "assets_changed=false" >> $GITHUB_OUTPUT
+            echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
+        if: steps.check_assets_changes.outputs.changed == 'true'
+        run: sudo apt-get update -qq && sudo apt-get install -y lftp
 
-      - name: Sync assets to server home directory (conditional)
-        if: steps.check_assets_changes.outputs.assets_changed == 'true'
+      - name: Sync assets
+        if: steps.check_assets_changes.outputs.changed == 'true'
+        env:
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.FTP_HOST }}
         run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose --only-newer assets/ assets/
-          "
+          lftp << LFTP
+          set ssl:verify-certificate yes
+          set ftp:passive-mode yes
+          set net:max-retries 3
+          set net:reconnect-interval-base 5
+          open -u "$FTP_USER","$FTP_PASS" "$FTP_HOST"
+          mirror -R --verbose --only-newer --parallel=5 assets/ assets/
+          bye
+          LFTP
 
-  build-and-deploy-main:
+  build-and-deploy:
     needs: sync-global-assets
     runs-on: ubuntu-latest
     steps:
@@ -51,102 +61,49 @@ jobs:
         with:
           node-version: 'latest'
 
+      - name: Install dependencies
+        run: npm ci
 
-      - run: npm install
-      - run: npm run build:main
-      - run: sudo apt-get update && sudo apt-get install -y lftp
-
-
-      - name: Deploy main static files
+      - name: Build main + admin
         run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose \
-            --exclude-glob '.git*' \
-            --exclude-glob 'node_modules/' \
-            --exclude-glob 'assets/fonts/' \
-            --exclude-glob 'assets/images/' \
-            --exclude-glob 'assets/videos/' \
-            --exclude-glob 'assets/documents/' \
-            --exclude-glob 'assets/raw/' \
+          npm run build:main
+          npm run build:admin
+
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y lftp
+
+      - name: Deploy apps in lftp
+        env:
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+        run: |
+          lftp << LFTP
+          set ssl:verify-certificate yes
+          set ftp:passive-mode yes
+          set net:max-retries 3
+          set net:reconnect-interval-base 5
+          open -u "$FTP_USER","$FTP_PASS" "$FTP_HOST"
+
+          mirror -R --verbose --parallel=5 \
+            --exclude-glob .git* \
+            --exclude-glob node_modules/ \
+            --exclude-glob assets/fonts/ \
+            --exclude-glob assets/images/ \
+            --exclude-glob assets/videos/ \
+            --exclude-glob assets/documents/ \
+            --exclude-glob assets/raw/ \
             dist/static/ public_html/
-          "
-
-      - name: Deploy Main .htaccess
-        run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          
           put -O public_html/ domains/Main/.htaccess
-          "
+          mirror -R --verbose --parallel=5 -x ^Admin/ src/scripts/ public_html/scripts/
+          mirror -R --verbose --parallel=5 whatsapp-bot/ public_html/whatsapp-bot/
 
-
-      - name: Update main index.html
-        run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          put -O public_html/ dist/static/index.html
-          "
-
-
-      - name: Sync scripts folder
-        run: |
-          echo "Syncing scripts folder to public_html/scripts"
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose -x '^Admin/' src/scripts/ public_html/scripts/
-          "
-
-      - name: Sync whatsapp-bot folder
-        run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose whatsapp-bot/ public_html/whatsapp-bot/
-          "
-
-  build-and-deploy-admin:
-    needs: build-and-deploy-main
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 'latest'
-
-      - run: npm install
-      - run: npm run build:admin
-      - run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Deploy admin portal
-        run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose \
-            --exclude-glob '.git*' \
-            dist/admin/ admin.harvestschools.com/
-          "
-
-      - name: Deploy Admin .htaccess
-        run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+          mirror -R --verbose --parallel=5 --exclude-glob .git* dist/admin/ admin.harvestschools.com/
           put -O admin.harvestschools.com/ domains/Admin/.htaccess
-          "
-
-      - name: Sync scripts
-        run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-          mirror -R --verbose src/scripts/Admin/ admin.harvestschools.com/scripts/Admin/;
-          mirror -R --verbose src/scripts/Public/General/ admin.harvestschools.com/scripts/Public/General/;
+          mirror -R --verbose --parallel=5 src/scripts/Admin/ admin.harvestschools.com/scripts/Admin/
+          mirror -R --verbose --parallel=5 src/scripts/Public/General/ admin.harvestschools.com/scripts/Public/General/
           put -O admin.harvestschools.com/scripts/ src/scripts/headers.php
-          "
 
+          bye
+          LFTP
