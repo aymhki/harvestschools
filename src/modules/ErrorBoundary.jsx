@@ -70,8 +70,8 @@ ErrorBoundaryClass.propTypes = {
     t: PropTypes.func.isRequired,
 };
 
-const ErrorBoundary = ({ children }) => {
-    const { t } = useTranslation(['error-boundary-page']);
+const ErrorBoundary = ({ children, ignoreLngUpdate }) => {
+    const { t } = useTranslation(['error-boundary-page'], { lng: ignoreLngUpdate ? 'en' : undefined });
     return <ErrorBoundaryClass t={t}>{children}</ErrorBoundaryClass>;
 };
 
@@ -79,4 +79,5 @@ export default ErrorBoundary;
 
 ErrorBoundary.propTypes = {
 	children: PropTypes.node.isRequired,
+	ignoreLngUpdate: PropTypes.bool.isRequired,
 }

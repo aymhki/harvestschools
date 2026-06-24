@@ -6,7 +6,6 @@ import AdminSidebar from "./modules/AdminSidebar.jsx";
 import AdminFooter from "./modules/AdminFooter.jsx";
 import NavigationBar from "./modules/NavigationBar.jsx";
 import './styles/App.css';
-import {useTranslation} from "react-i18next";
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from "./services/Admin/Session/AdminNavigationServices.jsx";
 
 const NotFound = lazy(() => import('./pages/NotFound'))
@@ -22,19 +21,8 @@ const FileViewer = lazy(() => import('./pages/Admin/FileViewer'))
 export default function AppAdmin() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { i18n } = useTranslation();
     const [adminLinks, setAdminLinks] = useState([]);
     const [isAuthLoading, setIsAuthLoading] = useState(false);
-
-    useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const langParam = searchParams.get('lang');
-        if (langParam && ['en', 'ar'].includes(langParam)) {
-            if (i18n.language !== langParam) {
-                i18n.changeLanguage(langParam);
-            }
-        }
-    }, [location.search, i18n]);
 
     const excludePaths = ['/login'];
     const shouldExclude = excludePaths.includes(location.pathname);
@@ -52,7 +40,7 @@ export default function AppAdmin() {
             {shouldExclude && <NavigationBar compactOrAdmin={true}/>}
             <div className={`content ${!shouldExclude ?  'admin-content' : '' }`}>
                 {!shouldExclude && <AdminSidebar adminLinks={adminLinks} />}
-                <ErrorBoundary>
+                <ErrorBoundary ignoreLngUpdate={true}>
                     <Suspense fallback={<div style={{minHeight: '50vh'}}><Spinner /></div>}>
                         <Routes>
                             <Route path="/" element={<Navigate to="/login" replace />} />

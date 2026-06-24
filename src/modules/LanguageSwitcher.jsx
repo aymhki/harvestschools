@@ -2,8 +2,9 @@ import { useTranslation } from 'react-i18next';
 import '../styles/LanguageSwitcher.css'
 import { useState, useEffect } from 'react';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
+import PropTypes from "prop-types";
 
-const LanguageSwitcher = () => {
+const LanguageSwitcher = ({ignoreDocUpdate}) => {
     const toggleLanguage = useToggleLanguage();
     const { i18n } = useTranslation();
     const [isMobile, setIsMobile] = useState(true);
@@ -31,7 +32,7 @@ const LanguageSwitcher = () => {
     return (
         <div className="language-switcher">
 
-            <div onClick={() => toggleLanguage({lng: 'en', ignoreDocUpdate: false} )}
+            <div onClick={() => toggleLanguage({lng: 'en', ignoreDocUpdate: ignoreDocUpdate} )}
                  className={`en ${(i18n.language === 'en' || i18n.language !== 'ar') ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 English
@@ -42,7 +43,7 @@ const LanguageSwitcher = () => {
             </span>
 
             <div
-                onClick={() => toggleLanguage({lng: 'ar', ignoreDocUpdate: false} )}
+                onClick={() => toggleLanguage({lng: 'ar', ignoreDocUpdate: ignoreDocUpdate} )}
                 className={`ar ${i18n.language === 'ar' ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 العربية
@@ -50,6 +51,10 @@ const LanguageSwitcher = () => {
 
         </div>
     );
+};
+
+LanguageSwitcher.propTypes = {
+    ignoreDocUpdate: PropTypes.bool,
 };
 
 export default LanguageSwitcher;
