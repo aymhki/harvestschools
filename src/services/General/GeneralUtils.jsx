@@ -146,7 +146,7 @@ const useToggleLanguage = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    return (lng) => {
+    return ({lng, ignoreDocUpdate}) => {
         if (lng === undefined) {
             lng = i18n.language === 'ar' ? 'en' : 'ar';
         }
@@ -163,8 +163,10 @@ const useToggleLanguage = () => {
             search: searchParams.toString()
         }, { replace: true });
 
-        document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = lng;
+        if (!ignoreDocUpdate) {
+            document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = lng;
+        }
     };
 };
 

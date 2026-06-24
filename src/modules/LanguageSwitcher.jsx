@@ -31,7 +31,7 @@ const LanguageSwitcher = () => {
     return (
         <div className="language-switcher">
 
-            <div onClick={() => toggleLanguage('en')}
+            <div onClick={() => toggleLanguage({lng: 'en', ignoreDocUpdate: false} )}
                  className={`en ${(i18n.language === 'en' || i18n.language !== 'ar') ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 English
@@ -42,7 +42,7 @@ const LanguageSwitcher = () => {
             </span>
 
             <div
-                onClick={() => toggleLanguage('ar')}
+                onClick={() => toggleLanguage({lng: 'ar', ignoreDocUpdate: false} )}
                 className={`ar ${i18n.language === 'ar' ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 العربية
