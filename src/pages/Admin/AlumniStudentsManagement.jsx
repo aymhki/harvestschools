@@ -8,24 +8,24 @@ import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 
 
-function InfoSystemManagement() {
+function AlumniStudentsManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 7, setIsLoading)
-        .then(
-            () => {
-                //TODO: Fetch data here
-            }
-        )
+        headToAdminLoginOnInvalidSession(navigate, 13, setIsLoading)
+            .then(
+                () => {
+                    //TODO: Fetch data here
+                }
+            )
     }, []);
 
     return (
         <>
             {isLoading && <Spinner/>}
 
-            <div className={"info-system-management-page"}>
+            <div className={"alumni-students-management-page"}>
 
                 <p>
                     This Page is Under Construction
@@ -36,4 +36,4 @@ function InfoSystemManagement() {
     )
 }
 
-export default InfoSystemManagement;
+export default AlumniStudentsManagement;

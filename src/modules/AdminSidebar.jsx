@@ -11,10 +11,12 @@ import EventIcon from '@mui/icons-material/Event';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import InfoIcon from '@mui/icons-material/Info';
 import PublicIcon from '@mui/icons-material/Public';
+import CelebrationIcon from '@mui/icons-material/Celebration';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
 import CloseIcon from '@mui/icons-material/Close';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import PropTypes from "prop-types";
 
@@ -29,10 +31,12 @@ function AdminSidebar({ adminLinks, loggedInUsername}) {
     const getIconForLink = (linkPath) => {
         switch(linkPath) {
             case '/job-applications': return <WorkIcon />;
-            case '/graduation-booking-management': return <SchoolIcon />;
-            case '/open-day-signups-management': return <EventIcon />;
+            case '/graduation-booking-management': return <EventIcon />;
+            case '/open-day-signups-management': return <CelebrationIcon />;
             case '/borrowing-system-management': return <LibraryBooksIcon />;
             case '/info-system-management': return <InfoIcon />;
+            case '/alumni-students-management' : return <SchoolIcon />;
+            case '/admin-users-management' : return <ManageAccountsIcon />;
             default: return <DashboardIcon />;
         }
     };
