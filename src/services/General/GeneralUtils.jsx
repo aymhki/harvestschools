@@ -143,17 +143,18 @@ const BASE_URLS = {
 
 const endpoints = generateEndpoints();
 
-const useToggleLanguage = () => {
+const useToggleLanguage = ({ignoreDocUpdate}) => {
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        document.documentElement.lang = i18n.language;
-        document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+        if (!ignoreDocUpdate) {
+            document.documentElement.lang = i18n.language;
+            document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+        }
+    }, [i18n.language, ignoreDocUpdate]);
 
-    }, [i18n.language]);
-
-    return ({lng, ignoreDocUpdate}) => {
+    return ({lng}) => {
         if (lng === undefined) {
             lng = i18n.language === 'ar' ? 'en' : 'ar';
         }
@@ -169,11 +170,6 @@ const useToggleLanguage = () => {
             pathname: location.pathname,
             search: searchParams.toString()
         }, { replace: true });
-
-        if (!ignoreDocUpdate) {
-            document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
-            document.documentElement.lang = lng;
-        }
     };
 };
 

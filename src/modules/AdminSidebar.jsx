@@ -25,7 +25,7 @@ function AdminSidebar({ adminLinks, loggedInUsername}) {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    const toggleLanguage = useToggleLanguage();
+    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: true});
     const {  i18n } = useTranslation();
 
     const getIconForLink = (linkPath) => {
@@ -126,7 +126,7 @@ function AdminSidebar({ adminLinks, loggedInUsername}) {
 
                 <div className="sidebar-footer">
                     <ul className="sidebar-links">
-                        <li onClick={() => toggleLanguage({lng: undefined, ignoreDocUpdate: true})}>
+                        <li onClick={() => toggleLanguage({lng: undefined})}>
                             <div className="nav-item-content" title={!isExpanded ? 'Change Language' : ''}>
                                 <span className="icon"><LanguageIcon /></span>
                                 {showText && <span className={`label admin-sidebar-language-switcher ${i18n.language === 'en' ? 'ar' : 'en'}`}>{i18n.language === 'en' ? 'العربية' : 'English'}</span>}

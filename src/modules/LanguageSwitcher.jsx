@@ -5,7 +5,7 @@ import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import PropTypes from "prop-types";
 
 const LanguageSwitcher = ({ignoreDocUpdate}) => {
-    const toggleLanguage = useToggleLanguage();
+    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: ignoreDocUpdate});
     const { i18n } = useTranslation();
     const [isMobile, setIsMobile] = useState(true);
 
@@ -32,7 +32,7 @@ const LanguageSwitcher = ({ignoreDocUpdate}) => {
     return (
         <div className="language-switcher">
 
-            <div onClick={() => toggleLanguage({lng: 'en', ignoreDocUpdate: ignoreDocUpdate} )}
+            <div onClick={() => toggleLanguage({lng: 'en'} )}
                  className={`en ${(i18n.language === 'en' || i18n.language !== 'ar') ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 English
@@ -43,7 +43,7 @@ const LanguageSwitcher = ({ignoreDocUpdate}) => {
             </span>
 
             <div
-                onClick={() => toggleLanguage({lng: 'ar', ignoreDocUpdate: ignoreDocUpdate} )}
+                onClick={() => toggleLanguage({lng: 'ar'} )}
                 className={`ar ${i18n.language === 'ar' ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
             >
                 العربية
