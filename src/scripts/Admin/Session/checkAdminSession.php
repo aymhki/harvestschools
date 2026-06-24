@@ -41,9 +41,22 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionId = $conn->real_escape_string($data['session_id']);
-    $sql = "SELECT username FROM admin_sessions WHERE id = '$sessionId'";
-    $result = $conn->query($sql);
+    $sessionId = $data['session_id'];
+    $stmt = $conn->prepare("SELECT admin_sessions.username, admin_users.name FROM admin_sessions LEFT JOIN admin_users ON LOWER(admin_sessions.username) = LOWER(admin_users.username) WHERE admin_sessions.id = ?");
+
+    if (!$stmt) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Database statement preparation failed",
+            "code" => 500
+        ]);
+        exit;
+    }
+
+    $stmt->bind_param("s", $sessionId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
     if ($result->num_rows == 0) {
         echo json_encode([
@@ -58,7 +71,7 @@ try {
         "success" => true,
         "message" => "Session is valid",
         "code" => 200,
-        "username" => $result->fetch_assoc()['username']
+        "username" => $result->fetch_assoc()['name']
     ]);
 
 } catch (Exception $e) {

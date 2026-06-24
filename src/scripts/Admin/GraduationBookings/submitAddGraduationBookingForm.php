@@ -542,31 +542,38 @@ function performRollback($conn, $data) {
 
 function performFinalCleanup($conn, $data) {
     try {
-        if (!empty($data['bookingId'])) {
-            $conn->query("DELETE FROM graduation_booking_extras WHERE booking_id = {$data['bookingId']}");
-            $conn->query("DELETE FROM graduation_booking_students_linker WHERE booking_id = {$data['bookingId']}");
-            $conn->query("DELETE FROM graduation_booking_parents_linker WHERE booking_id = {$data['bookingId']}");
-            $conn->query("DELETE FROM graduation_bookings WHERE booking_id = {$data['bookingId']}");
+        $intIds = [
+            ["DELETE FROM graduation_booking_extras WHERE booking_id = ?", $data['bookingId']],
+            ["DELETE FROM graduation_booking_students_linker WHERE booking_id = ?", $data['bookingId']],
+            ["DELETE FROM graduation_booking_parents_linker WHERE booking_id = ?", $data['bookingId']],
+            ["DELETE FROM graduation_bookings WHERE booking_id = ?", $data['bookingId']],
+            ["DELETE FROM graduation_booking_parents WHERE parent_id = ?", $data['firstParentId']],
+            ["DELETE FROM graduation_booking_parents WHERE parent_id = ?", $data['secondParentId']],
+            ["DELETE FROM graduation_booking_auth_credentials WHERE auth_id = ?", $data['authId']],
+        ];
+
+        foreach ($intIds as [$sql, $id]) {
+            if ($id === null) continue;
+            $stmt = $conn->prepare($sql);
+            if ($stmt) {
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $stmt->close();
+            }
         }
 
         foreach ($data['studentIds'] as $studentId) {
-            $conn->query("DELETE FROM graduation_booking_students WHERE student_id = $studentId");
-        }
-
-        if (!empty($data['firstParentId'])) {
-            $conn->query("DELETE FROM graduation_booking_parents WHERE parent_id = {$data['firstParentId']}");
-        }
-
-        if (!empty($data['secondParentId'])) {
-            $conn->query("DELETE FROM graduation_booking_parents WHERE parent_id = {$data['secondParentId']}");
-        }
-
-        if (!empty($data['authId'])) {
-            $conn->query("DELETE FROM graduation_booking_auth_credentials WHERE auth_id = {$data['authId']}");
+            $stmt = $conn->prepare("DELETE FROM graduation_booking_students WHERE student_id = ?");
+            if ($stmt) {
+                $stmt->bind_param("i", $studentId);
+                $stmt->execute();
+                $stmt->close();
+            }
         }
 
     } catch (Exception $e) {
         error_log("Final cleanup failed: " . $e->getMessage());
     }
 }
+
 ?>
