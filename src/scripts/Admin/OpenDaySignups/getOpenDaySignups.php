@@ -93,7 +93,7 @@ try {
     $rows = [];
 
     $headers = [
-        'Registration ID',
+        'ID',
         'Registration Created',
         'Parent Name',
         'Parent Phone',

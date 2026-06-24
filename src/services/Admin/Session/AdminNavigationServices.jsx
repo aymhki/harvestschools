@@ -16,10 +16,10 @@ const headToAdminLoginOnInvalidSession = async (navigate, allowedPermission, set
     }
 }
 
-const headToAdminLoginOnInvalidSessionFromAdminDashboard = async (navigate, setDashboardOptions, setIsLoading) => {
+const headToAdminLoginOnInvalidSessionFromAdminDashboard = async (navigate, setDashboardOptions, setIsLoading, setLoggedInUsername) => {
     try {
         setIsLoading(true);
-        await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions)
+        await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions, setLoggedInUsername)
     } catch (error) {
         console.log(error.message);
     } finally {

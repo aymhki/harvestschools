@@ -57,7 +57,8 @@ try {
     echo json_encode([
         "success" => true,
         "message" => "Session is valid",
-        "code" => 200
+        "code" => 200,
+        "username" => $result->fetch_assoc()['username']
     ]);
 
 } catch (Exception $e) {

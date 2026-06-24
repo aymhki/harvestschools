@@ -22,6 +22,7 @@
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh;
     width: 3.5rem;
     background-color: var(--primary-color);
     color: var(--harvest-white-color);
@@ -162,11 +163,12 @@
         min-height: 100vh;
         transform: translateX(0);
         color: var(--primary-color);
-        position: absolute;
     }
 
     .sidebar-overlay {
         display: block;
+        height: 100vh;
+        height: 100dvh;
     }
 
     .desktop-only { display: none; }
