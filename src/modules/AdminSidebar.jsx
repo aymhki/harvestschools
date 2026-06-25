@@ -136,7 +136,7 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
                     <ul className="sidebar-links">
                         <li>
                             <Link
-                                to={ `${ isDevelopment() ? `http://localhost:5173?lang=${i18n.language}` : `https://harvestschools.com?lang=${i18n.language}` }` }
+                                to={ `${ isDevelopment() ? `http://localhost:5173` : `https://harvestschools.com` }` }
                                 title={!isExpanded ? 'Return to Main Site' : ''}
                             >
                                 <span className="icon"><PublicIcon /></span>
