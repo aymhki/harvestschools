@@ -1760,6 +1760,33 @@ function Table({
                         </button>
                         <button onClick={() => setIsAccordionOpen(false)}>Close</button>
                     </div>
+
+                    {allowSticky && isMobile && (
+                        <>
+                            <div>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={stickyRows > 0}
+                                        onChange={(e) => setStickyRows(e.target.checked ? 1 : 0)}
+                                    />
+                                    Fix {(tableData && tableData[0] && tableData[0][0]) ? tableData[0][0] : ''} Row
+                                </label>
+                            </div>
+
+                            <div>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={stickyCols > 0}
+                                        onChange={(e) => setStickyCols(e.target.checked ? 1 : 0)}
+                                    />
+                                    Fix {(tableData && tableData[0] && tableData[0][0]) ? tableData[0][0] : ''} Column
+                                </label>
+                            </div>
+                        </>
+                    )}
+
                     {tableData && tableData[0] && tableData[0].map((header, index) => (
                         <div key={index}>
                             <label><input type="checkbox" checked={!hiddenColumns.has(header)}
