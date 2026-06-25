@@ -140,12 +140,16 @@ $file_size     = filesize($serve_path);
 $last_modified = filemtime($serve_path);
 $etag          = '"' . md5($serve_path . $last_modified . $file_size) . '"';
 
+$is_range_request = isset($_SERVER['HTTP_RANGE']);
+
 if (
-    (isset($_SERVER['HTTP_IF_NONE_MATCH'])     && trim($_SERVER['HTTP_IF_NONE_MATCH'])     === $etag) ||
-    (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $last_modified)
-) {
+    !$is_range_request && (
+        (isset($_SERVER['HTTP_IF_NONE_MATCH'])     && trim($_SERVER['HTTP_IF_NONE_MATCH'])     === $etag) ||
+        (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $last_modified)
+    )) {
     http_response_code(304); exit;
 }
+
 
 header('Content-Type: '    . $out_mime);
 header('ETag: '            . $etag);
@@ -160,7 +164,7 @@ header('Content-Disposition: ' . ($download ? 'attachment' : 'inline') . '; file
 
 // ── Range requests (video seeking) ───────────────────────────────────────────
 
-if (isset($_SERVER['HTTP_RANGE'])) {
+if ($is_range_request) {
     [, $range_spec]          = explode('=', $_SERVER['HTTP_RANGE'], 2);
     [$range_start, $range_end] = explode('-', $range_spec, 2);
 
@@ -177,6 +181,10 @@ if (isset($_SERVER['HTTP_RANGE'])) {
     http_response_code(206);
     header('Content-Range: bytes ' . $range_start . '-' . $range_end . '/' . $file_size);
     header('Content-Length: ' . $length);
+
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
 
     $fp = fopen($serve_path, 'rb');
     fseek($fp, $range_start);

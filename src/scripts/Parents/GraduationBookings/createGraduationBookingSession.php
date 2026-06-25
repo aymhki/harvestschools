@@ -27,7 +27,7 @@ try {
     if (!isset($input['username']) || !isset($input['session_id']) || !isset($input['user_id'])) {
         echo json_encode([
             "success" => false,
-            "message" => "Bad Request: Missing username or session_id",
+            "message" => "Bad Request: Missing username or session_id or user_id",
             "code" => 400
         ]);
         exit;

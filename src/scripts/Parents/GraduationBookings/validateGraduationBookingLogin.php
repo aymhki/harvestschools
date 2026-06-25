@@ -56,7 +56,7 @@ try {
             "success" => true,
             "message" => "Login successful",
             "code" => 200,
-            "id" => $result->fetch_assoc()['id'],
+            "id" => $result->fetch_assoc()['auth_id'],
         ]);
     } else {
         $stmt = $conn->prepare("SELECT * FROM graduation_booking_auth_credentials WHERE username = ?");
