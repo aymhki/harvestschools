@@ -115,6 +115,31 @@
     --arabic-normal-font: 'Arian LT', sans-serif;
     --arabic-normal-font-bold: 'Arian LT Demi', sans-serif;
 
+
+    --footer-z-index: 1000;
+    --navbar-z-index: 1800;
+    --navbar-item-z-index: 1900;
+    --admin-sidebar-overlay-z-index: 1999;
+    --admin-sidebar-z-index: 2000;
+    --admin-action-popup-modals-overlay-z-index: 2001;
+    --admin-action-popup-modals-z-index: 2002;
+    --table-module-filter-popup-overlay-z-index: 2001;
+    --table-module-filter-popup-z-index: 2002;
+    --form-date-popup-modal-overlay-z-index: 2001;
+    --form-date-popup-modal-z-index: 2002;
+    --spinner-overlay-z-index: 100000;
+
+    --parallax-scroll-base-z-index: 1;
+    --parallax-scroll-top-z-index: 2;
+    --photo-slider-non-active-dot-indicator-z-index: 1;
+    --photo-slider-active-dot-indicator-z-index: 2;
+    --form-toggle-password-visibility-button-z-index: 1;
+    --photo-slider-arrow-z-index: 100;
+    --photo-collage-popup-lightbox-z-index: 100000;
+
+    --table-module-header-and-footer-z-index: 10;
+    --table-module-sticky-control-widget-z-index: 100;
+
     font-family: var(--english-normal-font);
 }
 

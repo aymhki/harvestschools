@@ -26,9 +26,14 @@ export default function AppAdmin() {
     const [adminLinks, setAdminLinks] = useState([]);
     const [loggedInUsername, setLoggedInUsername] = useState('Admin');
     const [isAuthLoading, setIsAuthLoading] = useState(false);
+    const [isSidebarPinned, setIsSidebarPinned] = useState(false);
 
     const excludePaths = ['/login'];
     const shouldExclude = excludePaths.includes(location.pathname);
+
+    const handleTogglePin = () => {
+        setIsSidebarPinned(prev => !prev);
+    };
 
     useEffect(() => {
         if (shouldExclude) {
@@ -41,8 +46,14 @@ export default function AppAdmin() {
     return (
         <div className="App admin-app">
             {shouldExclude && <NavigationBar compactOrAdmin={true}/>}
-            <div className={`content ${!shouldExclude ?  'admin-content' : '' }`}>
-                {!shouldExclude && <AdminSidebar adminLinks={adminLinks} loggedInUsername={loggedInUsername}/>}
+            <div className={`content ${!shouldExclude ?  'admin-content' : '' } ${isSidebarPinned ? 'pinned' : ''}`}>
+                {!shouldExclude && (
+                    <AdminSidebar adminLinks={adminLinks}
+                                  loggedInUsername={loggedInUsername}
+                                  isPinned={isSidebarPinned}
+                                  onTogglePin={handleTogglePin}
+                                />
+                )}
                 <ErrorBoundary ignoreLngUpdate={true}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
                         <Routes>
