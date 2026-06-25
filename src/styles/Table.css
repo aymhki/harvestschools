@@ -95,7 +95,7 @@
     position: sticky;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: var(--table-module-header-and-footer-z-index);
     padding-top: 2rem;
     padding-bottom: 2rem;
     padding-left: 0;
@@ -112,7 +112,7 @@
     position: sticky;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: var(--table-module-header-and-footer-z-index);
     align-content: center;
     justify-content: center;
     align-items: center;
@@ -171,7 +171,7 @@ tr:hover {
     padding: 0.2rem 0.4rem;
     border-radius: 0.1rem;
     box-shadow: 0 0.1rem 0.1rem rgba(0,0,0,0.2);
-    z-index: 100;
+    z-index: var(--table-module-sticky-control-widget-z-index);
 }
 
 .sticky-control-checkbox {
@@ -236,7 +236,7 @@ tr:hover {
     width: 100vw;
     height: 100vh;
     position: fixed;
-    z-index: 1500;
+    z-index: var(--table-module-filter-popup-overlay-z-index);
 }
 
 .table-module-accordion-overlay {
@@ -249,7 +249,7 @@ tr:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1500;
+    z-index: var(--table-module-filter-popup-overlay-z-index);
     cursor: pointer;
 }
 
@@ -266,7 +266,7 @@ tr:hover {
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 1);
     justify-content: center;
     align-items: center;
-    z-index: 1501;
+    z-index: var(--table-module-filter-popup-z-index);
 }
 
 .compact-table-header-text {
@@ -285,7 +285,7 @@ tr:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1500;
+    z-index: var(--table-module-filter-popup-overlay-z-index);
     cursor: pointer;
 }
 
@@ -299,7 +299,7 @@ tr:hover {
     width: 100vw;
     height: 100vh;
     position: fixed;
-    z-index: 1500;
+    z-index: var(--table-module-filter-popup-overlay-z-index);
 }
 
 .table-module-filter-popup {
@@ -314,7 +314,7 @@ tr:hover {
     display: flex;
     flex-direction: column;
     padding: 2rem;
-    z-index: 1501;
+    z-index: var(--table-module-filter-popup-z-index);
     overflow: hidden;
 }
 

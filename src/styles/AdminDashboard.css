@@ -87,7 +87,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: var(--admin-action-popup-modals-overlay-z-index);
 }
 
 
@@ -97,7 +97,7 @@
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0.5rem;
-    z-index: 1000;
+    z-index: var(--admin-action-popup-modals-overlay-z-index);
     top: 0;
     left: 0;
 }
@@ -110,7 +110,7 @@
     background-color: var(--harvest-white-color);
     width: 80%;
     min-height: 50%;
-    z-index: 1001;
+    z-index: var(--admin-action-popup-modals-z-index);
 }
 
 .add-booking-modal-form-container:lang(ar), .edit-booking-modal-container:lang(ar), .add-booking-modal:lang(ar), .edit-booking-modal:lang(ar) {
@@ -179,7 +179,7 @@
 
 
 .add-booking-modal-form-footer button, .edit-booking-modal-footer button {
-    /*margin: 0.5rem;*/
+    margin-top: 2rem;
     /*padding: 0.5rem;*/
     /*font-size: large;*/
 }
@@ -200,7 +200,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: var(--admin-action-popup-modals-overlay-z-index);
 }
 
 
@@ -210,7 +210,7 @@
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0.5rem;
-    z-index: 1000;
+    z-index: var(--admin-action-popup-modals-overlay-z-index);
     top: 0;
     left: 0;
 }
@@ -221,7 +221,7 @@
     padding: 1rem;
     background-color: var(--harvest-white-color);
     width: 50%;
-    z-index: 1001;
+    z-index: var(--admin-action-popup-modals-z-index);
 }
 
 .delete-booking-modal-header {

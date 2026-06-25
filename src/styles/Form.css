@@ -368,7 +368,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    z-index: var(--form-date-popup-modal-overlay-z-index);
 }
 
 .form-select-date-modal-overlay {
@@ -377,7 +377,7 @@
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0.5rem;
-    z-index: 2000;
+    z-index: var(--form-date-popup-modal-overlay-z-index);
     top: 0;
     left: 0;
 }
@@ -389,7 +389,7 @@
     background-color: var(--harvest-white-color);
     width: 30%;
     max-height: 100%;
-    z-index: 2001;
+    z-index: var(--form-date-popup-modal-z-index);
 }
 
 .form-select-date-modal-header {
@@ -562,7 +562,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+    z-index: var(--form-toggle-password-visibility-button-z-index);
     box-shadow: none;
     color: var(--primary-color);
 }

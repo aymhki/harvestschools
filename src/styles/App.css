@@ -27,8 +27,14 @@
 }
 
 .content.admin-content {
-    padding-left: 3.5rem
+    padding-left: 3.5rem;
+    transition: padding-left 0.3s ease;
 }
+
+.content.admin-content.pinned {
+    padding-left: 16rem;
+}
+
 
 .logo {
     height: 6rem;
@@ -155,6 +161,10 @@
     }
 
     .content.admin-content {
+        padding-left: 0;
+    }
+
+    .content.admin-content.pinned {
         padding-left: 0;
     }
 

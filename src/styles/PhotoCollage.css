@@ -67,7 +67,7 @@
 .lightbox {
     display: flex;
     position: fixed;
-    z-index: 90000;
+    z-index: var(--photo-collage-popup-lightbox-z-index);
     padding-top: 0;
     left: 0;
     top: 0;

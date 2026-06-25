@@ -20,7 +20,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import PropTypes from "prop-types";
 
-function AdminSidebar({ adminLinks, loggedInUsername}) {
+function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const location = useLocation();
@@ -47,7 +47,7 @@ function AdminSidebar({ adminLinks, loggedInUsername}) {
         navigate('/login');
     };
 
-    const showText = isExpanded || isMobileOpen;
+    const showText = isExpanded || isPinned || isMobileOpen;
 
     useEffect(() => {
         const handleResize = () => {
@@ -85,12 +85,12 @@ function AdminSidebar({ adminLinks, loggedInUsername}) {
             {isMobileOpen && <div className="sidebar-overlay" onClick={() => setIsMobileOpen(false)}></div>}
 
             <aside
-                className={`admin-sidebar ${isExpanded ? 'expanded' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}
+                className={`admin-sidebar ${isExpanded || isPinned ? 'expanded' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}
                 onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
             >
                 <div className="sidebar-header">
-                    <div className="menu-toggle desktop-only">
+                    <div className="menu-toggle desktop-only" onClick={onTogglePin}>
                         <MenuIcon />
                     </div>
                     <div className="menu-toggle mobile-only" onClick={() => setIsMobileOpen(false)}>
@@ -179,6 +179,8 @@ AdminSidebar.propTypes = {
         })
     ).isRequired,
     loggedInUsername: PropTypes.string.isRequired,
+    isPinned: PropTypes.bool.isRequired,
+    onTogglePin: PropTypes.func.isRequired
 }
 
 export default AdminSidebar;
