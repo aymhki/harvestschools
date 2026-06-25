@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
-import {fetchJobApplicationsRequest} from "../../services/Public/JobApplications/JobApplicationsServices.jsx";
+import {fetchJobApplicationsRequest} from "../../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
 
 function JobApplications() {
     const navigate = useNavigate();
