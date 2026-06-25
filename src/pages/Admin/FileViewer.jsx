@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Spinner from '../../modules/Spinner';
 import '../../styles/FileViewer.css';
-import {serveJobApplicationFile} from "../../services/Public/JobApplications/JobApplicationsServices.jsx";
+import {serveJobApplicationFile} from "../../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
 
 
 function FileViewer() {
