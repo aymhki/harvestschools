@@ -7,6 +7,7 @@ import AdminFooter from "../modules/AdminFooter.jsx";
 import NavigationBar from "../modules/NavigationBar.jsx";
 import '../styles/App.css';
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from "../services/Admin/Session/AdminNavigationServices.jsx";
+import {useTranslation} from "react-i18next";
 
 const NotFound = lazy(() => import('../pages/NotFound.jsx'))
 const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin.jsx'))
@@ -27,6 +28,7 @@ export default function AppAdmin() {
     const [loggedInUsername, setLoggedInUsername] = useState('Admin');
     const [isAuthLoading, setIsAuthLoading] = useState(false);
     const [isSidebarPinned, setIsSidebarPinned] = useState(false);
+    const { i18n } = useTranslation();
 
     const excludePaths = ['/login'];
     const shouldExclude = excludePaths.includes(location.pathname);

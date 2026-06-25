@@ -47,6 +47,7 @@ function AmericanStaff() {
 
                 <Table tableData={tableData} numCols={3}
                        sortConfigParam={{column: 1, direction: 'ascending'}}
+                       ignoreSideMarginsOnFixed={true}
                 />
 
                 <p>

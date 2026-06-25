@@ -49,7 +49,9 @@ function NationalStaff() {
                 </p>
 
                 <Table tableData={tableData} numCols={3}
-                       sortConfigParam={{column: 1, direction: 'ascending'}}/>
+                       sortConfigParam={{column: 1, direction: 'ascending'}}
+                       ignoreSideMarginsOnFixed={true}
+                />
 
                 <p>
                     {t('common.last-updated', {ns: 'common'})} {formattedDate}

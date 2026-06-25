@@ -14,18 +14,17 @@ import PublicIcon from '@mui/icons-material/Public';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
-import LanguageIcon from '@mui/icons-material/Language';
 import CloseIcon from '@mui/icons-material/Close';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
+import ViewSidebarIcon from '@mui/icons-material/ViewSidebar';
 import PropTypes from "prop-types";
+import {LinkOutlined} from "@mui/icons-material";
 
 function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: true});
     const {  i18n } = useTranslation();
 
     const getIconForLink = (linkPath) => {
@@ -89,16 +88,25 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
                 onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
             >
-                <div className="sidebar-header">
-                    <div className="menu-toggle desktop-only" onClick={onTogglePin}>
+                <div className="sidebar-header" onClick={() => {
+                    if (isMobileOpen) {
+                        setIsMobileOpen(false);
+                    } else {
+                        onTogglePin()
+                    }
+                }}>
+                    <div className="menu-toggle desktop-only" >
+                        <ViewSidebarIcon />
+                    </div>
+                    <div className="menu-toggle mobile-only" >
                         <MenuIcon />
                     </div>
-                    <div className="menu-toggle mobile-only" onClick={() => setIsMobileOpen(false)}>
-                        <MenuIcon />
-                    </div>
-                    {showText && <span className="logo-text">
-                        {loggedInUsername}
-                    </span>}
+                    {showText && (
+                        <span className="logo-text">
+                            {loggedInUsername}
+                        </span>
+                    )}
+
                 </div>
 
                 <nav className="sidebar-nav">
@@ -126,21 +134,6 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
 
                 <div className="sidebar-footer">
                     <ul className="sidebar-links">
-                        <li onClick={() => toggleLanguage({lng: undefined})}>
-                            <div className="nav-item-content" title={!isExpanded ? 'Change Language' : ''}>
-                                <span className="icon"><LanguageIcon /></span>
-                                {showText && <span className={`label admin-sidebar-language-switcher ${i18n.language === 'en' ? 'ar' : 'en'}`}>{i18n.language === 'en' ? 'العربية' : 'English'}</span>}
-                            </div>
-                        </li>
-                        <li>
-                            <Link
-                                to={ "https://schooleverywhere-harvest.com/schooleverywhere/" }
-                                title={!isExpanded ? 'SchoolEverywhere' : ''}
-                            >
-                                <span className="icon"><PublicIcon /></span>
-                                {showText && <span className="label">SchoolEverywhere</span>}
-                            </Link>
-                        </li>
                         <li>
                             <Link
                                 to={ `${ isDevelopment() ? `http://localhost:5173?lang=${i18n.language}` : `https://harvestschools.com?lang=${i18n.language}` }` }
@@ -148,6 +141,15 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
                             >
                                 <span className="icon"><PublicIcon /></span>
                                 {showText && <span className="label">Main Site</span>}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                to={ "https://schooleverywhere-harvest.com/schooleverywhere/" }
+                                title={!isExpanded ? 'SchoolEverywhere' : ''}
+                            >
+                                <span className="icon"><LinkOutlined /></span>
+                                {showText && <span className="label">SchoolEverywhere</span>}
                             </Link>
                         </li>
                         <li className="logout-btn" onClick={handleLogout}>

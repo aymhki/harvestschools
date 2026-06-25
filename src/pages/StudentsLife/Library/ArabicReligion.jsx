@@ -26,7 +26,7 @@ function ArabicReligion() {
                     {t("students-life-pages.library-pages.arabic-religious-page.title")}
               </h1>
 
-              <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 1, direction: 'ascending'}}/>
+              <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 1, direction: 'ascending'}} ignoreSideMarginsOnFixed={true}/>
 
               <h2>
                   {t("students-life-pages.library-pages.suggest-book-form.recommend-a-book-for-the-library-to-add-to-its-collection")}

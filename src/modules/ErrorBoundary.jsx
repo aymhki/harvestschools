@@ -71,7 +71,7 @@ ErrorBoundaryClass.propTypes = {
 };
 
 const ErrorBoundary = ({ children, ignoreLngUpdate }) => {
-    const { t } = useTranslation(['error-boundary-page'], { lng: ignoreLngUpdate ? 'en' : undefined });
+    const { t } = useTranslation(['error-boundary-page'], ignoreLngUpdate ? {lng:  'en'} : {} );
     return <ErrorBoundaryClass t={t}>{children}</ErrorBoundaryClass>;
 };
 

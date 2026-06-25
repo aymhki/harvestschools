@@ -31,7 +31,8 @@ function Table({
                    hideVerticalScrollBar,
                    tablePages,
                    isLoading,
-                   forceEnglishTable
+                   forceEnglishTable,
+                   ignoreSideMarginsOnFixed
     }) {
 
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : {
@@ -1344,8 +1345,8 @@ function Table({
                     const totalMax = containerMax + moduleMax + windowMax;
 
                     const ratio = container.clientWidth / (container.clientWidth + totalMax);
-                    const minWidth = isMobile ? 80 : 10;
-                    const maxWidth = isMobile ? (trackWidth * 0.6) : (trackWidth * 0.1);
+                    const minWidth = isMobile ? 80 : 80;
+                    const maxWidth = isMobile ? (trackWidth * 0.6) : (trackWidth * 0.3);
                     let newThumbWidth = ratio * trackWidth;
                     newThumbWidth = Math.max(minWidth, Math.min(newThumbWidth, maxWidth));
                     setThumbWidth(newThumbWidth);
@@ -1430,7 +1431,7 @@ function Table({
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
 
     return (
-        <div className="table-module" ref={tableModuleRef} >
+        <div className={`table-module ${!isScrollbarVisible ? 'compressed' : '' }`} ref={tableModuleRef} >
 
 
             { (headerModuleElements || allowHideColumns || allowExport || hasActiveFilters() || isScrollbarVisible) && (
@@ -1475,7 +1476,7 @@ function Table({
                 </div>
             )}
 
-            <div className={`table-with-vertical-scrollbar-wrapper ${!isVerticalScrollbarVisible ? 'fixed' : ''}`}>
+            <div className={`table-with-vertical-scrollbar-wrapper ${!isVerticalScrollbarVisible ? 'fixed' : ''} ${ignoreSideMarginsOnFixed ? 'ignore-side-margins' : ''}`}>
                 {renderVerticalCustomScrollbar(true)}
                 <div
                     className={`table-scroll-container ${scrollable ? 'table-module-table-scrollable scrollable' : ''}`}
@@ -2007,7 +2008,8 @@ Table.propTypes = {
     hideVerticalScrollBar: PropTypes.bool,
     tablePages: PropTypes.bool,
     isLoading: PropTypes.bool,
-    forceEnglishTable: PropTypes.bool
+    forceEnglishTable: PropTypes.bool,
+    ignoreSideMarginsOnFixed: PropTypes.bool
 };
 
 export default Table;

@@ -46,7 +46,7 @@ function NationalCalendar() {
                 {t("events-pages.national-calendar-page.title")}
             </h1>
 
-            <Table tableData={finalTableData} numCols={3}/>
+            <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
 
             <div className={"download-calendar-button-wrapper"} onClick={() => {
                 window.open(servePublicAsset("/documents/Calendars/national_calendar_2026.pdf", {download:true}), "_blank");

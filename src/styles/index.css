@@ -201,7 +201,7 @@ h2 {
 }
 
 h2:lang(ar) {
-    line-height: 5rem;
+    line-height: 1rem;
 }
 
 h3 {
@@ -241,7 +241,7 @@ h3:lang(ar) {
 button {
     border-radius: 1rem;
     border: 0;
-    padding: 0.8rem;
+    padding: 0.5rem 0.8rem 0.5rem 0.8rem;
     margin: 1rem;
     font-size: large;
     font-weight: bold;
@@ -359,7 +359,6 @@ label:lang(ar) {
     button {
         font-size: small;
         letter-spacing: 0.1rem;
-        padding: 0.5rem 0.8rem 0.5rem 0.8rem;
         margin: 1rem;
     }
 
