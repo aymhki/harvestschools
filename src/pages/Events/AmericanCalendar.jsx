@@ -47,7 +47,7 @@ function AmericanCalendar() {
                 {t("events-pages.american-calendar-page.title")}
             </h1>
 
-            <Table tableData={finalTableData} numCols={3}/>
+            <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
 
             <p>
                 {t("events-pages.common.holiday-shifted-notice")}

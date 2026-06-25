@@ -29,7 +29,7 @@ function ArabicGeneral() {
                     }
                 </h1>
 
-                <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 0, direction: 'ascending'}}/>
+                <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 0, direction: 'ascending'}} ignoreSideMarginsOnFixed={true}/>
 
 
                 <h2 >

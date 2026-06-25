@@ -48,7 +48,7 @@ function BritishKGCalendar() {
                     {t("events-pages.kg-calendars-pages.british-kg-calendar.title")}
                 </h1>
 
-                <Table tableData={finalTableData} numCols={3}/>
+                <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
 
                 <div className={"download-calendar-button-wrapper"} onClick={() => {
                     window.open(servePublicAsset("/documents/Calendars/british_kg_calendar_2026.pdf", {download: true}), "_blank");

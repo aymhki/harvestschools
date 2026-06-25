@@ -47,7 +47,7 @@ function NationalKGCalendar() {
                     {t("events-pages.kg-calendars-pages.national-kg-calendar.title")}
                 </h1>
 
-                <Table tableData={finalTableData} numCols={3}/>
+                <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
 
                 <div className={"download-calendar-button-wrapper"} onClick={() => {
                     window.open(servePublicAsset("/documents/Calendars/national_kg_calendar_2026.pdf", {download:true}), "_blank");

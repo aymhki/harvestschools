@@ -49,7 +49,7 @@ function BritishCalendar() {
                   {t("events-pages.british-calendar-page.title")}
               </h1>
 
-              <Table tableData={finalTableData} numCols={3}/>
+              <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
 
               <p>
                     {t("events-pages.common.subjected-to-change-notice")}

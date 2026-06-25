@@ -26,7 +26,7 @@ function ArabicInformation() {
                   {t("students-life-pages.library-pages.arabic-educational-page.title")}
               </h1>
 
-              <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 1, direction: 'ascending'}}/>
+              <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 1, direction: 'ascending'}} ignoreSideMarginsOnFixed={true}/>
 
 
               <h2 >

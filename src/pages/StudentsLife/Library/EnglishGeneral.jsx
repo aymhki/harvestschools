@@ -27,7 +27,7 @@ function EnglishGeneral() {
                   {t("students-life-pages.library-pages.english-general-page.title")}
               </h1>
 
-              <Table tableData={finalTableData} numCols={1} sortConfigParam={{column: 0, direction: 'ascending'}}/>
+              <Table tableData={finalTableData} numCols={1} sortConfigParam={{column: 0, direction: 'ascending'}} ignoreSideMarginsOnFixed={true}/>
 
 
               <h2>

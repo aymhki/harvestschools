@@ -38,7 +38,7 @@ function Activities() {
             />
 
         <div className={'extreme-padding-container'}>
-            <Table tableData={finalTableData} numCols={3}/>
+            <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
 
             <h1>
                 {t("students-life-pages.activities-page.enroll-now")}

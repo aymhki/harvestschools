@@ -42,11 +42,13 @@ function MinimumStageAge() {
 
             <Table tableHeader={
                 t("faqs-pages.minimum-stage-age-page.national-division-table-header")
-            } numCols={2} tableData={finalNationalTableData}/>
+            } numCols={2} tableData={finalNationalTableData} ignoreSideMarginsOnFixed={true}
+            />
 
             <Table tableHeader={
                 t("faqs-pages.minimum-stage-age-page.international-division-table-header")
-            } numCols={2} tableData={finalInternationalTableData}/>
+            } numCols={2} tableData={finalInternationalTableData} ignoreSideMarginsOnFixed={true}
+            />
 
             <p>
                 {t('common.last-updated', {ns: 'common'})} {formattedDate}
