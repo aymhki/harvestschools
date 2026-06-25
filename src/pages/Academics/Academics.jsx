@@ -71,7 +71,7 @@ function Academics() {
             title: t("nav.admin-login", {ns: 'nav'}),
             image: "/images/AcademicsPages/Login1.png",
             description: t("academics-pages.admin-login-description"),
-            link: isDevelopment() ? `http://localhost:5174?lang=${i18n.language}/` : `https://admin.harvestschools.com?lang=${i18n.language}/`,
+            link: isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`,
             buttonText: t("common.learn-more", {ns: 'common'}),
             externalLink: true
         }

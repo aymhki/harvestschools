@@ -254,9 +254,9 @@ function NavigationBar({compactOrAdmin}){
                         </li>
 
                         <li onClick={() => {
-                            navigate(isDevelopment() ? `http://localhost:5174?lang=${i18n.language}/` : `https://admin.harvestschools.com?lang=${i18n.language}/`);
+                            navigate(isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`);
                         }}>
-                            <Link to={isDevelopment() ? `http://localhost:5174?lang=${i18n.language}/` : `https://admin.harvestschools.com?lang=${i18n.language}/`}>
+                            <Link to={isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`}>
                                 {t("nav.admin-login")}
                             </Link>
                         </li>
