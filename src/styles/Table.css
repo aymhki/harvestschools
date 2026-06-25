@@ -97,7 +97,7 @@
     right: 0;
     z-index: var(--table-module-header-and-footer-z-index);
     padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
     padding-left: 0;
     padding-right: 0;
     align-content: center;
@@ -414,8 +414,8 @@ td button {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 0 4rem 0 2rem;
-    margin-bottom: 0.5rem;
+    padding: 0 2rem 0 1.5rem;
+    margin-top: 0.5rem;
     box-sizing: border-box;
     user-select: none;
     opacity: 0;
