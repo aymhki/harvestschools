@@ -43,9 +43,9 @@ function InfoSystemManagement() {
 
     const tabData = [
             {
-                    id: 0,
-                    label: 'Global Settings',
-                    component: GlobalSettings
+                id: 0,
+                label: 'Global Settings',
+                component: GlobalSettings
             },
             {
                 id: 1,
