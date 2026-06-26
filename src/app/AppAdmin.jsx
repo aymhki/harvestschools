@@ -7,7 +7,6 @@ import AdminFooter from "../modules/AdminFooter.jsx";
 import NavigationBar from "../modules/NavigationBar.jsx";
 import '../styles/App.css';
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from "../services/Admin/Session/AdminNavigationServices.jsx";
-import {useTranslation} from "react-i18next";
 
 const NotFound = lazy(() => import('../pages/NotFound.jsx'))
 const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin.jsx'))
@@ -29,7 +28,10 @@ function AppAdmin() {
     const [loggedInUsername, setLoggedInUsername] = useState('admin');
     const [loggedInUserId, setLoggedInUserId] = useState(-1);
     const [isAuthLoading, setIsAuthLoading] = useState(false);
-    const [isSidebarPinned, setIsSidebarPinned] = useState(false);
+    const [isSidebarPinned, setIsSidebarPinned] = useState(() => {
+        const savedPreference = localStorage.getItem('isSidebarPinned');
+        return savedPreference === 'true';
+    });
     const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false);
     const [userDataWereNeverFetched, setUserDataWereNeverFetched] = useState(true);
     const excludePaths = ['/login'];
@@ -38,6 +40,10 @@ function AppAdmin() {
     const handleTogglePin = () => {
         setIsSidebarPinned(prev => !prev);
     };
+
+    useEffect(() => {
+        localStorage.setItem('isSidebarPinned', isSidebarPinned);
+    }, [isSidebarPinned]);
 
     useEffect(() => {
         if (shouldExclude) {
@@ -55,11 +61,12 @@ function AppAdmin() {
             {shouldExclude && <NavigationBar compactOrAdmin={true}/>}
             <div className={`content ${!shouldExclude ?  'admin-content' : '' } ${isSidebarPinned ? 'pinned' : ''}`}>
                 {!shouldExclude && (
-                    <AdminSidebar adminLinks={adminLinks}
-                                  loggedInUsername={loggedInName}
-                                  isPinned={isSidebarPinned}
-                                  onTogglePin={handleTogglePin}
-                                />
+                    <AdminSidebar
+                        adminLinks={adminLinks}
+                        loggedInUsername={loggedInName}
+                        isPinned={isSidebarPinned}
+                        onTogglePin={handleTogglePin}
+                    />
                 )}
                 <ErrorBoundary ignoreLngUpdate={true}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
