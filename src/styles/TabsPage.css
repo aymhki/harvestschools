@@ -3,13 +3,14 @@
     min-height: 100vh;
     font-family: sans-serif;
     border: none;
-    overflow: hidden;
     border-radius: 0;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .tabs-bar {
     display: flex;
-    background-color: var( --harvest-white-color);
+    background-color: var(--harvest-white-color);
     border-bottom: 0.1rem solid var(--read-only-field-grey-color);
     border-radius: 0;
     overflow-x: scroll;
@@ -47,7 +48,6 @@
 .mobile-nav-arrow:hover {
     background-color: transparent;
     color: var(--primary-color);
-
 }
 
 .tab-btn {
@@ -68,14 +68,10 @@
     font-family: var(--english-title-font);
 }
 
-.tab-btn:hover {
-
-}
-
 .tab-btn.active {
-    color: var( --primary-color);
-    border-bottom: 0.3rem solid var( --primary-color);
-    background-color: var( --harvest-white-color);
+    color: var(--primary-color);
+    border-bottom: 0.3rem solid var(--primary-color);
+    background-color: var(--harvest-white-color);
 }
 
 .tab-panel {
@@ -109,9 +105,6 @@
 }
 
 @media (max-width: 768px) {
-    .tab-btn {
-        font-size: small;
-    }
 
     .tabs-bar {
         overflow: hidden;
@@ -126,7 +119,7 @@
     .tab-btn.active {
         display: block;
         min-width: 100%;
-        border-bottom: 0.1rem solid var( --primary-color);
+        border-bottom: 0.1rem solid var(--primary-color);
     }
 
     .mobile-nav-arrow {
@@ -144,6 +137,40 @@
 
     .right-arrow {
         right: 0;
+    }
+
+    .tabs-bar-wrapper.bar-position-top {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-color: var(--harvest-white-color);
+    }
+
+    .tabs-bar-wrapper.bar-position-top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background-color: var(--harvest-white-color);
+    }
+
+    .tab-panel.tab-panel-top-bar {
+        padding-top: 3.5rem;
+    }
+
+    .tabs-bar-wrapper.bar-position-bottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background-color: var(--harvest-white-color);
+        border-top: 0.1rem solid var(--read-only-field-grey-color);
+    }
+
+    .tab-panel.tab-panel-bottom-bar {
+        padding-bottom: 3.5rem;
     }
 }
 
@@ -168,5 +195,11 @@
     .mobile-nav-arrow:hover {
         background-color: transparent;
         color: var(--harvest-white-color);
+    }
+
+    .tabs-bar-wrapper.bar-position-top,
+    .tabs-bar-wrapper.bar-position-bottom {
+        background-color: var(--light-dark-accent-color);
+        border-color: transparent;
     }
 }
