@@ -111,6 +111,17 @@ const adminLoginPageUrl = '/login';
 const adminDashboardPageUrl = '/dashboard';
 const costPerChildInOpenDaySignup = 150;
 
+const adminUserManagementPermissionLevel = 1000;
+const jobApplicationManagementPermissionLevel = 0;
+const graduationBookingManagementPermissionLevel = 1;
+const openDaySignupManagementPermissionLevel = 2;
+const BorrowingSystemManagementPermissionLevel = 3;
+const infoSystemManagementPermissionLevel = 7;
+const alumniStudentsManagementPermissionLevel = 13;
+
+
+
+
 const ENDPOINTS = {
     checkGraduationBookingSession: '/scripts/Parents/GraduationBookings/checkGraduationBookingSession.php',
     getAllGraduationBookings: '/scripts/Admin/GraduationBookings/getAllGraduationBookings.php',
@@ -134,6 +145,10 @@ const ENDPOINTS = {
     submitOpenDaySignupForm: '/scripts/Public/OpenDaySignups/submitOpenDaySignupForm.php',
     getOpenDaySignups: '/scripts/Admin/OpenDaySignups/getOpenDaySignups.php',
     servePublicAssetFile: '/scripts/Public/General/servePublicAssetFile.php',
+    getAllAdminUsers: '/scripts/Admin/AdminUsers/getAllAdminUsers.php',
+    addAdminUser: '/scripts/Admin/AdminUsers/addAdminUser.php',
+    editAdminUser: '/scripts/Admin/AdminUsers/editAdminUser.php',
+    deleteAdminUser: '/scripts/Admin/AdminUsers/deleteAdminUser.php',
 };
 
 const BASE_URLS = {
@@ -142,6 +157,12 @@ const BASE_URLS = {
 };
 
 const endpoints = generateEndpoints();
+
+const logoutCurrentAdmin = (navigate) => {
+    document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    navigate(adminLoginPageUrl);
+}
 
 const useToggleLanguage = ({ignoreDocUpdate}) => {
     const navigate = useNavigate();
@@ -200,4 +221,12 @@ export {
     costPerChildInOpenDaySignup,
     formatNumberByLocale,
     useToggleLanguage,
+    logoutCurrentAdmin,
+    adminUserManagementPermissionLevel,
+    graduationBookingManagementPermissionLevel,
+    openDaySignupManagementPermissionLevel,
+    jobApplicationManagementPermissionLevel,
+    infoSystemManagementPermissionLevel,
+    alumniStudentsManagementPermissionLevel,
+    BorrowingSystemManagementPermissionLevel
 }

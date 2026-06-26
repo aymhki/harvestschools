@@ -1486,7 +1486,7 @@ function Table({
                         updateVerticalThumbPosition();
                     }}
                 >
-                    { ( (!finalTableData || finalTableData.length === 0) && !isLoading) ? (
+                    { ( !isLoading && (finalTableData && Array.isArray(finalTableData) && finalTableData.length === 0) ) ? (
                         <div className={"table-module-header-empty-state"}>
                             <h3>{t("common.no-table-enteries-found", {ns: 'common'})}</h3>
                         </div>

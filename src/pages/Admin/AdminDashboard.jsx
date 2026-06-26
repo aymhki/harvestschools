@@ -5,7 +5,7 @@ import Spinner from "../../modules/Spinner.jsx";
 import {useMemo} from "react";
 import PropTypes from "prop-types";
 
-function AdminDashboard({ dashboardOptions, isLoading, loggedInUsername }) {
+function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
     const navigate = useNavigate();
 
     const greeting = useMemo(() => {
@@ -17,7 +17,7 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInUsername }) {
             timeGreeting = "Afternoon";
         }
 
-        const finalLoggedInUsername = loggedInUsername.split(' ')[0].slice(0, 24);
+        const finalLoggedInUsername = loggedInName.split(' ')[0].slice(0, 24);
         const timeBasedGreeting = `${timeGreeting}, ${finalLoggedInUsername}`;
 
         const otherOptions = [
@@ -33,7 +33,7 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInUsername }) {
             const randomIndex = Math.floor(Math.random() * otherOptions.length);
             return otherOptions[randomIndex];
         }
-    }, [loggedInUsername]);
+    }, [loggedInName]);
 
     return (
         <div className={"dashboard-page"}>
@@ -67,7 +67,7 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInUsername }) {
 AdminDashboard.propTypes = {
     dashboardOptions: PropTypes.array.isRequired,
     isLoading: PropTypes.bool.isRequired,
-    loggedInUsername: PropTypes.string.isRequired,
+    loggedInName: PropTypes.string.isRequired,
 };
 
 export default AdminDashboard;

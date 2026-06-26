@@ -6,6 +6,7 @@ import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
+import {alumniStudentsManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 
 
 function AlumniStudentsManagement() {
@@ -13,7 +14,7 @@ function AlumniStudentsManagement() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 13, setIsLoading)
+        headToAdminLoginOnInvalidSession(navigate, alumniStudentsManagementPermissionLevel, setIsLoading)
             .then(
                 () => {
                     //TODO: Fetch data here

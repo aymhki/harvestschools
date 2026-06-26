@@ -5,6 +5,7 @@ import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import { fetchAllOpenDaySignups } from "../../services/Admin/OpenDaySignups/AdminOpenDaySignupsManagementServices.jsx";
+import {openDaySignupManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx"
 
 
 function OpenDaySignupsManagement() {
@@ -13,7 +14,7 @@ function OpenDaySignupsManagement() {
     const [openDaySignups, setOpenDaySignups] = useState(null);
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 2, setIsLoading);
+        headToAdminLoginOnInvalidSession(navigate, openDaySignupManagementPermissionLevel, setIsLoading);
     }, []);
 
     const loadTableData = async () => {

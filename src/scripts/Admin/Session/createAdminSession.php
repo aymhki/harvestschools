@@ -58,8 +58,8 @@ try {
         $stmt->close();
     }
 
-    $stmt = $conn->prepare("INSERT INTO admin_sessions (username, id, user_id) VALUES (?, ?, ?)");
-    $stmt->bind_param("ssi", $user, $sessionId, $userId);
+    $stmt = $conn->prepare("INSERT INTO admin_sessions (id, user_id) VALUES (?, ?)");
+    $stmt->bind_param("si", $sessionId, $userId);
 
     if (!$stmt->execute()) {
         echo json_encode([

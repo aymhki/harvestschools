@@ -21,15 +21,17 @@ const FileViewer = lazy(() => import('../pages/Admin/FileViewer.jsx'))
 const AdminUsersManagement = lazy(() => import('../pages/Admin/AdminUsersManagement.jsx'))
 const AlumniStudentsManagement = lazy(() => import('../pages/Admin/AlumniStudentsManagement.jsx'))
 
-export default function AppAdmin() {
+function AppAdmin() {
     const location = useLocation();
     const navigate = useNavigate();
     const [adminLinks, setAdminLinks] = useState([]);
-    const [loggedInUsername, setLoggedInUsername] = useState('Admin');
+    const [loggedInName, setLoggedInName] = useState('Admin');
+    const [loggedInUsername, setLoggedInUsername] = useState('admin');
+    const [loggedInUserId, setLoggedInUserId] = useState(-1);
     const [isAuthLoading, setIsAuthLoading] = useState(false);
     const [isSidebarPinned, setIsSidebarPinned] = useState(false);
-    const { i18n } = useTranslation();
-
+    const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false);
+    const [userDataWereNeverFetched, setUserDataWereNeverFetched] = useState(true);
     const excludePaths = ['/login'];
     const shouldExclude = excludePaths.includes(location.pathname);
 
@@ -40,10 +42,13 @@ export default function AppAdmin() {
     useEffect(() => {
         if (shouldExclude) {
             setAdminLinks([]);
-        } else if (adminLinks.length === 0) {
-            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInUsername);
+            setUserDataWereNeverFetched(true);
+        } else if ((adminLinks.length === 0 && userDataWereNeverFetched) || refreshCurrentUserData) {
+            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInName, setLoggedInUsername, setLoggedInUserId);
+            setUserDataWereNeverFetched(false);
+            setRefreshCurrentUserData(false);
         }
-    }, [shouldExclude, navigate, adminLinks.length]);
+    }, [shouldExclude, navigate, adminLinks.length, refreshCurrentUserData, userDataWereNeverFetched]);
 
     return (
         <div className="App admin-app">
@@ -51,7 +56,7 @@ export default function AppAdmin() {
             <div className={`content ${!shouldExclude ?  'admin-content' : '' } ${isSidebarPinned ? 'pinned' : ''}`}>
                 {!shouldExclude && (
                     <AdminSidebar adminLinks={adminLinks}
-                                  loggedInUsername={loggedInUsername}
+                                  loggedInUsername={loggedInName}
                                   isPinned={isSidebarPinned}
                                   onTogglePin={handleTogglePin}
                                 />
@@ -61,14 +66,14 @@ export default function AppAdmin() {
                         <Routes>
                             <Route path="/" element={<Navigate to="/login" replace />} />
                             <Route path="/login" element={<AdminLogin />} />
-                            <Route path="/dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInUsername={loggedInUsername}/>} />
+                            <Route path="/dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
                             <Route path="/job-applications" element={<JobApplications />} />
                             <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
                             <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />
                             <Route path="/borrowing-system-management" element={<BorrowingSystemManagement />} />
                             <Route path="/info-system-management" element={<InfoSystemManagement />} />
                             <Route path="/view-job-application-file" element={<FileViewer />} />
-                            <Route path="/admin-users-management" element={<AdminUsersManagement />} />
+                            <Route path="/admin-users-management" element={<AdminUsersManagement loggedInUserId={loggedInUserId} setRefreshCurrentUserData={setRefreshCurrentUserData}/>} />
                             <Route path="/alumni-students-management" element={<AlumniStudentsManagement />} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
@@ -79,3 +84,5 @@ export default function AppAdmin() {
         </div>
     )
 }
+
+export default AppAdmin;

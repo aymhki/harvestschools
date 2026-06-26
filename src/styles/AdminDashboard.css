@@ -80,7 +80,7 @@
     padding: 1.5rem;
 }
 
-.add-booking-modal, .edit-booking-modal {
+.general-large-admin-action-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -94,7 +94,7 @@
 }
 
 
-.add-booking-modal-form-overlay, .edit-booking-modal-overlay {
+.general-large-admin-action-modal-overlay {
     position: absolute;
     width: 100vw;
     height: 100vh;
@@ -106,7 +106,7 @@
 }
 
 
-.add-booking-modal-form-container, .edit-booking-modal-container {
+.general-large-admin-action-modal-container {
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
@@ -116,60 +116,16 @@
     z-index: var(--admin-action-popup-modals-z-index);
 }
 
-.add-booking-modal-form-container:lang(ar), .edit-booking-modal-container:lang(ar), .add-booking-modal:lang(ar), .edit-booking-modal:lang(ar) {
-    direction: ltr;
-    text-align: left;
-}
 
-.add-booking-modal-form-container h1:lang(ar), .add-booking-modal-form-container h2:lang(ar), .add-booking-modal-form-container h3:lang(ar), .edit-booking-modal-container h1:lang(ar), .edit-booking-modal-container h2:lang(ar), .edit-booking-modal-container h3:lang(ar) {
-    font-family: var(--english-title-font);
-}
-
-.add-booking-modal-form-container label:lang(ar), .add-booking-modal-form-container input:lang(ar), .edit-booking-modal-container label:lang(ar), .edit-booking-modal-container input:lang(ar) {
-    font-family: var(--english-normal-font);
-    text-align: left;
-    direction: ltr !important;
-}
-
-.add-booking-modal-form-container select:lang(ar), .edit-booking-modal-container select:lang(ar) {
-    font-family: var(--english-normal-font);
-    text-align: left !important;
-    direction: ltr !important;
-    background-position: right 0.7rem top 50% !important;
-}
-
-.add-booking-modal-form-container form:lang(ar), .edit-booking-modal-container form:lang(ar) {
-    direction: ltr;
-}
-
-.add-booking-modal-form-container button:lang(ar), .edit-booking-modal-container button:lang(ar) {
-    font-family: var(--english-normal-font-bold);
-    letter-spacing: 0.3rem !important;
-}
-
-
-.add-booking-modal-form-container .number-input-container .number-form-field:lang(ar), .edit-booking-modal-container .number-input-container .number-form-field:lang(ar) {
-    text-align: center;
-}
-
-.add-booking-modal-form-container .password-field-wrapper:lang(ar), .edit-booking-modal-container .password-field-wrapper:lang(ar) {
-    text-align: left;
-}
-
-.add-booking-modal-form-container .toggle-password-visibility:lang(ar), .edit-booking-modal-container .toggle-password-visibility:lang(ar) {
-    right: 2rem;
-    left: auto;
-}
-
-.add-booking-modal-form-header, .edit-booking-modal-header {
+.general-large-admin-action-modal-header {
     margin: 0.5rem;
 }
 
-.add-booking-modal-form-header h3,  .add-booking-modal-form-header p,  .edit-booking-modal-header h3,  .edit-booking-modal-header p {
+.general-large-admin-action-modal-header h3, .general-large-admin-action-modal-header p {
     margin: 0.5rem;
 }
 
-.add-booking-modal-form-footer, .edit-booking-modal-footer {
+.general-large-admin-action-modal-footer {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -181,19 +137,17 @@
 }
 
 
-.add-booking-modal-form-footer button, .edit-booking-modal-footer button {
+.general-large-admin-action-modal-footer button {
     margin-top: 2rem;
-    /*padding: 0.5rem;*/
-    /*font-size: large;*/
 }
 
 
-.add-booking-modal-content, .edit-booking-modal-content {
+.general-large-admin-action-modal-content {
     overflow-y: scroll;
     max-height: 80vh;
 }
 
-.delete-booking-modal {
+.general-small-admin-action-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -207,7 +161,7 @@
 }
 
 
-.delete-booking-modal-overlay {
+.general-small-admin-action-modal-overlay {
     position: absolute;
     width: 100vw;
     height: 100vh;
@@ -218,7 +172,7 @@
     left: 0;
 }
 
-.delete-booking-modal-container {
+.general-small-admin-action-modal-container {
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
@@ -227,19 +181,19 @@
     z-index: var(--admin-action-popup-modals-z-index);
 }
 
-.delete-booking-modal-header {
+.general-small-admin-action-modal-header {
     margin: 0.5rem;
 }
 
-.delete-booking-modal-header h3,  .delete-booking-modal-header p {
+.general-small-admin-action-modal-header h3, .general-small-admin-action-modal-header p {
     margin: 0.5rem;
 }
 
-.delete-booking-modal-content {
+.general-small-admin-action-modal-content {
 
 }
 
-.delete-booking-modal-footer {
+.general-small-admin-action-modal-footer {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -250,7 +204,7 @@
     margin: 0;
 }
 
-.delete-booking-modal-footer button {
+.general-small-admin-action-modal-footer button {
     margin: 0.5rem;
     padding: 0.5rem;
     font-size: medium;
@@ -265,25 +219,33 @@
 }
 
 @media (max-width: 1024px) {
-    .add-booking-modal-form-container, .edit-booking-modal-container {
+    .general-large-admin-action-modal-header h3 {
+        line-height: 1.5;
+    }
+
+    .general-large-admin-action-modal-container {
         width: 90%;
-        min-height: 90%;
+        min-height: 80%;
+    }
+
+    .general-large-admin-action-modal-content{
+        max-height: 70vh;
     }
 }
 
 @media (max-width: 768px) {
-    .delete-booking-modal-container {
+    .general-small-admin-action-modal-container {
         width: 90%;
     }
 }
 
 @media (prefers-color-scheme: dark) {
 
-    .add-booking-modal-form-container, .edit-booking-modal-container {
+    .general-large-admin-action-modal-container {
         background-color: var(--light-dark-accent-color);
     }
 
-    .delete-booking-modal-container {
+    .general-small-admin-action-modal-container {
         background-color: var(--light-dark-accent-color);
     }
 }

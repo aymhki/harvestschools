@@ -4,6 +4,8 @@ import {
     checkAdminSessionFromAdminLogin
 } from "./MainAdminServices.jsx";
 
+import {adminLoginPageUrl} from "../../General/GeneralUtils.jsx";
+
 const headToAdminLoginOnInvalidSession = async (navigate, allowedPermission, setIsLoading) => {
     try {
         setIsLoading(true);
@@ -16,12 +18,13 @@ const headToAdminLoginOnInvalidSession = async (navigate, allowedPermission, set
     }
 }
 
-const headToAdminLoginOnInvalidSessionFromAdminDashboard = async (navigate, setDashboardOptions, setIsLoading, setLoggedInUsername) => {
+const headToAdminLoginOnInvalidSessionFromAdminDashboard = async (navigate, setDashboardOptions, setIsLoading, setLoggedInName, setLoggedInUsername, setLoggedInUserId) => {
     try {
         setIsLoading(true);
-        await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions, setLoggedInUsername)
+        await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions, setLoggedInName, setLoggedInUsername, setLoggedInUserId);
     } catch (error) {
         console.log(error.message);
+        navigate(adminLoginPageUrl);
     } finally {
         setIsLoading(false);
     }

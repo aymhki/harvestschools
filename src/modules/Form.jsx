@@ -419,8 +419,107 @@ function Form({
         
         return renderWithOptionalLabel(field, textarea);
     };
+
+    const renderMultipleSelectCheckboxGrid = (field) => {
+        const widthClass = getWidthClass(field.widthOfField);
+
+        if (!fieldRefs.current[field.id]) {
+            fieldRefs.current[field.id] = createRef();
+        }
+
+        const parseValues = (val) => {
+            if (!val) return [];
+            if (Array.isArray(val)) return val;
+            return String(val).split(',').map(v => v.trim()).filter(Boolean);
+        };
+
+        const selectedValues = parseValues(field.defaultValue || field.value || '');
+
+        const updateHiddenInput = () => {
+            const checked = [];
+
+            (field.choices || []).forEach((choice, i) => {
+                const r = fieldRefs.current[`${field.id}_${i}`];
+                if (r?.current?.checked) checked.push(choice);
+            });
+
+            const commaValue = checked.join(',');
+
+            const hiddenRef = fieldRefs.current[field.id];
+            if (hiddenRef?.current) hiddenRef.current.value = commaValue;
+
+            setGeneralFormError('');
+            setSuccessMessage('');
+
+            if (!noInputFieldsCache) saveToCache(field, commaValue);
+
+            const newFields = processFieldRules(dynamicFields, field, commaValue);
+            setDynamicFields(newFields);
+
+            processFieldOnChangeResult(field, commaValue);
+        };
+
+        const checkAll = () => {
+            (field.choices || []).forEach((_, i) => {
+                const r = fieldRefs.current[`${field.id}_${i}`];
+                if (r?.current) r.current.checked = true;
+            });
+            updateHiddenInput();
+        };
+
+        const uncheckAll = () => {
+            (field.choices || []).forEach((_, i) => {
+                const r = fieldRefs.current[`${field.id}_${i}`];
+                if (r?.current) r.current.checked = false;
+            });
+            updateHiddenInput();
+        };
+
+        const grid = (
+            <div className={`select-multiple-form-field checkbox-grid-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`}>
+                <input
+                    type="hidden"
+                    id={field.id}
+                    name={field.httpName}
+                    ref={fieldRefs.current[field.id]}
+                    defaultValue={selectedValues.join(',')}
+                />
+
+                {!field.readOnlyField && !formIsReadOnly && (
+                    <div className="checkbox-grid-controls">
+                        <button type="button" onClick={checkAll}   disabled={submitting}>Select all</button>
+                        <button type="button" onClick={uncheckAll} disabled={submitting}>Clear all</button>
+                    </div>
+                )}
+
+                {(field.choices || []).map((choice, i) => {
+                    const choiceRefKey = `${field.id}_${i}`;
+                    if (!fieldRefs.current[choiceRefKey]) fieldRefs.current[choiceRefKey] = createRef();
+                    return (
+                        <label key={i} className="checkbox-grid-item">
+                            <input
+                                type="checkbox"
+                                value={choice}
+                                disabled={submitting || field.readOnlyField || formIsReadOnly}
+                                ref={fieldRefs.current[choiceRefKey]}
+                                defaultChecked={selectedValues.includes(choice)}
+                                onChange={updateHiddenInput}
+                            />
+                            {choice}
+                        </label>
+                    );
+                })}
+            </div>
+        );
+
+        return renderWithOptionalLabel(field, grid);
+    };
     
     const renderSelect = (field) => {
+        if (field.multiple) {
+            return renderMultipleSelectCheckboxGrid(field);
+        }
+
         const baseProps = getCommonInputProps(field);
         const widthClass = getWidthClass(field.widthOfField);
         
@@ -830,6 +929,24 @@ function Form({
                     }
                 }
             }
+
+            if (dynamicFields[i].type === 'select' && dynamicFields[i].multiple && dynamicFields[i].required) {
+
+                const selected = [];
+
+                (dynamicFields[i].choices || []).forEach((choice, j) => {
+                    const choiceRef = fieldRefs.current[`${dynamicFields[i].id}_${j}`];
+                    if (choiceRef?.current?.checked) selected.push(choice);
+                });
+
+
+                if (selected.length === 0) {
+                    setGeneralFormError( t('all-forms.field-required', { field1: getWhichLabelToUse(dynamicFields[i]) } ) );
+                    setTimeout(() => setGeneralFormError(''), msgTimeout);
+                    return;
+                }
+
+            }
         }
         
         setSubmitting(true);
@@ -858,8 +975,32 @@ function Form({
                 } else {
                     const ref = fieldRefs.current[field.id];
                     if (ref && ref.current) {
+
                         if (field.type === 'checkbox' || field.type === 'radio') {
+
                             value = ref.current.checked ? ref.current.value : '';
+
+                        } else if (field.type === 'select' && field.multiple) {
+
+                            if (field.readOnlyField || formIsReadOnly) {
+
+                                const vals = Array.isArray(field.value)
+                                    ? field.value
+                                    : String(field.value || '').split(',').map(v => v.trim()).filter(Boolean);
+
+                                value = vals.join(',');
+
+                            } else {
+
+                                const selected = [];
+
+                                (field.choices || []).forEach((choice, i) => {
+                                    const choiceRef = fieldRefs.current[`${field.id}_${i}`];
+                                    if (choiceRef?.current?.checked) selected.push(choice);
+                                });
+
+                                value = selected.join(',');
+                            }
                         } else {
                             value = ref.current.value || '';
                         }
@@ -957,6 +1098,13 @@ function Form({
                 if (ref && ref.current) {
                     if (field.type === 'checkbox' || field.type === 'radio') {
                         ref.current.checked = cachedValue;
+                    } else if (field.type === 'select' && field.multiple) {
+                        ref.current.value = cachedValue;
+                        const vals = String(cachedValue).split(',').map(v => v.trim()).filter(Boolean);
+                        (field.choices || []).forEach((choice, i) => {
+                            const choiceRef = fieldRefs.current[`${field.id}_${i}`];
+                            if (choiceRef?.current) choiceRef.current.checked = vals.includes(choice);
+                        });
                     } else {
                         ref.current.value = cachedValue;
                     }
@@ -1013,6 +1161,15 @@ function Form({
                     if ( ref && ref.current ) {
                         if ( field.type === 'checkbox' || field.type === 'radio' ) {
                             ref.current.checked = field.value;
+                        } else if (field.type === 'select' && field.multiple) {
+                            const vals = Array.isArray(field.value)
+                                ? field.value
+                                : String(field.value).split(',').map(v => v.trim()).filter(Boolean);
+                            ref.current.value = vals.join(',');
+                            (field.choices || []).forEach((choice, i) => {
+                                const choiceRef = fieldRefs.current[`${field.id}_${i}`];
+                                if (choiceRef?.current) choiceRef.current.checked = vals.includes(choice);
+                            });
                         } else {
                             ref.current.value = field.value;
                         }
@@ -1043,7 +1200,6 @@ function Form({
     }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
 
 
-    
     const CaptchaField = () => {
         if (noCaptcha) return null;
         
@@ -1066,6 +1222,7 @@ function Form({
                         type="text"
                         placeholder=""
                         required
+                        ref={enteredCaptcha}
                         onPaste={handlePaste}
                     />
                     <div
@@ -1267,10 +1424,10 @@ function Form({
             <>
                 <form className="form" onSubmit={onSubmit} method="post" onReset={resetForm}>
                     {dynamicFields.map((field) => (renderFieldBasedOnType(field)))}
-                    <CaptchaField/>
-                    <FormFooter/>
+                    {CaptchaField()}
+                    {FormFooter()}
                 </form>
-                <DateModal/>
+                {DateModal()}
             </>
         );
     };

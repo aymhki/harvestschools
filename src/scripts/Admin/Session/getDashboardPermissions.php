@@ -168,7 +168,8 @@ try {
         ]
     ];
 
-
+    rsort($cleanPermissionLevels);
+    
     foreach ($cleanPermissionLevels as $level) {
         if (isset($allDashboardOptions[$level])) {
             $dashboardOptions = array_merge($dashboardOptions, $allDashboardOptions[$level]);

@@ -114,9 +114,6 @@ jobs:
 
           mirror -R --verbose --parallel=5 --exclude-glob .git* dist/admin/ admin.harvestschools.com/
           put -O admin.harvestschools.com/ domains/Admin/.htaccess
-          mirror -R --verbose --parallel=5 src/scripts/Admin/ admin.harvestschools.com/scripts/Admin/
-          mirror -R --verbose --parallel=5 src/scripts/Public/General/ admin.harvestschools.com/scripts/Public/General/
-          put -O admin.harvestschools.com/scripts/ src/scripts/headers.php
-
+          mirror -R --verbose --parallel=5 src/scripts/ admin.harvestschools.com/scripts/
           bye
           LFTP

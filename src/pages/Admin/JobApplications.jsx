@@ -5,6 +5,7 @@ import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {fetchJobApplicationsRequest} from "../../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
+import {jobApplicationManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx"
 
 function JobApplications() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ function JobApplications() {
     const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 0, setIsLoading);
+        headToAdminLoginOnInvalidSession(navigate, jobApplicationManagementPermissionLevel, setIsLoading);
     }, []);
 
     const loadTableData = async () => {

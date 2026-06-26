@@ -8,7 +8,8 @@ const fetchAllOpenDaySignups = async (navigate, setOpenDaySignups) => {
     const sessionId = validateAdminSessionLocally();
 
     if (!sessionId) {
-        console.log('Session expired');
+        navigate(adminLoginPageUrl);
+        return 'Session expired';
     }
 
     setOpenDaySignups(null);
@@ -19,7 +20,7 @@ const fetchAllOpenDaySignups = async (navigate, setOpenDaySignups) => {
 
         const result = await response.json();
 
-        if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
+        if (result && result.data && Array.isArray(result.data)) {
             setOpenDaySignups(result.data);
         } else {
             setOpenDaySignups(null);

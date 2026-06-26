@@ -17,7 +17,7 @@
     "egp": "جنيه",
     "upload": "رفع",
     "remove": "إزالة",
-    "year-month-day": " (سنة-شهر-يوم) "
-
+    "year-month-day": " (سنة-شهر-يوم) ",
+    "field-required": "هذه الخانة '{{field1}}' مطلوبة"
   }
 }

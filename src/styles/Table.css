@@ -708,6 +708,17 @@ td button {
     user-select: none;
 }
 
+.table-module-header-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
 @media (max-width: 1600px) {
     .table-module-header-buttons-wrapper {
         flex-wrap: wrap;

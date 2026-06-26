@@ -1,7 +1,7 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {msgTimeout} from "../../services/General/GeneralUtils.jsx";
+import {msgTimeout, graduationBookingManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
@@ -850,7 +850,7 @@ function GraduationBookingManagement() {
     }
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 1, setIsLoading)
+        headToAdminLoginOnInvalidSession(navigate, graduationBookingManagementPermissionLevel, setIsLoading)
         .then(
             () => {
                 fetchBookings();
@@ -955,15 +955,15 @@ function GraduationBookingManagement() {
                 />
             </div>
 
-            <animated.div style={animateAddBookingModal} className={"add-booking-modal"}>
-                <div className={"add-booking-modal-form-overlay"} onClick={cancelAddBookingModal}/>
-                <div className={"add-booking-modal-form-container"}>
-                    <div className={"add-booking-modal-form-header"}>
+            <animated.div style={animateAddBookingModal} className={"general-large-admin-action-modal"}>
+                <div className={"general-large-admin-action-modal-overlay"} onClick={cancelAddBookingModal}/>
+                <div className={"general-large-admin-action-modal-container"}>
+                    <div className={"general-large-admin-action-modal-header"}>
                         <h3>
                             Add A New Booking
                         </h3>
                     </div>
-                    <div className={"add-booking-modal-content"}>
+                    <div className={"general-large-admin-action-modal-content"}>
                         <Form fields={addBookingModalCoreFormFields}
                               mailTo={''}
                               sendPdf={false}
@@ -987,7 +987,7 @@ function GraduationBookingManagement() {
                     </div>
 
 
-                    <div className={"add-booking-modal-form-footer"}>
+                    <div className={"general-large-admin-action-modal-footer"}>
                         <button className={"add-booking-modal-form-cancel-button"} onClick={cancelAddBookingModal}>
                             Cancel
                         </button>
@@ -995,12 +995,12 @@ function GraduationBookingManagement() {
                 </div>
             </animated.div>
 
-            <animated.div style={animateDeleteBookingModal} className={"delete-booking-modal"}>
-                <div className={"delete-booking-modal-overlay"} onClick={handleCancelDeleteBookingModal}/>
+            <animated.div style={animateDeleteBookingModal} className={"general-small-admin-action-modal"}>
+                <div className={"general-small-admin-action-modal-overlay"} onClick={handleCancelDeleteBookingModal}/>
 
-                <div className={"delete-booking-modal-container"}>
+                <div className={"general-small-admin-action-modal-container"}>
 
-                    <div className={"delete-booking-modal-header"}>
+                    <div className={"general-small-admin-action-modal-header"}>
 
                         <h3>
                             Delete Booking
@@ -1008,7 +1008,7 @@ function GraduationBookingManagement() {
 
                     </div>
 
-                    <div className={"delete-booking-modal-content"}>
+                    <div className={"general-small-admin-action-modal-content"}>
                             <p>
                                 Are you sure you want to delete this booking ID{' '}
                                 {(allBookings && rowIndexToDelete !== null && allBookings[rowIndexToDelete]) ? (
@@ -1021,20 +1021,20 @@ function GraduationBookingManagement() {
                         {deleteError && (
                             <>
                                 <br/>
-                                <p className={"delete-booking-modal-error"}>{deleteError}</p>
+                                <p>{deleteError}</p>
                             </>
                         )}
                     </div>
 
-                    <div className={"delete-booking-modal-footer"}>
+                    <div className={"general-small-admin-action-modal-footer"}>
 
 
 
-                        <button className={"delete-booking-modal-cancel-button"} onClick={handleCancelDeleteBookingModal}>
+                        <button onClick={handleCancelDeleteBookingModal}>
                             Cancel
                         </button>
 
-                        <button className={"delete-booking-modal-confirm-button"} onClick={() => {
+                        <button onClick={() => {
                             handleDeleteBooking();
                         }}>
                             {isDeleting ? 'Deleting...' : 'Delete'}
@@ -1048,19 +1048,19 @@ function GraduationBookingManagement() {
 
             </animated.div>
 
-            <animated.div style={animateEditBookingModal} className={"edit-booking-modal"}>
-                <div className={"edit-booking-modal-overlay"} onClick={() => {
+            <animated.div style={animateEditBookingModal} className={"general-large-admin-action-modal"}>
+                <div className={"general-large-admin-action-modal-overlay"} onClick={() => {
                     handleCancelEditBookingModal();
                 }}/>
 
-                <div className={"edit-booking-modal-container"}>
-                    <div className={"edit-booking-modal-header"}>
+                <div className={"general-large-admin-action-modal-container"}>
+                    <div className={"general-large-admin-action-modal-header"}>
                         <h3>
                             Edit Booking
                         </h3>
                     </div>
 
-                    <div className={"edit-booking-modal-content"}>
+                    <div className={"general-large-admin-action-modal-content"}>
                         {editBookingModalPreFilledCoreFields && (
                             <Form fields={editBookingModalPreFilledCoreFields}
                                   mailTo={''}
@@ -1090,7 +1090,7 @@ function GraduationBookingManagement() {
                         )}
                     </div>
 
-                    <div className={"edit-booking-modal-footer"}>
+                    <div className={"general-large-admin-action-modal-footer"}>
                         <button className={"edit-booking-modal-cancel-button"} onClick={() => {
                             handleCancelEditBookingModal();
                         }}>
