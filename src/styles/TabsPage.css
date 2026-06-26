@@ -1,0 +1,172 @@
+.tabs-container {
+    width: 100%;
+    min-height: 100vh;
+    font-family: sans-serif;
+    border: none;
+    overflow: hidden;
+    border-radius: 0;
+}
+
+.tabs-bar {
+    display: flex;
+    background-color: var( --harvest-white-color);
+    border-bottom: 0.1rem solid var(--read-only-field-grey-color);
+    border-radius: 0;
+    overflow-x: scroll;
+    justify-content: safe center;
+    align-items: center;
+    margin: 0 auto;
+    scrollbar-width: none;
+}
+
+.tabs-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.tabs-bar-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.mobile-nav-arrow {
+    display: none;
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 1rem;
+    color: inherit;
+    outline: none;
+    box-shadow: none;
+    filter: none;
+    transition: none;
+    z-index: 10;
+    font-family: var(--english-normal-font);
+}
+
+.mobile-nav-arrow:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+
+}
+
+.tab-btn {
+    flex: 1;
+    margin: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+    box-shadow: none;
+    filter: none;
+    border: none;
+    outline: none;
+    border-radius: 0;
+    background: none;
+    font-size: large;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 10rem;
+    font-family: var(--english-title-font);
+}
+
+.tab-btn:hover {
+
+}
+
+.tab-btn.active {
+    color: var( --primary-color);
+    border-bottom: 0.3rem solid var( --primary-color);
+    background-color: var( --harvest-white-color);
+}
+
+.tab-panel {
+    min-height: 100vh;
+}
+
+.tab-content {
+    width: 100%;
+    padding: 0.5rem;
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@media (max-width: 1600px) {
+
+}
+
+@media (max-width: 1200px) {
+
+}
+
+@media (max-width: 1024px) {
+    .tab-btn {
+        font-size: medium;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .tab-btn {
+        font-size: small;
+    }
+
+    .tabs-bar {
+        overflow: hidden;
+    }
+
+    .tab-btn {
+        font-size: small;
+        display: none;
+        width: 100%;
+    }
+
+    .tab-btn.active {
+        display: block;
+        min-width: 100%;
+        border-bottom: 0.1rem solid var( --primary-color);
+    }
+
+    .mobile-nav-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+    }
+
+    .left-arrow {
+        left: 0;
+    }
+
+    .right-arrow {
+        right: 0;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .tab-btn {
+        color: var(--harvest-white-color);
+        background-color: var(--light-dark-accent-color);
+    }
+
+    .tab-btn.active {
+        background-color: var(--light-dark-accent-color);
+        color: var(--harvest-white-color);
+        border-color: var(--harvest-white-color);
+    }
+
+    .tabs-bar {
+        background-color: var(--light-dark-accent-color);
+        border: none;
+        box-shadow: 0.1rem 0.1rem 1rem var(--harvest-white-color);
+    }
+
+    .mobile-nav-arrow:hover {
+        background-color: transparent;
+        color: var(--harvest-white-color);
+    }
+}
