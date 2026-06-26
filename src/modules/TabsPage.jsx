@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import '../styles/TabsPage.css';
 
-function TabsPage({ tabData, initialTab, barOnTopInMobile = true }) {
+function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = true }) {
     const [activeTab, setActiveTab] = useState(initialTab || tabData[0].id);
     const currentIndex = tabData.findIndex((tab) => tab.id === activeTab);
 
@@ -17,7 +17,7 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true }) {
     };
 
     const tabBar = (
-        <div className={`tabs-bar-wrapper ${barOnTopInMobile ? 'bar-position-top' : 'bar-position-bottom'}`}>
+        <div className={`tabs-bar-wrapper ${barOnTopInMobile ? 'bar-position-top' : 'bar-position-bottom'} ${stickyOnDesktop ? 'sticky-desktop' : ''}`}>
             <button
                 className="mobile-nav-arrow left-arrow"
                 onClick={handlePrevTab}
@@ -49,7 +49,7 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true }) {
     );
 
     const tabPanel = (
-        <div className={`tab-panel ${barOnTopInMobile ? 'tab-panel-top-bar' : 'tab-panel-bottom-bar'}`} role="tabpanel">
+        <div className={`tab-panel ${barOnTopInMobile ? 'tab-panel-top-bar' : 'tab-panel-bottom-bar'} ${stickyOnDesktop ? 'tab-panel-sticky-desktop' : ''}`} role="tabpanel">
             {tabData.map((tab) => {
                 const ActiveTabComponent = tab.component;
                 return (
@@ -82,6 +82,7 @@ TabsPage.propTypes = {
     ).isRequired,
     initialTab: PropTypes.number,
     barOnTopInMobile: PropTypes.bool,
+    stickyOnDesktop: PropTypes.bool,
 }
 
 export default TabsPage;
