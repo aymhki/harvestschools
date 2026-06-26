@@ -1,8 +1,8 @@
 .floating-mobile-menu {
     display: none;
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 0;
+    right: 0;
     z-index: var(--admin-sidebar-z-index);
     background-color:  var(--harvest-white-color);
     color: var(--primary-color);
