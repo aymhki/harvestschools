@@ -10,7 +10,7 @@ function set_cors_headers($customOptions = []) {
         ],
         'cache_control'   => 'no-store, no-cache, must-revalidate, max-age=0',
         'pragma'          => 'no-cache',
-        'access_control_allow_credentials' => 'false'
+        'access_control_allow_credentials' => 'true'
     ];
 
     $config = array_merge($defaults, $customOptions);

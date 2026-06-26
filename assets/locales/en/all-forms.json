@@ -17,6 +17,7 @@
     "egp": "EGP",
     "upload": "Upload",
     "remove": "Remove",
-    "year-month-day": " (YYYY-MM-DD)"
+    "year-month-day": " (YYYY-MM-DD)",
+    "field-required": "Field '{{field1}}' is required"
   }
 }

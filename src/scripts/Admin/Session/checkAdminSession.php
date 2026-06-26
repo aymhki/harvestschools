@@ -42,7 +42,7 @@ try {
 
     $conn->set_charset("utf8mb4");
     $sessionId = $data['session_id'];
-    $stmt = $conn->prepare("SELECT admin_sessions.username, admin_users.name FROM admin_sessions LEFT JOIN admin_users ON LOWER(admin_sessions.username) = LOWER(admin_users.username) WHERE admin_sessions.id = ?");
+    $stmt = $conn->prepare("SELECT admin_users.name, admin_users.username, admin_users.id FROM admin_users LEFT JOIN admin_sessions ON admin_sessions.user_id = admin_users.id WHERE admin_sessions.id = ?");
 
     if (!$stmt) {
         echo json_encode([
@@ -67,12 +67,18 @@ try {
         exit;
     }
 
-    echo json_encode([
+    $resultUser = $result->fetch_assoc();
+
+    $toReturn = [
         "success" => true,
         "message" => "Session is valid",
         "code" => 200,
-        "username" => $result->fetch_assoc()['name']
-    ]);
+        "name" => $resultUser['name'],
+        "username" => $resultUser['username'],
+        "id" => $resultUser['id']
+    ];
+
+    echo json_encode($toReturn);
 
 } catch (Exception $e) {
 

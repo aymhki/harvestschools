@@ -7,6 +7,8 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
 
     if (!sessionId) {
         console.log('Session expired');
+        navigate(adminLoginPageUrl);
+        return 'Session expired';
     }
 
     setJobApplications(null);
@@ -18,7 +20,7 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
 
         const result = await response.json();
 
-        if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
+        if (result && result.data && Array.isArray(result.data)) {
             setJobApplications(result.data);
         } else {
             setJobApplications(null);

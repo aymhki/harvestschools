@@ -1,5 +1,6 @@
-<?
+<?php
 require_once '../../headers.php';
+require_once '../../authHelpers.php';
 set_cors_headers();
 $dbConfig = require '../../dbConfig.php';
 $servername = $dbConfig['db_host'];
@@ -11,18 +12,6 @@ $dbname = $dbConfig['db_name'];
 try {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
-
-    if (!isset($data['session_id'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Bad Request: Missing session_id",
-            "code" => 400
-        ]);
-        exit;
-    }
-
-    $sessionId = $data['session_id'];
-
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
@@ -31,50 +20,48 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
+    $authStatus = check_user_permission($conn, 1000);
 
-
-    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
-    if (!$stmt) {
-        echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error, "code" => 500]);
+    if (!$authStatus['success']) {
+        echo json_encode($authStatus);
         exit;
     }
 
-    $stmt->bind_param("s", $sessionId);
-    $stmt->execute();
-    $permissionResult = $stmt->get_result();
-    $stmt->close();
-
-    if ($permissionResult->num_rows == 0) {
-        echo json_encode(["success" => false, "message" => "Invalid session", "code" => 401]);
-        exit;
-    }
-
-    $permissionRow = $permissionResult->fetch_assoc();
-    $cleanPermissionLevels = array_map('intval', explode(',', $permissionRow['permission_level']));
-
-    if (!in_array(1000, $cleanPermissionLevels, true)) {
-        echo json_encode(["success" => false, "message" => "Permission denied", "code" => 403]);
-        exit;
+    $permissionsMap = [];
+    $permResult = $conn->query("SELECT permission_id, permission_name, description FROM available_permissions");
+    if ($permResult && $permResult->num_rows > 0) {
+        while ($pRow = $permResult->fetch_assoc()) {
+            $permissionsMap[$pRow['permission_id']] = [
+                'name' => $pRow['permission_name'],
+                'description' => $pRow['description']
+            ];
+        }
     }
 
     $sql = "SELECT * FROM admin_users";
-
     $result = $conn->query($sql);
 
     $headers = [
-        "ID", "Username", "Name", "Password Hash", "Permission Level"
+        "User ID", "Username", "Name", "Password Hash", "Permissions", "Permissions In Numbers"
     ];
-
 
     $dataRows = [];
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $rowData = array_values($row);
-            foreach($fileLinkIndices as $index) {
-                if (!empty($rowData[$index])) {
-                    $rowData[$index] = urlencode($rowData[$index]);
+            $originalPermissions = isset($row['permission_level']) ? $row['permission_level'] : '';
+
+            if (isset($row['permission_level']) && $row['permission_level'] !== '') {
+                $permIds = array_map('trim', explode(',', $row['permission_level']));
+                $permNames = [];
+                foreach ($permIds as $id) {
+                    $permNames[] = isset($permissionsMap[$id]) ? $permissionsMap[$id]['name'] : $id;
                 }
+                $row['permission_level'] = implode(', ', $permNames);
             }
+
+            $row['permissions_in_numbers'] = $originalPermissions;
+
+            $rowData = array_values($row);
             $dataRows[] = $rowData;
         }
     }
@@ -83,7 +70,8 @@ try {
         "success" => true,
         "message" => "Data retrieved successfully",
         "code" => 200,
-        "data" => array_merge([$headers], $dataRows)
+        "data" => array_merge([$headers], $dataRows),
+        "permissionsDict" => $permissionsMap
     ]);
 
 

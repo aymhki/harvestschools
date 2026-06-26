@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
+import {BorrowingSystemManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 
 function BorrowingSystemManagement() {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ function BorrowingSystemManagement() {
 
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 3, setIsLoading);
+        headToAdminLoginOnInvalidSession(navigate, BorrowingSystemManagementPermissionLevel, setIsLoading);
     }, []);
 
     return (

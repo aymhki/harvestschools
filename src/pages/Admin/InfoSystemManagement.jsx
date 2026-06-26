@@ -6,14 +6,14 @@ import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
-
+import {infoSystemManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 
 function InfoSystemManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        headToAdminLoginOnInvalidSession(navigate, 7, setIsLoading)
+        headToAdminLoginOnInvalidSession(navigate, infoSystemManagementPermissionLevel, setIsLoading)
         .then(
             () => {
                 //TODO: Fetch data here
