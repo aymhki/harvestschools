@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { serveLocalAssets } from '../../vite-plugins/serve-local-assets.jsx'
+import { serveLocalAssets } from '../../src/plugins/serve-local-assets.jsx'
 import path from 'path'
 
 export default defineConfig({
