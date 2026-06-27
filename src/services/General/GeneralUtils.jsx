@@ -149,6 +149,8 @@ const ENDPOINTS = {
     addAdminUser: '/scripts/Admin/AdminUsers/addAdminUser.php',
     editAdminUser: '/scripts/Admin/AdminUsers/editAdminUser.php',
     deleteAdminUser: '/scripts/Admin/AdminUsers/deleteAdminUser.php',
+    getInfoSystem: '/scripts/Admin/InfoSystem/getInfoSystemData.php',
+    updateInfoSystem: '/scripts/Admin/InfoSystem/updateInfoSystemData.php',
 };
 
 const BASE_URLS = {
