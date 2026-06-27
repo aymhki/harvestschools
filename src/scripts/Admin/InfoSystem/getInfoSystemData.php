@@ -24,36 +24,55 @@ try {
         exit;
     }
 
-    $settings = [];
+    $settingsHeaders = ["Setting Key", "Value", "Is Encrypted", "Description"];
+    $settingsRows = [];
+
     $stmt = $conn->prepare("SELECT setting_key, IF(is_encrypted, CAST(AES_DECRYPT(UNHEX(setting_value), ?) AS CHAR), setting_value) AS val, is_encrypted, description FROM info_system_global_settings");
     $stmt->bind_param("s", $dbEncryptionKeyPhrase);
     $stmt->execute();
     $res = $stmt->get_result();
+
     while ($row = $res->fetch_assoc()) {
-        $settings[] = $row;
+        $settingsRows[] = array_values($row);
     }
     $stmt->close();
 
-    $departments = [];
-    $res = $conn->query("SELECT * FROM info_system_departments");
+    $settingsData = array_merge([$settingsHeaders], $settingsRows);
+
+    $deptHeaders = ["Department Key", "Name (EN)", "Name (AR)", "Contact Number", "Is Academic"];
+    $deptRows = [];
+
+    $res = $conn->query("SELECT dept_key, name_en, name_ar, contact_number, is_academic FROM info_system_departments");
+
     while ($row = $res->fetch_assoc()) {
-        $departments[] = $row;
+        $deptRows[] = array_values($row);
     }
 
-    $stages = [];
-    $res = $conn->query("SELECT * FROM info_system_stages ORDER BY dept_key, sort_order ASC");
+    $deptData = array_merge([$deptHeaders], $deptRows);
+
+    $stageHeaders = [
+        "Stage Key", "Department Key", "Section Key", "Section Title (EN)",
+        "Section Title (AR)", "Name (EN)", "Name (AR)", "Is Offered",
+        "Age (EN)", "Age (AR)", "Tuition Fees", "Sort Order"
+    ];
+    $stageRows = [];
+
+    $res = $conn->query("SELECT stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order FROM info_system_stages ORDER BY dept_key, sort_order ASC");
+
     while ($row = $res->fetch_assoc()) {
-        $stages[] = $row;
+        $stageRows[] = array_values($row);
     }
+
+    $stageData = array_merge([$stageHeaders], $stageRows);
 
     echo json_encode([
         "success" => true,
         "message" => "Data retrieved successfully",
         "code" => 200,
         "data" => [
-            "settings" => $settings,
-            "departments" => $departments,
-            "stages" => $stages
+            "settings" => $settingsData,
+            "departments" => $deptData,
+            "stages" => $stageData
         ]
     ]);
 
