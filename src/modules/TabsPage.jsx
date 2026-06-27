@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import {Fragment, useState} from "react";
 import '../styles/TabsPage.css';
 
-function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = true }) {
+function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = false, elementsAcrossTabsAtTheTop }) {
     const [activeTab, setActiveTab] = useState(initialTab || tabData[0].id);
     const currentIndex = tabData.findIndex((tab) => tab.id === activeTab);
 
@@ -57,6 +57,12 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
                         key={tab.id}
                         className={`tab-content ${activeTab === tab.id ? 'active' : ''}`}
                     >
+                        {elementsAcrossTabsAtTheTop && elementsAcrossTabsAtTheTop.map((element, index) => (
+                            <Fragment key={index}>
+                                {element}
+                            </Fragment>
+                        ))}
+
                         {ActiveTabComponent && <ActiveTabComponent />}
                     </div>
                 );
@@ -83,6 +89,7 @@ TabsPage.propTypes = {
     initialTab: PropTypes.number,
     barOnTopInMobile: PropTypes.bool,
     stickyOnDesktop: PropTypes.bool,
+    elementsAcrossTabsAtTheTop: PropTypes.array,
 }
 
 export default TabsPage;

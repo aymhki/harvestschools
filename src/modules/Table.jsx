@@ -26,6 +26,7 @@ function Table({
                    onEditEntryOption,
                    likelyUrlColumns,
                    allowSticky,
+                   allowStickyOnMobile,
                    dataTypes,
                    hideHorizontalScrollBar,
                    hideVerticalScrollBar,
@@ -79,8 +80,9 @@ function Table({
     const [isVerticalDragging, setIsVerticalDragging] = useState(false);
     const [startY, setStartY] = useState(0);
     const [scrollTopStart, setScrollTopStart] = useState(0);
-    const [stickyRows, setStickyRows] = useState(allowSticky ? 1 : 0);
-    const [stickyCols, setStickyCols] = useState(allowSticky ? 1 : 0);
+    const [isCurrentlySticky, setIsCurrentlySticky] = useState(isMobile ? (allowStickyOnMobile === undefined) ? allowSticky : (allowSticky && allowStickyOnMobile) : allowSticky);
+    const [stickyRows, setStickyRows] = useState(isCurrentlySticky ? 1 : 0);
+    const [stickyCols, setStickyCols] = useState(isCurrentlySticky ? 1 : 0);
     const [hoveredCell, setHoveredCell] = useState({r: null, c: null});
     const [colWidths, setColWidths] = useState([]);
     const [rowHeights, setRowHeights] = useState([]);
@@ -1430,6 +1432,12 @@ function Table({
         };
     }, [finalTableData, hiddenColumns, isAccordionOpen, isFilterPopupOpen, compact, scrollable, tableData, isMobile, showVerticalScrollBarInMobile, hideVerticalScrollBar]);
 
+    useEffect(() => {
+        setIsCurrentlySticky(isMobile ? (allowStickyOnMobile === undefined) ? allowSticky : (allowSticky && allowStickyOnMobile) : allowSticky);
+        setStickyCols(isCurrentlySticky ? 1 : 0);
+        setStickyRows(isCurrentlySticky ? 1 : 0);
+    }, [isMobile, allowStickyOnMobile, allowSticky, isCurrentlySticky])
+
     return (
         <div className={`table-module ${!isScrollbarVisible ? 'compressed' : '' }`} ref={tableModuleRef} >
 
@@ -1543,7 +1551,7 @@ function Table({
                                                 onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: cellIndex})}
                                                 onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             >
-                                                {allowSticky && (showColControl || showRowControl) && (
+                                                {isCurrentlySticky && (showColControl || showRowControl) && (
                                                     <div className="sticky-control-widget">
                                                         {showColControl && (
                                                             <label className="sticky-control-checkbox"
@@ -1640,7 +1648,7 @@ function Table({
                                                 const showColControlEdit = isHoveredEdit && rowIndex === 0 && editCellIndex < 1;
                                                 const showRowControlEdit = isHoveredEdit && editCellIndex === 0 && rowIndex < 1;
 
-                                                return allowSticky && (showColControlEdit || showRowControlEdit) ? (
+                                                return isCurrentlySticky && (showColControlEdit || showRowControlEdit) ? (
                                                     <div className="sticky-control-widget">
                                                         {showColControlEdit && (
                                                             <label className="sticky-control-checkbox"
@@ -1694,7 +1702,7 @@ function Table({
                                                 const showColControlDelete = isHoveredDelete && rowIndex === 0 && deleteCellIndex < 1;
                                                 const showRowControlDelete = isHoveredDelete && deleteCellIndex === 0 && rowIndex < 1;
 
-                                                return allowSticky && (showColControlDelete || showRowControlDelete) ? (
+                                                return isCurrentlySticky && (showColControlDelete || showRowControlDelete) ? (
                                                     <div className="sticky-control-widget">
                                                         {showColControlDelete && (
                                                             <label className="sticky-control-checkbox"
@@ -2030,6 +2038,7 @@ Table.propTypes = {
     onEditEntryOption: PropTypes.func,
     likelyUrlColumns: PropTypes.objectOf(PropTypes.func),
     allowSticky: PropTypes.bool,
+    allowStickyOnMobile: PropTypes.bool,
     dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     hideHorizontalScrollBar: PropTypes.bool,
     hideVerticalScrollBar: PropTypes.bool,
