@@ -94,20 +94,22 @@ function InfoSystemManagement() {
             if (currentEditType === 'settings') {
                 payload = {
                     settings: [{
-                        setting_key: globalSettingsData[indexOfRowToEdit][0],
+                        setting_key: globalSettingsData[indexOfRowToEdit][1],
                         val: formDataJson['field_val'],
                         is_encrypted: formDataJson['field_is_encrypted'],
-                        description: formDataJson['field_description'] || ''
+                        description: formDataJson['field_description'] || '',
+                        sort_order: Number(globalSettingsData[indexOfRowToEdit][0])
                     }]
                 };
             } else if (currentEditType === 'departments') {
                 payload = {
                     departments: [{
-                        dept_key: departmentsData[indexOfRowToEdit][0],
+                        dept_key: departmentsData[indexOfRowToEdit][1],
                         name_en: formDataJson['field_name_en'],
                         name_ar: formDataJson['field_name_ar'],
                         contact_number: formDataJson['field_contact_number'],
-                        is_academic: formDataJson['field_is_academic']
+                        is_academic: formDataJson['field_is_academic'],
+                        sort_order: Number(departmentsData[indexOfRowToEdit][0])
                     }]
                 };
             } else if (currentEditType === 'stages') {

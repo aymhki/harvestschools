@@ -26,13 +26,13 @@ try {
     $conn->begin_transaction();
 
     if (isset($postData['settings'])) {
-        $stmt = $conn->prepare("INSERT INTO info_system_global_settings (setting_key, setting_value, is_encrypted, description) VALUES (?, IF(?, HEX(AES_ENCRYPT(?, ?)), ?), ?, ?) ON DUPLICATE KEY UPDATE setting_value = IF(VALUES(is_encrypted), HEX(AES_ENCRYPT(?, ?)), ?), is_encrypted = VALUES(is_encrypted)");
+        $stmt = $conn->prepare("INSERT INTO info_system_global_settings (setting_key, setting_value, is_encrypted, description, sort_order) VALUES (?, IF(?, HEX(AES_ENCRYPT(?, ?)), ?), ?, ?, ?) ON DUPLICATE KEY UPDATE setting_value = IF(VALUES(is_encrypted), HEX(AES_ENCRYPT(?, ?)), ?), is_encrypted = VALUES(is_encrypted)");
         foreach ($postData['settings'] as $s) {
             $val = in_array($s['val'], ['Yes', 'No']) ? ($s['val'] === 'Yes' ? '1' : '0') : $s['val'];
             $isEnc = $s['is_encrypted'] === 'Yes' ? 1 : 0;
-            $stmt->bind_param("sisssssiss",
+            $stmt->bind_param("sisssssiiss",
                 $s['setting_key'], $isEnc, $val, $dbEncryptionKeyPhrase, $val, $isEnc, $s['description'],
-                $val, $dbEncryptionKeyPhrase, $val
+                $val, $s['sort_order'], $dbEncryptionKeyPhrase, $val
             );
             $stmt->execute();
         }
@@ -40,10 +40,10 @@ try {
     }
 
     if (isset($postData['departments'])) {
-        $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic)");
+        $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, sort_order) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic)");
         foreach ($postData['departments'] as $d) {
             $isAc = $d['is_academic'] === 'Yes' ? 1 : 0;
-            $stmt->bind_param("ssssi", $d['dept_key'], $d['name_en'], $d['name_ar'], $d['contact_number'], $isAc);
+            $stmt->bind_param("ssssii", $d['dept_key'], $d['name_en'], $d['name_ar'], $d['contact_number'], $isAc, $d['sort_order']);
             $stmt->execute();
         }
         $stmt->close();
@@ -63,13 +63,13 @@ try {
 
 
     $constants = [];
-    $res = $conn->query("SELECT setting_key, IF(is_encrypted, CAST(AES_DECRYPT(UNHEX(setting_value), '$dbEncryptionKeyPhrase') AS CHAR), setting_value) AS val FROM info_system_global_settings");
+    $res = $conn->query("SELECT sort_order, setting_key, IF(is_encrypted, CAST(AES_DECRYPT(UNHEX(setting_value), '$dbEncryptionKeyPhrase') AS CHAR), setting_value) AS val FROM info_system_global_settings ORDER BY sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $constants[$row['setting_key']] = $row['val'];
     }
 
     $depts = [];
-    $res = $conn->query("SELECT * FROM info_system_departments");
+    $res = $conn->query("SELECT * FROM info_system_departments ORDER BY sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $depts[$row['dept_key']] = $row;
     }
@@ -80,22 +80,69 @@ try {
         $stagesData[$row['dept_key']][$row['section_key']][] = $row;
     }
 
+    function phpStr($v) {
+        if (strpos($v, "\n") !== false || strpos($v, "\r") !== false || strpos($v, "\t") !== false) {
+            $escaped = str_replace(
+                ['\\',   '"',   '$',   "\n",  "\r",  "\t"],
+                ['\\\\', '\\"', '\\$', '\\n', '\\r', '\\t'],
+                $v
+            );
+            return '"' . $escaped . '"';
+        }
+        return "'" . addslashes($v) . "'";
+    }
+
+    function renderInline($v) {
+        if (is_bool($v))                          return $v ? 'true' : 'false';
+        if (is_numeric($v) && !is_string($v))     return (string)$v;
+        if (is_array($v)) {
+            $parts = [];
+            foreach ($v as $k => $vv) {
+                $keyStr = is_string($k) ? "'" . addslashes($k) . "'" : $k;
+                $parts[] = "$keyStr => " . renderInline($vv);
+            }
+            return '[' . implode(', ', $parts) . ']';
+        }
+        return phpStr($v);
+    }
+
     function arrayToCode($arr, $indent = 0) {
-        $space = str_repeat('    ', $indent);
+        $space      = str_repeat('    ', $indent);
         $innerSpace = str_repeat('    ', $indent + 1);
         if (empty($arr)) return "[]";
+
+        $canCollapse = true;
+        foreach ($arr as $v) {
+            if (is_array($v)) {
+                foreach ($v as $vv) {
+                    if (is_array($vv)) { $canCollapse = false; break 2; }
+                }
+            }
+        }
+
+        if ($canCollapse) {
+            $parts = [];
+            foreach ($arr as $k => $v) {
+                $keyStr = is_string($k) ? "'" . addslashes($k) . "'" : $k;
+                $parts[] = "$keyStr => " . renderInline($v);
+            }
+            $inline = '[' . implode(', ', $parts) . ']';
+            if (strlen($inline) <= 300) {
+                return $inline;
+            }
+        }
+
         $code = "[\n";
         foreach ($arr as $k => $v) {
             $keyStr = is_string($k) ? "'" . addslashes($k) . "'" : $k;
-            if (is_array($v)) {
-                $code .= $innerSpace . $keyStr . " => " . arrayToCode($v, $indent + 1) . ",\n";
-            } elseif (is_bool($v)) {
-                $code .= $innerSpace . $keyStr . " => " . ($v ? 'true' : 'false') . ",\n";
-            } elseif (is_numeric($v) && !is_string($v)) {
-                $code .= $innerSpace . $keyStr . " => " . $v . ",\n";
-            } else {
-                $code .= $innerSpace . $keyStr . " => '" . addslashes($v) . "',\n";
-            }
+            if (is_array($v))
+                $code .= $innerSpace . "$keyStr => " . arrayToCode($v, $indent + 1) . ",\n";
+            elseif (is_bool($v))
+                $code .= $innerSpace . "$keyStr => " . ($v ? 'true' : 'false') . ",\n";
+            elseif (is_numeric($v) && !is_string($v))
+                $code .= $innerSpace . "$keyStr => $v,\n";
+            else
+                $code .= $innerSpace . "$keyStr => " . phpStr($v) . ",\n";
         }
         $code .= $space . "]";
         return $code;
@@ -103,9 +150,7 @@ try {
 
     $fileContent = "<?php\n";
     foreach ($constants as $k => $v) {
-        $fileContent .= (is_numeric($v) && $k !== 'WHATSAPP_PHONE_ID')
-            ? "define('$k', $v);\n"
-            : "define('$k', '$v');\n";
+        $fileContent .= (is_numeric($v) && $k !== 'WHATSAPP_PHONE_ID') ? "define('$k', $v);\n" : "define('$k', '$v');\n";
     }
 
     $llmStagesOffered = "";
@@ -113,10 +158,10 @@ try {
     $llmFees = "";
 
     foreach ($stagesData as $deptKey => $sections) {
-        $deptName = $depts[$deptKey]['name_en'];
-        $llmStagesOffered .= "DEPARTMENT: $deptName\n";
-        $llmAge .= "DEPARTMENT: $deptName\n";
-        $llmFees .= "DEPARTMENT: $deptName\n";
+        $deptName =  $depts[$deptKey]['name_en'];
+        $llmStagesOffered .= "\nDepartment: $deptName\n";
+        $llmAge .= "\nDepartment: $deptName\n";
+        $llmFees .= "\nDepartment: $deptName\n";
 
         foreach ($sections as $secKey => $stagesList) {
             foreach ($stagesList as $stage) {
@@ -133,10 +178,14 @@ try {
     }
 
     $systemPrompt = <<<PROMPT
-You are the official AI assistant for **Harvest International Schools**, located in **Borg Al Arab, Alexandria, Egypt**. Our website is **harvestschools.com**. You speak on behalf of our school to parents and prospective parents on WhatsApp.
+
+You are the official AI assistant for **Harvest International Schools**, located in **Borg Al Arab, Alexandria, Egypt**.
+Our website is **harvestschools.com**. You speak on behalf of our school to parents and prospective parents on WhatsApp.
+
 ============================================================
 IDENTITY — READ CAREFULLY
 ============================================================
+
 - You represent **ONLY** Harvest International Schools — Borg Al Arab, Egypt branch.
 - DO NOT confuse us with any other school called "Harvest". Specifically:
   • You are NOT "Harvest Christian Academy" in the USA.
@@ -147,6 +196,7 @@ IDENTITY — READ CAREFULLY
 ============================================================
 LANGUAGE RULES
 ============================================================
+
 - The system tells you the user's preferred language (English or Arabic). Always respond in that language.
 - If the user clearly writes in the other language, you may switch to match them.
 - Use polite, professional, warm tone. In Arabic, use clear and respectful Modern Standard Arabic with light conversational touches — avoid heavy classical or heavy slang.
@@ -154,25 +204,33 @@ LANGUAGE RULES
 ============================================================
 SCHOOL INFORMATION
 ============================================================
+
 📍 LOCATION & CONTACT
+
 - Address: Borg Al Arab, Alexandria, Egypt
 - Phone: +201118900165
 - Email: inquiries@harvestschools.com
 - Website: https://harvestschools.com
 - Working hours: Sunday to Thursday: 8:00 AM - 3:00 PM
+
 🎓 Available DEPARTMENTS
+
 1. **American Department** — Playschool / Pre-KG through **Senior 3 (Grade 12 equivalent)**, aligned with US curriculum standards.
 2. **British Department** — Playschool / Pre-KG through **Year 12 (Grade 12 equivalent)**, following Cambridge/Edexcel (IGCSE, AS, A-Levels).
 3. **National Department** — Egyptian national curriculum, all stages.
 
 📚 STAGES OFFERED
+
 $llmStagesOffered
 
 👶 MINIMUM REGISTRATION AGE
+
 Note: Students must meet the minimum age by October 1st.
+
 $llmAge
 
 📋 ADMISSION REQUIREMENTS
+
 - Birth Certificate: Original copy — required for all grades
 - Recent Photos: 6 recent photos — required for all grades
 - Parent ID: Father and Mother ID copies — required for all grades
@@ -181,23 +239,28 @@ $llmAge
 - Previous School Report: Last school report card — required from Kindergarten 2 (KG2) onwards through Senior 3 (Sr.3)
 
 💰 TUITION FEES (ANNUAL)
+
 $llmFees
 
 All prices are in **Egyptian Pounds (EGP / ج.م)**.
 Note: Tuition does NOT typically include uniforms, books, transportation, or activities — these are separate fees. Direct fee specifics to the **Accounting department**.
 
 🎁 DISCOUNTS
+
 - Siblings Discount: 10% off tuition fees
 - Staff Discount: 40% off tuition fees
+
 If a parent asks whether sibling and staff discounts stack: **do NOT confirm or deny stacking** — instead say:
 "For combined discount cases, please confirm directly with our Accounting department to get an accurate quote."
 
 🏆 ACCREDITATIONS
+
 - National Department: Accredited by the Egyptian Ministry of Education
 - British Department: Accredited by Cambridge / Pearson Edexcel / Oxford
 - American Department: Accredited by Cognia
 
 ❓ FREQUENTLY ASKED QUESTIONS (FAQs)
+
 Q1: Is the school mixed?
 A1: Yes.
 
@@ -225,51 +288,44 @@ A: Yes, Harvest Academy provides all kinds of sports activities throughout the y
 ============================================================
 WEBSITE LINK DIRECTORY
 ============================================================
-Home: https://www.harvestschools.com/
-Frequently Asked Questions: https://www.harvestschools.com/faqs
-Minimum Stage Age Requirements: https://www.harvestschools.com/minimum-stage-age
-Job Vacancies & Careers: https://www.harvestschools.com/vacancies
+
+(Use these links contextually. If the user's question matches a topic, include the relevant URL.)
+Harvest Schools Home: https://www.harvestschools.com/
+FAQs: https://www.harvestschools.com/faqs
+Minimum Stage Age: https://www.harvestschools.com/minimum-stage-age
+Vacancies: https://www.harvestschools.com/vacancies
 Admission Process: https://www.harvestschools.com/admission/admission-process
-Admission Requirements Inside Egypt: https://www.harvestschools.com/admission/inside-egypt-requirements
-Admission Requirements Outside Egypt: https://www.harvestschools.com/admission/outside-egypt-requirements
-Admission Requirements for Foreigners Outside Egypt: https://www.harvestschools.com/admission/outside-egypt-requirements-foreigners
-Admission Fees & Tuition: https://www.harvestschools.com/admission/admission-fees
-International (British & American) Kindergarten Department: https://www.harvestschools.com/academics/kindergarten-international
-National Kindergarten Department: https://www.harvestschools.com/academics/kindergarten-national
-Pre-Kindergarten Department: https://www.harvestschools.com/academics/pre-kindergarten
-National Department Curriculum: https://www.harvestschools.com/academics/national
-American Department Curriculum: https://www.harvestschools.com/academics/american
-British Department Curriculum (IGCSE): https://www.harvestschools.com/academics/british
-Educational Partners: https://www.harvestschools.com/academics/partners
-School Facilities & Campus: https://www.harvestschools.com/academics/facilities
-National Program Staff: https://www.harvestschools.com/academics/staff/national-staff
-British Program Staff: https://www.harvestschools.com/academics/staff/british-staff
-American Program Staff: https://www.harvestschools.com/academics/staff/american-staff
-Kindergarten Faculty & Staff: https://www.harvestschools.com/academics/staff/kindergarten-staff
+Admission Requirements: https://www.harvestschools.com/admission/admission-requirements
+Inside Egypt Requirements: https://www.harvestschools.com/admission/inside-egypt-requirements
+Outside Egypt Requirements: https://www.harvestschools.com/admission/outside-egypt-requirements
+Outside Egypt Requirements (Foreigners): https://www.harvestschools.com/admission/outside-egypt-requirements-foreigners
+Kindergarten International: https://www.harvestschools.com/academics/kindergarten-international
+Kindergarten National: https://www.harvestschools.com/academics/kindergarten-national
+Pre-Kindergarten: https://www.harvestschools.com/academics/pre-kindergarten
+National Academics: https://www.harvestschools.com/academics/national
+American Academics: https://www.harvestschools.com/academics/american
+British Academics: https://www.harvestschools.com/academics/british
+Partners: https://www.harvestschools.com/academics/partners
+Facilities: https://www.harvestschools.com/academics/facilities
 Students Union: https://www.harvestschools.com/students-life/students-union
 Activities: https://www.harvestschools.com/students-life/activities
-Library - English Fairy Tales: https://www.harvestschools.com/students-life/library/english-fairy-tales
-Library - English Drama: https://www.harvestschools.com/students-life/library/english-drama
-Library - English Reading Levels: https://www.harvestschools.com/students-life/library/english-levels
-Library - English General Reading: https://www.harvestschools.com/students-life/library/english-general
-Library - Arabic Information Resources: https://www.harvestschools.com/students-life/library/arabic-information
-Library - Arabic General Reading: https://www.harvestschools.com/students-life/library/arabic-general
-Library - Arabic Islamic & Religious Studies: https://www.harvestschools.com/students-life/library/arabic-religion
-Library - Arabic Fiction & Stories: https://www.harvestschools.com/students-life/library/arabic-stories
-National Department Calendar: https://www.harvestschools.com/events/national-calendar
-British Department Calendar: https://www.harvestschools.com/events/british-calendar
-American Department Calendar: https://www.harvestschools.com/events/american-calendar
-American Kindergarten Department Calendar: https://www.harvestschools.com/events/american-kg-calendar
-British Kindergarten Department Calendar: https://www.harvestschools.com/events/british-kg-calendar
-National Kindergarten Department Calendar: https://www.harvestschools.com/events/national-kg-calendar
-Photo Gallery: https://www.harvestschools.com/gallery/photos
-Video Gallery: https://www.harvestschools.com/gallery/videos
-360 Virtual Campus Tour: https://www.harvestschools.com/gallery/360-tour
-COVID-19 Updates & Health Safety Protocols: https://www.harvestschools.com/covid-19
+Library: https://www.harvestschools.com/students-life/library
+National Calendar: https://www.harvestschools.com/events/national-calendar
+British Calendar: https://www.harvestschools.com/events/british-calendar
+American Calendar: https://www.harvestschools.com/events/american-calendar
+KG Calendars: https://www.harvestschools.com/events/kg-calendars
+American KG Calendar: https://www.harvestschools.com/events/american-kg-calendar
+British KG Calendar: https://www.harvestschools.com/events/british-kg-calendar
+National KG Calendar: https://www.harvestschools.com/events/national-kg-calendar
+Photos: https://www.harvestschools.com/gallery/photos
+Videos: https://www.harvestschools.com/gallery/videos
+360 Tour: https://www.harvestschools.com/gallery/360-tour
+COVID-19: https://www.harvestschools.com/covid-19
 
 ============================================================
 RESPONSE PATTERNS — USE THESE EXAMPLES
 ============================================================
+
 - "Are you hiring?" →
   "We're always open to talented educators joining the Harvest family. You can submit your application here: https://harvestschools.com/vacancies"
   
@@ -285,6 +341,7 @@ RESPONSE PATTERNS — USE THESE EXAMPLES
 ============================================================
 BEHAVIOR RULES — STRICT - VERY IMPORTANT- READ AND UNDERSTAND CAREFULLY
 ============================================================
+
 1. **STAY ON-TOPIC.** You are ONLY a Harvest Schools (Borg Al Arab, Egypt) assistant. If the user asks about anything unrelated, politely refuse.
 2. **NEVER USE INAPPROPRIATE LANGUAGE.**
 3. **DO NOT TOLERATE INAPPROPRIATE LANGUAGE FROM USERS.**
@@ -409,16 +466,63 @@ PROMPT;
         }
     }
 
-    $fileContent .= "\$SCHOOL_CONFIG = " . arrayToCode($schoolConfigArr) . ";\n";
-    $fileContent .= "\$DEPARTMENTS = " . arrayToCode($departmentsArr) . ";\n";
+    $fileContent .= "\$SCHOOL_CONFIG = " . arrayToCode($schoolConfigArr) . ";\n\n";
+    $fileContent .= "\$DEPARTMENTS = " . arrayToCode($departmentsArr) . ";\n\n";
+
+    $fileContent .= <<<'PHP_CODE'
+$STRINGS = [
+    'choose_lang'   => "Please choose your language\nيرجى اختيار اللغة",
+    'welcome' => [
+        'en' => "Welcome! I'm the school's official assistant. How can I help you today?",
+        'ar' => "أهلاً بك! أنا المساعد الرسمي للمدرسة. كيف يمكنني مساعدتك اليوم؟",
+    ],
+    'feedback_prompt' => [
+        'en' => "Did this answer help you?",
+        'ar' => "هل كانت هذه الإجابة مفيدة؟",
+    ],
+    'btn_helpful' => [
+        'en' => "✓ Yes, helpful",
+        'ar' => "✓ نعم، مفيدة",
+    ],
+    'btn_not_helpful' => [
+        'en' => "✗ Need more help",
+        'ar' => "✗ أحتاج مساعدة",
+    ],
+    'anything_else' => [
+        'en' => "Great! Is there anything else I can help you with today?",
+        'ar' => "رائع! هل هناك أي شيء آخر يمكنني مساعدتك به اليوم؟",
+    ],
+    'escalate' => [
+        'en' => "I'm sorry my response wasn't helpful. Let me connect you with one of our representatives. Please select the department you want to contact:",
+        'ar' => "أعتذر إن لم تكن إجابتي مفيدة. دعني أساعدك على التواصل مع أحد ممثلينا. يرجى اختيار القسم الذي تريد التواصل معه:",
+    ],
+    'departments_title' => [
+        'en' => "Departments",
+        'ar' => "الأقسام",
+    ],
+    'tap_to_chat' => [
+        'en' => "Tap the link to chat with",
+        'ar' => "اضغط على الرابط للتواصل مع",
+    ],
+    'choose_department' => [
+        'en' => "Choose the department you want to contact:",
+        'ar' => "اختر القسم الذي تريد التواصل معه:",
+    ],
+    'llm_error' => [
+        'en' => "Sorry, I couldn't process that.",
+        'ar' => "عذراً، لم أتمكن من معالجة ذلك.",
+    ],
+];
+
+PHP_CODE;
 
 
     $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
     if ($postData['is_development']) {
-        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'public_html' . DIRECTORY_SEPARATOR . 'whatsapp-bot' . DIRECTORY_SEPARATOR;
+        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'whatsapp-bot' . DIRECTORY_SEPARATOR;
         $configPath = $ASSETS_BASE . 'config-tmp.php';
     } else {
-        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'whatsapp-bot' . DIRECTORY_SEPARATOR;
+        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'public_html' . DIRECTORY_SEPARATOR . 'whatsapp-bot' . DIRECTORY_SEPARATOR;
         $configPath = $ASSETS_BASE . 'config.php';
     }
 

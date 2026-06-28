@@ -10,15 +10,6 @@ $dbname = $dbConfig['db_name'];
 $dbEncryptionKeyPhrase = $dbConfig['encryption_key_phrase'];
 
 
-function prependIncrementingId(array $data): array {
-    $data[0] = array_merge(["ID"], $data[0]);
-    for ($i = 1; $i < count($data); $i++) {
-        $data[$i] = array_merge([$i], $data[$i]);
-    }
-    return $data;
-}
-
-
 function moveColumnFirst(array $data, string $columnHeader): array {
     $headerRow = $data[0];
     $colIndex = array_search($columnHeader, $headerRow);
@@ -46,9 +37,9 @@ try {
         exit;
     }
 
-    $settingsHeaders = ["Setting Key", "Value", "Is Encrypted", "Description"];
+    $settingsHeaders = ["Setting Key", "Value", "Is Encrypted", "Description", "ID"];
     $settingsRows = [];
-    $stmt = $conn->prepare("SELECT setting_key, IF(is_encrypted, CAST(AES_DECRYPT(UNHEX(setting_value), ?) AS CHAR), setting_value) AS val, is_encrypted, description FROM info_system_global_settings");
+    $stmt = $conn->prepare("SELECT setting_key, IF(is_encrypted, CAST(AES_DECRYPT(UNHEX(setting_value), ?) AS CHAR), setting_value) AS val, is_encrypted, description, sort_order FROM info_system_global_settings ORDER BY sort_order ASC");
     $stmt->bind_param("s", $dbEncryptionKeyPhrase);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -57,19 +48,19 @@ try {
             $row['val'] = $row['val'] === '1' ? 'Yes' : 'No';
         }
         $row['is_encrypted'] = $row['is_encrypted'] == 1 ? 'Yes' : 'No';
-        $settingsRows[] = array_values($row);
+        $settingsRows[] = array_map('strval', array_values($row));
     }
     $stmt->close();
-    $settingsData = prependIncrementingId(array_merge([$settingsHeaders], $settingsRows));
+    $settingsData = moveColumnFirst(array_merge([$settingsHeaders], $settingsRows), "ID");
 
-    $deptHeaders = ["Department Key", "Name (EN)", "Name (AR)", "Contact Number", "Is Academic"];
+    $deptHeaders = ["Department Key", "Name (EN)", "Name (AR)", "Contact Number", "Is Academic", "ID"];
     $deptRows = [];
-    $res = $conn->query("SELECT dept_key, name_en, name_ar, contact_number, is_academic FROM info_system_departments");
+    $res = $conn->query("SELECT dept_key, name_en, name_ar, contact_number, is_academic, sort_order FROM info_system_departments ORDER BY sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $row['is_academic'] = $row['is_academic'] == 1 ? 'Yes' : 'No';
-        $deptRows[] = array_values($row);
+        $deptRows[] = array_map('strval', array_values($row));
     }
-    $deptData = prependIncrementingId(array_merge([$deptHeaders], $deptRows));
+    $deptData = moveColumnFirst(array_merge([$deptHeaders], $deptRows), "ID");
 
     $stageHeaders = [
         "Stage Key", "Department Key", "Section Key", "Section Title (EN)",
@@ -80,7 +71,7 @@ try {
     $res = $conn->query("SELECT stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order FROM info_system_stages ORDER BY dept_key, sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $row['is_offered'] = $row['is_offered'] == 1 ? 'Yes' : 'No';
-        $stageRows[] = array_values($row);
+        $stageRows[] = array_map('strval', array_values($row));
     }
     $stageData = moveColumnFirst(array_merge([$stageHeaders], $stageRows), "ID");
 
