@@ -37,14 +37,13 @@ function handleSimpleMode($from, $message) {
         }
 
         if (isset($DEPARTMENTS[$listId])) {
-            $dept = $DEPARTMENTS[$listId];
             $lang = $session['language'];
+            $dept = $DEPARTMENTS[$listId];
             $deptName = $dept[$lang];
             $waLink = "https://wa.me/" . $dept['number'];
-
             $msg = $STRINGS['tap_to_chat'][$lang] . " *{$deptName}*:\n{$waLink}";
-            sendText($from, $msg);
-
+            $urlBtnTitle = ($lang === 'en') ? 'Start Chatting' : 'ابدأ المحادثة';
+            sendCtaUrlButton($from, $msg, $urlBtnTitle, $waLink);
             return;
         }
     }
