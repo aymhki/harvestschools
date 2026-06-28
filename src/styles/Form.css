@@ -671,14 +671,14 @@
     color: var(--primary-color);
     font-size: large;
     font-family: var(--english-normal-font);
-    border: none;
     width: 50%;
     font-weight: 400;
     font-style: normal;
     text-align: center;
     line-height: 1.5;
     letter-spacing: 0.1rem;
-    border-radius: 0.1rem;
+    border-radius: 0.3rem;
+    border: 0.1rem solid var(--primary-color);
 }
 
 .number-input-reduce-button, .number-input-add-button {
@@ -964,10 +964,16 @@
 
     .number-form-field {
         color: var(--harvest-white-color);
-        border: none;
+        border: 0.1rem solid var(--harvest-white-color);
+        background-color: var(--harvest-black-gradient-color);
     }
 
     .checkbox-grid-item input[type="checkbox"] {
         accent-color: var(--harvest-white-color);
+    }
+
+    .number-input-container {
+        background-color: var(--harvest-black-gradient-color);
+
     }
 }
