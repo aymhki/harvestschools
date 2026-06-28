@@ -222,6 +222,8 @@ function InfoSystemManagement() {
                    isLoading={isLoading}
                    headerModuleElements={reloadButtonConfig}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
+                   allowBreakWordColumns={{ "Value": '10rem' }}
+                   truncateValuesColumns={{'Value': 100}}
             />
         </div>
     );
@@ -304,6 +306,9 @@ function InfoSystemManagement() {
                     </div>
 
                     <div className={"general-large-admin-action-modal-content"}>
+                        <p className={"general-large-admin-action-modal-content-note"}>
+                            Note: Do not edit the info system data values unless you know what you are doing.
+                        </p>
                         { (showEditModal && editFormFields != null) && (
                             <Form fields={editFormFields}
                                   mailTo={''}

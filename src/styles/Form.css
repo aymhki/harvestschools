@@ -10,10 +10,6 @@
     overflow-y: auto;
 }
 
-td:lang(ar) {
-    direction: rtl;
-}
-
 .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
     margin: 1rem;
     will-change: filter;

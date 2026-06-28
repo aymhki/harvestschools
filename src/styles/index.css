@@ -140,6 +140,9 @@
     --table-module-header-and-footer-z-index: 10;
     --table-module-sticky-control-widget-z-index: 100;
 
+    --mobile-nav-arrow-in-tabs-bar-z-index: 10;
+    --tabs-bar-z-index: 100;
+
     font-family: var(--english-normal-font);
 }
 
