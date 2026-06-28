@@ -215,7 +215,8 @@ function Form({
         readOnly: field.readOnlyField || formIsReadOnly || submitting || false,
         onChange: (e) => onChange(e, field),
         ref: fieldRefs.current[field.id],
-        defaultValue: field.defaultValue || ''
+        defaultValue: field.defaultValue || '',
+        ...(field.lang !== undefined && { lang: field.lang })
     });
     
     const getPlaceholder = (field) =>
@@ -1470,6 +1471,7 @@ const fieldShape = {
         ruleResult: PropTypes.arrayOf(PropTypes.object).isRequired
     })),
     alwaysEnglish: PropTypes.bool,
+    lang: PropTypes.string
 };
 
 Form.propTypes = {

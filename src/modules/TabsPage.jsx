@@ -1,9 +1,16 @@
 import PropTypes from "prop-types";
-import {Fragment, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import '../styles/TabsPage.css';
 
-function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = false, elementsAcrossTabsAtTheTop }) {
-    const [activeTab, setActiveTab] = useState(initialTab || tabData[0].id);
+function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = false, elementsAcrossTabsAtTheTop, title }) {
+    const storageKey = title ? `activeTab_${title}` : null;
+    const [activeTab, setActiveTab] = useState(() => {
+        if (storageKey) {
+            const saved = Number(localStorage.getItem(storageKey));
+            if (saved && tabData.some((t) => t.id === saved)) return saved;
+        }
+        return initialTab || tabData[0].id;
+    });
     const currentIndex = tabData.findIndex((tab) => tab.id === activeTab);
 
     const handlePrevTab = () => {
@@ -15,6 +22,12 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
         const nextIndex = currentIndex === tabData.length - 1 ? 0 : currentIndex + 1;
         setActiveTab(tabData[nextIndex].id);
     };
+
+    useEffect(() => {
+        if (storageKey) {
+            localStorage.setItem(storageKey, activeTab);
+        }
+    }, [activeTab, storageKey]);
 
     const tabBar = (
         <div className={`tabs-bar-wrapper ${barOnTopInMobile ? 'bar-position-top' : 'bar-position-bottom'} ${stickyOnDesktop ? 'sticky-desktop' : ''}`}>
@@ -90,6 +103,7 @@ TabsPage.propTypes = {
     barOnTopInMobile: PropTypes.bool,
     stickyOnDesktop: PropTypes.bool,
     elementsAcrossTabsAtTheTop: PropTypes.array,
+    title: PropTypes.string,
 }
 
 export default TabsPage;

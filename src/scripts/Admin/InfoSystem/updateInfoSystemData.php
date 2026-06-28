@@ -26,13 +26,13 @@ try {
     $conn->begin_transaction();
 
     if (isset($postData['settings'])) {
-        $stmt = $conn->prepare("INSERT INTO info_system_global_settings (setting_key, setting_value, is_encrypted, description, sort_order) VALUES (?, IF(?, HEX(AES_ENCRYPT(?, ?)), ?), ?, ?, ?) ON DUPLICATE KEY UPDATE setting_value = IF(VALUES(is_encrypted), HEX(AES_ENCRYPT(?, ?)), ?), is_encrypted = VALUES(is_encrypted)");
+        $stmt = $conn->prepare("INSERT INTO info_system_global_settings (setting_key, setting_value, is_encrypted, description, sort_order) VALUES (?, IF(?, HEX(AES_ENCRYPT(?, ?)), ?), ?, ?, ?) ON DUPLICATE KEY UPDATE setting_value = IF(VALUES(is_encrypted), HEX(AES_ENCRYPT(?, ?)), ?), is_encrypted = VALUES(is_encrypted), description=VALUES(description), sort_order=VALUES(sort_order)");
         foreach ($postData['settings'] as $s) {
             $val = in_array($s['val'], ['Yes', 'No']) ? ($s['val'] === 'Yes' ? '1' : '0') : $s['val'];
             $isEnc = $s['is_encrypted'] === 'Yes' ? 1 : 0;
             $stmt->bind_param("sisssssiiss",
                 $s['setting_key'], $isEnc, $val, $dbEncryptionKeyPhrase, $val, $isEnc, $s['description'],
-                $val, $s['sort_order'], $dbEncryptionKeyPhrase, $val
+                $s['sort_order'], $val, $dbEncryptionKeyPhrase, $val
             );
             $stmt->execute();
         }
@@ -40,7 +40,7 @@ try {
     }
 
     if (isset($postData['departments'])) {
-        $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, sort_order) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic)");
+        $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, sort_order) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic), sort_order=VALUES(sort_order)");
         foreach ($postData['departments'] as $d) {
             $isAc = $d['is_academic'] === 'Yes' ? 1 : 0;
             $stmt->bind_param("ssssii", $d['dept_key'], $d['name_en'], $d['name_ar'], $d['contact_number'], $isAc, $d['sort_order']);
