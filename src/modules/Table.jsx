@@ -33,7 +33,10 @@ function Table({
                    tablePages,
                    isLoading,
                    forceEnglishTable,
-                   ignoreSideMarginsOnFixed
+                   ignoreSideMarginsOnFixed,
+                   currencyColumns,
+                   currencySymbols,
+                   currencySymbolPositions,
     }) {
 
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : {
@@ -705,10 +708,27 @@ function Table({
         return ' ⇅';
     };
 
-    const applyLikelyUrlFunction = (columnName, cellValue) => {
+    const applyLikelyUrlOrCurrencyFunction = (columnName, cellValue) => {
         if (likelyUrlColumns && likelyUrlColumns[columnName]) {
             return <a className={"table-link"} lang={"en"}
                       onClick={() => likelyUrlColumns[columnName](cellValue)}>{cellValue}</a>;
+        } else if (currencyColumns && currencyColumns.includes(columnName)) {
+            const index = currencyColumns.indexOf(columnName);
+            const currencySymbol = currencySymbols[index];
+            const currencyPosition = currencySymbolPositions[index];
+
+            const formattedNumber = new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(cellValue);
+
+            switch (currencyPosition) {
+                case 'left': return `${currencySymbol}${formattedNumber}`;
+                case 'right': return `${formattedNumber}${currencySymbol}`;
+                case 'left-space': return `${currencySymbol} ${formattedNumber}`;
+                case 'right-space': return `${formattedNumber} ${currencySymbol}`;
+                default: return formattedNumber;
+            }
         } else {
             return cellValue;
         }
@@ -1550,6 +1570,7 @@ function Table({
                                                 style={inlineStyles}
                                                 onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: cellIndex})}
                                                 onMouseLeave={() => setHoveredCell({r: null, c: null})}
+                                                lang={detectLang(cell)}
                                             >
                                                 {isCurrentlySticky && (showColControl || showRowControl) && (
                                                     <div className="sticky-control-widget">
@@ -1594,8 +1615,7 @@ function Table({
                                                                     {cell}{getSortIndicator(cellIndex)}
                                                                 </h3>
                                                                 {(filterableColumns && displayedTableData[0] && filterableColumns.includes(displayedTableData[0][cellIndex])) &&
-                                                                    <FilterAltIcon
-                                                                        onClick={() => openFilterPopup(displayedTableData[0][cellIndex])}/>
+                                                                    <FilterAltIcon onClick={() => openFilterPopup(displayedTableData[0][cellIndex])}/>
                                                                 }
                                                             </div>
                                                         ) : (
@@ -1618,11 +1638,11 @@ function Table({
                                                         {compact ? (
                                                             <p className={"compact-table-cell-text"}
                                                                lang={detectLang(cell)}>
-                                                                {applyLikelyUrlFunction(displayedTableData[0][cellIndex], cell)}
+                                                                {applyLikelyUrlOrCurrencyFunction(displayedTableData[0][cellIndex], cell)}
                                                             </p>
                                                         ) : (
                                                             <p lang={detectLang(cell)}>
-                                                                {applyLikelyUrlFunction(displayedTableData[0][cellIndex], cell)}
+                                                                {applyLikelyUrlOrCurrencyFunction(displayedTableData[0][cellIndex], cell)}
                                                             </p>
                                                         )}
                                                     </>
@@ -2045,7 +2065,10 @@ Table.propTypes = {
     tablePages: PropTypes.bool,
     isLoading: PropTypes.bool,
     forceEnglishTable: PropTypes.bool,
-    ignoreSideMarginsOnFixed: PropTypes.bool
+    ignoreSideMarginsOnFixed: PropTypes.bool,
+    currencyColumns: PropTypes.arrayOf(PropTypes.string),
+    currencySymbols: PropTypes.arrayOf(PropTypes.string),
+    currencySymbolPositions: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Table;

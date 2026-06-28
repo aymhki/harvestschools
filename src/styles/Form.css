@@ -10,6 +10,10 @@
     overflow-y: auto;
 }
 
+td:lang(ar) {
+    direction: rtl;
+}
+
 .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
     margin: 1rem;
     will-change: filter;
@@ -531,6 +535,11 @@
     width: calc(100% - 2.2rem);
 }
 
+.field-with-label-on-top.half-width .select-form-field {
+    margin-right: 0;
+    width: calc(100% - 1rem);
+}
+
 .field-with-label-on-top.third-width .text-form-field {
     padding-right: 0;
     margin-right: 0;
@@ -780,7 +789,7 @@
 
     .field-with-label-on-top.two-thirds-width .text-form-field, .field-with-label-on-top.third-width .text-form-field, .field-with-label-on-top.half-width .text-form-field {
         margin: 0.3rem;
-        width: calc(100% - 1.5rem);
+        width: calc(100% - 1.1rem);
     }
 
     .field-with-label-on-top.full-width .text-form-field, .field-with-label-on-top.full-width-with-margin .text-form-field {
@@ -807,9 +816,9 @@
         width: calc(100%);
     }
 
-    .field-with-label-on-top.third-width .select-form-field {
-        margin: 0.5rem;
-        width: calc(100% - 0.81rem);
+
+    .field-with-label-on-top.full-width {
+        width: calc(100% - 1.2rem);
     }
 
     .form-label-outside {
@@ -820,10 +829,18 @@
         width: calc(100%);
     }
 
-    .number-input-container {
-        width: calc(100% - 0.8rem);
+    .field-with-label-on-top.third-width.always-english .number-input-container, .field-with-label-on-top.third-width .number-input-container, .field-with-label-on-top.half-width .number-input-container, .field-with-label-on-top.half-width.always-english .number-input-container {
+        width: calc(100% - 1.4rem);
         margin: 0.5rem;
-        padding: 0.5rem;
+    }
+
+    .field-with-label-on-top.half-width.always-english .text-form-field.txtPassword, .field-with-label-on-top.half-width .text-form-field.txtPassword {
+        width: calc(100% - 1.2rem);
+    }
+
+    .field-with-label-on-top.third-width.always-english .select-form-field, .field-with-label-on-top.third-width .select-form-field, .field-with-label-on-top.half-width .select-form-field, .field-with-label-on-top.half-width.always-english .select-form-field {
+        width: calc(100% - 1.2rem);
+        margin: 0.5rem;
     }
 
     .number-input-reduce-button, .number-input-add-button {
@@ -900,6 +917,7 @@
     .text-form-field, .textarea-form-field, .select-form-field, .radio-form-field, .checkbox-form-field, .file-form-field, .select-multiple-form-field, .file-form-field-styled {
         color: var(--harvest-white-color);
         border: 0.1rem solid var(--harvest-white-color);
+        background-color: var(--harvest-black-gradient-color);
     }
 
     .text-form-field:hover, .textarea-form-field:hover, .select-form-field:hover, .radio-form-field:hover, .checkbox-form-field:hover, .file-form-field:hover, .file-form-field-styled:hover, .text-form-field:focus, .textarea-form-field:focus, .select-form-field:focus, .radio-form-field:focus, .checkbox-form-field:focus, .file-form-field:focus, .select-multiple-form-field:focus, .file-form-field-styled:focus {
