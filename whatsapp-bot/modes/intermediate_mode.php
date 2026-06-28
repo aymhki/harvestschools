@@ -161,8 +161,8 @@ function handleIntermediateMode($from, $message) {
             if (count($parts) >= 3) {
                 $action = $parts[1];
                 $deptKey = $parts[2];
-                if ($deptKey === 'early') {
-                    sendStageMenuIntermediate($from, $lang, $action, 'early', 'early_stg');
+                if ($deptKey === 'kindergarten') {
+                    sendStageMenuIntermediate($from, $lang, $action, 'kindergarten', 'early_stg');
                     return;
                 }
                 sendSectionMenuIntermediate($from, $lang, $action, $deptKey);
