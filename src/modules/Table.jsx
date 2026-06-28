@@ -37,6 +37,9 @@ function Table({
                    currencyColumns,
                    currencySymbols,
                    currencySymbolPositions,
+                   allowBreakWordColumns,
+                   truncateValuesColumns,
+                   customActionColumn,
     }) {
 
     const [sortConfig, setSortConfig] = useState(sortConfigParam ? sortConfigParam : {
@@ -1537,6 +1540,10 @@ function Table({
                             const finalTableIndex = isPaginated && rowIndex >= headerRowCount
                                 ? headerRowCount + (currentPage - 1) * pageSize + (rowIndex - headerRowCount)
                                 : rowIndex;
+                            const editColVisible = !!(allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit"));
+                            const customActionColVisible = !!(customActionColumn && !hiddenColumns.has(customActionColumn.headerText));
+                            const customActionCellIndex = row.length + (editColVisible ? 1 : 0);
+                            const deleteCellIndex = customActionCellIndex + (customActionColVisible ? 1 : 0);
                             return (
                                 <tr key={rowIndex}>
                                     {row.map((cell, cellIndex) => {
@@ -1547,7 +1554,17 @@ function Table({
                                         const isHovered = hoveredCell.r === actualRowIndex && hoveredCell.c === cellIndex;
                                         const showColControl = isHovered && rowIndex === 0 && cellIndex < 1;
                                         const showRowControl = isHovered && cellIndex === 0 && rowIndex < 1;
-
+                                        const colName = displayedTableData[0] && displayedTableData[0][cellIndex];
+                                        const breakWordMaxWidth = rowIndex !== 0 && allowBreakWordColumns && colName
+                                            ? allowBreakWordColumns[colName]
+                                            : undefined;
+                                        const maxTruncLen = rowIndex !== 0 && truncateValuesColumns && colName
+                                            ? truncateValuesColumns[colName]
+                                            : undefined;
+                                        const rawCellStr = String(cell ?? '');
+                                        const isCellTruncated = maxTruncLen !== undefined && rawCellStr.length > maxTruncLen;
+                                        const displayCell = isCellTruncated ? rawCellStr.slice(0, maxTruncLen) + '...' : cell;
+                                        const truncateTitle = isCellTruncated ? rawCellStr : undefined;
                                         let inlineStyles = {
                                             cursor: rowIndex === 0 ? 'pointer' : 'default',
                                             whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
@@ -1555,13 +1572,17 @@ function Table({
                                             zIndex: isCorner ? 3 : (isStickyRow || isStickyCol ? 2 : undefined),
                                             backgroundColor: (isStickyRow || isStickyCol) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
                                         };
-
                                         if (isStickyRow) {
                                             inlineStyles.top = rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0;
                                         }
-
                                         if (isStickyCol) {
                                             inlineStyles.left = colWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) || 0;
+                                        }
+                                        if (breakWordMaxWidth !== undefined) {
+                                            inlineStyles.minWidth = `${breakWordMaxWidth}`;
+                                            inlineStyles.wordBreak = 'break-word';
+                                            inlineStyles.overflowWrap = 'break-word';
+                                            inlineStyles.whiteSpace = 'normal';
                                         }
 
                                         return (
@@ -1637,12 +1658,14 @@ function Table({
                                                     <>
                                                         {compact ? (
                                                             <p className={"compact-table-cell-text"}
-                                                               lang={detectLang(cell)}>
-                                                                {applyLikelyUrlOrCurrencyFunction(displayedTableData[0][cellIndex], cell)}
+                                                               lang={detectLang(cell)}
+                                                               title={truncateTitle}>
+                                                                {applyLikelyUrlOrCurrencyFunction(colName, displayCell)}
                                                             </p>
                                                         ) : (
-                                                            <p lang={detectLang(cell)}>
-                                                                {applyLikelyUrlOrCurrencyFunction(displayedTableData[0][cellIndex], cell)}
+                                                            <p lang={detectLang(cell)}
+                                                               title={truncateTitle}>
+                                                                {applyLikelyUrlOrCurrencyFunction(colName, displayCell)}
                                                             </p>
                                                         )}
                                                     </>
@@ -1701,32 +1724,82 @@ function Table({
                                             )}
                                         </td>
                                     )}
-                                    {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && (
+                                    {customActionColVisible && (
                                         <td
-                                            onMouseEnter={() => setHoveredCell({
-                                                r: actualRowIndex,
-                                                c: row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)
-                                            })}
+                                            onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: customActionCellIndex})}
                                             onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             style={{
                                                 textAlign: 'center',
-                                                position: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 'sticky' : 'relative',
-                                                zIndex: (actualRowIndex < stickyRows && (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 3 : ((actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? 2 : undefined),
-                                                backgroundColor: (actualRowIndex < stickyRows || (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                                position: (actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? 'sticky' : 'relative',
+                                                zIndex: (actualRowIndex < stickyRows && customActionCellIndex < stickyCols) ? 3 : ((actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? 2 : undefined),
+                                                backgroundColor: (actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
                                                 top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                                left: (row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)) < stickyCols ? (colWidths.slice(0, row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0)).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                                left: customActionCellIndex < stickyCols ? (colWidths.slice(0, customActionCellIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
                                             }}>
                                             {(() => {
-                                                const deleteCellIndex = row.length + (allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") ? 1 : 0);
+                                                const isHoveredCustomAction = hoveredCell.r === actualRowIndex && hoveredCell.c === customActionCellIndex;
+                                                const showColControlCustomAction = isHoveredCustomAction && rowIndex === 0 && customActionCellIndex < 1;
+                                                const showRowControlCustomAction = isHoveredCustomAction && customActionCellIndex === 0 && rowIndex < 1;
+                                                return isCurrentlySticky && (showColControlCustomAction || showRowControlCustomAction) ? (
+                                                    <div className="sticky-control-widget">
+                                                        {showColControlCustomAction && (
+                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyCols > customActionCellIndex}
+                                                                    onChange={(e) => setStickyCols(e.target.checked ? customActionCellIndex + 1 : customActionCellIndex)}
+                                                                /> Fix Col
+                                                            </label>
+                                                        )}
+                                                        {showRowControlCustomAction && (
+                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={stickyRows > actualRowIndex}
+                                                                    onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                                /> Fix Row
+                                                            </label>
+                                                        )}
+                                                    </div>
+                                                ) : null;
+                                            })()}
+                                            {rowIndex === 0 ? (
+                                                <h3 className={"compact-table-header-text"}>{customActionColumn.headerText}</h3>
+                                            ) : (
+                                                <div className={"action-buttons-wrapper-in-table-module"}>
+                                                    {customActionColumn.actions.map((action, actionIndex) => (
+                                                        <button
+                                                            key={actionIndex}
+                                                            onClick={() => action.onClick(rowMapping[finalTableIndex])}
+                                                            aria-label={action.label}
+                                                        >
+                                                            {action.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </td>
+                                    )}
+                                    {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && (
+                                        <td
+                                            onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: deleteCellIndex})}
+                                            onMouseLeave={() => setHoveredCell({r: null, c: null})}
+                                            style={{
+                                                textAlign: 'center',
+                                                position: (actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? 'sticky' : 'relative',
+                                                zIndex: (actualRowIndex < stickyRows && deleteCellIndex < stickyCols) ? 3 : ((actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? 2 : undefined),
+                                                backgroundColor: (actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                                top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                                left: deleteCellIndex < stickyCols ? (colWidths.slice(0, deleteCellIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                            }}>
+                                            {(() => {
                                                 const isHoveredDelete = hoveredCell.r === actualRowIndex && hoveredCell.c === deleteCellIndex;
                                                 const showColControlDelete = isHoveredDelete && rowIndex === 0 && deleteCellIndex < 1;
                                                 const showRowControlDelete = isHoveredDelete && deleteCellIndex === 0 && rowIndex < 1;
-
                                                 return isCurrentlySticky && (showColControlDelete || showRowControlDelete) ? (
                                                     <div className="sticky-control-widget">
                                                         {showColControlDelete && (
-                                                            <label className="sticky-control-checkbox"
-                                                                   title="Fix all columns up to this one">
+                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyCols > deleteCellIndex}
@@ -1735,8 +1808,7 @@ function Table({
                                                             </label>
                                                         )}
                                                         {showRowControlDelete && (
-                                                            <label className="sticky-control-checkbox"
-                                                                   title="Fix all rows up to this one">
+                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={stickyRows > actualRowIndex}
@@ -1750,8 +1822,7 @@ function Table({
                                             {rowIndex === 0 ? (
                                                 <h3 className={"compact-table-header-text"}>Delete</h3>
                                             ) : (
-                                                <button onClick={() => onDeleteEntry(rowMapping[finalTableIndex])}
-                                                        aria-label="Delete row">Delete</button>
+                                                <button onClick={() => onDeleteEntry(rowMapping[finalTableIndex])} aria-label="Delete row">Delete</button>
                                             )}
                                         </td>
                                     )}
@@ -1783,7 +1854,12 @@ function Table({
                         <button onClick={() => setHiddenColumns(new Set())}>Show All</button>
                         <button onClick={() => {
                             const allHeaders = tableData && tableData[0] ? [...tableData[0]] : [];
-                            setHiddenColumns(new Set([...allHeaders, "Edit", "Delete"]));
+                            setHiddenColumns(new Set([
+                                ...allHeaders,
+                                "Edit",
+                                ...(customActionColumn ? [customActionColumn.headerText] : []),
+                                "Delete",
+                            ]));
                         }}>Hide All
                         </button>
                         <button onClick={() => setIsAccordionOpen(false)}>Close</button>
@@ -1825,6 +1901,16 @@ function Table({
                         <div>
                             <label><input type="checkbox" checked={!hiddenColumns.has("Edit")}
                                           onChange={() => toggleColumnVisibility("Edit")}/>{'\tEdit Column'}</label>
+                        </div>
+                    )}
+                    {customActionColumn && (
+                        <div>
+                            <label>
+                                <input type="checkbox"
+                                       checked={!hiddenColumns.has(customActionColumn.headerText)}
+                                       onChange={() => toggleColumnVisibility(customActionColumn.headerText)}/>
+                                {'\t' + customActionColumn.headerText + ' Column'}
+                            </label>
                         </div>
                     )}
                     {allowDeleteEntryOption && onDeleteEntry && (
@@ -2069,6 +2155,15 @@ Table.propTypes = {
     currencyColumns: PropTypes.arrayOf(PropTypes.string),
     currencySymbols: PropTypes.arrayOf(PropTypes.string),
     currencySymbolPositions: PropTypes.arrayOf(PropTypes.string),
+    allowBreakWordColumns: PropTypes.objectOf(PropTypes.string),
+    truncateValuesColumns: PropTypes.objectOf(PropTypes.number),
+    customActionColumn: PropTypes.shape({
+        headerText: PropTypes.string.isRequired,
+        actions: PropTypes.arrayOf(PropTypes.shape({
+            label: PropTypes.string.isRequired,
+            onClick: PropTypes.func.isRequired,
+        })).isRequired,
+    }),
 };
 
 export default Table;

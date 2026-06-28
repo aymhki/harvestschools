@@ -32,7 +32,7 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
     const tabBar = (
         <div className={`tabs-bar-wrapper ${barOnTopInMobile ? 'bar-position-top' : 'bar-position-bottom'} ${stickyOnDesktop ? 'sticky-desktop' : ''}`}>
             <button
-                className="mobile-nav-arrow left-arrow"
+                className="mobile-nav-tabs-bar-arrow left-arrow"
                 onClick={handlePrevTab}
                 aria-label="Previous tab"
             >
@@ -52,7 +52,7 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
                 ))}
             </div>
             <button
-                className="mobile-nav-arrow right-arrow"
+                className="mobile-nav-tabs-bar-arrow right-arrow"
                 onClick={handleNextTab}
                 aria-label="Next tab"
             >

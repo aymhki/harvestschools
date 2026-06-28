@@ -184,6 +184,14 @@ tr:hover {
     background-color: var(--harvest-off-white-color);
 }
 
+td:lang(ar) {
+    direction: rtl;
+}
+
+.action-buttons-wrapper-in-table-module {
+    gap: 0.5rem;
+}
+
 .sticky-control-widget {
     position: absolute;
     top: 0.1rem;

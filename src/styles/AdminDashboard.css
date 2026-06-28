@@ -151,6 +151,11 @@
     max-height: 80vh;
 }
 
+.general-large-admin-action-modal-content-note {
+    font-size: medium;
+    padding-inline-start: 1rem;
+}
+
 .general-small-admin-action-modal {
     position: fixed;
     top: 0;
@@ -240,6 +245,10 @@
 @media (max-width: 768px) {
     .general-small-admin-action-modal-container {
         width: 90%;
+    }
+
+    .general-large-admin-action-modal-content-note {
+        font-size: small;
     }
 }
 
