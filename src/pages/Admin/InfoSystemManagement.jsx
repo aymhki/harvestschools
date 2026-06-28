@@ -40,17 +40,20 @@ function InfoSystemManagement() {
             });
     }, []);
 
+    const settingSortOrderColIndex = 0;
     const settingKeyColIndex = 1;
     const settingValColIndex = 2;
     const settingIsEncryptedColIndex = 3;
     const settingDescriptionColIndex = 4;
 
+    const departmentSortOrderColIndex = 0;
     const departmentKeyColIndex = 1;
     const departmentNameEnColIndex = 2;
     const departmentNameArColIndex = 3;
     const departmentContactNumberColIndex = 4;
     const departmentIsAcademicColIndex = 5;
 
+    const stageSortOrderColIndex = 0;
     const stageKeyColIndex = 1;
     const stageDeptKeyColIndex = 2;
     const stageSectionKeyColIndex = 3;
@@ -70,6 +73,29 @@ function InfoSystemManagement() {
         'SESSION_TIMEOUT_MINUTES': ['30', '60', '120']
     }
 
+    const settingKeyFormFieldId = 1;
+    const settingValFormFieldId = 2;
+    const settingIsEncryptedFormFieldId = 3;
+    const settingDescriptionFormFieldId = 4;
+
+    const departmentKeyFormFieldId = 1;
+    const departmentNameEnFormFieldId = 2;
+    const departmentNameArFormFieldId = 3;
+    const departmentContactNumberFormFieldId = 4;
+    const departmentIsAcademicFormFieldId = 5;
+
+    const stageKeyFormFieldId = 1;
+    const stageDeptKeyFormFieldId = 2;
+    const stageSectionKeyFormFieldId = 3;
+    const stageSectionTitleEnFormFieldId = 4;
+    const stageSectionTitleArFormFieldId = 5;
+    const stageNameEnFormFieldId = 6;
+    const stageNameArFormFieldId = 7;
+    const stageAgeEnFormFieldId = 9;
+    const stageAgeArFormFieldId = 10;
+    const stageIsOfferedFormFieldId = 8;
+    const stageTuitionFeesFormFieldId = 11;
+
     const handleEditInitialization = (type, rowIndex) => {
         let rowData;
         let formFieldsConfig = [];
@@ -80,43 +106,43 @@ function InfoSystemManagement() {
 
             if (isSettingKeyWithLimitedValues) {
                 formFieldsConfig = [
-                    { id: 'setting_key', type: 'text', name: 'setting_key', label: 'Setting Key', required: true, value: rowData[settingKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Setting Key', readOnlyField: true},
-                    { id: 'val', type: 'select', name: 'val', label: 'Value', required: true, value: rowData[settingValColIndex], defaultValue: [rowData[settingValColIndex]], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Value', choices: isSettingKeyWithLimitedValues},
-                    { id: 'is_encrypted', type: 'select', name: 'is_encrypted', label: 'Is Encrypted', required: true, choices: ['Yes', 'No'], defaultValue: [rowData[settingIsEncryptedColIndex]], value: rowData[settingIsEncryptedColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Is Encrypted'},
-                    { id: 'description', type: 'textarea', name: 'description', label: 'Description', required: false, value: rowData[settingDescriptionColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Description'}
+                    { id: settingKeyFormFieldId, type: 'text', name: 'setting_key', label: 'Setting Key', required: true, value: rowData[settingKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Setting Key', readOnlyField: true, httpName: 'setting-key'},
+                    { id: settingValFormFieldId, type: 'select', name: 'val', label: 'Value', required: true, value: rowData[settingValColIndex], defaultValue: rowData[settingValColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Value', choices: isSettingKeyWithLimitedValues, httpName: 'setting-value'},
+                    { id: settingIsEncryptedFormFieldId, type: 'select', name: 'is_encrypted', label: 'Is Encrypted', required: true, choices: ['Yes', 'No'], defaultValue: rowData[settingIsEncryptedColIndex], value: rowData[settingIsEncryptedColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Is Encrypted', httpName: 'setting-is-encrypted'},
+                    { id: settingDescriptionFormFieldId, type: 'textarea', name: 'description', label: 'Description', required: false, value: rowData[settingDescriptionColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Description', httpName: 'setting-description'}
                 ];
             } else {
 
                 formFieldsConfig = [
-                    { id: 'setting_key', type: 'text', name: 'setting_key', label: 'Setting Key', required: true, value: rowData[settingKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Setting Key', readOnlyField: true},
-                    { id: 'val', type: 'text', name: 'val', label: 'Value', required: true, value: rowData[settingValColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Value'},
-                    { id: 'is_encrypted', type: 'select', name: 'is_encrypted', label: 'Is Encrypted', required: true, choices: ['Yes', 'No'], defaultValue: [rowData[settingIsEncryptedColIndex]], value: rowData[settingIsEncryptedColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Is Encrypted'},
-                    { id: 'description', type: 'textarea', name: 'description', label: 'Description', required: false, value: rowData[settingDescriptionColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Description'}
+                    { id: settingKeyFormFieldId, type: 'text', name: 'setting_key', label: 'Setting Key', required: true, value: rowData[settingKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Setting Key', readOnlyField: true, httpName: 'setting-key'},
+                    { id: settingValFormFieldId, type: 'text', name: 'val', label: 'Value', required: true, value: rowData[settingValColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Value', httpName: 'setting-value'},
+                    { id: settingIsEncryptedFormFieldId, type: 'select', name: 'is_encrypted', label: 'Is Encrypted', required: true, choices: ['Yes', 'No'], defaultValue: rowData[settingIsEncryptedColIndex], value: rowData[settingIsEncryptedColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Is Encrypted', httpName: 'setting-is-encrypted'},
+                    { id: settingDescriptionFormFieldId, type: 'textarea', name: 'description', label: 'Description', required: false, value: rowData[settingDescriptionColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Description', httpName: 'setting-description'}
                 ];
             }
         } else if (type === 'departments') {
             rowData = departmentsData[rowIndex];
             formFieldsConfig = [
-                { id: 'dept_key', type: 'text', name: 'dept_key', label: 'Department Key', required: true, value: rowData[departmentKeyColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Department Key', readOnlyField: true },
-                { id: 'name_en', type: 'text', name: 'name_en', label: 'Name (EN)', required: true, value: rowData[departmentNameEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (EN)' },
-                { id: 'name_ar', type: 'text', name: 'name_ar', label: 'Name (AR)', required: true, value: rowData[departmentNameArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (AR)', lang: 'ar' },
-                { id: 'contact_number', type: 'text', name: 'contact_number', label: 'Contact Number', required: true, value: rowData[departmentContactNumberColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: "Contact Number (Do not add a '+' at the beggining and always start with 20 for this work correctly in Whatsapp api" },
-                { id: 'is_academic', type: 'select', name: 'is_academic', label: 'Is Academic', required: true, choices: ['Yes', 'No'], defaultValue: [rowData[departmentIsAcademicColIndex]], value: rowData[departmentIsAcademicColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Is Academic' },
+                { id: departmentKeyFormFieldId, type: 'text', name: 'dept_key', label: 'Department Key', required: true, value: rowData[departmentKeyColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Department Key', readOnlyField: true, httpName: 'department-key' },
+                { id: departmentNameEnFormFieldId, type: 'text', name: 'name_en', label: 'Name (EN)', required: true, value: rowData[departmentNameEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (EN)', httpName: 'department-name-en' },
+                { id: departmentNameArFormFieldId, type: 'text', name: 'name_ar', label: 'Name (AR)', required: true, value: rowData[departmentNameArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (AR)', lang: 'ar', httpName: 'department-name-ar' },
+                { id: departmentContactNumberFormFieldId, type: 'text', name: 'contact_number', label: 'Contact Number', required: true, value: rowData[departmentContactNumberColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: "Contact Number (Do not add a '+' at the beggining and always start with 20 for this work correctly in WhatsApp api", httpName: 'department-contact-number' },
+                { id: departmentIsAcademicFormFieldId, type: 'select', name: 'is_academic', label: 'Is Academic', required: true, choices: ['Yes', 'No'], defaultValue: rowData[departmentIsAcademicColIndex], value: rowData[departmentIsAcademicColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Is Academic', httpName: 'department-is-academic' },
             ];
         } else if (type === 'stages') {
             rowData = stagesData[rowIndex];
             formFieldsConfig = [
-                { id: 'stage_key', type: 'text', name: 'stage_key', label: 'Stage Key', required: true, value: rowData[stageKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Stage Key', readOnlyField: true  },
-                { id: 'dept_key', type: 'text', name: 'dept_key', label: 'Department Key', required: true, value: rowData[stageDeptKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Department Key', readOnlyField: true  },
-                { id: 'section_key', type: 'text', name: 'section_key', label: 'Section Key', required: true, value: rowData[stageSectionKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Section Key', readOnlyField: true  },
-                { id: 'section_title_en', type: 'text', name: 'section_title_en', label: 'Section Title (EN)', required: true, value: rowData[stageSectionTitleEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Section Title (EN)' },
-                { id: 'section_title_ar', type: 'text', name: 'section_title_ar', label: 'Section Title (AR)', required: true, value: rowData[stageSectionTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Section Title (AR)', lang: 'ar' },
-                { id: 'name_en', type: 'text', name: 'name_en', label: 'Name (EN)', required: true, value: rowData[stageNameEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (EN)' },
-                { id: 'name_ar', type: 'text', name: 'name_ar', label: 'Name (AR)', required: true, value: rowData[stageNameArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (AR)', lang: 'ar' },
-                { id: 'age_en', type: 'text', name: 'age_en', label: 'Age (EN)', required: true, value: rowData[stageAgeEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Age (EN)' },
-                { id: 'age_ar', type: 'text', name: 'age_ar', label: 'Age (AR)', required: true, value: rowData[stageAgeArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Age (AR)', lang: 'ar' },
-                { id: 'is_offered', type: 'select', name: 'is_offered', label: 'Is Offered', required: true, choices: ['Yes', 'No'], defaultValue: [rowData[stageIsOfferedColIndex]], value: rowData[stageIsOfferedColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Is Offered' },
-                { id: 'tuition_fees', type: 'number', name: 'tuition_fees', label: 'Tuition Fees', required: true, value: rowData[stageTuitionFeesColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Tuition Fees', minimumValue: 1, maximumValue: 1000000000 },
+                { id: stageKeyFormFieldId, type: 'text', name: 'stage_key', label: 'Stage Key', required: true, value: rowData[stageKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Stage Key', readOnlyField: true, httpName: 'stage-key'  },
+                { id: stageDeptKeyFormFieldId, type: 'text', name: 'dept_key', label: 'Department Key', required: true, value: rowData[stageDeptKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Department Key', readOnlyField: true, httpName: 'department-key'  },
+                { id: stageSectionKeyFormFieldId, type: 'text', name: 'section_key', label: 'Section Key', required: true, value: rowData[stageSectionKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Section Key', readOnlyField: true, httpName: 'section-key'  },
+                { id: stageSectionTitleEnFormFieldId, type: 'text', name: 'section_title_en', label: 'Section Title (EN)', required: true, value: rowData[stageSectionTitleEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Section Title (EN)', httpName: 'stage-section-title-en' },
+                { id: stageSectionTitleArFormFieldId, type: 'text', name: 'section_title_ar', label: 'Section Title (AR)', required: true, value: rowData[stageSectionTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Section Title (AR)', lang: 'ar', httpName: 'stage-section-title-ar' },
+                { id: stageNameEnFormFieldId, type: 'text', name: 'name_en', label: 'Name (EN)', required: true, value: rowData[stageNameEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (EN)', httpName: 'stage-name-en'    },
+                { id: stageNameArFormFieldId, type: 'text', name: 'name_ar', label: 'Name (AR)', required: true, value: rowData[stageNameArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (AR)', lang: 'ar', httpName: 'stage-name-ar' },
+                { id: stageAgeEnFormFieldId, type: 'text', name: 'age_en', label: 'Age (EN)', required: true, value: rowData[stageAgeEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Age (EN)', httpName: 'stage-age-en' },
+                { id: stageAgeArFormFieldId, type: 'text', name: 'age_ar', label: 'Age (AR)', required: true, value: rowData[stageAgeArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Age (AR)', lang: 'ar', httpName: 'stage-age-ar' },
+                { id: stageIsOfferedFormFieldId, type: 'select', name: 'is_offered', label: 'Is Offered', required: true, choices: ['Yes', 'No'], defaultValue: rowData[stageIsOfferedColIndex], value: rowData[stageIsOfferedColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Is Offered', httpName: 'stage-is-offered' },
+                { id: stageTuitionFeesFormFieldId, type: 'number', name: 'tuition_fees', label: 'Tuition Fees', required: true, value: rowData[stageTuitionFeesColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Tuition Fees', minimumValue: 1, maximumValue: 1000000000, httpName: 'stage-tuition-fees' },
             ];
         }
 
@@ -137,38 +163,38 @@ function InfoSystemManagement() {
                 payload = {
                     settings: [{
                         setting_key: globalSettingsData[indexOfRowToEdit][1],
-                        val: formDataJson['field_val'],
-                        is_encrypted: formDataJson['field_is_encrypted'],
-                        description: formDataJson['field_description'] || '',
-                        sort_order: Number(globalSettingsData[indexOfRowToEdit][0])
+                        val: formDataJson[`field_${settingValFormFieldId}`],
+                        is_encrypted: formDataJson[`field_${settingIsEncryptedFormFieldId}`],
+                        description: formDataJson[`field_${settingDescriptionFormFieldId}`] || '',
+                        sort_order: Number(globalSettingsData[indexOfRowToEdit][settingSortOrderColIndex])
                     }]
                 };
             } else if (currentEditType === 'departments') {
                 payload = {
                     departments: [{
-                        dept_key: departmentsData[indexOfRowToEdit][1],
-                        name_en: formDataJson['field_name_en'],
-                        name_ar: formDataJson['field_name_ar'],
-                        contact_number: formDataJson['field_contact_number'],
-                        is_academic: formDataJson['field_is_academic'],
-                        sort_order: Number(departmentsData[indexOfRowToEdit][0])
+                        dept_key: departmentsData[indexOfRowToEdit][settingKeyColIndex],
+                        name_en: formDataJson[`field_${departmentNameEnFormFieldId}`],
+                        name_ar: formDataJson[`field_${departmentNameArFormFieldId}`],
+                        contact_number: formDataJson[`field_${departmentContactNumberFormFieldId}`],
+                        is_academic: formDataJson[`field_${departmentIsAcademicFormFieldId}`],
+                        sort_order: Number(departmentsData[indexOfRowToEdit][departmentSortOrderColIndex])
                     }]
                 };
             } else if (currentEditType === 'stages') {
                 payload = {
                     stages: [{
-                        stage_key: stagesData[indexOfRowToEdit][1],
-                        dept_key: stagesData[indexOfRowToEdit][2],
-                        section_key: stagesData[indexOfRowToEdit][3],
-                        section_title_en: formDataJson['field_section_title_en'],
-                        section_title_ar: formDataJson['field_section_title_ar'],
-                        name_en: formDataJson['field_name_en'],
-                        name_ar: formDataJson['field_name_ar'],
-                        is_offered: formDataJson['field_is_offered'],
-                        age_en: formDataJson['field_age_en'],
-                        age_ar: formDataJson['field_age_ar'],
-                        tuition_fees: Number(formDataJson['field_tuition_fees']),
-                        sort_order: Number(stagesData[indexOfRowToEdit][0])
+                        stage_key: stagesData[indexOfRowToEdit][stageKeyColIndex],
+                        dept_key: stagesData[indexOfRowToEdit][stageDeptKeyColIndex],
+                        section_key: stagesData[indexOfRowToEdit][stageSectionKeyColIndex],
+                        section_title_en: formDataJson[`field_${stageSectionTitleEnFormFieldId}`],
+                        section_title_ar: formDataJson[`field_${stageSectionTitleArFormFieldId}`],
+                        name_en: formDataJson[`field_${stageNameEnFormFieldId}`],
+                        name_ar: formDataJson[`field_${stageNameArFormFieldId}`],
+                        is_offered: formDataJson[`field_${stageIsOfferedFormFieldId}`],
+                        age_en: formDataJson[`field_${stageAgeEnFormFieldId}`],
+                        age_ar: formDataJson[`field_${stageAgeArFormFieldId}`],
+                        tuition_fees: Number(formDataJson[`field_${stageTuitionFeesFormFieldId}`]),
+                        sort_order: Number(stagesData[indexOfRowToEdit][stageSortOrderColIndex])
                     }]
                 };
             }
