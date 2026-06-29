@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
-file_put_contents(__DIR__ . '/webhook.log', date('c') . " " . json_encode($input) . "\n", FILE_APPEND);
 
 try {
     $entry = $input['entry'][0]['changes'][0]['value'] ?? null;
@@ -34,15 +33,17 @@ try {
     $message = $messages[0];
     $from = $message['from'];
 
-    if (BOT_MODE === 'advanced') {
-        require_once __DIR__ . '/modes/advanced_mode.php';
-        handleAdvancedMode($from, $message);
-    } else if (BOT_MODE == 'intermediate') {
-        require_once __DIR__ . '/modes/intermediate_mode.php';
-        handleIntermediateMode($from, $message);
-    } else {
-        require_once __DIR__ . '/modes/simple_mode.php';
-        handleSimpleMode($from, $message);
+    if (BOT_ON === 1) {
+        if (BOT_MODE === 'advanced') {
+            require_once __DIR__ . '/modes/advanced_mode.php';
+            handleAdvancedMode($from, $message);
+        } else if (BOT_MODE == 'intermediate') {
+            require_once __DIR__ . '/modes/intermediate_mode.php';
+            handleIntermediateMode($from, $message);
+        } else {
+            require_once __DIR__ . '/modes/simple_mode.php';
+            handleSimpleMode($from, $message);
+        }
     }
 
 } catch (Throwable $e) {

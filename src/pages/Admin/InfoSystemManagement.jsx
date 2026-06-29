@@ -70,7 +70,8 @@ function InfoSystemManagement() {
         'BOT_MODE': ['simple', 'intermediate', 'advanced'],
         'USE_HISTORY_ACROSS_SESSIONS': ['Yes', 'No'],
         'LLM_PROVIDER': ['deepseek', 'gemini'],
-        'SESSION_TIMEOUT_MINUTES': ['30', '60', '120']
+        'SESSION_TIMEOUT_MINUTES': ['30', '60', '120'],
+        'BOT_ON': ['Yes', 'No'],
     }
 
     const settingKeyFormFieldId = 1;
