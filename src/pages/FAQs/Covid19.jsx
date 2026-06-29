@@ -441,9 +441,9 @@ function Covid19() {
                     <p>
                         {t("faqs-pages.covid-19-page.extra-information-description")}
 
-                        <div onClick={() => window.open('https://www.care.gov.eg/EgyptCare/Index.aspx', '_blank')} className={"covid-19-read-link"}>
+                        <span onClick={() => window.open('https://www.care.gov.eg/EgyptCare/Index.aspx', '_blank')} className={"covid-19-read-link"}>
                             {t("faqs-pages.covid-19-page.common.egypt-care-index-link")}
-                        </div>
+                        </span>
                     </p>
 
                     <h2 className={"covid-19-read-title"}>
@@ -482,9 +482,9 @@ function Covid19() {
                     <p>
                         {t("faqs-pages.covid-19-page.applying-to-harvest-schools-section.for-more-information-about-applying-paragraph")}
 
-                        <div onClick={() => window.open('https://harvestschools.com', '_blank')} className={"covid-19-read-link"}>
+                        <span onClick={() => window.open('https://harvestschools.com', '_blank')} className={"covid-19-read-link"}>
                             {t("faqs-pages.covid-19-page.common.harvest-schools-website-link")}
-                        </div>
+                        </span>
 
                     </p>
 

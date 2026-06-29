@@ -25,9 +25,7 @@ function handleSimpleMode($from, $message) {
     }
 
     if ($type === 'interactive') {
-        $listId = $message['interactive']['list_reply']['id']
-            ?? $message['interactive']['button_reply']['id']
-            ?? '';
+        $listId = $message['interactive']['list_reply']['id'] ?? $message['interactive']['button_reply']['id'] ?? '';
 
         if ($listId === 'lang_en' || $listId === 'lang_ar') {
             $lang = $listId === 'lang_en' ? 'en' : 'ar';
@@ -65,6 +63,8 @@ function sendDepartmentMenu($to, $lang) {
     foreach ($DEPARTMENTS as $id => $d) {
         $rows[] = ["id" => $id, "title" => mb_substr($d[$lang], 0, 24)];
     }
+
+    $rows[] = ["id" => $lang === "en" ? "lang_ar" : "lang_en", "title" => $lang === "en" ? "تغيير الى اللغة العربية" : "Change to English"];
 
     sendList($to, $STRINGS['choose_department'][$lang], $STRINGS['departments_title'][$lang], [[
         "title" => $STRINGS['departments_title'][$lang],

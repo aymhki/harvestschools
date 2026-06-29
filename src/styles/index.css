@@ -198,13 +198,12 @@ h1 {
 h2 {
     font-family: var(--english-title-font);
     font-size: 3rem;
-    line-height: 1;
     letter-spacing: 0.2rem;
     font-weight: 400;
 }
 
 h2:lang(ar) {
-    line-height: 1rem;
+
 }
 
 h3 {
