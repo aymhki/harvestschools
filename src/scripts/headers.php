@@ -10,6 +10,7 @@ function set_cors_headers($customOptions = []) {
             'http://localhost:5175',
             'http://localhost:8080',
             'http://localhost',
+            'https://localhost',
             'capacitor://localhost'
         ],
         'cache_control'   => 'no-store, no-cache, must-revalidate, max-age=0',
