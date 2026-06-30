@@ -6,7 +6,11 @@ function set_cors_headers($customOptions = []) {
         'allowed_methods' => 'GET, POST, PUT, DELETE, OPTIONS',
         'allowed_origins' => [
             'http://localhost:5173',
-            'http://localhost:5174'
+            'http://localhost:5174',
+            'http://localhost:5175',
+            'http://localhost:8080',
+            'http://localhost',
+            'capacitor://localhost'
         ],
         'cache_control'   => 'no-store, no-cache, must-revalidate, max-age=0',
         'pragma'          => 'no-cache',
