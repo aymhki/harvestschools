@@ -1,8 +1,13 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers([
-    'access_control_allow_credentials' => 'true',
-]);
+require_once '../../authHelpers.php';
+require_once '../../permissionLevels.php';
+$dbConfig = require '../../dbConfig.php';
+set_cors_headers();
+$servername = $dbConfig['db_host'];
+$username = $dbConfig['db_username'];
+$password = $dbConfig['db_password'];
+$dbname = $dbConfig['db_name'];
 
 function sendErrorResponse(string $message, int $code = 500): void {
     http_response_code(200);
@@ -15,24 +20,31 @@ function sendErrorResponse(string $message, int $code = 500): void {
 }
 
 try {
-    $dbConfig = require '../../dbConfig.php';
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error, "code" => 500]);
+        exit;
+    }
+
+    global $JOB_APPLICATION_MANAGEMENT;
+    $conn->set_charset("utf8mb4");
+    $authStatus = check_admin_user_permission($conn, $JOB_APPLICATION_MANAGEMENT);
+
+    if (!$authStatus['success']) {
+        echo json_encode($authStatus);
+        exit;
+    }
+
     $privateUploadsBasePath = '../../../../files_uploaded_from_harvestschools_webapp/job_applications/';
-    $requiredPermissionLevel = 0;
     $sessionDurationInHours = 12;
 
     $file_path_from_get = isset($_GET['file']) ? $_GET['file'] : null;
-    $sessionId = isset($_COOKIE['harvest_schools_admin_session_id']) ? $_COOKIE['harvest_schools_admin_session_id'] : null;
-    $sessionTime = isset($_COOKIE['harvest_schools_admin_session_time']) ? (int)$_COOKIE['harvest_schools_admin_session_time'] : null;
 
-    if (!$file_path_from_get || !$sessionId || !$sessionTime) {
+    if (!$file_path_from_get) {
         throw new Exception("Missing required parameters or authentication cookies.", 400);
     }
 
-    $sessionDurationInSeconds = $sessionDurationInHours * 60 * 60;
-    $sessionStartTimeSeconds = $sessionTime / 1000;
-    if (time() > ($sessionStartTimeSeconds + $sessionDurationInSeconds)) {
-        throw new Exception("Your session has expired. Please log in again.", 401);
-    }
 
     $sanitized_path = str_replace('\\', '/', $file_path_from_get);
     $path_parts = explode('/', $sanitized_path);
@@ -61,30 +73,7 @@ try {
         throw new Exception("File is not readable.", 403);
     }
 
-    $conn = new mysqli($dbConfig['db_host'], $dbConfig['db_username'], $dbConfig['db_password'], $dbConfig['db_name']);
-    if ($conn->connect_error) {
-        throw new Exception("Database connection failed: " . $conn->connect_error, 500);
-    }
-
-    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
-    if (!$stmt) {
-        throw new Exception("Database statement preparation failed.", 500);
-    }
-
-    try {
-        $stmt->bind_param("s", $sessionId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows === 0) {
-            throw new Exception("Invalid session.", 401);
-        }
-        $user = $result->fetch_assoc();
-        $permissionLevels = array_map('intval', explode(',', $user['permission_level']));
-        if (!in_array($requiredPermissionLevel, $permissionLevels, true)) {
-            throw new Exception("You do not have permission to access this file.", 403);
-        }
-    } finally {
-        $stmt->close();
+    if (isset($conn) ) {
         $conn->close();
     }
 

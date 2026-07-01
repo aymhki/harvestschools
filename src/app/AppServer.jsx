@@ -88,7 +88,7 @@ function AppServer() {
 
     return (
         <div className="App">
-            {!shouldExclude && <NavigationBar compactOrAdmin={false}/>}
+            {!shouldExclude && <NavigationBar compactOrAdmin={false} isMobileApp={false}/>}
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
                     <Routes>
@@ -106,7 +106,7 @@ function AppServer() {
                         <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
                         <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
                         <Route path="/admission/admission-fees" element={<AdmissionFees />} />
-                        <Route path="/academics" element={<Academics />} />
+                        <Route path="/academics" element={<Academics isMobileApp={false}/>} />
                         <Route path="/academics/kindergarten" element={<KindergartenAcademics />} />
                         <Route path="/academics/kindergarten-national" element={<KindergartenNationalAcademics />} />
                         <Route path="/academics/kindergarten-international" element={<KindergartenInternationalAcademics />} />

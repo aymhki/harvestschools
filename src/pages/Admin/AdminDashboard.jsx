@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
 import {useMemo} from "react";
 import PropTypes from "prop-types";
+import {logoutCurrentAdmin} from "../../services/General/GeneralUtils.jsx";
 
 function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
     const navigate = useNavigate();
@@ -48,9 +49,7 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
                         divElements={[(
                             <div className={"dashboard-page-footer"} key={1}>
                                 <button onClick={() => {
-                                    document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                                    document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                                    navigate('/login');
+                                    logoutCurrentAdmin(navigate);
                                 }}>Logout</button>
                             </div>
                         )]}

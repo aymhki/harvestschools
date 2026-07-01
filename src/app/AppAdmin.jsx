@@ -34,7 +34,7 @@ function AppAdmin() {
     });
     const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false);
     const [userDataWereNeverFetched, setUserDataWereNeverFetched] = useState(true);
-    const excludePaths = ['/login'];
+    const excludePaths = ['/admin-login'];
     const shouldExclude = excludePaths.includes(location.pathname);
 
     const handleTogglePin = () => {
@@ -58,7 +58,7 @@ function AppAdmin() {
 
     return (
         <div className="App admin-app">
-            {shouldExclude && <NavigationBar compactOrAdmin={true}/>}
+            {shouldExclude && <NavigationBar compactOrAdmin={true} isMobileApp={false}/>}
             <div className={`content ${!shouldExclude ?  'admin-content' : '' } ${isSidebarPinned ? 'pinned' : ''}`}>
                 {!shouldExclude && (
                     <AdminSidebar
@@ -71,9 +71,9 @@ function AppAdmin() {
                 <ErrorBoundary ignoreLngUpdate={true}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
                         <Routes>
-                            <Route path="/" element={<Navigate to="/login" replace />} />
-                            <Route path="/login" element={<AdminLogin />} />
-                            <Route path="/dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
+                            <Route path="/" element={<Navigate to="/admin-login" replace />} />
+                            <Route path="/admin-login" element={<AdminLogin />} />
+                            <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
                             <Route path="/job-applications" element={<JobApplications />} />
                             <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
                             <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />

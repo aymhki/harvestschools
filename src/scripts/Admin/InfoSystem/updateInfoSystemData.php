@@ -1,6 +1,7 @@
 <?php
 require_once '../../headers.php';
 require_once '../../authHelpers.php';
+require_once '../../permissionLevels.php';
 $dbConfig = require '../../dbConfig.php';
 set_cors_headers();
 $servername = $dbConfig['db_host'];
@@ -12,12 +13,17 @@ $dbEncryptionKeyPhrase = $dbConfig['encryption_key_phrase'];
 try {
     $input = file_get_contents('php://input');
     $postData = json_decode($input, true);
-
     $conn = new mysqli($servername, $username, $password, $dbname);
-    if ($conn->connect_error) throw new Exception("Connection failed: " . $conn->connect_error, 500);
-    $conn->set_charset("utf8mb4");
 
-    $authStatus = check_user_permission($conn, 7);
+    if ($conn->connect_error) {
+        echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error, "code" => 500]);
+        exit;
+    }
+
+    global $INFO_SYSTEM_MANAGEMENT;
+    $conn->set_charset("utf8mb4");
+    $authStatus = check_admin_user_permission($conn, $INFO_SYSTEM_MANAGEMENT);
+
     if (!$authStatus['success']) {
         echo json_encode($authStatus);
         exit;

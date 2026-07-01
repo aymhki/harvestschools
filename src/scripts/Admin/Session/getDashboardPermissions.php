@@ -1,7 +1,9 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../authHelpers.php';
+require_once '../../permissionLevels.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -13,18 +15,6 @@ try {
             "success" => false,
             "message" => "Method Not Allowed",
             "code" => 405
-        ]);
-        exit;
-    }
-
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
-
-    if (!isset($data['session_id'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Bad Request: Missing session_id",
-            "code" => 400
         ]);
         exit;
     }
@@ -41,7 +31,7 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionId = $data['session_id'];
+    $sessionId = get_bearer_token();
     $stmt = $conn->prepare("SELECT u.permission_level 
                           FROM admin_sessions s
                           JOIN admin_users u ON s.user_id = u.id
@@ -88,9 +78,17 @@ try {
         }
     }
 
+    global $ADMIN_USER_MANAGEMENT;
+    global $JOB_APPLICATION_MANAGEMENT;
+    global $GRADUATION_BOOKING_MANAGEMENT;
+    global $OPEN_DAY_SIGNUP_MANAGEMENT;
+    global $BORROWING_SYSTEM_MANAGEMENT;
+    global $INFO_SYSTEM_MANAGEMENT;
+    global $ALUMNI_STUDENTS_MANAGEMENT;
+
     $dashboardOptions = [];
     $allDashboardOptions = [
-        1000 => [
+        $ADMIN_USER_MANAGEMENT => [
             [
                 "title" => "Admin Users",
                 "image" => "/images/Dashboard/AdminUsers.png",
@@ -100,7 +98,7 @@ try {
                 "titleInArabic" => false
             ]
         ],
-        0 => [
+        $JOB_APPLICATION_MANAGEMENT => [
             [
                 "title" => "Job Applications",
                 "image" => '/images/Dashboard/JobApplications.png',
@@ -111,7 +109,7 @@ try {
                 "descriptionInArabic" => false
             ]
         ],
-        1 => [
+        $GRADUATION_BOOKING_MANAGEMENT => [
             [
                 "title" => "Graduation Bookings",
                 "image" => '/images/Dashboard/GraduationBookingManagement.png',
@@ -122,7 +120,7 @@ try {
                 "descriptionInArabic" => false
             ]
         ],
-        2 => [
+        $OPEN_DAY_SIGNUP_MANAGEMENT => [
             [
                 "title" => "Open Day Signups",
                 "image" => "/images/Dashboard/OpenDaySignups.png",
@@ -134,7 +132,7 @@ try {
             ]
 
         ],
-        3 => [
+        $BORROWING_SYSTEM_MANAGEMENT => [
             [
                 "title" => "Borrowing  System",
                 "image" => "/images/Dashboard/BorrowingSystem.png",
@@ -145,7 +143,7 @@ try {
                 "descriptionInArabic" => false
             ]
         ],
-        7 => [
+        $INFO_SYSTEM_MANAGEMENT => [
             [
                 "title" => "Info System",
                 "image" => "/images/Dashboard/InfoSystem.png",
@@ -156,7 +154,7 @@ try {
                 "descriptionInArabic" => false
             ]
         ],
-        13 => [
+        $ALUMNI_STUDENTS_MANAGEMENT => [
             [
                 "title" => "Alumni Students",
                 "image" => "/images/Dashboard/AlumniStudents.png",

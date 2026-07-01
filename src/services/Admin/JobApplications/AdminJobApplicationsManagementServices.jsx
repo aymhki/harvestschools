@@ -1,5 +1,5 @@
 import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx";
-import {adminLoginPageUrl, EMBEDDABLE_EXTENSIONS, endpoints, getMimeType} from "../../General/GeneralUtils.jsx";
+import {adminLoginPageUrl, EMBEDDABLE_EXTENSIONS, endpoints, getMimeType, getAdminSessionId} from "../../General/GeneralUtils.jsx";
 
 
 const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
@@ -12,11 +12,15 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
     }
 
     setJobApplications(null);
-    const timestamp = new Date().getTime();
 
     try {
         const response = await fetch(endpoints.getJobApplications,
-            {method: 'POST', body: JSON.stringify({session_id: sessionId})});
+    {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        });
 
         const result = await response.json();
 
@@ -59,7 +63,11 @@ const serveJobApplicationFile = async (searchParams, setIsLoading, setError, set
     }
 
     try {
-        const response = await fetch(`${endpoints.serveJobApplicationFile}${filePath}`, {credentials: 'include'});
+        const response = await fetch(`${endpoints.serveJobApplicationFile}${filePath}`, { method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + getAdminSessionId()
+            }
+        } );
 
         const contentType = response.headers.get("content-type");
 

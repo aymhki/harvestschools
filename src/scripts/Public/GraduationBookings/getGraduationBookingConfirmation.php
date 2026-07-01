@@ -22,7 +22,6 @@ try {
     $extrasId = $data['extrasId'];
     $requestUsername = $data['username'];
     $requestPasswordHash = $data['password_hash'];
-    $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         echo json_encode([
@@ -186,12 +185,9 @@ try {
         'students' => $students,
         'parents' => $parents
     ];
-    $endTime = microtime(true);
-    $executionTime = ($endTime - $startTime) * 1000;
     echo json_encode([
         'success' => true,
         'confirmation_data' => $responseData,
-        'executionTime' => $executionTime,
         'message' => 'Booking confirmation retrieved successfully',
         'code' => 200
     ]);

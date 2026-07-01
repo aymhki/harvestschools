@@ -1,7 +1,8 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../authHelpers.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -13,18 +14,6 @@ try {
             "success" => false,
             "message" => "Method Not Allowed",
             "code" => 405
-        ]);
-        exit;
-    }
-
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
-
-    if (!isset($data['session_id'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Bad Request: Missing session_id",
-            "code" => 400
         ]);
         exit;
     }
@@ -41,7 +30,7 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionId = $data['session_id'];
+    $sessionId = get_bearer_token();
     $stmt = $conn->prepare("SELECT auth_id FROM graduation_booking_sessions WHERE id = ?");
 
     if (!$stmt) {

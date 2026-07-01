@@ -5,7 +5,7 @@ import {
     extendSession,
     resetSession,
     sessionDuration,
-    getCookies,
+    getSessionsFromLocalStorage,
     endpoints
 } from "../../General/GeneralUtils.jsx";
 
@@ -22,7 +22,9 @@ const checkAdminSession = async (navigate, allowedPermission) => {
     try {
         const response = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
-            body: JSON.stringify({session_id: sessionId})
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const result = await response.json();
@@ -40,7 +42,9 @@ const checkAdminSession = async (navigate, allowedPermission) => {
 
         const userPermissionsResponse = await fetch(endpoints.getUserPermissions, {
             method: 'POST',
-            body: JSON.stringify({session_id: sessionId})
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const userPermissionsResult = await userPermissionsResponse.json();
@@ -76,7 +80,9 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
     try {
         const sessionResponse = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
-            body: JSON.stringify({session_id: sessionId})
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const sessionResult = await sessionResponse.json();
@@ -95,7 +101,9 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
 
         const permissionsResponse = await fetch(endpoints.getDashboardPermissions, {
             method: 'POST',
-            body: JSON.stringify({session_id: sessionId})
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const permissionsResult = await permissionsResponse.json();
@@ -134,7 +142,10 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
         if (result && result.success) {
             const sessionResponse = await fetch(endpoints.createAdminSession, {
                 method: 'POST',
-                body: JSON.stringify({ username: username, session_id: createSessions('harvest_schools_admin'), user_id: result.id })
+                body: JSON.stringify({ username: username, user_id: result.id }),
+                headers: {
+                    'Authorization': 'Bearer ' + createSessions('harvest_schools_admin')
+                }
             });
 
             const sessionResult = await sessionResponse.json();
@@ -159,7 +170,9 @@ const checkAdminSessionFromAdminLogin = async (navigate) => {
     try {
         const response = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
-            body: JSON.stringify({session_id: sessionId})
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const result = await response.json();
@@ -178,9 +191,9 @@ const checkAdminSessionFromAdminLogin = async (navigate) => {
 }
 
 const validateAdminSessionLocally = () => {
-    const cookies = getCookies();
-    const sessionId = cookies.harvest_schools_admin_session_id;
-    const sessionTime = parseInt(cookies.harvest_schools_admin_session_time, 10);
+    const localStorage = getSessionsFromLocalStorage('harvest_schools_admin');
+    const sessionId = localStorage.sessionId;
+    const sessionTime = parseInt(localStorage.sessionTime, 10);
 
     if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
         resetSession('harvest_schools_admin');

@@ -1,7 +1,8 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../authHelpers.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -24,17 +25,17 @@ try {
     $conn->set_charset("utf8mb4");
     $input = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($input['username']) || !isset($input['session_id']) || !isset($input['user_id'])) {
+    if (!isset($input['username']) || !isset($input['user_id'])) {
         echo json_encode([
             "success" => false,
-            "message" => "Bad Request: Missing username or session_id or user_id",
+            "message" => "Bad Request: Missing username or user_id",
             "code" => 400
         ]);
         exit;
     }
 
     $user      = $input['username'];
-    $sessionId = $input['session_id'];
+    $sessionId = get_bearer_token();
     $userId    = $input['user_id'];
 
     $stmt = $conn->prepare("SELECT id FROM graduation_booking_sessions WHERE auth_id = ?");

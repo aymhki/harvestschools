@@ -11,8 +11,12 @@ const fetchGraduationBookingsRequest = async (navigate, setAllBookings) => {
             return;
         }
 
-        const response = await fetch(endpoints.getAllGraduationBookings,
-            {method: 'POST', body: JSON.stringify({session_id: sessionId})});
+        const response = await fetch(endpoints.getAllGraduationBookings, {method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + sessionId
+                }
+        });
+
         const result = await response.json();
 
         if (result) {
@@ -46,7 +50,10 @@ const handleDeleteGraduationBookingRequest = async (bookingId) => {
 
         const response = await fetch(endpoints.deleteGraduationBookingEntry, {
             method: 'POST',
-            body: JSON.stringify({bookingId: bookingId, session_id: sessionId})
+            body: JSON.stringify({bookingId: bookingId}),
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const result = await response.json();
@@ -72,7 +79,10 @@ const handleAddGraduationBookingRequest = async (formData) => {
 
         const response = await fetch(endpoints.submitAddGraduationBookingForm, {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const result = await response.json();
@@ -99,7 +109,10 @@ const handleEditGraduationBookingRequest = async (formData, bookingId) => {
 
         const response = await fetch(endpoints.submitEditGraduationBookingForm, {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const result = await response.json();

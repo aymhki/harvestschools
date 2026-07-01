@@ -22,7 +22,8 @@ export default defineConfig({
                         return 'vendor'
                     }
                 }
-            }
+            },
+            external: (id) => id.includes('/fonts/')
         }
     },
     base: '/',

@@ -13,7 +13,12 @@ const fetchAllAdminUsers = async (navigate, setAdminUsers, setAvailablePermissio
     setAdminUsers(null);
 
     try {
-        const response = await fetch(endpoints.getAllAdminUsers, {method: 'GET', credentials: 'include'})
+        const response = await fetch(endpoints.getAllAdminUsers, {method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        })
+
         const result = await response.json();
 
         if (result && result.data && Array.isArray(result.data) ) {
@@ -43,7 +48,12 @@ const addAdminUser = async (newAdminUser) => {
             return 'Session expired';
         }
 
-        const response = await fetch(endpoints.addAdminUser, {method: 'POST', credentials: 'include', body: JSON.stringify(newAdminUser) });
+        const response = await fetch(endpoints.addAdminUser, {method: 'POST',
+            body: JSON.stringify(newAdminUser),
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        });
 
         const result = await response.json();
 
@@ -66,7 +76,12 @@ const editAdminUser = async (newAdminUser, logoutAfterEdit, navigate) => {
             return 'Session expired';
         }
 
-        const response = await fetch(endpoints.editAdminUser, {method: 'POST', credentials: 'include', body: JSON.stringify(newAdminUser) });
+        const response = await fetch(endpoints.editAdminUser, {method: 'POST',
+            body: JSON.stringify(newAdminUser),
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        });
 
         const result = await response.json();
 
@@ -93,10 +108,15 @@ const deleteAdminUser = async (adminUserToDeleteId, logoutAfterDelete, navigate)
             return 'Session expired';
         }
 
-        const response = await fetch(endpoints.deleteAdminUser, {method: 'POST', credentials: 'include',
+        const response = await fetch(endpoints.deleteAdminUser, {method: 'POST',
             body: JSON.stringify(
-                {"delete_admin_user_id": adminUserToDeleteId}
-            )
+                {
+                    "delete_admin_user_id": adminUserToDeleteId,
+                }
+            ),
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
         });
 
         const result = await response.json();

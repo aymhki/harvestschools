@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../styles/AdminSidebar.css';
-import {isDevelopment} from "../services/General/GeneralUtils.jsx";
-
+import {isDevelopment, logoutCurrentAdmin} from "../services/General/GeneralUtils.jsx";
+import { Capacitor } from '@capacitor/core';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
@@ -36,15 +36,11 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
             case '/info-system-management': return <InfoIcon />;
             case '/alumni-students-management' : return <SchoolIcon />;
             case '/admin-users-management' : return <ManageAccountsIcon />;
+            case  '/view-job-application-file' : return <WorkIcon />;
             default: return <DashboardIcon />;
         }
     };
 
-    const handleLogout = () => {
-        document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        navigate('/login');
-    };
 
     const showText = isExpanded || isPinned || isMobileOpen;
 
@@ -111,15 +107,16 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
 
                 <nav className="sidebar-nav">
                     <ul className="sidebar-links">
-                        <li className={location.pathname === '/dashboard' ? 'active' : ''}>
-                            <Link to="/dashboard" title={!isExpanded ? 'Dashboard' : ''} onClick={() => setIsMobileOpen(false)}>
+                        <li className={location.pathname === '/admin-dashboard' ? 'active' : ''}>
+                            <Link to="/admin-dashboard" title={!isExpanded ? 'Dashboard' : ''} onClick={() => setIsMobileOpen(false)}>
                                 <span className="icon"><DashboardIcon /></span>
                                 {showText && <span className="label">Dashboard</span>}
                             </Link>
                         </li>
 
                         {adminLinks.map((link) => {
-                            const isActive = location.pathname === link.link;
+                            const viewJobApplicationFile = location.pathname === '/view-job-application-file' && link.link === '/job-applications';
+                            const isActive = location.pathname === link.link || viewJobApplicationFile;
                             return (
                                 <li key={link.link} className={isActive ? 'active' : ''}>
                                     <Link to={link.link} title={!isExpanded ? link.title : ''} onClick={() => setIsMobileOpen(false)}>
@@ -136,7 +133,7 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
                     <ul className="sidebar-links">
                         <li>
                             <Link
-                                to={ `${ isDevelopment() ? `http://localhost:5173` : `https://harvestschools.com` }` }
+                                to={ `${ Capacitor.isNativePlatform() ? '/home' : isDevelopment() ? `http://localhost:5173` : `https://harvestschools.com` }` }
                                 title={!isExpanded ? 'Return to Main Site' : ''}
                             >
                                 <span className="icon"><PublicIcon /></span>
@@ -152,7 +149,7 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
                                 {showText && <span className="label">SchoolEverywhere</span>}
                             </Link>
                         </li>
-                        <li className="logout-btn" onClick={handleLogout}>
+                        <li className="logout-btn" onClick={() => {logoutCurrentAdmin(navigate)}}>
                             <div className="nav-item-content" title={!isExpanded ? 'Logout' : ''}>
                                 <span className="icon"><LogoutIcon /></span>
                                 {showText && <span className="label">Logout</span>}
@@ -182,7 +179,7 @@ AdminSidebar.propTypes = {
     ).isRequired,
     loggedInUsername: PropTypes.string.isRequired,
     isPinned: PropTypes.bool.isRequired,
-    onTogglePin: PropTypes.func.isRequired
+    onTogglePin: PropTypes.func.isRequired,
 }
 
 export default AdminSidebar;

@@ -3,9 +3,10 @@ import OptionsGrid from "../../modules/OptionsGrid.jsx";
 import {Helmet} from "react-helmet-async";
 import { useTranslation } from 'react-i18next';
 import {isDevelopment} from "../../services/General/GeneralUtils.jsx";
+import PropTypes from "prop-types";
 
 
-function Academics() {
+function Academics({isMobileApp}) {
 
     const { t, i18n } = useTranslation(['academics-pages']);
 
@@ -71,9 +72,9 @@ function Academics() {
             title: t("nav.admin-login", {ns: 'nav'}),
             image: "/images/AcademicsPages/Login1.png",
             description: t("academics-pages.admin-login-description"),
-            link: isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`,
+            link: isMobileApp ? '/admin-login' : isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`,
             buttonText: t("common.learn-more", {ns: 'common'}),
-            externalLink: true
+            externalLink: !isMobileApp
         }
     ];
 
@@ -92,6 +93,10 @@ function Academics() {
 
     </div>
   );
+}
+
+Academics.propTypes = {
+    isMobileApp: PropTypes.bool.isRequired,
 }
 
 export default Academics;
