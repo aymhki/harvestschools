@@ -163,12 +163,11 @@ function AppMobileApp() {
     return (
         <div className={`App ${isAdminSection ? 'admin-app' : ''}`}>
             {isAdminSection
-                ? isAdminLoginPath && <NavigationBar compactOrAdmin={true} isMobileApp={true}/>
-                : !isClientChromeExcluded && <NavigationBar compactOrAdmin={false} isMobileApp={true}/>}
+                ? isAdminLoginPath && <NavigationBar compactOrAdmin={true} isMobileApp={true} addViewPortPaddingForMobileApp={true}/>
+                : !isClientChromeExcluded && <NavigationBar compactOrAdmin={false} isMobileApp={true} addViewPortPaddingForMobileApp={true}/>}
 
             <div className={isAdminSection
-                ? `content ${!isAdminLoginPath ? 'admin-content' : ''} ${isSidebarPinned ? 'pinned' : ''}`
-                : 'content'}
+                ? `content ${!isAdminLoginPath ? 'admin-content' : ''} ${isSidebarPinned ? 'pinned' : ''} mobile-app-top-padding-for-view-port` : 'content'}
             >
                 {isAdminSection && !isAdminLoginPath && (
                     <AdminSidebar
