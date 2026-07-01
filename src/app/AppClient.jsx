@@ -89,7 +89,7 @@ function AppClient() {
 
     return (
         <div className="App">
-            {!shouldExclude && <NavigationBar compactOrAdmin={false} isMobileApp={false}/>}
+            {!shouldExclude && <NavigationBar compactOrAdmin={false} isMobileApp={false} addViewPortPaddingForMobileApp={false}/>}
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}></div>}>

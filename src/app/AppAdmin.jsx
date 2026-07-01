@@ -58,7 +58,7 @@ function AppAdmin() {
 
     return (
         <div className="App admin-app">
-            {shouldExclude && <NavigationBar compactOrAdmin={true} isMobileApp={false}/>}
+            {shouldExclude && <NavigationBar compactOrAdmin={true} isMobileApp={false} addViewPortPaddingForMobileApp={false}/>}
             <div className={`content ${!shouldExclude ?  'admin-content' : '' } ${isSidebarPinned ? 'pinned' : ''}`}>
                 {!shouldExclude && (
                     <AdminSidebar

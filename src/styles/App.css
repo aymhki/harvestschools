@@ -10,6 +10,13 @@
 
 }
 
+.mobile-app-top-padding-for-view-port {
+    padding-top: 3rem;
+}
+
+.mobile-app-bottom-padding-for-view-port {
+    padding-bottom: 1rem;
+}
 
 
 .content {
@@ -35,6 +42,9 @@
     padding-left: 16rem;
 }
 
+.content.admin-content.pinned.mobile-app-top-padding-for-view-port, .content.admin-content.mobile-app-top-padding-for-view-port {
+    padding-top: 3rem;
+}
 
 .logo {
     height: 6rem;

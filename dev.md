@@ -27,4 +27,11 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Add new lines to the llm prompt in the update info system script.
 - [x] Remove new lines from the $SCHOOL_CONFIG variable in the update info system script.
 - [x] Add the $STRINGS to the update info system script from the original config file.
-- [ ] Spinner is not taking the entire screen in mobile view.
+- [x] Spinner is not taking the entire screen in mobile view.
+- [ ] The mobile app should open when a harvestschools.com link is clicked if it is installed on the device.
+- [ ] The website should show install app prompt at the top or bottom when opened from a mobile device.
+- [ ] The top padding for view port in the mobile app should be implemented and tested especially on iOS.
+- [ ] The advanced mode in the whatsapp chat bot should be smarter about when to show feedback buttons and should show change language buttons as well as return a proper error message if the llm did not response. It should also include a third llm like claude.
+- [ ] Create a messenger bot that works like the whatsapp bot.
+- [ ] Add proper app icons for android and iOS as well as add documentation needed such as privacy policy and terms of service.
+- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
