@@ -3,20 +3,28 @@
   "private": true,
   "workspaces": [
     "domains/Admin",
-    "domains/Main"
+    "domains/Main",
+    "domains/MobileApp"
   ],
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run dev --workspace=domains/Main",
+    "dev:main": "npm run dev --workspace=domains/Main",
     "dev:admin": "npm run dev --workspace=domains/Admin",
+    "dev:android-mobile-app": "npm run android --workspace=domains/MobileApp",
+    "dev:ios-mobile-app": "npm run ios --workspace=domains/MobileApp",
+    "dev:mobile-app": "npm run dev --workspace=domains/MobileApp",
     "build:main": "npm run build --workspace=domains/Main",
     "build:admin": "npm run build --workspace=domains/Admin",
+    "build:mobile-app": "npm run build --workspace=domains/MobileApp",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "clean": "rm -rf dist",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.16",
@@ -46,13 +54,15 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.1",
     "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.2.22",
+    "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "typescript": "^6.0.3",
     "vite": "^7.2.2"
   },
   "snap": {

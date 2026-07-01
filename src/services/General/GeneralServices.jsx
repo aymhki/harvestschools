@@ -1,4 +1,5 @@
 import {endpoints, isDevelopment} from "./GeneralUtils.jsx";
+import { Capacitor } from '@capacitor/core';
 
 const submitFormRequest = async (formData) => {
     try {
@@ -25,7 +26,7 @@ const submitFormRequest = async (formData) => {
 
 
 function servePublicAsset(path, options = {}) {
-    if (isDevelopment()) return `/assets/${path}`
+    if (isDevelopment() && !Capacitor.isNativePlatform()) return `/assets/${path}`
 
     const { w, h, format, quality, download, filename } = options
     const params = new URLSearchParams({ path })
@@ -36,6 +37,7 @@ function servePublicAsset(path, options = {}) {
     if (quality)  params.set('quality', quality)
     if (download) params.set('download', '1')
     if (filename) params.set('filename', filename)
+
 
     return `${endpoints.servePublicAssetFile}?${params.toString()}`
 }

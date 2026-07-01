@@ -1,27 +1,15 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../permissionLevels.php';
+require_once '../../authHelpers.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
-
-    if (!isset($data['session_id'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Bad Request: Missing session_id",
-            "code" => 400
-        ]);
-        exit;
-    }
-
-    $sessionId = $data['session_id'];
-
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
@@ -29,30 +17,12 @@ try {
         exit;
     }
 
+    global $JOB_APPLICATION_MANAGEMENT;
     $conn->set_charset("utf8mb4");
+    $authStatus = check_admin_user_permission($conn, $JOB_APPLICATION_MANAGEMENT);
 
-
-    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
-    if (!$stmt) {
-        echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error, "code" => 500]);
-        exit;
-    }
-
-    $stmt->bind_param("s", $sessionId);
-    $stmt->execute();
-    $permissionResult = $stmt->get_result();
-    $stmt->close();
-
-    if ($permissionResult->num_rows == 0) {
-        echo json_encode(["success" => false, "message" => "Invalid session", "code" => 401]);
-        exit;
-    }
-
-    $permissionRow = $permissionResult->fetch_assoc();
-    $cleanPermissionLevels = array_map('intval', explode(',', $permissionRow['permission_level']));
-
-    if (!in_array(0, $cleanPermissionLevels, true)) {
-        echo json_encode(["success" => false, "message" => "Permission denied", "code" => 403]);
+    if (!$authStatus['success']) {
+        echo json_encode($authStatus);
         exit;
     }
 

@@ -1,0 +1,12 @@
+{
+    "appId": "com.harvestschools.app",
+    "appName": "Harvest International Schools",
+    "webDir": "../../dist/mobile-app",
+    "android": {
+        "path": "../../android"
+    },
+    "ios": {
+        "path": "../../ios"
+    }
+}
+

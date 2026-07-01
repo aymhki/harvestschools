@@ -22,8 +22,9 @@ tree --gitignore -I 'assets|.git' -a
 ## TODOs:
 - [x] Move i18n translations to the backend and break down the huge file into multiple smaller ones.
 - [x] Move the image assets of the gallery to the backend server instead of the public folder of the frontend.
-- [ ] h2 line height in the Covid-19 policy page is not correct
-- [ ] Pass isDevelopment to the update info system script so that it dynamically changes the script it is writing to.
-- [ ] Add new lines to the llm prompt in the update info system script.
-- [ ] Remove new lines from the $SCHOOL_CONFIG variable in the update info system script.
-- [ ] Add the $STRINGS to the update info system script from the original config file.
+- [x] h2 line height in the Covid-19 policy page is not correct
+- [x] Pass isDevelopment to the update info system script so that it dynamically changes the script it is writing to.
+- [x] Add new lines to the llm prompt in the update info system script.
+- [x] Remove new lines from the $SCHOOL_CONFIG variable in the update info system script.
+- [x] Add the $STRINGS to the update info system script from the original config file.
+- [ ] Spinner is not taking the entire screen in mobile view.

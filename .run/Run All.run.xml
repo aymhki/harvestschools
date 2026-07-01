@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run All" type="CompoundRunConfigurationType">
     <toRun name="dev:admin" type="js.build_tools.npm" />
-    <toRun name="npm dev" type="js.build_tools.npm" />
+    <toRun name="dev:main" type="js.build_tools.npm" />
+    <toRun name="dev:mobile-app" type="js.build_tools.npm" />
     <toRun name="harvest schools backend" type="PhpBuiltInWebServerConfigurationType" />
     <method v="2" />
   </configuration>

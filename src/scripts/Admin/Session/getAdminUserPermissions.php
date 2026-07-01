@@ -1,7 +1,9 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../authHelpers.php';
+require_once '../../permissionLevels.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -12,17 +14,6 @@ try {
             "success" => false,
             "message" => "Method Not Allowed",
             "code" => 405
-        ]);
-        exit;
-    }
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
-
-    if (!isset($data['session_id'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Bad Request: Missing session_id",
-            "code" => 400
         ]);
         exit;
     }
@@ -39,7 +30,7 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionId = $data['session_id'];
+    $sessionId = get_bearer_token();
     $stmt = $conn->prepare("SELECT u.permission_level 
                           FROM admin_sessions s
                           JOIN admin_users u ON s.user_id = u.id
@@ -73,8 +64,7 @@ try {
 
     if ($row['permission_level'] === "0") {
         $cleanPermissionLevels = [0];
-    }
-    elseif ($row['permission_level'] !== "" && $row['permission_level'] !== null) {
+    } elseif ($row['permission_level'] !== "" && $row['permission_level'] !== null) {
         $permissionLevels = explode(',', $row['permission_level']);
         $cleanPermissionLevels = [];
         foreach ($permissionLevels as $level) {

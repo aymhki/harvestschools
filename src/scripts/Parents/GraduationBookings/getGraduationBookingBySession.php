@@ -1,23 +1,15 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../authHelpers.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 try {
-    $input = json_decode(file_get_contents('php://input'), true);
-    if (!isset($input['session_id'])) {
-        echo json_encode([
-            'success' => false,
-            'message' => "Session ID is required",
-            'code' => 400
-        ]);
-        exit;
-    }
-    $sessionId = $input['session_id'];
-    $startTime = microtime(true);
+
+    $sessionId = get_bearer_token();
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         echo json_encode([
@@ -232,8 +224,6 @@ try {
         ];
         $tabularData[] = $row;
     }
-    $endTime = microtime(true);
-    $executionTime = ($endTime - $startTime) * 1000;
 
     echo json_encode([
         'success' => true,
@@ -242,7 +232,6 @@ try {
         'sessionId' => $sessionId,
         'detailedData' => $bookingData,
         'tabularData' => $tabularData,
-        'executionTime' => $executionTime,
         'message' => "Booking details retrieved successfully",
         'code' => 200
     ]);

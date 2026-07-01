@@ -1,8 +1,9 @@
 <?php
 require_once '../../headers.php';
 require_once '../../authHelpers.php';
-set_cors_headers();
+require_once '../../permissionLevels.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -25,7 +26,8 @@ try {
     $conn->set_charset("utf8mb4");
     $conn->begin_transaction();
 
-    $authStatus = check_user_permission($conn, 1000);
+    global $ADMIN_USER_MANAGEMENT;
+    $authStatus = check_admin_user_permission($conn, $ADMIN_USER_MANAGEMENT);
     if (!$authStatus['success']) {
         $conn->rollback();
         echo json_encode($authStatus);

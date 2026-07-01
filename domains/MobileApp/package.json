@@ -1,0 +1,10 @@
+{
+  "name": "MobileApp",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5175",
+    "android": "npx cap run android",
+    "ios": "npx cap run ios --target-name \"iPhone 16e\"",
+    "build": "rm -rf ../../dist/mobile-app && vite build --outDir ../../dist/mobile-app && npx cap sync"
+  }
+}

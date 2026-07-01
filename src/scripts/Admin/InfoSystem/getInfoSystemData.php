@@ -1,8 +1,9 @@
 <?php
 require_once '../../headers.php';
 require_once '../../authHelpers.php';
-set_cors_headers();
+require_once '../../permissionLevels.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -26,12 +27,16 @@ function moveColumnFirst(array $data, string $columnHeader): array {
 
 try {
     $conn = new mysqli($servername, $username, $password, $dbname);
+
     if ($conn->connect_error) {
         echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error, "code" => 500]);
         exit;
     }
+
+    global $INFO_SYSTEM_MANAGEMENT;
     $conn->set_charset("utf8mb4");
-    $authStatus = check_user_permission($conn, 7);
+    $authStatus = check_admin_user_permission($conn, $INFO_SYSTEM_MANAGEMENT);
+
     if (!$authStatus['success']) {
         echo json_encode($authStatus);
         exit;

@@ -1,18 +1,36 @@
 <?php
 
-function check_user_permission($conn, $requiredPermission, $explicitSessionId = null, $cookieName = 'harvest_schools_admin_session_id') {
-    $sessionId = $explicitSessionId;
+function get_bearer_token() {
+    $headers = null;
+
+    if (isset($_SERVER['Authorization'])) {
+        $headers = trim($_SERVER['Authorization']);
+    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
+    } elseif (function_exists('apache_request_headers')) {
+        $requestHeaders = apache_request_headers();
+        $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+        if (isset($requestHeaders['Authorization'])) {
+            $headers = trim($requestHeaders['Authorization']);
+        }
+    }
+
+    if (!empty($headers) && preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+        return $matches[1];
+    }
+
+    return null;
+}
+
+function check_admin_user_permission($conn, $requiredPermission, $explicitSessionId = null) {
+    $sessionId = get_bearer_token() ?? $explicitSessionId;
 
     if (empty($sessionId)) {
-        if (isset($_COOKIE[$cookieName]) && !empty($_COOKIE[$cookieName])) {
-            $sessionId = $_COOKIE[$cookieName];
-        } else {
-            return [
-                "success" => false,
-                "message" => "Bad Request: Missing session_id in payload and cookies",
-                "code" => 400
-            ];
-        }
+        return [
+            "success" => false,
+            "message" => "Bad Request: Missing session_id in payload",
+            "code" => 400
+        ];
     }
 
     $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
@@ -40,17 +58,31 @@ function check_user_permission($conn, $requiredPermission, $explicitSessionId = 
     $permissionRow = $permissionResult->fetch_assoc();
     $cleanPermissionLevels = array_map('intval', explode(',', $permissionRow['permission_level']));
 
-    if (!in_array((int)$requiredPermission, $cleanPermissionLevels, true)) {
-        return [
-            "success" => false,
-            "message" => "Permission denied",
-            "code" => 403
-        ];
+    if (is_array($requiredPermission)) {
+        $requiredPermissions = array_map('intval', $requiredPermission);
+        $missingPermissions = array_diff($requiredPermissions, $cleanPermissionLevels);
+        if (!empty($missingPermissions)) {
+            return [
+                "success" => false,
+                "message" => "Permission denied",
+                "code" => 403
+            ];
+        }
+    } else {
+        if (!in_array((int)$requiredPermission, $cleanPermissionLevels, true)) {
+            return [
+                "success" => false,
+                "message" => "Permission denied",
+                "code" => 403
+            ];
+        }
     }
+
 
     return [
         "success" => true,
         "message" => "Permission granted",
-        "code" => 200
+        "code" => 200,
+        "session_id" => $sessionId,
     ];
 }

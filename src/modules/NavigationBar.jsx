@@ -12,7 +12,7 @@ import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 import {isDevelopment} from "../services/General/GeneralUtils.jsx"
 
-function NavigationBar({compactOrAdmin}){
+function NavigationBar({compactOrAdmin, isMobileApp}){
     const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
@@ -254,9 +254,9 @@ function NavigationBar({compactOrAdmin}){
                         </li>
 
                         <li onClick={() => {
-                            navigate(isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`);
+                            navigate(isMobileApp ? '/admin-login' : isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`);
                         }}>
-                            <Link to={isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`}>
+                            <Link to={isMobileApp ? '/admin-login' : isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`}>
                                 {t("nav.admin-login")}
                             </Link>
                         </li>
@@ -477,7 +477,8 @@ function NavigationBar({compactOrAdmin}){
 }
 
 NavigationBar.propTypes = {
-    compactOrAdmin: PropTypes.bool.isRequired
+    compactOrAdmin: PropTypes.bool.isRequired,
+    isMobileApp: PropTypes.bool.isRequired,
 }
 
 export default NavigationBar;

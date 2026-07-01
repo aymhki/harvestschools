@@ -16,7 +16,12 @@ const fetchAllOpenDaySignups = async (navigate, setOpenDaySignups) => {
 
     try {
         const response = await fetch(endpoints.getOpenDaySignups,
-            {method: 'POST', body: JSON.stringify({session_id: sessionId})});
+    {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        });
 
         const result = await response.json();
 

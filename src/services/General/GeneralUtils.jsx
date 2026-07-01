@@ -2,32 +2,41 @@ import {v6 as uuidv6} from "uuid";
 import i18n from '../../i18n/i18n-client.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
+import { Capacitor } from '@capacitor/core';
 
 const isDevelopment = () => {
     return !import.meta.env.PROD;
 };
 
-const getBaseUrl = () => {
-    return isDevelopment() ? BASE_URLS.development : BASE_URLS.production;
+const getBaseUrl = (isAdmin = false) => {
+    if (isDevelopment()) return BASE_URLS.development;
+    return isAdmin ? ADMIN_BASE_URLS.production : BASE_URLS.production;
 };
 
 const generateEndpoints = () => {
-    const baseUrl = getBaseUrl();
     const fullEndpoints = {};
 
     for (const [key, path] of Object.entries(ENDPOINTS)) {
-        fullEndpoints[key] = `${baseUrl}${path}`;
+        const isAdmin = path.startsWith('/scripts/Admin/');
+        fullEndpoints[key] = `${getBaseUrl(isAdmin)}${path}`;
     }
 
     return fullEndpoints;
 };
 
-const getCookies = () => {
-    return document.cookie.split(';').reduce((acc, cookie) => {
-        const [key, value] = cookie.trim().split('=');
-        acc[key] = value;
-        return acc;
-    }, {});
+
+const getSessionsFromLocalStorage = (sessionName) => {
+    const sessionId = localStorage.getItem(`${sessionName}_session_id`);
+    const sessionTime = localStorage.getItem(`${sessionName}_session_time`);
+    return {sessionId, sessionTime};
+}
+
+const getAdminSessionId = () => {
+    return localStorage.getItem('harvest_schools_admin_session_id');
+}
+
+const getGraduationBookingSessionId = () => {
+    return localStorage.getItem('harvest_schools_graduation_booking_session_id');
 }
 
 const formatDateFromPacific = (pacificTimeString) => {
@@ -48,25 +57,21 @@ const formatDateFromPacific = (pacificTimeString) => {
     return pacificDate.toLocaleString(undefined, options);
 };
 
-const createSessions = (sessionName,) => {
+const createSessions = (sessionName) => {
     const sessionId = uuidv6();
-    const sessionExpiry = new Date();
-    sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
-    document.cookie = `${sessionName}_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=None; Secure`;
-    document.cookie = `${sessionName}_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=None; Secure`;
+    localStorage.setItem(`${sessionName}_session_id`, sessionId);
+    localStorage.setItem(`${sessionName}_session_time`, Date.now().toString());
     return sessionId;
 }
 
 const extendSession = (sessionName, sessionId) => {
-    const sessionExpiry = new Date();
-    sessionExpiry.setHours(sessionExpiry.getHours() + sessionDurationInHours);
-    document.cookie = `${sessionName}_session_id=${sessionId}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=None; Secure`;
-    document.cookie = `${sessionName}_session_time=${Date.now()}; expires=${sessionExpiry.toUTCString()}; path=/; SameSite=None; Secure`;
+    localStorage.setItem(`${sessionName}_session_id`, sessionId);
+    localStorage.setItem(`${sessionName}_session_time`, Date.now().toString());
 }
 
 const resetSession = (sessionName) => {
-    document.cookie = `${sessionName}_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    document.cookie = `${sessionName}_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    localStorage.removeItem(`${sessionName}_session_id`);
+    localStorage.removeItem(`${sessionName}_session_time`);
 }
 
 const getMimeType = (extension) => {
@@ -107,8 +112,8 @@ const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
 const graduationBookingLoginPageUrl = '/events/graduation-booking';
 const graduationBookingDashboardPageUrl = '/events/graduation-booking/dashboard';
-const adminLoginPageUrl = '/login';
-const adminDashboardPageUrl = '/dashboard';
+const adminLoginPageUrl = '/admin-login';
+const adminDashboardPageUrl = '/admin-dashboard';
 const costPerChildInOpenDaySignup = 150;
 
 const adminUserManagementPermissionLevel = 1000;
@@ -118,8 +123,6 @@ const openDaySignupManagementPermissionLevel = 2;
 const BorrowingSystemManagementPermissionLevel = 3;
 const infoSystemManagementPermissionLevel = 7;
 const alumniStudentsManagementPermissionLevel = 13;
-
-
 
 
 const ENDPOINTS = {
@@ -155,14 +158,19 @@ const ENDPOINTS = {
 
 const BASE_URLS = {
     development: 'http://localhost:8080',
-    production: ''
+    production: Capacitor.isNativePlatform() ? 'https://harvestschools.com' : ''
+};
+
+const ADMIN_BASE_URLS = {
+    development: 'http://localhost:8080',
+    production: Capacitor.isNativePlatform() ? 'https://admin.harvestschools.com' : ''
 };
 
 const endpoints = generateEndpoints();
 
 const logoutCurrentAdmin = (navigate) => {
-    document.cookie = 'harvest_schools_admin_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'harvest_schools_admin_session_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    localStorage.removeItem('harvest_schools_admin_session_id');
+    localStorage.removeItem('harvest_schools_admin_session_time');
     navigate(adminLoginPageUrl);
 }
 
@@ -204,7 +212,6 @@ export {
     extendSession,
     resetSession,
     getMimeType,
-    getCookies,
     isDevelopment,
     EMBEDDABLE_EXTENSIONS,
     cdCost,
@@ -230,5 +237,9 @@ export {
     jobApplicationManagementPermissionLevel,
     infoSystemManagementPermissionLevel,
     alumniStudentsManagementPermissionLevel,
-    BorrowingSystemManagementPermissionLevel
+    BorrowingSystemManagementPermissionLevel,
+    getBaseUrl,
+    getSessionsFromLocalStorage,
+    getAdminSessionId,
+    getGraduationBookingSessionId,
 }

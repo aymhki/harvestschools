@@ -697,6 +697,11 @@
     font-weight: bold;
 }
 
+.number-input-container.read-only-field .number-input-reduce-button, .number-input-container.read-only-field .number-input-add-button {
+    pointer-events: none;
+    background: var(--read-only-field-grey-color);
+}
+
 @media (max-width: 1600px) {
     .captcha-box, .captcha-input {
         letter-spacing: 2rem;
@@ -974,6 +979,20 @@
 
     .number-input-container {
         background-color: var(--harvest-black-gradient-color);
+    }
 
+    .number-input-container.read-only-field {
+        background-color: var(--dark-accent-color);
+    }
+
+    .number-form-field.read-only-field {
+        background-color: var(--dark-accent-color);
+        color: var(--harvest-white-color);
+        border-color: var(--harvest-white-color);
+    }
+
+    .number-input-container.read-only-field .number-input-reduce-button, .number-input-container.read-only-field .number-input-add-button {
+        background-color: var(--dark-accent-color);
+        color: var(--harvest-white-color);
     }
 }

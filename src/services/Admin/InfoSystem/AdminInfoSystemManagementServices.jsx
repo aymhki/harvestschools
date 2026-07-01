@@ -15,7 +15,11 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
     setStagesData(null);
 
     try {
-        const response = await fetch(endpoints.getInfoSystem, {method: 'GET', credentials: 'include'})
+        const response = await fetch(endpoints.getInfoSystem, {method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        })
         const result = await response.json();
 
         if (result && result.data ) {
@@ -49,7 +53,12 @@ const updateInfoSystemData = async (newInfoSystemData) => {
             return 'Session expired';
         }
 
-        const response = await fetch(endpoints.updateInfoSystem, {method: 'POST', credentials: 'include', body: JSON.stringify(newInfoSystemData) });
+        const response = await fetch(endpoints.updateInfoSystem, {method: 'POST',
+            body: JSON.stringify(newInfoSystemData),
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        });
 
         const result = await response.json();
 

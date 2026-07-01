@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 import { i18nConfig } from './i18n-shared';
+import { Capacitor } from '@capacitor/core';
+
 
 const i18nInstance = i18n.use(initReactI18next);
 
@@ -29,11 +31,15 @@ if (typeof window !== 'undefined') {
     i18nInstance.use(languageDetector);
 }
 
+const getLocalesLoadPath = () =>
+    Capacitor.isNativePlatform() ? 'https://harvestschools.com/locales/{{lng}}/{{ns}}.json' : '/locales/{{lng}}/{{ns}}.json';
+
 i18nInstance
     .use(Backend)
     .init({
         ...i18nConfig,
-        backend: { loadPath: '/locales/{{lng}}/{{ns}}.json' },
+        backend: { loadPath: getLocalesLoadPath() },
+        react: { useSuspense: false },
     });
 
 export default i18n;

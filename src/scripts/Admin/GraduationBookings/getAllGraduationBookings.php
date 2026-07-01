@@ -1,86 +1,31 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../permissionLevels.php';
+require_once '../../authHelpers.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 try {
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
-
-    if (!isset($data['session_id'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Bad Request: Missing session_id",
-            "code" => 400
-        ]);
-        exit;
-    }
-
-    $sessionId = $data['session_id'];
-    $startTime = microtime(true);
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
-        echo json_encode([
-            'success' => false,
-            'message' => "Connection failed: " . $conn->connect_error,
-            'code' => 500
-        ]);
+        echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error, "code" => 500]);
         exit;
     }
 
+    global $GRADUATION_BOOKING_MANAGEMENT;
     $conn->set_charset("utf8mb4");
+    $authStatus = check_admin_user_permission($conn, $GRADUATION_BOOKING_MANAGEMENT);
 
-    $permissionSql = "SELECT u.permission_level
-                      FROM admin_sessions s
-                      JOIN admin_users u ON s.user_id = u.id
-                      WHERE s.id = ?";
-
-    $stmt = $conn->prepare($permissionSql);
-
-    if (!$stmt) {
-        echo json_encode([
-            'success' => false,
-            'message' => "Prepare failed: " . $conn->error,
-            'code' => 500
-        ]);
+    if (!$authStatus['success']) {
+        echo json_encode($authStatus);
         exit;
     }
 
-    $stmt->bind_param("s", $sessionId);
-    $stmt->execute();
-    $permissionResult = $stmt->get_result();
-    $stmt->close();
-
-    if ($permissionResult->num_rows == 0) {
-        echo json_encode([
-            'success' => false,
-            'message' => "Invalid session",
-            'code' => 401
-        ]);
-        exit;
-    }
-
-    $permissionRow = $permissionResult->fetch_assoc();
-    $permissionLevels = explode(',', $permissionRow['permission_level']);
-    $cleanPermissionLevels = array_map(function ($level) {
-        return intval(trim($level));
-    }, $permissionLevels);
-
-    $hasPermission = in_array(1, $cleanPermissionLevels);
-
-    if (!$hasPermission) {
-        echo json_encode([
-            'success' => false,
-            'message' => "Permission denied",
-            'code' => 403
-        ]);
-        exit;
-    }
 
     $bookingsSql = "SELECT 
                 b.booking_id,
@@ -226,11 +171,9 @@ try {
     }
 
     $endTime = microtime(true);
-    $executionTime = ($endTime - $startTime) * 1000;
     echo json_encode([
         'success' => true,
         'data' => $data,
-        'executionTime' => $executionTime
     ]);
 
 } catch (Exception $e) {

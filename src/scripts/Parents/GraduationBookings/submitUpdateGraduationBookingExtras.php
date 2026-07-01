@@ -1,7 +1,8 @@
 <?php
 require_once '../../headers.php';
-set_cors_headers();
+require_once '../../authHelpers.php';
 $dbConfig = require '../../dbConfig.php';
+set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
@@ -27,6 +28,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $conn->set_charset("utf8mb4");
+
+        $sessionId = get_bearer_token();
+        $stmt = $conn->prepare("SELECT id FROM graduation_booking_sessions WHERE id = ?");
+        $stmt->bind_param("s", $sessionId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            $errorInfo['success'] = false;
+            $errorInfo['message'] = 'Invalid session';
+            $errorInfo['code'] = 404;
+            echo json_encode($errorInfo);
+            return;
+        }
+
         $formData = [];
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'field_') === 0) {
