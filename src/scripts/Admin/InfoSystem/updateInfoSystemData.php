@@ -414,7 +414,7 @@ PROMPT;
             'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
             'back_btn' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
             'apply_btn' => ['en' => 'Apply Now', 'ar' => 'تقدم الأن'],
-            'change_lang_btn' => ['en' => 'تغيير للغة العربية', 'ar' => 'Change to English'],
+            'change_lang_btn' => ['en' => 'تغيير للعربية', 'ar' => 'Change to English'],
             'nav_section' => ['en' => 'Navigation', 'ar' => 'التنقل'],
             'contact_title' => ['en' => 'Contact Departments', 'ar' => 'أقسام التواصل'],
             'contact_body' => ['en' => 'Please select the department you wish to chat with:', 'ar' => 'يرجى اختيار القسم الذي تريد التحدث معه:'],
@@ -547,7 +547,7 @@ $STRINGS = [
         'ar' => "اختر القسم الذي تريد التواصل معه:",
     ],
     'change_lang_btn' => [
-        'en' => 'تغيير للغة العربية',
+        'en' => 'تغيير للعربية',
         'ar' => 'Change to English'
     ],
     'llm_error' => [

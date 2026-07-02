@@ -3,12 +3,11 @@ require_once __DIR__ . '/../shared/config.php';
 require_once __DIR__ . '/../shared/db.php';
 require_once __DIR__ . '/messenger_api.php';
 
-setActiveChannel('messenger');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $mode = $_GET['hub_mode'] ?? '';
-    $token = $_GET['hub_verify_token'] ?? '';
-    $challenge = $_GET['hub_challenge'] ?? '';
+    $mode      = $_GET['hub_mode']         ?? '';
+    $token     = $_GET['hub_verify_token'] ?? '';
+    $challenge = $_GET['hub_challenge']    ?? '';
     if ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN) {
         echo $challenge;
         exit;
@@ -18,13 +17,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 $rawBody = file_get_contents('php://input');
+
+
 $input = json_decode($rawBody, true);
 
 try {
-    if (($input['object'] ?? '') !== 'page') {
+    $object = $input['object'] ?? '';
+    if ($object !== 'page' && $object !== 'instagram') {
         http_response_code(200);
         exit;
     }
+    setActiveChannel($object === 'instagram' ? 'instagram' : 'messenger');
+
     $messaging = $input['entry'][0]['messaging'][0] ?? null;
     if (!$messaging) {
         http_response_code(200);
@@ -59,6 +63,11 @@ http_response_code(200);
 
 
 function normalizeMessengerMessage($messaging) {
+    if (!empty($messaging['message']['is_echo'])
+        || !empty($messaging['message']['is_deleted'])
+        || !empty($messaging['message']['is_unsupported'])) {
+        return null;
+    }
     if (isset($messaging['postback'])) {
         return [
             'type' => 'interactive',

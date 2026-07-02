@@ -63,7 +63,7 @@ function sendDepartmentMenu($to, $lang) {
         $rows[] = ["id" => $id, "title" => mb_substr($d[$lang], 0, 24)];
     }
 
-    $rows[] = ["id" => $lang === "en" ? "lang_ar" : "lang_en", "title" => $lang === "en" ? "تغيير الى اللغة العربية" : "Change to English"];
+    $rows[] = ["id" => $lang === "en" ? "lang_ar" : "lang_en", "title" => $lang === "en" ? "تغيير للعربية" : "Change to English"];
 
     sendList($to, $STRINGS['choose_department'][$lang], $STRINGS['departments_title'][$lang], [[
         "title" => $STRINGS['departments_title'][$lang],
