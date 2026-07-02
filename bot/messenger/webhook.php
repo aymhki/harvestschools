@@ -18,16 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 $rawBody = file_get_contents('php://input');
-
-if (defined('MESSENGER_APP_SECRET') && MESSENGER_APP_SECRET && MESSENGER_APP_SECRET !== 'YOUR_MESSENGER_APP_SECRET') {
-    $signature = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';
-    $expected  = 'sha256=' . hash_hmac('sha256', $rawBody, MESSENGER_APP_SECRET);
-    if (!$signature || !hash_equals($expected, $signature)) {
-        http_response_code(403);
-        exit;
-    }
-}
-
 $input = json_decode($rawBody, true);
 
 try {
