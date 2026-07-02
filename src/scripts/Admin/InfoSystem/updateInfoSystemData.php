@@ -33,12 +33,23 @@ try {
 
     if (isset($postData['settings'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_global_settings (setting_key, setting_value, is_encrypted, description, sort_order) VALUES (?, IF(?, HEX(AES_ENCRYPT(?, ?)), ?), ?, ?, ?) ON DUPLICATE KEY UPDATE setting_value = IF(VALUES(is_encrypted), HEX(AES_ENCRYPT(?, ?)), ?), is_encrypted = VALUES(is_encrypted), description=VALUES(description), sort_order=VALUES(sort_order)");
+
         foreach ($postData['settings'] as $s) {
             $val = in_array($s['val'], ['Yes', 'No']) ? ($s['val'] === 'Yes' ? '1' : '0') : $s['val'];
             $isEnc = $s['is_encrypted'] === 'Yes' ? 1 : 0;
-            $stmt->bind_param("sisssssiiss",
-                $s['setting_key'], $isEnc, $val, $dbEncryptionKeyPhrase, $val, $isEnc, $s['description'],
-                $s['sort_order'], $val, $dbEncryptionKeyPhrase, $val
+
+            $stmt->bind_param("sisssisisss",
+                $s['setting_key'], // 1. s
+                $isEnc,             // 2. i
+                $val,                    // 3. s
+                $dbEncryptionKeyPhrase,  // 4. s
+                $val,                    // 5. s
+                $isEnc,                  // 6. i (Corrected from s)
+                $s['description'],       // 7. s
+                $s['sort_order'],        // 8. i
+                $val,                    // 9. s (Corrected from i - this was causing the 0!)
+                $dbEncryptionKeyPhrase,  // 10. s
+                $val                     // 11. s
             );
             $stmt->execute();
         }
