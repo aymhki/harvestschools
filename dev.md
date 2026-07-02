@@ -40,3 +40,10 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Verify cron jobs are working and sending notification emails properly.
 - [ ] Admin Login Height Container needs to be bigger.
 - [ ] Scroll bars needs to be hidden from admin side bar.
+- [ ] Select field with label outside and on top not filling the same width as the rest of the input fields in desktop view.
+- [ ] Add address option in the main menu of the intermediate mode in the chat bot.
+- [ ] Add switch language in the departments menu of the intermediate mode in the chat bot.
+- [ ] Large Action Modal Popup Needs to height readjustment for desktop view.
+- [ ] If the early playschool department is selected in the main menu of the intermediate mode, there is no need to prompt the user to select stage group in the chat bot.
+- [ ] Add an update config button to the info system management page in the admin portal for each tab table.
+- [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
