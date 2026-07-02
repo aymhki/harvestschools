@@ -39,17 +39,17 @@ try {
             $isEnc = $s['is_encrypted'] === 'Yes' ? 1 : 0;
 
             $stmt->bind_param("sisssisisss",
-                $s['setting_key'], // 1. s
-                $isEnc,             // 2. i
-                $val,                    // 3. s
-                $dbEncryptionKeyPhrase,  // 4. s
-                $val,                    // 5. s
-                $isEnc,                  // 6. i (Corrected from s)
-                $s['description'],       // 7. s
-                $s['sort_order'],        // 8. i
-                $val,                    // 9. s (Corrected from i - this was causing the 0!)
-                $dbEncryptionKeyPhrase,  // 10. s
-                $val                     // 11. s
+                $s['setting_key'],
+                $isEnc,
+                $val,
+                $dbEncryptionKeyPhrase,
+                $val,
+                $isEnc,
+                $s['description'],
+                $s['sort_order'],
+                $val,
+                $dbEncryptionKeyPhrase,
+                $val
             );
             $stmt->execute();
         }
