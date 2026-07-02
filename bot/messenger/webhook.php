@@ -10,7 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $mode = $_GET['hub_mode'] ?? '';
         $token = $_GET['hub_verify_token'] ?? '';
         $challenge = $_GET['hub_challenge'] ?? '';
+        file_put_contents(__DIR__ . '/error.log', date('c') . ":\n" . $challenge . "\n" . $token . "\n" . $mode . "\n", FILE_APPEND);
         if ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN) {
+            file_put_contents(__DIR__ . '/error.log', date('c') . ":\n" . $challenge . "\n" . $token . "\n" . $mode . "\n", FILE_APPEND);
             echo $challenge;
             exit;
         }
