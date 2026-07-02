@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
-
+require_once __DIR__ . '/../shared/config.php';
 function wa_request($payload) {
     $url = "https://graph.facebook.com/v25.0/" . WHATSAPP_PHONE_ID . "/messages";
     $ch = curl_init($url);

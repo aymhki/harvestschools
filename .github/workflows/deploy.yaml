@@ -110,7 +110,7 @@ jobs:
           
           put -O public_html/ domains/Main/.htaccess
           mirror -R --verbose --parallel=5 -x ^Admin/ src/scripts/ public_html/scripts/
-          mirror -R --verbose --parallel=5 whatsapp-bot/ public_html/whatsapp-bot/
+          mirror -R --verbose --parallel=5 bot/ public_html/bot/
 
           mirror -R --verbose --parallel=5 --exclude-glob .git* dist/admin/ admin.harvestschools.com/
           put -O admin.harvestschools.com/ domains/Admin/.htaccess

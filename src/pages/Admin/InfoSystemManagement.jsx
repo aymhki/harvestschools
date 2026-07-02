@@ -69,9 +69,10 @@ function InfoSystemManagement() {
     const settingKeysWithLimitedValues = {
         'BOT_MODE': ['simple', 'intermediate', 'advanced'],
         'USE_HISTORY_ACROSS_SESSIONS': ['Yes', 'No'],
-        'LLM_PROVIDER': ['deepseek', 'gemini'],
+        'LLM_PROVIDER': ['deepseek', 'gemini', 'claude'],
         'SESSION_TIMEOUT_MINUTES': ['30', '60', '120'],
         'BOT_ON': ['Yes', 'No'],
+        'NUMBER_OF_MESSAGES_BEFORE_LLM_ASKS_FOR_FEEDBACK': ['3', '5', '10', '20'],
     }
 
     const settingKeyFormFieldId = 1;

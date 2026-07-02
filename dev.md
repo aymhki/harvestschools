@@ -35,3 +35,4 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Create a messenger bot that works like the whatsapp bot.
 - [ ] Add proper app icons for android and iOS as well as add documentation needed such as privacy policy and terms of service.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
+- [ ] Look into adding description to list items that exceed 24 chars in whatsapp api and 20 chars in messenger api.

@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/../whatsapp_api.php';
 
 function handleSimpleMode($from, $message) {
     global $DEPARTMENTS, $STRINGS;
