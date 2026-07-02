@@ -385,7 +385,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                                <button key={3} onClick={() => {
                                    setShowAddAdminUserModal(true);
                                }}>
-                                   Add Booking
+                                   Add User
                                </button>
                            ),
                            (
