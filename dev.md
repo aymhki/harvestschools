@@ -36,3 +36,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Add proper app icons for android and iOS as well as add documentation needed such as privacy policy and terms of service.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Look into adding description to list items that exceed 24 chars in whatsapp api and 20 chars in messenger api.
+- [ ] Turn on Auto Decline for the whatsapp chat bot number on iPhone.
+- [ ] Verify cron jobs are working and sending notification emails properly.
