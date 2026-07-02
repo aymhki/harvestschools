@@ -36,10 +36,10 @@ PopulateBookingDataScript/main.py
 tmp.md
 tmp.sql
 
-whatsapp-bot/config.php
-whatsapp-bot/config-tmp.php
-whatsapp-bot/sql
-whatsapp-bot/review.md
+bot/shared/config.php
+bot/shared/config-tmp.php
+bot/shared/sql
+bot/whatsapp/review.md
 
 
 files_uploaded_from_harvestschools_webapp

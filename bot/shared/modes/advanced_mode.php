@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/../whatsapp_api.php';
 require_once __DIR__ . '/../llm_handler.php';
 
 function handleAdvancedMode($from, $message) {
@@ -52,11 +51,20 @@ function handleAdvancedMode($from, $message) {
         $btnId  = $message['interactive']['button_reply']['id'] ?? '';
         $listId = $message['interactive']['list_reply']['id']   ?? '';
 
+        if (strpos($btnId, 'lang_toggle') === 0) {
+            $lang = ($lang === 'en') ? 'ar' : 'en';
+            createOrUpdateSession($from, $lang, 'chatting');
+            $msg = $STRINGS['lang_changed'][$lang];
+            sendText($from, $msg);
+            saveMessage($from, 'assistant', $msg);
+            return;
+        }
         if ($btnId === 'fb_helpful') {
             $msg = $STRINGS['anything_else'][$lang];
             sendText($from, $msg);
             saveMessage($from, 'assistant', $msg);
             updateSessionState($from, 'chatting');
+            resetMessageCounter($from);
             return;
         }
 
@@ -66,6 +74,7 @@ function handleAdvancedMode($from, $message) {
             saveMessage($from, 'assistant', $msg);
             sendDepartmentList($from, $lang);
             updateSessionState($from, 'escalated');
+            resetMessageCounter($from);
             return;
         }
 
@@ -73,8 +82,8 @@ function handleAdvancedMode($from, $message) {
             $dept = $DEPARTMENTS[$listId];
             $deptName = $dept[$lang];
             $waLink = "https://wa.me/" . $dept['number'];
-            $msg = $STRINGS['tap_to_chat'][$lang] . " *{$deptName}*:\n{$waLink}";
-            sendText($from, $msg);
+            $msg = $STRINGS['tap_to_chat'][$lang] . " *{$deptName}*:\n";
+            sendCtaUrlButton($from, $msg, $STRINGS['start_chatting'][$lang], $waLink);
             saveMessage($from, 'assistant', $msg);
             updateSessionState($from, 'chatting');
             return;
@@ -104,14 +113,23 @@ function handleAdvancedMode($from, $message) {
     saveMessage($from, 'assistant', $reply);
     sendText($from, $reply);
 
-    sendFeedbackButtons($from, $lang);
-}
 
+    $isError = ($reply === ($STRINGS['llm_error'][$lang] ?? null));
+    if (!$isError) {
+        incrementMessageCounter($from);
+        $session = getSession($from);
+        if ((int)$session['messages_since_feedback'] >= NUMBER_OF_MESSAGES_BEFORE_LLM_ASKS_FOR_FEEDBACK) {
+            sendFeedbackButtons($from, $lang);
+            resetMessageCounter($from);
+        }
+    }
+}
 function sendFeedbackButtons($to, $lang) {
     global $STRINGS;
     sendButtons($to, $STRINGS['feedback_prompt'][$lang], [
         ["id" => "fb_helpful",     "title" => $STRINGS['btn_helpful'][$lang]],
-        ["id" => "fb_not_helpful", "title" => $STRINGS['btn_not_helpful'][$lang]]
+        ["id" => "fb_not_helpful", "title" => $STRINGS['btn_not_helpful'][$lang]],
+        ["id" => "lang_toggle_fb", "title" => $STRINGS['change_lang_btn'][$lang]]
     ]);
 }
 

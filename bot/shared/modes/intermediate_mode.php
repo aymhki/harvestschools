@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/../whatsapp_api.php';
 require_once __DIR__ . '/../config.php';
+
 function findStageById($stageId) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;

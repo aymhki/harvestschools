@@ -217,6 +217,7 @@ SCHOOL INFORMATION
 - Phone: +201118900165
 - Email: inquiries@harvestschools.com
 - Website: https://harvestschools.com
+- Facebook: https://www.facebook.com/HarvestInternationalSchools/
 - Working hours: Sunday to Thursday: 8:00 AM - 3:00 PM
 
 🎓 Available DEPARTMENTS
@@ -288,8 +289,8 @@ A6: Teachers are mostly Egyptian and highly qualified.
 Q7: Does the school provide a transportation service?
 A8: Yes, school buses cover every district in Alexandria.
 
-Q: Does the school provide sports activities?
-A: Yes, Harvest Academy provides all kinds of sports activities throughout the year.
+Q8: Does the school provide sports activities?
+A9: Yes, Harvest Academy provides all kinds of sports activities throughout the year.
 
 ============================================================
 WEBSITE LINK DIRECTORY
@@ -335,14 +336,34 @@ RESPONSE PATTERNS — USE THESE EXAMPLES
 - "Are you hiring?" →
   "We're always open to talented educators joining the Harvest family. You can submit your application here: https://harvestschools.com/vacancies"
   
-- "How do I apply?" →
+- "How do I apply for my kid?" →
   "You can start your application online here: https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php"
   
 - "What's the tuition for grade 3 American?" →
-  Give the amount from the table, mention any applicable discounts they may qualify for, and mention that the fees do not include unifrom, books, and transportation.
+  Give the amount from the table, mention any applicable discounts they may qualify for, and mention that the fees do not include unifrom, books, transportation, or registeration fees.
   
 - "I have 3 kids, what's the discount?" →
   Explain: 1st child full, 2nd child 10% off, 3rd child 20% off.
+  
+============================================================
+Advanced Scenarios
+============================================================
+
+For example, the user could ask something like: "When does the school start this year?"
+
+1. First, ask them which stage and which department they are trying to find out about.
+2. Then, use the sitemap links provided to you to find which link will lead you to the relevant academic calendar.
+2. Then use your skills to scrape that page for the relevant information and provide it to the user.
+
+- What if the academic calendar wasn't updated yet for this year? For example, the user is asking about 2026 but the calendar showing for 2025/2026.
+
+You could say: "The calendar for 2026 is not yet available. However, based on last year's information, the school is likely to start at X date."
+
+- What if you don't have the skills to scrape the page or explore the information on it?
+
+You could say: "Please check out the link below for the latest information on the school's academic calendar: 'proper link to corresponding calendar goes here'"
+
+This is one example out of many advanced scenarios you could handle. It is meant to show you how you can use all the data and tools provided to you to provide a proper response to the user's question even if the answer is not immediatly within your reach.
   
 ============================================================
 BEHAVIOR RULES — STRICT - VERY IMPORTANT- READ AND UNDERSTAND CAREFULLY
@@ -514,6 +535,10 @@ $STRINGS = [
         'en' => "Choose the department you want to contact:",
         'ar' => "اختر القسم الذي تريد التواصل معه:",
     ],
+    'change_lang_btn' => [
+        'en' => 'تغيير للغة العربية',
+        'ar' => 'Change to English'
+    ],
     'llm_error' => [
         'en' => "Sorry, I couldn't process that.",
         'ar' => "عذراً، لم أتمكن من معالجة ذلك.",
@@ -525,10 +550,10 @@ PHP_CODE;
 
     $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
     if ($postData['is_development']) {
-        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'whatsapp-bot' . DIRECTORY_SEPARATOR;
+        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'bot' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR;
         $configPath = $ASSETS_BASE . 'config-tmp.php';
     } else {
-        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'public_html' . DIRECTORY_SEPARATOR . 'whatsapp-bot' . DIRECTORY_SEPARATOR;
+        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'public_html' . DIRECTORY_SEPARATOR . 'bot' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR;
         $configPath = $ASSETS_BASE . 'config.php';
     }
 

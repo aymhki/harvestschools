@@ -1,7 +1,9 @@
 <?php
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../shared/config.php';
+require_once __DIR__ . '/../shared/db.php';
 require_once __DIR__ . '/whatsapp_api.php';
+
+setActiveChannel('whatsapp');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $mode      = $_GET['hub_mode']         ?? '';
@@ -14,25 +16,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     http_response_code(403);
     exit;
 }
-
 $input = json_decode(file_get_contents('php://input'), true);
-
 try {
     $entry = $input['entry'][0]['changes'][0]['value'] ?? null;
     if (!$entry) {
         http_response_code(200);
         exit;
     }
-
     $messages = $entry['messages'] ?? [];
     if (empty($messages)) {
         http_response_code(200);
         exit;
     }
-
     $message = $messages[0];
     $from = $message['from'];
-
     if (BOT_ON === 1) {
         if (BOT_MODE === 'advanced') {
             require_once __DIR__ . '/modes/advanced_mode.php';
@@ -45,9 +42,7 @@ try {
             handleSimpleMode($from, $message);
         }
     }
-
 } catch (Throwable $e) {
     file_put_contents(__DIR__ . '/error.log', date('c') . " " . $e->getMessage() . "\n", FILE_APPEND);
 }
-
 http_response_code(200);
