@@ -6,21 +6,15 @@ require_once __DIR__ . '/messenger_api.php';
 setActiveChannel('messenger');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    try {
-        $mode = $_GET['hub_mode'] ?? '';
-        $token = $_GET['hub_verify_token'] ?? '';
-        $challenge = $_GET['hub_challenge'] ?? '';
-        file_put_contents(__DIR__ . '/error.log', date('c') . ":\n" . $challenge . "\n" . $token . "\n" . $mode . "\n", FILE_APPEND);
-        if ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN) {
-            file_put_contents(__DIR__ . '/error.log', date('c') . ":\n" . $challenge . "\n" . $token . "\n" . $mode . "\n", FILE_APPEND);
-            echo $challenge;
-            exit;
-        }
-        http_response_code(403);
+    $mode = $_GET['hub_mode'] ?? '';
+    $token = $_GET['hub_verify_token'] ?? '';
+    $challenge = $_GET['hub_challenge'] ?? '';
+    if ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN) {
+        echo $challenge;
         exit;
-    } catch (Throwable $e) {
-        file_put_contents(__DIR__ . '/error.log', date('c') . " " . $e->getMessage() . "\n", FILE_APPEND);
     }
+    http_response_code(403);
+    exit;
 }
 
 $rawBody = file_get_contents('php://input');
