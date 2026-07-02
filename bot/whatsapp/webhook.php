@@ -6,15 +6,19 @@ require_once __DIR__ . '/whatsapp_api.php';
 setActiveChannel('whatsapp');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $mode      = $_GET['hub_mode']         ?? '';
-    $token     = $_GET['hub_verify_token'] ?? '';
-    $challenge = $_GET['hub_challenge']    ?? '';
-    if ($mode === 'subscribe' && $token === WHATSAPP_VERIFY_TOKEN) {
-        echo $challenge;
+    try {
+        $mode = $_GET['hub_mode'] ?? '';
+        $token = $_GET['hub_verify_token'] ?? '';
+        $challenge = $_GET['hub_challenge'] ?? '';
+        if ($mode === 'subscribe' && $token === WHATSAPP_VERIFY_TOKEN) {
+            echo $challenge;
+            exit;
+        }
+        http_response_code(403);
         exit;
+    } catch (Throwable $e) {
+        file_put_contents(__DIR__ . '/error.log', date('c') . " " . $e->getMessage() . "\n", FILE_APPEND);
     }
-    http_response_code(403);
-    exit;
 }
 $input = json_decode(file_get_contents('php://input'), true);
 try {
