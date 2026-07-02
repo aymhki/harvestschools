@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../shared/config.php';
 
 function msgr_request($payload) {
-    $url = "https://graph.facebook.com/v21.0/me/messages?access_token=" . urlencode(MESSENGER_PAGE_ACCESS_TOKEN);
+    $url = "https://graph.facebook.com/v25.0/me/messages?access_token=" . urlencode(MESSENGER_PAGE_ACCESS_TOKEN);
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
