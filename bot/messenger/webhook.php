@@ -44,6 +44,9 @@ try {
         http_response_code(200);
         exit;
     }
+
+    file_put_contents(__DIR__ . '/error.log', date('c') . " " . $object . "\n", FILE_APPEND);
+
     if (BOT_ON === 1) {
         if (BOT_MODE === 'advanced') {
             require_once __DIR__ . '/../shared/modes/advanced_mode.php';
