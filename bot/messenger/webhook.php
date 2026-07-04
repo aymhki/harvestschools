@@ -45,7 +45,6 @@ try {
         exit;
     }
 
-    file_put_contents(__DIR__ . '/error.log', date('c') . " " . $object . "\n", FILE_APPEND);
 
     if (BOT_ON === 1) {
         if (BOT_MODE === 'advanced') {
