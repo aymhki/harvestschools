@@ -1,6 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Build &amp; Run iOS" type="CompoundRunConfigurationType">
-    <toRun name="build:mobile-app" type="js.build_tools.npm" />
     <toRun name="dev:ios-mobile-app" type="js.build_tools.npm" />
     <method v="2" />
   </configuration>
