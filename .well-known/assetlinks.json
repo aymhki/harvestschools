@@ -1,0 +1,14 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.harvestschools.app",
+      "sha256_cert_fingerprints": [
+        "5A:6A:4F:0A:08:04:9C:7C:C1:5D:CC:92:51:CA:7C:AB:F9:11:56:36:ED:3F:97:34:6C:01:F1:65:7F:5C:23:09",
+        "RELEASE_UPLOAD_FINGERPRINT",
+        "GOOGLE_PLAY_APP_SIGNING_FINGERPRINT"
+      ]
+    }
+  }
+]
