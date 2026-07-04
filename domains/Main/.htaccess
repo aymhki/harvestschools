@@ -32,7 +32,6 @@
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 </IfModule>
 
-# --- BEGIN NEW CACHING RULES ---
 <IfModule mod_expires.c>
   ExpiresActive On
 
@@ -62,19 +61,25 @@
   ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
-# Disable caching for HTML files (Critical for React updates)
 <IfModule mod_headers.c>
   <FilesMatch "\.(html|htm)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
 </IfModule>
-# --- END NEW CACHING RULES ---
 
 <IfModule mod_headers.c>
   <FilesMatch ".*">
       Header set Link "</favicon.ico>; rel=icon" env=IS_ASSET
   </FilesMatch>
 </IfModule>
+
+<Files "apple-app-site-association">
+    Header set Content-Type "application/json"
+</Files>
+
+<Files "assetlinks.json" >
+    Header set Content-Type "application/json"
+</Files>
 
 
 # php -- BEGIN cPanel-generated handler, do not edit
