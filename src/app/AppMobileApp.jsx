@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Spinner from '../modules/Spinner.jsx'
 import ErrorBoundary from '../modules/ErrorBoundary.jsx'
@@ -9,6 +9,7 @@ import NavigationBar from '../modules/NavigationBar.jsx'
 import Footer from '../modules/Footer.jsx'
 import '../styles/App.css'
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from '../services/Admin/Session/AdminNavigationServices.jsx'
+import { App as CapacitorApp } from '@capacitor/app';
 
 const Home = lazy(() => import('../pages/Home.jsx'))
 const Faqs = lazy(() => import('../pages/FAQs/FAQs.jsx'))
@@ -139,8 +140,7 @@ function AppMobileApp() {
             document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr'
             document.documentElement.lang = i18n.language
         }
-    }, [location.search, i18n])
-
+    }, [location.search, i18n]);
 
     useEffect(() => {
         if (!isAdminSection) {
@@ -158,10 +158,36 @@ function AppMobileApp() {
         }
     }, [isAdminSection, isAdminLoginPath, navigate, adminLinks.length, refreshCurrentUserData, userDataWereNeverFetched])
 
+    useEffect(() => {
+        const handleInAppRouting = (url) => {
+            if (!url) return;
+            try {
+                const urlObj = new URL(url);
+                const slug = urlObj.pathname + urlObj.search + urlObj.hash;
+
+                if (slug && slug !== '/') {
+                    navigate(slug);
+                }
+            } catch (error) {
+                console.error('Failed to parse incoming Universal Link:', error);
+            }
+        };
+
+        const listener = CapacitorApp.addListener('appUrlOpen', (event) => {
+            handleInAppRouting(event.url);
+        });
+
+        return () => {
+            listener.then(handle => handle.remove());
+        };
+    }, [navigate]);
+
+
     const isClientChromeExcluded = CLIENT_CHROME_EXCLUDED_PATHS.includes(location.pathname)
 
     return (
-        <div className={`App ${isAdminSection ? 'admin-app' : ''}`}>
+        <>
+            <div className={`App ${isAdminSection ? 'admin-app' : ''} mobile-app`}>
             {isAdminSection
                 ? isAdminLoginPath && <NavigationBar compactOrAdmin={true} isMobileApp={true} addViewPortPaddingForMobileApp={true}/>
                 : !isClientChromeExcluded && <NavigationBar compactOrAdmin={false} isMobileApp={true} addViewPortPaddingForMobileApp={true}/>}
@@ -175,6 +201,7 @@ function AppMobileApp() {
                         loggedInUsername={loggedInName}
                         isPinned={isSidebarPinned}
                         onTogglePin={handleTogglePin}
+                        addViewPortPaddingForMobileApp={true}
                     />
                 )}
                 <ErrorBoundary ignoreLngUpdate={isAdminSection}>
@@ -260,6 +287,7 @@ function AppMobileApp() {
 
             {isAdminSection ? <AdminFooter /> : !isClientChromeExcluded && <Footer />}
         </div>
+        </>
     )
 }
 

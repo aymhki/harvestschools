@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-
 import AppMobileApp from '../../src/app/AppMobileApp.jsx'
 
 import '../../src/styles/index.css'

@@ -143,6 +143,8 @@
     --mobile-nav-arrow-in-tabs-bar-z-index: 10;
     --tabs-bar-z-index: 100;
 
+    --top-padding-for-mobile-app-view-port: env(safe-area-inset-top, 0);
+
     font-family: var(--english-normal-font);
 }
 

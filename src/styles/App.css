@@ -11,12 +11,9 @@
 }
 
 .mobile-app-top-padding-for-view-port {
-    padding-top: 3rem;
+    padding-top: var(--top-padding-for-mobile-app-view-port);
 }
 
-.mobile-app-bottom-padding-for-view-port {
-    padding-bottom: 1rem;
-}
 
 
 .content {
@@ -43,7 +40,7 @@
 }
 
 .content.admin-content.pinned.mobile-app-top-padding-for-view-port, .content.admin-content.mobile-app-top-padding-for-view-port {
-    padding-top: 3rem;
+    padding-top: var(--top-padding-for-mobile-app-view-port);
 }
 
 .logo {
@@ -177,6 +174,16 @@
     .content.admin-content.pinned {
         padding-left: 0;
     }
+
+    .mobile-app .tabs-bar {
+        padding-top: var(--top-padding-for-mobile-app-view-port);
+    }
+
+    .mobile-app .mobile-nav-tabs-bar-arrow {
+        top: var(--top-padding-for-mobile-app-view-port);
+        padding-top: calc(var(--top-padding-for-mobile-app-view-port) / 4);
+    }
+
 
     body {
         overflow-x: hidden;

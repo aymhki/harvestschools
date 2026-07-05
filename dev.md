@@ -28,22 +28,24 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Remove new lines from the $SCHOOL_CONFIG variable in the update info system script.
 - [x] Add the $STRINGS to the update info system script from the original config file.
 - [x] Spinner is not taking the entire screen in mobile view.
-- [ ] The mobile app should open when a harvestschools.com link is clicked if it is installed on the device.
+- [x] The mobile app should open when a harvestschools.com link is clicked if it is installed on the device.
 - [ ] The website should show install app prompt at the top or bottom when opened from a mobile device.
 - [ ] The top padding for view port in the mobile app should be implemented and tested especially on iOS.
-- [ ] The advanced mode in the whatsapp chat bot should be smarter about when to show feedback buttons and should show change language buttons as well as return a proper error message if the llm did not response. It should also include a third llm like claude.
-- [ ] Create a messenger bot that works like the whatsapp bot.
+- [x] The advanced mode in the whatsapp chat bot should be smarter about when to show feedback buttons and should show change language buttons as well as return a proper error message if the llm did not response. It should also include a third llm like claude.
+- [x] Create a messenger bot that works like the whatsapp bot.
 - [ ] Add proper app icons for android and iOS as well as add documentation needed such as privacy policy and terms of service.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Look into adding description to list items that exceed 24 chars in whatsapp api and 20 chars in messenger api.
 - [ ] Turn on Auto Decline for the whatsapp chat bot number on iPhone.
 - [ ] Verify cron jobs are working and sending notification emails properly.
-- [ ] Admin Login Height Container needs to be bigger.
-- [ ] Scroll bars needs to be hidden from admin side bar.
-- [ ] Select field with label outside and on top not filling the same width as the rest of the input fields in desktop view.
+- [x] Admin Login Height Container needs to be bigger.
+- [x] Scroll bars needs to be hidden from admin side bar.
+- [x] Select field with label outside and on top not filling the same width as the rest of the input fields in desktop view.
 - [ ] Add address option in the main menu of the intermediate mode in the chat bot.
 - [ ] Add switch language in the departments menu of the intermediate mode in the chat bot.
 - [ ] Large Action Modal Popup Needs to height readjustment for desktop view.
 - [ ] If the early playschool department is selected in the main menu of the intermediate mode, there is no need to prompt the user to select stage group in the chat bot.
 - [ ] Add an update config button to the info system management page in the admin portal for each tab table.
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
+- [ ] Implement swipe back gestures in iOS and android mobile app and add actions navigation bar for the mobile app.
+- [ ] Look into @capgo/capacitor-native-biometric and capacitor-secure-storage for quick and easy login on the mobile app.

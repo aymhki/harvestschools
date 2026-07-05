@@ -66,6 +66,7 @@ function AppAdmin() {
                         loggedInUsername={loggedInName}
                         isPinned={isSidebarPinned}
                         onTogglePin={handleTogglePin}
+                        addViewPortPaddingForMobileApp={false}
                     />
                 )}
                 <ErrorBoundary ignoreLngUpdate={true}>

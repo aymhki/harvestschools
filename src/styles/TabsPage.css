@@ -139,13 +139,6 @@
     }
 
     .tabs-bar-wrapper.bar-position-top {
-        position: sticky;
-        top: 0;
-        z-index: var(--tabs-bar-z-index);
-        background-color: var(--harvest-white-color);
-    }
-
-    .tabs-bar-wrapper.bar-position-top {
         position: fixed;
         top: 0;
         left: 0;
