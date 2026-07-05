@@ -34,6 +34,12 @@
     overflow-x: hidden;
     font-family: var(--english-normal-font);
     letter-spacing: 0.1rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.admin-sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 

@@ -6,6 +6,7 @@ import Form from '../../modules/Form.jsx'
 import {headToAdminDashboardOnValidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx"
 import {validateAdminLogin} from "../../services/Admin/Session/MainAdminServices.jsx";
 import {useTranslation} from "react-i18next";
+import {useToggleLanguage} from "../../services/General/GeneralUtils.jsx";
 
 function AdminLogin() {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ function AdminLogin() {
     const usernameFieldId = 1
     const passwordFieldId = 2
     const { t } = useTranslation(['admin'], {lng:'en'});
+    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: false} );
 
     const handleAdminLogin = async (formData) => {
         if (submittingLocal) {return;}
@@ -34,6 +36,7 @@ function AdminLogin() {
     };
 
     useEffect(() => {
+        toggleLanguage({lng: 'en'})
         headToAdminDashboardOnValidSession(navigate, setSubmittingLocal)
     }, []);
 

@@ -22,14 +22,22 @@
     align-items: center;
     justify-content: center;
     width: 50vw;
-    height: 40vh;
+    height: 60vh;
     background-color: var(--harvest-white-color);
     border-radius: 1rem;
     will-change: filter;
     transition: filter 0.5s;
     min-height: 35rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 
 }
+
+.admin-login-form-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+
 
 .admin-login-form-wrapper:hover {
     filter: drop-shadow(0 0 0.5rem var(--primary-color) );
