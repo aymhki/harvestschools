@@ -49,3 +49,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Implement swipe back gestures in iOS and android mobile app and add actions navigation bar for the mobile app.
 - [ ] Look into @capgo/capacitor-native-biometric and capacitor-secure-storage for quick and easy login on the mobile app.
+- [ ] Double check all the added icon assets and remove any old placeholders.
+- 
