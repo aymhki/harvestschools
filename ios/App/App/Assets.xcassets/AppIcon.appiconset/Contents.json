@@ -325,7 +325,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-20@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-20@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -338,7 +338,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-20@3x.png",
+      "filename" : "harvestschools-iOS-ClearDark-20@3x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
@@ -351,7 +351,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-29@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-29@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -364,7 +364,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-29@3x.png",
+      "filename" : "harvestschools-iOS-ClearDark-29@3x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
@@ -377,7 +377,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-38@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-38@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -390,7 +390,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-38@3x.png",
+      "filename" : "harvestschools-iOS-ClearDark-38@3x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
@@ -403,7 +403,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-40@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-40@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -416,7 +416,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-40@3x.png",
+      "filename" : "harvestschools-iOS-ClearDark-40@3x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
@@ -429,7 +429,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-60@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-60@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -442,7 +442,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-60@3x.png",
+      "filename" : "harvestschools-iOS-ClearDark-60@3x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
@@ -455,7 +455,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-64@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-64@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -468,7 +468,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-64@3x.png",
+      "filename" : "harvestschools-iOS-ClearDark-64@3x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
@@ -481,6 +481,7 @@
           "value" : "tinted"
         }
       ],
+      "filename" : "harvestschools-iOS-ClearDark-68@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -493,7 +494,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-76@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-76@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -506,7 +507,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-83.5@2x.png",
+      "filename" : "harvestschools-iOS-ClearDark-83.5@2x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
@@ -519,7 +520,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearLight-1024@1x.png",
+      "filename" : "harvestschools-iOS-ClearDark-1024@1x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
