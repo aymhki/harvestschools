@@ -26,7 +26,7 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $stmt = $conn->prepare("SELECT admin_users.name, admin_users.username, admin_users.id FROM admin_users LEFT JOIN admin_sessions ON admin_sessions.user_id = admin_users.id WHERE admin_sessions.id = ?");
+    $stmt = $conn->prepare("SELECT admin_users.name, admin_users.username, admin_users.id FROM admin_users JOIN admin_sessions ON admin_sessions.user_id = admin_users.id WHERE admin_sessions.id = ?");
 
     if (!$stmt) {
         echo json_encode([
