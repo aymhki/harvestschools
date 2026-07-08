@@ -1,6 +1,6 @@
 {
     "appId": "com.harvestschools.app",
-    "appName": "Harvest International Schools",
+    "appName": "H. I. S.",
     "webDir": "../../dist/mobile-app",
     "android": {
         "path": "../../app/android"

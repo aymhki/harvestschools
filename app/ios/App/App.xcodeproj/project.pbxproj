@@ -10,6 +10,7 @@
 		004BE3FF2FFC3F620006DEFD /* FloatingNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */; };
 		004BE4042FFC3FA10006DEFD /* PullToRefreshController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */; };
 		004E49E42FFBDDA3001494AA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */; };
+		00B7B20F2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */; };
 		00DE439C2FF9F50C002827AF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DE439B2FF9F506002827AF /* SceneDelegate.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
@@ -24,6 +25,7 @@
 		004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingNavBar.swift; sourceTree = "<group>"; };
 		004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshController.swift; sourceTree = "<group>"; };
 		004E49E32FFBDDA3001494AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		00DE439B2FF9F506002827AF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		00DE439D2FF9F53B002827AF /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -151,6 +154,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
+				00B7B20F2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
 				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
 				004E49E42FFBDDA3001494AA /* LaunchScreen.storyboard in Resources */,
