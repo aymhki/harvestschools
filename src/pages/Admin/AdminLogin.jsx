@@ -229,7 +229,7 @@ function AdminLogin() {
                               required: true,
                               placeholder: t("admin.login-page.username-field"),
                               errorMsg: 'Please enter username',
-                              value: loginMode === 'recovery' ? prefillUsername : '',
+                              value: '',
                               setValue: null,
                               widthOfField: 1,
                               httpName: 'username',
