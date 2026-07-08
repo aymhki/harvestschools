@@ -5,9 +5,8 @@ import { SplashScreen } from '@capacitor/splash-screen'
 import { Network } from '@capacitor/network'
 import { runMobileAppUpdateCheck, getLastAttemptTimestamp, appUpdateRetryCooldown, getAndClearRestorePath } from '../services/General/AppUpdaterService.jsx'
 import Spinner from './Spinner.jsx'
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 import '../styles/AppUpdateGate.css'
-
 
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
@@ -19,18 +18,21 @@ function AppUpdateGate({ children }) {
 
     const armRetryTimer = () => {
         if (retryTimerRef.current) clearTimeout(retryTimerRef.current)
-        const msRemaining = appUpdateRetryCooldown - (Date.now() - getLastAttemptTimestamp())
-        if (msRemaining <= 0) {
-            setCanRetry(true)
-        } else {
-            setCanRetry(false)
-            retryTimerRef.current = setTimeout(() => setCanRetry(true), msRemaining)
-        }
+
+        getLastAttemptTimestamp().then(lastAttempt => {
+            const msRemaining = appUpdateRetryCooldown - (Date.now() - lastAttempt)
+            if (msRemaining <= 0) {
+                setCanRetry(true)
+            } else {
+                setCanRetry(false)
+                retryTimerRef.current = setTimeout(() => setCanRetry(true), msRemaining)
+            }
+        })
     }
 
-    const runCheck = (force = false) => {
+    const runCheck = async (force = false) => {
         try {
-            const lastAttempt = getLastAttemptTimestamp()
+            const lastAttempt = await getLastAttemptTimestamp()
 
             if (!force && lastAttempt > 0 && Date.now() - lastAttempt < appUpdateRetryCooldown) {
                 setPhase('error')
@@ -47,31 +49,31 @@ function AppUpdateGate({ children }) {
                     setProgress(percent)
                 },
             })
-            .then((result) => {
+                .then((result) => {
 
-                if (!result || result.status === 'skipped' || result.status === 'ok') {
+                    if (!result || result.status === 'skipped' || result.status === 'ok') {
 
-                    const restorePath = getAndClearRestorePath()
-                    const here = window.location.pathname + window.location.search + window.location.hash
+                        const restorePath = getAndClearRestorePath()
+                        const here = window.location.pathname + window.location.search + window.location.hash
 
-                    if (restorePath && restorePath !== here) {
-                        navigate(restorePath, {replace: true})
+                        if (restorePath && restorePath !== here) {
+                            navigate(restorePath, {replace: true})
+                        }
+
+                        setPhase('ready')
+                        return
+
                     }
 
-                    setPhase('ready')
-                    return
+                    if (result.status === 'offline') {
+                        setPhase('offline')
+                        return
+                    }
 
-                }
+                    setPhase('error')
+                    armRetryTimer()
 
-                if (result.status === 'offline') {
-                    setPhase('offline')
-                    return
-                }
-
-                setPhase('error')
-                armRetryTimer()
-
-            })
+                })
 
         } catch (error) {
             console.log('Error running app update check:', error)
@@ -118,7 +120,6 @@ function AppUpdateGate({ children }) {
         return children
     }
 
-
     if (phase === 'offline') {
         return (
             <div className="app-update-wrapper">
@@ -131,12 +132,7 @@ function AppUpdateGate({ children }) {
     if (phase === 'error') {
         return (
             <div className="app-update-wrapper">
-                <p className="app-update-message">Sorry, looks like our servers are down right now. please try again later</p>
-
-                {/*{canRetry && (*/}
-                {/*    <button type="button" className="app-update-button" onClick={() => runCheck(true)}>Try Again</button>*/}
-                {/*)}*/}
-
+                <p className="app-update-message">Sorry, looks like our servers are down right now :( please try again later</p>
                 <button type="button" className="app-update-button" onClick={() => runCheck(true)}>Try Again</button>
             </div>
         )
@@ -153,7 +149,6 @@ function AppUpdateGate({ children }) {
         </div>
     )
 }
-
 
 AppUpdateGate.propTypes = {
     children: PropTypes.node.isRequired,
