@@ -3,10 +3,10 @@ import {adminLoginPageUrl, endpoints} from "../../General/GeneralUtils.jsx";
 
 
 const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmentsData, setStagesData) => {
-    const sessionId = validateAdminSessionLocally();
+    const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
-        navigate(adminLoginPageUrl);
+        navigate(adminLoginPageUrl, { replace: true });
         return 'Session expired';
     }
 
@@ -36,7 +36,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
             }
 
             if (result && result.code && (result.code === 401 || result.code === 403)) {
-                navigate(adminLoginPageUrl);
+                navigate(adminLoginPageUrl, { replace: true });
             }
         }
     } catch (error) {
@@ -47,7 +47,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
 
 const updateInfoSystemData = async (newInfoSystemData) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
 
         if (!sessionId) {
             return 'Session expired';

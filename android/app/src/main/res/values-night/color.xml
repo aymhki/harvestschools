@@ -6,4 +6,7 @@
     <color name="text_color">#FFFFFF</color>
 
     <color name="splash_background">#242424</color>
+    <color name="web_content_background">#242424</color>
+
+    <color name="pull_refresh_indicator_color">#F2F2F2</color>
 </resources>

@@ -3,10 +3,10 @@ import {adminLoginPageUrl, endpoints, logoutCurrentAdmin} from "../../General/Ge
 
 
 const fetchAllAdminUsers = async (navigate, setAdminUsers, setAvailablePermissionsDict) => {
-    const sessionId = validateAdminSessionLocally();
+    const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
-        navigate(adminLoginPageUrl);
+        navigate(adminLoginPageUrl, { replace: true });
         return 'Session expired';
     }
 
@@ -32,7 +32,7 @@ const fetchAllAdminUsers = async (navigate, setAdminUsers, setAvailablePermissio
             }
 
             if (result && result.code && (result.code === 401 || result.code === 403)) {
-                navigate(adminLoginPageUrl);
+                navigate(adminLoginPageUrl, { replace: true });
             }
         }
     } catch (error) {
@@ -42,7 +42,7 @@ const fetchAllAdminUsers = async (navigate, setAdminUsers, setAvailablePermissio
 
 const addAdminUser = async (newAdminUser) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
 
         if (!sessionId) {
             return 'Session expired';
@@ -70,7 +70,7 @@ const addAdminUser = async (newAdminUser) => {
 
 const editAdminUser = async (newAdminUser, logoutAfterEdit, navigate) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
 
         if (!sessionId) {
             return 'Session expired';
@@ -102,7 +102,7 @@ const editAdminUser = async (newAdminUser, logoutAfterEdit, navigate) => {
 
 const deleteAdminUser = async (adminUserToDeleteId, logoutAfterDelete, navigate) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
 
         if (!sessionId) {
             return 'Session expired';

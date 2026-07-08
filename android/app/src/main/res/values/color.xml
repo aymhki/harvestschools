@@ -7,4 +7,10 @@
 
     <color name="ic_launcher_background">#FFFFFF</color>
     <color name="splash_background">#FFFFFF</color>
+
+    <color name="nav_bar_actions_color">#1C1C1E</color>
+
+    <color name="web_content_background">#FFFFFF</color>
+
+    <color name="pull_refresh_indicator_color">#1C1C1E</color>
 </resources>

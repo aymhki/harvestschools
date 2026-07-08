@@ -66,5 +66,7 @@
             </array>
         </dict>
     </dict>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Secure Quick Login to Admin Dashboard</string>
 </dict>
 </plist>

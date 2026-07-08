@@ -666,9 +666,9 @@ function Form({
             <div className= {`form-title-section ${widthClass}`}
                  ref={fieldRefs.current[field.id]}
                  id={field.id}>
-                <h2>
+                <h3>
                     {getWhichLabelToUse(field)}
-                </h2>
+                </h3>
             </div>
         );
     }

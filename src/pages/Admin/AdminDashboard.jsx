@@ -2,13 +2,12 @@ import OptionsGrid from "../../modules/OptionsGrid.jsx";
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../modules/Spinner.jsx";
-import {useEffect, useMemo} from "react";
+import { useMemo} from "react";
 import PropTypes from "prop-types";
-import {logoutCurrentAdmin, useToggleLanguage} from "../../services/General/GeneralUtils.jsx";
+import {logoutCurrentAdmin} from "../../services/General/GeneralUtils.jsx";
 
 function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
     const navigate = useNavigate();
-    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: false} );
 
     const greeting = useMemo(() => {
         const hour = new Date().getHours();
@@ -19,7 +18,7 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
             timeGreeting = "Afternoon";
         }
 
-        const finalLoggedInUsername = loggedInName.split(' ')[0].slice(0, 24);
+        const finalLoggedInUsername = loggedInName ? loggedInName.split(' ')[0].slice(0, 24) : 'Admin'
         const timeBasedGreeting = `${timeGreeting}, ${finalLoggedInUsername}`;
 
         const otherOptions = [
@@ -37,9 +36,6 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
         }
     }, [loggedInName]);
 
-    useEffect(() => {
-        toggleLanguage({lng: 'en'})
-    })
     return (
         <div className={"dashboard-page"}>
             {isLoading ? (

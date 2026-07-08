@@ -143,8 +143,6 @@
     --mobile-nav-arrow-in-tabs-bar-z-index: 10;
     --tabs-bar-z-index: 100;
 
-    --top-padding-for-mobile-app-view-port: env(safe-area-inset-top, 0);
-
     font-family: var(--english-normal-font);
 }
 
@@ -243,9 +241,9 @@ h3:lang(ar) {
 
 
 button {
-    border-radius: 1rem;
+    border-radius: 0.8rem;
     border: 0;
-    padding: 0.8rem 0.8rem 0.8rem 0.8rem;
+    padding: 0.8rem 1rem 0.8rem 1rem;
     margin: 1rem;
     font-size: large;
     font-weight: bold;
@@ -356,18 +354,12 @@ label:lang(ar) {
     }
 
     button {
-        font-size: small;
+        font-size: medium;
         padding: 0.5rem 0.8rem 0.5rem 0.8rem;
     }
-
 }
 
 @media (max-width: 768px) {
-    button {
-        margin: 1rem;
-        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-    }
-
     h1 {
         font-size: 2rem;
         font-weight: 600;

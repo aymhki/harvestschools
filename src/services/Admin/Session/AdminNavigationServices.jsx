@@ -10,7 +10,6 @@ const headToAdminLoginOnInvalidSession = async (navigate, allowedPermission, set
     try {
         setIsLoading(true);
         await checkAdminSession(navigate, allowedPermission);
-
     } catch (error) {
         console.log(error.message);
     } finally {
@@ -24,7 +23,7 @@ const headToAdminLoginOnInvalidSessionFromAdminDashboard = async (navigate, setD
         await checkAdminSessionFromAdminDashboard(navigate, setDashboardOptions, setLoggedInName, setLoggedInUsername, setLoggedInUserId);
     } catch (error) {
         console.log(error.message);
-        navigate(adminLoginPageUrl);
+        navigate(adminLoginPageUrl, { replace: true });
     } finally {
         setIsLoading(false);
     }

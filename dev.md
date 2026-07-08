@@ -50,4 +50,8 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Implement swipe back gestures in iOS and android mobile app and add actions navigation bar for the mobile app.
 - [ ] Look into @capgo/capacitor-native-biometric and capacitor-secure-storage for quick and easy login on the mobile app.
 - [ ] Double check all the added icon assets and remove any old placeholders.
-- 
+- [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
+- [ ] Fix the pull to refresh iOS app problems.
+- [ ] h1/2/3 of the options page line height is not set.
+- [ ] The clear and save buttons of the admin large action modal popup could be in the modal footer rather than the form footer.
+- [ ] Fix the home page video for both chrome and excel.

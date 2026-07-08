@@ -1,5 +1,5 @@
-import { Suspense, lazy, useEffect, useState } from 'react'
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+import { Routes, Route, useLocation, useNavigate, matchPath } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Spinner from '../modules/Spinner.jsx'
 import ErrorBoundary from '../modules/ErrorBoundary.jsx'
@@ -10,6 +10,7 @@ import Footer from '../modules/Footer.jsx'
 import '../styles/App.css'
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from '../services/Admin/Session/AdminNavigationServices.jsx'
 import { App as CapacitorApp } from '@capacitor/app';
+import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 
 const Home = lazy(() => import('../pages/Home.jsx'))
 const Faqs = lazy(() => import('../pages/FAQs/FAQs.jsx'))
@@ -70,7 +71,6 @@ const PhotosGallery = lazy(() => import('../pages/Gallery/Photos.jsx'))
 const VideosGallery = lazy(() => import('../pages/Gallery/Videos.jsx'))
 const Tour360Gallery = lazy(() => import('../pages/Gallery/360Tour.jsx'))
 const Covid19 = lazy(() => import('../pages/FAQs/Covid19.jsx'))
-
 const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin.jsx'))
 const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard.jsx'))
 const BorrowingSystemManagement = lazy(() => import('../pages/Admin/BorrowingSystemManagement.jsx'))
@@ -81,32 +81,110 @@ const OpenDaySignupsManagement = lazy(() => import('../pages/Admin/OpenDaySignup
 const FileViewer = lazy(() => import('../pages/Admin/FileViewer.jsx'))
 const AdminUsersManagement = lazy(() => import('../pages/Admin/AdminUsersManagement.jsx'))
 const AlumniStudentsManagement = lazy(() => import('../pages/Admin/AlumniStudentsManagement.jsx'))
-
 const NotFound = lazy(() => import('../pages/NotFound.jsx'))
 
 
-const ADMIN_PATHS = [
-    '/admin-login',
-    '/admin-dashboard',
-    '/job-applications',
-    '/graduation-booking-management',
-    '/open-day-signups-management',
-    '/borrowing-system-management',
-    '/info-system-management',
-    '/view-job-application-file',
-    '/admin-users-management',
-    '/alumni-students-management',
+const routeConfig = [
+    { path: '/', element: () => <Home /> },
+    { path: '/home', element: () => <Home /> },
+    { path: '/more-info', element: () => <MoreInfo /> },
+    { path: '/faqs', element: () => <Faqs /> },
+    { path: '/minimum-stage-age', element: () => <MinimumStageAge /> },
+    { path: '/covid-19', element: () => <Covid19 /> },
+    { path: '/vacancies', element: () => <Vacancies /> },
+    { path: '/admission', element: () => <Admission /> },
+    { path: '/admission/admission-process', element: () => <AdmissionProcess /> },
+    { path: '/admission/admission-requirements', element: () => <AdmissionRequirements /> },
+    { path: '/admission/inside-egypt-requirements', element: () => <InsideEgyptRequirements /> },
+    { path: '/admission/outside-egypt-requirements', element: () => <OutsideEgyptRequirements /> },
+    { path: '/admission/outside-egypt-requirements-foreigners', element: () => <OutsideEgyptRequirementsForeigners /> },
+    { path: '/admission/admission-fees', element: () => <AdmissionFees /> },
+    { path: '/academics', element: () => <Academics isMobileApp={true} /> },
+    { path: '/academics/kindergarten', element: () => <KindergartenAcademics /> },
+    { path: '/academics/kindergarten-international', element: () => <KindergartenInternationalAcademics /> },
+    { path: '/academics/kindergarten-national', element: () => <KindergartenNationalAcademics /> },
+    { path: '/academics/pre-kindergarten', element: () => <PreKindergartenAcademics /> },
+    { path: '/academics/british', element: () => <British /> },
+    { path: '/academics/national', element: () => <NationalAcademics /> },
+    { path: '/academics/american', element: () => <AmericanAcademics /> },
+    { path: '/academics/partners', element: () => <PartnersAcademics /> },
+    { path: '/academics/facilities', element: () => <Facilities /> },
+    { path: '/academics/staff', chromeExcluded: true, element: () => <StaffAcademics /> },
+    { path: '/academics/staff/national-staff', element: () => <NationalStaff /> },
+    { path: '/academics/staff/british-staff', element: () => <BritishStaff /> },
+    { path: '/academics/staff/american-staff', element: () => <AmericanStaff /> },
+    { path: '/academics/staff/kindergarten-staff', element: () => <KindergartenStaff /> },
+    { path: '/students-life', element: () => <StudentLife /> },
+    { path: '/students-life/students-union', element: () => <StudentsUnion /> },
+    { path: '/students-life/activities', element: () => <Activities /> },
+    { path: '/students-life/library', element: () => <Library /> },
+    { path: '/students-life/library/english-fairy-tales', element: () => <EnglishFairyTales /> },
+    { path: '/students-life/library/english-drama', element: () => <EnglishDrama /> },
+    { path: '/students-life/library/english-levels', element: () => <EnglishLevels /> },
+    { path: '/students-life/library/english-general', element: () => <EnglishGeneral /> },
+    { path: '/students-life/library/arabic-information', element: () => <ArabicInformation /> },
+    { path: '/students-life/library/arabic-general', element: () => <ArabicGeneral /> },
+    { path: '/students-life/library/arabic-religion', element: () => <ArabicReligion /> },
+    { path: '/students-life/library/arabic-stories', element: () => <ArabicStories /> },
+    { path: '/events', element: () => <Events /> },
+    { path: '/events/national-calendar', element: () => <NationalCalendar /> },
+    { path: '/events/british-calendar', element: () => <BritishCalendar /> },
+    { path: '/events/american-calendar', element: () => <AmericanCalendar /> },
+    { path: '/events/kg-calendars', element: () => <KgCalendarEvents /> },
+    { path: '/events/american-kg-calendar', element: () => <AmericanKGCalendar /> },
+    { path: '/events/british-kg-calendar', element: () => <BritishKGCalendar /> },
+    { path: '/events/national-kg-calendar', element: () => <NationalKGCalendar /> },
+    { path: '/events/graduation-booking', element: () => <GraduationBookingLogin /> },
+    { path: '/events/graduation-booking/dashboard', element: () => <GraduationBookingDashboard /> },
+    { path: '/events/graduation-booking/media', element: () => <GraduationBookingMedia /> },
+    { path: '/events/graduation-booking/extras', element: () => <GraduationBookingExtras /> },
+    { path: '/events/graduation-booking/info', element: () => <GraduationBookingStatusInfo /> },
+    { path: '/events/graduation-booking-confirmation', element: () => <GraduationBookingConfirmation /> },
+    { path: '/events/open-day-signup', element: () => <OpenDaySignup /> },
+    { path: '/gallery', element: () => <Gallery /> },
+    { path: '/gallery/photos', element: () => <PhotosGallery /> },
+    { path: '/gallery/videos', element: () => <VideosGallery /> },
+    { path: '/gallery/360-tour', element: () => <Tour360Gallery /> },
+    { path: '/admin-login', section: 'admin', isAdminEntry: true, element: () => <AdminLogin isMobileApp={true}/> },
+    {
+        path: '/admin-dashboard',
+        section: 'admin',
+        element: (ctx) => (
+            <AdminDashboard dashboardOptions={ctx.adminLinks} isLoading={ctx.isAuthLoading} loggedInName={ctx.loggedInName} />
+        ),
+    },
+    { path: '/job-applications', section: 'admin', element: () => <JobApplications /> },
+    { path: '/graduation-booking-management', section: 'admin', element: () => <GraduationBookingManagement /> },
+    { path: '/open-day-signups-management', section: 'admin', element: () => <OpenDaySignupsManagement /> },
+    { path: '/borrowing-system-management', section: 'admin', element: () => <BorrowingSystemManagement /> },
+    { path: '/info-system-management', section: 'admin', element: () => <InfoSystemManagement /> },
+    { path: '/view-job-application-file', section: 'admin', element: () => <FileViewer /> },
+    {
+        path: '/admin-users-management',
+        section: 'admin',
+        element: (ctx) => (
+            <AdminUsersManagement loggedInUserId={ctx.loggedInUserId} setRefreshCurrentUserData={ctx.setRefreshCurrentUserData} />
+        ),
+    },
+    { path: '/alumni-students-management', section: 'admin', element: () => <AlumniStudentsManagement /> },
+    { path: '*', element: () => <NotFound /> },
 ]
 
-const CLIENT_CHROME_EXCLUDED_PATHS = ['/academics/staff']
+function findRouteConfig(pathname) {
+    return routeConfig.find((route) => matchPath({ path: route.path, end: true }, pathname))
+}
+
+const SHARE_HOSTS = { admin: 'admin.harvestschools.com', client: 'harvestschools.com' }
 
 function AppMobileApp() {
     const location = useLocation()
     const navigate = useNavigate()
     const { i18n } = useTranslation()
 
-    const isAdminSection = ADMIN_PATHS.includes(location.pathname)
-    const isAdminLoginPath = location.pathname === '/admin-login'
+    const activeRoute = findRouteConfig(location.pathname)
+    const isAdminSection = activeRoute?.section === 'admin'
+    const isAdminLoginPath = activeRoute?.isAdminEntry === true
+    const isClientChromeExcluded = activeRoute?.chromeExcluded === true
 
     const [adminLinks, setAdminLinks] = useState([])
     const [loggedInName, setLoggedInName] = useState('Admin')
@@ -119,6 +197,7 @@ function AppMobileApp() {
     })
     const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false)
     const [userDataWereNeverFetched, setUserDataWereNeverFetched] = useState(true)
+    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: true} );
 
     const handleTogglePin = () => {
         setIsSidebarPinned(prev => !prev)
@@ -139,28 +218,34 @@ function AppMobileApp() {
             }
             document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr'
             document.documentElement.lang = i18n.language
+        } else {
+            toggleLanguage({lng: 'en'})
         }
-    }, [location.search, i18n]);
+    }, [location.search, i18n, isAdminSection, toggleLanguage]);
 
     useEffect(() => {
         if (!isAdminSection) {
             return
         }
+
         if (isAdminLoginPath) {
             setAdminLinks([])
             setUserDataWereNeverFetched(true)
             return
         }
+
         if ((adminLinks.length === 0 && userDataWereNeverFetched) || refreshCurrentUserData) {
             headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInName, setLoggedInUsername, setLoggedInUserId)
             setUserDataWereNeverFetched(false)
             setRefreshCurrentUserData(false)
         }
+
     }, [isAdminSection, isAdminLoginPath, navigate, adminLinks.length, refreshCurrentUserData, userDataWereNeverFetched])
 
     useEffect(() => {
         const handleInAppRouting = (url) => {
             if (!url) return;
+
             try {
                 const urlObj = new URL(url);
                 const slug = urlObj.pathname + urlObj.search + urlObj.hash;
@@ -168,9 +253,11 @@ function AppMobileApp() {
                 if (slug && slug !== '/') {
                     navigate(slug);
                 }
+
             } catch (error) {
                 console.error('Failed to parse incoming Universal Link:', error);
             }
+
         };
 
         const listener = CapacitorApp.addListener('appUrlOpen', (event) => {
@@ -182,113 +269,59 @@ function AppMobileApp() {
         };
     }, [navigate]);
 
+    useEffect(() => {
+        const host = isAdminSection ? SHARE_HOSTS.admin : SHARE_HOSTS.client
+        const shareUrl = `https://${host}${location.pathname}${location.search}${location.hash}`
 
-    const isClientChromeExcluded = CLIENT_CHROME_EXCLUDED_PATHS.includes(location.pathname)
+        if (window.webkit?.messageHandlers?.nativeShareUrl) {
+
+            window.webkit.messageHandlers.nativeShareUrl.postMessage(shareUrl)
+
+        } else if (window.AndroidNativeBridge?.setShareUrl) {
+
+            window.AndroidNativeBridge.setShareUrl(shareUrl)
+
+        }
+
+    }, [location, isAdminSection])
+
+    const routeContext = useMemo(() => ({
+        adminLinks,
+        isAuthLoading,
+        loggedInName,
+        loggedInUserId,
+        loggedInUsername,
+        setRefreshCurrentUserData,
+    }), [adminLinks, isAuthLoading, loggedInName, loggedInUserId, loggedInUsername])
 
     return (
         <>
             <div className={`App ${isAdminSection ? 'admin-app' : ''} mobile-app`}>
-            {isAdminSection
-                ? isAdminLoginPath && <NavigationBar compactOrAdmin={true} isMobileApp={true} addViewPortPaddingForMobileApp={true}/>
-                : !isClientChromeExcluded && <NavigationBar compactOrAdmin={false} isMobileApp={true} addViewPortPaddingForMobileApp={true}/>}
-
-            <div className={isAdminSection
-                ? `content ${!isAdminLoginPath ? 'admin-content' : ''} ${isSidebarPinned ? 'pinned' : ''} mobile-app-top-padding-for-view-port` : 'content'}
-            >
-                {isAdminSection && !isAdminLoginPath && (
-                    <AdminSidebar
-                        adminLinks={adminLinks}
-                        loggedInUsername={loggedInName}
-                        isPinned={isSidebarPinned}
-                        onTogglePin={handleTogglePin}
-                        addViewPortPaddingForMobileApp={true}
-                    />
-                )}
-                <ErrorBoundary ignoreLngUpdate={isAdminSection}>
-                    <Suspense fallback={<div style={{ minHeight: '100vh' }}><Spinner /></div>}>
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/home" element={<Home />} />
-                            <Route path="/more-info" element={<MoreInfo />} />
-                            <Route path="/faqs" element={<Faqs />} />
-                            <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
-                            <Route path="/covid-19" element={<Covid19 />} />
-                            <Route path="/vacancies" element={<Vacancies />} />
-                            <Route path="/admission" element={<Admission />} />
-                            <Route path="/admission/admission-process" element={<AdmissionProcess />} />
-                            <Route path="/admission/admission-requirements" element={<AdmissionRequirements />} />
-                            <Route path="/admission/inside-egypt-requirements" element={<InsideEgyptRequirements />} />
-                            <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
-                            <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
-                            <Route path="/admission/admission-fees" element={<AdmissionFees />} />
-                            <Route path="/academics" element={<Academics isMobileApp={true}/>} />
-                            <Route path="/academics/kindergarten" element={<KindergartenAcademics />} />
-                            <Route path="/academics/kindergarten-international" element={<KindergartenInternationalAcademics />} />
-                            <Route path="/academics/kindergarten-national" element={<KindergartenNationalAcademics />} />
-                            <Route path="/academics/pre-kindergarten" element={<PreKindergartenAcademics />} />
-                            <Route path="/academics/british" element={<British />} />
-                            <Route path="/academics/national" element={<NationalAcademics />} />
-                            <Route path="/academics/american" element={<AmericanAcademics />} />
-                            <Route path="/academics/partners" element={<PartnersAcademics />} />
-                            <Route path="/academics/facilities" element={<Facilities />} />
-                            <Route path="/academics/staff" element={<StaffAcademics />} />
-                            <Route path="/academics/staff/national-staff" element={<NationalStaff />} />
-                            <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
-                            <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
-                            <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
-                            <Route path="/students-life" element={<StudentLife />} />
-                            <Route path="/students-life/students-union" element={<StudentsUnion />} />
-                            <Route path="/students-life/activities" element={<Activities />} />
-                            <Route path="/students-life/library" element={<Library />} />
-                            <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />
-                            <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
-                            <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />
-                            <Route path="/students-life/library/english-general" element={<EnglishGeneral />} />
-                            <Route path="/students-life/library/arabic-information" element={<ArabicInformation />} />
-                            <Route path="/students-life/library/arabic-general" element={<ArabicGeneral />} />
-                            <Route path="/students-life/library/arabic-religion" element={<ArabicReligion />} />
-                            <Route path="/students-life/library/arabic-stories" element={<ArabicStories />} />
-                            <Route path="/events" element={<Events />} />
-                            <Route path="/events/national-calendar" element={<NationalCalendar />} />
-                            <Route path="/events/british-calendar" element={<BritishCalendar />} />
-                            <Route path="/events/american-calendar" element={<AmericanCalendar />} />
-                            <Route path="/events/kg-calendars" element={<KgCalendarEvents />} />
-                            <Route path="/events/american-kg-calendar" element={<AmericanKGCalendar />} />
-                            <Route path="/events/british-kg-calendar" element={<BritishKGCalendar />} />
-                            <Route path="/events/national-kg-calendar" element={<NationalKGCalendar />} />
-                            <Route path="/events/graduation-booking" element={<GraduationBookingLogin />} />
-                            <Route path="/events/graduation-booking/dashboard" element={<GraduationBookingDashboard />} />
-                            <Route path="/events/graduation-booking/media" element={<GraduationBookingMedia />} />
-                            <Route path="/events/graduation-booking/extras" element={<GraduationBookingExtras />} />
-                            <Route path="/events/graduation-booking/info" element={<GraduationBookingStatusInfo />} />
-                            <Route path="/events/graduation-booking-confirmation" element={<GraduationBookingConfirmation />} />
-                            <Route path="/events/open-day-signup" element={<OpenDaySignup />} />
-                            <Route path="/gallery" element={<Gallery />} />
-                            <Route path="/gallery/photos" element={<PhotosGallery />} />
-                            <Route path="/gallery/videos" element={<VideosGallery />} />
-                            <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
-
-                            <Route path="/admin-login" element={<AdminLogin />} />
-                            <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName} />} />
-                            <Route path="/job-applications" element={<JobApplications />} />
-                            <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
-                            <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />
-                            <Route path="/borrowing-system-management" element={<BorrowingSystemManagement />} />
-                            <Route path="/info-system-management" element={<InfoSystemManagement />} />
-                            <Route path="/view-job-application-file" element={<FileViewer />} />
-                            <Route path="/admin-users-management" element={<AdminUsersManagement loggedInUserId={loggedInUserId} setRefreshCurrentUserData={setRefreshCurrentUserData} />} />
-                            <Route path="/alumni-students-management" element={<AlumniStudentsManagement />} />
-
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
-                    </Suspense>
-                </ErrorBoundary>
+                {isAdminSection
+                    ? isAdminLoginPath && <NavigationBar compactOrAdmin={true} isMobileApp={true}/>
+                    : !isClientChromeExcluded && <NavigationBar compactOrAdmin={false} isMobileApp={true}/>}
+                <div className={isAdminSection ? `content ${!isAdminLoginPath ? 'admin-content' : ''} ${isSidebarPinned ? 'pinned' : ''}` : 'content'}>
+                    {isAdminSection && !isAdminLoginPath && (
+                        <AdminSidebar
+                            adminLinks={adminLinks}
+                            loggedInUsername={loggedInName}
+                            isPinned={isSidebarPinned}
+                            onTogglePin={handleTogglePin}
+                        />
+                    )}
+                    <ErrorBoundary ignoreLngUpdate={isAdminSection}>
+                        <Suspense fallback={<div style={{ minHeight: '100vh' }}><Spinner /></div>}>
+                            <Routes>
+                                {routeConfig.map(({ path, element }) => (
+                                    <Route key={path} path={path} element={element(routeContext)} />
+                                ))}
+                            </Routes>
+                        </Suspense>
+                    </ErrorBoundary>
+                </div>
+                {isAdminSection ? <AdminFooter /> : !isClientChromeExcluded && <Footer />}
             </div>
-
-            {isAdminSection ? <AdminFooter /> : !isClientChromeExcluded && <Footer />}
-        </div>
         </>
     )
 }
-
 export default AppMobileApp
