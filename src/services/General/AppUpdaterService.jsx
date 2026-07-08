@@ -1,8 +1,10 @@
 import { CapacitorUpdater } from '@capgo/capacitor-updater'
 import { Capacitor } from '@capacitor/core'
+import { Network } from '@capacitor/network'
 
 const APP_UPDATE_BASE_URL = 'https://app.harvestschools.com'
 const APP_UPDATE_CHANNELS = ['latest', 'stable']
+const APP_UPDATE_RESTORE_PATH_KEY = 'harvest_schools_app_update_restore_path'
 const APP_UPDATE_LAST_ATTEMPT_KEY = 'harvest_schools_app_update_last_attempt'
 const appUpdateRetryCooldown = 60 * 60 * 1000
 
@@ -32,8 +34,16 @@ const applyChannel = async (channel, currentVersion, onProgress) => {
     if (bundle.status === 'error') {
         throw new Error(`Downloaded bundle for "${channel}" failed checksum/validation`)
     }
+    const currentPath = window.location.pathname + window.location.search + window.location.hash
+    sessionStorage.setItem(APP_UPDATE_RESTORE_PATH_KEY, currentPath)
     await CapacitorUpdater.set({ id: bundle.id })
     return { updated: true, channel }
+}
+
+const getAndClearRestorePath = () => {
+    const path = sessionStorage.getItem(APP_UPDATE_RESTORE_PATH_KEY)
+    if (path) sessionStorage.removeItem(APP_UPDATE_RESTORE_PATH_KEY)
+    return path
 }
 
 const getLastAttemptTimestamp = () => Number(localStorage.getItem(APP_UPDATE_LAST_ATTEMPT_KEY) || 0)
@@ -44,13 +54,24 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
     if (!Capacitor.isNativePlatform()) {
         return { status: 'skipped' }
     }
+
     await CapacitorUpdater.notifyAppReady()
+    const netStatus = await Network.getStatus()
+
+    if (!netStatus.connected) {
+        return { status: 'offline' }
+    }
+
     let downloadListenerHandle = null
+
     if (onProgress) {
         downloadListenerHandle = await CapacitorUpdater.addListener('download', (state) => {
             onProgress(state.percent)
         })
     }
+
+    recordAttempt()
+
     try {
         const { bundle: currentBundle } = await CapacitorUpdater.current()
         let lastError = null
@@ -65,7 +86,6 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
         }
         throw lastError
     } catch (error) {
-        recordAttempt()
         return { status: 'error', error }
     } finally {
         if (downloadListenerHandle) downloadListenerHandle.remove()
@@ -76,4 +96,5 @@ export {
     runMobileAppUpdateCheck,
     getLastAttemptTimestamp,
     appUpdateRetryCooldown,
+    getAndClearRestorePath,
 }
