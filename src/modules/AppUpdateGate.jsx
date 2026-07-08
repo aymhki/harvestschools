@@ -133,9 +133,11 @@ function AppUpdateGate({ children }) {
             <div className="app-update-wrapper">
                 <p className="app-update-message">Sorry, looks like our servers are down right now. please try again later</p>
 
-                {canRetry && (
-                    <button type="button" className="app-update-button" onClick={() => runCheck(true)}>Try Again</button>
-                )}
+                {/*{canRetry && (*/}
+                {/*    <button type="button" className="app-update-button" onClick={() => runCheck(true)}>Try Again</button>*/}
+                {/*)}*/}
+
+                <button type="button" className="app-update-button" onClick={() => runCheck(true)}>Try Again</button>
             </div>
         )
     }
