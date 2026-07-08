@@ -1,14 +1,14 @@
 
 ## When adding a new page to the website:
 1. Create the page jsx file in the `src/pages` directory or subdirectory.
-2. Import and add the page route with its adjacent component in `src/AppClient.jsx` and `src/AppServer.jsx` (Add to `src/AppAdmin.jsx` if it is an admin page).
+2. Import and add the page route with its adjacent component in `src/MainClientRouter.jsx` and `src/MainServerRouter.jsx` (Add to `src/AdminRouter.jsx` if it is an admin page).
 3. Add the page route to `prerender.js` if it was not one of the admin pages that should not be indexed.
 
 - Note: Do not add ract helment to the new page if it is an admin page as they are not meant to be indexed by search engines.
 
 ## When editing an existing page url:
 1. Update it in the navbar component
-2. Update it in the `src/AppServer.jsx` and `src/AppClient.jsx` files or `src/AppAdmin.jsx` if it is an admin page.
+2. Update it in the `src/MainServerRouter.jsx` and `src/MainClientRouter.jsx` files or `src/AdminRouter.jsx` if it is an admin page.
 3. Update it in their parent options page if it had one.
 4. Update it in any `navigate` refrences in the codebase.
 5. Update it in `prerender.js` if it was not one of the admin pages that should not be indexed.

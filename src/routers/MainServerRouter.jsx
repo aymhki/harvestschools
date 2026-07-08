@@ -67,7 +67,7 @@ import Tour360Gallery from '../pages/Gallery/360Tour.jsx';
 import Covid19 from '../pages/FAQs/Covid19.jsx';
 import NotFound from '../pages/NotFound.jsx';
 
-function AppServer() {
+function MainServerRouter() {
     const location = useLocation();
     const { i18n } = useTranslation();
 
@@ -161,4 +161,4 @@ function AppServer() {
     );
 }
 
-export default AppServer;
+export default MainServerRouter;

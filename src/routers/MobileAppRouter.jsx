@@ -176,7 +176,7 @@ function findRouteConfig(pathname) {
 
 const SHARE_HOSTS = { admin: 'admin.harvestschools.com', client: 'harvestschools.com' }
 
-function AppMobileApp() {
+function MobileAppRouter() {
     const location = useLocation()
     const navigate = useNavigate()
     const { i18n } = useTranslation()
@@ -324,4 +324,4 @@ function AppMobileApp() {
         </>
     )
 }
-export default AppMobileApp
+export default MobileAppRouter

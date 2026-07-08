@@ -20,7 +20,7 @@ const FileViewer = lazy(() => import('../pages/Admin/FileViewer.jsx'))
 const AdminUsersManagement = lazy(() => import('../pages/Admin/AdminUsersManagement.jsx'))
 const AlumniStudentsManagement = lazy(() => import('../pages/Admin/AlumniStudentsManagement.jsx'))
 
-function AppAdmin() {
+function AdminRouter() {
     const location = useLocation();
     const navigate = useNavigate();
     const [adminLinks, setAdminLinks] = useState([]);
@@ -92,4 +92,4 @@ function AppAdmin() {
     )
 }
 
-export default AppAdmin;
+export default AdminRouter;
