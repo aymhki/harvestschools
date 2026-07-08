@@ -68,7 +68,7 @@ const Tour360Gallery = lazy(() => import('../pages/Gallery/360Tour.jsx'));
 const Covid19 = lazy(() => import('../pages/FAQs/Covid19.jsx'));
 const NotFound = lazy(() => import('../pages/NotFound.jsx'));
 
-function AppClient() {
+function MainClientRouter() {
     const location = useLocation();
     const { i18n } = useTranslation();
 
@@ -164,4 +164,4 @@ function AppClient() {
     );
 }
 
-export default AppClient;
+export default MainClientRouter;

@@ -129,8 +129,11 @@ jobs:
           put -O admin.harvestschools.com/ domains/Admin/.htaccess
           mirror -R --verbose --parallel=5 src/scripts/ admin.harvestschools.com/scripts/
           
+          set cmd:fail-exit no
           mv app.harvestschools.com/latest.zip app.harvestschools.com/stable.zip
           mv app.harvestschools.com/latest.json app.harvestschools.com/stable.json
+          
+          set cmd:fail-exit yes
           put -O app.harvestschools.com/ mobile-app-bundle/latest.zip
           put -O app.harvestschools.com/ mobile-app-bundle/latest.json
           put -O app.harvestschools.com/ domains/MobileApp/.htaccess

@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from '../../src/app/AppClient.jsx'
+import App from '../../src/routers/MainClientRouter.jsx'
 import '../../src/styles/index.css'
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';

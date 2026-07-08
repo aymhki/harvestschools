@@ -3,10 +3,10 @@
     "appName": "Harvest International Schools",
     "webDir": "../../dist/mobile-app",
     "android": {
-        "path": "../../android"
+        "path": "../../app/android"
     },
     "ios": {
-        "path": "../../ios"
+        "path": "../../app/ios"
     },
     "plugins": {
         "CapacitorUpdater": {

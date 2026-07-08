@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import AppAdmin from '../../src/app/AppAdmin.jsx'
+import AdminRouter from '../../src/routers/AdminRouter.jsx'
 import '../../src/styles/index.css'
 import { BrowserRouter } from 'react-router-dom'
 import '../../src/i18n/i18n-client.jsx'
@@ -61,7 +61,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 v7_relativeSplatPath: true,
             }}
         >
-            <AppAdmin />
+            <AdminRouter />
         </BrowserRouter>
     </React.StrictMode>
 )

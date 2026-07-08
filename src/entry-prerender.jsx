@@ -1,7 +1,7 @@
 import ReactDOMServer from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { HelmetProvider } from 'react-helmet-async';
-import App from './app/AppServer.jsx';
+import App from './routers/MainServerRouter.jsx';
 import i18n from './i18n/i18n-server.jsx';
 
 const localeFiles = import.meta.glob('../assets/locales/*/*.json', { eager: true });
