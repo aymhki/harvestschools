@@ -182,9 +182,9 @@ function AdminLogin() {
     );
 
     const renderForm = () => (
-        <>
+        <div className={'admin-login-recovery-only-prompt-wrapper'}>
             {loginMode === 'recovery' && (
-                <div className={'admin-login-recovery-only-prompt-wrapper'}>
+                <>
                     <p className={'admin-login-recovery-message'}>
                         Enter your updated username and password below.{' '}
                     </p>
@@ -196,7 +196,7 @@ function AdminLogin() {
                     >
                         Try a different login
                     </button>
-                </div>
+                </>
 
             )}
             <Form key={loginMode === 'recovery' ? 'recovery-form' : 'normal-form'}
@@ -251,7 +251,7 @@ function AdminLogin() {
                       ]
                   }
             />
-        </>
+        </div>
     );
 
     return (
