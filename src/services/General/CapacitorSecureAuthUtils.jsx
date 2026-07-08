@@ -86,11 +86,22 @@ const hasSavedBiometricCredentials = async (namespace) => {
 
 const saveBiometricCredentials = async (namespace, username, password) => {
     try {
+        const serverKey = biometricServerKey(namespace);
+
+        try {
+            await NativeBiometric.deleteCredentials({
+                server: serverKey
+            });
+        } catch (deleteError) {
+            console.log(deleteError.message);
+        }
+
         await NativeBiometric.setCredentials({
             username,
             password,
-            server: biometricServerKey(namespace),
+            server: serverKey,
         });
+
         return true;
     } catch (error) {
         console.log(error.message);
