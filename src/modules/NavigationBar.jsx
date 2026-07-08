@@ -12,7 +12,7 @@ import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 import {isDevelopment} from "../services/General/GeneralUtils.jsx"
 
-function NavigationBar({compactOrAdmin, isMobileApp, addViewPortPaddingForMobileApp}){
+function NavigationBar({compactOrAdmin, isMobileApp}){
     const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
@@ -117,7 +117,7 @@ function NavigationBar({compactOrAdmin, isMobileApp, addViewPortPaddingForMobile
     });
 
     return (
-        <nav className={`navbar ${compactOrAdmin ? 'compact-navbar' : ''} ${addViewPortPaddingForMobileApp ? 'mobile-app-top-padding-for-view-port' : ''}`} >
+        <nav className={`navbar ${compactOrAdmin ? 'compact-navbar' : ''}`} >
             <div className={`logo-container ${compactOrAdmin ? 'compact-logo-container' : ''}`}>
                 <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate('/home'); } }>
                     <img src={servePublicAsset("/images/HarvestLogos/HarvestLogoCropped.avif")} alt="Harvest Logo" className={`logo ${compactOrAdmin ? 'compact-logo' : ''}`}/>
@@ -479,7 +479,6 @@ function NavigationBar({compactOrAdmin, isMobileApp, addViewPortPaddingForMobile
 NavigationBar.propTypes = {
     compactOrAdmin: PropTypes.bool.isRequired,
     isMobileApp: PropTypes.bool.isRequired,
-    addViewPortPaddingForMobileApp: PropTypes.bool.isRequired
 }
 
 export default NavigationBar;

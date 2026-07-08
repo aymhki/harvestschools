@@ -34,6 +34,7 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
     }
 
     $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
+    
     if (!$stmt) {
         return [
             "success" => false,

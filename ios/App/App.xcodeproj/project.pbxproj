@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		004BE3FF2FFC3F620006DEFD /* FloatingNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */; };
+		004BE4042FFC3FA10006DEFD /* PullToRefreshController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */; };
 		004E49E42FFBDDA3001494AA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */; };
 		00DE439C2FF9F50C002827AF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DE439B2FF9F506002827AF /* SceneDelegate.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingNavBar.swift; sourceTree = "<group>"; };
+		004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshController.swift; sourceTree = "<group>"; };
 		004E49E32FFBDDA3001494AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		00DE439B2FF9F506002827AF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		00DE439D2FF9F53B002827AF /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
@@ -65,6 +69,8 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
+				004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */,
+				004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */,
 				004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */,
 				00DE439D2FF9F53B002827AF /* App.entitlements */,
 				00DE439B2FF9F506002827AF /* SceneDelegate.swift */,
@@ -160,8 +166,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				004BE3FF2FFC3F620006DEFD /* FloatingNavBar.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				00DE439C2FF9F50C002827AF /* SceneDelegate.swift in Sources */,
+				004BE4042FFC3FA10006DEFD /* PullToRefreshController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

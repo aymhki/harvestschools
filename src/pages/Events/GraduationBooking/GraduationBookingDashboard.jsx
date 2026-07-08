@@ -59,7 +59,7 @@ function GraduationBookingDashboard() {
                             <div className={"booking-dashboard-page-footer"} key={1}>
                                 <button onClick={() => {
                                     resetSession('harvest_schools_graduation_booking');
-                                    navigate(graduationBookingLoginPageUrl);
+                                    navigate(graduationBookingLoginPageUrl, { replace: true });
                                 }}>
                                     {t("events-pages.graduation-booking-pages.dashboard-page.logout-btn")}
                                 </button>

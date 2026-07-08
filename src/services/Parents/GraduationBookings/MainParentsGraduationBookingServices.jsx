@@ -54,7 +54,7 @@ const submitUpdateGraduationBookingExtrasRequest = async (formData, bookingId, n
                 console.log(result.message);
             }
             
-            navigate(graduationBookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl, { replace: true });
         }
         
         formData.append('bookingId', bookingId);
@@ -89,7 +89,7 @@ const fetchGraduationBookingInfoBySessionRequest = async (navigate) => {
         const sessionId = validateGraduationBookingSessionLocally();
 
         if (!sessionId) {
-            navigate(graduationBookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl, { replace: true });
             return 'Session expired';
         }
 
@@ -110,7 +110,7 @@ const fetchGraduationBookingInfoBySessionRequest = async (navigate) => {
             }
 
             if (result && result.code && (result.code === 401 || result.code === 403)) {
-                navigate(graduationBookingLoginPageUrl);
+                navigate(graduationBookingLoginPageUrl, { replace: true });
             }
         }
     } catch (error) {
@@ -122,7 +122,7 @@ const checkGraduationBookingSessionFromBookingDashboard = async (navigate) => {
     const sessionId = validateGraduationBookingSessionLocally();
 
     if (!sessionId) {
-        navigate(graduationBookingLoginPageUrl);
+        navigate(graduationBookingLoginPageUrl, { replace: true });
         return;
     }
 
@@ -142,11 +142,11 @@ const checkGraduationBookingSessionFromBookingDashboard = async (navigate) => {
                 console.log(result.message);
             }
 
-            navigate(graduationBookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl, { replace: true });
         }
     } catch (error) {
         console.log(error.message);
-        navigate(graduationBookingLoginPageUrl);
+        navigate(graduationBookingLoginPageUrl, { replace: true });
     }
 }
 
@@ -175,7 +175,7 @@ const validateGraduationBookingLogin = async (formData, usernameFieldId, passwor
             const sessionResult = await sessionResponse.json();
 
             if (sessionResult.success) {
-                navigate(graduationBookingDashboardPageUrl);
+                navigate(graduationBookingDashboardPageUrl, { replace: true });
             } else {
                 return sessionResult;
             }
@@ -202,7 +202,7 @@ const checkGraduationBookingSessionFromBookingLogin = async (navigate) => {
         const result = await response.json();
 
         if (result.success) {
-            navigate(graduationBookingDashboardPageUrl);
+            navigate(graduationBookingDashboardPageUrl, { replace: true });
         } else {
            if (result.message) {
                 console.log(result.message);
@@ -217,7 +217,7 @@ const checkGraduationBookingSession = async (navigate) => {
     const sessionId = validateGraduationBookingSessionLocally();
 
     if (!sessionId) {
-        navigate(graduationBookingLoginPageUrl);
+        navigate(graduationBookingLoginPageUrl, { replace: true });
         return;
     }
 
@@ -238,7 +238,7 @@ const checkGraduationBookingSession = async (navigate) => {
                 console.log(result.message);
             }
 
-            navigate(graduationBookingLoginPageUrl);
+            navigate(graduationBookingLoginPageUrl, { replace: true });
         }
     } catch (error) {
         console.log(error.message);

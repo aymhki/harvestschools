@@ -88,7 +88,7 @@ function AppServer() {
 
     return (
         <div className="App">
-            {!shouldExclude && <NavigationBar compactOrAdmin={false} isMobileApp={false} addViewPortPaddingForMobileApp={false}/>}
+            {!shouldExclude && <NavigationBar compactOrAdmin={false} isMobileApp={false}/>}
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
                     <Routes>

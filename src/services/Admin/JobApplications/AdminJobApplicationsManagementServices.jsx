@@ -3,11 +3,11 @@ import {adminLoginPageUrl, EMBEDDABLE_EXTENSIONS, endpoints, getMimeType, getAdm
 
 
 const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
-    const sessionId = validateAdminSessionLocally();
+    const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
         console.log('Session expired');
-        navigate(adminLoginPageUrl);
+        navigate(adminLoginPageUrl, { replace: true });
         return 'Session expired';
     }
 
@@ -34,7 +34,7 @@ const fetchJobApplicationsRequest = async (navigate, setJobApplications) => {
             }
 
             if (result && result.code && (result.code === 401 || result.code === 403)) {
-                navigate(adminLoginPageUrl);
+                navigate(adminLoginPageUrl, { replace: true });
             }
         }
     } catch (error) {

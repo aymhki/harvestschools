@@ -3,6 +3,7 @@ import i18n from '../../i18n/i18n-client.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import { Capacitor } from '@capacitor/core';
+import {clearMobileSession} from "./CapacitorSecureAuthUtils.jsx"
 
 const isDevelopment = () => {
     return !import.meta.env.PROD;
@@ -171,7 +172,12 @@ const endpoints = generateEndpoints();
 const logoutCurrentAdmin = (navigate) => {
     localStorage.removeItem('harvest_schools_admin_session_id');
     localStorage.removeItem('harvest_schools_admin_session_time');
-    navigate(adminLoginPageUrl);
+
+    if (Capacitor.isNativePlatform()) {
+        clearMobileSession('harvest_schools_admin');
+    }
+
+    navigate(adminLoginPageUrl, { replace: true });
 }
 
 const useToggleLanguage = ({ignoreDocUpdate}) => {

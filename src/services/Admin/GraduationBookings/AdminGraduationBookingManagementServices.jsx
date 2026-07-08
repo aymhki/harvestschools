@@ -4,10 +4,10 @@ import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx"
 
 const fetchGraduationBookingsRequest = async (navigate, setAllBookings) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
 
         if (!sessionId) {
-            navigate(adminLoginPageUrl);
+            navigate(adminLoginPageUrl, { replace: true });
             return;
         }
 
@@ -29,7 +29,7 @@ const fetchGraduationBookingsRequest = async (navigate, setAllBookings) => {
 
 
                 if (result.code  && (result.code === 401 || result.code === 403)) {
-                    navigate(adminLoginPageUrl);
+                    navigate(adminLoginPageUrl, { replace: true });
                 }
             }
         }
@@ -43,7 +43,7 @@ const fetchGraduationBookingsRequest = async (navigate, setAllBookings) => {
 
 const handleDeleteGraduationBookingRequest = async (bookingId) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
         if (!sessionId) {
             return 'Session expired'
         }
@@ -71,7 +71,7 @@ const handleDeleteGraduationBookingRequest = async (bookingId) => {
 
 const handleAddGraduationBookingRequest = async (formData) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
 
         if (!sessionId) {
             return 'Session expired';
@@ -99,7 +99,7 @@ const handleAddGraduationBookingRequest = async (formData) => {
 
 const handleEditGraduationBookingRequest = async (formData, bookingId) => {
     try {
-        const sessionId = validateAdminSessionLocally();
+        const sessionId = await validateAdminSessionLocally();
 
         if (!sessionId) {
             return 'Session expired';

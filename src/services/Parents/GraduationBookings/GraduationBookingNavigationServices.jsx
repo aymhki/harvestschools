@@ -25,7 +25,7 @@ const headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard
         await checkGraduationBookingSessionFromBookingDashboard(navigate);
     } catch (error) {
         console.log(error.message);
-        navigate(graduationBookingLoginPageUrl);
+        navigate(graduationBookingLoginPageUrl, { replace: true });
     } finally {
         setIsLoading(false);
     }

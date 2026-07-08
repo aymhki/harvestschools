@@ -20,7 +20,7 @@ import ViewSidebarIcon from '@mui/icons-material/ViewSidebar';
 import PropTypes from "prop-types";
 import {LinkOutlined} from "@mui/icons-material";
 
-function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin, addViewPortPaddingForMobileApp}) {
+function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const location = useLocation();
@@ -70,6 +70,12 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin, add
         };
     }, [isMobileOpen]);
 
+    useEffect(() => {
+        if (isMobileOpen) {
+            setIsMobileOpen(false);
+        }
+    }, [location.pathname]);
+
     return (
         <>
             <button className="floating-mobile-menu" onClick={() => setIsMobileOpen(true)}>
@@ -80,7 +86,7 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin, add
             {isMobileOpen && <div className="sidebar-overlay" onClick={() => setIsMobileOpen(false)}></div>}
 
             <aside
-                className={`admin-sidebar ${isExpanded || isPinned ? 'expanded' : ''} ${isMobileOpen ? 'mobile-open' : ''} ${addViewPortPaddingForMobileApp ? 'mobile-app-top-padding-for-view-port' : ''}`}
+                className={`admin-sidebar ${isExpanded || isPinned ? 'expanded' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}
                 onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
             >
@@ -179,8 +185,7 @@ AdminSidebar.propTypes = {
     ).isRequired,
     loggedInUsername: PropTypes.string.isRequired,
     isPinned: PropTypes.bool.isRequired,
-    onTogglePin: PropTypes.func.isRequired,
-    addViewPortPaddingForMobileApp: PropTypes.bool.isRequired
+    onTogglePin: PropTypes.func.isRequired
 }
 
 export default AdminSidebar;

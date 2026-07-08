@@ -58,7 +58,7 @@ function AppAdmin() {
 
     return (
         <div className="App admin-app">
-            {shouldExclude && <NavigationBar compactOrAdmin={true} isMobileApp={false} addViewPortPaddingForMobileApp={false}/>}
+            {shouldExclude && <NavigationBar compactOrAdmin={true} isMobileApp={false}/>}
             <div className={`content ${!shouldExclude ?  'admin-content' : '' } ${isSidebarPinned ? 'pinned' : ''}`}>
                 {!shouldExclude && (
                     <AdminSidebar
@@ -66,14 +66,13 @@ function AppAdmin() {
                         loggedInUsername={loggedInName}
                         isPinned={isSidebarPinned}
                         onTogglePin={handleTogglePin}
-                        addViewPortPaddingForMobileApp={false}
                     />
                 )}
                 <ErrorBoundary ignoreLngUpdate={true}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
                         <Routes>
                             <Route path="/" element={<Navigate to="/admin-login" replace />} />
-                            <Route path="/admin-login" element={<AdminLogin />} />
+                            <Route path="/admin-login" element={<AdminLogin isMobileApp={false}/>} />
                             <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
                             <Route path="/job-applications" element={<JobApplications />} />
                             <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />

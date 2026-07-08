@@ -5,10 +5,10 @@ import {
 import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx";
 
 const fetchAllOpenDaySignups = async (navigate, setOpenDaySignups) => {
-    const sessionId = validateAdminSessionLocally();
+    const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
-        navigate(adminLoginPageUrl);
+        navigate(adminLoginPageUrl, { replace: true });
         return 'Session expired';
     }
 
@@ -35,7 +35,7 @@ const fetchAllOpenDaySignups = async (navigate, setOpenDaySignups) => {
             }
 
             if (result && result.code && (result.code === 401 || result.code === 403)) {
-                navigate(adminLoginPageUrl);
+                navigate(adminLoginPageUrl, { replace: true });
             }
         }
     } catch (error) {
