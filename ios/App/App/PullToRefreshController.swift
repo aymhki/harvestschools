@@ -49,7 +49,7 @@ final class PullToRefreshController: NSObject {
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         webView.scrollView.bounces = true
         webView.scrollView.alwaysBounceVertical = true
-        refreshControl.tintColor = .label // adapts with light/dark automatically
+        refreshControl.tintColor = .label
         refreshControl.addTarget(self, action: #selector(handleRefreshTriggered), for: .valueChanged)
         webView.scrollView.refreshControl = refreshControl
     }
