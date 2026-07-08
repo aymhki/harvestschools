@@ -51,6 +51,11 @@
     justify-content: center;
 }
 
+.admin-login-recovery-only-prompt-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
 @media (max-width: 1600px) {
 
 }

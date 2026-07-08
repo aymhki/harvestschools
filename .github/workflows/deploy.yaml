@@ -81,6 +81,17 @@ jobs:
         run: |
           npm run build:main
           npm run build:admin
+          npm run build:mobile-app
+
+      - name: Package mobile app update bundle
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y zip
+          mkdir -p mobile-app-bundle
+          (cd dist/mobile-app && zip -r -q ../../mobile-app-bundle/latest.zip . -x ".*")
+          CHECKSUM=$(sha256sum mobile-app-bundle/latest.zip | awk '{print $1}')
+          VERSION=$(git rev-parse --short=12 HEAD)
+          printf '{"version":"%s","checksum":"%s"}' "$VERSION" "$CHECKSUM" > mobile-app-bundle/latest.json
+          echo "Packaged mobile app bundle version $VERSION"
 
       - name: Install lftp
         run: sudo apt-get update -qq && sudo apt-get install -y lftp
@@ -117,5 +128,13 @@ jobs:
           mirror -R --verbose --parallel=5 --exclude-glob .git* dist/admin/ admin.harvestschools.com/
           put -O admin.harvestschools.com/ domains/Admin/.htaccess
           mirror -R --verbose --parallel=5 src/scripts/ admin.harvestschools.com/scripts/
+          
+          mirror -R --verbose --parallel=5 public/app-updates/ app.harvestschools.com/
+          set cmd:fail-exit no
+          mv app.harvestschools.com/latest.zip app.harvestschools.com/stable.zip
+          mv app.harvestschools.com/latest.json app.harvestschools.com/stable.json
+          put -O app.harvestschools.com/ mobile-app-bundle/latest.zip
+          put -O app.harvestschools.com/ mobile-app-bundle/latest.json
+          
           bye
           LFTP
