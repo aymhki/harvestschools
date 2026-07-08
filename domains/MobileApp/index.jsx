@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import AppMobileApp from '../../src/app/AppMobileApp.jsx'
+import AppUpdateGate from '../../src/modules/AppUpdateGate.jsx'
 
 import '../../src/styles/index.css'
 import '../../src/i18n/i18n-client.jsx'
@@ -46,7 +47,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 }}
             >
                 <Routes>
-                    <Route path="/*" element={<AppMobileApp />} />
+                    <Route path="/*" element={<AppUpdateGate><AppMobileApp /></AppUpdateGate>} />
                 </Routes>
             </BrowserRouter>
         </HelmetProvider>

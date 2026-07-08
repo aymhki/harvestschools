@@ -28,6 +28,7 @@
     "@capacitor/core": "^8.4.1",
     "@capacitor/ios": "^8.4.1",
     "@capgo/capacitor-native-biometric": "^8.6.0",
+    "@capgo/capacitor-updater": "^8.50.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.16",
