@@ -74,8 +74,11 @@ jobs:
         with:
           node-version: 'latest'
 
-      - name: Install dependencies
+      - name: Install npm 12
         run: npm install -g npm@12.0.0
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Build main + admin + mobile-app
         run: |
