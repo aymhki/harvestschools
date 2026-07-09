@@ -28,7 +28,6 @@
     "@capacitor/core": "^8.4.1",
     "@capacitor/ios": "^8.4.1",
     "@capacitor/network": "^8.0.1",
-    "@capacitor/splash-screen": "^8.0.1",
     "@capgo/capacitor-native-biometric": "^8.6.0",
     "@capgo/capacitor-updater": "^8.50.2",
     "@emotion/react": "^11.11.4",
@@ -82,6 +81,7 @@
   "allowScripts": {
     "postinstall-postinstall@2.1.0": true,
     "esbuild@0.28.1": true,
-    "core-js": false
+    "core-js": false,
+    "fsevents@2.3.3": true
   }
 }

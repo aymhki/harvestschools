@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
-import { SplashScreen } from '@capacitor/splash-screen'
 import { Network } from '@capacitor/network'
 import {
     runMobileAppUpdateCheck,
@@ -22,7 +21,6 @@ function AppUpdateGate({ children }) {
 
     const retryTimerRef = useRef(null)
     const offlineListenerRef = useRef(null)
-    const splashHiddenRef = useRef(false)
 
     const armRetryTimer = () => {
         if (retryTimerRef.current) {
@@ -102,23 +100,6 @@ function AppUpdateGate({ children }) {
             }
         }
     }, [])
-
-    useEffect(() => {
-        if (phase === 'checking') {
-            return
-        }
-
-        if (!Capacitor.isNativePlatform()) {
-            return
-        }
-
-        if (splashHiddenRef.current) {
-            return
-        }
-
-        splashHiddenRef.current = true
-        SplashScreen.hide()
-    }, [phase])
 
     useEffect(() => {
         if (phase !== 'offline') {

@@ -56,3 +56,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] The clear and save buttons of the admin large action modal popup could be in the modal footer rather than the form footer.
 - [ ] Fix the home page video for both chrome and excel.
 - [ ] Handle upgrading to npm 12 where post install for package patching might not run.
+- [ ] The bot response to the vacancies option in the main menu doesn't use a cta button.
+- 
