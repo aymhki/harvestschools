@@ -1,0 +1,46 @@
+Last Updated: July 2026
+
+Harvest International Schools ("we," "our," or "us") operates the Harvest Schools Mobile Application (the "App"). We respect your privacy and are committed to protecting it through strict compliance with this policy.
+
+This Privacy Policy informs you of our policies regarding the collection, use, and disclosure of personal data when you use our App.
+
+1. Information Collection and Use
+
+We do not collect, harvest, track, or share any user information or personal data through this App. The App functions strictly as a secure interface to bridge your device with our web-based portals (harvestschools.com and admin.harvestschools.com).
+
+2. Local Storage & Biometric Authentication
+
+To provide an enhanced user experience, the App allows users (such as administrators) to log in using biometric authentication (e.g., Touch ID, Face ID, or Android Fingerprint).
+
+Your actual biometric data is handled entirely by your device’s operating system and is never accessed, processed, or stored by the App or our servers.
+
+Your login credentials (username and password) are stored locally on your device utilizing secure system keychain systems via native api. They are never exposed to third parties.
+
+3. Server Authentication and Session Data
+
+When you log in through the App:
+
+Your username and password are encrypted and transmitted directly to our authentication server for the sole purpose of validating your identity.
+
+Our server does not retain your password or username post-authentication. * Upon successful validation, the server generates and stores only a temporary, unique UUID session token to keep you logged into your current session.
+
+4. Data Security
+
+The security of your data is critical to us. All data transmissions between the App and our servers (harvestschools.com and admin.harvestschools.com) are strictly enforced and encrypted over HTTPS (Hypertext Transfer Protocol Secure) connections to prevent interception.
+
+5. Third-Party Sharing
+
+We do not sell, trade, or otherwise transfer your data to outside parties. Because the App collects no data, there is no user information available to share with third-party analytical tools, advertisers, or networks.
+
+6. Changes to This Privacy Policy
+
+We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy within the App Store and Google Play Store pages. You are advised to review this Privacy Policy periodically for any changes.
+
+7. Contact Us
+
+If you have any questions about this Privacy Policy, please contact us at:
+
+Email: inquiries@harvestschools.com
+
+Website: harvestschools.com
+
