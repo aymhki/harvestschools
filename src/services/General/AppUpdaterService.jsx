@@ -80,7 +80,7 @@ const applyChannel = async (channel, currentVersion, onProgress) => {
         throw new Error(`Downloaded bundle for "${channel}" could not be validated`)
     }
 
-    saveRestorePath()
+    await saveRestorePath()
 
     await CapacitorUpdater.set({ id: bundle.id })
 
