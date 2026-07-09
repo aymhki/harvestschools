@@ -13,6 +13,35 @@ const APP_UPDATE_RESTORE_PATH_KEY = 'harvest_schools_app_update_restore_path'
 
 const appUpdateRetryCooldown = 60 * 60 * 1000
 
+const withTimeout = (promise, timeoutMs) => {
+    return new Promise((resolve) => {
+        let settled = false
+
+        const timer = setTimeout(() => {
+            if (!settled) {
+                settled = true
+                resolve(undefined)
+            }
+        }, timeoutMs)
+
+        promise
+            .then((value) => {
+                if (!settled) {
+                    settled = true
+                    clearTimeout(timer)
+                    resolve(value)
+                }
+            })
+            .catch(() => {
+                if (!settled) {
+                    settled = true
+                    clearTimeout(timer)
+                    resolve(undefined)
+                }
+            })
+    })
+}
+
 const fetchManifest = async (channel) => {
     const response = await fetch(`${APP_UPDATE_BASE_URL}/${channel}.json?ts=${Date.now()}`, {
         cache: 'no-store',
@@ -35,7 +64,7 @@ const saveRestorePath = () => {
     const currentPath = window.location.pathname + window.location.search + window.location.hash
 
     try {
-        sessionStorage.setItem(APP_UPDATE_RESTORE_PATH_KEY, currentPath)
+        localStorage.setItem(APP_UPDATE_RESTORE_PATH_KEY, currentPath)
     } catch (storageError) {
         console.warn('Could not save the current path before applying an update', storageError)
     }
@@ -45,10 +74,10 @@ const getAndClearRestorePath = () => {
     let path = null
 
     try {
-        path = sessionStorage.getItem(APP_UPDATE_RESTORE_PATH_KEY)
+        path = localStorage.getItem(APP_UPDATE_RESTORE_PATH_KEY)
 
         if (path) {
-            sessionStorage.removeItem(APP_UPDATE_RESTORE_PATH_KEY)
+            localStorage.removeItem(APP_UPDATE_RESTORE_PATH_KEY)
         }
     } catch (storageError) {
         console.warn('Could not read the saved restore path', storageError)
@@ -59,7 +88,7 @@ const getAndClearRestorePath = () => {
 
 const showSplashBeforeReload = async () => {
     try {
-        await SplashScreen.show({ autoHide: false })
+        await withTimeout(SplashScreen.show({ autoHide: false }), 800)
     } catch (splashError) {
         console.warn('Could not re-show the splash screen before applying the update', splashError)
     }
