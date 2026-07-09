@@ -7,6 +7,7 @@
     "@capacitor/core": "^8.4.1",
     "@capacitor/ios": "^8.4.1",
     "@capacitor/network": "^8.0.1",
+    "@capacitor/preferences": "^8.0.1",
     "@capgo/capacitor-native-biometric": "^8.6.0",
     "@capgo/capacitor-updater": "^8.50.2",
     "capacitor-secure-storage-plugin": "^0.13.0"

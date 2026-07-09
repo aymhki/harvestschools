@@ -40,7 +40,7 @@ function AppUpdateGate({ children }) {
         }
     }
 
-    const restoreSavedPathIfNeeded = () => {
+    const restoreSavedPathIfNeeded = async () => {
         const restorePath = getAndClearRestorePath()
 
         if (!restorePath) {
@@ -161,15 +161,25 @@ function AppUpdateGate({ children }) {
                 <p className="app-update-gate__message" role="status" aria-live="assertive">
                     Sorry, looks like our servers are down right now :( please try again later
                 </p>
-                {canRetry && (
-                    <button
-                        type="button"
-                        className="app-update-gate__button"
-                        onClick={() => runCheck(true)}
-                    >
-                        Try Again
-                    </button>
-                )}
+
+                {/*{canRetry && (*/}
+                {/*    <button*/}
+                {/*        type="button"*/}
+                {/*        className="app-update-gate__button"*/}
+                {/*        onClick={() => runCheck(true)}*/}
+                {/*    >*/}
+                {/*        Try Again*/}
+                {/*    </button>*/}
+                {/*)}*/}
+
+                <button
+                    type="button"
+                    className="app-update-gate__button"
+                    onClick={() => runCheck(true)}
+                >
+                    Try Again
+                </button>
+
             </div>
         )
     }
