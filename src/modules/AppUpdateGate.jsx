@@ -41,7 +41,7 @@ function AppUpdateGate({ children }) {
     }
 
     const restoreSavedPathIfNeeded = async () => {
-        const restorePath = getAndClearRestorePath()
+        const restorePath = await getAndClearRestorePath()
 
         if (!restorePath) {
             return
