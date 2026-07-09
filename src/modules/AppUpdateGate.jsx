@@ -208,7 +208,6 @@ function AppUpdateGate({ children }) {
                         style={{ width: `${progress}%` }}
                     />
                 </div>
-                <span className="app-update-gate__progress-label">{progress}%</span>
             </div>
         )
     }
