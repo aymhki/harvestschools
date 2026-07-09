@@ -106,7 +106,7 @@
       "size" : "83.5x83.5"
     },
     {
-      "filename" : "harvestschools-iOS-Default-1024@1x.png",
+      "filename" : "HarvestSchoolsForeground.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -313,7 +313,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "harvestschools-iOS-Dark-1024@1x.png",
+      "filename" : "HarvestSchoolsForeground-Dark.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -520,7 +520,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "harvestschools-iOS-ClearDark-1024@1x.png",
+      "filename" : "HarvestSchoolsForeground-Tinted.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
