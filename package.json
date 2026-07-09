@@ -78,5 +78,10 @@
     "source": "dist",
     "script": "serve",
     "port": 45678
+  },
+  "allowScripts": {
+    "postinstall-postinstall@2.1.0": true,
+    "esbuild@0.28.1": true,
+    "core-js": false
   }
 }
