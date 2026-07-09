@@ -148,8 +148,6 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
 
         const { bundle: currentBundle } = await CapacitorUpdater.current()
 
-        recordAttempt()
-
         let lastError = null
 
         for (const channel of APP_UPDATE_CHANNELS) {
@@ -164,8 +162,12 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
             }
         }
 
-        throw lastError
+        recordAttempt()
+
+        return { status: 'error', error: lastError }
     } catch (error) {
+        recordAttempt()
+
         return { status: 'error', error }
     } finally {
         if (downloadListenerHandle) {
