@@ -55,3 +55,4 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] h1/2/3 of the options page line height is not set.
 - [ ] The clear and save buttons of the admin large action modal popup could be in the modal footer rather than the form footer.
 - [ ] Fix the home page video for both chrome and excel.
+- [ ] Handle upgrading to npm 12 where post install for package patching might not run.

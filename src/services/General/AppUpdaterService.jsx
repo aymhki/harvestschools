@@ -1,14 +1,12 @@
 import { CapacitorUpdater } from '@capgo/capacitor-updater'
 import { Capacitor } from '@capacitor/core'
 import { Network } from '@capacitor/network'
-import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 const APP_UPDATE_BASE_URL = 'https://app.harvestschools.com'
 const APP_UPDATE_CHANNELS = ['latest', 'stable']
 const APP_UPDATE_RESTORE_PATH_KEY = 'harvest_schools_app_update_restore_path'
 const APP_UPDATE_LAST_ATTEMPT_KEY = 'harvest_schools_app_update_last_attempt'
 const appUpdateRetryCooldown = 60 * 60 * 1000
-
 
 const fetchManifest = async (channel) => {
     const response = await fetch(`${APP_UPDATE_BASE_URL}/${channel}.json?ts=${Date.now()}`, { cache: 'no-store' })
@@ -38,11 +36,6 @@ const applyChannel = async (channel, currentVersion, onProgress) => {
     }
     const currentPath = window.location.pathname + window.location.search + window.location.hash
     sessionStorage.setItem(APP_UPDATE_RESTORE_PATH_KEY, currentPath)
-
-    // FIX: Clear the attempt record BEFORE triggering the reload using native storage.
-    // Native storage flushes synchronously, preventing the "lost clear" issue on Android.
-    await clearAttempt()
-
     await CapacitorUpdater.set({ id: bundle.id })
     return { updated: true, channel }
 }
@@ -53,45 +46,9 @@ const getAndClearRestorePath = () => {
     return path
 }
 
-const getLastAttemptTimestamp = async () => {
-    const storage = SecureStoragePlugin
-    if (storage) {
-        try {
-            const ret = await storage.get({ key: APP_UPDATE_LAST_ATTEMPT_KEY })
-            const val = ret.value !== undefined ? ret.value : ret
-            return val ? Number(val) : 0
-        } catch (e) {
-            console.warn('Storage get failed', e)
-        }
-    }
-    return Number(localStorage.getItem(APP_UPDATE_LAST_ATTEMPT_KEY) || 0)
-}
-
-const recordAttempt = async () => {
-    const storage = SecureStoragePlugin
-    if (storage) {
-        try {
-            await storage.set({ key: APP_UPDATE_LAST_ATTEMPT_KEY, value: Date.now().toString() })
-            return
-        } catch (e) {
-            console.warn('Storage set failed', e)
-        }
-    }
-    localStorage.setItem(APP_UPDATE_LAST_ATTEMPT_KEY, Date.now().toString())
-}
-
-const clearAttempt = async () => {
-    const storage = SecureStoragePlugin
-    if (storage) {
-        try {
-            await storage.remove({ key: APP_UPDATE_LAST_ATTEMPT_KEY })
-            return
-        } catch (e) {
-            console.warn('Storage remove failed', e)
-        }
-    }
-    localStorage.removeItem(APP_UPDATE_LAST_ATTEMPT_KEY)
-}
+const getLastAttemptTimestamp = () => Number(localStorage.getItem(APP_UPDATE_LAST_ATTEMPT_KEY) || 0)
+const recordAttempt = () => localStorage.setItem(APP_UPDATE_LAST_ATTEMPT_KEY, Date.now().toString())
+const clearAttempt = () => localStorage.removeItem(APP_UPDATE_LAST_ATTEMPT_KEY)
 
 const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
     if (!Capacitor.isNativePlatform()) {
@@ -113,7 +70,7 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
         })
     }
 
-    await recordAttempt()
+    recordAttempt()
 
     try {
         const { bundle: currentBundle } = await CapacitorUpdater.current()
@@ -121,6 +78,7 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
         for (const channel of APP_UPDATE_CHANNELS) {
             try {
                 const result = await applyChannel(channel, currentBundle.version, onProgress)
+                clearAttempt()
                 return { status: 'ok', ...result }
             } catch (channelError) {
                 lastError = channelError
