@@ -2,6 +2,8 @@ package com.harvestschools.app;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.content.res.Configuration;
+import androidx.annotation.NonNull;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -20,6 +22,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.HapticFeedbackConstants;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.getcapacitor.BridgeActivity;
 
@@ -28,6 +31,7 @@ public class MainActivity extends BridgeActivity {
     private ImageButton backButton;
     private ImageButton forwardButton;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private CoordinatorLayout rootLayout;
 
     private volatile String currentShareUrl = "https://harvestschools.com";
     private boolean isWaitingForReload = false;
@@ -35,9 +39,31 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().getDecorView().post(this::setUpFloatingChrome);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        applyThemeColors();
+    }
+
+    private void applyThemeColors() {
+        WebView webView = getBridge() != null ? getBridge().getWebView() : null;
+
+        if (webView == null || swipeRefreshLayout == null || rootLayout == null) {
+            return;
+        }
+
+        int backgroundColor = ContextCompat.getColor(this, R.color.web_content_background);
+
+        rootLayout.setBackgroundColor(backgroundColor);
+        webView.setBackgroundColor(backgroundColor);
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.web_content_background);
     }
 
     private void setUpFloatingChrome() {
@@ -45,7 +71,9 @@ public class MainActivity extends BridgeActivity {
         if (webView == null || !(webView.getParent() instanceof CoordinatorLayout)) return;
 
         CoordinatorLayout root = (CoordinatorLayout) webView.getParent();
+        rootLayout = root;
         int backgroundColor = ContextCompat.getColor(this, R.color.web_content_background);
+
         root.setBackgroundColor(backgroundColor);
         webView.setBackgroundColor(backgroundColor);
 

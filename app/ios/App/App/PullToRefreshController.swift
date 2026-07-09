@@ -4,6 +4,7 @@ import WebKit
 final class PullToRefreshController: NSObject {
 
     private weak var webView: WKWebView?
+    private weak var safeAreaContainer: UIView?
     private let refreshControl = UIRefreshControl()
     private let impactGenerator = UIImpactFeedbackGenerator(style: .light)
     private var isRefreshing = false
@@ -15,13 +16,43 @@ final class PullToRefreshController: NSObject {
         self.webView = webView
         super.init()
 
-        applySiteColors(to: webView)
+        reparentWebViewIntoSafeArea(webView, in: containerView)
+        applySiteColors(to: webView, container: containerView)
         installRefreshControl(on: webView)
         observeLoadingState(webView: webView)
     }
 
     deinit {
         loadingObservation?.invalidate()
+    }
+
+    private func reparentWebViewIntoSafeArea(_ webView: WKWebView, in containerView: UIView) {
+        webView.removeFromSuperview()
+
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(container)
+
+        NSLayoutConstraint.activate([
+            container.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
+            container.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
+            container.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor),
+            container.trailingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.trailingAnchor),
+        ])
+
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(webView)
+
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: container.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            webView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+        ])
+
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
+
+        safeAreaContainer = container
     }
 
     private static var siteBackgroundColor: UIColor {
@@ -31,13 +62,14 @@ final class PullToRefreshController: NSObject {
         }
     }
 
-    private func applySiteColors(to webView: WKWebView) {
+    private func applySiteColors(to webView: WKWebView, container: UIView) {
         let color = Self.siteBackgroundColor
 
         webView.isOpaque = true
         webView.backgroundColor = color
         webView.scrollView.backgroundColor = color
         webView.underPageBackgroundColor = color
+        container.backgroundColor = color
     }
 
     private func installRefreshControl(on webView: WKWebView) {
@@ -87,4 +119,3 @@ final class PullToRefreshController: NSObject {
         }
     }
 }
-

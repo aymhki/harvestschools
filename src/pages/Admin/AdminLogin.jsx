@@ -185,10 +185,6 @@ function AdminLogin() {
         <div className={'admin-login-recovery-only-prompt-wrapper'}>
             {loginMode === 'recovery' && (
                 <>
-                    <p className={'admin-login-recovery-message'}>
-                        Enter your updated username and password below.{' '}
-                    </p>
-
                     <button
                         type={'button'}
                         className={'admin-login-recovery-cancel'}

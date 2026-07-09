@@ -11,6 +11,7 @@ import '../styles/App.css'
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from '../services/Admin/Session/AdminNavigationServices.jsx'
 import { App as CapacitorApp } from '@capacitor/app';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
+import '../styles/AppUpdateGate.css'
 
 const Home = lazy(() => import('../pages/Home.jsx'))
 const Faqs = lazy(() => import('../pages/FAQs/FAQs.jsx'))
@@ -310,7 +311,7 @@ function MobileAppRouter() {
                         />
                     )}
                     <ErrorBoundary ignoreLngUpdate={isAdminSection}>
-                        <Suspense fallback={<div style={{ minHeight: '100vh' }}><Spinner /></div>}>
+                        <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
                             <Routes>
                                 {routeConfig.map(({ path, element }) => (
                                     <Route key={path} path={path} element={element(routeContext)} />
