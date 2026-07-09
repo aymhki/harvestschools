@@ -40,6 +40,8 @@ const saveRestorePath = async () => {
             key: APP_UPDATE_RESTORE_PATH_KEY,
             value: currentPath,
         });
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (storageError) {
         console.warn('Could not save the current path', storageError);
     }
