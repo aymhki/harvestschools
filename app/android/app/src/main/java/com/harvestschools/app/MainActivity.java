@@ -151,6 +151,7 @@ public class MainActivity extends BridgeActivity {
         CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         );
+
         lp.gravity = Gravity.BOTTOM | Gravity.START;
         lp.setMargins(dp(16), 0, 0, dp(16));
         card.setLayoutParams(lp);

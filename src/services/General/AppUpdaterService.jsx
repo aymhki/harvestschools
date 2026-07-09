@@ -1,6 +1,8 @@
 import { CapacitorUpdater } from '@capgo/capacitor-updater'
 import { Capacitor } from '@capacitor/core'
 import { Network } from '@capacitor/network'
+import { Preferences } from '@capacitor/preferences';
+
 
 const APP_UPDATE_BASE_URL = 'https://app.harvestschools.com'
 
@@ -31,31 +33,31 @@ const fetchManifest = async (channel) => {
     return manifest
 }
 
-const saveRestorePath = () => {
-    const currentPath = window.location.pathname + window.location.search + window.location.hash
-
+const saveRestorePath = async () => {
+    const currentPath = window.location.pathname + window.location.search + window.location.hash;
     try {
-        localStorage.setItem(APP_UPDATE_RESTORE_PATH_KEY, currentPath)
+        await Preferences.set({
+            key: APP_UPDATE_RESTORE_PATH_KEY,
+            value: currentPath,
+        });
     } catch (storageError) {
-        console.warn('Could not save the current path before applying an update', storageError)
+        console.warn('Could not save the current path', storageError);
     }
-}
+};
 
-const getAndClearRestorePath = () => {
-    let path = null
-
+const getAndClearRestorePath = async () => {
+    let path = null;
     try {
-        path = localStorage.getItem(APP_UPDATE_RESTORE_PATH_KEY)
-
-        if (path) {
-            localStorage.removeItem(APP_UPDATE_RESTORE_PATH_KEY)
+        const { value } = await Preferences.get({ key: APP_UPDATE_RESTORE_PATH_KEY });
+        if (value) {
+            path = value;
+            await Preferences.remove({ key: APP_UPDATE_RESTORE_PATH_KEY });
         }
     } catch (storageError) {
-        console.warn('Could not read the saved restore path', storageError)
+        console.warn('Could not read the saved restore path', storageError);
     }
-
-    return path
-}
+    return path;
+};
 
 
 const applyChannel = async (channel, currentVersion, onProgress) => {
