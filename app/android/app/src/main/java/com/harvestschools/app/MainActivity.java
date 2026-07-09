@@ -155,15 +155,6 @@ public class MainActivity extends BridgeActivity {
         lp.setMargins(dp(16), 0, 0, dp(16));
         card.setLayoutParams(lp);
         root.addView(card);
-
-        ViewCompat.setOnApplyWindowInsetsListener(card, (v, insets) -> {
-            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            params.bottomMargin = dp(16) + bottomInset;
-            v.setLayoutParams(params);
-            return insets;
-        });
-
         updateNavButtonState(webView);
     }
 

@@ -4,7 +4,6 @@ import WebKit
 final class PullToRefreshController: NSObject {
 
     private weak var webView: WKWebView?
-    private weak var safeAreaContainer: UIView?
     private let refreshControl = UIRefreshControl()
     private let impactGenerator = UIImpactFeedbackGenerator(style: .light)
     private var isRefreshing = false
@@ -12,12 +11,12 @@ final class PullToRefreshController: NSObject {
     private let minimumRefreshDuration: TimeInterval = 0.7
     private var loadingObservation: NSKeyValueObservation?
 
+    @MainActor
     init(webView: WKWebView, containerView: UIView) {
         self.webView = webView
         super.init()
 
-        reparentWebViewIntoSafeArea(webView, in: containerView)
-        applySiteColors(to: webView, container: containerView)
+        applySiteColors(to: webView)
         installRefreshControl(on: webView)
         observeLoadingState(webView: webView)
     }
@@ -26,57 +25,38 @@ final class PullToRefreshController: NSObject {
         loadingObservation?.invalidate()
     }
 
-    private func reparentWebViewIntoSafeArea(_ webView: WKWebView, in containerView: UIView) {
-        webView.removeFromSuperview()
-
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(container)
-
-        NSLayoutConstraint.activate([
-            container.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
-            container.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor),
-            container.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor),
-            container.trailingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.trailingAnchor),
-        ])
-
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(webView)
-
-        NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: container.topAnchor),
-            webView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            webView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-        ])
-
-        webView.scrollView.contentInsetAdjustmentBehavior = .never
-
-        safeAreaContainer = container
-    }
-
-    private static var siteBackgroundColor: UIColor {
+    public static var siteBackgroundColor: UIColor {
         UIColor { $0.userInterfaceStyle == .dark
             ? UIColor(red: 0x24/255, green: 0x24/255, blue: 0x24/255, alpha: 1)
             : .white
         }
     }
 
-    private func applySiteColors(to webView: WKWebView, container: UIView) {
+    private func applySiteColors(to webView: WKWebView) {
         let color = Self.siteBackgroundColor
 
         webView.isOpaque = true
         webView.backgroundColor = color
         webView.scrollView.backgroundColor = color
         webView.underPageBackgroundColor = color
-        container.backgroundColor = color
     }
 
+    @MainActor
     private func installRefreshControl(on webView: WKWebView) {
         webView.scrollView.bounces = true
         webView.scrollView.alwaysBounceVertical = true
-        refreshControl.tintColor = .label
+        refreshControl.tintColor = UIColor { $0.userInterfaceStyle == .dark ? .white : .systemGray }
         refreshControl.addTarget(self, action: #selector(handleRefreshTriggered), for: .valueChanged)
+        refreshControl.layer.zPosition = CGFloat.greatestFiniteMagnitude
+        refreshControl.layer.backgroundColor = Self.siteBackgroundColor.cgColor
+        
+        webView.registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (view: WKWebView, _) in
+            guard let self = self else { return }
+            let dynamicColor = Self.siteBackgroundColor
+            let resolvedColor = dynamicColor.resolvedColor(with: view.traitCollection)
+            self.refreshControl.layer.backgroundColor = resolvedColor.cgColor
+        }
+        
         webView.scrollView.refreshControl = refreshControl
     }
 
@@ -119,3 +99,4 @@ final class PullToRefreshController: NSObject {
         }
     }
 }
+

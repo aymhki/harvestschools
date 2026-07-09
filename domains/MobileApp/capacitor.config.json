@@ -11,9 +11,6 @@
     "plugins": {
         "CapacitorUpdater": {
             "autoUpdate": "off"
-        },
-        "SplashScreen": {
-            "launchAutoHide": false
         }
     }
 }

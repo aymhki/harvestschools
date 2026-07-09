@@ -1,7 +1,6 @@
 import { CapacitorUpdater } from '@capgo/capacitor-updater'
 import { Capacitor } from '@capacitor/core'
 import { Network } from '@capacitor/network'
-import { SplashScreen } from '@capacitor/splash-screen'
 
 const APP_UPDATE_BASE_URL = 'https://app.harvestschools.com'
 
@@ -13,34 +12,6 @@ const APP_UPDATE_RESTORE_PATH_KEY = 'harvest_schools_app_update_restore_path'
 
 const appUpdateRetryCooldown = 60 * 60 * 1000
 
-const withTimeout = (promise, timeoutMs) => {
-    return new Promise((resolve) => {
-        let settled = false
-
-        const timer = setTimeout(() => {
-            if (!settled) {
-                settled = true
-                resolve(undefined)
-            }
-        }, timeoutMs)
-
-        promise
-            .then((value) => {
-                if (!settled) {
-                    settled = true
-                    clearTimeout(timer)
-                    resolve(value)
-                }
-            })
-            .catch(() => {
-                if (!settled) {
-                    settled = true
-                    clearTimeout(timer)
-                    resolve(undefined)
-                }
-            })
-    })
-}
 
 const fetchManifest = async (channel) => {
     const response = await fetch(`${APP_UPDATE_BASE_URL}/${channel}.json?ts=${Date.now()}`, {
@@ -86,13 +57,6 @@ const getAndClearRestorePath = () => {
     return path
 }
 
-const showSplashBeforeReload = async () => {
-    try {
-        await withTimeout(SplashScreen.show({ autoHide: false }), 800)
-    } catch (splashError) {
-        console.warn('Could not re-show the splash screen before applying the update', splashError)
-    }
-}
 
 const applyChannel = async (channel, currentVersion, onProgress) => {
     const manifest = await fetchManifest(channel)
@@ -115,8 +79,6 @@ const applyChannel = async (channel, currentVersion, onProgress) => {
     }
 
     saveRestorePath()
-
-    await showSplashBeforeReload()
 
     await CapacitorUpdater.set({ id: bundle.id })
 
