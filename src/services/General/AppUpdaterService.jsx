@@ -80,8 +80,6 @@ const applyChannel = async (channel, currentVersion, onProgress) => {
         throw new Error(`Downloaded bundle for "${channel}" could not be validated`)
     }
 
-    await saveRestorePath()
-
     await CapacitorUpdater.set({ id: bundle.id })
 
     return { updated: true, channel }
@@ -122,6 +120,12 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
         await CapacitorUpdater.notifyAppReady()
     } catch (notifyError) {
         console.warn('notifyAppReady failed', notifyError)
+    }
+
+    try {
+        await saveRestorePath()
+    } catch (saveError) {
+        console.warn('notifyAppReady failed', saveError)
     }
 
     const online = await isDeviceOnline()
