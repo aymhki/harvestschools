@@ -5,6 +5,7 @@ import { Network } from '@capacitor/network'
 import {
     runMobileAppUpdateCheck,
     getAndClearRestorePath,
+    attachPullToRefreshListener
 } from '../services/General/AppUpdaterService.jsx'
 import Spinner from './Spinner.jsx'
 import '../styles/AppUpdateGate.css'
@@ -96,6 +97,10 @@ function AppUpdateGate({ children }) {
             }
         }
     }, [phase])
+
+    useEffect(() => {
+        return attachPullToRefreshListener()
+    }, [])
 
     if (phase === 'ready') {
         return children

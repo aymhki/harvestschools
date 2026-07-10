@@ -33,8 +33,6 @@ public class MainActivity extends BridgeActivity {
     private ImageButton forwardButton;
     private SwipeRefreshLayout swipeRefreshLayout;
     private CoordinatorLayout rootLayout;
-
-    private static final String APP_UPDATE_RESTORE_PATH_KEY = "harvest_schools_app_update_restore_path";
     private volatile String currentShareUrl = "https://harvestschools.com";
     private boolean isWaitingForReload = false;
     private long refreshTriggeredAt = 0L;
@@ -101,7 +99,7 @@ public class MainActivity extends BridgeActivity {
             isWaitingForReload = true;
             refreshTriggeredAt = System.currentTimeMillis();
             swipeRefreshLayout.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK);
-            webView.evaluateJavascript("window.harvestSaveRestorePath && window.harvestSaveRestorePath()", null);
+            webView.evaluateJavascript("window.dispatchEvent(new Event('harvestPullToRefresh'))", null);
         });
 
         webView.addJavascriptInterface(new NativeBridge(), "AndroidNativeBridge");
