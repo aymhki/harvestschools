@@ -33,17 +33,6 @@ const fetchManifest = async (channel) => {
     return manifest
 }
 
-const saveRestorePath = async () => {
-    const currentPath = window.location.pathname + window.location.search + window.location.hash;
-    try {
-        await Preferences.set({
-            key: APP_UPDATE_RESTORE_PATH_KEY,
-            value: currentPath,
-        });
-    } catch (storageError) {
-        console.warn('Could not save the current path', storageError);
-    }
-};
 
 const getAndClearRestorePath = async () => {
     let path = null;
@@ -172,5 +161,4 @@ export {
     getLastAttemptTimestamp,
     appUpdateRetryCooldown,
     getAndClearRestorePath,
-    saveRestorePath
 }
