@@ -4,8 +4,6 @@ import { Capacitor } from '@capacitor/core'
 import { Network } from '@capacitor/network'
 import {
     runMobileAppUpdateCheck,
-    getLastAttemptTimestamp,
-    appUpdateRetryCooldown,
     getAndClearRestorePath,
 } from '../services/General/AppUpdaterService.jsx'
 import Spinner from './Spinner.jsx'
@@ -17,28 +15,8 @@ function AppUpdateGate({ children }) {
 
     const [phase, setPhase] = useState('checking')
     const [progress, setProgress] = useState(0)
-    const [canRetry, setCanRetry] = useState(false)
-
-    const retryTimerRef = useRef(null)
     const offlineListenerRef = useRef(null)
 
-    const armRetryTimer = () => {
-        if (retryTimerRef.current) {
-            clearTimeout(retryTimerRef.current)
-        }
-
-        const msRemaining = appUpdateRetryCooldown - (Date.now() - getLastAttemptTimestamp())
-
-        if (msRemaining <= 0) {
-            setCanRetry(true)
-        } else {
-            setCanRetry(false)
-
-            retryTimerRef.current = setTimeout(() => {
-                setCanRetry(true)
-            }, msRemaining)
-        }
-    }
 
     const restoreSavedPathIfNeeded = async () => {
         const restorePath = await getAndClearRestorePath()
@@ -54,15 +32,7 @@ function AppUpdateGate({ children }) {
         }
     }
 
-    const runCheck = async (force = false) => {
-        const lastAttempt = getLastAttemptTimestamp()
-        const withinCooldown = lastAttempt > 0 && Date.now() - lastAttempt < appUpdateRetryCooldown
-
-        if (!force && withinCooldown) {
-            setPhase('error')
-            armRetryTimer()
-            return
-        }
+    const runCheck = () => {
 
         setPhase('checking')
         setProgress(0)
@@ -74,10 +44,10 @@ function AppUpdateGate({ children }) {
             },
         }).then(async (result) => {
             const status = result ? result.status : 'skipped'
-            
+
             if (status === 'skipped' || status === 'ok') {
+                setPhase('ready');
                 await restoreSavedPathIfNeeded();
-                setPhase('ready')
                 return
             }
 
@@ -87,18 +57,11 @@ function AppUpdateGate({ children }) {
             }
 
             setPhase('error')
-            armRetryTimer()
         })
     }
 
     useEffect(() => {
         runCheck()
-
-        return () => {
-            if (retryTimerRef.current) {
-                clearTimeout(retryTimerRef.current)
-            }
-        }
     }, [])
 
     useEffect(() => {
@@ -114,7 +77,7 @@ function AppUpdateGate({ children }) {
 
         Network.addListener('networkStatusChange', (status) => {
             if (status.connected) {
-                runCheck(true)
+                runCheck()
             }
         }).then((handle) => {
             if (isMounted) {
@@ -147,7 +110,7 @@ function AppUpdateGate({ children }) {
                 <button
                     type="button"
                     className="app-update-gate__button"
-                    onClick={() => runCheck(true)}
+                    onClick={() => runCheck()}
                 >
                     Try Again
                 </button>
@@ -162,20 +125,10 @@ function AppUpdateGate({ children }) {
                     Sorry, looks like our servers are down right now :( please try again later
                 </p>
 
-                {/*{canRetry && (*/}
-                {/*    <button*/}
-                {/*        type="button"*/}
-                {/*        className="app-update-gate__button"*/}
-                {/*        onClick={() => runCheck(true)}*/}
-                {/*    >*/}
-                {/*        Try Again*/}
-                {/*    </button>*/}
-                {/*)}*/}
-
                 <button
                     type="button"
                     className="app-update-gate__button"
-                    onClick={() => runCheck(true)}
+                    onClick={() => runCheck()}
                 >
                     Try Again
                 </button>
