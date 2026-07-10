@@ -54,7 +54,7 @@ function AppUpdateGate({ children }) {
         }
     }
 
-    const runCheck = (force = false) => {
+    const runCheck = async (force = false) => {
         const lastAttempt = getLastAttemptTimestamp()
         const withinCooldown = lastAttempt > 0 && Date.now() - lastAttempt < appUpdateRetryCooldown
 
@@ -72,11 +72,11 @@ function AppUpdateGate({ children }) {
                 setPhase('downloading')
                 setProgress(percent)
             },
-        }).then((result) => {
+        }).then(async (result) => {
             const status = result ? result.status : 'skipped'
-
+            
             if (status === 'skipped' || status === 'ok') {
-                restoreSavedPathIfNeeded()
+                await restoreSavedPathIfNeeded();
                 setPhase('ready')
                 return
             }
