@@ -46,6 +46,11 @@ function AppUpdateGate({ children }) {
         }).then(async (result) => {
             const status = result ? result.status : 'skipped'
 
+            if (status === 'ok' && result.updated) {
+                setPhase('ready')
+                return
+            }
+
             if (status === 'skipped' || status === 'ok') {
                 setPhase('ready');
                 await restoreSavedPathIfNeeded();
