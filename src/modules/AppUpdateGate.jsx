@@ -171,7 +171,6 @@ function AppUpdateGate({ children }) {
             <Spinner />
         </div>
     )
-
 }
 
 AppUpdateGate.propTypes = {
