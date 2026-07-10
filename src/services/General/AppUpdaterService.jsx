@@ -122,12 +122,6 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
         console.warn('notifyAppReady failed', notifyError)
     }
 
-    try {
-        await saveRestorePath()
-    } catch (saveError) {
-        console.warn('notifyAppReady failed', saveError)
-    }
-
     const online = await isDeviceOnline()
 
     if (!online) {
@@ -178,4 +172,5 @@ export {
     getLastAttemptTimestamp,
     appUpdateRetryCooldown,
     getAndClearRestorePath,
+    saveRestorePath
 }
