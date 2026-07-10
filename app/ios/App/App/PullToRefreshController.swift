@@ -76,6 +76,7 @@ final class PullToRefreshController: NSObject {
             guard let self = self else { return }
         
             if let path = result as? String {
+                print(path)
                 UserDefaults.standard.set(path, forKey: self.APP_UPDATE_RESTORE_PATH_KEY)
             } else {
                 UserDefaults.standard.set("/", forKey: self.APP_UPDATE_RESTORE_PATH_KEY)
