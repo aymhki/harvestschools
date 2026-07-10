@@ -4,6 +4,8 @@ import AdminRouter from '../../src/routers/AdminRouter.jsx'
 import '../../src/styles/index.css'
 import { BrowserRouter } from 'react-router-dom'
 import '../../src/i18n/i18n-client.jsx'
+import ErrorBoundary from "../../src/modules/ErrorBoundary.jsx";
+
 
 window.addEventListener('error', (event) => {
     const error = event.error;
@@ -55,13 +57,15 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <BrowserRouter
-            future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true,
-            }}
-        >
-            <AdminRouter />
-        </BrowserRouter>
+        <ErrorBoundary ignoreLngUpdate={true}>
+            <BrowserRouter
+                future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true,
+                }}
+            >
+                <AdminRouter />
+            </BrowserRouter>
+        </ErrorBoundary>
     </React.StrictMode>
 )
