@@ -1,7 +1,6 @@
 import {Suspense, lazy, useEffect, useState} from 'react'
 import {Routes, Route, Navigate, useLocation, useNavigate} from 'react-router-dom'
 import Spinner from '../modules/Spinner.jsx'
-import ErrorBoundary from "../modules/ErrorBoundary.jsx";
 import AdminSidebar from "../modules/AdminSidebar.jsx";
 import AdminFooter from "../modules/AdminFooter.jsx";
 import NavigationBar from "../modules/NavigationBar.jsx";
@@ -68,24 +67,23 @@ function AdminRouter() {
                         onTogglePin={handleTogglePin}
                     />
                 )}
-                <ErrorBoundary ignoreLngUpdate={true}>
-                    <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
-                        <Routes>
-                            <Route path="/" element={<Navigate to="/admin-login" replace />} />
-                            <Route path="/admin-login" element={<AdminLogin isMobileApp={false}/>} />
-                            <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
-                            <Route path="/job-applications" element={<JobApplications />} />
-                            <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
-                            <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />
-                            <Route path="/borrowing-system-management" element={<BorrowingSystemManagement />} />
-                            <Route path="/info-system-management" element={<InfoSystemManagement />} />
-                            <Route path="/view-job-application-file" element={<FileViewer />} />
-                            <Route path="/admin-users-management" element={<AdminUsersManagement loggedInUserId={loggedInUserId} setRefreshCurrentUserData={setRefreshCurrentUserData}/>} />
-                            <Route path="/alumni-students-management" element={<AlumniStudentsManagement />} />
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
-                    </Suspense>
-                </ErrorBoundary>
+
+                <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/admin-login" replace />} />
+                        <Route path="/admin-login" element={<AdminLogin isMobileApp={false}/>} />
+                        <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
+                        <Route path="/job-applications" element={<JobApplications />} />
+                        <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
+                        <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />
+                        <Route path="/borrowing-system-management" element={<BorrowingSystemManagement />} />
+                        <Route path="/info-system-management" element={<InfoSystemManagement />} />
+                        <Route path="/view-job-application-file" element={<FileViewer />} />
+                        <Route path="/admin-users-management" element={<AdminUsersManagement loggedInUserId={loggedInUserId} setRefreshCurrentUserData={setRefreshCurrentUserData}/>} />
+                        <Route path="/alumni-students-management" element={<AlumniStudentsManagement />} />
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </Suspense>
             </div>
             <AdminFooter />
         </div>

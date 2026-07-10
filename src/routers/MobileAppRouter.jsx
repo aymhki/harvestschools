@@ -2,7 +2,6 @@ import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import { Routes, Route, useLocation, useNavigate, matchPath } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Spinner from '../modules/Spinner.jsx'
-import ErrorBoundary from '../modules/ErrorBoundary.jsx'
 import AdminSidebar from '../modules/AdminSidebar.jsx'
 import AdminFooter from '../modules/AdminFooter.jsx'
 import NavigationBar from '../modules/NavigationBar.jsx'
@@ -310,15 +309,13 @@ function MobileAppRouter() {
                             onTogglePin={handleTogglePin}
                         />
                     )}
-                    <ErrorBoundary ignoreLngUpdate={isAdminSection}>
-                        <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
-                            <Routes>
-                                {routeConfig.map(({ path, element }) => (
-                                    <Route key={path} path={path} element={element(routeContext)} />
-                                ))}
-                            </Routes>
-                        </Suspense>
-                    </ErrorBoundary>
+                    <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
+                        <Routes>
+                            {routeConfig.map(({ path, element }) => (
+                                <Route key={path} path={path} element={element(routeContext)} />
+                            ))}
+                        </Routes>
+                    </Suspense>
                 </div>
                 {isAdminSection ? <AdminFooter /> : !isClientChromeExcluded && <Footer />}
             </div>
