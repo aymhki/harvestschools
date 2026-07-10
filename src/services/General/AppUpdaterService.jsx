@@ -8,11 +8,7 @@ const APP_UPDATE_BASE_URL = 'https://app.harvestschools.com'
 
 const APP_UPDATE_CHANNELS = ['latest', 'stable']
 
-const APP_UPDATE_LAST_ATTEMPT_KEY = 'harvest_schools_app_update_last_attempt'
-
 const APP_UPDATE_RESTORE_PATH_KEY = 'harvest_schools_app_update_restore_path'
-
-const appUpdateRetryCooldown = 60 * 60 * 1000
 
 
 const fetchManifest = async (channel) => {
@@ -74,20 +70,6 @@ const applyChannel = async (channel, currentVersion, onProgress) => {
     return { updated: true, channel }
 }
 
-const getLastAttemptTimestamp = () => {
-    const stored = localStorage.getItem(APP_UPDATE_LAST_ATTEMPT_KEY)
-
-    return stored ? Number(stored) : 0
-}
-
-const recordAttempt = () => {
-    localStorage.setItem(APP_UPDATE_LAST_ATTEMPT_KEY, Date.now().toString())
-}
-
-const clearAttempt = () => {
-    localStorage.removeItem(APP_UPDATE_LAST_ATTEMPT_KEY)
-}
-
 const isDeviceOnline = async () => {
     try {
         const status = await Network.getStatus()
@@ -134,20 +116,14 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
             try {
                 const result = await applyChannel(channel, currentBundle.version, onProgress)
 
-                clearAttempt()
-
                 return { status: 'ok', ...result }
             } catch (channelError) {
                 lastError = channelError
             }
         }
 
-        recordAttempt()
-
         return { status: 'error', error: lastError }
     } catch (error) {
-        recordAttempt()
-
         return { status: 'error', error }
     } finally {
         if (downloadListenerHandle) {
@@ -158,7 +134,5 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
 
 export {
     runMobileAppUpdateCheck,
-    getLastAttemptTimestamp,
-    appUpdateRetryCooldown,
     getAndClearRestorePath,
 }
