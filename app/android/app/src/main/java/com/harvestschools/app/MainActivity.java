@@ -101,23 +101,7 @@ public class MainActivity extends BridgeActivity {
             isWaitingForReload = true;
             refreshTriggeredAt = System.currentTimeMillis();
             swipeRefreshLayout.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK);
-
-            webView.evaluateJavascript("window.location.pathname", value -> {
-                if (value != null && !value.equals("null")) {
-                    String pathname = value;
-
-                    if (pathname.startsWith("\"") && pathname.endsWith("\"") && pathname.length() >= 2) {
-                        pathname = pathname.substring(1, pathname.length() - 1);
-                    }
-
-                    getSharedPreferences("HarvestSchoolsPrefs", Context.MODE_PRIVATE)
-                            .edit()
-                            .putString(APP_UPDATE_RESTORE_PATH_KEY, pathname)
-                            .apply();
-                }
-            });
-
-            webView.reload();
+            webView.evaluateJavascript("window.harvestSaveRestorePath && window.harvestSaveRestorePath()", null);
         });
 
         webView.addJavascriptInterface(new NativeBridge(), "AndroidNativeBridge");

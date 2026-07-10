@@ -44,6 +44,17 @@ const getAndClearRestorePath = async () => {
     return path;
 };
 
+window.harvestSaveRestorePath = async () => {
+    try {
+        const path = window.location.pathname + window.location.search + window.location.hash
+        await Preferences.set({ key: APP_UPDATE_RESTORE_PATH_KEY, value: path })
+    } catch (e) {
+        console.warn('Could not save restore path', e)
+    } finally {
+        window.location.reload()
+    }
+}
+
 
 const applyChannel = async (channel, currentVersion, onProgress) => {
     const manifest = await fetchManifest(channel)
