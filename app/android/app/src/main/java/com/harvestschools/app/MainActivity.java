@@ -1,5 +1,6 @@
 package com.harvestschools.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.content.res.Configuration;
@@ -33,6 +34,7 @@ public class MainActivity extends BridgeActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private CoordinatorLayout rootLayout;
 
+    private static final String APP_UPDATE_RESTORE_PATH_KEY = "harvest_schools_app_update_restore_path";
     private volatile String currentShareUrl = "https://harvestschools.com";
     private boolean isWaitingForReload = false;
     private long refreshTriggeredAt = 0L;
@@ -99,6 +101,22 @@ public class MainActivity extends BridgeActivity {
             isWaitingForReload = true;
             refreshTriggeredAt = System.currentTimeMillis();
             swipeRefreshLayout.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK);
+
+            webView.evaluateJavascript("window.location.pathname", value -> {
+                if (value != null && !value.equals("null")) {
+                    String pathname = value;
+
+                    if (pathname.startsWith("\"") && pathname.endsWith("\"") && pathname.length() >= 2) {
+                        pathname = pathname.substring(1, pathname.length() - 1);
+                    }
+
+                    getSharedPreferences("HarvestSchoolsPrefs", Context.MODE_PRIVATE)
+                            .edit()
+                            .putString(APP_UPDATE_RESTORE_PATH_KEY, pathname)
+                            .apply();
+                }
+            });
+
             webView.reload();
         });
 

@@ -7,7 +7,6 @@ import {
     getLastAttemptTimestamp,
     appUpdateRetryCooldown,
     getAndClearRestorePath,
-    saveRestorePath,
 } from '../services/General/AppUpdaterService.jsx'
 import Spinner from './Spinner.jsx'
 import '../styles/AppUpdateGate.css'
@@ -134,15 +133,6 @@ function AppUpdateGate({ children }) {
             }
         }
     }, [phase])
-
-
-    useEffect(() => {
-        try {
-            saveRestorePath()
-        } catch (saveError) {
-            console.warn('Save Restore Path Failed', saveError)
-        }
-    }, [window.location.pathname])
 
     if (phase === 'ready') {
         return children
