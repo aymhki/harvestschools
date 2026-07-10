@@ -66,7 +66,18 @@ final class PullToRefreshController: NSObject {
         isRefreshing = true
         refreshStartTime = Date()
         impactGenerator.impactOccurred()
-        webView.evaluateJavaScript("window.dispatchEvent(new Event('harvestPullToRefresh'))")
+
+        webView.evaluateJavaScript("window.dispatchEvent(new Event('harvestPullToRefresh'))") { _, error in
+            if let error {
+                print("harvestPullToRefresh dispatch failed: \(error)")
+            }
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8.0) { [weak self] in
+            guard let self, self.isRefreshing else { return }
+            self.isRefreshing = false
+            self.refreshControl.endRefreshing()
+        }
     }
 
     private func observeLoadingState(webView: WKWebView) {
