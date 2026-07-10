@@ -451,7 +451,7 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
 
                         <li onClick={() => {
                             (isMobile ? toggleMenu() : null);
-                            navigate('covid-19');
+                            navigate('/covid-19');
                         }}><Link to="/covid-19">
                             {t("nav.covid-19-policy")}
                         </Link></li>
