@@ -451,8 +451,8 @@ PROMPT;
                 'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست.\n\nيمكنك تقديم طلب التوظيف من هنا:\nhttps://harvestschools.com/vacancies"
             ],
             'fees_disclaimer' => [
-                'en' => "\n\n_Note: Tuition does NOT include uniforms, books, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
-                'ar' => "\n\n_ملاحظة: المصروفات لا تشمل الزي المدرسي، الكتب، الباص، أو الأنشطة. قد تكون مؤهلاً لخصومات الأخوة أو العاملين. يرجى مراجعة قسم الحسابات للتفاصيل._"
+                'en' => "\n\n_Note: Tuition does NOT include uniforms, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
+                'ar' => "\n\n_ملاحظة: المصروفات لا تشمل الزي المدرسي، الباص، أو الأنشطة. قد تكون مؤهلاً لخصومات الأخوة أو العاملين. يرجى مراجعة قسم الحسابات للتفاصيل._"
             ]
         ],
         'faqs' => [

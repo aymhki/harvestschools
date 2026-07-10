@@ -38,7 +38,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Look into adding description to list items that exceed 24 chars in whatsapp api and 20 chars in messenger api.
 - [ ] Turn on Auto Decline for the whatsapp chat bot number on iPhone.
 - [ ] Verify cron jobs are working and sending notification emails properly.
-- [x] Admin Login Height Container needs to be bigger.
+- [ ] Admin Login Height Container needs to be bigger (use % instead vh or use nothing at all).
 - [x] Scroll bars needs to be hidden from admin side bar.
 - [x] Select field with label outside and on top not filling the same width as the rest of the input fields in desktop view.
 - [ ] Add address option in the main menu of the intermediate mode in the chat bot.
