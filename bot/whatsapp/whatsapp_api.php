@@ -7,7 +7,7 @@ function wa_request($payload) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
         CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer " . WHATSAPP_TOKEN,
+            "Authorization: Bearer " . WHATSAPP_ACCOUNT_ACCESS_TOKEN,
             "Content-Type: application/json"
         ],
         CURLOPT_POSTFIELDS => json_encode($payload)
