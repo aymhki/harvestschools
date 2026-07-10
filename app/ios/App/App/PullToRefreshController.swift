@@ -67,23 +67,10 @@ final class PullToRefreshController: NSObject {
             return
         }
         
-
         isRefreshing = true
         refreshStartTime = Date()
         impactGenerator.impactOccurred()
-        
-        webView.evaluateJavaScript("window.location.pathname") { [weak self, weak webView] result, error in
-            guard let self = self else { return }
-        
-            if let path = result as? String {
-                print(path)
-                UserDefaults.standard.set(path, forKey: self.APP_UPDATE_RESTORE_PATH_KEY)
-            } else {
-                UserDefaults.standard.set("/", forKey: self.APP_UPDATE_RESTORE_PATH_KEY)
-            }
-            
-            webView?.reload()
-        }
+        webView.evaluateJavaScript("window.harvestSaveRestorePath && window.harvestSaveRestorePath()")
     }
 
     private func observeLoadingState(webView: WKWebView) {
