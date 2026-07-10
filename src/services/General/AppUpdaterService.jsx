@@ -10,6 +10,9 @@ const APP_UPDATE_CHANNELS = ['latest', 'stable']
 
 const APP_UPDATE_RESTORE_PATH_KEY = 'harvest_schools_app_update_restore_path'
 
+const APP_UPDATE_PULL_TO_REFRESH_EVENT = 'harvestPullToRefresh'
+
+
 
 const fetchManifest = async (channel) => {
     const response = await fetch(`${APP_UPDATE_BASE_URL}/${channel}.json?ts=${Date.now()}`, {
@@ -44,17 +47,21 @@ const getAndClearRestorePath = async () => {
     return path;
 };
 
-window.harvestSaveRestorePath = async () => {
+const handlePullToRefresh = async () => {
     try {
         const path = window.location.pathname + window.location.search + window.location.hash
         await Preferences.set({ key: APP_UPDATE_RESTORE_PATH_KEY, value: path })
-    } catch (e) {
-        console.warn('Could not save restore path', e)
+    } catch (storageError) {
+        console.warn('Could not save the restore path', storageError)
     } finally {
         window.location.reload()
     }
 }
 
+const attachPullToRefreshListener = () => {
+    window.addEventListener(APP_UPDATE_PULL_TO_REFRESH_EVENT, handlePullToRefresh)
+    return () => window.removeEventListener(APP_UPDATE_PULL_TO_REFRESH_EVENT, handlePullToRefresh)
+}
 
 const applyChannel = async (channel, currentVersion, onProgress) => {
     const manifest = await fetchManifest(channel)
@@ -146,4 +153,5 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
 export {
     runMobileAppUpdateCheck,
     getAndClearRestorePath,
+    attachPullToRefreshListener
 }

@@ -10,7 +10,6 @@ final class PullToRefreshController: NSObject {
     private var refreshStartTime: Date?
     private let minimumRefreshDuration: TimeInterval = 0.7
     private var loadingObservation: NSKeyValueObservation?
-    private let APP_UPDATE_RESTORE_PATH_KEY = "harvest_schools_app_update_restore_path"
 
     @MainActor
     init(webView: WKWebView, containerView: UIView) {
@@ -63,14 +62,11 @@ final class PullToRefreshController: NSObject {
 
     @MainActor
     @objc private func handleRefreshTriggered() {
-        guard let webView, !isRefreshing else {
-            return
-        }
-        
+        guard let webView, !isRefreshing else { return }
         isRefreshing = true
         refreshStartTime = Date()
         impactGenerator.impactOccurred()
-        webView.evaluateJavaScript("window.harvestSaveRestorePath && window.harvestSaveRestorePath()")
+        webView.evaluateJavaScript("window.dispatchEvent(new Event('harvestPullToRefresh'))")
     }
 
     private func observeLoadingState(webView: WKWebView) {
