@@ -448,12 +448,12 @@ PROMPT;
                 'ar' => "*الاعتمادات:*\n\n• *القسم القومي:* معتمد من وزارة التربية والتعليم المصرية\n• *القسم البريطاني:* معتمد من Cambridge / Pearson Edexcel / Oxford\n• *القسم الأمريكي:* معتمد من Cognia"
             ],
             'menu_careers' => [
-                'en' => "We're always open to talented educators joining the Harvest family. Please click the button below to view our vacancies:",
-                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست. يرجى الضغط على الزر أدناه لعرض الوظائف المتاحة:"
+                'en' => "We're always open to talented educators joining the Harvest family. Please click the link below to apply:",
+                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست. يرجى الضغط على الزر أدناه للتقدم:"
             ],
             'menu_address' => [
-                'en' => "*Our Address:*\nBorg Al Arab City, Second Territory, Alexandria Governorate, Egypt",
-                'ar' => "*عنواننا:*\nبرج العرب، الحى الثانى، الإسكندرية، مصر"
+                'en' => "*Our Address:*\n",
+                'ar' => "*عنواننا:*\n"
             ],
             'fees_disclaimer' => [
                 'en' => "\n\n_Note: Tuition does NOT include uniforms, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",

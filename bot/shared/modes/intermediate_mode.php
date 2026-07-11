@@ -150,7 +150,7 @@ function handleIntermediateMode($from, $message) {
             if ($replyId === 'menu_careers') {
                 $link = "https://harvestschools.com/vacancies";
                 $msg = $config['static_content']['menu_careers'][$lang];
-                $urlBtnTitle = ($lang === 'en') ? 'View Vacancies' : 'عرض الوظائف';
+                $urlBtnTitle = ($lang === 'en') ? 'Apply' : 'تقدم';
 
                 sendCtaUrlButton($from, $msg, $urlBtnTitle, $link);
 

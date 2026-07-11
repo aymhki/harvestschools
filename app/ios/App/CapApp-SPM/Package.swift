@@ -13,6 +13,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.4.1"),
         .package(name: "CapacitorApp", path: "../../../../node_modules/@capacitor/app"),
+        .package(name: "CapacitorBrowser", path: "../../../../node_modules/@capacitor/browser"),
         .package(name: "CapacitorNetwork", path: "../../../../node_modules/@capacitor/network"),
         .package(name: "CapacitorPreferences", path: "../../../../node_modules/@capacitor/preferences"),
         .package(name: "CapgoCapacitorNativeBiometric", path: "../../../../node_modules/@capgo/capacitor-native-biometric"),
@@ -26,6 +27,7 @@ let package = Package(
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
                 .product(name: "CapacitorApp", package: "CapacitorApp"),
+                .product(name: "CapacitorBrowser", package: "CapacitorBrowser"),
                 .product(name: "CapacitorNetwork", package: "CapacitorNetwork"),
                 .product(name: "CapacitorPreferences", package: "CapacitorPreferences"),
                 .product(name: "CapgoCapacitorNativeBiometric", package: "CapgoCapacitorNativeBiometric"),
