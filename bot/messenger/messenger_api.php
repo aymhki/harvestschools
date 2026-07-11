@@ -1,28 +1,5 @@
 <?php
 require_once __DIR__ . '/../shared/config.php';
-require_once __DIR__ . '/../shared/text_utils.php';
-
-const MESSENGER_LIST_PAYLOAD_DELIM = '::title::';
-
-function encodeListPayload($id, $title) {
-    return $id . MESSENGER_LIST_PAYLOAD_DELIM . $title;
-}
-
-function decodeListPayload($payload) {
-    $payload = (string) $payload;
-    $pos = strpos($payload, MESSENGER_LIST_PAYLOAD_DELIM);
-    if ($pos === false) {
-        return ['id' => $payload, 'title' => null];
-    }
-    return [
-        'id'    => substr($payload, 0, $pos),
-        'title' => substr($payload, $pos + strlen(MESSENGER_LIST_PAYLOAD_DELIM))
-    ];
-}
-
-function isRtlText($text) {
-    return (bool) preg_match('/\p{Arabic}/u', (string) $text);
-}
 
 function msgr_request($payload) {
     $url = "https://graph.facebook.com/v25.0/me/messages?access_token=" . urlencode(MESSENGER_PAGE_ACCESS_TOKEN);
@@ -48,14 +25,17 @@ function sendText($to, $text) {
 
 
 function sendButtons($to, $body, $buttons) {
+
     $quickReplies = [];
+
     foreach ($buttons as $btn) {
         $quickReplies[] = [
             "content_type" => "text",
-            "title"        => mb_substr($btn['title'], 0, 20),
+            "title"        => smartTruncate($btn['title'], 20),
             "payload"      => $btn['id']
         ];
     }
+
     return msgr_request([
         "recipient"      => ["id" => $to],
         "messaging_type" => "RESPONSE",
@@ -64,63 +44,39 @@ function sendButtons($to, $body, $buttons) {
             "quick_replies" => $quickReplies
         ]
     ]);
+
 }
 
 function sendList($to, $body, $buttonText, $sections) {
     $rows = [];
+
     foreach ($sections as $section) {
-        foreach (($section['rows'] ?? []) as $row) {
+        foreach ($section['rows'] as $row) {
             $rows[] = $row;
         }
     }
 
-    if (count($rows) > 10) {
-        file_put_contents(__DIR__ . '/error.log', date('c') . " sendList: " . count($rows) . " rows truncated to 10 for Messenger/Instagram generic template\n", FILE_APPEND);
-        $rows = array_slice($rows, 0, 10);
+    if (count($rows) > 13) {
+        file_put_contents(__DIR__ . '/error.log', date('c') . " sendList: " . count($rows) . " rows truncated to 13 for Messenger quick replies\n", FILE_APPEND);
+        $rows = array_slice($rows, 0, 13);
     }
 
-    if (empty($rows)) {
-        return trim((string) $body) !== '' ? sendText($to, $body) : null;
-    }
+    $quickReplies = [];
 
-    $selectLabel = isRtlText($body) ? 'اختر' : 'Select';
-
-    $elements = [];
     foreach ($rows as $row) {
-        $rowTitle = $row['title'] ?? '';
-        $split = splitTitleAndDescription($rowTitle, 80, 80);
-
-        $element = [
-            "title"   => $split['title'] !== '' ? $split['title'] : mb_substr($rowTitle, 0, 80),
-            "buttons" => [[
-                "type"    => "postback",
-                "title"   => $selectLabel,
-                "payload" => encodeListPayload($row['id'], $rowTitle)
-            ]]
+        $quickReplies[] = [
+            "content_type" => "text",
+            "title"        => smartTruncate($row['title'], 20),
+            "payload"      => $row['id']
         ];
-
-        if ($split['description'] !== '') {
-            $element['subtitle'] = $split['description'];
-        }
-
-        $elements[] = $element;
-    }
-
-    if (trim((string) $body) !== '') {
-        sendText($to, $body);
     }
 
     return msgr_request([
         "recipient"      => ["id" => $to],
         "messaging_type" => "RESPONSE",
         "message"        => [
-            "attachment" => [
-                "type"    => "template",
-                "payload" => [
-                    "template_type" => "generic",
-                    "elements"      => $elements
-                ]
-            ]
+            "text"          => $body,
+            "quick_replies" => $quickReplies
         ]
     ]);
 }
@@ -139,7 +95,7 @@ function sendCtaUrlButton($to, $text, $buttonTitle, $url) {
                         [
                             "type"  => "web_url",
                             "url"   => $url,
-                            "title" => mb_substr($buttonTitle, 0, 20)
+                            "title" => smartTruncate($buttonTitle, 20)
                         ]
                     ]
                 ]
