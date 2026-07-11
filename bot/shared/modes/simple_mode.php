@@ -60,7 +60,7 @@ function sendDepartmentMenu($to, $lang) {
     global $DEPARTMENTS, $STRINGS;
     $rows = [];
     foreach ($DEPARTMENTS as $id => $d) {
-        $rows[] = ["id" => $id, "title" => mb_substr($d[$lang], 0, 24)];
+        $rows[] = ["id" => $id, "title" => $d[$lang]];
     }
 
     $rows[] = ["id" => $lang === "en" ? "lang_ar" : "lang_en", "title" => $lang === "en" ? "تغيير للعربية" : "Change to English"];

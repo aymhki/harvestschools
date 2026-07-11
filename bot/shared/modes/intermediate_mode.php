@@ -92,7 +92,7 @@ function handleIntermediateMode($from, $message) {
                 : "العودة للقائمة:";
 
             sendButtons($from, $menuMsg, [
-                ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 20)]
+                ["id" => "main_menu", "title" => $config['ui']['back_btn'][$lang]]
             ]);
 
             return;
@@ -119,7 +119,7 @@ function handleIntermediateMode($from, $message) {
                     : "العودة للقائمة:";
 
                 sendButtons($from, $menuMsg, [
-                    ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 20)]
+                    ["id" => "main_menu", "title" => $config['ui']['back_btn'][$lang] ]
                 ]);
             }
             return;
@@ -228,9 +228,9 @@ function getNavRows($lang, $currentMenuId) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
     return [
-        ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 24)],
-        ["id" => "menu_apply", "title" => mb_substr($config['ui']['apply_btn'][$lang], 0, 24)],
-        ["id" => "lang_toggle_" . $currentMenuId, "title" => mb_substr($config['ui']['change_lang_btn'][$lang], 0, 24)]
+        ["id" => "main_menu", "title" => $config['ui']['back_btn'][$lang]],
+        ["id" => "menu_apply", "title" => $config['ui']['apply_btn'][$lang]],
+        ["id" => "lang_toggle_" . $currentMenuId, "title" => $config['ui']['change_lang_btn'][$lang]]
     ];
 }
 function sendMainMenuIntermediate($to, $lang, $fallback) {
@@ -239,17 +239,17 @@ function sendMainMenuIntermediate($to, $lang, $fallback) {
     $ui = $config['ui'];
     $rows = [];
     foreach ($config['main_options'] as $opt) {
-        $rows[] = ["id" => $opt['id'], "title" => mb_substr($opt[$lang], 0, 24)];
+        $rows[] = ["id" => $opt['id'], "title" => $opt[$lang]];
     }
     $sections = [
         [
-            "title" => mb_substr($ui['main_title'][$lang], 0, 24),
+            "title" => $ui['main_title'][$lang],
             "rows" => $rows
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => [
-                ["id" => "lang_toggle_main_menu", "title" => mb_substr($ui['change_lang_btn'][$lang], 0, 24)]
+                ["id" => "lang_toggle_main_menu", "title" => $ui['change_lang_btn'][$lang]]
             ]
         ]
     ];
@@ -266,15 +266,15 @@ function sendFaqMenuIntermediate($to, $lang) {
     $ui = $config['ui'];
     $rows = [];
     foreach ($config['faqs'] as $faqId => $faqData) {
-        $rows[] = ["id" => $faqId, "title" => mb_substr($faqData['q'][$lang], 0, 24)];
+        $rows[] = ["id" => $faqId, "title" => $faqData['q'][$lang]];
     }
     $sections = [
         [
-            "title" => mb_substr($ui['faq_title'][$lang], 0, 24),
+            "title" => $ui['faq_title'][$lang],
             "rows" => $rows
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => getNavRows($lang, 'menu_faqs')
         ]
     ];
@@ -286,17 +286,17 @@ function sendContactMenuIntermediate($to, $lang) {
     $ui = $config['ui'];
     $rows = [];
     foreach ($config['contact_departments'] as $id => $dept) {
-        $rows[] = ["id" => "contact_" . $id, "title" => mb_substr($dept[$lang], 0, 24)];
+        $rows[] = ["id" => "contact_" . $id, "title" => $dept[$lang]];
     }
     $sections = [
         [
-            "title" => mb_substr($ui['contact_title'][$lang], 0, 24),
+            "title" => $ui['contact_title'][$lang],
             "rows" => $rows
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => [
-                ["id" => "main_menu", "title" => mb_substr($config['ui']['back_btn'][$lang], 0, 24)],
+                ["id" => "main_menu", "title" => $config['ui']['back_btn'][$lang]],
             ]
         ]
     ];
@@ -308,21 +308,21 @@ function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
     $ui = $config['ui'];
     $deptRows = [];
     foreach ($config['departments'] as $deptKey => $deptData) {
-        $deptRows[] = ["id" => "act_fees_{$deptKey}", "title" => mb_substr($deptData['name'][$lang], 0, 24)];
+        $deptRows[] = ["id" => "act_fees_{$deptKey}", "title" => $deptData['name'][$lang]];
     }
     $sections = [
         [
-            "title" => mb_substr($ui['dept_title'][$lang], 0, 24),
+            "title" => $ui['dept_title'][$lang],
             "rows" => $deptRows
         ],
         [
-            "title" => mb_substr($ui['disc_section'][$lang], 0, 24),
+            "title" => $ui['disc_section'][$lang],
             "rows" => [
-                ["id" => "menu_disc", "title" => mb_substr($ui['disc_item'][$lang], 0, 24)]
+                ["id" => "menu_disc", "title" => $ui['disc_item'][$lang]]
             ]
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => getNavRows($lang, 'menu_fees')
         ]
     ];
@@ -334,14 +334,14 @@ function sendInfoMenuIntermediate($to, $lang) {
     $ui = $config['ui'];
     $sections = [
         [
-            "title" => mb_substr($ui['info_title'][$lang], 0, 24),
+            "title" => $ui['info_title'][$lang],
             "rows" => [
-                ["id" => "menu_faqs", "title" => mb_substr($ui['faqs_item'][$lang], 0, 24)],
-                ["id" => "menu_careers", "title" => mb_substr($ui['careers_item'][$lang], 0, 24)],
+                ["id" => "menu_faqs", "title" => $ui['faqs_item'][$lang]],
+                ["id" => "menu_careers", "title" => $ui['careers_item'][$lang]],
             ]
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => getNavRows($lang, 'menu_info')
         ]
     ];
@@ -354,15 +354,15 @@ function sendDepartmentMenuIntermediate($to, $lang, $action) {
     $deptRows = [];
     foreach ($config['departments'] as $deptKey => $deptData) {
         $id = "act_{$action}_{$deptKey}";
-        $deptRows[] = ["id" => $id, "title" => mb_substr($deptData['name'][$lang], 0, 24)];
+        $deptRows[] = ["id" => $id, "title" => $deptData['name'][$lang]];
     }
     $sections = [
         [
-            "title" => mb_substr($ui['dept_title'][$lang], 0, 24),
+            "title" => $ui['dept_title'][$lang],
             "rows" => $deptRows
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => getNavRows($lang, "menu_{$action}")
         ]
     ];
@@ -377,15 +377,15 @@ function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
     $secRows = [];
     foreach ($dept['sections'] as $secKey => $secData) {
         $id = "sec_{$action}_{$deptKey}_{$secKey}";
-        $secRows[] = ["id" => $id, "title" => mb_substr($secData['title'][$lang], 0, 24)];
+        $secRows[] = ["id" => $id, "title" => $secData['title'][$lang]];
     }
     $sections = [
         [
-            "title" => mb_substr($ui['sec_title'][$lang], 0, 24),
+            "title" => $ui['sec_title'][$lang],
             "rows" => $secRows
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => getNavRows($lang, "act_{$action}_{$deptKey}")
         ]
     ];
@@ -402,7 +402,7 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     foreach ($stageData['stages'] as $stageId => $stage) {
         if ($filterUnoffered && !$stage['offered']) continue;
         $id = "res_{$action}_{$stageId}";
-        $rows[] = ["id" => $id, "title" => mb_substr($stage['name'][$lang], 0, 24)];
+        $rows[] = ["id" => $id, "title" => $stage['name'][$lang]];
     }
     $bodyText = $ui['stage_body'][$lang];
     if ($filterUnoffered) {
@@ -410,11 +410,11 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     }
     $sections = [
         [
-            "title" => mb_substr($stageData['title'][$lang], 0, 24),
+            "title" => $stageData['title'][$lang],
             "rows" => $rows
         ],
         [
-            "title" => mb_substr($ui['nav_section'][$lang], 0, 24),
+            "title" => $ui['nav_section'][$lang],
             "rows" => getNavRows($lang, "sec_{$action}_{$deptKey}_{$secKey}")
         ]
     ];
@@ -425,8 +425,8 @@ function sendFinalTextWithMenuButton($to, $text, $lang, $currentMenuId) {
     $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     sendButtons($to, $text, [
-        ["id" => "main_menu", "title" => mb_substr($ui['back_btn'][$lang], 0, 20)],
-        ["id" => "menu_apply", "title" => mb_substr($ui['apply_btn'][$lang], 0, 20)],
-        ["id" => "lang_toggle_" . $currentMenuId, "title" => mb_substr($ui['change_lang_btn'][$lang], 0, 20)]
+        ["id" => "main_menu", "title" => $ui['back_btn'][$lang]],
+        ["id" => "menu_apply", "title" => $ui['apply_btn'][$lang]],
+        ["id" => "lang_toggle_" . $currentMenuId, "title" => $ui['change_lang_btn'][$lang]]
     ]);
 }

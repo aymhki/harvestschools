@@ -71,12 +71,13 @@ function normalizeMessengerMessage($messaging) {
         return null;
     }
     if (isset($messaging['postback'])) {
+        $decoded = decodeListPayload($messaging['postback']['payload'] ?? '');
         return [
             'type' => 'interactive',
             'interactive' => [
                 'button_reply' => [
-                    'id'    => $messaging['postback']['payload'] ?? '',
-                    'title' => $messaging['postback']['title'] ?? ''
+                    'id'    => $decoded['id'],
+                    'title' => $decoded['title'] ?? ($messaging['postback']['title'] ?? '')
                 ]
             ]
         ];
