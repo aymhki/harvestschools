@@ -1,5 +1,28 @@
 <?php
 require_once __DIR__ . '/../shared/config.php';
+require_once __DIR__ . '/../shared/text_utils.php';
+
+const MESSENGER_LIST_PAYLOAD_DELIM = '::title::';
+
+function encodeListPayload($id, $title) {
+    return $id . MESSENGER_LIST_PAYLOAD_DELIM . $title;
+}
+
+function decodeListPayload($payload) {
+    $payload = (string) $payload;
+    $pos = strpos($payload, MESSENGER_LIST_PAYLOAD_DELIM);
+    if ($pos === false) {
+        return ['id' => $payload, 'title' => null];
+    }
+    return [
+        'id'    => substr($payload, 0, $pos),
+        'title' => substr($payload, $pos + strlen(MESSENGER_LIST_PAYLOAD_DELIM))
+    ];
+}
+
+function isRtlText($text) {
+    return (bool) preg_match('/\p{Arabic}/u', (string) $text);
+}
 
 function msgr_request($payload) {
     $url = "https://graph.facebook.com/v25.0/me/messages?access_token=" . urlencode(MESSENGER_PAGE_ACCESS_TOKEN);
@@ -46,28 +69,58 @@ function sendButtons($to, $body, $buttons) {
 function sendList($to, $body, $buttonText, $sections) {
     $rows = [];
     foreach ($sections as $section) {
-        foreach ($section['rows'] as $row) {
+        foreach (($section['rows'] ?? []) as $row) {
             $rows[] = $row;
         }
     }
-    if (count($rows) > 13) {
-        file_put_contents(__DIR__ . '/error.log', date('c') . " sendList: " . count($rows) . " rows truncated to 13 for Messenger quick replies\n", FILE_APPEND);
-        $rows = array_slice($rows, 0, 13);
+
+    if (count($rows) > 10) {
+        file_put_contents(__DIR__ . '/error.log', date('c') . " sendList: " . count($rows) . " rows truncated to 10 for Messenger/Instagram generic template\n", FILE_APPEND);
+        $rows = array_slice($rows, 0, 10);
     }
-    $quickReplies = [];
+
+    if (empty($rows)) {
+        return trim((string) $body) !== '' ? sendText($to, $body) : null;
+    }
+
+    $selectLabel = isRtlText($body) ? 'اختر' : 'Select';
+
+    $elements = [];
     foreach ($rows as $row) {
-        $quickReplies[] = [
-            "content_type" => "text",
-            "title"        => mb_substr($row['title'], 0, 20),
-            "payload"      => $row['id']
+        $rowTitle = $row['title'] ?? '';
+        $split = splitTitleAndDescription($rowTitle, 80, 80);
+
+        $element = [
+            "title"   => $split['title'] !== '' ? $split['title'] : mb_substr($rowTitle, 0, 80),
+            "buttons" => [[
+                "type"    => "postback",
+                "title"   => $selectLabel,
+                "payload" => encodeListPayload($row['id'], $rowTitle)
+            ]]
         ];
+
+        if ($split['description'] !== '') {
+            $element['subtitle'] = $split['description'];
+        }
+
+        $elements[] = $element;
     }
+
+    if (trim((string) $body) !== '') {
+        sendText($to, $body);
+    }
+
     return msgr_request([
         "recipient"      => ["id" => $to],
         "messaging_type" => "RESPONSE",
         "message"        => [
-            "text"          => $body,
-            "quick_replies" => $quickReplies
+            "attachment" => [
+                "type"    => "template",
+                "payload" => [
+                    "template_type" => "generic",
+                    "elements"      => $elements
+                ]
+            ]
         ]
     ]);
 }

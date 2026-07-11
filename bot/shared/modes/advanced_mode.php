@@ -137,7 +137,7 @@ function sendDepartmentList($to, $lang) {
     global $DEPARTMENTS, $STRINGS;
     $rows = [];
     foreach ($DEPARTMENTS as $id => $d) {
-        $rows[] = ["id" => $id, "title" => mb_substr($d[$lang], 0, 24)];
+        $rows[] = ["id" => $id, "title" => $d[$lang]];
     }
     sendList($to, $STRINGS['departments_title'][$lang], $STRINGS['departments_title'][$lang], [[
         "title" => $STRINGS['departments_title'][$lang],
