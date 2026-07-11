@@ -452,8 +452,8 @@ PROMPT;
                 'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست. يرجى الضغط على الزر أدناه للتقدم:"
             ],
             'menu_address' => [
-                'en' => "*Our Address:*\n",
-                'ar' => "*عنواننا:*\n"
+                'en' => "*Our Address:*\nHod Sakrah WA Abu Hamad, New Borg El Arab, Alexandria Governorate 5221440, Egypt",
+                'ar' => "*عنواننا:*\nحوض سكرة وأبو حمد، برج العرب الجديدة، محافظة الإسكندرية 5221440"
             ],
             'fees_disclaimer' => [
                 'en' => "\n\n_Note: Tuition does NOT include uniforms, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
