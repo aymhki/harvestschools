@@ -29,14 +29,13 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Add the $STRINGS to the update info system script from the original config file.
 - [x] Spinner is not taking the entire screen in mobile view.
 - [x] The mobile app should open when a harvestschools.com link is clicked if it is installed on the device.
-- [ ] The website should show install app prompt at the top or bottom when opened from a mobile device.
-- [ ] The top padding for view port in the mobile app should be implemented and tested especially on iOS.
+- [x] The website should show install app prompt at the top or bottom when opened from a mobile device.
+- [x] The top padding for view port in the mobile app should be implemented and tested especially on iOS.
 - [x] The advanced mode in the whatsapp chat bot should be smarter about when to show feedback buttons and should show change language buttons as well as return a proper error message if the llm did not response. It should also include a third llm like claude.
 - [x] Create a messenger bot that works like the whatsapp bot.
-- [ ] Add proper app icons for android and iOS as well as add documentation needed such as privacy policy and terms of service.
-- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
+- [x] Add proper app icons for android and iOS as well as add documentation needed such as privacy policy and terms of service.
 - [ ] Look into adding description to list items that exceed 24 chars in whatsapp api and 20 chars in messenger api.
-- [ ] Turn on Auto Decline for the whatsapp chat bot number on iPhone.
+- [x] Turn on Auto Decline for the whatsapp chat bot number on iPhone.
 - [ ] Verify cron jobs are working and sending notification emails properly.
 - [ ] Admin Login Height Container needs to be bigger (use % instead vh or use nothing at all).
 - [x] Scroll bars needs to be hidden from admin side bar.
@@ -47,14 +46,14 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] If the early playschool department is selected in the main menu of the intermediate mode, there is no need to prompt the user to select stage group in the chat bot.
 - [ ] Add an update config button to the info system management page in the admin portal for each tab table.
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
-- [ ] Implement swipe back gestures in iOS and android mobile app and add actions navigation bar for the mobile app.
-- [ ] Look into @capgo/capacitor-native-biometric and capacitor-secure-storage for quick and easy login on the mobile app.
-- [ ] Double check all the added icon assets and remove any old placeholders.
+- [x] Implement swipe back gestures in iOS and android mobile app and add actions navigation bar for the mobile app.
+- [x] Look into @capgo/capacitor-native-biometric and capacitor-secure-storage for quick and easy login on the mobile app.
+- [x] Double check all the added icon assets and remove any old placeholders.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
 - [ ] Fix the pull to refresh iOS app problems.
 - [ ] h1/2/3 of the options page line height is not set.
 - [ ] The clear and save buttons of the admin large action modal popup could be in the modal footer rather than the form footer.
-- [ ] Fix the home page video for both chrome and excel.
-- [ ] Handle upgrading to npm 12 where post install for package patching might not run.
+- [ ] Fix the home page video for both chrome and safari.
+- [x] Handle upgrading to npm 12 where post install for package patching might not run.
 - [ ] The bot response to the vacancies option in the main menu doesn't use a cta button.
-- 
+- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
