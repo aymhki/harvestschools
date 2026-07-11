@@ -433,6 +433,7 @@ PROMPT;
             ['id' => 'menu_reqs', 'en' => 'Admission Requirements', 'ar' => 'متطلبات التقديم'],
             ['id' => 'menu_fees', 'en' => 'Tuition Fees & Discounts', 'ar' => 'المصروفات والخصومات'],
             ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
+            ['id' => 'menu_address', 'en' => 'School Address', 'ar' => 'عنوان المدرسة'],
             ['id' => 'menu_info', 'en' => 'FAQs & Careers', 'ar' => 'الأسئلة والوظائف'],
             ['id' => 'menu_contact', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
             ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
@@ -447,8 +448,12 @@ PROMPT;
                 'ar' => "*الاعتمادات:*\n\n• *القسم القومي:* معتمد من وزارة التربية والتعليم المصرية\n• *القسم البريطاني:* معتمد من Cambridge / Pearson Edexcel / Oxford\n• *القسم الأمريكي:* معتمد من Cognia"
             ],
             'menu_careers' => [
-                'en' => "We're always open to talented educators joining the Harvest family.\n\nYou can submit your application here:\nhttps://harvestschools.com/vacancies",
-                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست.\n\nيمكنك تقديم طلب التوظيف من هنا:\nhttps://harvestschools.com/vacancies"
+                'en' => "We're always open to talented educators joining the Harvest family. Please click the button below to view our vacancies:",
+                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست. يرجى الضغط على الزر أدناه لعرض الوظائف المتاحة:"
+            ],
+            'menu_address' => [
+                'en' => "*Our Address:*\nBorg Al Arab City, Second Territory, Alexandria Governorate, Egypt",
+                'ar' => "*عنواننا:*\nبرج العرب، الحى الثانى، الإسكندرية، مصر"
             ],
             'fees_disclaimer' => [
                 'en' => "\n\n_Note: Tuition does NOT include uniforms, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
