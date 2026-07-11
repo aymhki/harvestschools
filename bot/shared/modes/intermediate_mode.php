@@ -14,11 +14,13 @@ function findStageById($stageId) {
     }
     return null;
 }
+
 function getRequirementsForStage($stageId, $stageName, $lang) {
     $medicalStages = ['stg_nat_kg1', 'stg_brit_fs1', 'stg_am_prek'];
     $noReportStages = ['stg_pre_play', 'stg_play', 'stg_nat_kg1', 'stg_brit_fs1', 'stg_am_prek'];
     $needsMedical = in_array($stageId, $medicalStages);
     $needsReport = !in_array($stageId, $noReportStages);
+
     if ($lang === 'en') {
         $text = "*Admission Requirements for {$stageName}:*\n";
         $text .= "• Original Birth Certificate\n";
@@ -36,11 +38,14 @@ function getRequirementsForStage($stageId, $stageName, $lang) {
         if ($needsMedical) $text .= "• شهادة طبية (مستخرجة من التأمين الصحي)\n";
         if ($needsReport) $text .= "• بيان نجاح / شهادة من المدرسة السابقة\n";
     }
+
     return $text;
 }
+
 function handleIntermediateMode($from, $message) {
     $session = getSession($from);
     $type = $message['type'] ?? '';
+
     if ($type === 'text') {
         $textBody = strtolower(trim($message['text']['body'] ?? ''));
         if (in_array($textBody, ['menu', 'القائمة', 'main menu'])) {
@@ -50,6 +55,7 @@ function handleIntermediateMode($from, $message) {
             }
         }
     }
+
     if (!$session || !$session['language']) {
         if ($type === 'interactive') {
             $btnId = $message['interactive']['button_reply']['id'] ?? '';
@@ -60,23 +66,29 @@ function handleIntermediateMode($from, $message) {
                 return;
             }
         }
+
         askLanguageMode($from);
         return;
     }
+
     $lang = $session['language'];
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
+
     if ($type === 'interactive') {
         $replyId = $message['interactive']['list_reply']['id'] ?? $message['interactive']['button_reply']['id'] ?? '';
+
         if (strpos($replyId, 'lang_toggle_') === 0) {
             $lang = ($lang === 'en') ? 'ar' : 'en';
             createOrUpdateSession($from, $lang, 'menu');
             $replyId = substr($replyId, 12);
         }
+
         if ($replyId === 'main_menu') {
             sendMainMenuIntermediate($from, $lang, true);
             return;
         }
+
         if ($replyId === 'menu_apply') {
             $link = "https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php";
 
@@ -97,10 +109,12 @@ function handleIntermediateMode($from, $message) {
 
             return;
         }
+
         if ($replyId === 'menu_contact') {
             sendContactMenuIntermediate($from, $lang);
             return;
         }
+
         if (strpos($replyId, 'contact_') === 0) {
             $deptId = substr($replyId, 8);
             $contacts = $config['contact_departments'];
@@ -124,24 +138,66 @@ function handleIntermediateMode($from, $message) {
             }
             return;
         }
+
         if (strpos($replyId, 'menu_') === 0) {
-            if (in_array($replyId, ['menu_disc', 'menu_accr', 'menu_careers'])) {
+
+            if (in_array($replyId, ['menu_disc', 'menu_accr'])) {
                 $text = $config['static_content'][$replyId][$lang];
                 sendFinalTextWithMenuButton($from, $text, $lang, $replyId);
                 return;
             }
+
+            if ($replyId === 'menu_careers') {
+                $link = "https://harvestschools.com/vacancies";
+                $msg = $config['static_content']['menu_careers'][$lang];
+                $urlBtnTitle = ($lang === 'en') ? 'View Vacancies' : 'عرض الوظائف';
+
+                sendCtaUrlButton($from, $msg, $urlBtnTitle, $link);
+
+                $menuMsg = ($lang === 'en')
+                    ? "Return to navigation:"
+                    : "العودة للقائمة:";
+
+                sendButtons($from, $menuMsg, [
+                    ["id" => "main_menu", "title" => $config['ui']['back_btn'][$lang]]
+                ]);
+
+                return;
+            }
+
+            if ($replyId === 'menu_address') {
+                $addressText = $config['static_content']['menu_address'][$lang];
+                $mapLink = "https://maps.app.goo.gl/4mWYs9jX5T2gK1FL7";
+                $mapBtnTitle = ($lang === 'en') ? 'View on Map' : 'عرض على الخريطة';
+
+                sendCtaUrlButton($from, $addressText, $mapBtnTitle, $mapLink);
+
+                $menuMsg = ($lang === 'en')
+                    ? "Return to navigation:"
+                    : "العودة للقائمة:";
+
+                sendButtons($from, $menuMsg, [
+                    ["id" => "main_menu", "title" => $config['ui']['back_btn'][$lang]]
+                ]);
+
+                return;
+            }
+
             if ($replyId === 'menu_faqs') {
                 sendFaqMenuIntermediate($from, $lang);
                 return;
             }
+
             if ($replyId === 'menu_info') {
                 sendInfoMenuIntermediate($from, $lang);
                 return;
             }
+
             if ($replyId === 'menu_fees') {
                 sendFeesAndDiscountsMenuIntermediate($from, $lang);
                 return;
             }
+
             if (in_array($replyId, ['menu_stages', 'menu_age', 'menu_reqs'])) {
                 $action = str_replace('menu_', '', $replyId);
                 sendDepartmentMenuIntermediate($from, $lang, $action);
@@ -156,19 +212,27 @@ function handleIntermediateMode($from, $message) {
             }
             return;
         }
+
         if (strpos($replyId, 'act_') === 0) {
-            $parts = explode('_', $replyId);
-            if (count($parts) >= 3) {
-                $action = $parts[1];
-                $deptKey = $parts[2];
-                if ($deptKey === 'kindergarten') {
-                    sendStageMenuIntermediate($from, $lang, $action, 'kindergarten', 'early_stg');
+            $rest = substr($replyId, 4);
+            $sep = strpos($rest, '_');
+
+            if ($sep !== false) {
+                $action = substr($rest, 0, $sep);
+                $deptKey = substr($rest, $sep + 1);
+                $dept = $config['departments'][$deptKey] ?? null;
+
+                if ($dept && count($dept['sections']) === 1) {
+                    $onlySecKey = array_key_first($dept['sections']);
+                    sendStageMenuIntermediate($from, $lang, $action, $deptKey, $onlySecKey);
                     return;
                 }
+
                 sendSectionMenuIntermediate($from, $lang, $action, $deptKey);
                 return;
             }
         }
+
         if (strpos($replyId, 'sec_') === 0) {
             $parts = explode('_', $replyId, 4);
             if (count($parts) == 4) {
@@ -179,43 +243,54 @@ function handleIntermediateMode($from, $message) {
                 return;
             }
         }
+
         if (strpos($replyId, 'res_') === 0) {
             $parts = explode('_', $replyId);
-            array_shift($parts); array_shift($parts);
+            array_shift($parts);
+            $action = array_shift($parts);
             $stageId = implode('_', $parts);
             $stageData = findStageById($stageId);
+
             if ($stageData) {
                 $stageName = $stageData['name'][$lang];
                 $responseText = "";
+
                 if ($stageData['offered']) {
-                    $currency = ($lang === 'en') ? "EGP" : "ج.م";
-                    $feesStr = number_format($stageData['fees']);
-                    $ageStr = $stageData['age'][$lang];
-                    $reqsStr = getRequirementsForStage($stageId, $stageName, $lang);
-                    $disclaimer = $config['static_content']['fees_disclaimer'][$lang];
-                    if ($lang === 'en') {
-                        $responseText = "*{$stageName}* is currently offered at Harvest Schools.\n\n";
-                        $responseText .= "*Minimum Registration Age:* {$ageStr}\n";
-                        $responseText .= "*Annual Tuition Fees:* {$feesStr} {$currency}\n\n";
-                        $responseText .= "{$reqsStr}";
-                        $responseText .= "{$disclaimer}";
+                    if ($action === 'age') {
+                        $ageStr = $stageData['age'][$lang];
+                        $responseText = ($lang === 'en')
+                            ? "*Minimum Registration Age for {$stageName}:* {$ageStr}"
+                            : "*الحد الأدنى لسن القبول لمرحلة {$stageName}:* {$ageStr}";
+                    } elseif ($action === 'fees') {
+                        $currency = ($lang === 'en') ? "EGP" : "ج.م";
+                        $feesStr = number_format($stageData['fees']);
+                        $disclaimer = $config['static_content']['fees_disclaimer'][$lang];
+                        $responseText = ($lang === 'en')
+                            ? "*Annual Tuition Fees for {$stageName}:* {$feesStr} {$currency}"
+                            : "*المصروفات الدراسية السنوية لمرحلة {$stageName}:* {$feesStr} {$currency}";
+                        $responseText .= $disclaimer;
+                    } elseif ($action === 'reqs') {
+                        $responseText = getRequirementsForStage($stageId, $stageName, $lang);
                     } else {
-                        $responseText = "مرحلة *{$stageName}* متاحة حالياً للتسجيل في مدارس هارڤست.\n\n";
-                        $responseText .= "*الحد الأدنى لسن القبول:* {$ageStr}\n";
-                        $responseText .= "*المصروفات الدراسية السنوية:* {$feesStr} {$currency}\n\n";
-                        $responseText .= "{$reqsStr}";
-                        $responseText .= "{$disclaimer}";
+                        $responseText = ($lang === 'en')
+                            ? "*{$stageName}* is currently offered at Harvest Schools."
+                            : "مرحلة *{$stageName}* متاحة حالياً للتسجيل في مدارس هارڤست.";
                     }
+
                 } else {
                     $responseText = ($lang === 'en')
                         ? "Sorry, *{$stageName}* is currently NOT offered at Harvest Schools."
                         : "نعتذر، مرحلة *{$stageName}* غير متاحة حالياً في مدارس هارڤست.";
                 }
+
                 sendFinalTextWithMenuButton($from, $responseText, $lang, $replyId);
             }
+
             return;
         }
+
     }
+
     sendMainMenuIntermediate($from, $lang, true);
 }
 function askLanguageMode($to) {
@@ -224,6 +299,7 @@ function askLanguageMode($to) {
         ["id" => "lang_ar", "title" => "العربية"]
     ]);
 }
+
 function getNavRows($lang, $currentMenuId) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
@@ -233,14 +309,17 @@ function getNavRows($lang, $currentMenuId) {
         ["id" => "lang_toggle_" . $currentMenuId, "title" => $config['ui']['change_lang_btn'][$lang]]
     ];
 }
+
 function sendMainMenuIntermediate($to, $lang, $fallback) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $rows = [];
+
     foreach ($config['main_options'] as $opt) {
         $rows[] = ["id" => $opt['id'], "title" => $opt[$lang]];
     }
+
     $sections = [
         [
             "title" => $ui['main_title'][$lang],
@@ -260,14 +339,17 @@ function sendMainMenuIntermediate($to, $lang, $fallback) {
         sendList($to, $ui['main_body'][$lang], $ui['main_btn'][$lang], $sections);
     }
 }
+
 function sendFaqMenuIntermediate($to, $lang) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $rows = [];
+
     foreach ($config['faqs'] as $faqId => $faqData) {
         $rows[] = ["id" => $faqId, "title" => $faqData['q'][$lang]];
     }
+
     $sections = [
         [
             "title" => $ui['faq_title'][$lang],
@@ -278,16 +360,20 @@ function sendFaqMenuIntermediate($to, $lang) {
             "rows" => getNavRows($lang, 'menu_faqs')
         ]
     ];
+
     sendList($to, $ui['faq_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
+
 function sendContactMenuIntermediate($to, $lang) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $rows = [];
+
     foreach ($config['contact_departments'] as $id => $dept) {
         $rows[] = ["id" => "contact_" . $id, "title" => $dept[$lang]];
     }
+
     $sections = [
         [
             "title" => $ui['contact_title'][$lang],
@@ -297,19 +383,24 @@ function sendContactMenuIntermediate($to, $lang) {
             "title" => $ui['nav_section'][$lang],
             "rows" => [
                 ["id" => "main_menu", "title" => $config['ui']['back_btn'][$lang]],
+                ["id" => "lang_toggle_menu_contact", "title" => $config['ui']['change_lang_btn'][$lang]]
             ]
         ]
     ];
+
     sendList($to, $ui['contact_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
+
 function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $deptRows = [];
+
     foreach ($config['departments'] as $deptKey => $deptData) {
         $deptRows[] = ["id" => "act_fees_{$deptKey}", "title" => $deptData['name'][$lang]];
     }
+
     $sections = [
         [
             "title" => $ui['dept_title'][$lang],
@@ -326,8 +417,10 @@ function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
             "rows" => getNavRows($lang, 'menu_fees')
         ]
     ];
+
     sendList($to, $ui['fees_disc_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
+
 function sendInfoMenuIntermediate($to, $lang) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
@@ -345,17 +438,21 @@ function sendInfoMenuIntermediate($to, $lang) {
             "rows" => getNavRows($lang, 'menu_info')
         ]
     ];
+
     sendList($to, $ui['info_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
+
 function sendDepartmentMenuIntermediate($to, $lang, $action) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
     $deptRows = [];
+
     foreach ($config['departments'] as $deptKey => $deptData) {
         $id = "act_{$action}_{$deptKey}";
         $deptRows[] = ["id" => $id, "title" => $deptData['name'][$lang]];
     }
+
     $sections = [
         [
             "title" => $ui['dept_title'][$lang],
@@ -366,8 +463,10 @@ function sendDepartmentMenuIntermediate($to, $lang, $action) {
             "rows" => getNavRows($lang, "menu_{$action}")
         ]
     ];
+
     sendList($to, $ui['dept_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
+
 function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
@@ -375,10 +474,12 @@ function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
     $dept = $config['departments'][$deptKey] ?? null;
     if (!$dept) return;
     $secRows = [];
+
     foreach ($dept['sections'] as $secKey => $secData) {
         $id = "sec_{$action}_{$deptKey}_{$secKey}";
         $secRows[] = ["id" => $id, "title" => $secData['title'][$lang]];
     }
+
     $sections = [
         [
             "title" => $ui['sec_title'][$lang],
@@ -389,8 +490,10 @@ function sendSectionMenuIntermediate($to, $lang, $action, $deptKey) {
             "rows" => getNavRows($lang, "act_{$action}_{$deptKey}")
         ]
     ];
+
     sendList($to, $ui['sec_body'][$lang], $ui['main_btn'][$lang], $sections);
 }
+
 function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
@@ -399,15 +502,19 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     if (!$stageData) return;
     $filterUnoffered = in_array($action, ['fees', 'reqs']);
     $rows = [];
+
     foreach ($stageData['stages'] as $stageId => $stage) {
         if ($filterUnoffered && !$stage['offered']) continue;
         $id = "res_{$action}_{$stageId}";
         $rows[] = ["id" => $id, "title" => $stage['name'][$lang]];
     }
+
     $bodyText = $ui['stage_body'][$lang];
+
     if ($filterUnoffered) {
         $bodyText .= "\n\n_" . $ui['unoffered_note'][$lang] . "_";
     }
+
     $sections = [
         [
             "title" => $stageData['title'][$lang],
@@ -418,15 +525,19 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
             "rows" => getNavRows($lang, "sec_{$action}_{$deptKey}_{$secKey}")
         ]
     ];
+
     sendList($to, $bodyText, $ui['main_btn'][$lang], $sections);
 }
+
 function sendFinalTextWithMenuButton($to, $text, $lang, $currentMenuId) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
     $ui = $config['ui'];
+
     sendButtons($to, $text, [
         ["id" => "main_menu", "title" => $ui['back_btn'][$lang]],
         ["id" => "menu_apply", "title" => $ui['apply_btn'][$lang]],
         ["id" => "lang_toggle_" . $currentMenuId, "title" => $ui['change_lang_btn'][$lang]]
     ]);
+
 }

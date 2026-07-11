@@ -54,11 +54,14 @@ function sendButtons($to, $body, $buttons) {
 
 function sendList($to, $body, $buttonText, $sections) {
     $preparedSections = [];
+
     foreach ($sections as $section) {
         $rows = [];
+
         foreach (($section['rows'] ?? []) as $row) {
             $rows[] = prepareWaListRow($row);
         }
+
         $preparedSections[] = [
             "title" => smartTruncate($section['title'] ?? '', WA_LIST_TITLE_LIMIT),
             "rows"  => $rows
@@ -88,9 +91,11 @@ function prepareWaListRow($row) {
 
     if ($existingDesc !== '') {
         $description = trim($description . ' ' . $existingDesc);
+
         if (mb_strlen($description, 'UTF-8') > WA_LIST_DESC_LIMIT) {
             $description = smartTruncate($description, WA_LIST_DESC_LIMIT);
         }
+
     }
 
     $result = [
