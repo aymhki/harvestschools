@@ -162,7 +162,7 @@ function InfoSystemManagement() {
 
             if (calledEditType === 'settings') {
 
-                if ( globalSettingsData.length > 0 ) {
+                if (globalSettingsData && globalSettingsData.length > 0 ) {
 
                     const placeHolder = globalSettingsData[0]
 
@@ -181,7 +181,7 @@ function InfoSystemManagement() {
                 }
             } else if (calledEditType === 'departments') {
 
-                if (departmentsData.length > 0) {
+                if (departmentsData && departmentsData.length > 0) {
 
                     const placeHolder = departmentsData[0]
 
@@ -201,7 +201,7 @@ function InfoSystemManagement() {
                 }
             } else if (calledEditType === 'stages') {
 
-                if (stagesData.length > 0) {
+                if (stagesData && stagesData.length > 0) {
 
                     const placeHolder = stagesData[0]
 
