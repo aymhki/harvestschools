@@ -97,6 +97,30 @@ function Table({
     const showHorizontalScrollBarInMobile = true
     const scrollIntervalRef = useRef(null);
     const verticalScrollIntervalRef = useRef(null);
+    const hasRestoredScrollRef = useRef(false);
+    const saveScrollTimeoutRef = useRef(null);
+
+    const scrollStorageKey = useMemo(() => {
+        if (typeof window === 'undefined') return null;
+        return `table-scroll-pos:${window.location.pathname}:${exportFileName || tableHeader || 'default-table'}`;
+    }, [exportFileName, tableHeader]);
+
+    const persistScrollPosition = useCallback(() => {
+        if (!scrollStorageKey || !scrollContainerRef.current) return;
+        if (saveScrollTimeoutRef.current) clearTimeout(saveScrollTimeoutRef.current);
+
+        saveScrollTimeoutRef.current = setTimeout(() => {
+            try {
+                sessionStorage.setItem(scrollStorageKey, JSON.stringify({
+                    top: scrollContainerRef.current.scrollTop,
+                    left: scrollContainerRef.current.scrollLeft,
+                }));
+            } catch (e) {
+                console.error(e);
+            }
+        }, 150);
+
+    }, [scrollStorageKey]);
 
     const dataRows = useMemo(() => {
         if (!finalTableData || finalTableData.length <= headerRowCount) return [];
@@ -1461,6 +1485,43 @@ function Table({
         setStickyRows(isCurrentlySticky ? 1 : 0);
     }, [isMobile, allowStickyOnMobile, allowSticky, isCurrentlySticky])
 
+    useEffect(() => {
+        if (hasRestoredScrollRef.current) return;
+        if (!scrollStorageKey || !scrollContainerRef.current) return;
+        if (!displayedTableData || displayedTableData.length === 0) return;
+
+        try {
+            const saved = sessionStorage.getItem(scrollStorageKey);
+
+            if (saved) {
+                const {top, left} = JSON.parse(saved);
+
+                requestAnimationFrame(() => {
+                    if (scrollContainerRef.current) {
+                        scrollContainerRef.current.scrollTop = top || 0;
+                        scrollContainerRef.current.scrollLeft = left || 0;
+                        updateThumbPosition();
+                        updateVerticalThumbPosition();
+                    }
+                });
+
+            }
+
+        } catch (e) {
+            console.error(e);
+        }
+
+        hasRestoredScrollRef.current = true;
+    }, [scrollStorageKey, displayedTableData, updateThumbPosition, updateVerticalThumbPosition]);
+
+    useEffect(() => {
+        return () => {
+            if (saveScrollTimeoutRef.current) {
+                clearTimeout(saveScrollTimeoutRef.current);
+            }
+        };
+    }, []);
+
     return (
         <div className={`table-module ${!isScrollbarVisible ? 'compressed' : '' }`} ref={tableModuleRef} >
 
@@ -1515,6 +1576,7 @@ function Table({
                     onScroll={() => {
                         updateThumbPosition();
                         updateVerticalThumbPosition();
+                        persistScrollPosition();
                     }}
                 >
                     { ( !isLoading && (finalTableData && Array.isArray(finalTableData) && finalTableData.length === 0) ) ? (

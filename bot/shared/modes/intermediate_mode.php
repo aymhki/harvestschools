@@ -503,7 +503,7 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     $ui = $config['ui'];
     $stageData = $config['departments'][$deptKey]['sections'][$secKey] ?? null;
     if (!$stageData) return;
-    $filterUnoffered = in_array($action, ['fees', 'reqs']);
+    $filterUnoffered = in_array($action, ['fees', 'reqs', 'age']);
     $rows = [];
 
     foreach ($stageData['stages'] as $stageId => $stage) {
