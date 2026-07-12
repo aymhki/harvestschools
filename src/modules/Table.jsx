@@ -1862,7 +1862,7 @@ function Table({
                             ]));
                         }}>Hide All
                         </button>
-                        <button onClick={() => setIsAccordionOpen(false)}>Close</button>
+                        <button onClick={() => setIsAccordionOpen(false)}>Done</button>
                     </div>
 
                     {allowSticky && isMobile && (
@@ -2107,7 +2107,7 @@ function Table({
 
                                         <button onClick={() => {
                                             setIsFilterPopupOpen(false);
-                                        }}>Close
+                                        }}>Done
                                         </button>
                                     </div>
                                 </div>
