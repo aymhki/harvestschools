@@ -1,6 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
@@ -173,7 +173,7 @@ function InfoSystemManagement() {
             setSyncConfigDataError(error.message || 'An error occurred while editing the info system data.');
 
             setTimeout(() => {
-                setSyncConfigDataError('');
+                setSyncConfigDataError(null);
             }, msgTimeout);
         } finally {
             setIsLoading(false);
@@ -255,7 +255,7 @@ function InfoSystemManagement() {
         setEditFormFields(null);
     };
 
-    const getTableModuleHeaderElements = () => {
+    const getTableModuleHeaderElements = useMemo(() => {
         return [
             (
                 <button key={1} onClick={reloadData} disabled={isLoading}>
@@ -267,13 +267,13 @@ function InfoSystemManagement() {
                     {isLoading ? 'Syncing...' : 'Trigger Server Static Data Update'}
                 </button>
             ),
-            (
+            syncConfigDataError && (
                 <p key={3} className={'admin-table-header-button-error'}>
                     {syncConfigDataError}
                 </p>
             )
         ];
-    }
+    }, [syncConfigDataError]);
 
     const GlobalSettings = () => (
         <div className="admin-page-tab-content">

@@ -1535,7 +1535,7 @@ function Table({
                         ))}
                         {finalTableData && allowHideColumns && (
                             <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
-                                {isAccordionOpen ? 'Hide Columns' : 'Show Columns'}
+                                {'Show/Hide Columns'}
                             </button>
                         )}
                         {finalTableData && allowExport && (
