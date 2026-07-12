@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/../../configs/botConfig.php';
+$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+require_once dirname($doc_root) . '/configs/botConfig.php';
 require_once __DIR__ . '/../shared/text_utils.php';
 
 function msgr_request($payload) {

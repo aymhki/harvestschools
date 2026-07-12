@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/../../configs/botConfig.php';
+$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+require_once dirname($doc_root) . '/configs/botConfig.php';
 require_once __DIR__ . '/../shared/db.php';
 require_once __DIR__ . '/messenger_api.php';
 
