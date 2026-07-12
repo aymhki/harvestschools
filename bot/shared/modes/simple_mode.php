@@ -1,5 +1,5 @@
 <?php
-require_once '../db.php';
+require_once __DIR__ . '/../db.php';
 
 function handleSimpleMode($from, $message) {
     global $DEPARTMENTS, $STRINGS;
