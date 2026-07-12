@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../../../configs/botConfig.php';
 
 function findStageById($stageId) {
     global $SCHOOL_CONFIG;
@@ -259,8 +259,10 @@ function handleIntermediateMode($from, $message) {
                     if ($action === 'age') {
                         $ageStr = $stageData['age'][$lang];
                         $responseText = ($lang === 'en')
-                            ? "*Minimum Registration Age for {$stageName}:* {$ageStr}"
-                            : "*الحد الأدنى لسن القبول لمرحلة {$stageName}:* {$ageStr}";
+                            ? "*Minimum Registration Age for {$stageName}:* {$ageStr}\n\n{$config['static_content']['minimum_age_disc'][$lang]}"
+                            : "*الحد الأدنى لسن القبول لمرحلة {$stageName}:* {$ageStr}\n\n{$config['static_content']['minimum_age_disc'][$lang]}";
+
+
                     } elseif ($action === 'fees') {
                         $currency = ($lang === 'en') ? "EGP" : "ج.م";
                         $feesStr = number_format($stageData['fees']);

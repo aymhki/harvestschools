@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-/src/scripts/dbConfig.php
+/configs/dbConfig.php
 db.sql
 
 PopulateGraduationBookingDataScript/All 2025 KG Graduation Bookings.csv
@@ -36,8 +36,8 @@ PopulateGraduationBookingDataScript/main.py
 tmp.md
 tmp.sql
 
-bot/shared/config.php
-bot/shared/config-tmp.php
+configs/botConfig.php
+configs/config-tmp.php
 bot/shared/sql
 bot/whatsapp/review.md
 

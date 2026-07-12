@@ -6,7 +6,7 @@ import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
-import {infoSystemManagementPermissionLevel, isDevelopment} from "../../services/General/GeneralUtils.jsx";
+import {infoSystemManagementPermissionLevel, isDevelopment, msgTimeout} from "../../services/General/GeneralUtils.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
 import {fetchInfoSystemData, updateInfoSystemData} from "../../services/Admin/InfoSystem/AdminInfoSystemManagementServices.jsx";
 
@@ -21,6 +21,7 @@ function InfoSystemManagement() {
     const [editFormFields, setEditFormFields] = useState(null);
     const [currentEditType, setCurrentEditType] = useState(null);
     const [indexOfRowToEdit, setIndexOfRowToEdit] = useState(null);
+    const [syncConfigDataError, setSyncConfigDataError] = useState(null);
 
     const animateEditModal = useSpring({
         opacity: showEditModal ? 1 : 0,
@@ -154,6 +155,102 @@ function InfoSystemManagement() {
         setIndexOfRowToEdit(rowIndex);
     };
 
+    const handleSyncInfoSystemSubmit = async (calledEditType) => {
+        try {
+            setIsLoading(true);
+            let payload = {};
+
+            if (calledEditType === 'settings') {
+
+                if ( globalSettingsData.length > 0 ) {
+
+                    const placeHolder = globalSettingsData[0]
+
+                    payload = {
+                        settings: [{
+                            setting_key: placeHolder[settingKeyColIndex],
+                            val: placeHolder[settingValColIndex],
+                            is_encrypted: placeHolder[settingIsEncryptedColIndex],
+                            description: placeHolder[settingDescriptionColIndex] || '',
+                            sort_order: Number(placeHolder[settingSortOrderColIndex])
+                        }]
+                    };
+
+                } else {
+                    throw new Error('No Data to Sync From.')
+                }
+            } else if (calledEditType === 'departments') {
+
+                if (departmentsData.length > 0) {
+
+                    const placeHolder = departmentsData[0]
+
+                    payload = {
+                        departments: [{
+                            dept_key: placeHolder[departmentKeyColIndex],
+                            name_en: placeHolder[departmentNameEnColIndex],
+                            name_ar: placeHolder[departmentNameArColIndex],
+                            contact_number: placeHolder[departmentContactNumberColIndex],
+                            is_academic: placeHolder[departmentIsAcademicColIndex],
+                            sort_order: Number(placeHolder[departmentSortOrderColIndex])
+                        }]
+                    };
+
+                } else {
+                    throw new Error('No Data to Sync From.')
+                }
+            } else if (calledEditType === 'stages') {
+
+                if (stagesData.length > 0) {
+
+                    const placeHolder = stagesData[0]
+
+                    payload = {
+                        stages: [{
+                            stage_key: placeHolder[stageKeyColIndex],
+                            dept_key: placeHolder[stageDeptKeyColIndex],
+                            section_key: placeHolder[stageSectionKeyColIndex],
+                            section_title_en: placeHolder[stageSectionTitleEnColIndex],
+                            section_title_ar: placeHolder[stageSectionTitleArColIndex],
+                            name_en: placeHolder[stageNameEnColIndex],
+                            name_ar: placeHolder[stageNameArColIndex],
+                            is_offered: placeHolder[stageIsOfferedColIndex],
+                            age_en: placeHolder[stageAgeEnColIndex],
+                            age_ar: placeHolder[stageAgeArColIndex],
+                            tuition_fees: Number(placeHolder[stageTuitionFeesColIndex]),
+                            sort_order: Number(placeHolder[stageSortOrderColIndex])
+                        }]
+                    };
+
+                } else {
+                    throw new Error('No Data to Sync From.')
+                }
+            }
+
+            payload.is_development = isDevelopment();
+            const result = await updateInfoSystemData(payload);
+
+            if (result && result.success) {
+                setShowEditModal(false);
+                setResetEditModal(true);
+                setCurrentEditType(null);
+                setEditFormFields(null);
+                await reloadData();
+                return true;
+            } else {
+                throw new Error(result.message || result);
+            }
+        } catch (error) {
+            setSyncConfigDataError(error.message || 'An error occurred while editing the info system data.');
+
+            setTimeout(() => {
+                setSyncConfigDataError('');
+            }, msgTimeout);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     const handleEditInfoSystemSubmit = async (formData) => {
         setIsLoading(true);
 
@@ -164,7 +261,7 @@ function InfoSystemManagement() {
             if (currentEditType === 'settings') {
                 payload = {
                     settings: [{
-                        setting_key: globalSettingsData[indexOfRowToEdit][1],
+                        setting_key: globalSettingsData[indexOfRowToEdit][settingKeyColIndex],
                         val: formDataJson[`field_${settingValFormFieldId}`],
                         is_encrypted: formDataJson[`field_${settingIsEncryptedFormFieldId}`],
                         description: formDataJson[`field_${settingDescriptionFormFieldId}`] || '',
@@ -174,7 +271,7 @@ function InfoSystemManagement() {
             } else if (currentEditType === 'departments') {
                 payload = {
                     departments: [{
-                        dept_key: departmentsData[indexOfRowToEdit][settingKeyColIndex],
+                        dept_key: departmentsData[indexOfRowToEdit][departmentKeyColIndex],
                         name_en: formDataJson[`field_${departmentNameEnFormFieldId}`],
                         name_ar: formDataJson[`field_${departmentNameArFormFieldId}`],
                         contact_number: formDataJson[`field_${departmentContactNumberFormFieldId}`],
@@ -229,13 +326,25 @@ function InfoSystemManagement() {
         setEditFormFields(null);
     };
 
-    const reloadButtonConfig = [
-        (
-            <button key={1} onClick={reloadData} disabled={isLoading}>
-                {isLoading ? 'Loading...' : 'Reload Table Data'}
-            </button>
-        )
-    ];
+    const getTableModuleHeaderElements = (calledEditType) => {
+        return [
+            (
+                <button key={1} onClick={reloadData} disabled={isLoading}>
+                    {isLoading ? 'Loading...' : 'Reload Table Data'}
+                </button>
+            ),
+            (
+                <button key={2} onClick={handleSyncInfoSystemSubmit(calledEditType)} disabled={isLoading}>
+                    {isLoading ? 'Syncing' : 'Sync Config Data'}
+                </button>
+            ),
+            (
+                <p key={3} className={'admin-table-header-button-error'}>
+                    {syncConfigDataError}
+                </p>
+            )
+        ];
+    }
 
     const GlobalSettings = () => (
         <div className="admin-page-tab-content">
@@ -248,10 +357,11 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('settings', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={reloadButtonConfig}
+                   headerModuleElements={getTableModuleHeaderElements('settings')}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
                    allowBreakWordColumns={{ "Value": '10rem' }}
                    truncateValuesColumns={{'Value': 100}}
+
             />
         </div>
     );
@@ -267,7 +377,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('departments', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={reloadButtonConfig}
+                   headerModuleElements={getTableModuleHeaderElements('departments')}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
             />
         </div>
@@ -284,7 +394,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('stages', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={reloadButtonConfig}
+                   headerModuleElements={getTableModuleHeaderElements('stages')}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
                    currencyColumns={[
                        'Tuition Fees'
@@ -334,9 +444,17 @@ function InfoSystemManagement() {
                     </div>
 
                     <div className={"general-large-admin-action-modal-content"}>
-                        <p className={"general-large-admin-action-modal-content-note"}>
-                            Note: Do not edit the info system data values unless you know what you are doing.
-                        </p>
+
+                        { (currentEditType === 'settings' ) ? (
+                            <p className={"general-large-admin-action-modal-content-note"}>
+                                Note: Do not edit the info system settings data values unless you know what you are doing.
+                            </p>
+                        ) : (
+                            <p className={"general-large-admin-action-modal-content-note"}>
+                                Note: Titles should preferably be under 20 characters (Spaces are characters)
+                            </p>
+                        )}
+
                         { (showEditModal && editFormFields != null) && (
                             <Form fields={editFormFields}
                                   mailTo={''}

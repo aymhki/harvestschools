@@ -2,7 +2,7 @@
 require_once '../../headers.php';
 require_once '../../authHelpers.php';
 require_once '../../permissionLevels.php';
-$dbConfig = require '../../dbConfig.php';
+$dbConfig = require '../../../../configs/dbConfig.php';
 set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
@@ -458,6 +458,10 @@ PROMPT;
             'fees_disclaimer' => [
                 'en' => "\n\n_Note: Tuition does NOT include uniforms, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
                 'ar' => "\n\n_ملاحظة: المصروفات لا تشمل الزي المدرسي، الباص، أو الأنشطة. قد تكون مؤهلاً لخصومات الأخوة أو العاملين. يرجى مراجعة قسم الحسابات للتفاصيل._"
+            ],
+            'minimum_age_disc' => [
+                'en' => "\n\n_Note: Students MUST meet the minimum age by October 1st._",
+                'ar' => "\n\n_ملاحطة: يجب على الطالب ان يكون في العمر المطلوب قبل يوم ١ أكتوبر_"
             ]
         ],
         'faqs' => [
@@ -566,18 +570,18 @@ PHP_CODE;
 
     $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
     if ($postData['is_development']) {
-        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'bot' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR;
+        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR;
         $configPath = $ASSETS_BASE . 'config-tmp.php';
     } else {
-        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'public_html' . DIRECTORY_SEPARATOR . 'bot' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR;
-        $configPath = $ASSETS_BASE . 'config.php';
+        $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR;
+        $configPath = $ASSETS_BASE . 'botConfig.php';
     }
 
     if (file_put_contents($configPath, $fileContent) === false) {
         throw new Exception("Failed to write to $configPath", 500);
     }
 
-    echo json_encode(["success" => true, "message" => "Database updated and config.php generated successfully.", "code" => 200]);
+    echo json_encode(["success" => true, "message" => "Database updated and botConfig.php generated successfully.", "code" => 200]);
 
 } catch (Exception $e) {
     if (isset($conn)) {

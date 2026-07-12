@@ -1,7 +1,7 @@
 <?php
 require_once '../../headers.php';
 set_cors_headers();
-$dbConfig = require '../../dbConfig.php';
+$dbConfig = require '../../../../configs/dbConfig.php';
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
 $password = $dbConfig['db_password'];
