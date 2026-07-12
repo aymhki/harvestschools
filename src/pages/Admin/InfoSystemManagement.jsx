@@ -137,7 +137,7 @@ function InfoSystemManagement() {
             formFieldsConfig = [
                 { id: stageKeyFormFieldId, type: 'text', name: 'stage_key', label: 'Stage Key', required: true, value: rowData[stageKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Stage Key', readOnlyField: true, httpName: 'stage-key'  },
                 { id: stageDeptKeyFormFieldId, type: 'text', name: 'dept_key', label: 'Department Key', required: true, value: rowData[stageDeptKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Department Key', readOnlyField: true, httpName: 'department-key'  },
-                { id: stageSectionKeyFormFieldId, type: 'text', name: 'section_key', label: 'Section Key', required: true, value: rowData[stageSectionKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Section Key', readOnlyField: true, httpName: 'section-key'  },
+                { id: stageSectionKeyFormFieldId, type: 'select', name: 'section_key', label: 'Section Key', required: true, value: rowData[stageSectionKeyColIndex], defaultValue: rowData[stageSectionKeyColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Section Key', httpName: 'section-key', choices: ['early_stg', 'nat_kg', 'nat_jr', 'nat_mid', 'nat_sr', 'brit_fs', 'brit_prim', 'brit_mid', 'brit_sec', 'am_kg', 'am_elem', 'am_mid', 'am_high']  },
                 { id: stageSectionTitleEnFormFieldId, type: 'text', name: 'section_title_en', label: 'Section Title (EN)', required: true, value: rowData[stageSectionTitleEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Section Title (EN)', httpName: 'stage-section-title-en' },
                 { id: stageSectionTitleArFormFieldId, type: 'text', name: 'section_title_ar', label: 'Section Title (AR)', required: true, value: rowData[stageSectionTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Section Title (AR)', lang: 'ar', httpName: 'stage-section-title-ar' },
                 { id: stageNameEnFormFieldId, type: 'text', name: 'name_en', label: 'Name (EN)', required: true, value: rowData[stageNameEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (EN)', httpName: 'stage-name-en'    },
@@ -162,9 +162,9 @@ function InfoSystemManagement() {
 
             if (calledEditType === 'settings') {
 
-                if (globalSettingsData && globalSettingsData.length > 0 ) {
+                if (globalSettingsData && globalSettingsData.length > 1 ) {
 
-                    const placeHolder = globalSettingsData[0]
+                    const placeHolder = globalSettingsData[1]
 
                     payload = {
                         settings: [{
@@ -181,9 +181,9 @@ function InfoSystemManagement() {
                 }
             } else if (calledEditType === 'departments') {
 
-                if (departmentsData && departmentsData.length > 0) {
+                if (departmentsData && departmentsData.length > 1) {
 
-                    const placeHolder = departmentsData[0]
+                    const placeHolder = departmentsData[1]
 
                     payload = {
                         departments: [{
@@ -201,9 +201,9 @@ function InfoSystemManagement() {
                 }
             } else if (calledEditType === 'stages') {
 
-                if (stagesData && stagesData.length > 0) {
+                if (stagesData && stagesData.length > 1) {
 
-                    const placeHolder = stagesData[0]
+                    const placeHolder = stagesData[1]
 
                     payload = {
                         stages: [{
@@ -284,7 +284,7 @@ function InfoSystemManagement() {
                     stages: [{
                         stage_key: stagesData[indexOfRowToEdit][stageKeyColIndex],
                         dept_key: stagesData[indexOfRowToEdit][stageDeptKeyColIndex],
-                        section_key: stagesData[indexOfRowToEdit][stageSectionKeyColIndex],
+                        section_key: formDataJson[`field_${stageSectionKeyFormFieldId}`],
                         section_title_en: formDataJson[`field_${stageSectionTitleEnFormFieldId}`],
                         section_title_ar: formDataJson[`field_${stageSectionTitleArFormFieldId}`],
                         name_en: formDataJson[`field_${stageNameEnFormFieldId}`],
@@ -451,7 +451,7 @@ function InfoSystemManagement() {
                             </p>
                         ) : (
                             <p className={"general-large-admin-action-modal-content-note"}>
-                                Note: Titles should preferably be under 20 characters (Spaces are characters)
+                                Note: Titles & names should preferably be under 20 characters (Spaces are characters)
                             </p>
                         )}
 

@@ -68,7 +68,7 @@ try {
     }
 
     if (isset($postData['stages'])) {
-        $stmt = $conn->prepare("INSERT INTO info_system_stages (stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE section_title_en=VALUES(section_title_en), section_title_ar=VALUES(section_title_ar), name_en=VALUES(name_en), name_ar=VALUES(name_ar), is_offered=VALUES(is_offered), age_en=VALUES(age_en), age_ar=VALUES(age_ar), tuition_fees=VALUES(tuition_fees), sort_order=VALUES(sort_order)");
+        $stmt = $conn->prepare("INSERT INTO info_system_stages (stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE section_key=VALUES(section_key), section_title_en=VALUES(section_title_en), section_title_ar=VALUES(section_title_ar), name_en=VALUES(name_en), name_ar=VALUES(name_ar), is_offered=VALUES(is_offered), age_en=VALUES(age_en), age_ar=VALUES(age_ar), tuition_fees=VALUES(tuition_fees), sort_order=VALUES(sort_order)");
         foreach ($postData['stages'] as $st) {
             $isOff = $st['is_offered'] === 'Yes' ? 1 : 0;
             $stmt->bind_param("sssssssisssi", $st['stage_key'], $st['dept_key'], $st['section_key'], $st['section_title_en'], $st['section_title_ar'], $st['name_en'], $st['name_ar'], $isOff, $st['age_en'], $st['age_ar'], $st['tuition_fees'], $st['sort_order']);
