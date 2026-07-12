@@ -2,7 +2,7 @@
 require_once '../../headers.php';
 require_once '../../authHelpers.php';
 require_once '../../permissionLevels.php';
-$dbConfig = require '../../dbConfig.php';
+$dbConfig = require '../../../../configs/dbConfig.php';
 set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];

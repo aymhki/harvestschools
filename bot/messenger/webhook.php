@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../shared/config.php';
+require_once __DIR__ . '/../../configs/botConfig.php';
 require_once __DIR__ . '/../shared/db.php';
 require_once __DIR__ . '/messenger_api.php';
 
