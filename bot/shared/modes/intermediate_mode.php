@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/../../../configs/botConfig.php';
+require_once '../db.php';
+require_once '../../../configs/botConfig.php';
 
 function findStageById($stageId) {
     global $SCHOOL_CONFIG;

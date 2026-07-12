@@ -219,6 +219,11 @@
     font-size: medium;
 }
 
+.admin-table-header-button-error {
+    margin: 0.5rem;
+    color: var(--secondary-color);
+}
+
 @media (max-width: 1600px) {
 
 }

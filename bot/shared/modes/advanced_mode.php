@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/../llm_handler.php';
+require_once '../db.php';
+require_once '../llm_handler.php';
 
 function handleAdvancedMode($from, $message) {
     global $STRINGS, $DEPARTMENTS;

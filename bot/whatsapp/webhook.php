@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../../configs/botConfig.php';
-require_once __DIR__ . '/../shared/db.php';
-require_once __DIR__ . '/whatsapp_api.php';
+require_once '../../configs/botConfig.php';
+require_once '../shared/db.php';
+require_once 'whatsapp_api.php';
 
 setActiveChannel('whatsapp');
 
