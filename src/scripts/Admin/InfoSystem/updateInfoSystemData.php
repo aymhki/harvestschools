@@ -14,6 +14,7 @@ $dbEncryptionKeyPhrase = $dbConfig['encryption_key_phrase'];
 try {
     $input = file_get_contents('php://input');
     $postData = json_decode($input, true);
+    $updateStaticOnly = !empty($postData['update_static_content_only']);
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
@@ -32,7 +33,7 @@ try {
 
     $conn->begin_transaction();
 
-    if (isset($postData['settings'])) {
+    if (!$updateStaticOnly && isset($postData['settings'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_global_settings (setting_key, setting_value, is_encrypted, description, sort_order) VALUES (?, IF(?, HEX(AES_ENCRYPT(?, ?)), ?), ?, ?, ?) ON DUPLICATE KEY UPDATE setting_value = IF(VALUES(is_encrypted), HEX(AES_ENCRYPT(?, ?)), ?), is_encrypted = VALUES(is_encrypted), description=VALUES(description), sort_order=VALUES(sort_order)");
 
         foreach ($postData['settings'] as $s) {
@@ -57,7 +58,7 @@ try {
         $stmt->close();
     }
 
-    if (isset($postData['departments'])) {
+    if (!$updateStaticOnly && isset($postData['departments'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, sort_order) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic), sort_order=VALUES(sort_order)");
         foreach ($postData['departments'] as $d) {
             $isAc = $d['is_academic'] === 'Yes' ? 1 : 0;
@@ -67,7 +68,7 @@ try {
         $stmt->close();
     }
 
-    if (isset($postData['stages'])) {
+    if (!$updateStaticOnly && isset($postData['stages'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_stages (stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE section_key=VALUES(section_key), section_title_en=VALUES(section_title_en), section_title_ar=VALUES(section_title_ar), name_en=VALUES(name_en), name_ar=VALUES(name_ar), is_offered=VALUES(is_offered), age_en=VALUES(age_en), age_ar=VALUES(age_ar), tuition_fees=VALUES(tuition_fees), sort_order=VALUES(sort_order)");
         foreach ($postData['stages'] as $st) {
             $isOff = $st['is_offered'] === 'Yes' ? 1 : 0;

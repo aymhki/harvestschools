@@ -155,79 +155,13 @@ function InfoSystemManagement() {
         setIndexOfRowToEdit(rowIndex);
     };
 
-    const handleSyncInfoSystemSubmit = async (calledEditType) => {
+    const handleSyncInfoSystemSubmit = async () => {
         try {
             setIsLoading(true);
             let payload = {};
 
-            if (calledEditType === 'settings') {
-
-                if (globalSettingsData && globalSettingsData.length > 1 ) {
-
-                    const placeHolder = globalSettingsData[1]
-
-                    payload = {
-                        settings: [{
-                            setting_key: placeHolder[settingKeyColIndex],
-                            val: placeHolder[settingValColIndex],
-                            is_encrypted: placeHolder[settingIsEncryptedColIndex],
-                            description: placeHolder[settingDescriptionColIndex] || '',
-                            sort_order: Number(placeHolder[settingSortOrderColIndex])
-                        }]
-                    };
-
-                } else {
-                    throw new Error('No Data to Sync From.')
-                }
-            } else if (calledEditType === 'departments') {
-
-                if (departmentsData && departmentsData.length > 1) {
-
-                    const placeHolder = departmentsData[1]
-
-                    payload = {
-                        departments: [{
-                            dept_key: placeHolder[departmentKeyColIndex],
-                            name_en: placeHolder[departmentNameEnColIndex],
-                            name_ar: placeHolder[departmentNameArColIndex],
-                            contact_number: placeHolder[departmentContactNumberColIndex],
-                            is_academic: placeHolder[departmentIsAcademicColIndex],
-                            sort_order: Number(placeHolder[departmentSortOrderColIndex])
-                        }]
-                    };
-
-                } else {
-                    throw new Error('No Data to Sync From.')
-                }
-            } else if (calledEditType === 'stages') {
-
-                if (stagesData && stagesData.length > 1) {
-
-                    const placeHolder = stagesData[1]
-
-                    payload = {
-                        stages: [{
-                            stage_key: placeHolder[stageKeyColIndex],
-                            dept_key: placeHolder[stageDeptKeyColIndex],
-                            section_key: placeHolder[stageSectionKeyColIndex],
-                            section_title_en: placeHolder[stageSectionTitleEnColIndex],
-                            section_title_ar: placeHolder[stageSectionTitleArColIndex],
-                            name_en: placeHolder[stageNameEnColIndex],
-                            name_ar: placeHolder[stageNameArColIndex],
-                            is_offered: placeHolder[stageIsOfferedColIndex],
-                            age_en: placeHolder[stageAgeEnColIndex],
-                            age_ar: placeHolder[stageAgeArColIndex],
-                            tuition_fees: Number(placeHolder[stageTuitionFeesColIndex]),
-                            sort_order: Number(placeHolder[stageSortOrderColIndex])
-                        }]
-                    };
-
-                } else {
-                    throw new Error('No Data to Sync From.')
-                }
-            }
-
             payload.is_development = isDevelopment();
+            payload.update_static_content_only = true;
             const result = await updateInfoSystemData(payload);
 
             if (result && result.success) {
@@ -326,7 +260,7 @@ function InfoSystemManagement() {
         setEditFormFields(null);
     };
 
-    const getTableModuleHeaderElements = (calledEditType) => {
+    const getTableModuleHeaderElements = () => {
         return [
             (
                 <button key={1} onClick={reloadData} disabled={isLoading}>
@@ -334,8 +268,8 @@ function InfoSystemManagement() {
                 </button>
             ),
             (
-                <button key={2} onClick={async () => await handleSyncInfoSystemSubmit(calledEditType)} disabled={isLoading}>
-                    {isLoading ? 'Syncing' : 'Sync Config Data'}
+                <button key={2} onClick={async () => await handleSyncInfoSystemSubmit()} disabled={isLoading}>
+                    {isLoading ? 'Syncing' : 'Trigger Server Static Update'}
                 </button>
             ),
             (
@@ -357,7 +291,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('settings', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={getTableModuleHeaderElements('settings')}
+                   headerModuleElements={getTableModuleHeaderElements()}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
                    allowBreakWordColumns={{ "Value": '10rem' }}
                    truncateValuesColumns={{'Value': 100}}
@@ -377,7 +311,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('departments', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={getTableModuleHeaderElements('departments')}
+                   headerModuleElements={getTableModuleHeaderElements()}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
             />
         </div>
@@ -394,7 +328,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('stages', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={getTableModuleHeaderElements('stages')}
+                   headerModuleElements={getTableModuleHeaderElements()}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
                    currencyColumns={[
                        'Tuition Fees'
