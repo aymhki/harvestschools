@@ -286,7 +286,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('settings', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={getTableModuleHeaderElements()}
+                   headerModuleElements={getTableModuleHeaderElements}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
                    allowBreakWordColumns={{ "Value": '10rem' }}
                    truncateValuesColumns={{'Value': 100}}
@@ -306,7 +306,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('departments', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={getTableModuleHeaderElements()}
+                   headerModuleElements={getTableModuleHeaderElements}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
             />
         </div>
@@ -323,7 +323,7 @@ function InfoSystemManagement() {
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('stages', rowIndex)}
                    isLoading={isLoading}
-                   headerModuleElements={getTableModuleHeaderElements()}
+                   headerModuleElements={getTableModuleHeaderElements}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
                    currencyColumns={[
                        'Tuition Fees'
