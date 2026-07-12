@@ -427,6 +427,7 @@ PROMPT;
             'info_body' => ['en' => 'Please select an option to continue:', 'ar' => 'يرجى الإختيار للمتابعة:'],
             'faqs_item' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
             'careers_item' => ['en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
+            'no_stgs' => ['en' => 'Sorry, all the stages in this stage group are not currently offered', 'ar' => 'معذرة، كل المراحل الدراسية في هذه المجموعة غير متوفرة حاليًا']
         ],
         'main_options' => [
             ['id' => 'menu_stages', 'en' => 'Stages Offered', 'ar' => 'المراحل المتاحة'],
