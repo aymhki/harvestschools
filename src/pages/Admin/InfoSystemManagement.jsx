@@ -331,6 +331,7 @@ function InfoSystemManagement() {
                    filterableColumns={[
                        'Section Key',
                        'Department Key',
+                       'Is Offered'
                    ]}
                    currencySymbols={['EGP']}
                    currencySymbolPositions={['right-space']}
