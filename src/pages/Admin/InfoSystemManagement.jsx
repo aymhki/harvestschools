@@ -451,7 +451,13 @@ function InfoSystemManagement() {
                             </p>
                         ) : (
                             <p className={"general-large-admin-action-modal-content-note"}>
-                                Note: Titles & names should preferably be under 20 characters (Spaces are characters)
+                                Note: Titles & names should preferably be under 20 characters (Spaces are characters).
+                            </p>
+                        )}
+
+                        {currentEditType === 'stages' && (
+                            <p className={"general-large-admin-action-modal-content-note"}>
+                                Note: You should not assign more than 6 stages to the same section key.
                             </p>
                         )}
 

@@ -518,18 +518,25 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
         $bodyText .= "\n\n_" . $ui['unoffered_note'][$lang] . "_";
     }
 
-    $sections = [
-        [
-            "title" => $stageData['title'][$lang],
-            "rows" => $rows
-        ],
-        [
-            "title" => $ui['nav_section'][$lang],
-            "rows" => getNavRows($lang, "sec_{$action}_{$deptKey}_{$secKey}")
-        ]
-    ];
+    if (count($rows) > 0) {
+        $sections = [
+            [
+                "title" => $stageData['title'][$lang],
+                "rows" => $rows
+            ],
+            [
+                "title" => $ui['nav_section'][$lang],
+                "rows" => getNavRows($lang, "sec_{$action}_{$deptKey}_{$secKey}")
+            ]
+        ];
 
-    sendList($to, $bodyText, $ui['main_btn'][$lang], $sections);
+        sendList($to, $bodyText, $ui['main_btn'][$lang], $sections);
+    } else {
+        sendButtons($to, $ui['no_stgs'][$lang], [
+            ["id" => "main_menu", "title" => $ui['back_btn'][$lang]],
+            ["id" => "lang_toggle_" . "sec_{$action}_{$deptKey}_{$secKey}", "title" => $ui['change_lang_btn'][$lang]]
+        ]);
+    }
 }
 
 function sendFinalTextWithMenuButton($to, $text, $lang, $currentMenuId) {
