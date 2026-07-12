@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../configs/botConfig.php';
-require_once __DIR__ . '/../shared/text_utils.php';
+require_once '../../configs/botConfig.php';
+require_once '../shared/text_utils.php';
 
 
 const WA_LIST_TITLE_LIMIT = 24;
