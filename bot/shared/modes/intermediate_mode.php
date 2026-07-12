@@ -1,5 +1,5 @@
 <?php
-require_once '../db.php';
+require_once __DIR__ . '/../db.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 require_once dirname($doc_root) . '/configs/botConfig.php';
 
