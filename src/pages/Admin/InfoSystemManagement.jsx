@@ -328,6 +328,10 @@ function InfoSystemManagement() {
                    currencyColumns={[
                        'Tuition Fees'
                    ]}
+                   filterableColumns={[
+                       'Section Key',
+                       'Department Key',
+                   ]}
                    currencySymbols={['EGP']}
                    currencySymbolPositions={['right-space']}
             />
