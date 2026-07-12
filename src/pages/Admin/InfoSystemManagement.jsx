@@ -165,11 +165,6 @@ function InfoSystemManagement() {
             const result = await updateInfoSystemData(payload);
 
             if (result && result.success) {
-                setShowEditModal(false);
-                setResetEditModal(true);
-                setCurrentEditType(null);
-                setEditFormFields(null);
-                await reloadData();
                 return true;
             } else {
                 throw new Error(result.message || result);
@@ -269,7 +264,7 @@ function InfoSystemManagement() {
             ),
             (
                 <button key={2} onClick={async () => await handleSyncInfoSystemSubmit()} disabled={isLoading}>
-                    {isLoading ? 'Syncing' : 'Trigger Server Static Update'}
+                    {isLoading ? 'Syncing...' : 'Trigger Server Static Data Update'}
                 </button>
             ),
             (
