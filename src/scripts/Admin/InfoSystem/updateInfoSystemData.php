@@ -2,7 +2,8 @@
 require_once '../../headers.php';
 require_once '../../authHelpers.php';
 require_once '../../permissionLevels.php';
-$dbConfig = require '../../../../configs/dbConfig.php';
+$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+$dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
 $servername = $dbConfig['db_host'];
 $username = $dbConfig['db_username'];
@@ -568,7 +569,6 @@ $STRINGS = [
 PHP_CODE;
 
 
-    $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
     if ($postData['is_development']) {
         $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR;
         $configPath = $ASSETS_BASE . 'config-tmp.php';

@@ -1,5 +1,6 @@
 <?php
-require_once '../../configs/botConfig.php';
+$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+require_once dirname($doc_root) . '/configs/botConfig.php';
 
 function db() {
     static $pdo = null;
