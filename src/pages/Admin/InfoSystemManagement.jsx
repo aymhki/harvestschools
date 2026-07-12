@@ -334,7 +334,7 @@ function InfoSystemManagement() {
                 </button>
             ),
             (
-                <button key={2} onClick={handleSyncInfoSystemSubmit(calledEditType)} disabled={isLoading}>
+                <button key={2} onClick={async () => await handleSyncInfoSystemSubmit(calledEditType)} disabled={isLoading}>
                     {isLoading ? 'Syncing' : 'Sync Config Data'}
                 </button>
             ),
