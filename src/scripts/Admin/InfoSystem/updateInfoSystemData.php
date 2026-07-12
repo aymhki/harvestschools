@@ -55,16 +55,19 @@ try {
             );
             $stmt->execute();
         }
+
         $stmt->close();
     }
 
     if (!$updateStaticOnly && isset($postData['departments'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, sort_order) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic), sort_order=VALUES(sort_order)");
+
         foreach ($postData['departments'] as $d) {
             $isAc = $d['is_academic'] === 'Yes' ? 1 : 0;
             $stmt->bind_param("ssssii", $d['dept_key'], $d['name_en'], $d['name_ar'], $d['contact_number'], $isAc, $d['sort_order']);
             $stmt->execute();
         }
+
         $stmt->close();
     }
 
@@ -83,14 +86,17 @@ try {
                 'ar' => $st['section_title_ar'],
             ];
         }
+
         $stmt->close();
 
         if (!empty($sectionTitles)) {
             $syncStmt = $conn->prepare("UPDATE info_system_stages SET section_title_en = ?, section_title_ar = ? WHERE section_key = ?");
+
             foreach ($sectionTitles as $sectionKey => $titles) {
                 $syncStmt->bind_param("sss", $titles['en'], $titles['ar'], $sectionKey);
                 $syncStmt->execute();
             }
+
             $syncStmt->close();
         }
     }
