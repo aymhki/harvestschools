@@ -1,28 +1,29 @@
 <?php
-$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
-require_once dirname($doc_root) . '/configs/botConfig.php';
-require_once __DIR__ . '/../shared/db.php';
-require_once __DIR__ . '/messenger_api.php';
 
+try {
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $mode      = $_GET['hub_mode']         ?? '';
-    $token     = $_GET['hub_verify_token'] ?? '';
-    $challenge = $_GET['hub_challenge']    ?? '';
+    $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+    require_once dirname($doc_root) . '/configs/botConfig.php';
+    require_once __DIR__ . '/../shared/db.php';
+    require_once __DIR__ . '/messenger_api.php';
 
-    if ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN) {
-        echo $challenge;
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $mode      = $_GET['hub_mode']         ?? '';
+        $token     = $_GET['hub_verify_token'] ?? '';
+        $challenge = $_GET['hub_challenge']    ?? '';
+
+        if ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN) {
+            echo $challenge;
+            exit;
+        }
+
+        http_response_code(403);
         exit;
     }
 
-    http_response_code(403);
-    exit;
-}
+    $rawBody = file_get_contents('php://input');
+    $input = json_decode($rawBody, true);
 
-$rawBody = file_get_contents('php://input');
-$input = json_decode($rawBody, true);
-
-try {
     $object = $input['object'] ?? '';
 
     if ($object !== 'page' && $object !== 'instagram') {
@@ -51,7 +52,6 @@ try {
         http_response_code(200);
         exit;
     }
-
 
     if (BOT_ON === 1) {
         if (BOT_MODE === 'advanced') {
