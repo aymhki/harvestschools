@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import {useEffect, useState, useRef, createRef} from "react";
+import {useEffect, useState, useRef, createRef, useId} from "react";
 import {Fragment} from "react";
 import '../styles/Form.css'
 import {v6 as uuidv6} from 'uuid';
@@ -13,6 +13,7 @@ import {useFormCache} from "../services/General/UseFormCache.jsx";
 import {msgTimeout} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
+import {createPortal} from "react-dom";
 
 function Form({
                   fields,
@@ -41,7 +42,8 @@ function Form({
                   forceEnglishForm,
                   hasDifferentResetBehaviour,
                   differentResetBehaviour,
-
+                  formFooterButtonsAreOutside,
+                  footerButtonsPortalTarget,
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -70,6 +72,7 @@ function Form({
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
     const { t } = useTranslation(['all-forms'], forceEnglishForm ? { lng: 'en' } : {});
+    const formId = useId();
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -1256,14 +1259,14 @@ function Form({
         if (hasDifferentSubmitButtonText) {
             const buttonText = (submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]);
             return (
-                <button type="submit" disabled={submitting} className="submit-button">
+                <button type="submit" form={formId} disabled={submitting} className="submit-button">
                     {buttonText}
                 </button>
             );
         }
 
         return (
-            <button type="submit" disabled={submitting} className="submit-button">
+            <button type="submit" form={formId} disabled={submitting} className="submit-button">
                 {submitting ? t('all-forms.submitting') : t('all-forms.submit')}
             </button>
         );
@@ -1272,7 +1275,7 @@ function Form({
     const ResetButtons = () => (
         <div className="reset-buttons-wrapper">
             {!noClearOption && (
-                <button type="reset" disabled={submitting} className="reset-button">
+                <button type="reset"  form={formId} disabled={submitting} className="reset-button">
                     {t('all-forms.clear')}
                 </button>
             )}
@@ -1291,24 +1294,30 @@ function Form({
         const resetButtons = (
             <ResetButtons/>
         );
-        
+
+        const buttonsMarkup = (
+            <div className={buttonsWrapperClass}>
+                {switchFooterButtonsOrder ? (
+                    <>
+                        {resetButtons}
+                        {submitButton}
+                    </>
+                ) : (
+                    <>
+                        {submitButton}
+                        {resetButtons}
+                    </>
+                )}
+            </div>
+        );
+
         return (
             <div className={footerClass}>
                 {generalFormError && <p className="general-form-error">{generalFormError}</p>}
                 {successMessage && <p className="success-message">{successMessage}</p>}
-                <div className={buttonsWrapperClass}>
-                    {switchFooterButtonsOrder ? (
-                        <>
-                            {resetButtons}
-                            {submitButton}
-                        </>
-                    ) : (
-                        <>
-                            {submitButton}
-                            {resetButtons}
-                        </>
-                    )}
-                </div>
+                {formFooterButtonsAreOutside && footerButtonsPortalTarget?.current
+                    ? createPortal(buttonsMarkup, footerButtonsPortalTarget.current)
+                    : buttonsMarkup}
             </div>
         );
     };
@@ -1423,7 +1432,7 @@ function Form({
     const MainForm = () => {
         return (
             <>
-                <form className="form" onSubmit={onSubmit} method="post" onReset={resetForm}>
+                <form className="form" onSubmit={onSubmit} method="post" onReset={resetForm} id={formId}>
                     {dynamicFields.map((field) => (renderFieldBasedOnType(field)))}
                     {CaptchaField()}
                     {FormFooter()}
@@ -1501,6 +1510,8 @@ Form.propTypes = {
     forceEnglishForm: PropTypes.bool,
     hasDifferentResetBehaviour: PropTypes.bool,
     differentResetBehaviour: PropTypes.func,
+    formFooterButtonsAreOutside: PropTypes.bool,
+    footerButtonsPortalTarget: PropTypes.object,
 };
 
 export default Form;

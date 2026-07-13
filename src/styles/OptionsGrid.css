@@ -27,6 +27,10 @@
     line-height: 1.5;
 }
 
+.options-grid-container h1, .options-grid-container-dynamic h1 {
+    line-height: 1.5;
+}
+
 .options-grid-compact-items-container {
     display: grid;
     padding: 1rem;
@@ -107,6 +111,10 @@
     border-radius: 1rem;
     cursor: pointer;
     height: auto;
+}
+
+.options-grid-items-container h3 {
+    line-height: 1.5;
 }
 
 
@@ -198,6 +206,19 @@
     .options-grid-compact-items-container  {
         min-height: 12rem;
         max-height: 15rem;
+    }
+
+    .options-grid-items-container {
+        gap: 0.1rem;
+        grid-template-columns: repeat(auto-fill, minmax(calc(100% - 1rem), 1fr));
+    }
+
+    .options-grid-items-container img {
+        max-height: 5rem;
+    }
+
+    .options-grid-container {
+        width: 90%;
     }
 }
 

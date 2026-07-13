@@ -1,6 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {msgTimeout, graduationBookingManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
@@ -29,6 +29,8 @@ function GraduationBookingManagement() {
     const [showEditBookingModal, setShowEditBookingModal] = useState(false);
     const [editBookingModalPreFilledCoreFields, setEditBookingModalPreFilledCoreFields] = useState(null);
     const [resetEditBookingModal, setResetEditBookingModal] = useState(false);
+    const addBookingModalFooterButtonsRef = useRef(null);
+    const editBookingModalFooterButtonsRef = useRef(null);
 
     const bookingUsernameFieldId = 1;
     const bookingPasswordFieldId = 2;
@@ -983,6 +985,8 @@ function GraduationBookingManagement() {
                               footerButtonsSpaceBetween={true}
                               switchFooterButtonsOrder={true}
                               forceEnglishForm={true}
+                              formFooterButtonsAreOutside={true}
+                              footerButtonsPortalTarget={addBookingModalFooterButtonsRef}
                         />
                     </div>
 
@@ -991,6 +995,7 @@ function GraduationBookingManagement() {
                         <button className={"add-booking-modal-form-cancel-button"} onClick={cancelAddBookingModal}>
                             Cancel
                         </button>
+                        <div ref={addBookingModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>
@@ -1086,6 +1091,8 @@ function GraduationBookingManagement() {
                                   setResetForFromParent={setResetEditBookingModal}
                                   thisFormIsEditingAnEntry={true}
                                   forceEnglishForm={true}
+                                  formFooterButtonsAreOutside={true}
+                                  footerButtonsPortalTarget={editBookingModalFooterButtonsRef}
                             />
                         )}
                     </div>
@@ -1096,6 +1103,7 @@ function GraduationBookingManagement() {
                         }}>
                             Cancel
                         </button>
+                        <div ref={editBookingModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
 

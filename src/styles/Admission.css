@@ -107,6 +107,6 @@
 
 @media (prefers-color-scheme: dark) {
     .admission-process-image {
-        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+        filter: invert(0.92) hue-rotate(180deg);
     }
 }
