@@ -32,7 +32,7 @@ try {
     $permResult = $conn->query("SELECT permission_id, permission_name, description FROM available_permissions");
     if ($permResult && $permResult->num_rows > 0) {
         while ($pRow = $permResult->fetch_assoc()) {
-            $permissionsMap[$pRow['permission_id']] = [
+            $permissionsMap[(string)$pRow['permission_id']] = [
                 'name' => $pRow['permission_name'],
                 'description' => $pRow['description']
             ];
@@ -49,14 +49,20 @@ try {
     $dataRows = [];
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $originalPermissions = isset($row['permission_level']) ? $row['permission_level'] : '';
+            $sql = "SELECT permission_level_id FROM admin_users_permissions_linker WHERE admin_user_id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $row["id"]);
+            $stmt->execute();
+            $permissionResult = $stmt->get_result();
+            $originalPermissions = array_map(fn($n)=> (string)$n, array_column($permissionResult->fetch_all(MYSQLI_ASSOC), 'permission_level_id'));
 
-            if (isset($row['permission_level']) && $row['permission_level'] !== '') {
-                $permIds = array_map('trim', explode(',', $row['permission_level']));
+            if (count($originalPermissions) > 0) {
                 $permNames = [];
-                foreach ($permIds as $id) {
+
+                foreach ($originalPermissions as $id) {
                     $permNames[] = isset($permissionsMap[$id]) ? $permissionsMap[$id]['name'] : $id;
                 }
+
                 $row['permission_level'] = implode(', ', $permNames);
             }
 

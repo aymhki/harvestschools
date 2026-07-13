@@ -1,4 +1,5 @@
 <?php
+require_once '../../permissionLevels.php';
 
 function get_bearer_token() {
     $headers = null;
@@ -33,7 +34,7 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
         ];
     }
 
-    $stmt = $conn->prepare("SELECT u.permission_level FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id WHERE s.id = ?");
+    $stmt = $conn->prepare("SELECT p.permission_level_id FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id JOIN admin_users_permissions_linker p ON u.id = p.admin_user_id  WHERE s.id = ?");
     
     if (!$stmt) {
         return [
@@ -56,26 +57,28 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
         ];
     }
 
-    $permissionRow = $permissionResult->fetch_assoc();
-    $cleanPermissionLevels = array_map('intval', explode(',', $permissionRow['permission_level']));
+    $permissionRow = array_map(fn($n)=> (string)$n, array_column($permissionResult->fetch_all(MYSQLI_ASSOC), 'permission_level_id'));
+    global $JACK_OF_ALL_TRADES;
 
-    if (is_array($requiredPermission)) {
-        $requiredPermissions = array_map('intval', $requiredPermission);
-        $missingPermissions = array_diff($requiredPermissions, $cleanPermissionLevels);
-        if (!empty($missingPermissions)) {
-            return [
-                "success" => false,
-                "message" => "Permission denied",
-                "code" => 403
-            ];
-        }
-    } else {
-        if (!in_array((int)$requiredPermission, $cleanPermissionLevels, true)) {
-            return [
-                "success" => false,
-                "message" => "Permission denied",
-                "code" => 403
-            ];
+    if (!in_array($JACK_OF_ALL_TRADES, $permissionRow)) {
+        if (is_array($requiredPermission)) {
+            $missingPermissions = array_diff($requiredPermission, $permissionRow);
+
+            if (!empty($missingPermissions)) {
+                return [
+                    "success" => false,
+                    "message" => "Permission denied",
+                    "code" => 403
+                ];
+            }
+        } else {
+            if (!in_array($requiredPermission, $permissionRow, true)) {
+                return [
+                    "success" => false,
+                    "message" => "Permission denied",
+                    "code" => 403
+                ];
+            }
         }
     }
 

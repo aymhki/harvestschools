@@ -32,10 +32,7 @@ try {
 
     $conn->set_charset("utf8mb4");
     $sessionId = get_bearer_token();
-    $stmt = $conn->prepare("SELECT u.permission_level 
-                          FROM admin_sessions s
-                          JOIN admin_users u ON s.user_id = u.id
-                          WHERE s.id = ?");
+    $stmt = $conn->prepare("SELECT  p.permission_level_id FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id JOIN admin_users_permissions_linker p ON u.id = p.admin_user_id WHERE s.id = ?");
 
     if (!$stmt) {
         echo json_encode([
@@ -60,20 +57,18 @@ try {
         exit;
     }
 
-    $row = $result->fetch_assoc();
-    $cleanPermissionLevels = [];
+    $row = array_column($result->fetch_all(MYSQLI_ASSOC), 'permission_level_id');
+    $cleanPermissionLevels = array_map(fn($n) => (string)$n, $row);
 
-    if ($row['permission_level'] === "0") {
-        $cleanPermissionLevels = [0];
-    } elseif ($row['permission_level'] !== "" && $row['permission_level'] !== null) {
-        $permissionLevels = explode(',', $row['permission_level']);
-        $cleanPermissionLevels = [];
-        foreach ($permissionLevels as $level) {
-            $trimmedLevel = trim($level);
-            if ($trimmedLevel !== "") {
-                $cleanPermissionLevels[] = intval($trimmedLevel);
-            }
-        }
+    global $JACK_OF_ALL_TRADES;
+
+    if (in_array($JACK_OF_ALL_TRADES, $cleanPermissionLevels)) {
+        $sql = "SELECT permission_id FROM available_permissions";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $allPermissions = array_column($result->fetch_all(MYSQLI_ASSOC), 'permission_id');
+        $cleanPermissionLevels = array_map(fn($n) => (string)$n, $allPermissions);
     }
 
     echo json_encode([

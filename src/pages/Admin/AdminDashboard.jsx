@@ -6,7 +6,7 @@ import { useMemo} from "react";
 import PropTypes from "prop-types";
 import {logoutCurrentAdmin} from "../../services/General/GeneralUtils.jsx";
 
-function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
+function AdminDashboard({ dashboardOptions, adminPermissions, isLoading, loggedInName }) {
     const navigate = useNavigate();
 
     const greeting = useMemo(() => {
@@ -65,6 +65,7 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
 
 AdminDashboard.propTypes = {
     dashboardOptions: PropTypes.array.isRequired,
+    adminPermissions: PropTypes.arrayOf(PropTypes.string).isRequired,
     isLoading: PropTypes.bool.isRequired,
     loggedInName: PropTypes.string.isRequired,
 };

@@ -1,7 +1,7 @@
 import {v6 as uuidv6} from "uuid";
 import i18n from '../../i18n/i18n-client.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import { Capacitor } from '@capacitor/core';
 import {clearMobileSession} from "./CapacitorSecureAuthUtils.jsx"
 
@@ -117,13 +117,14 @@ const adminLoginPageUrl = '/admin-login';
 const adminDashboardPageUrl = '/admin-dashboard';
 const costPerChildInOpenDaySignup = 150;
 
-const adminUserManagementPermissionLevel = 1000;
-const jobApplicationManagementPermissionLevel = 0;
-const graduationBookingManagementPermissionLevel = 1;
-const openDaySignupManagementPermissionLevel = 2;
-const BorrowingSystemManagementPermissionLevel = 3;
-const infoSystemManagementPermissionLevel = 7;
-const alumniStudentsManagementPermissionLevel = 13;
+const adminUserManagementPermissionLevel = "1000";
+const jobApplicationManagementPermissionLevel = "0";
+const graduationBookingManagementPermissionLevel = "1";
+const openDaySignupManagementPermissionLevel = "2";
+const BorrowingSystemManagementPermissionLevel = "3";
+const infoSystemManagementPermissionLevel = "7";
+const alumniStudentsManagementPermissionLevel = "13";
+const jackOfAllTradesPermissionLevel = "7246262252458111903";
 
 
 const ENDPOINTS = {
@@ -210,6 +211,34 @@ const useToggleLanguage = ({ignoreDocUpdate}) => {
     };
 };
 
+const useDarkMode = () => {
+
+    const getInitial = () =>
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    const [isDarkMode, setIsDarkMode] = useState(getInitial);
+
+    useEffect(() => {
+        if (!window.matchMedia) return;
+
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+        const handleChange = (event) => setIsDarkMode(event.matches);
+
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener("change", handleChange);
+            return () => mediaQuery.removeEventListener("change", handleChange);
+        }
+
+        mediaQuery.addEventListener("change", handleChange);
+        return () => mediaQuery.removeEventListener("change", handleChange);
+    }, []);
+
+    return isDarkMode;
+}
+
 
 export {
     generateEndpoints,
@@ -244,8 +273,11 @@ export {
     infoSystemManagementPermissionLevel,
     alumniStudentsManagementPermissionLevel,
     BorrowingSystemManagementPermissionLevel,
+    jackOfAllTradesPermissionLevel,
     getBaseUrl,
     getSessionsFromLocalStorage,
     getAdminSessionId,
     getGraduationBookingSessionId,
+    useDarkMode
 }
+

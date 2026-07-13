@@ -47,6 +47,11 @@ try {
     $stmt->bind_param("i", $adminUserToDeleteId);
     $stmt->execute();
 
+    $sql = "DELETE FROM admin_users_permissions_linker WHERE admin_user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $adminUserToDeleteId);
+    $stmt->execute();
+
     $sql = "DELETE FROM admin_users WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $adminUserToDeleteId);

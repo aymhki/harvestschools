@@ -31,6 +31,7 @@ function AdminRouter() {
         const savedPreference = localStorage.getItem('isSidebarPinned');
         return savedPreference === 'true';
     });
+    const [adminPermissions, setAdminPermissions] = useState([]);
     const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false);
     const [userDataWereNeverFetched, setUserDataWereNeverFetched] = useState(true);
     const excludePaths = ['/admin-login'];
@@ -49,7 +50,7 @@ function AdminRouter() {
             setAdminLinks([]);
             setUserDataWereNeverFetched(true);
         } else if ((adminLinks.length === 0 && userDataWereNeverFetched) || refreshCurrentUserData) {
-            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInName, setLoggedInUsername, setLoggedInUserId);
+            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInName, setLoggedInUsername, setAdminPermissions, setLoggedInUserId);
             setUserDataWereNeverFetched(false);
             setRefreshCurrentUserData(false);
         }
@@ -65,6 +66,7 @@ function AdminRouter() {
                         loggedInUsername={loggedInName}
                         isPinned={isSidebarPinned}
                         onTogglePin={handleTogglePin}
+                        adminPermissions={adminPermissions}
                     />
                 )}
 
@@ -72,7 +74,7 @@ function AdminRouter() {
                     <Routes>
                         <Route path="/" element={<Navigate to="/admin-login" replace />} />
                         <Route path="/admin-login" element={<AdminLogin isMobileApp={false}/>} />
-                        <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
+                        <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} adminPermissions={adminPermissions} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
                         <Route path="/job-applications" element={<JobApplications />} />
                         <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
                         <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />

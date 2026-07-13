@@ -83,19 +83,9 @@ try {
         exit;
     }
 
-    $permissionLevels = preg_split('/\s*,\s*/', $newAdminPermissionLevel, -1, PREG_SPLIT_NO_EMPTY);
-
-    foreach ($permissionLevels as $level) {
-        if (!is_numeric($level) ) {
-            $conn->rollback();
-            echo json_encode(["success" => false, "message" => "Invalid permission level", "code" => 400]);
-            exit;
-        }
-    }
-
-    $availablePermissions = $conn->query("SELECT permission_id FROM available_permissions");
-    $permissionIds = array_map('intval', $permissionLevels);
-    $invalidPermissionIds = array_diff($permissionIds, array_column($availablePermissions->fetch_all(MYSQLI_ASSOC), 'permission_id'));
+    $availablePermissions = $conn->query("SELECT permission_id FROM available_permissions")->fetch_all(MYSQLI_ASSOC);
+    $permissionIds = array_map(fn($n) => (string)$n, array_column($availablePermissions, 'permission_id'));
+    $invalidPermissionIds = array_diff($newAdminPermissionLevel, $permissionIds);
 
     if (!empty($invalidPermissionIds)) {
         $conn->rollback();
@@ -104,12 +94,19 @@ try {
     }
 
 
-    $sql = "INSERT INTO admin_users (username, name, password_hash, permission_level) VALUES (?, ?, SHA2(?, 256), ?)";
+    $sql = "INSERT INTO admin_users (username, name, password_hash) VALUES (?, ?, SHA2(?, 256))";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $newUsername, $newAdminName, $newAdminPassword, $newAdminPermissionLevel);
+    $stmt->bind_param("sss", $newUsername, $newAdminName, $newAdminPassword);
     $stmt->execute();
-
+    $new_user_id = mysqli_insert_id($conn);
     $conn->commit();
+
+    foreach ($newAdminPermissionLevel as $permissionId) {
+        $sql = "INSERT INTO admin_users_permissions_linker (admin_user_id, permission_level_id) VALUES (?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $new_user_id, $permissionId);
+        $stmt->execute();
+    }
 
     echo json_encode(["success" => true, "message" => "Admin user created successfully", "code" => 200]);
 

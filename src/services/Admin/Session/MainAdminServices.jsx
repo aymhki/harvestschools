@@ -55,6 +55,7 @@ const checkAdminSession = async (navigate, allowedPermission) => {
             navigate(adminLoginPageUrl, { replace: true });
 
         }
+
         const userPermissionsResponse = await fetch(endpoints.getUserPermissions, {
             method: 'POST',
             headers: {
@@ -65,7 +66,6 @@ const checkAdminSession = async (navigate, allowedPermission) => {
         const userPermissionsResult = await userPermissionsResponse.json();
 
         if (userPermissionsResult && userPermissionsResult.success && userPermissionsResult.cleanPermissionLevels) {
-
             if (!userPermissionsResult.cleanPermissionLevels.includes(allowedPermission)) {
                 navigate(adminLoginPageUrl, { replace: true });
             }
@@ -85,7 +85,7 @@ const checkAdminSession = async (navigate, allowedPermission) => {
     }
 }
 
-const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions, setLoggedInName, setLoggedInUsername, setLoggedInUserId) => {
+const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions, setLoggedInName, setLoggedInUsername, setAdminPermissions, setLoggedInUserId) => {
     const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
@@ -129,6 +129,7 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
         if (permissionsResult.success) {
 
             setDashboardOptions(permissionsResult.dashboardOptions);
+            setAdminPermissions(permissionsResult.permissionLevels);
 
         } else {
 

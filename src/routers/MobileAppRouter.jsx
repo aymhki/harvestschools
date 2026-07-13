@@ -150,7 +150,7 @@ const routeConfig = [
         path: '/admin-dashboard',
         section: 'admin',
         element: (ctx) => (
-            <AdminDashboard dashboardOptions={ctx.adminLinks} isLoading={ctx.isAuthLoading} loggedInName={ctx.loggedInName} />
+            <AdminDashboard dashboardOptions={ctx.adminLinks} adminPermissions={ctx.adminPermissions} isLoading={ctx.isAuthLoading} loggedInName={ctx.loggedInName} />
         ),
     },
     { path: '/job-applications', section: 'admin', element: () => <JobApplications /> },
@@ -195,6 +195,7 @@ function MobileAppRouter() {
         const savedPreference = localStorage.getItem('isSidebarPinned')
         return savedPreference === 'true'
     })
+    const [adminPermissions, setAdminPermissions] = useState([])
     const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false)
     const [userDataWereNeverFetched, setUserDataWereNeverFetched] = useState(true)
     const toggleLanguage = useToggleLanguage({ignoreDocUpdate: true} );
@@ -235,7 +236,7 @@ function MobileAppRouter() {
         }
 
         if ((adminLinks.length === 0 && userDataWereNeverFetched) || refreshCurrentUserData) {
-            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInName, setLoggedInUsername, setLoggedInUserId)
+            headToAdminLoginOnInvalidSessionFromAdminDashboard(navigate, setAdminLinks, setIsAuthLoading, setLoggedInName, setLoggedInUsername, setAdminPermissions, setLoggedInUserId)
             setUserDataWereNeverFetched(false)
             setRefreshCurrentUserData(false)
         }
@@ -292,7 +293,8 @@ function MobileAppRouter() {
         loggedInUserId,
         loggedInUsername,
         setRefreshCurrentUserData,
-    }), [adminLinks, isAuthLoading, loggedInName, loggedInUserId, loggedInUsername])
+        adminPermissions
+    }), [adminLinks, isAuthLoading, loggedInName, loggedInUserId, loggedInUsername, adminPermissions])
 
     return (
         <>
@@ -307,6 +309,7 @@ function MobileAppRouter() {
                             loggedInUsername={loggedInName}
                             isPinned={isSidebarPinned}
                             onTogglePin={handleTogglePin}
+                            adminPermissions={adminPermissions}
                         />
                     )}
                     <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
