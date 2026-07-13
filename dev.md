@@ -47,7 +47,7 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Fix the pull to refresh iOS app problems.
 - [x] Handle upgrading to npm 12 where post install for package patching might not run.
 - [x] The bot response to the vacancies option in the main menu doesn't use a cta button.
-- [ ] h1/2/3 of the options page line height is not set.
+- [x] h1/2/3 of the options page line height is not set.
 - [ ] The clear and save buttons of the admin large action modal popup could be in the modal footer rather than the form footer.
 - [ ] Fix the home page video width for both chrome and safari.
 - [ ] Large Action Modal Popup Needs to height readjustment for desktop view.

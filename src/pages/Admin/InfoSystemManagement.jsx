@@ -1,6 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
@@ -22,6 +22,7 @@ function InfoSystemManagement() {
     const [currentEditType, setCurrentEditType] = useState(null);
     const [indexOfRowToEdit, setIndexOfRowToEdit] = useState(null);
     const [syncConfigDataError, setSyncConfigDataError] = useState(null);
+    const editModalFooterButtonsRef = useRef(null);
 
     const animateEditModal = useSpring({
         opacity: showEditModal ? 1 : 0,
@@ -417,6 +418,8 @@ function InfoSystemManagement() {
                                   noClearOption={true}
                                   hasDifferentSubmitButtonText={true}
                                   differentSubmitButtonText={['Save Changes', 'Saving...']}
+                                  formFooterButtonsAreOutside={true}
+                                  footerButtonsPortalTarget={editModalFooterButtonsRef}
                             />
                         )}
                     </div>
@@ -425,6 +428,7 @@ function InfoSystemManagement() {
                         <button className={"add-admin-user-modal-form-cancel-button"} onClick={cancelEditModal}>
                             Cancel
                         </button>
+                        <div ref={editModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>

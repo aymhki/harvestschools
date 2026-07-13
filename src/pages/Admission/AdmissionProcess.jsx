@@ -21,13 +21,15 @@ function AdmissionProcess() {
         </Helmet>
 
         <div className="extreme-padding-container">
-            <img
-                src={
-                    i18n.language === 'ar' ? servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-ar.png') :
-                                            servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-en.png')
-                }
-                className={"admission-process-image"} alt="Admission Process"
-            />
+            <div className="admission-process-image-container">
+                <img
+                    src={
+                        i18n.language === 'ar' ? servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-ar.png') :
+                                                servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-en.png')
+                    }
+                    className={"admission-process-image"} alt="Admission Process"
+                />
+            </div>
 
             <div className="admission-process-steps">
                 <div className="admission-process-step">

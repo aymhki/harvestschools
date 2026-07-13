@@ -63,7 +63,7 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
 
                             }}>
 
-                                {<h2>{option.title}</h2>}
+                                {<h3>{option.title}</h3>}
                                 <img src={servePublicAsset(option.image)} alt={option.title}/>
                                 {<p>{option.description}</p>}
 

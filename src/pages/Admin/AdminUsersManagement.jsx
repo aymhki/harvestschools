@@ -1,6 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
@@ -25,6 +25,9 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
     const [userToEditId, setUserToEditId] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const addAdminUserModalFooterButtonsRef = useRef(null);
+    const editAdminUserModalFooterButtonsRef = useRef(null);
+
 
     const animateAddAdminUserModal = useSpring({
         opacity: (showAddAdminUserModal && permissionsFieldHasBeenPopulated) ? 1 : 0,
@@ -444,6 +447,8 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                               noClearOption={true}
                               hasDifferentSubmitButtonText={true}
                               differentSubmitButtonText={['Add Admin User', 'Adding Admin User...']}
+                                  formFooterButtonsAreOutside={true}
+                                  footerButtonsPortalTarget={addAdminUserModalFooterButtonsRef}
                           />
                         )}
                     </div>
@@ -452,6 +457,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                         <button className={"add-admin-user-modal-form-cancel-button"} onClick={cancelAddAdminUserModal}>
                             Cancel
                         </button>
+                        <div ref={addAdminUserModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>
@@ -488,15 +494,18 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                               noClearOption={true}
                               hasDifferentSubmitButtonText={true}
                               differentSubmitButtonText={['Edit Admin User', 'Editing Admin User...']}
+                                  formFooterButtonsAreOutside={true}
+                                  footerButtonsPortalTarget={editAdminUserModalFooterButtonsRef}
 
                             />
                         )}
                     </div>
 
                     <div className={"general-large-admin-action-modal-footer"}>
-                        <button className={"add-admin-user-modal-form-cancel-button"} onClick={cancelEditAdminUserModal}>
+                        <button className={"edit-admin-user-modal-form-cancel-button"} onClick={cancelEditAdminUserModal}>
                             Cancel
                         </button>
+                        <div ref={editAdminUserModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
 
