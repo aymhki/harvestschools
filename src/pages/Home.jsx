@@ -138,11 +138,13 @@ function Home() {
                     </p>
 
                     <div className="home-page-visit-us-section-map-container">
-                        <iframe className="home-page-visit-us-section-map"
+                        <iframe
+                            className="home-page-visit-us-section-map"
                             frameBorder={0}
                             allowFullScreen
                             loading="lazy"
-                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13698.65926645064!2d29.59631!3d30.868058!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6e0538b2d2ee1e57!2sHarvest%20International%20School!5e0!3m2!1sen!2sus!4v1623455102421!5m2!1sen!2sus;output=embed;frameborder=0;loading=lazy;"/>
+                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3000!2d29.59631!3d30.868058!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6e0538b2d2ee1e57!2sHarvest%20International%20School!5e0!3m2!1sen!2sus!4v1623455102421!5m2!1sen!2sus"
+                        />
                     </div>
                 </div>
             </div>

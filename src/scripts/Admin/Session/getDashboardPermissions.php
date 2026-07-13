@@ -33,10 +33,7 @@ try {
 
     $conn->set_charset("utf8mb4");
     $sessionId = get_bearer_token();
-    $stmt = $conn->prepare("SELECT u.permission_level 
-                          FROM admin_sessions s
-                          JOIN admin_users u ON s.user_id = u.id
-                          WHERE s.id = ?");
+    $stmt = $conn->prepare("SELECT  p.permission_level_id FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id JOIN admin_users_permissions_linker p ON u.id = p.admin_user_id WHERE s.id = ?");
 
     if (!$stmt) {
         echo json_encode([
@@ -61,23 +58,8 @@ try {
         exit;
     }
 
-    $row = $result->fetch_assoc();
-    $cleanPermissionLevels = [];
-
-    if ($row['permission_level'] === "0") {
-        $cleanPermissionLevels = [0];
-    }
-    elseif ($row['permission_level'] !== "" && $row['permission_level'] !== null) {
-        $permissionLevels = explode(',', $row['permission_level']);
-        $cleanPermissionLevels = [];
-
-        foreach ($permissionLevels as $level) {
-            $trimmedLevel = trim($level);
-            if ($trimmedLevel !== "") {
-                $cleanPermissionLevels[] = intval($trimmedLevel);
-            }
-        }
-    }
+    $row = array_column($result->fetch_all(MYSQLI_ASSOC), 'permission_level_id');
+    $cleanPermissionLevels = array_map(fn($n) => (string)$n, $row);
 
     global $ADMIN_USER_MANAGEMENT;
     global $JOB_APPLICATION_MANAGEMENT;
@@ -86,6 +68,7 @@ try {
     global $BORROWING_SYSTEM_MANAGEMENT;
     global $INFO_SYSTEM_MANAGEMENT;
     global $ALUMNI_STUDENTS_MANAGEMENT;
+    global $JACK_OF_ALL_TRADES;
 
     $dashboardOptions = [];
     $allDashboardOptions = [
@@ -168,11 +151,13 @@ try {
     ];
 
     rsort($cleanPermissionLevels);
-    
-    foreach ($cleanPermissionLevels as $level) {
-        if (isset($allDashboardOptions[$level])) {
-            $dashboardOptions = array_merge($dashboardOptions, $allDashboardOptions[$level]);
-        }
+    $master_of_none = in_array($JACK_OF_ALL_TRADES, $cleanPermissionLevels, true);
+
+    if (!$master_of_none) {
+        $filteredOptions = array_intersect_key($allDashboardOptions, array_flip($cleanPermissionLevels));
+        $dashboardOptions = array_merge([], ...array_values($filteredOptions));
+    } else {
+        $dashboardOptions = array_merge([], ...array_values($allDashboardOptions));
     }
 
     echo json_encode([

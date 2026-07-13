@@ -7,7 +7,7 @@ import Form from '../../modules/Form.jsx'
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {fetchAllAdminUsers, addAdminUser, editAdminUser, deleteAdminUser} from "../../services/Admin/AdminUsers/AdminUsersManagementServices.jsx";
-import {adminUserManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx"
+import {adminUserManagementPermissionLevel, msgTimeout} from "../../services/General/GeneralUtils.jsx"
 import PropTypes from "prop-types";
 
 function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
@@ -240,14 +240,13 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
             const idArray = permissionNames.map(name => {
                 return Object.keys(availablePermissionsDict).find(id => availablePermissionsDict[id].name === name);
             });
-            const permissionIdsString = idArray.filter(Boolean).join(', ');
 
             const formDataToSend = {
                 "new_admin_username": formDataJson[`field_${usernameFieldId}`],
                 "new_admin_name": formDataJson[`field_${nameFieldId}`],
                 "new_admin_password": formDataJson[`field_${passwordFieldId}`],
                 "new_admin_confirm_password": formDataJson[`field_${confirmPasswordFieldId}`],
-                "new_admin_permissions": permissionIdsString
+                "new_admin_permissions": idArray
             };
 
             const result = await addAdminUser(formDataToSend);
@@ -277,7 +276,6 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
             const idArray = permissionNames.map(name => {
                 return Object.keys(availablePermissionsDict).find(id => availablePermissionsDict[id].name === name);
             });
-            const permissionIdsString = idArray.filter(Boolean).join(', ');
             const adminToEditNewPassword = formDataJson[`field_${passwordFieldId}`];
 
             const formDataToSend = {
@@ -286,7 +284,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                 "edit_admin_name": formDataJson[`field_${nameFieldId}`],
                 "edit_admin_password": adminToEditNewPassword,
                 "edit_admin_confirm_password": formDataJson[`field_${confirmPasswordFieldId}`],
-                "edit_admin_permissions": permissionIdsString,
+                "edit_admin_permissions": idArray,
                 "the_current_user_editing_id": loggedInUserId,
             };
 
@@ -321,6 +319,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
     const handleDeleteAdminUser = async () => {
         if (rowIndexToDelete === null) {
             setDeleteError('Please select an admin to delete.');
+            setTimeout(() => { setDeleteError(null); }, msgTimeout);
             return;
         }
 
@@ -343,7 +342,8 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
             }
 
         } catch (error) {
-            throw new Error(error.message || 'An error occurred while deleting the admin user.');
+            setDeleteError(error.message || 'An error occurred while deleting the admin user.');
+            setTimeout(() => { setDeleteError(null); }, msgTimeout);
         } finally {
             setIsLoading(false);
             setIsDeleting(false);

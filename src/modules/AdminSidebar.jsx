@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../styles/AdminSidebar.css';
-import {isDevelopment, logoutCurrentAdmin} from "../services/General/GeneralUtils.jsx";
+import {isDevelopment, logoutCurrentAdmin, jackOfAllTradesPermissionLevel} from "../services/General/GeneralUtils.jsx";
 import { Capacitor } from '@capacitor/core';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import WorkIcon from '@mui/icons-material/Work';
@@ -20,7 +20,7 @@ import ViewSidebarIcon from '@mui/icons-material/ViewSidebar';
 import PropTypes from "prop-types";
 import {LinkOutlined} from "@mui/icons-material";
 
-function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
+function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned, onTogglePin}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const location = useLocation();
@@ -155,6 +155,18 @@ function AdminSidebar({ adminLinks, loggedInUsername, isPinned, onTogglePin}) {
                                 {showText && <span className="label">SchoolEverywhere</span>}
                             </Link>
                         </li>
+
+                        {(adminPermissions.includes(jackOfAllTradesPermissionLevel)) && (<li>
+                                    <Link
+                                        to={ "https://alfajralbasem.com/" }
+                                        title={!isExpanded ? 'Corporate' : ''}
+                                    >
+                                        <span className="icon"><LinkOutlined /></span>
+                                        {showText && <span className="label">Corporate</span>}
+                                    </Link>
+                                </li>
+                        )}
+
                         <li className="logout-btn" onClick={() => {logoutCurrentAdmin(navigate)}}>
                             <div className="nav-item-content" title={!isExpanded ? 'Logout' : ''}>
                                 <span className="icon"><LogoutIcon /></span>
@@ -183,6 +195,7 @@ AdminSidebar.propTypes = {
             title: PropTypes.string.isRequired,
         })
     ).isRequired,
+    adminPermissions: PropTypes.arrayOf(PropTypes.string).isRequired,
     loggedInUsername: PropTypes.string.isRequired,
     isPinned: PropTypes.bool.isRequired,
     onTogglePin: PropTypes.func.isRequired

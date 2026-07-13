@@ -57,4 +57,13 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
-- 
+- [ ] Create basic corporate site.
+- [ ] Setup the info for the D-U-N-S Number.
+- [ ] Fix the home page map.
+- [ ] Getting dashboard permissions and validating them should all work through the new permissions table in the db.
+- [ ] The custom multi select form field should support a special set value entries at which custom actions like check all and uncheck all work and at which a higher priority sort order is given.
+- [ ] Add corporate website to the admin sidebar with the master of none permission level.
+- [ ] Use AES encrypt for all admin passwords.
+- [ ] Use AES encrypt for all admin sessions.
+- [ ] Look into MFA  for admin logins.
+- [ ] Improve the sessions table to include fingerprinting.

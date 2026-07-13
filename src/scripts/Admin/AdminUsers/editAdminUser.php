@@ -94,19 +94,10 @@ try {
         $updatePassword = true;
     }
 
-    $permissionLevels = preg_split('/\s*,\s*/', $editAdminPermissionLevel, -1, PREG_SPLIT_NO_EMPTY);
 
-    foreach ($permissionLevels as $level) {
-        if (!is_numeric($level)) {
-            $conn->rollback();
-            echo json_encode(["success" => false, "message" => "Invalid permission level format", "code" => 400]);
-            exit;
-        }
-    }
-
-    $availablePermissions = $conn->query("SELECT permission_id FROM available_permissions");
-    $permissionIds = array_map('intval', $permissionLevels);
-    $invalidPermissionIds = array_diff($permissionIds, array_column($availablePermissions->fetch_all(MYSQLI_ASSOC), 'permission_id'));
+    $availablePermissions = $conn->query("SELECT permission_id FROM available_permissions")->fetch_all(MYSQLI_ASSOC);
+    $permissionIds = array_map(fn($n) => (string)$n, array_column($availablePermissions, 'permission_id'));
+    $invalidPermissionIds = array_diff($editAdminPermissionLevel, $permissionIds);
 
     if (!empty($invalidPermissionIds)) {
         $conn->rollback();
@@ -115,13 +106,13 @@ try {
     }
 
     if ($updatePassword) {
-        $sql = "UPDATE admin_users SET username = ?, name = ?, password_hash = SHA2(?, 256), permission_level = ? WHERE id = ?";
+        $sql = "UPDATE admin_users SET username = ?, name = ?, password_hash = SHA2(?, 256) WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $editUsername, $editAdminName, $editAdminPassword, $editAdminPermissionLevel, $adminId);
+        $stmt->bind_param("sssi", $editUsername, $editAdminName, $editAdminPassword, $adminId);
     } else {
-        $sql = "UPDATE admin_users SET username = ?, name = ?, permission_level = ? WHERE id = ?";
+        $sql = "UPDATE admin_users SET username = ?, name = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $editUsername, $editAdminName, $editAdminPermissionLevel, $adminId);
+        $stmt->bind_param("ssi", $editUsername, $editAdminName, $adminId);
     }
 
     $stmt->execute();
@@ -134,6 +125,18 @@ try {
             echo json_encode(["success" => false, "message" => "Admin user not found.", "code" => 404]);
             exit;
         }
+    }
+
+    $sql = "DELETE FROM admin_users_permissions_linker WHERE admin_user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $adminId);
+    $stmt->execute();
+
+    foreach ($editAdminPermissionLevel as $permissionId) {
+        $sql = "INSERT INTO admin_users_permissions_linker (admin_user_id, permission_level_id) VALUES (?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $adminId, $permissionId);
+        $stmt->execute();
     }
 
     if ($updatePassword && $theCurrentUserEditingId == $adminId) {
