@@ -49,13 +49,14 @@
 }
 
 .menu-icon {
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.25s;
     will-change: transform;
     box-shadow: none;
     font-weight: bold;
     font-size: xxx-large;
-
 }
 
 .menu-icon.open {
@@ -65,10 +66,9 @@
     box-shadow: none;
     font-weight: bold;
     font-size: xxx-large;
-    padding-left: 0.3rem;
-    padding-right: 0.3rem;
-
-
+    padding-right: 1rem;
+    padding-left: 0.8rem;
+    padding-top: 0.5rem;
 }
 
 .menu-icon-container {
@@ -76,6 +76,8 @@
     justify-content: center;
     align-items: center;
     padding: 0;
+    width: 3rem;
+    height: 4rem;
     z-index: var(--navbar-item-z-index);
 
 }
