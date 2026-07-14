@@ -26,6 +26,8 @@
     height: 60vh;
     margin-top: 1rem;
     min-width: 20rem;
+    transform: translateZ(0);
+    will-change: transform;
 
 }
 
