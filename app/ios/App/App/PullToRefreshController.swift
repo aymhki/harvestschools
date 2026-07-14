@@ -38,7 +38,7 @@ final class PullToRefreshController: NSObject {
         webView.isOpaque = true
         webView.backgroundColor = color
         webView.scrollView.backgroundColor = color
-        webView.underPageBackgroundColor = color
+        // webView.underPageBackgroundColor = color
     }
 
     @MainActor
