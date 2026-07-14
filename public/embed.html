@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html><body style="margin:0">
+<html lang="en">
+<head>
+    <title>Embed Video</title>
+    <style>html,body,iframe{margin:0;padding:0;width:100%;height:100%;border:0;}</style>
+</head>
+<body>
+<iframe id="yt"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
 <script>
-    const params = new URLSearchParams(location.search);
-    const id = params.get('v');
-    document.write(`<iframe src="https://www.youtube-nocookie.com/embed/${id}"
-    style="width:100%;height:100%;border:0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowfullscreen></iframe>`);
+    const id = new URLSearchParams(location.search).get('v');
+    document.getElementById('yt').src = `https://www.youtube-nocookie.com/embed/${id}`;
 </script>
-</body></html>
+</body>
+</html>
