@@ -50,12 +50,12 @@ final class PullToRefreshController: NSObject {
         refreshControl.layer.zPosition = CGFloat.greatestFiniteMagnitude
         refreshControl.layer.backgroundColor = Self.siteBackgroundColor.cgColor
         
-//         webView.registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (view: WKWebView, _) in
-//             guard let self = self else { return }
-//             let dynamicColor = Self.siteBackgroundColor
-//             let resolvedColor = dynamicColor.resolvedColor(with: view.traitCollection)
-//             self.refreshControl.layer.backgroundColor = resolvedColor.cgColor
-//         }
+        webView.registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (view: WKWebView, _) in
+            guard let self = self else { return }
+            let dynamicColor = Self.siteBackgroundColor
+            let resolvedColor = dynamicColor.resolvedColor(with: view.traitCollection)
+            self.refreshControl.layer.backgroundColor = resolvedColor.cgColor
+        }
         
         webView.scrollView.refreshControl = refreshControl
     }
