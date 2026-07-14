@@ -1,4 +1,4 @@
-.admin-footer {
+.corporate-footer {
     padding: 1rem;
     background-color: inherit;
     color: inherit;
@@ -7,7 +7,7 @@
     border-top: 0.1rem solid rgba(150, 150, 150, 0.2);
 }
 
-.admin-copy-right-text {
+.corporate-copy-right-text {
     font-size: 0.5rem;
     font-family: var(--english-normal-font);
     text-align: center;
@@ -16,13 +16,13 @@
 
 
 @media (max-width: 768px) {
-    .admin-copy-right-text {
+    .corporate-copy-right-text {
         font-size: 0.5rem;
     }
 }
 
 @media (prefers-color-scheme: dark) {
-    .admin-copy-right-text {
-        color: var(--harvest-white-color);
+    .corporate-copy-right-text {
+        color: var(--fb-white-color);
     }
 }

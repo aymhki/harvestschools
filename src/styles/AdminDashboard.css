@@ -114,7 +114,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     width: 80%;
     min-height: 50%;
     z-index: var(--admin-action-popup-modals-z-index);
@@ -185,7 +185,7 @@
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     width: 50%;
     z-index: var(--admin-action-popup-modals-z-index);
 }

@@ -7,7 +7,7 @@
 }
 
 :lang(ar) {
-    letter-spacing: 0 !important;
+    /*letter-spacing: 0 !important;*/
 }
 
 @font-face {
@@ -101,13 +101,13 @@
     --secondary-color: #c94349;
     --dark-accent-color: #454545;
     --light-dark-accent-color: #242425FF;
-    --harvest-black-color: #000000;
-    --harvest-black-gradient-color: #0f0f0f;
-    --harvest-link-color: #052ced;
+    --fb-black-color: #000000;
+    --fb-black-gradient-color: #0f0f0f;
+    --fb-link-color: #052ced;
     --read-only-field-grey-color: #ccc;
-    --harvest-white-gradient: #f0f0f0f0;
-    --harvest-white-color: #ffffff;
-    --harvest-off-white-color: #f1f1f1;
+    --fb-white-gradient: #f0f0f0f0;
+    --fb-white-color: #ffffff;
+    --fb-off-white-color: #f1f1f1;
     --english-title-font: "American Typewriter", "Courier New", Courier, monospace;
     --english-normal-font: 'Futura', sans-serif;
     --english-normal-font-bold: 'Futura-Bold', sans-serif;
@@ -172,7 +172,7 @@ a:visited {
 }
 
 a:visited:hover {
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
 }
 
 body {
@@ -250,7 +250,7 @@ button {
     font-family: var(--english-normal-font-bold);
     letter-spacing: 0.1rem;
     line-height: 1.5;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     color: var(--primary-color);
     cursor: pointer;
     will-change: filter;
@@ -261,7 +261,7 @@ button {
 button:hover {
     filter: drop-shadow(0 0 0.5rem var(--primary-color));
     background-color: var(--primary-color);
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
 }
 
 button:lang(ar) {
@@ -295,7 +295,7 @@ label:lang(ar) {
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
-        background-color: var(--harvest-white-color);
+        background-color: var(--fb-white-color);
     }
 
     a:hover {
@@ -303,7 +303,7 @@ label:lang(ar) {
     }
 
     button {
-        background-color: var(--harvest-white-color);
+        background-color: var(--fb-white-color);
     }
 }
 
@@ -398,42 +398,42 @@ label:lang(ar) {
 @media (prefers-color-scheme: dark) {
 
     :root {
-        --harvest-link-color: deepskyblue;
+        --fb-link-color: deepskyblue;
     }
 
     a {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     a:visited {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     a:visited:hover {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     a:hover {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     button {
-        background-color: var(--harvest-white-color);
+        background-color: var(--fb-white-color);
         color: var(--primary-color);
     }
 
     button:hover {
-        filter: drop-shadow(0 0 2rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 2rem var(--fb-white-color));
         background-color: var(--light-dark-accent-color);
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     h1, h2, h3, p {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     label {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 }
 

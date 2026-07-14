@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const toAbsolute = (p) => path.resolve(__dirname, p);
 
 const template = fs.readFileSync(toAbsolute('dist/static/index.html'), 'utf-8');
-const { render } = await import('./dist/prerender/entry-prerender.js');
+const { render } = await import('./dist/prerender/entry-prerender-main.js');
 
 const routesToPrerender = [
     '/',
