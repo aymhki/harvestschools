@@ -56,7 +56,7 @@
     box-shadow: 0 0 0.01rem var(--primary-color);
     font-size: 3rem;
     font-weight: 10;
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     cursor: pointer;
     z-index: var(--photo-slider-arrow-z-index);
 }
@@ -82,7 +82,7 @@
 }
 
 .photo-text {
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     position: absolute;
     top: 35vh;
     left: 20%;

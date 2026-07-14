@@ -54,7 +54,7 @@
     height: 40%;
     object-fit: cover;
     min-width: 10rem;
-    filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+    filter: drop-shadow(0 0 1rem var(--fb-white-color));
     margin-bottom: 5rem;
 }
 
@@ -234,7 +234,7 @@
 
 @media (prefers-color-scheme: dark) {
     .important-info-hyperlink-text {
-        color: var(--harvest-white-color) !important;
+        color: var(--fb-white-color) !important;
     }
 
     .home-page-visit-us-section-map-container iframe {

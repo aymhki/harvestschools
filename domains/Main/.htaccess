@@ -1,43 +1,27 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
-
   RewriteRule ^embed\.html$ - [L]
-
   RewriteCond %{REQUEST_URI} !^/scripts/Public/General/servePublicAssetFile\.php
-
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^assets/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1 [B,QSA,L]
-
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^(images|videos|documents|fonts|locales)/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1/$2 [B,QSA,L]
-
-  # Serve the directory's index.html file for directory requests
   DirectoryIndex index.html
-
-  # Rewrite rule to serve SPA for non-file/directory requests
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
-
-  # Rules to remove .html extension from URLs
-  # Redirect requests for /path/to/page.html to /path/to/page
   RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
   RewriteRule ^ /%1 [R=301,L]
-
-  # Internally rewrite /path/to/page to /path/to/page.html
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_URI}.html -f
   RewriteRule ^(.*?)/?$ /$1.html [L]
-
   RewriteCond %{HTTP:Authorization} ^(.*)
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 </IfModule>
 
 <IfModule mod_expires.c>
   ExpiresActive On
-
-  # Images (Cache for 1 year)
   ExpiresByType image/avif "access plus 1 year"
   ExpiresByType image/jpg "access plus 1 year"
   ExpiresByType image/jpeg "access plus 1 year"
@@ -46,18 +30,12 @@
   ExpiresByType image/webp "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 year"
   ExpiresByType image/x-icon "access plus 1 year"
-
-  # Video (Cache for 1 year)
   ExpiresByType video/mp4 "access plus 1 year"
   ExpiresByType video/mpeg "access plus 1 year"
-
-  # CSS & JS (Cache for 1 year)
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType text/javascript "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
   ExpiresByType application/x-javascript "access plus 1 year"
-
-  # Fonts (Cache for 1 year)
   ExpiresByType application/font-woff2 "access plus 1 year"
   ExpiresByType application/font-woff "access plus 1 year"
   ExpiresByType font/woff2 "access plus 1 year"

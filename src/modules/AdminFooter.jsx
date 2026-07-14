@@ -7,8 +7,8 @@ function AdminFooter() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <div className="admin-footer">
-            <div className="admin-copy-right-text">
+        <div className="corporate-footer">
+            <div className="corporate-copy-right-text">
                 {t("footer.all-rights-reserved", { year: currentYear})}.
             </div>
         </div>

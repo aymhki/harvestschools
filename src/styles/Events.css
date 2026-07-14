@@ -78,7 +78,7 @@
     align-items: center;
     min-height: 100vh;
     min-width: 100vw;
-    background: radial-gradient(circle, var(--harvest-white-color), #1a2a6c);
+    background: radial-gradient(circle, var(--fb-white-color), #1a2a6c);
 }
 
 .booking-login-page-form-controller {
@@ -96,7 +96,7 @@
     justify-content: center;
     width: 35vw;
     height: 45vh;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     border-radius: 1rem;
     will-change: filter;
     transition: filter 0.5s;
@@ -159,7 +159,7 @@
     width: 80vw;
     height: 65vh;
     padding: 1rem;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     color: var(--primary-color);
     border-radius: 1rem;
     will-change: filter;
@@ -189,7 +189,7 @@
     width: 80vw;
     height: 65vh;
     padding: 1rem;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     color: var(--primary-color);
 }
 
@@ -289,7 +289,7 @@
 
 @media (prefers-color-scheme: dark) {
     .booking-login-page {
-        background: radial-gradient(circle, var(--harvest-white-color), var(--harvest-black-gradient-color)) ;
+        background: radial-gradient(circle, var(--fb-white-color), var(--fb-black-gradient-color)) ;
     }
 
     .booking-login-form-wrapper {
@@ -297,22 +297,22 @@
     }
 
     .booking-login-form-wrapper:hover {
-        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
     .booking-extras-form-wrapper {
         background-color: var(--light-dark-accent-color);
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     .booking-confirmation-page {
         background-color: var(--light-dark-accent-color);
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     .booking-confirmation-wrapper {
         background-color: var(--light-dark-accent-color);
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
 }

@@ -31,7 +31,7 @@
 }
 
 .language-switcher .ar.active.mobile, .language-switcher .en.active.mobile {
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     text-decoration: none;
 }
 
@@ -41,19 +41,19 @@
 }
 
 .language-switcher-separator.mobile {
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     font-weight: normal;
 }
 
 @media (prefers-color-scheme: dark) {
     .language-switcher .en.active, .language-switcher .ar.active {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
         text-decoration: none;
     }
 
 
 
     .language-switcher-separator, .language-switcher-separator.mobile {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 }
