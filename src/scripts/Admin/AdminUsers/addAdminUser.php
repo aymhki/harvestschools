@@ -22,6 +22,7 @@ try {
     }
 
     global $ADMIN_USER_MANAGEMENT;
+    global $JACK_OF_ALL_TRADES;
     $conn->set_charset("utf8mb4");
     $conn->begin_transaction();
     $authStatus = check_admin_user_permission($conn, $ADMIN_USER_MANAGEMENT);
@@ -37,6 +38,16 @@ try {
     $newAdminPassword = $data['new_admin_password']  ?? '';
     $newAdminConfirmPassword = $data['new_admin_confirm_password'] ?? '';
     $newAdminPermissionLevel = $data['new_admin_permissions'] ?? '';
+
+    if (is_array($newAdminPermissionLevel)) {
+        $isAdmin = in_array($ADMIN_USER_MANAGEMENT, $newAdminPermissionLevel);
+        $isJack = in_array($JACK_OF_ALL_TRADES, $newAdminPermissionLevel);
+
+        if ($isAdmin || $isJack) {
+            if (!$isAdmin) $newAdminPermissionLevel[] = $ADMIN_USER_MANAGEMENT;
+            if (!$isJack) $newAdminPermissionLevel[] = $JACK_OF_ALL_TRADES;
+        }
+    }
 
     if (strlen($newUsername) < 3 ||
         strlen($newUsername) > 20 ||

@@ -66,7 +66,7 @@ try {
                 $row['permission_level'] = implode(', ', $permNames);
             }
 
-            $row['permissions_in_numbers'] = $originalPermissions;
+            $row['permissions_in_numbers'] = implode(', ',  $originalPermissions);
 
             $rowData = array_values($row);
             $dataRows[] = $rowData;
