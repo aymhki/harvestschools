@@ -1,6 +1,8 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  RewriteRule ^embed\.html$ - [L]
+
   RewriteCond %{REQUEST_URI} !^/scripts/Public/General/servePublicAssetFile\.php
 
   RewriteCond %{REQUEST_FILENAME} !-f
