@@ -20,9 +20,10 @@
       "phone-number": "رقم الهاتف",
       "message": "الرسالة",
       "subject": "الموضوع",
-      "admissions": "التسجيل",
       "general-inquiry": "استفسار عام",
       "feedback": "ملاحظات",
+      "consultation": "استفتاء",
+      "partnership": "شراكة",
       "other": "أخرى"
     }
   }

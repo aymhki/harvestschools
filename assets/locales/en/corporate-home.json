@@ -20,9 +20,10 @@
       "phone-number": "Phone Number",
       "message": "Message",
       "subject": "Subject",
-      "admissions": "Admissions",
       "general-inquiry": "General Inquiry",
       "feedback": "Feedback",
+      "consultation": "Consultation",
+      "partnership": "Partnership",
       "other": "Other"
     }
   }

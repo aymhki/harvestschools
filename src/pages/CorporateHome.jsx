@@ -26,7 +26,7 @@ function CorporateHome() {
         { id: 1, type: 'text', label: 'Name', displayLabel: t("corporate-home.contact-us-form-fields.name"), httpName: 'name', required: true, value: '', setValue: null, widthOfField: 1 },
         { id: 2, type: 'email', label: 'Email', displayLabel: t("corporate-home.contact-us-form-fields.email"), httpName: 'email', required: true, value: '', setValue: null, widthOfField: 2 },
         { id: 3, type: 'tel', label: 'Phone Number', displayLabel: t("corporate-home.contact-us-form-fields.phone-number"), httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
-        {id:  4, type: 'select', label: 'Subject', displayLabel: t("corporate-home.contact-us-form-fields.subject"), httpName: 'subject', required: true, value: '', setValue: null, widthOfField: 1, choices: [t("corporate-home.contact-us-form-fields.admissions"), t("corporate-home.contact-us-form-fields.general-inquiry"), t("corporate-home.contact-us-form-fields.feedback"), t("corporate-home.contact-us-form-fields.other")]},
+        {id:  4, type: 'select', label: 'Subject', displayLabel: t("corporate-home.contact-us-form-fields.subject"), httpName: 'subject', required: true, value: '', setValue: null, widthOfField: 1, choices: [t("corporate-home.contact-us-form-fields.general-inquiry"), t("corporate-home.contact-us-form-fields.consultation"), t("corporate-home.contact-us-form-fields.feedback"), t("corporate-home.contact-us-form-fields.partnership")]},
         { id: 5, type: 'textarea', label: 'Message', displayLabel: t("corporate-home.contact-us-form-fields.message"), httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 }
     ]
 
