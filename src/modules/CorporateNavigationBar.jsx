@@ -113,7 +113,7 @@ function CorporateNavigationBar(){
     });
 
     return (
-        <nav className={`navbar ${isMobile && isOpen ? 'mobile-menu-open' : ''}`}>
+        <nav className={`navbar`} >
             <div className={`logo-container`}>
                 <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate('/home'); } }>
                     <img src={servePublicAsset("/images/CorporateLogo/Al-FajrAl-BasemLogo.png")} alt="Harvest Logo" className={`logo`}/>
