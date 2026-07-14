@@ -18,6 +18,12 @@ function PhotoSlider({ photos, darken }) {
         setCurrent(current === 0 ? length - 1 : current - 1);
     };
 
+    const goToSlide = (index) => {
+        if (index === current) return;
+        setExiting(current);
+        setCurrent(index);
+    };
+
     useEffect(() => {
         if (exiting !== null) {
             const timer = setTimeout(() => {
@@ -58,7 +64,7 @@ function PhotoSlider({ photos, darken }) {
                     <span
                         key={index}
                         className={`dot ${index === current ? 'active' : ''}`}
-                        onClick={() => setCurrent(index)}
+                        onClick={() => goToSlide(index)}
                     />
                 ))}
             </div>
