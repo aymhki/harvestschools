@@ -1,0 +1,428 @@
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="ltr"] {
+    text-align: left;
+}
+
+:lang(ar) {
+    /*letter-spacing: 0 !important;*/
+}
+
+@font-face {
+    font-family: 'FB Sans Standard Medium';
+    src: url('/assets/fonts/FB Sans Standard Medium/FB-Sans-Standard-Medium.woff') format('woff22');
+    font-weight: auto;
+    font-style: auto;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'FB Sans Standard Regular';
+    src: url('/assets/fonts/FB Sans Standard Regular/FB-Sans-Standard-Regular.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'FB Serif Semibold Web';
+    src: url('/assets/fonts/FB Serif Semibold Web/FB-Serif-Semibold-Web.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+    font-display: swap;
+}
+
+
+@font-face {
+    font-family: 'Arian Lt';
+    src: url('/assets/fonts/Arian LT/Arian LT.woff2') format('woff2'),
+    url('/assets/fonts/Arian LT/Arian LT.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Arian LT Demi';
+    src: url('/assets/fonts/Arian LT Demi/Arian LT Demi.woff2') format('woff2'),
+    url('/assets/fonts/Arian LT Demi/Arian LT Demi.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+    font-display: swap;
+}
+
+
+@font-face {
+    font-family: 'Arslan Wessam A';
+    src: url('/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff2') format('woff2'),
+    url('/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Janna LT Bold';
+    src: url('/assets/fonts/Janna LT Bold/Janna LT Bold.woff2') format('woff2'),
+    url('/assets/fonts/Janna LT Bold/Janna LT Bold.woff') format('woff');
+    font-weight: auto;
+    font-style: auto;
+    font-display: swap;
+}
+
+
+:root {
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: var(--light-dark-accent-color);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --primary-color: #0A2947;
+    --secondary-color: #c94349;
+    --dark-accent-color: #454545;
+    --light-dark-accent-color: #242425FF;
+    --fb-black-color: #000000;
+    --fb-black-gradient-color: #0f0f0f;
+    --fb-link-color: #052ced;
+    --read-only-field-grey-color: #ccc;
+    --fb-white-gradient: #f0f0f0f0;
+    --fb-white-color: #ffff;
+    --fb-off-white-color: #f1f1f1;
+    --english-title-font: "FB Serif Semibold Web", "Courier New", Courier, monospace;
+    --english-normal-font: 'FB Sans Standard Regular', sans-serif;
+    --english-normal-font-bold: 'FB Sans Standard Medium', sans-serif;
+    --arabic-title-font: 'Janna LT Bold', sans-serif;
+    --arabic-normal-font: 'Arian LT', sans-serif;
+    --arabic-normal-font-bold: 'Arian LT Demi', sans-serif;
+
+
+    --footer-z-index: 1000;
+    --navbar-z-index: 1800;
+    --navbar-item-z-index: 1900;
+    --admin-sidebar-overlay-z-index: 1999;
+    --admin-sidebar-z-index: 2000;
+    --admin-action-popup-modals-overlay-z-index: 2001;
+    --admin-action-popup-modals-z-index: 2002;
+    --table-module-filter-popup-overlay-z-index: 2001;
+    --table-module-filter-popup-z-index: 2002;
+    --form-date-popup-modal-overlay-z-index: 2001;
+    --form-date-popup-modal-z-index: 2002;
+    --spinner-overlay-z-index: 100000;
+
+    --parallax-scroll-base-z-index: 1;
+    --parallax-scroll-top-z-index: 2;
+    --photo-slider-non-active-dot-indicator-z-index: 1;
+    --photo-slider-active-dot-indicator-z-index: 2;
+    --form-toggle-password-visibility-button-z-index: 1;
+    --photo-slider-arrow-z-index: 100;
+    --photo-collage-popup-lightbox-z-index: 100000;
+
+    --table-module-header-and-footer-z-index: 10;
+    --table-module-sticky-control-widget-z-index: 100;
+
+    --mobile-nav-arrow-in-tabs-bar-z-index: 10;
+    --tabs-bar-z-index: 100;
+
+    font-family: var(--english-normal-font);
+}
+
+.custom-hyperlink-text {
+    color: var(--secondary-color) !important;
+    text-decoration: underline;
+    display: inline;
+}
+
+a {
+    display: block;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+    color: var(--primary-color);
+    text-decoration: inherit;
+}
+
+a:hover {
+    color: #747bff;
+    cursor: pointer;
+
+}
+
+a:visited {
+    color: #747bff;
+}
+
+a:visited:hover {
+    color: var(--fb-white-color);
+}
+
+body {
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+    overflow-X: hidden;
+}
+
+body.lock-scroll {
+    overflow: hidden;
+}
+
+
+h1 {
+    font-family: var(--english-title-font);
+    font-weight: 600;
+    font-size: 5rem;
+    line-height: 1;
+    letter-spacing: 0.3rem;
+}
+
+h2 {
+    font-family: var(--english-title-font);
+    font-size: 3rem;
+    letter-spacing: 0.2rem;
+    font-weight: 400;
+}
+
+h2:lang(ar) {
+
+}
+
+h3 {
+    font-family: var(--english-title-font);
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: 0.1rem;
+    font-weight: 400;
+}
+
+p {
+
+    font-size: 1.5rem;
+    line-height: 2;
+    letter-spacing: 0.1rem;
+    font-weight: 300;
+}
+
+h1:lang(ar) {
+    font-family: var(--arabic-title-font);
+    letter-spacing: 0.1rem;
+}
+
+p:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+h2:lang(ar) {
+    font-family: var(--arabic-title-font);
+}
+
+h3:lang(ar) {
+    font-family: var(--arabic-title-font);
+}
+
+
+button {
+    border-radius: 0.8rem;
+    border: 0;
+    padding: 0.8rem 1rem 0.8rem 1rem;
+    margin: 1rem;
+    font-size: large;
+    font-weight: bold;
+    font-family: var(--english-normal-font-bold);
+    letter-spacing: 0.1rem;
+    line-height: 1.5;
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    cursor: pointer;
+    will-change: filter;
+    transition: filter 0.25s;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+}
+
+button:hover {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+}
+
+button:lang(ar) {
+    font-family: var(--arabic-normal-font-bold);
+    letter-spacing: 0.1rem;
+
+}
+
+form:lang(ar) {
+    direction: rtl;
+}
+
+input:lang(ar) {
+    direction: rtl;
+    font-family: var(--arabic-normal-font);
+}
+
+textarea:lang(ar) {
+    direction: rtl;
+    font-family: var(--arabic-normal-font);
+}
+
+label {
+
+}
+
+label:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color: #213547;
+        background-color: var(--fb-white-color);
+    }
+
+    a:hover {
+        color: #747bff;
+    }
+
+    button {
+        background-color: var(--fb-white-color);
+    }
+}
+
+
+
+
+@media (max-width: 1600px) {
+    button {
+        font-size: large;
+    }
+
+}
+
+@media (max-width: 1200px) {
+    h1 {
+        font-size: 3rem;
+        font-weight: 400;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    p {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    button {
+        font-size: large;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    h2:lang(ar) {
+        letter-spacing: 0;
+    }
+
+    button {
+        font-size: medium;
+        padding: 0.5rem 0.8rem 0.5rem 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+        font-weight: 600;
+    }
+
+    h1:lang(ar) {
+        letter-spacing: 0rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h2:lang(ar) {
+        letter-spacing: 0rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    p:lang(ar) {
+        letter-spacing: 0rem;
+    }
+
+    h3:lang(ar) {
+        letter-spacing: 0rem;
+    }
+
+}
+
+@media (prefers-color-scheme: dark) {
+
+    :root {
+        --fb-link-color: deepskyblue;
+    }
+
+    a {
+        color: var(--fb-white-color);
+    }
+
+    a:visited {
+        color: var(--fb-white-color);
+    }
+
+    a:visited:hover {
+        color: var(--fb-white-color);
+    }
+
+    a:hover {
+        color: var(--fb-white-color);
+    }
+
+    button {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+
+    button:hover {
+        filter: drop-shadow(0 0 2rem var(--fb-white-color));
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+
+    h1, h2, h3, p {
+        color: var(--fb-white-color);
+    }
+
+    label {
+        color: var(--fb-white-color);
+    }
+}
+

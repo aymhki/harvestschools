@@ -1,0 +1,31 @@
+.corporate-footer {
+    padding: 1rem;
+    background-color: inherit;
+    color: inherit;
+    text-align: center;
+    font-size: 0.9rem;
+    border-top: 0.1rem solid rgba(150, 150, 150, 0.2);
+}
+
+.corporate-copy-right-text {
+    font-size: 0.8rem;
+    font-family: var(--english-normal-font);
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.corporate-copy-right-text:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+@media (max-width: 768px) {
+    .corporate-copy-right-text {
+        font-size: 0.5rem;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .corporate-copy-right-text {
+        color: var(--fb-white-color);
+    }
+}

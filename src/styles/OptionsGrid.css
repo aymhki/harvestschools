@@ -225,25 +225,25 @@
 @media (prefers-color-scheme: dark) {
 
     .options-grid-container {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     .options-grid-items-container {
-        color: var(--harvest-white-color);
-        box-shadow: 0 0 0.5rem var(--harvest-white-color);
+        color: var(--fb-white-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
     .options-grid-items-container:hover {
-        filter: drop-shadow(0 0 1em var(--harvest-white-color));
+        filter: drop-shadow(0 0 1em var(--fb-white-color));
     }
 
     .options-grid-compact-items-container {
-        color: var(--harvest-white-color);
-        box-shadow: 0 0 0.5rem var(--harvest-white-color);
+        color: var(--fb-white-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
     .options-grid-compact-items-container:hover {
-        filter: drop-shadow(0 0 3em var(--harvest-white-color));
+        filter: drop-shadow(0 0 3em var(--fb-white-color));
     }
 
 }

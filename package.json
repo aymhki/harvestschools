@@ -4,7 +4,8 @@
   "workspaces": [
     "domains/Admin",
     "domains/Main",
-    "domains/MobileApp"
+    "domains/MobileApp",
+    "domains/Corporate"
   ],
   "version": "1.0.0",
   "type": "module",
@@ -15,9 +16,11 @@
     "dev:android-mobile-app": "npm run android --workspace=domains/MobileApp",
     "dev:ios-mobile-app": "npm run ios --workspace=domains/MobileApp",
     "dev:mobile-app": "npm run dev --workspace=domains/MobileApp",
+    "dev:corporate": "npm run dev --workspace=domains/Corporate",
     "build:main": "npm run build --workspace=domains/Main",
     "build:admin": "npm run build --workspace=domains/Admin",
     "build:mobile-app": "npm run build --workspace=domains/MobileApp",
+    "build:corporate": "npm run build --workspace=domains/Corporate",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "clean": "rm -rf dist",
     "preview": "vite preview"

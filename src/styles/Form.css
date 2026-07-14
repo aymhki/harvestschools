@@ -3,9 +3,9 @@
     --ff-field-bg: transparent;
     --ff-field-color: var(--primary-color);
     --ff-readonly-bg: var(--read-only-field-grey-color);
-    --ff-readonly-color: var(--harvest-black-color);
-    --ff-readonly-border: var(--harvest-black-color);
-    --ff-panel-bg: var(--harvest-white-color);
+    --ff-readonly-color: var(--fb-black-color);
+    --ff-readonly-border: var(--fb-black-color);
+    --ff-panel-bg: var(--fb-white-color);
 
     --ff-gap: 1rem;
     --ff-radius: 0.5rem;
@@ -18,6 +18,7 @@
     --ff-captcha-letter-spacing: 3rem;
     --ff-captcha-font-size: x-large;
 }
+
 
 .form,
 .form *,
@@ -384,7 +385,7 @@
 
 .remove-button:hover {
     background-color: var(--secondary-color);
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
 }
 
 .remove-section-button {
@@ -399,7 +400,7 @@
 
 .remove-section-button:hover {
     background-color: var(--secondary-color);
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     filter: drop-shadow(0 0 1em var(--secondary-color));
 }
 
@@ -527,9 +528,9 @@
 
 .captcha-box {
     display: flex;
-    background-color: var(--harvest-white-gradient);
+    background-color: var(--fb-white-gradient);
     text-decoration: line-through;
-    text-decoration-color: var(--harvest-white-color);
+    text-decoration-color: var(--fb-white-color);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -763,12 +764,12 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --ff-field-border: var(--harvest-white-color);
-        --ff-field-bg: var(--harvest-black-gradient-color);
-        --ff-field-color: var(--harvest-white-color);
+        --ff-field-border: var(--fb-white-color);
+        --ff-field-bg: var(--fb-black-gradient-color);
+        --ff-field-color: var(--fb-white-color);
         --ff-readonly-bg: var(--dark-accent-color);
-        --ff-readonly-color: var(--harvest-white-color);
-        --ff-readonly-border: var(--harvest-white-color);
+        --ff-readonly-color: var(--fb-white-color);
+        --ff-readonly-border: var(--fb-white-color);
         --ff-panel-bg: var(--light-dark-accent-color);
     }
 
@@ -778,24 +779,24 @@
 
     .remove-section-button {
         background-color: var(--secondary-color);
-        color: var(--harvest-white-color);
-        box-shadow: 0 0 0.5rem var(--harvest-white-color);
+        color: var(--fb-white-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
     .remove-section-button:hover {
         background-color: var(--dark-accent-color);
-        color: var(--harvest-white-color);
-        filter: drop-shadow(0 0 1em var(--harvest-white-color));
+        color: var(--fb-white-color);
+        filter: drop-shadow(0 0 1em var(--fb-white-color));
     }
 
     .captcha-box {
-        background-color: var(--harvest-black-gradient-color);
-        text-decoration-color: var(--harvest-black-color);
+        background-color: var(--fb-black-gradient-color);
+        text-decoration-color: var(--fb-black-color);
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <circle cx="5" cy="5" r="1" fill="%23000080"/> <circle cx="12" cy="5" r="1" fill="%23004040"/> <circle cx="19" cy="5" r="1" fill="%23000040"/> <circle cx="5" cy="12" r="1" fill="%23008000"/> <circle cx="12" cy="12" r="1" fill="%23004080"/> <circle cx="19" cy="12" r="1" fill="%23004080"/> <circle cx="5" cy="19" r="1" fill="%23ffffff"/> <circle cx="12" cy="19" r="1" fill="%23000000"/> <circle cx="19" cy="19" r="1" fill="%23808080"/> </svg>');
     }
 
     .number-input-container.read-only-field .number-input-reduce-button,
     .number-input-container.read-only-field .number-input-add-button {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 }

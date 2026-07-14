@@ -19,7 +19,8 @@ export const i18nConfig = {
         'home',
         'nav',
         'students-life-pages',
-        'vacancies-page'
+        'vacancies-page',
+        'corporate-home'
     ],
     detection: {
         order: ['customUrlDetector', 'localStorage', 'navigator'],

@@ -142,5 +142,17 @@ jobs:
           put -O app.harvestschools.com/ mobile-app-bundle/latest.json
           put -O app.harvestschools.com/ domains/MobileApp/.htaccess
           
+          mirror -R --verbose --parallel=5 \
+            --exclude-glob .git* \
+            --exclude-glob node_modules/ \
+            --exclude-glob assets/fonts/ \
+            --exclude-glob assets/images/ \
+            --exclude-glob assets/videos/ \
+            --exclude-glob assets/documents/ \
+            --exclude-glob assets/raw/ \
+            dist/corporate/static/ alfajralbasem.com/
+          
+          put -O alfajralbasem.com/ domains/Corporate/.htaccess
+          mirror -R --verbose --parallel=5 -x ^Admin/ src/scripts/ alfajralbasem.com/scripts/          
           bye
           LFTP
