@@ -75,7 +75,6 @@ function Home() {
                         muted
                         playsInline
                         className="home-page-about-us-video"
-                        crossOrigin="anonymous"
                     />
 
                 </div>
