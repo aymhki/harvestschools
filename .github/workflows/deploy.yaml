@@ -80,11 +80,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build main + admin + mobile-app
+      - name: Build main + admin + mobile-app + corporate
         run: |
           npm run build:main
           npm run build:admin
           npm run build:mobile-app
+          npm run build:corporate
 
       - name: Package mobile app update bundle
         run: |
