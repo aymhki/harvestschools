@@ -156,7 +156,7 @@ function CorporateNavigationBar(){
                 <animated.ul style={{
                     transform: menuAnimation.transform,
                     opacity: menuAnimation.opacity,
-                    position: isOpen ? 'absolute' : 'fixed',
+                    position: 'absolute',
                 }} className={"nav-links-mobile"}>
 
                     {/*<li onClick={() => {*/}
