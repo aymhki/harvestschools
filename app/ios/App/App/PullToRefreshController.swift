@@ -16,7 +16,7 @@ final class PullToRefreshController: NSObject {
         self.webView = webView
         super.init()
 
-        applySiteColors(to: webView)
+//         applySiteColors(to: webView)
         installRefreshControl(on: webView)
         observeLoadingState(webView: webView)
     }
@@ -38,7 +38,7 @@ final class PullToRefreshController: NSObject {
         webView.isOpaque = true
         webView.backgroundColor = color
         webView.scrollView.backgroundColor = color
-        // webView.underPageBackgroundColor = color
+        webView.underPageBackgroundColor = color
     }
 
     @MainActor
