@@ -183,14 +183,14 @@
 
 @media (prefers-color-scheme: dark) {
     .logo {
-        filter: drop-shadow(0 0 1em var(--harvest-white-color));
+        filter: drop-shadow(0 0 1em var(--fb-white-color));
     }
 
     .logo:hover {
-        filter: drop-shadow(0 0 1em var(--harvest-white-color));
+        filter: drop-shadow(0 0 1em var(--fb-white-color));
     }
 
     .extreme-padding-container:lang(ar) h1 {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 }

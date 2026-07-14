@@ -11,7 +11,7 @@
 
 .photo-slider {
     color: var(--primary-color);
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     border-radius: 1rem;
     column-span: 3;
     row-span: 3;
@@ -37,8 +37,8 @@
     max-width: 100%;
     width: 100%;
     object-fit: fill;
-    background-color: var(--harvest-white-color);
-    color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
+    color: var(--fb-white-color);
     border-radius: 1rem;
 }
 
@@ -112,7 +112,7 @@
     position: absolute;
     top: 15px;
     right: 35px;
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
@@ -123,7 +123,7 @@
     position: absolute;
     top: 50%;
     left: 1%;
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
@@ -134,7 +134,7 @@
     position: absolute;
     top: 50%;
     right: 1%;
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
@@ -155,7 +155,7 @@
     position: absolute;
     top: 15px;
     left: 35px;
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
@@ -165,9 +165,9 @@
 
 @media (prefers-color-scheme: dark) {
     .photo-slider {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
         background-color: inherit;
-        box-shadow: 0 0 0 0.1rem var(--harvest-white-color);
+        box-shadow: 0 0 0 0.1rem var(--fb-white-color);
     }
 
 

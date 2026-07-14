@@ -1,0 +1,29 @@
+{
+  "corporate-home": {
+    "our-vision": "Our Vision",
+    "our-mission": "Our Mission",
+    "harvest-schools-vision": "To invest in an interactive, authentic, effective, and creative generation, in which students are thirsty for knowledge and prepared for global leadership in a safe educational environment.",
+    "harvest-schools-mission": "To invest in the skills of educators and administrative calibers to provide an inspirational environment made fit to qualify students to be part of a gleaming future placing technology in its best use to activate the most effective educational system.",
+    "about-us": "About Us",
+    "harvest-schools-about-us": "Al-Fajr Al-Basem was founded in 2013 by Eng. Hassan Khalil Ibrahim to be the first company in Borg El-Arab to recruiting highly qualified teachers and administrators. Eng. Hassan has, for many years, dreamt and planned of founding a school with a true mission and vision. He consulted various specialized educators and finally, the dream came true. HIS aims to offer an ideal learning environment where students can satisfy their thirst for knowledge enjoying an extensive extracurricular program. The purpose-built world-class educational facility includes extended grounds, specialized sports fields and courts, a well-equipped gymnasium and an outdoor swimming pool. Eng. Hassan’s mission is to raise well-rounded young people who are physically, ethically and educationally capable to face the challenges of the twenty-first century in an ever-evolving global community. At HIS, we are committed to providing the best by offering simultaneously the Egyptian, British and American syllabi. Lifelong education and eagerness to discover and experiment are at the heart of our mission.",
+    "contact-us": "Contact Us",
+    "visit-us": "Visit Us",
+    "our-staff": "Our Staff",
+    "our-facilities": "Our Facilities",
+    "phone": "Phone:",
+    "01061894477,": "01061894477,",
+    "01118900165": "01118900165",
+    "harvest-schools-address": "Hod Sakrah WA Abu Hamad, Borg El Arab",
+    "contact-us-form-fields": {
+      "name": "Name",
+      "email": "Email",
+      "phone-number": "Phone Number",
+      "message": "Message",
+      "subject": "Subject",
+      "admissions": "Admissions",
+      "general-inquiry": "General Inquiry",
+      "feedback": "Feedback",
+      "other": "Other"
+    }
+  }
+}

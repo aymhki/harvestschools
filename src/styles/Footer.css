@@ -130,19 +130,19 @@
 
 
     .copy-right-text {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     .mobile-footer-action-text {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     .mobile-footer-chat-icon {
-        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 1rem var(--fb-white-color));
     }
 
     .mobile-footer-call-icon {
-        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 1rem var(--fb-white-color));
     }
 
     .footer {
@@ -154,10 +154,10 @@
     }
 
     .mobile-footer-chat-icon:hover {
-        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 1rem var(--fb-white-color));
     }
 
     .mobile-footer-call-icon:hover {
-        filter: drop-shadow(0 0 1rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 1rem var(--fb-white-color));
     }
 }

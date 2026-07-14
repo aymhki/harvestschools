@@ -163,7 +163,7 @@
 
 table {
     width: 100%;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     color: var(--primary-color);
     border-collapse: collapse;
 }
@@ -181,7 +181,7 @@ th, td {
 }
 
 tr:hover {
-    background-color: var(--harvest-off-white-color);
+    background-color: var(--fb-off-white-color);
 }
 
 td:lang(ar) {
@@ -228,7 +228,7 @@ td:lang(ar) {
 
 .table-link {
     text-decoration: underline;
-    color: var(--harvest-link-color);
+    color: var(--fb-link-color);
     font-family: var(--english-normal-font-bold);
     font-weight: bold;
     font-size: 80%;
@@ -237,7 +237,7 @@ td:lang(ar) {
 }
 
 .table-link:hover {
-    color: var(--harvest-link-color);
+    color: var(--fb-link-color);
     text-decoration: underline;
     cursor: pointer;
 }
@@ -295,7 +295,7 @@ td:lang(ar) {
     gap: 1rem;
     padding: 2rem;
     border-radius: 1rem;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 1);
     justify-content: center;
     align-items: center;
@@ -341,7 +341,7 @@ td:lang(ar) {
     max-width: 90vw;
     max-height: 85vh;
     height: auto;
-    background-color: var(--harvest-white-color);
+    background-color: var(--fb-white-color);
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
     border-radius: 1rem;
     display: flex;
@@ -366,7 +366,7 @@ td:lang(ar) {
     justify-content: flex-start;
     align-items: flex-start;
     overflow-y: auto;
-    background-color: var(--harvest-white-gradient);
+    background-color: var(--fb-white-gradient);
     border: 0.1rem solid #ccc;
     border-radius: 0.5rem;
     flex: 1;
@@ -697,7 +697,7 @@ td button {
 
 .table-pagination-controls .pagination-btn:hover:not(:disabled) {
     background: var(--primary-color);
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
 }
 
 .table-pagination-controls .pagination-btn:disabled {
@@ -707,7 +707,7 @@ td button {
 
 .table-pagination-controls .pagination-btn.active {
     background-color: var(--primary-color);
-    color: var(--harvest-white-color);
+    color: var(--fb-white-color);
 }
 
 .table-pagination-controls .pagination-ellipsis {
@@ -927,17 +927,17 @@ td button {
 @media (prefers-color-scheme: dark) {
     table {
         background-color: inherit;
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
         border-collapse: collapse;
         border-radius: 1rem;
     }
 
     td {
-        border: var(--harvest-white-color) 0.1rem solid;
+        border: var(--fb-white-color) 0.1rem solid;
     }
 
     tr {
-        border: var(--harvest-white-color) 0.1rem solid;
+        border: var(--fb-white-color) 0.1rem solid;
     }
 
     tr:hover {
@@ -951,7 +951,7 @@ td button {
 
     .table-module-filter-popup-values-list {
         background-color: var(--dark-accent-color);
-        border: 0.1rem solid var(--harvest-white-color);
+        border: 0.1rem solid var(--fb-white-color);
     }
 
     .table-module-accordion-content {
@@ -959,30 +959,30 @@ td button {
     }
 
     .table-module-filter-search-input-field {
-        border: 0.1rem solid var(--harvest-white-color);
+        border: 0.1rem solid var(--fb-white-color);
     }
 
     .table-module-filter-search-input-field::placeholder {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     .table-module-filter-search-input-field:focus {
-        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
     .table-module-filter-search-input-field:hover {
-        filter: drop-shadow(0 0 0.5rem var(--harvest-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
     .custom-scrollbar-track {
         background: var(--dark-accent-color);
     }
     .custom-scrollbar-arrow {
-        background: var(--harvest-white-color);
+        background: var(--fb-white-color);
         color: var(--dark-accent-color);
     }
     .custom-scrollbar-thumb {
-        background: var(--harvest-white-color);
+        background: var(--fb-white-color);
     }
     .thumb-grip span {
         background: rgba(0, 0, 0, 0.5);
@@ -992,11 +992,11 @@ td button {
         background: var(--dark-accent-color);
     }
     .custom-scrollbar-arrow-vertical {
-        background: var(--harvest-white-color);
+        background: var(--fb-white-color);
         color: var(--dark-accent-color);
     }
     .custom-scrollbar-thumb-vertical {
-        background: var(--harvest-white-color);
+        background: var(--fb-white-color);
     }
     .thumb-grip-vertical span {
         background: rgba(0, 0, 0, 0.5);
@@ -1004,19 +1004,19 @@ td button {
 
     .table-module-table td,
     .table-module-table th {
-        border-bottom: var(--harvest-white-color) 0.1rem solid;
-        border-right: var(--harvest-white-color) 0.1rem solid;
-        border-left: var(--harvest-white-color) 0.1rem solid;
+        border-bottom: var(--fb-white-color) 0.1rem solid;
+        border-right: var(--fb-white-color) 0.1rem solid;
+        border-left: var(--fb-white-color) 0.1rem solid;
         background-clip: padding-box;
     }
 
     .table-module-table tr td:first-child,
     .table-module-table tr th:first-child {
-        border-left: var(--harvest-white-color) 0.1rem solid;
+        border-left: var(--fb-white-color) 0.1rem solid;
     }
     .table-module-table tr:first-child td,
     .table-module-table tr:first-child th {
-        border-top: var(--harvest-white-color) 0.1rem solid;
+        border-top: var(--fb-white-color) 0.1rem solid;
     }
 
     .sticky-control-widget {
@@ -1024,25 +1024,25 @@ td button {
     }
 
     .table-pagination-controls .pagination-btn {
-        color: var(--harvest-white-color);
-        border-color: var(--harvest-white-color);
+        color: var(--fb-white-color);
+        border-color: var(--fb-white-color);
     }
 
     .table-pagination-controls .pagination-btn:hover:not(:disabled) {
-        background: var(--harvest-white-color);
+        background: var(--fb-white-color);
         color: var(--dark-accent-color);
     }
 
     .table-pagination-controls .pagination-btn.active {
-        background-color: var(--harvest-white-color);
+        background-color: var(--fb-white-color);
         color: var(--dark-accent-color);
     }
 
     .table-pagination-controls .pagination-ellipsis {
-        color: var(--harvest-white-color);
+        color: var(--fb-white-color);
     }
 
     .table-scroll-container {
-        box-shadow: 0 0 0.5rem 0 var(--harvest-white-color);
+        box-shadow: 0 0 0.5rem 0 var(--fb-white-color);
     }
 }
