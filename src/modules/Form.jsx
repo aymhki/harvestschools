@@ -221,6 +221,20 @@ function Form({
         defaultValue: field.defaultValue || '',
         ...(field.lang !== undefined && { lang: field.lang })
     });
+
+    const expandAutoSelectDependents = (autoSelect, choiceName, visited = new Set()) => {
+        if (!autoSelect || !Object.prototype.hasOwnProperty.call(autoSelect, choiceName) || visited.has(choiceName)) {
+            return [];
+        }
+        visited.add(choiceName);
+        let dependents = [];
+        (autoSelect[choiceName] || []).forEach(dep => {
+            dependents.push(dep);
+            dependents = dependents.concat(expandAutoSelectDependents(autoSelect, dep, visited));
+        });
+        return dependents;
+    };
+
     
     const getPlaceholder = (field) =>
         `${field.placeholder || getWhichLabelToUse(field)}${field.required ? '*' : ''}`;
@@ -463,6 +477,28 @@ function Form({
             processFieldOnChangeResult(field, commaValue);
         };
 
+        const handleChoiceChange = (choice, isChecked) => {
+            if (field.autoSelect) {
+                const dependents = expandAutoSelectDependents(field.autoSelect, choice);
+                dependents.forEach(dep => {
+                    const depIndex = (field.choices || []).indexOf(dep);
+                    if (depIndex !== -1) {
+                        const r = fieldRefs.current[`${field.id}_${depIndex}`];
+                        if (r?.current) r.current.checked = isChecked;
+                    }
+                });
+            }
+            updateHiddenInput();
+        };
+
+        const orderedChoices = field.autoSelect
+            ? [...(field.choices || [])].sort((a, b) => {
+                const aIsSmart = Object.prototype.hasOwnProperty.call(field.autoSelect, a) ? 0 : 1;
+                const bIsSmart = Object.prototype.hasOwnProperty.call(field.autoSelect, b) ? 0 : 1;
+                return aIsSmart - bIsSmart;
+            })
+            : (field.choices || []);
+
         const checkAll = () => {
             (field.choices || []).forEach((_, i) => {
                 const r = fieldRefs.current[`${field.id}_${i}`];
@@ -496,23 +532,25 @@ function Form({
                     </div>
                 )}
 
-                {(field.choices || []).map((choice, i) => {
+                {orderedChoices.map((choice) => {
+                    const i = (field.choices || []).indexOf(choice);
                     const choiceRefKey = `${field.id}_${i}`;
                     if (!fieldRefs.current[choiceRefKey]) fieldRefs.current[choiceRefKey] = createRef();
                     return (
-                        <label key={i} className="checkbox-grid-item">
+                        <label key={choiceRefKey} className="checkbox-grid-item">
                             <input
                                 type="checkbox"
                                 value={choice}
                                 disabled={submitting || field.readOnlyField || formIsReadOnly}
                                 ref={fieldRefs.current[choiceRefKey]}
                                 defaultChecked={selectedValues.includes(choice)}
-                                onChange={updateHiddenInput}
+                                onChange={(e) => handleChoiceChange(choice, e.target.checked)}
                             />
                             {choice}
                         </label>
                     );
                 })}
+
             </div>
         );
 
@@ -1480,7 +1518,8 @@ const fieldShape = {
         ruleResult: PropTypes.arrayOf(PropTypes.object).isRequired
     })),
     alwaysEnglish: PropTypes.bool,
-    lang: PropTypes.string
+    lang: PropTypes.string,
+    autoSelect: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
 };
 
 Form.propTypes = {

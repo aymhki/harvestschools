@@ -25,6 +25,7 @@ try {
     $conn->set_charset("utf8mb4");
     $conn->begin_transaction();
     global $ADMIN_USER_MANAGEMENT;
+    global $JACK_OF_ALL_TRADES;
     $authStatus = check_admin_user_permission($conn, $ADMIN_USER_MANAGEMENT);
     if (!$authStatus['success']) {
         $conn->rollback();
@@ -94,6 +95,28 @@ try {
         $updatePassword = true;
     }
 
+    if (is_array($editAdminPermissionLevel)) {
+        $stmtPerms = $conn->prepare("SELECT permission_level_id FROM admin_users_permissions_linker WHERE admin_user_id = ?");
+        $stmtPerms->bind_param("i", $adminId);
+        $stmtPerms->execute();
+        $currentPerms = array_column($stmtPerms->get_result()->fetch_all(MYSQLI_ASSOC), 'permission_level_id');
+        $stmtPerms->close();
+
+        $wasAdmin = in_array($ADMIN_USER_MANAGEMENT, $currentPerms);
+        $wasJack = in_array($JACK_OF_ALL_TRADES, $currentPerms);
+        $isAdmin = in_array($ADMIN_USER_MANAGEMENT, $editAdminPermissionLevel);
+        $isJack = in_array($JACK_OF_ALL_TRADES, $editAdminPermissionLevel);
+
+        if ($isAdmin && !$wasAdmin) $isJack = true;
+        if ($isJack && !$wasJack) $isAdmin = true;
+        if (!$isAdmin && $wasAdmin) $isJack = false;
+        if (!$isJack && $wasJack) $isAdmin = false;
+
+        $editAdminPermissionLevel = array_filter($editAdminPermissionLevel, fn($p) => $p != $ADMIN_USER_MANAGEMENT && $p != $JACK_OF_ALL_TRADES);
+        if ($isAdmin) $editAdminPermissionLevel[] = $ADMIN_USER_MANAGEMENT;
+        if ($isJack) $editAdminPermissionLevel[] = $JACK_OF_ALL_TRADES;
+        $editAdminPermissionLevel = array_values($editAdminPermissionLevel);
+    }
 
     $availablePermissions = $conn->query("SELECT permission_id FROM available_permissions")->fetch_all(MYSQLI_ASSOC);
     $permissionIds = array_map(fn($n) => (string)$n, array_column($availablePermissions, 'permission_id'));

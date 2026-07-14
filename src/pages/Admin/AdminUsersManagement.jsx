@@ -7,7 +7,7 @@ import Form from '../../modules/Form.jsx'
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {fetchAllAdminUsers, addAdminUser, editAdminUser, deleteAdminUser} from "../../services/Admin/AdminUsers/AdminUsersManagementServices.jsx";
-import {adminUserManagementPermissionLevel, msgTimeout} from "../../services/General/GeneralUtils.jsx"
+import {adminUserManagementPermissionLevel, msgTimeout, jackOfAllTradesPermissionLevel} from "../../services/General/GeneralUtils.jsx"
 import PropTypes from "prop-types";
 
 function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
@@ -143,6 +143,9 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
     useEffect(() => {
         if (availablePermissionsDict != null && !permissionsFieldHasBeenPopulated) {
             const availablePermissionsDictChoicesArray = Object.values(availablePermissionsDict).map(permission => permission.name)
+            const adminUsersPermissionName = availablePermissionsDict[adminUserManagementPermissionLevel].name
+            const aJackOfAllTradesPermissionName = availablePermissionsDict[jackOfAllTradesPermissionLevel].name;
+
             setAddAdminUserCoreFormFields(prevState => {
                 const permissionsField = {
                     id: permissionsFieldId,
@@ -164,6 +167,10 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                     dontLetTheBrowserSaveField: true,
                     choices: availablePermissionsDictChoicesArray,
                     defaultValue: [],
+                    autoSelect: {
+                        [aJackOfAllTradesPermissionName]: availablePermissionsDictChoicesArray,
+                        [adminUsersPermissionName]: [aJackOfAllTradesPermissionName],
+                    }
                 };
 
                 const fieldExists = prevState.some(field => field.id === permissionsFieldId);
@@ -447,8 +454,8 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                               noClearOption={true}
                               hasDifferentSubmitButtonText={true}
                               differentSubmitButtonText={['Add Admin User', 'Adding Admin User...']}
-                                  formFooterButtonsAreOutside={true}
-                                  footerButtonsPortalTarget={addAdminUserModalFooterButtonsRef}
+                              formFooterButtonsAreOutside={true}
+                              footerButtonsPortalTarget={addAdminUserModalFooterButtonsRef}
                           />
                         )}
                     </div>
@@ -494,8 +501,8 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                               noClearOption={true}
                               hasDifferentSubmitButtonText={true}
                               differentSubmitButtonText={['Edit Admin User', 'Editing Admin User...']}
-                                  formFooterButtonsAreOutside={true}
-                                  footerButtonsPortalTarget={editAdminUserModalFooterButtonsRef}
+                              formFooterButtonsAreOutside={true}
+                              footerButtonsPortalTarget={editAdminUserModalFooterButtonsRef}
 
                             />
                         )}
