@@ -56,6 +56,13 @@ final class PullToRefreshController: NSObject {
             let resolvedColor = dynamicColor.resolvedColor(with: view.traitCollection)
             self.refreshControl.layer.backgroundColor = resolvedColor.cgColor
         }
+
+        webView.registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (view: WKWebView, _) in
+            view.isHidden = true
+            DispatchQueue.main.async {
+                view.isHidden = false
+            }
+        }
         
         webView.scrollView.refreshControl = refreshControl
     }
