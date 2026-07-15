@@ -49,7 +49,7 @@ tree --gitignore -I 'assets|.git' -a
 - [x] The bot response to the vacancies option in the main menu doesn't use a cta button.
 - [x] h1/2/3 of the options page line height is not set.
 - [x] The clear and save buttons of the admin large action modal popup could be in the modal footer rather than the form footer.
-- [ ] Fix the home page video width for both chrome and safari.
+- [x] Fix the home page video width for both chrome and safari.
 - [ ] Large Action Modal Popup Needs to height readjustment for desktop view.
 - [ ] Admin Login Height Container needs to be bigger (use % instead vh or use nothing at all).
 - [x] If the early playschool department is selected in the main menu of the intermediate mode, there is no need to prompt the user to select stage group in the chat bot.

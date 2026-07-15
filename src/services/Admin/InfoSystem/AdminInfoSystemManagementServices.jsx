@@ -1,5 +1,5 @@
 import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx";
-import {adminLoginPageUrl, endpoints} from "../../General/GeneralUtils.jsx";
+import {adminLoginPageUrl, endpoints, buildAuthHeaders} from "../../General/GeneralUtils.jsx";
 
 
 const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmentsData, setStagesData) => {
@@ -16,9 +16,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
 
     try {
         const response = await fetch(endpoints.getInfoSystem, {method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         })
         const result = await response.json();
 
@@ -55,9 +53,7 @@ const updateInfoSystemData = async (newInfoSystemData) => {
 
         const response = await fetch(endpoints.updateInfoSystem, {method: 'POST',
             body: JSON.stringify(newInfoSystemData),
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();

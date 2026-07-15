@@ -127,6 +127,26 @@ const alumniStudentsManagementPermissionLevel = "13";
 const jackOfAllTradesPermissionLevel = "7246262252458111903";
 
 
+const getClientFingerprint = async () => {
+    const raw = [
+        navigator.userAgent,
+        navigator.language,
+        navigator.hardwareConcurrency ?? '',
+        screen.colorDepth ?? '',
+        navigator.maxTouchPoints ?? '',
+    ].join('||');
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+    return Array.from(new Uint8Array(digest))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+};
+
+const buildAuthHeaders = async (sessionId) => ({
+    'Authorization': 'Bearer ' + sessionId,
+    'X-Client-Fingerprint': await getClientFingerprint(),
+});
+
+
 const ENDPOINTS = {
     checkGraduationBookingSession: '/scripts/Parents/GraduationBookings/checkGraduationBookingSession.php',
     getAllGraduationBookings: '/scripts/Admin/GraduationBookings/getAllGraduationBookings.php',
@@ -136,7 +156,6 @@ const ENDPOINTS = {
     submitAddGraduationBookingForm: '/scripts/Admin/GraduationBookings/submitAddGraduationBookingForm.php',
     getGraduationBookingInfoBySession: '/scripts/Parents/GraduationBookings/getGraduationBookingBySession.php',
     submitEditGraduationBookingForm: '/scripts/Admin/GraduationBookings/submitEditGraduationBookingForm.php',
-    createAdminSession: '/scripts/Admin/Session/createAdminSession.php',
     validateAdminSession: '/scripts/Admin/Session/checkAdminSession.php',
     validateAdminLogin: '/scripts/Admin/Session/validateAdminLogin.php',
     getDashboardPermissions: '/scripts/Admin/Session/getDashboardPermissions.php',
@@ -278,6 +297,8 @@ export {
     getSessionsFromLocalStorage,
     getAdminSessionId,
     getGraduationBookingSessionId,
-    useDarkMode
+    useDarkMode,
+    getClientFingerprint,
+    buildAuthHeaders
 }
 

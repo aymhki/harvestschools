@@ -55,11 +55,45 @@ try {
     $stmt->close();
 
     if ($result->num_rows > 0) {
+        $userId = $result->fetch_assoc()['id'];
+
+        $fingerprint = isset($data['fingerprint']) && is_string($data['fingerprint'])
+            ? substr($data['fingerprint'], 0, 64)
+            : null;
+
+        $sessionToken = bin2hex(random_bytes(32));
+        $tokenHash    = hash('sha256', $sessionToken);
+
+        $stmt = $conn->prepare("DELETE FROM admin_sessions WHERE user_id = ? AND last_seen < (NOW() - INTERVAL 12 HOUR)");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $stmt->close();
+
+        $stmt = $conn->prepare(
+            "DELETE FROM admin_sessions WHERE user_id = ? AND id NOT IN (
+            SELECT id FROM (
+                SELECT id FROM admin_sessions WHERE user_id = ? ORDER BY last_seen DESC LIMIT 4
+            ) keep
+        )"
+        );
+        $stmt->bind_param("ii", $userId, $userId);
+        $stmt->execute();
+        $stmt->close();
+
+        $stmt = $conn->prepare("INSERT INTO admin_sessions (id, user_id, fingerprint_hash) VALUES (?, ?, ?)");
+        $stmt->bind_param("sis", $tokenHash, $userId, $fingerprint);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "message" => "Could not create session", "code" => 500]);
+            exit;
+        }
+        $stmt->close();
+
         echo json_encode([
-            "success" => true,
-            "message" => "Login successful",
-            "code" => 200,
-            "id" => $result->fetch_assoc()['id'],
+            "success"      => true,
+            "message"      => "Login successful",
+            "code"         => 200,
+            "id"           => $userId,
+            "sessionToken" => $sessionToken,
         ]);
     } else {
         $stmt = $conn->prepare("SELECT * FROM admin_users WHERE username = ?");

@@ -1,4 +1,4 @@
-import {adminLoginPageUrl, endpoints} from "../../General/GeneralUtils.jsx";
+import {adminLoginPageUrl, endpoints, buildAuthHeaders} from "../../General/GeneralUtils.jsx";
 import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx"
 
 
@@ -12,9 +12,7 @@ const fetchGraduationBookingsRequest = async (navigate, setAllBookings) => {
         }
 
         const response = await fetch(endpoints.getAllGraduationBookings, {method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + sessionId
-                }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -51,9 +49,7 @@ const handleDeleteGraduationBookingRequest = async (bookingId) => {
         const response = await fetch(endpoints.deleteGraduationBookingEntry, {
             method: 'POST',
             body: JSON.stringify({bookingId: bookingId}),
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -80,9 +76,7 @@ const handleAddGraduationBookingRequest = async (formData) => {
         const response = await fetch(endpoints.submitAddGraduationBookingForm, {
             method: 'POST',
             body: formData,
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -110,9 +104,7 @@ const handleEditGraduationBookingRequest = async (formData, bookingId) => {
         const response = await fetch(endpoints.submitEditGraduationBookingForm, {
             method: 'POST',
             body: formData,
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();

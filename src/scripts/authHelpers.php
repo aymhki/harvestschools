@@ -1,6 +1,49 @@
 <?php
 require_once '../../permissionLevels.php';
 
+function get_bearer_token_hash() {
+    $token = get_bearer_token();
+    return $token ? hash('sha256', $token) : null;
+}
+
+function validate_admin_session($conn) {
+    $tokenHash = get_bearer_token_hash();
+    if (!$tokenHash) {
+        return ["success" => false, "message" => "Missing bearer token", "code" => 401];
+    }
+
+    $stmt = $conn->prepare(
+        "SELECT user_id, fingerprint_hash FROM admin_sessions
+         WHERE id = ? AND last_seen >= (NOW() - INTERVAL 12 HOUR)"
+    );
+    $stmt->bind_param("s", $tokenHash);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+
+    if ($result->num_rows === 0) {
+        return ["success" => false, "message" => "Invalid or expired session", "code" => 401];
+    }
+
+    $row = $result->fetch_assoc();
+
+    if (!empty($row['fingerprint_hash'])) {
+        $clientFp = isset($_SERVER['HTTP_X_CLIENT_FINGERPRINT'])
+            ? substr(trim($_SERVER['HTTP_X_CLIENT_FINGERPRINT']), 0, 64)
+            : '';
+        if (!hash_equals($row['fingerprint_hash'], $clientFp)) {
+            return ["success" => false, "message" => "Session/device mismatch", "code" => 401];
+        }
+    }
+
+    $stmt = $conn->prepare("UPDATE admin_sessions SET last_seen = NOW() WHERE id = ?");
+    $stmt->bind_param("s", $tokenHash);
+    $stmt->execute();
+    $stmt->close();
+
+    return ["success" => true, "user_id" => (int)$row['user_id'], "code" => 200];
+}
+
 function get_bearer_token() {
     $headers = null;
 
@@ -24,7 +67,11 @@ function get_bearer_token() {
 }
 
 function check_admin_user_permission($conn, $requiredPermission, $explicitSessionId = null) {
-    $sessionId = get_bearer_token() ?? $explicitSessionId;
+    $sessionCheck = validate_admin_session($conn);
+    if (!$sessionCheck['success']) {
+        return $sessionCheck;
+    }
+    $sessionId = get_bearer_token_hash();
 
     if (empty($sessionId)) {
         return [
