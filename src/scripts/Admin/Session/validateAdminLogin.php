@@ -34,87 +34,56 @@ try {
         exit;
     }
 
-
     $user          = $data['username'];
     $plainPassword = $data['password'];
 
-    $stmt = $conn->prepare("SELECT * FROM admin_users WHERE username = ? AND password_hash = SHA2(?, 256)");
+    $stmt = $conn->prepare("SELECT id, password_hash FROM admin_users WHERE username = ?");
 
     if (!$stmt) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Prepare failed: " . $conn->error,
-            "code" => 500
-        ]);
+        echo json_encode(["success" => false, "message" => "Prepare failed", "code" => 500]);
         exit;
     }
 
-    $stmt->bind_param("ss", $user, $plainPassword);
+    $stmt->bind_param("s", $user);
     $stmt->execute();
     $result = $stmt->get_result();
     $stmt->close();
 
-    if ($result->num_rows > 0) {
-        $userId = $result->fetch_assoc()['id'];
+    $genericFail = ["success" => false, "message" => "Invalid username or password", "code" => 401];
 
-        $fingerprint = isset($data['fingerprint']) && is_string($data['fingerprint'])
-            ? substr($data['fingerprint'], 0, 64)
-            : null;
+    if ($result->num_rows === 0) {
+        echo json_encode($genericFail);
+        exit;
+    }
 
-        $sessionToken = bin2hex(random_bytes(32));
-        $tokenHash    = hash('sha256', $sessionToken);
+    $userRow    = $result->fetch_assoc();
+    $userId     = (int)$userRow['id'];
+    $storedHash = $userRow['password_hash'];
+    $passwordOk = false;
 
-        $stmt = $conn->prepare("DELETE FROM admin_sessions WHERE user_id = ? AND last_seen < (NOW() - INTERVAL 12 HOUR)");
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $stmt->close();
+    if (password_verify($plainPassword, $storedHash)) {
+        $passwordOk = true;
 
-        $stmt = $conn->prepare(
-            "DELETE FROM admin_sessions WHERE user_id = ? AND id NOT IN (
-            SELECT id FROM (
-                SELECT id FROM admin_sessions WHERE user_id = ? ORDER BY last_seen DESC LIMIT 4
-            ) keep
-        )"
-        );
-        $stmt->bind_param("ii", $userId, $userId);
-        $stmt->execute();
-        $stmt->close();
-
-        $stmt = $conn->prepare("INSERT INTO admin_sessions (id, user_id, fingerprint_hash) VALUES (?, ?, ?)");
-        $stmt->bind_param("sis", $tokenHash, $userId, $fingerprint);
-        if (!$stmt->execute()) {
-            echo json_encode(["success" => false, "message" => "Could not create session", "code" => 500]);
-            exit;
+        if (password_needs_rehash($storedHash, PASSWORD_DEFAULT)) {
+            $newHash = password_hash($plainPassword, PASSWORD_DEFAULT);
+            $up = $conn->prepare("UPDATE admin_users SET password_hash = ? WHERE id = ?");
+            $up->bind_param("si", $newHash, $userId);
+            $up->execute();
+            $up->close();
         }
-        $stmt->close();
 
-        echo json_encode([
-            "success"      => true,
-            "message"      => "Login successful",
-            "code"         => 200,
-            "id"           => $userId,
-            "sessionToken" => $sessionToken,
-        ]);
-    } else {
-        $stmt = $conn->prepare("SELECT * FROM admin_users WHERE username = ?");
-        $stmt->bind_param("s", $user);
-        $stmt->execute();
-        $userResult = $stmt->get_result();
-        $stmt->close();
+    } elseif (hash_equals($storedHash, hash('sha256', $plainPassword))) {
+        $passwordOk = true;
+        $newHash = password_hash($plainPassword, PASSWORD_DEFAULT);
+        $up = $conn->prepare("UPDATE admin_users SET password_hash = ? WHERE id = ?");
+        $up->bind_param("si", $newHash, $userId);
+        $up->execute();
+        $up->close();
+    }
 
-        if ($userResult->num_rows > 0) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Incorrect password",
-                "code" => 401
-            ]);
-        } else {
-            echo json_encode([
-                "success" => false,
-                "message" => "Username not found",
-                "code" => 404
-            ]);
-        }
+    if (!$passwordOk) {
+        echo json_encode($genericFail);
+        exit;
     }
 } catch (Exception $e) {
     echo json_encode([

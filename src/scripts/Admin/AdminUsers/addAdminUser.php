@@ -38,6 +38,7 @@ try {
     $newAdminPassword = $data['new_admin_password']  ?? '';
     $newAdminConfirmPassword = $data['new_admin_confirm_password'] ?? '';
     $newAdminPermissionLevel = $data['new_admin_permissions'] ?? '';
+    $newAdminEmail = trim($data['new_admin_email'] ?? '');
 
     if (is_array($newAdminPermissionLevel)) {
         $isAdmin = in_array($ADMIN_USER_MANAGEMENT, $newAdminPermissionLevel);
@@ -67,6 +68,12 @@ try {
     if ($result->num_rows > 0) {
         $conn->rollback();
         echo json_encode(["success" => false, "message" => "Username already exists", "code" => 400]);
+        exit;
+    }
+
+    if (!preg_match('/^[A-Za-z0-9._%+-]+@(harvestschools|alfajralbasem)\.com$/', $newAdminEmail)) {
+        $conn->rollback();
+        echo json_encode(["success" => false, "message" => "Email must be a valid @harvestschools.com or @alfajralbasem.com address", "code" => 400]);
         exit;
     }
 
@@ -104,10 +111,10 @@ try {
         exit;
     }
 
-
-    $sql = "INSERT INTO admin_users (username, name, password_hash) VALUES (?, ?, SHA2(?, 256))";
+    $hashedPassword = password_hash($newAdminPassword, PASSWORD_DEFAULT);
+    $sql = "INSERT INTO admin_users (username, name, password_hash, email) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $newUsername, $newAdminName, $newAdminPassword);
+    $stmt->bind_param("ssss", $newUsername, $newAdminName, $hashedPassword, $newAdminEmail);
     $stmt->execute();
     $new_user_id = mysqli_insert_id($conn);
     $conn->commit();

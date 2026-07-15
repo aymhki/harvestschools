@@ -39,12 +39,11 @@ try {
         }
     }
 
-    $sql = "SELECT * FROM admin_users";
+    $sql = "SELECT id, username, name, email FROM admin_users";
     $result = $conn->query($sql);
 
-    $headers = [
-        "User ID", "Username", "Name", "Password Hash", "Permissions", "Permissions In Numbers"
-    ];
+    $headers = ["User ID", "Username", "Name", "Email", "Permissions", "Permissions In Numbers"];
+
 
     $dataRows = [];
     if ($result->num_rows > 0) {

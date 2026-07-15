@@ -40,6 +40,7 @@ try {
     $editAdminConfirmPassword = $data['edit_admin_confirm_password'] ?? '';
     $editAdminPermissionLevel = $data['edit_admin_permissions'] ?? '';
     $theCurrentUserEditingId = $data['the_current_user_editing_id'] ?? '';
+    $editAdminEmail = trim($data['edit_admin_email'] ?? '');
 
     if (empty($adminId) || !is_numeric($adminId)) {
         $conn->rollback();
@@ -65,6 +66,12 @@ try {
     if ($result->num_rows > 0) {
         $conn->rollback();
         echo json_encode(["success" => false, "message" => "Username already exists", "code" => 400]);
+        exit;
+    }
+
+    if (!preg_match('/^[A-Za-z0-9._%+-]+@(harvestschools|alfajralbasem)\.com$/', $editAdminEmail)) {
+        $conn->rollback();
+        echo json_encode(["success" => false, "message" => "Email must be a valid @harvestschools.com or @alfajralbasem.com address", "code" => 400]);
         exit;
     }
 
@@ -94,6 +101,7 @@ try {
         }
         $updatePassword = true;
     }
+
 
     if (is_array($editAdminPermissionLevel)) {
         $stmtPerms = $conn->prepare("SELECT permission_level_id FROM admin_users_permissions_linker WHERE admin_user_id = ?");
@@ -129,13 +137,14 @@ try {
     }
 
     if ($updatePassword) {
-        $sql = "UPDATE admin_users SET username = ?, name = ?, password_hash = SHA2(?, 256) WHERE id = ?";
+        $hashedPassword = password_hash($editAdminPassword, PASSWORD_DEFAULT);
+        $sql = "UPDATE admin_users SET username = ?, name = ?, email = ?, password_hash = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $editUsername, $editAdminName, $editAdminPassword, $adminId);
+        $stmt->bind_param("ssssi", $editUsername, $editAdminName, $editAdminEmail, $hashedPassword, $adminId);
     } else {
-        $sql = "UPDATE admin_users SET username = ?, name = ? WHERE id = ?";
+        $sql = "UPDATE admin_users SET username = ?, name = ?, email = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssi", $editUsername, $editAdminName, $adminId);
+        $stmt->bind_param("sssi", $editUsername, $editAdminName, $editAdminEmail, $adminId);
     }
 
     $stmt->execute();
