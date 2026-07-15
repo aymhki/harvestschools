@@ -137,3 +137,34 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
         "session_id" => $sessionId,
     ];
 }
+
+
+function issue_admin_session($conn, $userId, $fingerprintHash = null) {
+    $stmt = $conn->prepare("DELETE FROM admin_sessions WHERE user_id = ? AND last_seen < (NOW() - INTERVAL 12 HOUR)");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->close();
+
+    $stmt = $conn->prepare(
+        "DELETE FROM admin_sessions WHERE user_id = ? AND id NOT IN (
+            SELECT id FROM (SELECT id FROM admin_sessions WHERE user_id = ? ORDER BY last_seen DESC LIMIT 4) keep
+        )"
+    );
+    $stmt->bind_param("ii", $userId, $userId);
+    $stmt->execute();
+    $stmt->close();
+
+    $token     = bin2hex(random_bytes(32));
+    $tokenHash = hash('sha256', $token);
+    $stmt = $conn->prepare("INSERT INTO admin_sessions (id, user_id, fingerprint_hash) VALUES (?, ?, ?)");
+    $stmt->bind_param("sis", $tokenHash, $userId, $fingerprintHash);
+    $stmt->execute();
+    $stmt->close();
+
+    $stmt = $conn->prepare("UPDATE admin_users SET last_login_at = NOW() WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->close();
+
+    return $token;
+}

@@ -176,6 +176,16 @@ const ENDPOINTS = {
     deleteAdminUser: '/scripts/Admin/AdminUsers/deleteAdminUser.php',
     getInfoSystem: '/scripts/Admin/InfoSystem/getInfoSystemData.php',
     updateInfoSystem: '/scripts/Admin/InfoSystem/updateInfoSystemData.php',
+    verifyMfa: '/scripts/Admin/Session/verifyMfa.php',
+    requestMfaEmailCode: '/scripts/Admin/Session/requestMfaEmailCode.php',
+    getMyAccount: '/scripts/Admin/Session/getMyAccount.php',
+    updateMyAccount: '/scripts/Admin/Session/updateMyAccount.php',
+    setupTotp: '/scripts/Admin/Session/setupTotp.php',
+    confirmTotp: '/scripts/Admin/Session/confirmTotp.php',
+    passkeyRegisterOptions: '/scripts/Admin/Session/passkeyRegisterOptions.php',
+    passkeyRegisterVerify: '/scripts/Admin/Session/passkeyRegisterVerify.php',
+    passkeyLoginOptions: '/scripts/Admin/Session/passkeyLoginOptions.php',
+    passkeyLoginVerify: '/scripts/Admin/Session/passkeyLoginVerify.php',
 };
 
 const BASE_URLS = {

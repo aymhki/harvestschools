@@ -8,6 +8,8 @@ import {
     validateAdminLogin,
     validateAdminLoginWithCredentials,
     isMobileApp,
+    requestEmailCode,
+    completeMfa
 } from "../../services/Admin/Session/MainAdminServices.jsx";
 import {useTranslation} from "react-i18next";
 import {
@@ -25,6 +27,11 @@ function AdminLogin() {
     const navigate = useNavigate();
     const isMountedRef = useRef(true);
     const [submittingLocal, setSubmittingLocal] = useState(false);
+    const [mfaState, setMfaState] = useState(null);
+    const [mfaMethod, setMfaMethod] = useState(null);
+    const [mfaCode, setMfaCode] = useState('');
+    const [mfaError, setMfaError] = useState(null);
+    const [showAltMethods, setShowAltMethods] = useState(false);
     const [loginMode, setLoginMode] = useState('checking');
     const [prefillUsername, setPrefillUsername] = useState('');
     const usernameFieldId = 1
@@ -40,11 +47,19 @@ function AdminLogin() {
         try {
             const result = await validateAdminLogin(formData, usernameFieldId, passwordFieldId, navigate);
 
-            if (result && !result.success) {
-                throw new Error(result.message);
-            } else {
+            if (result && result.mfaRequired) {
+                setMfaState(result);
+                setMfaMethod(result.preferred);
+                setLoginMode('mfa');
+                if (result.preferred === 'email') { requestEmailCode(result.mfaToken); }
                 return true;
             }
+
+            if (result && !result.success) {
+                throw new Error(result.message);
+            }
+
+            return true;
 
         } catch (error) {
             throw new Error(error.message);
@@ -157,6 +172,68 @@ function AdminLogin() {
             isMountedRef.current = false;
         };
     }, []);
+
+    const renderMfaScreen = () => (
+        <div className={'admin-login-mfa'}>
+            {mfaMethod === 'passkey' ? (
+                <button type={'button'} disabled={submittingLocal} onClick={handlePasskeyMfa}>
+                    Use your passkey
+                </button>
+            ) : (
+                <>
+                    <p>
+                        {mfaMethod === 'email'
+                            ? `Enter the 6-digit code sent to ${mfaState.maskedEmail}`
+                            : 'Enter the 6-digit code from your authenticator app'}
+                    </p>
+                    <input
+                        type={'text'} inputMode={'numeric'} maxLength={6}
+                        value={mfaCode}
+                        onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                        autoFocus
+                    />
+                    {mfaMethod === 'email' && (
+                        <button type={'button'} onClick={() => requestEmailCode(mfaState.mfaToken)}>
+                            Resend code
+                        </button>
+                    )}
+                    <button type={'button'} disabled={submittingLocal || mfaCode.length !== 6} onClick={handleCodeMfa}>
+                        Verify
+                    </button>
+                </>
+            )}
+            {mfaError && <p className={'admin-login-mfa-error'}>{mfaError}</p>}
+            {mfaState.methods.length > 1 && (
+                <button type={'button'} onClick={() => setShowAltMethods(v => !v)}>
+                    Authenticate another way
+                </button>
+            )}
+            {showAltMethods && mfaState.methods.filter(m => m !== mfaMethod).map(m => (
+                <button key={m} type={'button'} onClick={() => {
+                    setMfaMethod(m); setMfaCode(''); setMfaError(null); setShowAltMethods(false);
+                    if (m === 'email') { requestEmailCode(mfaState.mfaToken); }
+                }}>
+                    {m === 'passkey' ? 'Use a passkey' : m === 'totp' ? 'Use authenticator app' : 'Email me a code'}
+                </button>
+            ))}
+        </div>
+    );
+
+    const handleCodeMfa = async () => {
+        setSubmittingLocal(true);
+        setMfaError(null);
+
+        try {
+            const result = await completeMfa(mfaState.mfaToken, mfaMethod, mfaCode, navigate);
+            if (!result.success) { setMfaError(result.message || 'Verification failed'); }
+            // On success completeMfa already navigated; if result.promptPasskey, the
+            // dashboard shows the add-passkey prompt (pass via navigation state or a
+            // sessionStorage flag read once by AdminRouter).
+        } finally {
+            setSubmittingLocal(false);
+        }
+
+    };
 
     const renderBiometricScreen = () => (
         <div className={'admin-login-biometric-only'}>
