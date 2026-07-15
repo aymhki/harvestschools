@@ -5,22 +5,14 @@ import { useSpring, animated } from 'react-spring';
 import {useNavigate} from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
-import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 
 function CorporateNavigationBar(){
     const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
-    const [academicsOpen, setAcademicsOpen] = useState(false);
-    const [admissionOpen, setAdmissionOpen] = useState(false);
-    const [studentsLifeOpen, setStudentsLifeOpen] = useState(false);
-    const [eventsOpen, setEventsOpen] = useState(false);
-    const [galleryOpen, setGalleryOpen] = useState(false);
-    const [moreInfoOpen, setMoreInfoOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const { t, i18n } = useTranslation(['corporate-nav']);
-    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: false});
 
     useEffect(() => {
         setIsClient(true);
@@ -29,55 +21,29 @@ function CorporateNavigationBar(){
     const toggleMenu = () => {
         setIsOpen(!isOpen);
 
-        if (isOpen) {
-            setAcademicsOpen(false);
-            setAdmissionOpen(false);
-            setStudentsLifeOpen(false);
-            setEventsOpen(false);
-            setGalleryOpen(false);
-            setMoreInfoOpen(false);
-        }
     }
 
     const closeMenu = () => {
         setIsOpen(false);
-        setAcademicsOpen(false);
-        setAdmissionOpen(false);
-        setStudentsLifeOpen(false);
-        setEventsOpen(false);
-        setGalleryOpen(false);
-        setMoreInfoOpen(false);
     }
-
-    const toggleDropdown = (dropdown, setDropdown) => {
-        setDropdown(!dropdown);
-    }
-
-    const handleDropdownClick = (e, mainLink) => {
-        if (!e.target.closest('.dropdown-content')) {
-            navigate(mainLink);
-
-            if (isMobile){
-                setIsOpen(true);
-            }
-        }
-    };
 
     useEffect(() => {
         let lastWidth = window.innerWidth;
+        let lastIsMobile = window.innerWidth < 768;
 
         const checkWindowSize = () => {
             const currentWidth = window.innerWidth;
-            if (currentWidth !== lastWidth) {
+            const currentIsMobile = currentWidth < 768;
+
+            if (currentIsMobile !== lastIsMobile) {
+                lastIsMobile = currentIsMobile;
                 lastWidth = currentWidth;
                 toggleNavMenuMobile(currentWidth);
             }
         };
 
         checkWindowSize();
-
         window.addEventListener("resize", checkWindowSize);
-
         return () => window.removeEventListener("resize", checkWindowSize);
     }, []);
 
@@ -85,20 +51,8 @@ function CorporateNavigationBar(){
         setIsMobile(currentWidth < 768);
         if (currentWidth >= 768) {
             setIsOpen(true);
-            setAcademicsOpen(false);
-            setAdmissionOpen(false);
-            setStudentsLifeOpen(false);
-            setEventsOpen(false);
-            setGalleryOpen(false);
-            setMoreInfoOpen(false);
         } else {
             setIsOpen(false);
-            setAcademicsOpen(false);
-            setAdmissionOpen(false);
-            setStudentsLifeOpen(false);
-            setEventsOpen(false);
-            setGalleryOpen(false);
-            setMoreInfoOpen(false);
         }
     }
 
