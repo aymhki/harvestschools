@@ -167,9 +167,21 @@ const performAdminLogin = async (username, password, navigate, persistBiometricC
             } else {
                 extendSession('harvest_schools_admin', result.sessionToken);
             }
+
             navigate(adminDashboardPageUrl, { replace: true });
-            return { success: true };
+
+            if (result && result.success && result.mfa_required) {
+                return {
+                    success: true,
+                    mfaRequired: true,
+                    mfaToken: result.mfaToken,
+                    methods: result.methods,
+                    preferred: result.preferred,
+                    maskedEmail: result.maskedEmail,
+                };
+            }
         }
+
         return result;
     } catch (error) {
         return { success: false, message: error.message, code: 0 };
@@ -247,6 +259,40 @@ const validateAdminSessionLocally = async () => {
     return null;
 }
 
+const storeSessionAndEnter = async (sessionToken, navigate) => {
+    if (isMobileApp()) {
+        await setMobileSession('harvest_schools_admin', sessionToken);
+    } else {
+        extendSession('harvest_schools_admin', sessionToken);
+    }
+    navigate(adminDashboardPageUrl, { replace: true });
+};
+
+const completeMfa = async (mfaToken, method, code, navigate) => {
+    try {
+        const response = await fetch(endpoints.verifyMfa, {
+            method: 'POST',
+            body: JSON.stringify({ mfa_token: mfaToken, method, code }),
+        });
+        const result = await response.json();
+        if (result && result.success && result.sessionToken) {
+            await storeSessionAndEnter(result.sessionToken, navigate);
+            return { success: true, promptPasskey: result.promptPasskey };
+        }
+        return result;
+    } catch (error) {
+        return { success: false, message: error.message, code: 0 };
+    }
+};
+
+const requestEmailCode = async (mfaToken) => {
+    const response = await fetch(endpoints.requestMfaEmailCode, {
+        method: 'POST',
+        body: JSON.stringify({ mfa_token: mfaToken }),
+    });
+    return response.json();
+};
+
 export {
     checkAdminSession,
     validateAdminLogin,
@@ -255,4 +301,6 @@ export {
     checkAdminSessionFromAdminLogin,
     validateAdminSessionLocally,
     isMobileApp,
+    requestEmailCode,
+    completeMfa
 }

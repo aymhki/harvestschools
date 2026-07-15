@@ -1,5 +1,6 @@
 <?php
 require_once '../../headers.php';
+require_once '../../mfaHelpers.php';
 set_cors_headers();
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
@@ -85,6 +86,52 @@ try {
         echo json_encode($genericFail);
         exit;
     }
+
+    $fingerprint = isset($data['fingerprint']) && is_string($data['fingerprint'])
+        ? substr($data['fingerprint'], 0, 64)
+        : null;
+
+    $mfaReason = compute_mfa_required($conn, $userId, $fingerprint);
+    $mfaInfo   = get_available_mfa_methods($conn, $userId);
+
+    if ($mfaReason !== null && !empty($mfaInfo['methods'])) {
+        $mfaToken = bin2hex(random_bytes(32));
+        $mfaHash  = hash('sha256', $mfaToken);
+
+        $stmt = $conn->prepare(
+            "INSERT INTO admin_mfa_challenges (id, user_id, fingerprint_hash, expires_at) VALUES (?, ?, ?, NOW() + INTERVAL 10 MINUTE)"
+        );
+
+        $stmt->bind_param("sis", $mfaHash, $userId, $fingerprint);
+        $stmt->execute();
+        $stmt->close();
+
+        echo json_encode([
+            "success"      => true,
+            "mfa_required" => true,
+            "mfaToken"     => $mfaToken,
+            "methods"      => $mfaInfo['methods'],
+            "preferred"    => $mfaInfo['preferred'],
+            "maskedEmail"  => $mfaInfo['masked_email'],
+            "code"         => 200,
+        ]);
+        exit;
+    }
+
+    $sessionToken = issue_admin_session($conn, $userId, $fingerprint);
+    log_admin_event($conn, $userId, 'login_success', $fingerprint);
+
+    echo json_encode([
+        "success"          => true,
+        "message"          => "Login successful",
+        "code"             => 200,
+        "id"               => $userId,
+        "sessionToken"     => $sessionToken,
+        "needsEmailSetup"  => empty($mfaInfo['methods']),
+    ]);
+    exit;
+
+
 } catch (Exception $e) {
     echo json_encode([
         "success" => false,
