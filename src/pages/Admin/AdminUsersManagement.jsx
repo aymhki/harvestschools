@@ -46,9 +46,10 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
 
     const usernameFieldId = 2;
     const nameFieldId = 3;
-    const passwordFieldId = 4;
-    const confirmPasswordFieldId = 5;
-    const permissionsFieldId = 6;
+    const emailFieldId = 4;
+    const passwordFieldId = 5;
+    const confirmPasswordFieldId = 6;
+    const permissionsFieldId = 7;
 
     const [addAdminUserCoreFormFields, setAddAdminUserCoreFormFields] = useState( [
         {
@@ -61,7 +62,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
             errorMsg: 'Please enter username',
             value: '',
             setValue: null,
-            widthOfField: 2,
+            widthOfField: 3,
             httpName: 'username',
             labelOutside: true,
             labelOnTop: true,
@@ -78,12 +79,29 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
             errorMsg: 'Please enter name',
             value: '',
             setValue: null,
-            widthOfField: 2,
+            widthOfField: 3,
             httpName: 'name',
             labelOutside: true,
             labelOnTop: true,
             dontLetTheBrowserSaveField: true,
             displayLabel: 'Name',
+        },
+        {
+            id: emailFieldId,
+            type: 'email',
+            name: 'email',
+            label: 'Email',
+            required: true,
+            placeholder: 'Email',
+            errorMsg: 'Please enter email',
+            value: '',
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'email',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            displayLabel: 'Email',
         },
         {
             id: passwordFieldId,
@@ -194,6 +212,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
     const colIndexForAdminId = 0;
     const colIndexForAdminUsername = 1;
     const colIndexForAdminName = 2;
+    const colIndexForAdminEmail = 3
     const colIndexForAdminPermissions = 4;
 
     const handleEditAdminUserModalInitialization = (rowIndex) => {
@@ -201,6 +220,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
             const adminUserToEditId = adminUsers[rowIndex][colIndexForAdminId];
             const adminUserToEditUsername = adminUsers[rowIndex][colIndexForAdminUsername];
             const adminUserToEditName = adminUsers[rowIndex][colIndexForAdminName];
+            const adminUserToEditEmail = adminUsers[rowIndex][colIndexForAdminEmail];
             const adminUserToEditPermissions = adminUsers[rowIndex][colIndexForAdminPermissions];
 
             const updatedAddAdminUserCoreFormFields = addAdminUserCoreFormFields.map(field => {
@@ -220,6 +240,8 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                     updatedField.value = '';
                 } else if (updatedField.id === permissionsFieldId) {
                     updatedField.value = adminUserToEditPermissions;
+                } else if (updatedField.id === emailFieldId) {
+                    updatedField.value = adminUserToEditEmail;
                 }
 
                 return updatedField;
@@ -251,6 +273,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
             const formDataToSend = {
                 "new_admin_username": formDataJson[`field_${usernameFieldId}`],
                 "new_admin_name": formDataJson[`field_${nameFieldId}`],
+                "new_admin_email": formDataJson[`field_${emailFieldId}`],
                 "new_admin_password": formDataJson[`field_${passwordFieldId}`],
                 "new_admin_confirm_password": formDataJson[`field_${confirmPasswordFieldId}`],
                 "new_admin_permissions": idArray
@@ -289,6 +312,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                 "edit_admin_id": userToEditId,
                 "edit_admin_username": formDataJson[`field_${usernameFieldId}`],
                 "edit_admin_name": formDataJson[`field_${nameFieldId}`],
+                "edit_admin_email": formDataJson[`field_${emailFieldId}`],
                 "edit_admin_password": adminToEditNewPassword,
                 "edit_admin_confirm_password": formDataJson[`field_${confirmPasswordFieldId}`],
                 "edit_admin_permissions": idArray,
@@ -380,7 +404,6 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                        forceEnglishTable={true}
                        defaultHiddenColumns={
                             [
-                                'Password Hash',
                                 'Permissions In Numbers'
                             ]
                        }

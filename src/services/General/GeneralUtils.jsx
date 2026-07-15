@@ -3,7 +3,7 @@ import i18n from '../../i18n/i18n-client.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import { Capacitor } from '@capacitor/core';
-import {clearMobileSession} from "./CapacitorSecureAuthUtils.jsx"
+import {clearMobileSession, getMobileSession} from "./CapacitorSecureAuthUtils.jsx"
 
 const isDevelopment = () => {
     return !import.meta.env.PROD;
@@ -158,6 +158,7 @@ const ENDPOINTS = {
     submitEditGraduationBookingForm: '/scripts/Admin/GraduationBookings/submitEditGraduationBookingForm.php',
     validateAdminSession: '/scripts/Admin/Session/checkAdminSession.php',
     validateAdminLogin: '/scripts/Admin/Session/validateAdminLogin.php',
+    deleteAdminSession: '/scripts/Admin/Session/deleteAdminSession.php',
     getDashboardPermissions: '/scripts/Admin/Session/getDashboardPermissions.php',
     getUserPermissions: '/scripts/Admin/Session/getAdminUserPermissions.php',
     submitForm: '/scripts/Public/General/submitForm.php',
@@ -189,14 +190,26 @@ const ADMIN_BASE_URLS = {
 
 const endpoints = generateEndpoints();
 
-const logoutCurrentAdmin = (navigate) => {
-    localStorage.removeItem('harvest_schools_admin_session_id');
-    localStorage.removeItem('harvest_schools_admin_session_time');
+const logoutCurrentAdmin = async (navigate) => {
+    const native = Capacitor.isNativePlatform();
+    const sessionId = native ? await getMobileSession('harvest_schools_admin') : localStorage.getItem('harvest_schools_admin_session_id');
 
-    if (Capacitor.isNativePlatform()) {
-        clearMobileSession('harvest_schools_admin');
+    if (sessionId) {
+        try {
+
+            await fetch(endpoints.deleteAdminSession, {
+                method: 'POST',
+                headers: await buildAuthHeaders(sessionId),
+            });
+
+        } catch {
+            console.log('Could not delete admin session sessions from the server.');
+        }
     }
 
+    localStorage.removeItem('harvest_schools_admin_session_id');
+    localStorage.removeItem('harvest_schools_admin_session_time');
+    if (native) { await clearMobileSession('harvest_schools_admin'); }
     navigate(adminLoginPageUrl, { replace: true });
 }
 
