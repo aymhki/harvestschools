@@ -9,6 +9,7 @@ import {
     resetSession,
     getSessionsFromLocalStorage,
     endpoints,
+    buildAuthHeaders
 } from "../../General/GeneralUtils.jsx";
 
 
@@ -42,9 +43,7 @@ const submitUpdateGraduationBookingExtrasRequest = async (formData, bookingId, n
         
         const response = await fetch (endpoints.checkGraduationBookingSession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         })
         
         const result = await response.json();
@@ -62,9 +61,7 @@ const submitUpdateGraduationBookingExtrasRequest = async (formData, bookingId, n
         const updateResponse = await fetch(endpoints.updateGraduationBookingExtras, {
             method: 'POST',
             body: formData,
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
         
         const updateResult = await updateResponse.json();
@@ -95,9 +92,7 @@ const fetchGraduationBookingInfoBySessionRequest = async (navigate) => {
 
         const response = await fetch(endpoints.getGraduationBookingInfoBySession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -129,9 +124,7 @@ const checkGraduationBookingSessionFromBookingDashboard = async (navigate) => {
     try {
         const response = await fetch(endpoints.checkGraduationBookingSession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -167,9 +160,7 @@ const validateGraduationBookingLogin = async (formData, usernameFieldId, passwor
             const sessionResponse = await fetch(endpoints.createGraduationBookingSession, {
                 method: 'POST',
                 body: JSON.stringify({username: username, user_id: result.id}),
-                headers: {
-                    'Authorization': 'Bearer ' + createSessions('harvest_schools_graduation_booking')
-                }
+                headers: await buildAuthHeaders(createSessions('harvest_schools_graduation_booking'))
             });
 
             const sessionResult = await sessionResponse.json();
@@ -194,9 +185,7 @@ const checkGraduationBookingSessionFromBookingLogin = async (navigate) => {
     try {
         const response = await fetch(endpoints.checkGraduationBookingSession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -224,9 +213,7 @@ const checkGraduationBookingSession = async (navigate) => {
     try {
         const response = await fetch(endpoints.checkGraduationBookingSession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();

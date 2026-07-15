@@ -27,6 +27,14 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
+    $sessionCheck = validate_admin_session($conn);
+
+    if (!$sessionCheck['success']) {
+        echo json_encode($sessionCheck);
+        exit;
+    }
+
+    $sessionId = get_bearer_token_hash();
     $stmt = $conn->prepare("SELECT admin_users.name, admin_users.username, admin_users.id FROM admin_users JOIN admin_sessions ON admin_sessions.user_id = admin_users.id WHERE admin_sessions.id = ?");
 
     if (!$stmt) {
@@ -38,7 +46,6 @@ try {
         exit;
     }
 
-    $sessionId = get_bearer_token();
     $stmt->bind_param("s", $sessionId);
     $stmt->execute();
     $result = $stmt->get_result();

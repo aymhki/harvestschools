@@ -2,11 +2,13 @@ import {
     adminDashboardPageUrl,
     adminLoginPageUrl,
     createSessions,
+    buildAuthHeaders,
     extendSession,
     resetSession,
     sessionDuration,
     getSessionsFromLocalStorage,
-    endpoints
+    endpoints,
+    getClientFingerprint
 } from "../../General/GeneralUtils.jsx";
 import { Capacitor } from '@capacitor/core';
 import {
@@ -31,9 +33,7 @@ const checkAdminSession = async (navigate, allowedPermission) => {
     try {
         const response = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -53,14 +53,12 @@ const checkAdminSession = async (navigate, allowedPermission) => {
             }
 
             navigate(adminLoginPageUrl, { replace: true });
-
+            return;
         }
 
         const userPermissionsResponse = await fetch(endpoints.getUserPermissions, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const userPermissionsResult = await userPermissionsResponse.json();
@@ -96,9 +94,7 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
     try {
         const sessionResponse = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const sessionResult = await sessionResponse.json();
@@ -109,6 +105,8 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
             }
 
             navigate(adminLoginPageUrl, { replace: true });
+            return;
+
         } else if (isMobileApp()) {
             await extendMobileSession('harvest_schools_admin', sessionId);
         }
@@ -119,9 +117,7 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
 
         const permissionsResponse = await fetch(endpoints.getDashboardPermissions, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const permissionsResult = await permissionsResponse.json();
@@ -152,53 +148,33 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
 
 const performAdminLogin = async (username, password, navigate, persistBiometricCredentials) => {
     try {
+        const fingerprint = await getClientFingerprint();
         const response = await fetch(endpoints.validateAdminLogin, {
             method: 'POST',
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password, fingerprint })
         });
-
         const result = await response.json();
-
-        if (result && result.success) {
+        if (result && result.success && result.sessionToken) {
             const mobile = isMobileApp();
-            const newSessionId = mobile ? generateSecureSessionId() : createSessions('harvest_schools_admin');
-
-            const sessionResponse = await fetch(endpoints.createAdminSession, {
-                method: 'POST',
-                body: JSON.stringify({ username: username, user_id: result.id }),
-                headers: {
-                    'Authorization': 'Bearer ' + newSessionId
-                }
-            });
-
-            const sessionResult = await sessionResponse.json();
-
-            if (sessionResult.success) {
-
-                if (mobile) {
-                    await setMobileSession('harvest_schools_admin', newSessionId);
-                    if (persistBiometricCredentials) {
-                        const biometricHardwareAvailable = await isBiometricAvailable();
-                        if (biometricHardwareAvailable) {
-                            await saveBiometricCredentials('harvest_schools_admin', username, password);
-                        }
+            if (mobile) {
+                await setMobileSession('harvest_schools_admin', result.sessionToken);
+                if (persistBiometricCredentials) {
+                    const biometricHardwareAvailable = await isBiometricAvailable();
+                    if (biometricHardwareAvailable) {
+                        await saveBiometricCredentials('harvest_schools_admin', username, password);
                     }
                 }
-
-                navigate(adminDashboardPageUrl, { replace: true });
-                return { success: true };
-
             } else {
-                return sessionResult;
+                extendSession('harvest_schools_admin', result.sessionToken);
             }
-
-        } else {
-            return result;
+            navigate(adminDashboardPageUrl, { replace: true });
+            return { success: true };
         }
+        return result;
     } catch (error) {
         return { success: false, message: error.message, code: 0 };
     }
-}
+};
 
 const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, navigate) => {
     const formDataEntries = Array.from(formData.entries());
@@ -221,9 +197,7 @@ const checkAdminSessionFromAdminLogin = async (navigate) => {
 
         const response = await fetch(endpoints.validateAdminSession, {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();

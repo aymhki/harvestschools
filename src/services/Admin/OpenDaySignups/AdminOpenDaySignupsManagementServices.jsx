@@ -1,6 +1,7 @@
 import {
     adminLoginPageUrl,
     endpoints,
+    buildAuthHeaders
 } from "../../General/GeneralUtils.jsx";
 import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx";
 
@@ -18,9 +19,7 @@ const fetchAllOpenDaySignups = async (navigate, setOpenDaySignups) => {
         const response = await fetch(endpoints.getOpenDaySignups,
     {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();

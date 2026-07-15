@@ -1,5 +1,5 @@
 import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx";
-import {adminLoginPageUrl, endpoints, logoutCurrentAdmin} from "../../General/GeneralUtils.jsx";
+import {adminLoginPageUrl, endpoints, logoutCurrentAdmin, buildAuthHeaders} from "../../General/GeneralUtils.jsx";
 
 
 const fetchAllAdminUsers = async (navigate, setAdminUsers, setAvailablePermissionsDict) => {
@@ -14,9 +14,7 @@ const fetchAllAdminUsers = async (navigate, setAdminUsers, setAvailablePermissio
 
     try {
         const response = await fetch(endpoints.getAllAdminUsers, {method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         })
 
         const result = await response.json();
@@ -50,9 +48,7 @@ const addAdminUser = async (newAdminUser) => {
 
         const response = await fetch(endpoints.addAdminUser, {method: 'POST',
             body: JSON.stringify(newAdminUser),
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -78,9 +74,7 @@ const editAdminUser = async (newAdminUser, logoutAfterEdit, navigate) => {
 
         const response = await fetch(endpoints.editAdminUser, {method: 'POST',
             body: JSON.stringify(newAdminUser),
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();
@@ -114,9 +108,7 @@ const deleteAdminUser = async (adminUserToDeleteId, logoutAfterDelete, navigate)
                     "delete_admin_user_id": adminUserToDeleteId,
                 }
             ),
-            headers: {
-                'Authorization': 'Bearer ' + sessionId
-            }
+            headers: await buildAuthHeaders(sessionId)
         });
 
         const result = await response.json();

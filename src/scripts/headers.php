@@ -31,8 +31,7 @@ function set_cors_headers($customOptions = []) {
     }
 
     header('Access-Control-Allow-Methods: ' . $config['allowed_methods']);
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Client-Fingerprint');
     header('Cache-Control: ' . $config['cache_control']);
     header('Pragma: ' . $config['pragma']);
     header('Expires: 0');

@@ -32,7 +32,14 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
-    $sessionId = get_bearer_token();
+    $sessionCheck = validate_admin_session($conn);
+
+    if (!$sessionCheck['success']) {
+        echo json_encode($sessionCheck);
+        exit;
+    }
+
+    $sessionId = get_bearer_token_hash();
     $stmt = $conn->prepare("SELECT  p.permission_level_id FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id JOIN admin_users_permissions_linker p ON u.id = p.admin_user_id WHERE s.id = ?");
 
     if (!$stmt) {
