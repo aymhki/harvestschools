@@ -19,7 +19,39 @@ const generateSecureSessionId = () => {
     });
 };
 
+const deviceBindingKey = (namespace) => `${namespace}_device_binding_secret`;
+
+
+const setDeviceBindingSecret = async (namespace, secret) => {
+    if (!secret) { return; }
+
+    try {
+        await SecureStoragePlugin.set({ key: deviceBindingKey(namespace), value: secret });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const getDeviceBindingSecret = async (namespace) => {
+    try {
+        const result = await SecureStoragePlugin.get({ key: deviceBindingKey(namespace) });
+        return (result && result.value) || null;
+    } catch (error) {
+        return null;
+    }
+};
+
+const clearDeviceBindingSecret = async (namespace) => {
+    try {
+        await SecureStoragePlugin.remove({ key: deviceBindingKey(namespace) });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const clearMobileSession = async (namespace) => {
+    await clearDeviceBindingSecret(namespace);
+
     try {
         await SecureStoragePlugin.remove({ key: secureSessionIdKey(namespace) });
     } catch (error) {
@@ -142,6 +174,9 @@ const verifyBiometricIdentity = async (options) => {
 export {
     DEFAULT_MOBILE_SESSION_DURATION,
     generateSecureSessionId,
+    setDeviceBindingSecret,
+    getDeviceBindingSecret,
+    clearDeviceBindingSecret,
     getMobileSession,
     setMobileSession,
     extendMobileSession,

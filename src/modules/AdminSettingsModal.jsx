@@ -21,17 +21,68 @@ import {
     removeTotp,
     registerPasskey,
     removePasskey,
+    listSessions,
+    revokeSession,
+    revokeAllOtherSessions,
 } from '../services/Admin/Session/AdminSettingsServices.jsx';
 import {passkeySupported} from '../services/General/PasskeyUtils.jsx';
 import {isMobileApp} from '../services/Admin/Session/MainAdminServices.jsx';
 import {adminLoginPageUrl, msgTimeout} from '../services/General/GeneralUtils.jsx';
 
+const PROFILE_TAB = 'profile';
+const SECURITY_TAB = 'security';
+
+const METHOD_LABELS = {
+    passkey: 'Passkey',
+    totp: 'Authenticator app',
+    email: 'Email code',
+};
+
+const METHOD_BLURBS = {
+    passkey: 'Fingerprint, face or device PIN.',
+    totp: 'A rotating code from an authenticator app.',
+    email: 'A code sent to your verified address.',
+};
+
+const passwordField = (id, displayLabel = 'Current Password') => ({
+    id,
+    type: 'password',
+    name: 'current-password',
+    label: 'Current Password',
+    displayLabel,
+    httpName: 'current-password',
+    required: true,
+    placeholder: 'Current Password',
+    errorMsg: 'Please enter your current password',
+    value: '',
+    setValue: null,
+    widthOfField: 1,
+    labelOutside: true,
+    labelOnTop: true,
+    dontLetTheBrowserSaveField: true,
+});
+
+const codeField = (id, displayLabel) => ({
+    id,
+    type: 'text',
+    name: 'code',
+    label: 'Verification Code',
+    displayLabel,
+    httpName: 'one-time-code',
+    required: true,
+    placeholder: '000000',
+    errorMsg: 'Enter the 6-digit code',
+    regex: '^[0-9]{6}$',
+    value: '',
+    setValue: null,
+    widthOfField: 1,
+    labelOutside: true,
+    labelOnTop: true,
+    dontLetTheBrowserSaveField: true,
+});
 
 function AdminSettingsModal({show, notice, onClose}) {
     const navigate = useNavigate();
-
-    const PROFILE_TAB = 'profile';
-    const SECURITY_TAB = 'security';
 
     const [activeTab, setActiveTab] = useState(PROFILE_TAB);
     const [account, setAccount] = useState(null);
@@ -45,26 +96,13 @@ function AdminSettingsModal({show, notice, onClose}) {
     const [totpSetup, setTotpSetup] = useState(null);
     const [totpPanel, setTotpPanel] = useState(null);
 
+    const [sessions, setSessions] = useState(null);
+
     const [resetProfileForm, setResetProfileForm] = useState(false);
     const profileFooterRef = useRef(null);
     const [, forceFooterRender] = useState(0);
     const statusTimerRef = useRef(null);
     const isMountedRef = useRef(true);
-
-
-
-    const METHOD_LABELS = {
-        passkey: 'Passkey',
-        totp: 'Authenticator app',
-        email: 'Email code',
-    };
-
-    const METHOD_BLURBS = {
-        passkey: 'Fingerprint, face or device PIN.',
-        totp: 'A rotating code from an authenticator app.',
-        email: 'A code sent to your verified address.',
-    };
-
 
     const canUsePasskeys = passkeySupported() && !isMobileApp();
 
@@ -104,6 +142,16 @@ function AdminSettingsModal({show, notice, onClose}) {
         return false;
     };
 
+    const loadSessions = useCallback(async () => {
+        const result = await listSessions();
+
+        if (!isMountedRef.current) { return; }
+
+        if (result && result.success) {
+            setSessions(result.sessions || []);
+        }
+    }, []);
+
     const loadAccount = useCallback(async () => {
         const result = await fetchMyAccount();
 
@@ -114,10 +162,11 @@ function AdminSettingsModal({show, notice, onClose}) {
             if (result.account.pendingEmail) {
                 setResendIn(result.account.verifySendState?.retryAfter ?? 0);
             }
+            await loadSessions();
         } else if (!handleSessionExpired(result)) {
             flash((result && result.message) || 'Could not load account details', true);
         }
-    }, [flash]);
+    }, [flash, loadSessions]);
 
     useEffect(() => {
         if (!show) { return; }
@@ -127,6 +176,7 @@ function AdminSettingsModal({show, notice, onClose}) {
         setTotpSetup(null);
         setTotpPanel(null);
         setEmailPanel(null);
+        setSessions(null);
         setStatusMsg(null);
         setErrorMsg(null);
         loadAccount();
@@ -148,48 +198,12 @@ function AdminSettingsModal({show, notice, onClose}) {
         throw new Error((result && result.message) || fallback);
     };
 
+
     const currentPasswordFieldId = 1;
     const nameFieldId = 2;
     const usernameFieldId = 3;
     const newPasswordFieldId = 5;
     const confirmNewPasswordFieldId = 6;
-
-    const passwordField = (id, displayLabel = 'Current Password') => ({
-        id,
-        type: 'password',
-        name: 'current-password',
-        label: 'Current Password',
-        displayLabel,
-        httpName: 'current-password',
-        required: true,
-        placeholder: 'Current Password',
-        errorMsg: 'Please enter your current password',
-        value: '',
-        setValue: null,
-        widthOfField: 1,
-        labelOutside: true,
-        labelOnTop: true,
-        dontLetTheBrowserSaveField: true,
-    });
-
-    const codeField = (id, displayLabel) => ({
-        id,
-        type: 'text',
-        name: 'code',
-        label: 'Verification Code',
-        displayLabel,
-        httpName: 'one-time-code',
-        required: true,
-        placeholder: '000000',
-        errorMsg: 'Enter the 6-digit code',
-        regex: '^[0-9]{6}$',
-        value: '',
-        setValue: null,
-        widthOfField: 1,
-        labelOutside: true,
-        labelOnTop: true,
-        dontLetTheBrowserSaveField: true,
-    });
 
     const handleProfileSubmit = async (formData) => {
         const values = Object.fromEntries(formData.entries());
@@ -214,7 +228,6 @@ function AdminSettingsModal({show, notice, onClose}) {
         await loadAccount();
         return true;
     };
-
 
     const emailFieldId = 10;
     const emailPasswordFieldId = 11;
@@ -276,9 +289,7 @@ function AdminSettingsModal({show, notice, onClose}) {
         try {
             const result = await resendEmailVerification();
 
-            if (typeof result?.retryAfter === 'number') {
-                setResendIn(result.retryAfter);
-            }
+            if (typeof result?.retryAfter === 'number') { setResendIn(result.retryAfter); }
 
             if (result && result.success) {
                 flash(result.message || 'Code sent.');
@@ -691,6 +702,110 @@ function AdminSettingsModal({show, notice, onClose}) {
         </div>
     );
 
+
+    const handleRevokeSession = async (publicId, device, isCurrent) => {
+        const prompt = isCurrent
+            ? 'Sign out of this device?'
+            : `Sign out of ${device}?`;
+
+        if (!window.confirm(prompt)) { return; }
+
+        setIsBusy(true);
+
+        try {
+            const result = await revokeSession(publicId);
+
+            if (result && result.success) {
+                if (result.revokedCurrent) {
+                    navigate(adminLoginPageUrl, { replace: true });
+                    return;
+                }
+                flash(result.message || 'Signed out.');
+                await loadSessions();
+            } else if (!handleSessionExpired(result)) {
+                flash((result && result.message) || 'Could not sign out that session', true);
+            }
+        } finally {
+            setIsBusy(false);
+        }
+    };
+
+    const handleRevokeAllOthers = async () => {
+        if (!window.confirm('Sign out of every other device?')) { return; }
+
+        setIsBusy(true);
+
+        try {
+            const result = await revokeAllOtherSessions();
+
+            if (result && result.success) {
+                flash(result.message || 'Other sessions signed out.');
+                await loadSessions();
+            } else if (!handleSessionExpired(result)) {
+                flash((result && result.message) || 'Could not sign out other sessions', true);
+            }
+        } finally {
+            setIsBusy(false);
+        }
+    };
+
+    const formatRemaining = (seconds) => {
+        if (seconds <= 0) { return 'expiring now'; }
+        const days = Math.floor(seconds / 86400);
+        if (days >= 1) { return `expires in ${days} day${days === 1 ? '' : 's'}`; }
+        const hours = Math.max(1, Math.round(seconds / 3600));
+        return `expires in ${hours} hour${hours === 1 ? '' : 's'}`;
+    };
+
+    const renderSessionsCard = () => (
+        <div className={'admin-settings-card'}>
+            <h4>Active sessions</h4>
+            <p className={'admin-settings-hint'}>
+                Every device currently signed in to your account. If you do not recognise one, sign it out
+                and then change your password.
+            </p>
+
+            {sessions === null ? (
+                <p className={'admin-settings-hint'}>Loading&hellip;</p>
+            ) : sessions.length === 0 ? (
+                <p className={'admin-settings-hint'}>No other sessions.</p>
+            ) : (
+                <ul className={'admin-settings-passkey-list'}>
+                    {sessions.map((session) => (
+                        <li key={session.publicId} className={'admin-settings-passkey-row'}>
+                            <div className={'admin-settings-value'}>
+                                <div>
+                                    {session.device}
+                                    {session.isCurrent && ' — this device'}
+                                </div>
+                                <div className={'admin-settings-passkey-meta'}>
+                                    Signed in {session.createdAt}, last active {session.lastSeen}
+                                    {`, ${formatRemaining(session.expiresInSeconds)}`}
+                                    {!session.bound && ' — not device-bound'}
+                                </div>
+                            </div>
+                            <button
+                                type={'button'}
+                                disabled={isBusy}
+                                onClick={() => handleRevokeSession(session.publicId, session.device, session.isCurrent)}
+                            >
+                                {session.isCurrent ? 'Sign out' : 'Revoke'}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
+
+            {sessions && sessions.length > 1 && (
+                <div className={'admin-settings-buttons-row'}>
+                    <button type={'button'} disabled={isBusy} onClick={handleRevokeAllOthers}>
+                        Sign out of all other devices
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+
     const renderPasskeyCard = () => (
         <div className={'admin-settings-card'}>
             <h4>Passkeys</h4>
@@ -918,6 +1033,7 @@ function AdminSettingsModal({show, notice, onClose}) {
                                     {renderEmailCard()}
                                     {renderTotpCard()}
                                     {renderPasskeyCard()}
+                                    {renderSessionsCard()}
                                 </div>
                             )}
                         </>

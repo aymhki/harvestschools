@@ -7,12 +7,12 @@ import {
     sessionDuration,
     getSessionsFromLocalStorage,
     endpoints,
-    getClientFingerprint
-} from "../../General/GeneralUtils.jsx";
+    getClientFingerprint, buildLoginHeaders} from "../../General/GeneralUtils.jsx";
 import { Capacitor } from '@capacitor/core';
 import {
     getMobileSession,
     setMobileSession,
+    setDeviceBindingSecret,
     extendMobileSession,
     isBiometricAvailable,
     saveBiometricCredentials,
@@ -145,7 +145,13 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
     }
 }
 
-const storeSessionAndEnter = async (sessionToken, navigate) => {
+const storeSessionAndEnter = async (result, navigate) => {
+    const sessionToken = result.sessionToken;
+
+    if (isMobileApp() && result.deviceSecret) {
+        await setDeviceBindingSecret('harvest_schools_admin', result.deviceSecret);
+    }
+
     if (isMobileApp()) {
         await setMobileSession('harvest_schools_admin', sessionToken);
     } else {
@@ -159,7 +165,7 @@ const performAdminLogin = async (username, password, navigate, persistBiometricC
         const fingerprint = await getClientFingerprint();
         const response = await fetch(endpoints.validateAdminLogin, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildLoginHeaders(),
             body: JSON.stringify({ username, password, fingerprint })
         });
         const result = await response.json();
@@ -187,7 +193,7 @@ const performAdminLogin = async (username, password, navigate, persistBiometricC
             if (result.needsEmailSetup) {
                 sessionStorage.setItem('hs_needs_mfa_setup', '1');
             }
-            await storeSessionAndEnter(result.sessionToken, navigate);
+            await storeSessionAndEnter(result, navigate);
             return { success: true };
         }
 
@@ -271,7 +277,7 @@ const completeMfa = async (mfaToken, method, code, navigate) => {
     try {
         const response = await fetch(endpoints.verifyMfa, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildLoginHeaders(),
             body: JSON.stringify({ mfa_token: mfaToken, method, code }),
         });
         const result = await response.json();
@@ -279,7 +285,7 @@ const completeMfa = async (mfaToken, method, code, navigate) => {
             if (result.promptPasskey && !isMobileApp() && passkeySupported()) {
                 sessionStorage.setItem('hs_prompt_passkey', '1');
             }
-            await storeSessionAndEnter(result.sessionToken, navigate);
+            await storeSessionAndEnter(result, navigate);
             return { success: true, promptPasskey: result.promptPasskey };
         }
         return result;
@@ -292,7 +298,7 @@ const requestEmailCode = async (mfaToken) => {
     try {
         const response = await fetch(endpoints.requestMfaEmailCode, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildLoginHeaders(),
             body: JSON.stringify({ mfa_token: mfaToken }),
         });
 
@@ -306,7 +312,7 @@ const performPasskeyMfa = async (mfaToken, navigate) => {
     try {
         const optionsResponse = await fetch(endpoints.passkeyLoginOptions, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildLoginHeaders(),
             body: JSON.stringify({ mfa_token: mfaToken }),
         });
         const optionsResult = await optionsResponse.json();
@@ -323,7 +329,7 @@ const performPasskeyMfa = async (mfaToken, navigate) => {
 
         const verifyResponse = await fetch(endpoints.passkeyLoginVerify, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildLoginHeaders(),
             body: JSON.stringify({
                 mfa_token: mfaToken,
                 id: bufToB64(credential.rawId),
@@ -335,7 +341,7 @@ const performPasskeyMfa = async (mfaToken, navigate) => {
         const result = await verifyResponse.json();
 
         if (result && result.success && result.sessionToken) {
-            await storeSessionAndEnter(result.sessionToken, navigate);
+            await storeSessionAndEnter(result, navigate);
             return { success: true };
         }
 

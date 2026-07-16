@@ -3,7 +3,7 @@ import i18n from '../../i18n/i18n-client.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import { Capacitor } from '@capacitor/core';
-import {clearMobileSession, getMobileSession} from "./CapacitorSecureAuthUtils.jsx"
+import {clearMobileSession, getMobileSession, getDeviceBindingSecret} from "./CapacitorSecureAuthUtils.jsx"
 
 const isDevelopment = () => {
     return !import.meta.env.PROD;
@@ -112,9 +112,7 @@ const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
 
-// Client-side mirror of mfaConfig.php's throttle. The server is the authority
-// and always re-checks; this only exists so the resend button can show a
-// countdown instead of firing a request we already know will be refused.
+
 const mfaResendCooldownSeconds = 30;
 const mfaResendMaxPerWindow = 5;
 const graduationBookingLoginPageUrl = '/events/graduation-booking';
@@ -147,9 +145,27 @@ const getClientFingerprint = async () => {
         .join('');
 };
 
-const buildAuthHeaders = async (sessionId) => ({
-    'Authorization': 'Bearer ' + sessionId,
-    'X-Client-Fingerprint': await getClientFingerprint(),
+
+const buildAuthHeaders = async (sessionId) => {
+    const native = Capacitor.isNativePlatform();
+
+    const headers = {
+        'Authorization': 'Bearer ' + sessionId,
+        'X-Client-Platform': native ? 'native' : 'web',
+        'X-Client-Fingerprint': await getClientFingerprint(),
+    };
+
+    if (native) {
+        const deviceSecret = await getDeviceBindingSecret('harvest_schools_admin');
+        if (deviceSecret) { headers['X-Device-Binding'] = deviceSecret; }
+    }
+
+    return headers;
+};
+
+const buildLoginHeaders = () => ({
+    'Content-Type': 'application/json',
+    'X-Client-Platform': Capacitor.isNativePlatform() ? 'native' : 'web',
 });
 
 
@@ -193,6 +209,8 @@ const ENDPOINTS = {
     passkeyLoginOptions: '/scripts/Admin/Session/passkeyLoginOptions.php',
     passkeyLoginVerify: '/scripts/Admin/Session/passkeyLoginVerify.php',
     deletePasskey: '/scripts/Admin/Session/deletePasskey.php',
+    listAdminSessions: '/scripts/Admin/Session/listAdminSessions.php',
+    revokeAdminSession: '/scripts/Admin/Session/revokeAdminSession.php',
     deleteTotp: '/scripts/Admin/Session/deleteTotp.php',
     setPreferredMfa: '/scripts/Admin/Session/setPreferredMfa.php',
     requestEmailVerification: '/scripts/Admin/Session/requestEmailVerification.php',
@@ -335,6 +353,7 @@ export {
     getGraduationBookingSessionId,
     useDarkMode,
     getClientFingerprint,
-    buildAuthHeaders
+    buildAuthHeaders,
+    buildLoginHeaders
 }
 

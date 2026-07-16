@@ -131,14 +131,16 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    $sessionToken = issue_admin_session($conn, $userId, $challengeRow['fingerprint_hash']);
+    $session = issue_admin_session($conn, $userId, $challengeRow['fingerprint_hash']);
     log_admin_event($conn, $userId, 'mfa_pass', $challengeRow['fingerprint_hash']);
     log_admin_event($conn, $userId, 'login_success', $challengeRow['fingerprint_hash']);
 
     echo json_encode([
         "success"       => true,
         "code"          => 200,
-        "sessionToken"  => $sessionToken,
+        "sessionToken"  => $session['token'],
+        "deviceSecret"  => $session['deviceSecret'],
+        "bindingMode"   => $session['bindingMode'],
         "promptPasskey" => false
     ]);
 
