@@ -29,60 +29,12 @@ import {passkeySupported} from '../services/General/PasskeyUtils.jsx';
 import {isMobileApp} from '../services/Admin/Session/MainAdminServices.jsx';
 import {adminLoginPageUrl, msgTimeout} from '../services/General/GeneralUtils.jsx';
 
-const PROFILE_TAB = 'profile';
-const SECURITY_TAB = 'security';
 
-const METHOD_LABELS = {
-    passkey: 'Passkey',
-    totp: 'Authenticator app',
-    email: 'Email code',
-};
-
-const METHOD_BLURBS = {
-    passkey: 'Fingerprint, face or device PIN.',
-    totp: 'A rotating code from an authenticator app.',
-    email: 'A code sent to your verified address.',
-};
-
-const passwordField = (id, displayLabel = 'Current Password') => ({
-    id,
-    type: 'password',
-    name: 'current-password',
-    label: 'Current Password',
-    displayLabel,
-    httpName: 'current-password',
-    required: true,
-    placeholder: 'Current Password',
-    errorMsg: 'Please enter your current password',
-    value: '',
-    setValue: null,
-    widthOfField: 1,
-    labelOutside: true,
-    labelOnTop: true,
-    dontLetTheBrowserSaveField: true,
-});
-
-const codeField = (id, displayLabel) => ({
-    id,
-    type: 'text',
-    name: 'code',
-    label: 'Verification Code',
-    displayLabel,
-    httpName: 'one-time-code',
-    required: true,
-    placeholder: '000000',
-    errorMsg: 'Enter the 6-digit code',
-    regex: '^[0-9]{6}$',
-    value: '',
-    setValue: null,
-    widthOfField: 1,
-    labelOutside: true,
-    labelOnTop: true,
-    dontLetTheBrowserSaveField: true,
-});
-
-function AdminSettingsModal({show, notice, onClose}) {
+function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) {
     const navigate = useNavigate();
+
+    const PROFILE_TAB = 'profile';
+    const SECURITY_TAB = 'security';
 
     const [activeTab, setActiveTab] = useState(PROFILE_TAB);
     const [account, setAccount] = useState(null);
@@ -105,6 +57,55 @@ function AdminSettingsModal({show, notice, onClose}) {
     const isMountedRef = useRef(true);
 
     const canUsePasskeys = passkeySupported() && !isMobileApp();
+
+    const METHOD_LABELS = {
+        passkey: 'Passkey',
+        totp: 'Authenticator app',
+        email: 'Email code',
+    };
+
+    const METHOD_BLURBS = {
+        passkey: 'Fingerprint, face or device PIN.',
+        totp: 'A rotating code from an authenticator app.',
+        email: 'A code sent to your verified address.',
+    };
+
+    const passwordField = (id, displayLabel = 'Current Password') => ({
+        id,
+        type: 'password',
+        name: 'current-password',
+        label: 'Current Password',
+        displayLabel,
+        httpName: 'current-password',
+        required: true,
+        placeholder: 'Current Password',
+        errorMsg: 'Please enter your current password',
+        value: '',
+        setValue: null,
+        widthOfField: 1,
+        labelOutside: true,
+        labelOnTop: true,
+        dontLetTheBrowserSaveField: true,
+    });
+
+    const codeField = (id, displayLabel) => ({
+        id,
+        type: 'text',
+        name: 'code',
+        label: 'Verification Code',
+        displayLabel,
+        httpName: 'one-time-code',
+        required: true,
+        placeholder: '000000',
+        errorMsg: 'Enter the 6-digit code',
+        regex: '^[0-9]{6}$',
+        value: '',
+        setValue: null,
+        widthOfField: 1,
+        labelOutside: true,
+        labelOnTop: true,
+        dontLetTheBrowserSaveField: true,
+    });
 
     const animateSettingsModal = useSpring({
         opacity: show ? 1 : 0,
@@ -221,9 +222,13 @@ function AdminSettingsModal({show, notice, onClose}) {
         });
 
         const ok = await runOrThrow(result, 'Could not update account');
-        if (!ok) { return true; }
+
+        if (!ok) {
+            return true;
+        }
 
         flash(ok.message || 'Account updated.');
+        setRefreshCurrentUserData(true);
         setResetProfileForm(true);
         await loadAccount();
         return true;
@@ -1053,6 +1058,7 @@ AdminSettingsModal.propTypes = {
     show: PropTypes.bool.isRequired,
     notice: PropTypes.string,
     onClose: PropTypes.func.isRequired,
+    setRefreshCurrentUserData: PropTypes.func.isRequired,
 };
 
 export default AdminSettingsModal;
