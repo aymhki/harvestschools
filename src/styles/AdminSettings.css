@@ -1,183 +1,71 @@
 .admin-settings-modal-container {
-    --settings-surface: var(--fb-white-color);
-    --settings-raised: var(--fb-off-white-color);
-    --settings-ink: var(--primary-color);
-    --settings-ink-muted: rgba(31, 33, 82, 0.68);
-    --settings-border: rgba(31, 33, 82, 0.16);
-    --settings-border-strong: rgba(31, 33, 82, 0.32);
-    --settings-accent: var(--primary-color);
-    --settings-accent-ink: var(--fb-white-color);
-    --settings-accent-soft: rgba(31, 33, 82, 0.08);
-    --settings-danger: var(--secondary-color);
-    --settings-danger-soft: rgba(201, 67, 73, 0.1);
-    --settings-success: #1f6f43;
-    --settings-success-soft: rgba(31, 111, 67, 0.12);
-    --settings-warning-soft: rgba(201, 67, 73, 0.08);
-    --settings-focus-ring: rgba(31, 33, 82, 0.35);
-    --settings-radius: 0.625rem;
+    --as-surface: var(--fb-white-color);
+    --as-ink: var(--primary-color);
 
     display: flex;
     flex-direction: column;
-    max-height: min(88dvh, 54rem);
-    color: var(--settings-ink);
-    font-family: var(--english-normal-font);
+    max-height: 90vh;
+    color: var(--as-ink);
 }
 
 .admin-settings-modal-header {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .admin-settings-tabs {
     display: flex;
     flex-direction: row;
-    gap: 0.25rem;
+    flex-wrap: wrap;
     width: 100%;
-    padding: 0.25rem;
-    border-radius: var(--settings-radius);
-    background-color: var(--settings-accent-soft);
 }
 
-.admin-settings-tab {
-    position: relative;
-    flex: 1;
-    padding: 0.55rem 0.75rem;
-    border: none;
-    border-radius: calc(var(--settings-radius) - 0.25rem);
-    background: transparent;
-    color: var(--settings-ink-muted);
-    font-family: inherit;
-    font-size: 0.9rem;
-    letter-spacing: 0.03rem;
-    cursor: pointer;
-    transition: background-color 0.18s ease, color 0.18s ease;
+.admin-settings-tabs button {
+    margin: 0.25rem 0.5rem 0.25rem 0;
 }
 
-.admin-settings-tab:hover {
-    background-color: var(--settings-surface);
-    color: var(--settings-ink);
-    filter: none;
-}
-
-.admin-settings-tab.active {
-    background-color: var(--settings-accent);
-    color: var(--settings-accent-ink);
-}
-
-.admin-settings-tab:focus-visible {
-    outline: 2px solid var(--settings-focus-ring);
-    outline-offset: 2px;
-}
-
-.admin-settings-tab-dot {
-    display: inline-block;
-    width: 0.45rem;
-    height: 0.45rem;
-    margin-left: 0.4rem;
-    border-radius: 50%;
-    background-color: var(--settings-danger);
-    vertical-align: middle;
+.admin-settings-tabs button.active {
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
 }
 
 .admin-settings-modal-content {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 0.25rem 0.5rem 0.5rem 0.5rem;
-    text-align: left;
+    overflow-x: hidden;
+    padding: 0.75rem;
+    text-align: start;
 }
 
 .admin-settings-section {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
-    margin: 0.75rem 0;
-}
-
-.admin-settings-notice {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    border: 1px solid var(--settings-border-strong);
-    border-left: 3px solid var(--settings-accent);
-    border-radius: var(--settings-radius);
-    background-color: var(--settings-accent-soft);
-    padding: 0.75rem 1rem;
-    margin: 0.5rem 0 0.25rem 0;
-}
-
-.admin-settings-notice.warning {
-    border-left-color: var(--settings-danger);
-    background-color: var(--settings-warning-soft);
-}
-
-.admin-settings-notice p {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
-}
-
-.admin-settings-status,
-.admin-settings-error {
+    gap: var(--ff-gap);
     margin: 0.5rem 0;
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--settings-radius);
-    font-size: 0.9rem;
-}
-
-.admin-settings-status {
-    color: var(--settings-success);
-    background-color: var(--settings-success-soft);
-    border: 1px solid var(--settings-success);
-}
-
-.admin-settings-error {
-    color: var(--settings-danger);
-    background-color: var(--settings-danger-soft);
-    border: 1px solid var(--settings-danger);
 }
 
 .admin-settings-card {
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
-    border: 1px solid var(--settings-border);
-    border-radius: var(--settings-radius);
-    background-color: var(--settings-raised);
+    gap: 0.5rem;
+    border: var(--ff-border-width) solid var(--as-ink);
+    border-radius: var(--ff-radius);
     padding: 1rem;
+    min-width: 0;
 }
 
-.admin-settings-card-head {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.admin-settings-card h5 {
+.admin-settings-card h4,
+.admin-settings-card p {
     margin: 0;
-    font-size: 1rem;
-    font-family: var(--english-normal-font-bold), var(--english-normal-font);
-    letter-spacing: 0.03rem;
-    color: var(--settings-ink);
+    color: var(--as-ink);
 }
 
 .admin-settings-hint {
-    margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: var(--settings-ink-muted);
-}
-
-.admin-settings-label {
-    display: block;
-    font-size: 0.8rem;
-    letter-spacing: 0.02rem;
-    color: var(--settings-ink-muted);
-    margin: 0.35rem 0 0.25rem 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
 .admin-settings-value-row {
@@ -185,429 +73,154 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
+    min-width: 0;
 }
 
 .admin-settings-value {
-    font-size: 0.95rem;
-    word-break: break-all;
+    word-break: break-word;
+    min-width: 0;
 }
 
 .admin-settings-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.15rem 0.55rem;
-    border-radius: 999px;
-    border: 1px solid currentColor;
-    font-size: 0.72rem;
-    letter-spacing: 0.05rem;
-    text-transform: uppercase;
+    border: var(--ff-border-width) solid currentColor;
+    border-radius: var(--ff-radius);
+    padding: 0.1rem 0.5rem;
+    font-size: 0.8rem;
     white-space: nowrap;
 }
 
-.admin-settings-badge.verified {
-    color: var(--settings-success);
-    background-color: var(--settings-success-soft);
-}
-
 .admin-settings-badge.unverified {
-    color: var(--settings-danger);
-    background-color: var(--settings-danger-soft);
+    color: var(--secondary-color);
 }
 
-.admin-settings-inline-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    border: 1px dashed var(--settings-border-strong);
-    border-radius: var(--settings-radius);
-    background-color: var(--settings-surface);
-    padding: 0.85rem;
-}
-
-.admin-settings-inline-title {
-    margin: 0;
-    font-size: 0.92rem;
-}
-
-.admin-settings-method-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
-}
-
-.admin-settings-method-option {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 0.6rem;
-    width: 100%;
-    padding: 0.7rem 0.75rem;
-    border: 1px solid var(--settings-border);
-    border-radius: var(--settings-radius);
-    background-color: var(--settings-surface);
-    color: var(--settings-ink);
-    text-align: left;
-    font-family: inherit;
-    cursor: pointer;
-    transition: border-color 0.18s ease, background-color 0.18s ease;
-}
-
-.admin-settings-method-option:hover:not(:disabled) {
-    border-color: var(--settings-accent);
-    background-color: var(--settings-accent-soft);
-    filter: none;
-    color: var(--settings-ink);
-}
-
-.admin-settings-method-option.selected {
-    border-color: var(--settings-accent);
-    background-color: var(--settings-accent-soft);
-    box-shadow: inset 0 0 0 1px var(--settings-accent);
-}
-
-.admin-settings-method-option:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.admin-settings-method-option:focus-visible {
-    outline: 2px solid var(--settings-focus-ring);
-    outline-offset: 2px;
-}
-
-.admin-settings-method-radio {
-    flex: 0 0 auto;
-    width: 1rem;
-    height: 1rem;
-    margin-top: 0.15rem;
-    border: 2px solid var(--settings-border-strong);
-    border-radius: 50%;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.admin-settings-method-option.selected .admin-settings-method-radio {
-    border-color: var(--settings-accent);
-    box-shadow: inset 0 0 0 3px var(--settings-accent);
-}
-
-.admin-settings-method-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    min-width: 0;
-}
-
-.admin-settings-method-name {
-    font-size: 0.9rem;
-    font-family: var(--english-normal-font-bold), var(--english-normal-font);
-}
-
-.admin-settings-method-blurb {
-    font-size: 0.78rem;
-    line-height: 1.4;
-    color: var(--settings-ink-muted);
-}
-
-.admin-settings-text-input,
-.admin-settings-code-input {
-    padding: 0.55rem 0.65rem;
-    border: 1px solid var(--settings-border-strong);
-    border-radius: 0.4rem;
-    background-color: var(--settings-surface);
-    color: var(--settings-ink);
-    font-family: inherit;
-    font-size: 0.92rem;
-}
-
-.admin-settings-text-input {
-    width: 100%;
-    min-width: 0;
-}
-
-.admin-settings-code-input {
-    width: 8.5rem;
-    text-align: center;
-    letter-spacing: 0.35rem;
-    font-size: 1.1rem;
-}
-
-.admin-settings-text-input::placeholder,
-.admin-settings-code-input::placeholder {
-    color: var(--settings-ink-muted);
-    opacity: 0.55;
-    letter-spacing: normal;
-}
-
-.admin-settings-text-input:focus,
-.admin-settings-code-input:focus {
-    outline: none;
-    border-color: var(--settings-accent);
-    box-shadow: 0 0 0 3px var(--settings-focus-ring);
-}
-
-.admin-settings-text-input:disabled,
-.admin-settings-code-input:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-.admin-settings-code-row,
-.admin-settings-button-row,
-.admin-settings-add-passkey {
+.admin-settings-buttons-row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    min-width: 0;
+}
+
+.admin-settings-buttons-row button {
+    margin: 0.35rem 0.35rem 0.35rem 0;
+}
+
+/* minmax(0, 1fr) rather than 1fr: grid items default to min-content width, so
+   a long method name used to blow the column out past the card edge and get
+   clipped by the scrolling content area. */
+.admin-settings-method-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
+    min-width: 0;
 }
 
-.admin-settings-add-passkey .admin-settings-text-input {
-    flex: 1 1 14rem;
+.admin-settings-method-grid button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    text-align: start;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
-.admin-settings-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    padding: 0.55rem 1rem;
-    border: 1px solid var(--settings-border-strong);
-    border-radius: 0.4rem;
-    background-color: var(--settings-surface);
-    color: var(--settings-ink);
-    font-family: inherit;
-    font-size: 0.88rem;
-    letter-spacing: 0.03rem;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-}
-
-.admin-settings-button:hover:not(:disabled) {
-    border-color: var(--settings-accent);
-    background-color: var(--settings-accent-soft);
-    color: var(--settings-ink);
-    filter: none;
-}
-
-.admin-settings-button:focus-visible {
-    outline: 2px solid var(--settings-focus-ring);
-    outline-offset: 2px;
-}
-
-.admin-settings-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.admin-settings-button.primary {
-    border-color: var(--settings-accent);
-    background-color: var(--settings-accent);
-    color: var(--settings-accent-ink);
-}
-
-.admin-settings-button.primary:hover:not(:disabled) {
-    background-color: var(--settings-ink);
-    border-color: var(--settings-ink);
-    color: var(--settings-accent-ink);
-}
-
-.admin-settings-button.ghost {
-    border-color: transparent;
-    background: transparent;
-    color: var(--settings-accent);
-    text-decoration: underline;
-    text-underline-offset: 0.2rem;
-}
-
-.admin-settings-button.ghost:hover:not(:disabled) {
-    background-color: var(--settings-accent-soft);
-    border-color: transparent;
-}
-
-.admin-settings-button.danger {
-    border-color: var(--settings-danger);
-    background-color: var(--settings-danger);
+.admin-settings-method-grid button.selected {
+    background-color: var(--primary-color);
     color: var(--fb-white-color);
 }
 
-.admin-settings-button.danger:hover:not(:disabled) {
-    filter: brightness(0.9);
-    background-color: var(--settings-danger);
-    color: var(--fb-white-color);
-}
-
-.admin-settings-button.danger-ghost {
-    border-color: transparent;
-    background: transparent;
-    color: var(--settings-danger);
-}
-
-.admin-settings-button.danger-ghost:hover:not(:disabled) {
-    border-color: var(--settings-danger);
-    background-color: var(--settings-danger-soft);
-    color: var(--settings-danger);
-}
-
-.admin-settings-button.small {
-    padding: 0.35rem 0.7rem;
-    font-size: 0.8rem;
+.admin-settings-method-grid button .admin-settings-method-blurb {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    opacity: 0.85;
 }
 
 .admin-settings-passkey-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
 }
 
 .admin-settings-passkey-row {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.55rem 0;
-    border-bottom: 1px solid var(--settings-border);
+    gap: 0.5rem;
+    border-bottom: var(--ff-border-width) solid var(--as-ink);
+    padding: 0.5rem 0;
+    min-width: 0;
 }
 
 .admin-settings-passkey-row:last-child {
     border-bottom: none;
 }
 
-.admin-settings-passkey-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    min-width: 0;
-}
-
-.admin-settings-passkey-label {
-    font-family: var(--english-normal-font-bold), var(--english-normal-font);
-    font-size: 0.9rem;
-    word-break: break-word;
-}
-
 .admin-settings-passkey-meta {
-    font-size: 0.78rem;
-    color: var(--settings-ink-muted);
-}
-
-.admin-settings-totp-setup {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.6rem;
+    font-size: 0.8rem;
+    opacity: 0.8;
 }
 
 .admin-settings-totp-qr {
-    width: 220px;
-    height: 220px;
-    border: 1px solid var(--settings-border);
-    border-radius: var(--settings-radius);
-    background-color: #ffffff;
+    width: 12rem;
+    height: 12rem;
+    max-width: 100%;
+    align-self: center;
+    background-color: var(--fb-white-color);
+    border-radius: var(--ff-radius);
     padding: 0.4rem;
-}
-
-.admin-settings-totp-secret {
-    margin: 0;
-    font-size: 0.82rem;
-    color: var(--settings-ink-muted);
+    box-sizing: border-box;
 }
 
 .admin-settings-totp-secret code {
-    display: inline-block;
-    padding: 0.15rem 0.4rem;
-    border-radius: 0.25rem;
-    background-color: var(--settings-accent-soft);
-    color: var(--settings-ink);
-    font-size: 0.85rem;
-    letter-spacing: 0.08rem;
     word-break: break-all;
     user-select: all;
+}
+
+.admin-settings-status {
+    color: var(--as-ink);
+    margin: 0.5rem 0;
+}
+
+.admin-settings-error {
+    color: var(--secondary-color);
+    margin: 0.5rem 0;
 }
 
 .admin-settings-modal-footer {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-}
-
-.admin-settings-modal-footer .modal-footer-buttons-portal-target {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
+    width: 100%;
+    height: auto;
 }
 
 @media (max-width: 768px) {
-    .admin-settings-modal-container {
-        max-height: 92dvh;
-    }
-
-    .admin-settings-method-list {
+    .admin-settings-method-grid {
         grid-template-columns: 1fr;
-    }
-
-    .admin-settings-passkey-row {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .admin-settings-code-row .admin-settings-code-input {
-        width: 100%;
-    }
-
-    .admin-settings-code-row .admin-settings-button,
-    .admin-settings-button-row .admin-settings-button {
-        flex: 1 1 auto;
-    }
-
-    .admin-settings-totp-qr {
-        width: 180px;
-        height: 180px;
-        align-self: center;
-    }
-
-    .admin-settings-modal-footer,
-    .admin-settings-modal-footer .modal-footer-buttons-portal-target {
-        width: 100%;
-        justify-content: stretch;
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .admin-settings-modal-container {
-        --settings-surface: var(--light-dark-accent-color);
-        --settings-raised: #2e2e33;
-        --settings-ink: var(--fb-off-white-color);
-        --settings-ink-muted: rgba(241, 241, 241, 0.62);
-        --settings-border: rgba(255, 255, 255, 0.14);
-        --settings-border-strong: rgba(255, 255, 255, 0.3);
-        --settings-accent: #9aa0e0;
-        --settings-accent-ink: #14162e;
-        --settings-accent-soft: rgba(154, 160, 224, 0.14);
-        --settings-danger: #e98287;
-        --settings-danger-soft: rgba(233, 130, 135, 0.14);
-        --settings-success: #7fc59b;
-        --settings-success-soft: rgba(127, 197, 155, 0.14);
-        --settings-warning-soft: rgba(233, 130, 135, 0.1);
-        --settings-focus-ring: rgba(154, 160, 224, 0.45);
+        --as-surface: var(--light-dark-accent-color);
+        --as-ink: var(--fb-white-color);
+
+        background-color: var(--as-surface);
     }
 
-    .admin-settings-tab.active {
-        color: var(--settings-accent-ink);
-    }
-
-    .admin-settings-button:hover,
-    .admin-settings-tab:hover,
-    .admin-settings-method-option:hover {
-        filter: none;
+    .admin-settings-tabs button.active,
+    .admin-settings-method-grid button.selected {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
     }
 }

@@ -1,28 +1,11 @@
 .admin-login-page {
-    --login-surface: var(--fb-white-color);
-    --login-raised: var(--fb-off-white-color);
-    --login-ink: var(--primary-color);
-    --login-ink-muted: rgba(31, 33, 82, 0.68);
-    --login-border: rgba(31, 33, 82, 0.18);
-    --login-border-strong: rgba(31, 33, 82, 0.35);
-    --login-accent: var(--primary-color);
-    --login-accent-ink: var(--fb-white-color);
-    --login-accent-soft: rgba(31, 33, 82, 0.08);
-    --login-danger: var(--secondary-color);
-    --login-danger-soft: rgba(201, 67, 73, 0.1);
-    --login-success: #1f6f43;
-    --login-success-soft: rgba(31, 111, 67, 0.12);
-    --login-focus-ring: rgba(31, 33, 82, 0.35);
-    --login-radius: 1rem;
-
+    --al-surface: var(--fb-white-color);
+    --al-ink: var(--primary-color);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    min-height: 100dvh;
-    width: 100%;
-    padding: 2rem 1rem;
-    box-sizing: border-box;
+    min-width: 100vw;
     background: radial-gradient(circle, var(--fb-white-color), #1a2a6c);
 }
 
@@ -30,28 +13,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    min-height: 100vh;
+    min-width: 100vw;
 }
 
 .admin-login-form-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.5rem;
-
-    width: min(34rem, 100%);
+    justify-content: center;
+    width: 50vw;
     height: auto;
-    min-height: 22rem;
+    min-height: min(35rem, calc(100dvh - 4rem));
     max-height: calc(100dvh - 4rem);
     overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 2rem 1.75rem;
+    padding: 2rem;
     box-sizing: border-box;
 
-    background-color: var(--login-surface);
-    color: var(--login-ink);
-    border-radius: var(--login-radius);
+    background-color: var(--al-surface);
+    border-radius: 1rem;
     will-change: filter;
     transition: filter 0.5s;
     scrollbar-width: none;
@@ -66,355 +46,114 @@
     filter: drop-shadow(0 0 0.5rem var(--primary-color));
 }
 
-.admin-login-form-wrapper h2 {
-    margin: 0 0 0.5rem 0;
-    text-align: center;
-    color: var(--login-ink);
+.admin-login-biometric-only {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.admin-login-biometric-only,
 .admin-login-recovery-only-prompt-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
     width: 100%;
 }
 
 .admin-login-notice {
-    max-width: 100%;
-    margin: 0.25rem 0 0.5rem 0;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--login-danger);
-    border-radius: 0.5rem;
-    background-color: var(--login-danger-soft);
-    color: var(--login-danger);
+    max-width: 80%;
     text-align: center;
-    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin: 0.5rem 0;
 }
 
 .admin-login-mfa {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 0.75rem;
     width: 100%;
-    padding: 0.5rem 0;
+    padding: 1rem 0;
 }
 
 .admin-login-mfa-title {
+    font-weight: 600;
+    font-size: 1.1rem;
     margin: 0;
-    font-family: var(--english-normal-font-bold), var(--english-normal-font);
-    font-size: 1.15rem;
-    letter-spacing: 0.03rem;
-    color: var(--login-ink);
-}
-
-.admin-login-mfa-method-chip {
-    margin: 0;
-    padding: 0.2rem 0.75rem;
-    border: 1px solid var(--login-accent);
-    border-radius: 999px;
-    background-color: var(--login-accent-soft);
-    color: var(--login-accent);
-    font-size: 0.75rem;
-    letter-spacing: 0.08rem;
-    text-transform: uppercase;
-}
-
-.admin-login-mfa-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.65rem;
-    width: 100%;
-    padding: 1rem 0.75rem;
-    border: 1px solid var(--login-border);
-    border-radius: 0.75rem;
-    background-color: var(--login-raised);
+    color: var(--al-ink);
 }
 
 .admin-login-mfa-instructions {
-    max-width: 24rem;
+    text-align: center;
     margin: 0;
-    text-align: center;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: var(--login-ink-muted);
+    color: var(--al-ink);
 }
 
-.admin-login-mfa-code-input {
-    width: 10rem;
-    padding: 0.6rem;
-    border: 1px solid var(--login-border-strong);
-    border-radius: 0.5rem;
-    background-color: var(--login-surface);
-    color: var(--login-ink);
-    font-family: inherit;
-    font-size: 1.4rem;
-    text-align: center;
-    letter-spacing: 0.5rem;
-    text-indent: 0.5rem;
-}
-
-.admin-login-mfa-code-input::placeholder {
-    color: var(--login-ink-muted);
-    opacity: 0.4;
-}
-
-.admin-login-mfa-code-input:focus {
-    outline: none;
-    border-color: var(--login-accent);
-    box-shadow: 0 0 0 3px var(--login-focus-ring);
-}
-
-.admin-login-mfa-primary-button {
-    min-width: 12rem;
-    padding: 0.6rem 1.25rem;
-    border: 1px solid var(--login-accent);
-    border-radius: 0.5rem;
-    background-color: var(--login-accent);
-    color: var(--login-accent-ink);
-    font-family: inherit;
-    font-size: 0.92rem;
-    letter-spacing: 0.04rem;
-    cursor: pointer;
-    transition: background-color 0.18s ease, border-color 0.18s ease;
-}
-
-.admin-login-mfa-primary-button:hover:not(:disabled) {
-    background-color: var(--login-ink);
-    border-color: var(--login-ink);
-    color: var(--login-accent-ink);
-    filter: none;
-}
-
-.admin-login-mfa-primary-button:focus-visible {
-    outline: 2px solid var(--login-focus-ring);
-    outline-offset: 2px;
-}
-
-.admin-login-mfa-primary-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.admin-login-mfa-secondary-button,
-.admin-login-recovery-cancel {
-    padding: 0.3rem 0.5rem;
-    border: none;
-    border-radius: 0.35rem;
-    background: none;
-    color: var(--login-accent);
-    font-family: inherit;
-    font-size: 0.85rem;
-    text-decoration: underline;
-    text-underline-offset: 0.2rem;
-    cursor: pointer;
-}
-
-.admin-login-mfa-secondary-button:hover:not(:disabled),
-.admin-login-recovery-cancel:hover:not(:disabled) {
-    background-color: var(--login-accent-soft);
-    color: var(--login-accent);
-    filter: none;
-}
-
-.admin-login-mfa-secondary-button:focus-visible,
-.admin-login-recovery-cancel:focus-visible {
-    outline: 2px solid var(--login-focus-ring);
-    outline-offset: 2px;
-}
-
-.admin-login-mfa-secondary-button:disabled,
-.admin-login-recovery-cancel:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    text-decoration: none;
-}
-
-.admin-login-mfa-fineprint {
+.admin-login-mfa-form-wrapper {
+    width: 100%;
     max-width: 22rem;
-    margin: 0;
-    text-align: center;
-    font-size: 0.75rem;
-    line-height: 1.4;
-    color: var(--login-ink-muted);
-    opacity: 0.85;
 }
 
-.admin-login-mfa-switcher {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.4rem;
-    width: 100%;
-}
-
-.admin-login-mfa-alt-methods {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--login-border);
-    border-radius: 0.65rem;
-    background-color: var(--login-raised);
-}
-
-.admin-login-mfa-alt-method-button {
+.admin-login-mfa-buttons-row {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.55rem;
+    justify-content: center;
     width: 100%;
-    padding: 0.55rem 0.7rem;
-    border: 1px solid var(--login-border);
-    border-radius: 0.5rem;
-    background-color: var(--login-surface);
-    color: var(--login-ink);
-    font-family: inherit;
-    font-size: 0.87rem;
-    text-align: left;
-    text-decoration: none;
-    cursor: pointer;
-    transition: border-color 0.18s ease, background-color 0.18s ease;
 }
 
-.admin-login-mfa-alt-method-button:hover:not(:disabled) {
-    border-color: var(--login-accent);
-    background-color: var(--login-accent-soft);
-    color: var(--login-ink);
-    filter: none;
+.admin-login-mfa-buttons-row button {
+    margin: 0.35rem;
 }
 
-.admin-login-mfa-alt-method-button.current {
-    border-color: var(--login-accent);
-    background-color: var(--login-accent-soft);
-}
-
-.admin-login-mfa-alt-method-button:focus-visible {
-    outline: 2px solid var(--login-focus-ring);
-    outline-offset: 2px;
-}
-
-.admin-login-mfa-alt-method-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.admin-login-mfa-alt-method-radio {
-    flex: 0 0 auto;
-    width: 0.9rem;
-    height: 0.9rem;
-    border: 2px solid var(--login-border-strong);
-    border-radius: 50%;
-}
-
-.admin-login-mfa-alt-method-button.current .admin-login-mfa-alt-method-radio {
-    border-color: var(--login-accent);
-    box-shadow: inset 0 0 0 3px var(--login-accent);
-}
-
-.admin-login-mfa-alt-method-label {
-    flex: 1;
-    min-width: 0;
-}
-
-.admin-login-mfa-alt-method-current {
-    flex: 0 0 auto;
-    font-size: 0.68rem;
-    letter-spacing: 0.06rem;
-    text-transform: uppercase;
-    color: var(--login-accent);
-    opacity: 0.85;
-}
-
-
-.admin-login-mfa-status,
-.admin-login-mfa-error {
-    width: 100%;
-    margin: 0;
-    padding: 0.45rem 0.7rem;
-    border-radius: 0.5rem;
+.admin-login-mfa-error,
+.admin-login-mfa-status {
     text-align: center;
-    font-size: 0.85rem;
-    line-height: 1.4;
+    margin: 0;
+}
+
+.admin-login-mfa-error {
+    color: var(--secondary-color);
 }
 
 .admin-login-mfa-status {
-    border: 1px solid var(--login-success);
-    background-color: var(--login-success-soft);
-    color: var(--login-success);
+    color: var(--al-ink);
 }
 
-.admin-login-mfa-error {
-    border: 1px solid var(--login-danger);
-    background-color: var(--login-danger-soft);
-    color: var(--login-danger);
+.admin-login-mfa button:disabled,
+.admin-login-biometric-only button:disabled,
+.admin-login-recovery-only-prompt-wrapper button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
-
 
 @media (max-width: 1200px) {
     .admin-login-form-wrapper {
-        width: min(32rem, 100%);
+        width: 70vw;
     }
 }
 
 @media (max-width: 768px) {
-    .admin-login-page {
-        padding: 1rem 0.75rem;
-    }
-
     .admin-login-form-wrapper {
-        width: 100%;
-        min-height: 0;
+        width: 90vw;
+        min-height: min(30rem, calc(100dvh - 2rem));
         max-height: calc(100dvh - 2rem);
-        padding: 1.5rem 1.1rem;
-    }
-
-    .admin-login-mfa-primary-button {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .admin-login-mfa-code-input {
-        width: 100%;
-        max-width: 12rem;
+        padding: 1.5rem 1rem;
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .admin-login-page {
-        --login-surface: var(--light-dark-accent-color);
-        --login-raised: #2e2e33;
-        --login-ink: var(--fb-off-white-color);
-        --login-ink-muted: rgba(241, 241, 241, 0.62);
-        --login-border: rgba(255, 255, 255, 0.14);
-        --login-border-strong: rgba(255, 255, 255, 0.3);
-        --login-accent: #9aa0e0;
-        --login-accent-ink: #14162e;
-        --login-accent-soft: rgba(154, 160, 224, 0.14);
-        --login-danger: #e98287;
-        --login-danger-soft: rgba(233, 130, 135, 0.14);
-        --login-success: #7fc59b;
-        --login-success-soft: rgba(127, 197, 155, 0.14);
-        --login-focus-ring: rgba(154, 160, 224, 0.45);
+        --al-surface: var(--light-dark-accent-color);
+        --al-ink: var(--fb-white-color);
 
         background: radial-gradient(circle, var(--fb-white-color), var(--fb-black-gradient-color));
     }
 
     .admin-login-form-wrapper:hover {
         filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
-    }
-
-    .admin-login-mfa-primary-button:hover,
-    .admin-login-mfa-secondary-button:hover,
-    .admin-login-mfa-alt-method-button:hover,
-    .admin-login-recovery-cancel:hover,
-    .admin-login-biometric-button:hover {
-        filter: none;
     }
 }

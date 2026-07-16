@@ -186,66 +186,24 @@
     .sidebar-footer .sidebar-links {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.4rem;
-        padding: 0.5rem;
-    }
-
-    .sidebar-footer .sidebar-links li {
-        width: auto;
-        min-width: 0;
-        border-radius: 0.5rem;
-        overflow: hidden;
     }
 
     .sidebar-footer .sidebar-links li a,
     .sidebar-footer .sidebar-links li .nav-item-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
         height: 100%;
-        min-height: 4.25rem;
-        padding: 0.75rem 0.4rem;
-        border: 0.1rem solid rgba(255, 255, 255, 0.14);
-        border-radius: 0.5rem;
-        text-align: center;
+        padding: 0.8rem 0.6rem;
     }
 
     .sidebar-footer .sidebar-links .icon {
-        min-width: 0;
+        min-width: 1.5rem;
     }
 
     .sidebar-footer .sidebar-links .label {
-        margin-left: 0;
-        font-size: 0.72rem;
-        line-height: 1.2;
-        letter-spacing: 0.02rem;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        text-overflow: clip;
-        overflow: visible;
-        flex: 0 0 auto;
-    }
-
-    .sidebar-footer .sidebar-links li.logout-btn,
-    .sidebar-footer .sidebar-links li.close-admin-sidebar-mobile {
-        grid-column: 1 / -1;
-    }
-
-    .sidebar-footer .sidebar-links li.logout-btn a,
-    .sidebar-footer .sidebar-links li.logout-btn .nav-item-content,
-    .sidebar-footer .sidebar-links li.close-admin-sidebar-mobile .nav-item-content {
-        flex-direction: row;
-        gap: 0.6rem;
-        min-height: 0;
-        padding: 0.7rem 0.8rem;
-    }
-
-    .sidebar-footer .sidebar-links li.logout-btn .label,
-    .sidebar-footer .sidebar-links li.close-admin-sidebar-mobile .label {
-        flex: 0 0 auto;
+        margin-left: 0.5rem;
         font-size: 0.85rem;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
     }
 }
 
@@ -268,12 +226,5 @@
     .sidebar-links li.active a {
         background-color: var(--fb-white-color);
         color: var(--light-dark-accent-color, #1a1a1a);
-    }
-
-    @media (max-width: 768px) {
-        .sidebar-footer .sidebar-links li a,
-        .sidebar-footer .sidebar-links li .nav-item-content {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
     }
 }
