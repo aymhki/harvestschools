@@ -12,9 +12,13 @@ const authedPost = async (endpoint, body = null) => {
     try {
         const response = await fetch(endpoint, {
             method: 'POST',
-            headers: await buildAuthHeaders(sessionId),
-            ...(body ? { body: JSON.stringify(body) } : {}),
+            headers: {
+                ...(await buildAuthHeaders(sessionId)),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body ?? {}),
         });
+
         return await response.json();
     } catch (error) {
         return { success: false, code: 0, message: error.message };
@@ -25,6 +29,7 @@ const fetchMyAccount = async () => {
     return authedPost(endpoints.getMyAccount);
 };
 
+
 const updateMyAccount = async (payload) => {
     return authedPost(endpoints.updateMyAccount, payload);
 };
@@ -33,12 +38,36 @@ const dismissPasskeyPrompt = async () => {
     return authedPost(endpoints.updateMyAccount, { action: 'dismiss_passkey_prompt' });
 };
 
-const startTotpSetup = async () => {
-    return authedPost(endpoints.setupTotp);
+const resendEmailVerification = async () => {
+    return authedPost(endpoints.requestEmailVerification);
+};
+
+const confirmEmailChange = async (code) => {
+    return authedPost(endpoints.confirmEmailVerification, { code });
+};
+
+const cancelEmailChange = async () => {
+    return authedPost(endpoints.confirmEmailVerification, { action: 'cancel' });
+};
+
+const setPreferredMfa = async (method) => {
+    return authedPost(endpoints.setPreferredMfa, { method });
+};
+
+const startTotpSetup = async (currentPassword = '') => {
+    return authedPost(endpoints.setupTotp, { current_password: currentPassword });
 };
 
 const confirmTotpSetup = async (code) => {
     return authedPost(endpoints.confirmTotp, { code });
+};
+
+const cancelTotpSetup = async () => {
+    return authedPost(endpoints.confirmTotp, { action: 'cancel' });
+};
+
+const removeTotp = async (currentPassword) => {
+    return authedPost(endpoints.deleteTotp, { current_password: currentPassword });
 };
 
 const removePasskey = async (passkeyId) => {
@@ -69,9 +98,11 @@ const registerPasskey = async (label) => {
         if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
             return { success: false, message: 'Passkey prompt was cancelled', cancelled: true };
         }
+
         if (error && error.name === 'InvalidStateError') {
             return { success: false, message: 'A passkey for this account already exists on this device' };
         }
+
         return { success: false, message: error.message };
     }
 };
@@ -80,8 +111,14 @@ export {
     fetchMyAccount,
     updateMyAccount,
     dismissPasskeyPrompt,
+    resendEmailVerification,
+    confirmEmailChange,
+    cancelEmailChange,
+    setPreferredMfa,
     startTotpSetup,
     confirmTotpSetup,
+    cancelTotpSetup,
+    removeTotp,
     registerPasskey,
     removePasskey
 }
