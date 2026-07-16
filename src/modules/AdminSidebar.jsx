@@ -22,7 +22,7 @@ import PropTypes from "prop-types";
 import {LinkOutlined} from "@mui/icons-material";
 import AdminSettingsModal from './AdminSettingsModal.jsx';
 
-function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned, onTogglePin}) {
+function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned, onTogglePin, setRefreshCurrentUserData}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -224,6 +224,7 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
                 show={showSettingsModal}
                 notice={settingsNotice}
                 onClose={closeSettings}
+                setRefreshCurrentUserData={setRefreshCurrentUserData}
             />
         </>
     );
@@ -239,7 +240,8 @@ AdminSidebar.propTypes = {
     adminPermissions: PropTypes.arrayOf(PropTypes.string).isRequired,
     loggedInUsername: PropTypes.string.isRequired,
     isPinned: PropTypes.bool.isRequired,
-    onTogglePin: PropTypes.func.isRequired
+    onTogglePin: PropTypes.func.isRequired,
+    setRefreshCurrentUserData: PropTypes.func.isRequired,
 }
 
 export default AdminSidebar;

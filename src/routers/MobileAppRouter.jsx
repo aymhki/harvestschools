@@ -310,6 +310,7 @@ function MobileAppRouter() {
                             isPinned={isSidebarPinned}
                             onTogglePin={handleTogglePin}
                             adminPermissions={adminPermissions}
+                            setRefreshCurrentUserData={setRefreshCurrentUserData}
                         />
                     )}
                     <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>

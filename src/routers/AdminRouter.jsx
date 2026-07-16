@@ -67,6 +67,7 @@ function AdminRouter() {
                         isPinned={isSidebarPinned}
                         onTogglePin={handleTogglePin}
                         adminPermissions={adminPermissions}
+                        setRefreshCurrentUserData={setRefreshCurrentUserData}
                     />
                 )}
 
