@@ -46,8 +46,8 @@ try {
     $messageBody = "Your admin login verification code is: {$code}\n\nIt expires in 10 minutes. If you did not try to log in, change your password immediately.";
 
     $boundary = md5(time());
-    $headers  = "From: no-reply@harvestschools.com\r\n";
-    $headers .= "Reply-To: no-reply@harvestschools.com\r\n";
+    $headers  = "From: no-reply@admin.harvestschools.com\r\n";
+    $headers .= "Reply-To: no-reply@admin.harvestschools.com\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
 
