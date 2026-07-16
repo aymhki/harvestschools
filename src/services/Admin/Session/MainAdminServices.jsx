@@ -1,7 +1,6 @@
 import {
     adminDashboardPageUrl,
     adminLoginPageUrl,
-    createSessions,
     buildAuthHeaders,
     extendSession,
     resetSession,
@@ -12,13 +11,14 @@ import {
 } from "../../General/GeneralUtils.jsx";
 import { Capacitor } from '@capacitor/core';
 import {
-    generateSecureSessionId,
     getMobileSession,
     setMobileSession,
     extendMobileSession,
     isBiometricAvailable,
     saveBiometricCredentials,
 } from "../../General/CapacitorSecureAuthUtils.jsx";
+
+import { decodeGetArgs, bufToB64, passkeySupported } from "../../General/PasskeyUtils.jsx";
 
 const isMobileApp = () => Capacitor.isNativePlatform();
 
@@ -145,6 +145,14 @@ const checkAdminSessionFromAdminDashboard = async (navigate, setDashboardOptions
     }
 }
 
+const storeSessionAndEnter = async (sessionToken, navigate) => {
+    if (isMobileApp()) {
+        await setMobileSession('harvest_schools_admin', sessionToken);
+    } else {
+        extendSession('harvest_schools_admin', sessionToken);
+    }
+    navigate(adminDashboardPageUrl, { replace: true });
+};
 
 const performAdminLogin = async (username, password, navigate, persistBiometricCredentials) => {
     try {
@@ -154,32 +162,32 @@ const performAdminLogin = async (username, password, navigate, persistBiometricC
             body: JSON.stringify({ username, password, fingerprint })
         });
         const result = await response.json();
+
+        if (result && result.success && (result.sessionToken || result.mfa_required)
+            && isMobileApp() && persistBiometricCredentials) {
+            const biometricHardwareAvailable = await isBiometricAvailable();
+            if (biometricHardwareAvailable) {
+                await saveBiometricCredentials('harvest_schools_admin', username, password);
+            }
+        }
+
+        if (result && result.success && result.mfa_required) {
+            return {
+                success: true,
+                mfaRequired: true,
+                mfaToken: result.mfaToken,
+                methods: result.methods || [],
+                preferred: result.preferred,
+                maskedEmail: result.maskedEmail,
+            };
+        }
+
         if (result && result.success && result.sessionToken) {
-            const mobile = isMobileApp();
-            if (mobile) {
-                await setMobileSession('harvest_schools_admin', result.sessionToken);
-                if (persistBiometricCredentials) {
-                    const biometricHardwareAvailable = await isBiometricAvailable();
-                    if (biometricHardwareAvailable) {
-                        await saveBiometricCredentials('harvest_schools_admin', username, password);
-                    }
-                }
-            } else {
-                extendSession('harvest_schools_admin', result.sessionToken);
+            if (result.needsEmailSetup) {
+                sessionStorage.setItem('hs_needs_mfa_setup', '1');
             }
-
-            navigate(adminDashboardPageUrl, { replace: true });
-
-            if (result && result.success && result.mfa_required) {
-                return {
-                    success: true,
-                    mfaRequired: true,
-                    mfaToken: result.mfaToken,
-                    methods: result.methods,
-                    preferred: result.preferred,
-                    maskedEmail: result.maskedEmail,
-                };
-            }
+            await storeSessionAndEnter(result.sessionToken, navigate);
+            return { success: true };
         }
 
         return result;
@@ -194,7 +202,6 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
     return performAdminLogin(username, password, navigate, true);
 }
-
 
 const validateAdminLoginWithCredentials = async (username, password, navigate) => {
     return performAdminLogin(username, password, navigate, false);
@@ -259,15 +266,6 @@ const validateAdminSessionLocally = async () => {
     return null;
 }
 
-const storeSessionAndEnter = async (sessionToken, navigate) => {
-    if (isMobileApp()) {
-        await setMobileSession('harvest_schools_admin', sessionToken);
-    } else {
-        extendSession('harvest_schools_admin', sessionToken);
-    }
-    navigate(adminDashboardPageUrl, { replace: true });
-};
-
 const completeMfa = async (mfaToken, method, code, navigate) => {
     try {
         const response = await fetch(endpoints.verifyMfa, {
@@ -276,6 +274,9 @@ const completeMfa = async (mfaToken, method, code, navigate) => {
         });
         const result = await response.json();
         if (result && result.success && result.sessionToken) {
+            if (result.promptPasskey && !isMobileApp() && passkeySupported()) {
+                sessionStorage.setItem('hs_prompt_passkey', '1');
+            }
             await storeSessionAndEnter(result.sessionToken, navigate);
             return { success: true, promptPasskey: result.promptPasskey };
         }
@@ -293,6 +294,50 @@ const requestEmailCode = async (mfaToken) => {
     return response.json();
 };
 
+const performPasskeyMfa = async (mfaToken, navigate) => {
+    try {
+        const optionsResponse = await fetch(endpoints.passkeyLoginOptions, {
+            method: 'POST',
+            body: JSON.stringify({ mfa_token: mfaToken }),
+        });
+        const optionsResult = await optionsResponse.json();
+
+        if (!optionsResult || !optionsResult.success || !optionsResult.options) {
+            return optionsResult || { success: false, message: 'Could not start passkey verification', code: 0 };
+        }
+
+        const credential = await navigator.credentials.get(decodeGetArgs(optionsResult.options));
+
+        if (!credential) {
+            return { success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true };
+        }
+
+        const verifyResponse = await fetch(endpoints.passkeyLoginVerify, {
+            method: 'POST',
+            body: JSON.stringify({
+                mfa_token: mfaToken,
+                id: bufToB64(credential.rawId),
+                clientDataJSON: bufToB64(credential.response.clientDataJSON),
+                authenticatorData: bufToB64(credential.response.authenticatorData),
+                signature: bufToB64(credential.response.signature),
+            }),
+        });
+        const result = await verifyResponse.json();
+
+        if (result && result.success && result.sessionToken) {
+            await storeSessionAndEnter(result.sessionToken, navigate);
+            return { success: true };
+        }
+
+        return result;
+    } catch (error) {
+        if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+            return { success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true };
+        }
+        return { success: false, message: error.message, code: 0 };
+    }
+};
+
 export {
     checkAdminSession,
     validateAdminLogin,
@@ -302,5 +347,6 @@ export {
     validateAdminSessionLocally,
     isMobileApp,
     requestEmailCode,
-    completeMfa
+    completeMfa,
+    performPasskeyMfa
 }

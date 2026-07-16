@@ -9,7 +9,8 @@ import {
     validateAdminLoginWithCredentials,
     isMobileApp,
     requestEmailCode,
-    completeMfa
+    completeMfa,
+    performPasskeyMfa
 } from "../../services/Admin/Session/MainAdminServices.jsx";
 import {useTranslation} from "react-i18next";
 import {
@@ -20,6 +21,7 @@ import {
     clearMobileSession,
     verifyBiometricIdentity,
 } from "../../services/General/CapacitorSecureAuthUtils.jsx";
+import {passkeySupported} from "../../services/General/PasskeyUtils.jsx";
 
 const ADMIN_SESSION_NAMESPACE = 'harvest_schools_admin';
 
@@ -32,6 +34,7 @@ function AdminLogin() {
     const [mfaCode, setMfaCode] = useState('');
     const [mfaError, setMfaError] = useState(null);
     const [showAltMethods, setShowAltMethods] = useState(false);
+    const [loginNotice, setLoginNotice] = useState(null);
     const [loginMode, setLoginMode] = useState('checking');
     const [prefillUsername, setPrefillUsername] = useState('');
     const usernameFieldId = 1
@@ -39,19 +42,54 @@ function AdminLogin() {
     const { t } = useTranslation(['admin'], {lng:'en'});
     const mobile = isMobileApp();
 
+    const resetMfaState = () => {
+        setMfaState(null);
+        setMfaMethod(null);
+        setMfaCode('');
+        setMfaError(null);
+        setShowAltMethods(false);
+    };
+
+    const exitMfaToFullForm = (notice) => {
+        resetMfaState();
+        setLoginNotice(notice || null);
+        setLoginMode('full');
+    };
+
+    const isExpiredMfaResult = (result) =>
+        result && result.code === 401 && /expired/i.test(result.message || '');
+
     const handleAdminLogin = async (formData) => {
         if (submittingLocal) {return;}
 
         setSubmittingLocal(true);
+        setLoginNotice(null);
 
         try {
             const result = await validateAdminLogin(formData, usernameFieldId, passwordFieldId, navigate);
 
             if (result && result.mfaRequired) {
-                setMfaState(result);
-                setMfaMethod(result.preferred);
+                const usableMethods = (result.methods || []).filter(
+                    (m) => !(m === 'passkey' && (mobile || !passkeySupported()))
+                );
+
+                if (usableMethods.length === 0) {
+                    throw new Error('No verification method is available on this device. Please log in from another device or contact an administrator.');
+                }
+
+                const startingMethod = usableMethods.includes(result.preferred)
+                    ? result.preferred
+                    : usableMethods[0];
+
+                setMfaState({ ...result, methods: usableMethods });
+                setMfaMethod(startingMethod);
+                setMfaCode('');
+                setMfaError(null);
+                setShowAltMethods(false);
                 setLoginMode('mfa');
-                if (result.preferred === 'email') { requestEmailCode(result.mfaToken); }
+
+                if (startingMethod === 'email') { requestEmailCode(result.mfaToken); }
+
                 return true;
             }
 
@@ -66,6 +104,56 @@ function AdminLogin() {
         } finally {
             setSubmittingLocal(false);
         }
+    };
+
+    const handleCodeMfa = async () => {
+        setSubmittingLocal(true);
+        setMfaError(null);
+
+        try {
+            const result = await completeMfa(mfaState.mfaToken, mfaMethod, mfaCode, navigate);
+
+            if (result && !result.success) {
+                if (isExpiredMfaResult(result) || result.code === 429) {
+                    exitMfaToFullForm(result.code === 429
+                        ? 'Too many incorrect attempts. Please log in again.'
+                        : 'Your verification session expired. Please log in again.');
+                } else {
+                    setMfaError(result.message || 'Verification failed');
+                }
+            }
+        } finally {
+            setSubmittingLocal(false);
+        }
+    };
+
+    const handlePasskeyMfa = async () => {
+        setSubmittingLocal(true);
+        setMfaError(null);
+
+        try {
+            const result = await performPasskeyMfa(mfaState.mfaToken, navigate);
+
+            if (result && !result.success && !result.cancelled) {
+                if (isExpiredMfaResult(result) || result.code === 429) {
+                    exitMfaToFullForm(result.code === 429
+                        ? 'Too many incorrect attempts. Please log in again.'
+                        : 'Your verification session expired. Please log in again.');
+                } else {
+                    setMfaError(result.message || 'Passkey verification failed');
+                }
+            }
+        } finally {
+            setSubmittingLocal(false);
+        }
+    };
+
+    const switchMfaMethod = (method) => {
+        setMfaMethod(method);
+        setMfaCode('');
+        setMfaError(null);
+        setShowAltMethods(false);
+        if (method === 'email') { requestEmailCode(mfaState.mfaToken); }
     };
 
     const resetToFirstTimeMobileExperience = async () => {
@@ -102,6 +190,35 @@ function AdminLogin() {
                 credentials.password,
                 navigate
             );
+
+            if (result && result.mfaRequired) {
+                const usableMethods = (result.methods || []).filter((m) => m !== 'passkey');
+
+                if (usableMethods.length === 0) {
+                    if (isMountedRef.current) {
+                        setLoginNotice('No verification method is available on this device. Please log in from another device or contact an administrator.');
+                        setLoginMode('full');
+                    }
+                    return;
+                }
+
+                const startingMethod = usableMethods.includes(result.preferred)
+                    ? result.preferred
+                    : usableMethods[0];
+
+                if (isMountedRef.current) {
+                    setMfaState({ ...result, methods: usableMethods });
+                    setMfaMethod(startingMethod);
+                    setMfaCode('');
+                    setMfaError(null);
+                    setShowAltMethods(false);
+                    setLoginMode('mfa');
+                }
+
+                if (startingMethod === 'email') { requestEmailCode(result.mfaToken); }
+
+                return;
+            }
 
             if (result && !result.success) {
                 const credentialsLikelyChanged = result.code === 401 || result.code === 404;
@@ -175,65 +292,92 @@ function AdminLogin() {
 
     const renderMfaScreen = () => (
         <div className={'admin-login-mfa'}>
+            <p className={'admin-login-mfa-title'}>
+                Verify it&apos;s you
+            </p>
+
             {mfaMethod === 'passkey' ? (
-                <button type={'button'} disabled={submittingLocal} onClick={handlePasskeyMfa}>
+                <button
+                    type={'button'}
+                    className={'admin-login-mfa-primary-button'}
+                    disabled={submittingLocal}
+                    onClick={handlePasskeyMfa}
+                >
                     Use your passkey
                 </button>
             ) : (
                 <>
-                    <p>
+                    <p className={'admin-login-mfa-instructions'}>
                         {mfaMethod === 'email'
                             ? `Enter the 6-digit code sent to ${mfaState.maskedEmail}`
                             : 'Enter the 6-digit code from your authenticator app'}
                     </p>
                     <input
-                        type={'text'} inputMode={'numeric'} maxLength={6}
+                        className={'admin-login-mfa-code-input'}
+                        type={'text'}
+                        inputMode={'numeric'}
+                        autoComplete={'one-time-code'}
+                        maxLength={6}
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
                         autoFocus
                     />
+                    <button
+                        type={'button'}
+                        className={'admin-login-mfa-primary-button'}
+                        disabled={submittingLocal || mfaCode.length !== 6}
+                        onClick={handleCodeMfa}
+                    >
+                        Verify
+                    </button>
                     {mfaMethod === 'email' && (
-                        <button type={'button'} onClick={() => requestEmailCode(mfaState.mfaToken)}>
+                        <button
+                            type={'button'}
+                            className={'admin-login-mfa-secondary-button'}
+                            disabled={submittingLocal}
+                            onClick={() => requestEmailCode(mfaState.mfaToken)}
+                        >
                             Resend code
                         </button>
                     )}
-                    <button type={'button'} disabled={submittingLocal || mfaCode.length !== 6} onClick={handleCodeMfa}>
-                        Verify
-                    </button>
                 </>
             )}
+
             {mfaError && <p className={'admin-login-mfa-error'}>{mfaError}</p>}
+
             {mfaState.methods.length > 1 && (
-                <button type={'button'} onClick={() => setShowAltMethods(v => !v)}>
+                <button
+                    type={'button'}
+                    className={'admin-login-mfa-secondary-button'}
+                    disabled={submittingLocal}
+                    onClick={() => setShowAltMethods(v => !v)}
+                >
                     Authenticate another way
                 </button>
             )}
+
             {showAltMethods && mfaState.methods.filter(m => m !== mfaMethod).map(m => (
-                <button key={m} type={'button'} onClick={() => {
-                    setMfaMethod(m); setMfaCode(''); setMfaError(null); setShowAltMethods(false);
-                    if (m === 'email') { requestEmailCode(mfaState.mfaToken); }
-                }}>
+                <button
+                    key={m}
+                    type={'button'}
+                    className={'admin-login-mfa-alt-method-button'}
+                    disabled={submittingLocal}
+                    onClick={() => switchMfaMethod(m)}
+                >
                     {m === 'passkey' ? 'Use a passkey' : m === 'totp' ? 'Use authenticator app' : 'Email me a code'}
                 </button>
             ))}
+
+            <button
+                type={'button'}
+                className={'admin-login-recovery-cancel'}
+                disabled={submittingLocal}
+                onClick={() => exitMfaToFullForm(null)}
+            >
+                Back to login
+            </button>
         </div>
     );
-
-    const handleCodeMfa = async () => {
-        setSubmittingLocal(true);
-        setMfaError(null);
-
-        try {
-            const result = await completeMfa(mfaState.mfaToken, mfaMethod, mfaCode, navigate);
-            if (!result.success) { setMfaError(result.message || 'Verification failed'); }
-            // On success completeMfa already navigated; if result.promptPasskey, the
-            // dashboard shows the add-passkey prompt (pass via navigation state or a
-            // sessionStorage flag read once by AdminRouter).
-        } finally {
-            setSubmittingLocal(false);
-        }
-
-    };
 
     const renderBiometricScreen = () => (
         <div className={'admin-login-biometric-only'}>
@@ -338,7 +482,11 @@ function AdminLogin() {
                                 {t("admin.login-page.title")}
                             </h2>
                         )}
+                        {loginNotice && (loginMode === 'full' || loginMode === 'recovery') && (
+                            <p className={'admin-login-notice'}>{loginNotice}</p>
+                        )}
                         {loginMode === 'biometric' && renderBiometricScreen()}
+                        {loginMode === 'mfa' && mfaState && renderMfaScreen()}
                         {(loginMode === 'recovery' || loginMode === 'full') && renderForm()}
                     </div>
                 </div>
