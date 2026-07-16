@@ -38,9 +38,6 @@ function AdminSettingsModal({show, notice, onClose}) {
     const [newPasskeyLabel, setNewPasskeyLabel] = useState('');
     const [resetAccountForm, setResetAccountForm] = useState(false);
     const accountFormFooterButtonsRef = useRef(null);
-
-    // WebAuthn is unavailable inside the Capacitor webview; the native app
-    // already has its own biometric login via secure storage.
     const canUsePasskeys = passkeySupported() && !isMobileApp();
 
     const animateSettingsModal = useSpring({
