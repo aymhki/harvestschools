@@ -34,7 +34,10 @@ try {
     $userId = (int)$row['user_id'];
 
     if ((int)$row['attempts'] >= 5) {
-        $conn->query("DELETE FROM admin_mfa_challenges WHERE id = '" . $conn->real_escape_string($mfaHash) . "'");
+        $stmt = $conn->prepare("DELETE FROM admin_mfa_challenges WHERE id = ?");
+        $stmt->bind_param("s", $mfaHash);
+        $stmt->execute();
+        $stmt->close();
         log_admin_event($conn, $userId, 'mfa_fail', $row['fingerprint_hash']);
         echo json_encode(["success" => false, "message" => "Too many attempts. Log in again.", "code" => 429]); exit;
     }
