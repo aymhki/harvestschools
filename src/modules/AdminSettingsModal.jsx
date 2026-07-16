@@ -30,6 +30,9 @@ import {adminLoginPageUrl, msgTimeout} from '../services/General/GeneralUtils.js
 function AdminSettingsModal({show, notice, onClose}) {
     const navigate = useNavigate();
 
+    const PROFILE_TAB = 'profile';
+    const SECURITY_TAB = 'security';
+
     const [activeTab, setActiveTab] = useState(PROFILE_TAB);
     const [account, setAccount] = useState(null);
     const [isBusy, setIsBusy] = useState(false);
@@ -48,8 +51,7 @@ function AdminSettingsModal({show, notice, onClose}) {
     const statusTimerRef = useRef(null);
     const isMountedRef = useRef(true);
 
-    const PROFILE_TAB = 'profile';
-    const SECURITY_TAB = 'security';
+
 
     const METHOD_LABELS = {
         passkey: 'Passkey',
