@@ -159,6 +159,7 @@ const performAdminLogin = async (username, password, navigate, persistBiometricC
         const fingerprint = await getClientFingerprint();
         const response = await fetch(endpoints.validateAdminLogin, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password, fingerprint })
         });
         const result = await response.json();
@@ -270,6 +271,7 @@ const completeMfa = async (mfaToken, method, code, navigate) => {
     try {
         const response = await fetch(endpoints.verifyMfa, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ mfa_token: mfaToken, method, code }),
         });
         const result = await response.json();
@@ -287,17 +289,24 @@ const completeMfa = async (mfaToken, method, code, navigate) => {
 };
 
 const requestEmailCode = async (mfaToken) => {
-    const response = await fetch(endpoints.requestMfaEmailCode, {
-        method: 'POST',
-        body: JSON.stringify({ mfa_token: mfaToken }),
-    });
-    return response.json();
+    try {
+        const response = await fetch(endpoints.requestMfaEmailCode, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mfa_token: mfaToken }),
+        });
+
+        return await response.json();
+    } catch (error) {
+        return { success: false, message: error.message, code: 0 };
+    }
 };
 
 const performPasskeyMfa = async (mfaToken, navigate) => {
     try {
         const optionsResponse = await fetch(endpoints.passkeyLoginOptions, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ mfa_token: mfaToken }),
         });
         const optionsResult = await optionsResponse.json();
@@ -314,6 +323,7 @@ const performPasskeyMfa = async (mfaToken, navigate) => {
 
         const verifyResponse = await fetch(endpoints.passkeyLoginVerify, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 mfa_token: mfaToken,
                 id: bufToB64(credential.rawId),

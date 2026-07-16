@@ -111,6 +111,12 @@ const confirmedStatus = 'Confirmed';
 const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
+
+// Client-side mirror of mfaConfig.php's throttle. The server is the authority
+// and always re-checks; this only exists so the resend button can show a
+// countdown instead of firing a request we already know will be refused.
+const mfaResendCooldownSeconds = 30;
+const mfaResendMaxPerWindow = 5;
 const graduationBookingLoginPageUrl = '/events/graduation-booking';
 const graduationBookingDashboardPageUrl = '/events/graduation-booking/dashboard';
 const adminLoginPageUrl = '/admin-login';
@@ -187,6 +193,10 @@ const ENDPOINTS = {
     passkeyLoginOptions: '/scripts/Admin/Session/passkeyLoginOptions.php',
     passkeyLoginVerify: '/scripts/Admin/Session/passkeyLoginVerify.php',
     deletePasskey: '/scripts/Admin/Session/deletePasskey.php',
+    deleteTotp: '/scripts/Admin/Session/deleteTotp.php',
+    setPreferredMfa: '/scripts/Admin/Session/setPreferredMfa.php',
+    requestEmailVerification: '/scripts/Admin/Session/requestEmailVerification.php',
+    confirmEmailVerification: '/scripts/Admin/Session/confirmEmailVerification.php',
 };
 
 const BASE_URLS = {
@@ -299,6 +309,8 @@ export {
     confirmedStatus,
     sessionDuration,
     msgTimeout,
+    mfaResendCooldownSeconds,
+    mfaResendMaxPerWindow,
     graduationBookingLoginPageUrl,
     graduationBookingDashboardPageUrl,
     adminLoginPageUrl,
