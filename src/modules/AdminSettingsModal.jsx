@@ -31,6 +31,26 @@ import {adminLoginPageUrl, msgTimeout} from '../services/General/GeneralUtils.js
 function AdminSettingsModal({show, notice, onClose}) {
     const navigate = useNavigate();
 
+    const PROFILE_TAB = 'profile';
+    const SECURITY_TAB = 'security';
+
+    const METHOD_LABELS = {
+        passkey: 'Passkey',
+        totp: 'Authenticator app',
+        email: 'Email code',
+    };
+
+    const METHOD_BLURBS = {
+        passkey: 'Fingerprint, face or device PIN. Phishing-resistant.',
+        totp: 'A rotating 6-digit code from Google Authenticator, Authy, and so on.',
+        email: 'A 6-digit code sent to your verified work address.',
+    };
+
+    const animateSettingsModal = useSpring({
+        opacity: show ? 1 : 0,
+        transform: show ? 'translateY(0)' : 'translateY(-100%)',
+    });
+
     const [activeTab, setActiveTab] = useState(PROFILE_TAB);
     const [account, setAccount] = useState(null);
     const [isBusy, setIsBusy] = useState(false);
@@ -60,26 +80,6 @@ function AdminSettingsModal({show, notice, onClose}) {
     const usernameFieldId = 3;
     const newPasswordFieldId = 5;
     const confirmNewPasswordFieldId = 6;
-
-    const PROFILE_TAB = 'profile';
-    const SECURITY_TAB = 'security';
-
-    const METHOD_LABELS = {
-        passkey: 'Passkey',
-        totp: 'Authenticator app',
-        email: 'Email code',
-    };
-
-    const METHOD_BLURBS = {
-        passkey: 'Fingerprint, face or device PIN. Phishing-resistant.',
-        totp: 'A rotating 6-digit code from Google Authenticator, Authy, and so on.',
-        email: 'A 6-digit code sent to your verified work address.',
-    };
-
-    const animateSettingsModal = useSpring({
-        opacity: show ? 1 : 0,
-        transform: show ? 'translateY(0)' : 'translateY(-100%)',
-    });
 
     useEffect(() => {
         isMountedRef.current = true;
