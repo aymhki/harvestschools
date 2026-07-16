@@ -1,5 +1,6 @@
 <?php
 require_once '../../headers.php';
+require_once '../../authHelpers.php';
 require_once '../../mfaHelpers.php';
 set_cors_headers();
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
@@ -37,6 +38,10 @@ try {
 
     $user          = $data['username'];
     $plainPassword = $data['password'];
+
+    $fingerprint = isset($data['fingerprint']) && is_string($data['fingerprint'])
+        ? substr($data['fingerprint'], 0, 64)
+        : null;
 
     $stmt = $conn->prepare("SELECT id, password_hash FROM admin_users WHERE username = ?");
 
@@ -83,13 +88,10 @@ try {
     }
 
     if (!$passwordOk) {
+        log_admin_event($conn, $userId, 'login_fail', $fingerprint);
         echo json_encode($genericFail);
         exit;
     }
-
-    $fingerprint = isset($data['fingerprint']) && is_string($data['fingerprint'])
-        ? substr($data['fingerprint'], 0, 64)
-        : null;
 
     $mfaReason = compute_mfa_required($conn, $userId, $fingerprint);
     $mfaInfo   = get_available_mfa_methods($conn, $userId);
