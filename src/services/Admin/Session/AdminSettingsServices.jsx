@@ -29,7 +29,6 @@ const fetchMyAccount = async () => {
     return authedPost(endpoints.getMyAccount);
 };
 
-
 const updateMyAccount = async (payload) => {
     return authedPost(endpoints.updateMyAccount, payload);
 };
@@ -72,6 +71,18 @@ const removeTotp = async (currentPassword) => {
 
 const removePasskey = async (passkeyId) => {
     return authedPost(endpoints.deletePasskey, { passkey_id: passkeyId });
+};
+
+const listSessions = async () => {
+    return authedPost(endpoints.listAdminSessions);
+};
+
+const revokeSession = async (publicId) => {
+    return authedPost(endpoints.revokeAdminSession, { public_id: publicId });
+};
+
+const revokeAllOtherSessions = async () => {
+    return authedPost(endpoints.revokeAdminSession, { action: 'all_others' });
 };
 
 const registerPasskey = async (label) => {
@@ -120,5 +131,8 @@ export {
     cancelTotpSetup,
     removeTotp,
     registerPasskey,
-    removePasskey
+    removePasskey,
+    listSessions,
+    revokeSession,
+    revokeAllOtherSessions
 }

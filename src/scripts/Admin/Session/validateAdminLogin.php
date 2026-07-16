@@ -155,7 +155,7 @@ try {
         exit;
     }
 
-    $sessionToken = issue_admin_session($conn, $userId, $fingerprint);
+    $session = issue_admin_session($conn, $userId, $fingerprint);
     log_admin_event($conn, $userId, 'login_success', $fingerprint);
 
     echo json_encode([
@@ -163,7 +163,9 @@ try {
         "message"         => "Login successful",
         "code"            => 200,
         "id"              => $userId,
-        "sessionToken"    => $sessionToken,
+        "sessionToken"    => $session['token'],
+        "deviceSecret"    => $session['deviceSecret'],
+        "bindingMode"     => $session['bindingMode'],
         "needsEmailSetup" => empty($mfaInfo['methods']),
     ]);
     exit;

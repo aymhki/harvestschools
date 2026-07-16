@@ -149,7 +149,7 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    $sessionToken = issue_admin_session($conn, $userId, $row['fingerprint_hash']);
+    $session = issue_admin_session($conn, $userId, $row['fingerprint_hash']);
     log_admin_event($conn, $userId, 'mfa_pass', $row['fingerprint_hash']);
     log_admin_event($conn, $userId, 'login_success', $row['fingerprint_hash']);
 
@@ -166,16 +166,14 @@ try {
     echo json_encode([
         "success"       => true,
         "code"          => 200,
-        "sessionToken"  => $sessionToken,
+        "sessionToken"  => $session['token'],
+        "deviceSecret"  => $session['deviceSecret'],
+        "bindingMode"   => $session['bindingMode'],
         "promptPasskey" => ((int)($flags['pk'] ?? 0) === 0 && !(int)($flags['passkey_prompt_declined'] ?? 0)),
     ]);
 
 } catch (Exception $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => $e->getMessage(),
-        "code" => 500
-    ]);
+    echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => 500]);
 } finally {
     if (isset($conn) && $conn instanceof mysqli) {
         $conn->close();

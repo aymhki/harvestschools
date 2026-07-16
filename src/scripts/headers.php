@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/securityHeaders.php';
+
 function set_cors_headers($customOptions = []) {
     $defaults = [
         'content_type'    => 'application/json',
@@ -22,8 +24,11 @@ function set_cors_headers($customOptions = []) {
 
     header('Content-Type: ' . $config['content_type']);
 
+    send_security_headers();
+
     if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $config['allowed_origins'])) {
         header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+        header('Vary: Origin');
     }
 
     if ($config['access_control_allow_credentials'] === 'true') {
@@ -31,7 +36,7 @@ function set_cors_headers($customOptions = []) {
     }
 
     header('Access-Control-Allow-Methods: ' . $config['allowed_methods']);
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Client-Fingerprint');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Client-Fingerprint, X-Client-Platform, X-Device-Binding');
     header('Cache-Control: ' . $config['cache_control']);
     header('Pragma: ' . $config['pragma']);
     header('Expires: 0');

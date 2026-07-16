@@ -1,5 +1,50 @@
 <?php
 require_once '../../permissionLevels.php';
+require_once __DIR__ . '/mfaConfig.php';
+require_once __DIR__ . '/securityHeaders.php';
+
+function session_binding_mode_for_request() {
+    if (mfa_is_local_request()) {
+        return 'none';
+    }
+
+    $platform = strtolower(trim($_SERVER['HTTP_X_CLIENT_PLATFORM'] ?? ''));
+    return $platform === 'native' ? 'secret' : 'cookie';
+}
+
+function set_device_binding_cookie($secret) {
+    $ttl = (int)mfa_config('session_absolute_ttl_seconds');
+
+    setcookie(mfa_config('session_binding_cookie'), $secret, [
+        'expires'  => time() + $ttl,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
+}
+
+function clear_device_binding_cookie() {
+    setcookie(mfa_config('session_binding_cookie'), '', [
+        'expires'  => time() - 3600,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
+}
+
+function presented_device_secret($bindingMode) {
+    if ($bindingMode === 'cookie') {
+        return (string)($_COOKIE[mfa_config('session_binding_cookie')] ?? '');
+    }
+
+    if ($bindingMode === 'secret') {
+        return substr(trim((string)($_SERVER['HTTP_X_DEVICE_BINDING'] ?? '')), 0, 128);
+    }
+
+    return '';
+}
 
 function get_bearer_token_hash() {
     $token = get_bearer_token();
@@ -8,15 +53,21 @@ function get_bearer_token_hash() {
 
 function validate_admin_session($conn) {
     $tokenHash = get_bearer_token_hash();
+
     if (!$tokenHash) {
         return ["success" => false, "message" => "Missing bearer token", "code" => 401];
     }
 
+    $idleTtl     = (int)mfa_config('session_idle_ttl_seconds');
+    $absoluteTtl = (int)mfa_config('session_absolute_ttl_seconds');
+
     $stmt = $conn->prepare(
-        "SELECT user_id, fingerprint_hash FROM admin_sessions
-         WHERE id = ? AND last_seen >= (NOW() - INTERVAL 12 HOUR)"
+        "SELECT user_id, binding_mode, device_secret_hash,
+                (created_at < (NOW() - INTERVAL ? SECOND)) AS aged_out
+         FROM admin_sessions
+         WHERE id = ? AND last_seen >= (NOW() - INTERVAL ? SECOND)"
     );
-    $stmt->bind_param("s", $tokenHash);
+    $stmt->bind_param("isi", $absoluteTtl, $tokenHash, $idleTtl);
     $stmt->execute();
     $result = $stmt->get_result();
     $stmt->close();
@@ -27,12 +78,29 @@ function validate_admin_session($conn) {
 
     $row = $result->fetch_assoc();
 
-    if (!empty($row['fingerprint_hash'])) {
-        $clientFp = isset($_SERVER['HTTP_X_CLIENT_FINGERPRINT'])
-            ? substr(trim($_SERVER['HTTP_X_CLIENT_FINGERPRINT']), 0, 64)
-            : '';
-        if (!hash_equals($row['fingerprint_hash'], $clientFp)) {
-            return ["success" => false, "message" => "Session/device mismatch", "code" => 401];
+    if ((int)$row['aged_out'] === 1) {
+        delete_admin_session_row($conn, $tokenHash);
+
+        return [
+            "success" => false,
+            "message" => "Your session has reached its maximum age. Please log in again.",
+            "code"    => 401
+        ];
+    }
+
+    $bindingMode = $row['binding_mode'] ?? 'none';
+
+    if ($bindingMode !== 'none') {
+        $presented = presented_device_secret($bindingMode);
+        $expected  = (string)($row['device_secret_hash'] ?? '');
+
+        if ($expected === '' || $presented === '' ||
+            !hash_equals($expected, hash('sha256', $presented))) {
+            return [
+                "success" => false,
+                "message" => "This session is not valid on this device. Please log in again.",
+                "code"    => 401
+            ];
         }
     }
 
@@ -42,6 +110,13 @@ function validate_admin_session($conn) {
     $stmt->close();
 
     return ["success" => true, "user_id" => (int)$row['user_id'], "code" => 200];
+}
+
+function delete_admin_session_row($conn, $tokenHash) {
+    $stmt = $conn->prepare("DELETE FROM admin_sessions WHERE id = ?");
+    $stmt->bind_param("s", $tokenHash);
+    $stmt->execute();
+    $stmt->close();
 }
 
 function get_bearer_token() {
@@ -68,9 +143,11 @@ function get_bearer_token() {
 
 function check_admin_user_permission($conn, $requiredPermission, $explicitSessionId = null) {
     $sessionCheck = validate_admin_session($conn);
+
     if (!$sessionCheck['success']) {
         return $sessionCheck;
     }
+
     $sessionId = get_bearer_token_hash();
 
     if (empty($sessionId)) {
@@ -82,7 +159,7 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
     }
 
     $stmt = $conn->prepare("SELECT p.permission_level_id FROM admin_sessions s JOIN admin_users u ON s.user_id = u.id JOIN admin_users_permissions_linker p ON u.id = p.admin_user_id  WHERE s.id = ?");
-    
+
     if (!$stmt) {
         return [
             "success" => false,
@@ -129,7 +206,6 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
         }
     }
 
-
     return [
         "success" => true,
         "message" => "Permission granted",
@@ -138,26 +214,50 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
     ];
 }
 
-
 function issue_admin_session($conn, $userId, $fingerprintHash = null) {
-    $stmt = $conn->prepare("DELETE FROM admin_sessions WHERE user_id = ? AND last_seen < (NOW() - INTERVAL 12 HOUR)");
-    $stmt->bind_param("i", $userId);
+    $idleTtl     = (int)mfa_config('session_idle_ttl_seconds');
+    $absoluteTtl = (int)mfa_config('session_absolute_ttl_seconds');
+    $maxSessions = max(1, (int)mfa_config('session_max_per_user'));
+    $stmt = $conn->prepare(
+        "DELETE FROM admin_sessions
+         WHERE user_id = ?
+           AND (last_seen < (NOW() - INTERVAL ? SECOND)
+                OR created_at < (NOW() - INTERVAL ? SECOND))"
+    );
+    $stmt->bind_param("iii", $userId, $idleTtl, $absoluteTtl);
     $stmt->execute();
     $stmt->close();
 
     $stmt = $conn->prepare(
         "DELETE FROM admin_sessions WHERE user_id = ? AND id NOT IN (
-            SELECT id FROM (SELECT id FROM admin_sessions WHERE user_id = ? ORDER BY last_seen DESC LIMIT 4) keep
+            SELECT id FROM (SELECT id FROM admin_sessions WHERE user_id = ? ORDER BY last_seen DESC LIMIT ?) keep
         )"
     );
-    $stmt->bind_param("ii", $userId, $userId);
+    $stmt->bind_param("iii", $userId, $userId, $maxSessions);
     $stmt->execute();
     $stmt->close();
 
     $token     = bin2hex(random_bytes(32));
     $tokenHash = hash('sha256', $token);
-    $stmt = $conn->prepare("INSERT INTO admin_sessions (id, user_id, fingerprint_hash) VALUES (?, ?, ?)");
-    $stmt->bind_param("sis", $tokenHash, $userId, $fingerprintHash);
+    $publicId = bin2hex(random_bytes(16));
+
+    $bindingMode      = session_binding_mode_for_request();
+    $deviceSecret     = null;
+    $deviceSecretHash = null;
+
+    if ($bindingMode !== 'none') {
+        $deviceSecret     = bin2hex(random_bytes(32));
+        $deviceSecretHash = hash('sha256', $deviceSecret);
+    }
+
+    $userAgent = substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255);
+
+    $stmt = $conn->prepare(
+        "INSERT INTO admin_sessions
+            (id, public_id, user_id, fingerprint_hash, binding_mode, device_secret_hash, user_agent)
+         VALUES (?, ?, ?, ?, ?, ?, ?)"
+    );
+    $stmt->bind_param("ssissss", $tokenHash, $publicId, $userId, $fingerprintHash, $bindingMode, $deviceSecretHash, $userAgent);
     $stmt->execute();
     $stmt->close();
 
@@ -166,5 +266,83 @@ function issue_admin_session($conn, $userId, $fingerprintHash = null) {
     $stmt->execute();
     $stmt->close();
 
-    return $token;
+    if ($bindingMode === 'cookie') {
+        set_device_binding_cookie($deviceSecret);
+    }
+
+    return [
+        'token' => $token,
+        'deviceSecret' => $bindingMode === 'secret' ? $deviceSecret : null,
+        'bindingMode'  => $bindingMode,
+    ];
+}
+
+function describe_user_agent($userAgent) {
+    $ua = (string)$userAgent;
+
+    if ($ua === '') { return 'Unknown device'; }
+
+    $browser = 'Unknown browser';
+    foreach ([
+                 'Edg/'     => 'Edge',
+                 'OPR/'     => 'Opera',
+                 'Chrome/'  => 'Chrome',
+                 'Safari/'  => 'Safari',
+                 'Firefox/' => 'Firefox',
+             ] as $needle => $name) {
+        if (strpos($ua, $needle) !== false) { $browser = $name; break; }
+    }
+
+    $platform = 'Unknown OS';
+    foreach ([
+                 'Windows'  => 'Windows',
+                 'Android'  => 'Android',
+                 'iPhone'   => 'iPhone',
+                 'iPad'     => 'iPad',
+                 'Mac OS X' => 'macOS',
+                 'Linux'    => 'Linux',
+             ] as $needle => $name) {
+        if (strpos($ua, $needle) !== false) { $platform = $name; break; }
+    }
+
+    return $browser . ' on ' . $platform;
+}
+
+function list_admin_sessions($conn, $userId, $currentTokenHash) {
+    $idleTtl     = (int)mfa_config('session_idle_ttl_seconds');
+    $absoluteTtl = (int)mfa_config('session_absolute_ttl_seconds');
+
+    $stmt = $conn->prepare(
+        "SELECT id, public_id, user_agent, binding_mode,
+                DATE_FORMAT(created_at, '%b %e, %Y at %l:%i %p') AS created_label,
+                DATE_FORMAT(last_seen,  '%b %e, %Y at %l:%i %p') AS last_seen_label,
+                TIMESTAMPDIFF(SECOND, last_seen, NOW()) AS seconds_idle,
+                GREATEST(0, ? - TIMESTAMPDIFF(SECOND, created_at, NOW())) AS seconds_remaining
+         FROM admin_sessions
+         WHERE user_id = ?
+           AND last_seen >= (NOW() - INTERVAL ? SECOND)
+           AND created_at >= (NOW() - INTERVAL ? SECOND)
+         ORDER BY last_seen DESC"
+    );
+    $stmt->bind_param("iiii", $absoluteTtl, $userId, $idleTtl, $absoluteTtl);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+
+    $sessions = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $sessions[] = [
+            'publicId'         => $row['public_id'],
+            'device'           => describe_user_agent($row['user_agent']),
+            'createdAt'        => $row['created_label'],
+            'lastSeen'         => $row['last_seen_label'],
+            'secondsIdle'      => (int)$row['seconds_idle'],
+            'expiresInSeconds' => (int)$row['seconds_remaining'],
+            'bound'            => ($row['binding_mode'] ?? 'none') !== 'none',
+            'isCurrent'        => hash_equals((string)$row['id'], (string)$currentTokenHash),
+        ];
+    }
+
+    return $sessions;
 }
