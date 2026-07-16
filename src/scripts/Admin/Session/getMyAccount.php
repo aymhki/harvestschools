@@ -7,7 +7,12 @@ set_cors_headers();
 
 try {
     $conn = new mysqli($dbConfig['db_host'], $dbConfig['db_username'], $dbConfig['db_password'], $dbConfig['db_name']);
-    if ($conn->connect_error) { echo json_encode(["success" => false, "message" => "Database connection failed", "code" => 500]); exit; }
+
+    if ($conn->connect_error) {
+        echo json_encode(["success" => false, "message" => "Database connection failed", "code" => 500]);
+        exit;
+    }
+
     $conn->set_charset("utf8mb4");
 
     $sessionCheck = validate_admin_session($conn);
@@ -16,15 +21,33 @@ try {
 
     $stmt = $conn->prepare(
         "SELECT u.name, u.username, u.email, u.preferred_mfa,
-                (u.totp_secret IS NOT NULL) AS has_totp,
-                (SELECT COUNT(*) FROM admin_passkeys p WHERE p.user_id = u.id) AS passkey_count
+                (u.totp_secret IS NOT NULL) AS has_totp
          FROM admin_users u WHERE u.id = ?"
     );
-
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
     $stmt->close();
+
+    $passkeys = [];
+    $stmt = $conn->prepare(
+        "SELECT id, label, created_at, last_used
+         FROM admin_passkeys WHERE user_id = ?
+         ORDER BY created_at DESC"
+    );
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $pkResult = $stmt->get_result();
+    $stmt->close();
+
+    while ($pkRow = $pkResult->fetch_assoc()) {
+        $passkeys[] = [
+            "id"        => (int)$pkRow['id'],
+            "label"     => $pkRow['label'],
+            "createdAt" => $pkRow['created_at'],
+            "lastUsed"  => $pkRow['last_used'],
+        ];
+    }
 
     echo json_encode(["success" => true, "code" => 200, "account" => [
         "name"         => $row['name'],
@@ -32,15 +55,12 @@ try {
         "email"        => $row['email'],
         "preferredMfa" => $row['preferred_mfa'],
         "hasTotp"      => (bool)$row['has_totp'],
-        "passkeyCount" => (int)$row['passkey_count'],
+        "passkeyCount" => count($passkeys),
+        "passkeys"     => $passkeys,
     ]]);
 
 } catch (Exception $e) {
-    echo json_encode([
-        "success" => false, "message" => $e->getMessage(), "code" => 500
-    ]);
+    echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => 500]);
 } finally {
-    if (isset($conn)) {
-        $conn->close();
-    }
+    if (isset($conn)) { $conn->close(); }
 }

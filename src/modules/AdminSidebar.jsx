@@ -17,12 +17,16 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import ViewSidebarIcon from '@mui/icons-material/ViewSidebar';
+import SettingsIcon from '@mui/icons-material/Settings';
 import PropTypes from "prop-types";
 import {LinkOutlined} from "@mui/icons-material";
+import AdminSettingsModal from './AdminSettingsModal.jsx';
 
 function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned, onTogglePin}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const [settingsNotice, setSettingsNotice] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
     const {  i18n } = useTranslation();
@@ -75,6 +79,30 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
             setIsMobileOpen(false);
         }
     }, [location.pathname]);
+
+
+    useEffect(() => {
+        const promptPasskey = sessionStorage.getItem('hs_prompt_passkey') === '1';
+        const needsMfaSetup = sessionStorage.getItem('hs_needs_mfa_setup') === '1';
+
+        if (promptPasskey || needsMfaSetup) {
+            sessionStorage.removeItem('hs_prompt_passkey');
+            sessionStorage.removeItem('hs_needs_mfa_setup');
+            setSettingsNotice(promptPasskey ? 'passkey_prompt' : 'mfa_setup');
+            setShowSettingsModal(true);
+        }
+    }, []);
+
+    const openSettings = () => {
+        setSettingsNotice(null);
+        setShowSettingsModal(true);
+        setIsMobileOpen(false);
+    };
+
+    const closeSettings = () => {
+        setShowSettingsModal(false);
+        setSettingsNotice(null);
+    };
 
     return (
         <>
@@ -157,15 +185,22 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
                         </li>
 
                         {(adminPermissions.includes(jackOfAllTradesPermissionLevel)) && (<li>
-                                    <Link
-                                        to={ "https://alfajralbasem.com/" }
-                                        title={!isExpanded ? 'Corporate' : ''}
-                                    >
-                                        <span className="icon"><LinkOutlined /></span>
-                                        {showText && <span className="label">Corporate</span>}
-                                    </Link>
-                                </li>
+                                <Link
+                                    to={ "https://alfajralbasem.com/" }
+                                    title={!isExpanded ? 'Corporate' : ''}
+                                >
+                                    <span className="icon"><LinkOutlined /></span>
+                                    {showText && <span className="label">Corporate</span>}
+                                </Link>
+                            </li>
                         )}
+
+                        <li className="settings-btn" onClick={openSettings}>
+                            <div className="nav-item-content" title={!isExpanded ? 'Settings' : ''}>
+                                <span className="icon"><SettingsIcon /></span>
+                                {showText && <span className="label">Settings</span>}
+                            </div>
+                        </li>
 
                         <li className="logout-btn" onClick={() => {logoutCurrentAdmin(navigate)}}>
                             <div className="nav-item-content" title={!isExpanded ? 'Logout' : ''}>
@@ -184,6 +219,12 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
                     </ul>
                 </div>
             </aside>
+
+            <AdminSettingsModal
+                show={showSettingsModal}
+                notice={settingsNotice}
+                onClose={closeSettings}
+            />
         </>
     );
 }

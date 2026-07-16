@@ -186,6 +186,7 @@ const ENDPOINTS = {
     passkeyRegisterVerify: '/scripts/Admin/Session/passkeyRegisterVerify.php',
     passkeyLoginOptions: '/scripts/Admin/Session/passkeyLoginOptions.php',
     passkeyLoginVerify: '/scripts/Admin/Session/passkeyLoginVerify.php',
+    deletePasskey: '/scripts/Admin/Session/deletePasskey.php',
 };
 
 const BASE_URLS = {

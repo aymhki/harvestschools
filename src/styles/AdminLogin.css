@@ -58,6 +58,80 @@
     justify-content: center;
 }
 
+.admin-login-notice {
+    max-width: 80%;
+    text-align: center;
+    color: #c62828;
+    margin: 0.5rem 0;
+}
+
+.admin-login-mfa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    max-width: 90%;
+}
+
+.admin-login-mfa-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.admin-login-mfa-instructions {
+    text-align: center;
+    margin: 0;
+}
+
+.admin-login-mfa-code-input {
+    width: 10rem;
+    padding: 0.6rem;
+    font-size: 1.4rem;
+    text-align: center;
+    letter-spacing: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+}
+
+.admin-login-mfa-code-input:focus {
+    outline: 2px solid var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.admin-login-mfa-primary-button {
+    min-width: 12rem;
+}
+
+.admin-login-mfa-primary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.admin-login-mfa-secondary-button,
+.admin-login-mfa-alt-method-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.admin-login-mfa-secondary-button:disabled,
+.admin-login-mfa-alt-method-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.admin-login-mfa-error {
+    color: #c62828;
+    text-align: center;
+    margin: 0;
+}
+
 @media (max-width: 1600px) {
 
 }
@@ -107,5 +181,15 @@
     .admin-login-form-wrapper:hover {
         filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
-}
 
+    .admin-login-mfa-code-input {
+        border-color: rgba(255, 255, 255, 0.4);
+        background-color: transparent;
+        color: inherit;
+    }
+
+    .admin-login-mfa-error,
+    .admin-login-notice {
+        color: #ef9a9a;
+    }
+}
