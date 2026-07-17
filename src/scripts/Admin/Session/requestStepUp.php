@@ -39,6 +39,16 @@ try {
 
     $mfaInfo = get_available_mfa_methods($conn, $userId);
 
+    $removing = ['remove_email' => 'email', 'remove_totp' => 'totp', 'remove_passkey' => 'passkey'];
+
+    if (isset($removing[$action])) {
+        $mfaInfo['methods'] = array_values(array_diff($mfaInfo['methods'], [$removing[$action]]));
+
+        if (!in_array($mfaInfo['preferred'], $mfaInfo['methods'], true)) {
+            $mfaInfo['preferred'] = $mfaInfo['methods'][0] ?? null;
+        }
+    }
+
     if (empty($mfaInfo['methods'])) {
         echo json_encode([
             "success"          => false,

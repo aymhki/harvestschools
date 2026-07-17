@@ -44,13 +44,13 @@ const METHOD_BLURBS = {
     email: 'A code sent to your verified address.',
 };
 
-const STEP_UP_TITLES = {
-    update_profile: 'Confirm your account changes',
-    change_email: 'Confirm your new email',
-    remove_email: 'Confirm removing your email',
-    setup_totp: 'Confirm replacing your authenticator',
-    remove_totp: 'Confirm removing your authenticator',
-    remove_passkey: 'Confirm removing this passkey',
+const STEP_UP_ACTION_LABELS = {
+    update_profile: 'update your name, username or password',
+    change_email: 'change the email address on your account',
+    remove_email: 'remove the email address from your account',
+    setup_totp: 'replace your authenticator app',
+    remove_totp: 'remove your authenticator app',
+    remove_passkey: 'remove this passkey',
 };
 
 const bootstrapPasswordField = (id) => ({
@@ -205,6 +205,24 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         return () => clearInterval(timer);
     }, [resendIn]);
 
+    const stepUpEmailSentRef = useRef(false);
+
+    useEffect(() => {
+        if (!stepUp) { stepUpEmailSentRef.current = false; return; }
+        if (stepUpMethod !== 'email' || stepUpEmailSentRef.current) { return; }
+
+        stepUpEmailSentRef.current = true;
+
+        (async () => {
+            const result = await resendStepUpEmailCode(stepUp.token);
+            if (!isMountedRef.current) { return; }
+            if (typeof result?.retryAfter === 'number') { setStepUpResendIn(result.retryAfter); }
+            if (result && !result.success && result.code !== 429) {
+                flash(result.message || 'Could not send the code', true);
+            }
+        })();
+    }, [stepUp, stepUpMethod, flash]);
+
     useEffect(() => {
         if (stepUpResendIn <= 0) { return undefined; }
         const timer = setInterval(() => setStepUpResendIn((s) => (s <= 1 ? 0 : s - 1)), 1000);
@@ -225,18 +243,23 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         const result = await requestStepUp(action, payload);
 
         if (result && result.success) {
+
             setStepUp({
                 token: result.stepUpToken,
                 action: result.action,
                 methods: result.methods || [],
                 maskedEmail: result.maskedEmail,
             });
+
             setStepUpMethod(result.preferred);
             setStepUpResendIn(result.retryAfter || 0);
+            stepUpEmailSentRef.current = !!result.emailSent;
             return true;
         }
 
-        if (handleSessionExpired(result)) { return true; }
+        if (handleSessionExpired(result)) {
+            return true;
+        }
 
         throw new Error((result && result.message) || 'Could not start verification');
     };
@@ -634,20 +657,27 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
     );
 
     const renderStepUpCard = () => (
-        <div className={'admin-settings-card warning'}>
-            <h4>{STEP_UP_TITLES[stepUp.action] || 'Verify it\u2019s you'}</h4>
+        <div className={'admin-settings-card'}>
+            <h4>Verify it&apos;s you</h4>
+            <p>
+                To {STEP_UP_ACTION_LABELS[stepUp.action] || 'make this change'}, confirm your identity first.
+            </p>
 
             {stepUp.methods.length > 1 && (
-                <div className={'admin-settings-buttons-row'}>
+                <div className={'admin-settings-method-grid'}>
                     {stepUp.methods.map((m) => (
                         <button
                             key={m}
                             type={'button'}
                             className={m === stepUpMethod ? 'selected' : ''}
                             disabled={isBusy}
+                            aria-pressed={m === stepUpMethod}
                             onClick={() => setStepUpMethod(m)}
                         >
-                            {METHOD_LABELS[m]}
+                            <span className={'admin-settings-method-radio'} aria-hidden={'true'}/>
+                            <span className={'admin-settings-method-text'}>
+                                <span>{METHOD_LABELS[m]}</span>
+                            </span>
                         </button>
                     ))}
                 </div>
@@ -715,11 +745,14 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                                 aria-pressed={selected}
                                 onClick={() => handleSetPreferred(method)}
                             >
-                                <span>{isAuto ? 'Automatic' : METHOD_LABELS[method]}</span>
-                                <span className={'admin-settings-method-blurb'}>
-                                    {isAuto
-                                        ? 'Use the strongest method I have set up.'
-                                        : available ? METHOD_BLURBS[method] : 'Not set up yet'}
+                                <span className={'admin-settings-method-radio'} aria-hidden={'true'}/>
+                                <span className={'admin-settings-method-text'}>
+                                    <span>{isAuto ? 'Automatic' : METHOD_LABELS[method]}</span>
+                                    <span className={'admin-settings-method-blurb'}>
+                                        {isAuto
+                                            ? 'Use the strongest method I have set up.'
+                                            : available ? METHOD_BLURBS[method] : 'Not set up yet'}
+                                    </span>
                                 </span>
                             </button>
                         );
@@ -771,14 +804,14 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                         id: emailFieldId, type: 'email', name: 'email', label: 'Email',
                         displayLabel: 'New Email Address', httpName: 'email', required: true,
                         placeholder: 'name@harvestschools.com', errorMsg: 'Please enter a valid email address',
-                        value: account?.email || '', setValue: null, widthOfField: 1,
+                        defaultValue: account?.email || '', value: '', setValue: null, widthOfField: 1,
                         labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                     }]
                     : [{
                         id: emailFieldId, type: 'email', name: 'email', label: 'Email',
                         displayLabel: 'New Email Address', httpName: 'email', required: true,
                         placeholder: 'name@harvestschools.com', errorMsg: 'Please enter a valid email address',
-                        value: account?.email || '', setValue: null, widthOfField: 1,
+                        defaultValue: account?.email || '', value: '', setValue: null, widthOfField: 1,
                         labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                     }, bootstrapPasswordField(emailBootstrapPasswordFieldId)],
                 handleEmailSubmit,
@@ -849,12 +882,12 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             <p className={'admin-settings-hint'}>The strongest option. Nothing to type and nothing that can be phished.</p>
 
             {account?.passkeys && account.passkeys.length > 0 ? (
-                <ul className={'admin-settings-passkey-list'}>
+                <ul className={'admin-settings-list'}>
                     {account.passkeys.map((passkey) => (
-                        <li key={passkey.id} className={'admin-settings-passkey-row'}>
+                        <li key={passkey.id} className={'admin-settings-list-row'}>
                             <div className={'admin-settings-value'}>
                                 <div>{passkey.label || 'Passkey'}</div>
-                                <div className={'admin-settings-passkey-meta'}>
+                                <div className={'admin-settings-list-meta'}>
                                     Added {passkey.createdAt}
                                     {passkey.lastUsed ? `, last used ${passkey.lastUsed}` : ', never used'}
                                 </div>
@@ -908,12 +941,12 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             ) : sessions.length === 0 ? (
                 <p className={'admin-settings-hint'}>No other sessions.</p>
             ) : (
-                <ul className={'admin-settings-passkey-list'}>
+                <ul className={'admin-settings-list'}>
                     {sessions.map((session) => (
-                        <li key={session.publicId} className={'admin-settings-passkey-row'}>
+                        <li key={session.publicId} className={'admin-settings-list-row'}>
                             <div className={'admin-settings-value'}>
                                 <div>{session.device}{session.isCurrent && ' \u2014 this device'}</div>
-                                <div className={'admin-settings-passkey-meta'}>
+                                <div className={'admin-settings-list-meta'}>
                                     Signed in {session.createdAt}, last active {session.lastSeen}
                                     {`, ${formatRemaining(session.expiresInSeconds)}`}
                                     {!session.bound && ' \u2014 not device-bound'}
@@ -979,7 +1012,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                             {(isBusy || !account) && <Spinner/>}
 
                             {gateClosed && (
-                                <div className={'admin-settings-card warning'}>
+                                <div className={'admin-settings-card'}>
                                     <p className={'admin-settings-error'}>
                                         Your account is locked until you set up a login verification method. Add a
                                         verified email, an authenticator app, or a passkey below.
@@ -988,7 +1021,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                             )}
 
                             {!gateClosed && !hasAnyMethod && account && (
-                                <div className={'admin-settings-card warning'}>
+                                <div className={'admin-settings-card'}>
                                     <p className={'admin-settings-hint'}>
                                         {`You have ${Math.max(0, (account.graceAllowed || 0) - (account.graceUsed || 0))} login(s) left before your account is locked until a verification method is set up.`}
                                     </p>
@@ -1019,7 +1052,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                             {account && !stepUp && activeTab === PROFILE_TAB && !gateClosed && (
                                 <div className={'admin-settings-section'}>
                                     {!hasAnyMethod && (
-                                        <div className={'admin-settings-card warning'}>
+                                        <div className={'admin-settings-card'}>
                                             <p className={'admin-settings-hint'}>
                                                 Set up a verification method before changing your name, username or
                                                 password. Changes are confirmed with that method, not your password.
@@ -1031,14 +1064,14 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                                             id: nameFieldId, type: 'text', name: 'name', label: 'Name',
                                             displayLabel: 'Name', httpName: 'name', required: true,
                                             placeholder: 'Name', errorMsg: 'Please enter name',
-                                            value: account.name || '', setValue: null, widthOfField: 2,
+                                            defaultValue: account.name || '', value: '', setValue: null, widthOfField: 2,
                                             labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                                         },
                                         {
                                             id: usernameFieldId, type: 'text', name: 'username', label: 'Username',
                                             displayLabel: 'Username', httpName: 'username', required: true,
                                             placeholder: 'Username', errorMsg: 'Please enter username',
-                                            value: account.username || '', setValue: null, widthOfField: 2,
+                                            defaultValue: account.username || '', value: '', setValue: null, widthOfField: 2,
                                             labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                                         },
                                         {

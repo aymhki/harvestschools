@@ -29,12 +29,8 @@ const fetchMyAccount = async () => {
     return authedPost(endpoints.getMyAccount);
 };
 
-const updateMyAccount = async (payload) => {
-    return authedPost(endpoints.updateMyAccount, payload);
-};
-
 const dismissPasskeyPrompt = async () => {
-    return authedPost(endpoints.updateMyAccount, { action: 'dismiss_passkey_prompt' });
+    return authedPost(endpoints.dismissPasskeyPrompt);
 };
 
 const resendEmailVerification = async () => {
@@ -164,7 +160,6 @@ const registerPasskey = async (label) => {
 
 export {
     fetchMyAccount,
-    updateMyAccount,
     dismissPasskeyPrompt,
     requestEmailChange,
     resendEmailVerification,

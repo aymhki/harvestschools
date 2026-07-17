@@ -1,6 +1,9 @@
 .admin-settings-modal-container {
     --as-surface: var(--fb-white-color);
     --as-ink: var(--primary-color);
+    --as-line: var(--primary-color);
+    --as-tint: var(--fb-off-white-color);
+    --as-gap: 1rem;
 
     display: flex;
     flex-direction: column;
@@ -9,45 +12,26 @@
 }
 
 
-.admin-settings-modal-container button {
-    padding: 0.4rem 0.75rem;
-    margin: 0.3rem 0.4rem 0.3rem 0;
-    font-size: 0.85rem;
-    letter-spacing: 0.05rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 0.2rem var(--primary-color);
+.admin-settings-modal-container button:not(.toggle-password-visibility) {
+    margin: 0.6rem 0.75rem 0.6rem 0;
 }
 
-.admin-settings-modal-container button:disabled {
+.admin-settings-modal-container button:not(.toggle-password-visibility):disabled {
     opacity: 0.45;
     cursor: not-allowed;
     filter: none;
 }
 
-
-.admin-settings-modal-container button.selected,
-.admin-settings-modal-container button.active {
-    background-color: var(--secondary-color);
-    color: var(--fb-white-color);
-    box-shadow: 0 0 0.2rem var(--secondary-color);
-}
-
-.admin-settings-modal-container button.selected:hover,
-.admin-settings-modal-container button.active:hover {
-    background-color: var(--secondary-color);
-    color: var(--fb-white-color);
-}
-
 .admin-settings-modal-container button.danger {
     color: var(--secondary-color);
-    box-shadow: 0 0 0.2rem var(--secondary-color);
+    box-shadow: 0 0 0.5rem var(--secondary-color);
 }
 
 .admin-settings-modal-header {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.4rem;
+    gap: 0.75rem;
 }
 
 .admin-settings-tabs {
@@ -55,48 +39,82 @@
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
+    gap: 0.5rem;
+    border-bottom: 0.1rem solid var(--as-line);
 }
 
+.admin-settings-tabs button {
+    margin: 0 !important;
+    padding: 0.6rem 1.2rem;
+    background: none;
+    box-shadow: none;
+    filter: none;
+    border: none;
+    border-bottom: 0.3rem solid transparent;
+    border-radius: 0;
+    color: var(--as-ink);
+    font-family: var(--english-title-font);
+    font-size: 1rem;
+    opacity: 0.6;
+}
+
+.admin-settings-tabs button:hover:not(:disabled) {
+    background: none;
+    color: var(--as-ink);
+    opacity: 1;
+    filter: none;
+}
+
+.admin-settings-tabs button.active {
+    border-bottom-color: var(--as-line);
+    opacity: 1;
+}
 
 .admin-settings-modal-content {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 0.75rem;
+    padding: 1rem;
     text-align: start;
 }
 
 .admin-settings-section {
     display: flex;
     flex-direction: column;
-    gap: var(--ff-gap);
-    margin: 0.5rem 0;
+    gap: var(--as-gap);
+    margin: 0.75rem 0;
 }
 
 .admin-settings-card {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    border: var(--ff-border-width) solid var(--as-ink);
+    gap: 0.75rem;
+    border: 0.1rem solid var(--as-line);
     border-radius: var(--ff-radius);
-    padding: 0.9rem;
+    padding: 1.25rem;
     min-width: 0;
 }
 
-.admin-settings-card.warning {
+.admin-settings-card.danger-zone {
     border-color: var(--secondary-color);
 }
 
-.admin-settings-card h4,
+.admin-settings-card h4 {
+    margin: 0 0 0.25rem 0;
+    color: var(--as-ink);
+    font-family: var(--english-title-font);
+}
+
 .admin-settings-card p {
     margin: 0;
     color: var(--as-ink);
+    line-height: 1.6;
 }
 
 .admin-settings-hint {
-    font-size: 0.85rem;
-    opacity: 0.8;
+    font-size: 0.9rem;
+    opacity: 0.75;
 }
 
 .admin-settings-value-row {
@@ -104,20 +122,21 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     min-width: 0;
 }
 
 .admin-settings-value {
     word-break: break-word;
     min-width: 0;
+    line-height: 1.6;
 }
 
 .admin-settings-badge {
-    border: var(--ff-border-width) solid currentColor;
+    border: 0.1rem solid currentColor;
     border-radius: var(--ff-radius);
-    padding: 0.1rem 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
     white-space: nowrap;
     color: var(--success-color);
 }
@@ -132,89 +151,137 @@
     flex-wrap: wrap;
     align-items: center;
     min-width: 0;
+    margin: -0.6rem -0.75rem -0.6rem 0;
 }
-
 
 .admin-settings-method-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.4rem;
+    gap: 0.75rem;
     min-width: 0;
-    margin-top: 0.2rem;
+    margin-top: 0.25rem;
 }
 
 .admin-settings-method-grid button {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
-    gap: 0.15rem;
+    gap: 0.75rem;
     width: 100%;
     min-width: 0;
-    margin: 0;
+    margin: 0 !important;
+    padding: 0.9rem 1rem;
     text-align: start;
     white-space: normal;
     overflow-wrap: anywhere;
+    background-color: var(--as-surface);
+    color: var(--as-ink);
+    box-shadow: none;
+    border: 0.1rem solid var(--as-line);
+    font-size: 0.95rem;
+}
+
+.admin-settings-method-grid button:hover:not(:disabled) {
+    background-color: var(--as-tint);
+    color: var(--as-ink);
+    filter: none;
+}
+
+.admin-settings-method-grid button.selected {
+    background-color: var(--as-tint);
+    border-width: 0.2rem;
+}
+
+.admin-settings-method-radio {
+    flex: 0 0 auto;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.15rem;
+    border: 0.15rem solid currentColor;
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+.admin-settings-method-grid button.selected .admin-settings-method-radio {
+    opacity: 1;
+    box-shadow: inset 0 0 0 0.2rem var(--as-surface), inset 0 0 0 1rem currentColor;
+}
+
+.admin-settings-method-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
 }
 
 .admin-settings-method-blurb {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-weight: 400;
     letter-spacing: normal;
-    opacity: 0.85;
+    opacity: 0.75;
+    line-height: 1.5;
 }
 
-.admin-settings-passkey-list {
+.admin-settings-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
-.admin-settings-passkey-row {
+.admin-settings-list-row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    border-bottom: var(--ff-border-width) solid var(--as-ink);
-    padding: 0.4rem 0;
+    gap: 1rem;
+    border-bottom: 0.1rem solid var(--as-line);
+    padding: 0.75rem 0;
     min-width: 0;
 }
 
-.admin-settings-passkey-row:last-child {
+.admin-settings-list-row:last-child {
     border-bottom: none;
 }
 
-.admin-settings-passkey-meta {
-    font-size: 0.75rem;
-    opacity: 0.8;
+.admin-settings-list-meta {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    line-height: 1.5;
+    margin-top: 0.25rem;
 }
 
 .admin-settings-totp-qr {
-    width: 11rem;
-    height: 11rem;
+    width: 12rem;
+    height: 12rem;
     max-width: 100%;
     align-self: center;
     background-color: var(--fb-white-color);
     border-radius: var(--ff-radius);
-    padding: 0.4rem;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
     box-sizing: border-box;
 }
 
 .admin-settings-totp-secret code {
     word-break: break-all;
     user-select: all;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    background-color: var(--as-tint);
 }
 
-.admin-settings-status {
-    color: var(--success-color);
-    margin: 0.4rem 0;
-}
-
+.admin-settings-status,
 .admin-settings-error {
-    color: var(--secondary-color);
-    margin: 0.4rem 0;
+    margin: 0.75rem 0;
+    line-height: 1.6;
 }
+
+.admin-settings-status { color: var(--success-color); }
+.admin-settings-error  { color: var(--secondary-color); }
 
 .admin-settings-modal-footer {
     display: flex;
@@ -222,31 +289,65 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 0.25rem;
     width: 100%;
     height: auto;
+    padding-top: 0.5rem;
 }
 
 @media (max-width: 768px) {
-    .admin-settings-method-grid {
-        grid-template-columns: 1fr;
-    }
+    .admin-settings-method-grid { grid-template-columns: 1fr; }
+    .admin-settings-modal-content { padding: 0.75rem; }
+    .admin-settings-tabs button { flex: 1; padding: 0.6rem 0.5rem; }
 }
 
 @media (prefers-color-scheme: dark) {
     .admin-settings-modal-container {
         --as-surface: var(--light-dark-accent-color);
         --as-ink: var(--fb-white-color);
+        --as-line: var(--fb-white-color);
+        --as-tint: var(--dark-accent-color);
 
         background-color: var(--as-surface);
     }
 
-    .admin-settings-modal-container button:hover {
-        filter: drop-shadow(0 0 0.4rem var(--fb-white-color));
+    .admin-settings-modal-container button:not(.toggle-password-visibility) {
+        background-color: transparent;
+        color: var(--fb-white-color);
+        box-shadow: 0 0 0.3rem var(--fb-white-color);
     }
 
-    .admin-settings-modal-container button.selected:hover,
-    .admin-settings-modal-container button.active:hover {
+    .admin-settings-modal-container button:not(.toggle-password-visibility):hover:not(:disabled) {
+        background-color: var(--fb-white-color);
+        color: var(--light-dark-accent-color);
+        filter: none;
+    }
+
+    .admin-settings-modal-container button.danger {
+        color: var(--secondary-color);
+        box-shadow: 0 0 0.3rem var(--secondary-color);
+    }
+
+    .admin-settings-modal-container button.danger:hover:not(:disabled) {
         background-color: var(--secondary-color);
         color: var(--fb-white-color);
+    }
+
+    .admin-settings-tabs button,
+    .admin-settings-tabs button:hover:not(:disabled) {
+        background: none;
+        box-shadow: none;
+        color: var(--fb-white-color);
+    }
+
+    .admin-settings-method-grid button,
+    .admin-settings-method-grid button:hover:not(:disabled) {
+        box-shadow: none;
+        color: var(--fb-white-color);
+    }
+
+    .admin-settings-method-grid button:hover:not(:disabled),
+    .admin-settings-method-grid button.selected {
+        background-color: var(--dark-accent-color);
     }
 }

@@ -138,13 +138,13 @@ try {
 
     if ($updatePassword) {
         $hashedPassword = password_hash($editAdminPassword, PASSWORD_DEFAULT);
-        $sql = "UPDATE admin_users SET username = ?, name = ?, email = ?, password_hash = ? WHERE id = ?";
+        $sql = "UPDATE admin_users SET username = ?, name = ?, email = ?, email_verified_at = IF(? = '', NULL, NOW()), pending_email = NULL, password_hash = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $editUsername, $editAdminName, $editAdminEmail, $hashedPassword, $adminId);
+        $stmt->bind_param("sssssi", $editUsername, $editAdminName, $editAdminEmail, $editAdminEmail, $hashedPassword, $adminId);
     } else {
-        $sql = "UPDATE admin_users SET username = ?, name = ?, email = ? WHERE id = ?";
+        $sql = "UPDATE admin_users SET username = ?, name = ?, email = ?, email_verified_at = IF(? = '', NULL, NOW()), pending_email = NULL WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $editUsername, $editAdminName, $editAdminEmail, $adminId);
+        $stmt->bind_param("ssssi", $editUsername, $editAdminName, $editAdminEmail, $editAdminEmail, $adminId);
     }
 
     $stmt->execute();

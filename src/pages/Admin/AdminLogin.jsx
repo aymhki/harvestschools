@@ -340,42 +340,45 @@ function AdminLogin() {
         };
     }, []);
 
-    const renderMfaButtonsRow = () => {
-        const others = (mfaState.methods || []).filter((m) => m !== mfaMethod);
+    const renderMfaPicker = () => {
+        if (!mfaState || mfaState.methods.length <= 1) { return null; }
 
         return (
-            <div className={'admin-login-mfa-buttons-row'}>
-                {mfaMethod === 'email' && (
-                    <button
-                        type={'button'}
-                        disabled={submittingLocal || resendIn > 0}
-                        onClick={() => sendEmailCode(mfaState.mfaToken)}
-                    >
-                        {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
-                    </button>
-                )}
-
-                {others.map((m) => (
+            <div className={'admin-login-mfa-picker'}>
+                <p className={'admin-login-mfa-picker-label'}>Verify with</p>
+                {mfaState.methods.map((m) => (
                     <button
                         key={m}
                         type={'button'}
+                        className={m === mfaMethod ? 'current' : ''}
                         disabled={submittingLocal}
+                        aria-pressed={m === mfaMethod}
                         onClick={() => switchMfaMethod(m)}
                     >
+                        <span className={'admin-login-mfa-picker-radio'} aria-hidden={'true'}/>
                         {METHOD_SWITCH_LABELS[m]}
                     </button>
                 ))}
-
-                <button
-                    type={'button'}
-                    disabled={submittingLocal}
-                    onClick={() => exitMfaToFullForm(null)}
-                >
-                    Back to login
-                </button>
             </div>
         );
     };
+
+    const renderMfaActions = () => (
+        <div className={'admin-login-mfa-actions'}>
+            {mfaMethod === 'email' && (
+                <button
+                    type={'button'}
+                    disabled={submittingLocal || resendIn > 0}
+                    onClick={() => sendEmailCode(mfaState.mfaToken)}
+                >
+                    {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
+                </button>
+            )}
+            <button type={'button'} disabled={submittingLocal} onClick={() => exitMfaToFullForm(null)}>
+                Back to login
+            </button>
+        </div>
+    );
 
     const renderMfaScreen = () => (
         <div className={'admin-login-mfa'}>
@@ -444,7 +447,8 @@ function AdminLogin() {
             {mfaStatus && <p className={'admin-login-mfa-status'} role={'status'}>{mfaStatus}</p>}
             {mfaError && <p className={'admin-login-mfa-error'} role={'alert'}>{mfaError}</p>}
 
-            {renderMfaButtonsRow()}
+            {renderMfaPicker()}
+            {renderMfaActions()}
         </div>
     );
 
