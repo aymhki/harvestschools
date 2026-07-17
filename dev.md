@@ -67,3 +67,4 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Use AES encrypt for all admin sessions.
 - [ ] Look into MFA  for admin logins.
 - [ ] Improve the sessions table to include fingerprinting.
+- [ ] Arabic captcha width and padding looks off.

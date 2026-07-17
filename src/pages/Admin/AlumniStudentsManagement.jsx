@@ -17,7 +17,7 @@ function AlumniStudentsManagement() {
         headToAdminLoginOnInvalidSession(navigate, alumniStudentsManagementPermissionLevel, setIsLoading)
             .then(
                 () => {
-                    //TODO: Fetch data here
+                    // TODO: Fetch data here
                 }
             )
     }, []);

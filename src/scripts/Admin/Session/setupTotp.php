@@ -2,6 +2,7 @@
 require_once '../../headers.php';
 require_once '../../authHelpers.php';
 require_once '../../mfaHelpers.php';
+require_once '../../accountActions.php';
 set_cors_headers();
 
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
@@ -32,67 +33,20 @@ try {
     $sessionCheck = validate_admin_session($conn, ['allow_during_mfa_setup' => true]);
     if (!$sessionCheck['success']) { echo json_encode($sessionCheck); exit; }
     $userId = $sessionCheck['user_id'];
+    $mfaInfo = get_available_mfa_methods($conn, $userId);
 
-    $stmt = $conn->prepare("SELECT username, password_hash, totp_secret FROM admin_users WHERE id = ?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-
-    if ($result->num_rows === 0) {
-        echo json_encode(["success" => false, "message" => "User not found", "code" => 404]);
+    if (!empty($mfaInfo['methods'])) {
+        echo json_encode([
+            "success"        => false,
+            "message"        => "Verifying your identity is required to replace your authenticator app.",
+            "stepUpRequired" => true,
+            "stepUpAction"   => "setup_totp",
+            "code"           => 403
+        ]);
         exit;
     }
 
-    $row = $result->fetch_assoc();
-
-    if (!empty($row['totp_secret'])) {
-        $data            = json_decode(file_get_contents('php://input'), true);
-        $currentPassword = is_array($data) ? (string)($data['current_password'] ?? '') : '';
-        $storedHash      = (string)$row['password_hash'];
-
-        $passwordOk = $storedHash !== '' && (
-                password_verify($currentPassword, $storedHash) ||
-                hash_equals($storedHash, hash('sha256', $currentPassword))
-            );
-
-        if (!$passwordOk) {
-            echo json_encode([
-                "success"         => false,
-                "message"         => "Enter your current password to replace the authenticator app already on this account",
-                "requiresPassword" => true,
-                "code"            => 401
-            ]);
-            exit;
-        }
-    }
-
-    $secret = base32_encode_bytes(random_bytes(20));
-    $stmt = $conn->prepare(
-        "UPDATE admin_users SET totp_secret_pending = ?, totp_secret_pending_at = NOW() WHERE id = ?"
-    );
-    $stmt->bind_param("si", $secret, $userId);
-    $stmt->execute();
-    $stmt->close();
-
-    $issuer = rawurlencode('Harvest Schools Admin');
-    $label  = $issuer . ':' . rawurlencode($row['username']);
-
-    $uri = "otpauth://totp/{$label}"
-        . "?secret={$secret}"
-        . "&issuer={$issuer}"
-        . "&algorithm=SHA1"
-        . "&digits=6"
-        . "&period=30";
-
-    echo json_encode([
-        "success"       => true,
-        "code"          => 200,
-        "secret"        => $secret,
-        "otpauthUri"    => $uri,
-        "expiresIn"     => (int)mfa_config('totp_pending_ttl_seconds'),
-        "isReplacement" => !empty($row['totp_secret']),
-    ]);
+    echo json_encode(start_totp_enrolment($conn, $userId));
 
 } catch (Exception $e) {
     echo json_encode([

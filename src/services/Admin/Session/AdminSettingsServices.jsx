@@ -1,6 +1,6 @@
 import {endpoints, buildAuthHeaders} from "../../General/GeneralUtils.jsx";
 import {validateAdminSessionLocally} from "./MainAdminServices.jsx";
-import {decodeCreateArgs, bufToB64} from "../../General/PasskeyUtils.jsx";
+import {decodeCreateArgs, decodeGetArgs, bufToB64} from "../../General/PasskeyUtils.jsx";
 
 const authedPost = async (endpoint, body = null) => {
     const sessionId = await validateAdminSessionLocally();
@@ -53,8 +53,8 @@ const setPreferredMfa = async (method) => {
     return authedPost(endpoints.setPreferredMfa, { method });
 };
 
-const startTotpSetup = async (currentPassword = '') => {
-    return authedPost(endpoints.setupTotp, { current_password: currentPassword });
+const startTotpSetup = async () => {
+    return authedPost(endpoints.setupTotp);
 };
 
 const confirmTotpSetup = async (code) => {
@@ -65,12 +65,56 @@ const cancelTotpSetup = async () => {
     return authedPost(endpoints.confirmTotp, { action: 'cancel' });
 };
 
-const removeTotp = async (currentPassword) => {
-    return authedPost(endpoints.deleteTotp, { current_password: currentPassword });
+const requestStepUp = async (action, payload = {}) => {
+    return authedPost(endpoints.requestStepUp, { action, payload });
+};
+
+const resendStepUpEmailCode = async (stepUpToken) => {
+    return authedPost(endpoints.requestStepUpEmailCode, { step_up_token: stepUpToken });
+};
+
+const verifyStepUpCode = async (stepUpToken, method, code) => {
+    return authedPost(endpoints.verifyStepUp, { step_up_token: stepUpToken, method, code });
+};
+
+const verifyStepUpPasskey = async (stepUpToken) => {
+    try {
+        const optionsResult = await authedPost(endpoints.stepUpPasskeyOptions, { step_up_token: stepUpToken });
+
+        if (!optionsResult || !optionsResult.success || !optionsResult.options) {
+            return optionsResult || { success: false, message: 'Could not start passkey verification' };
+        }
+
+        const assertion = await navigator.credentials.get(decodeGetArgs(optionsResult.options));
+
+        if (!assertion) {
+            return { success: false, message: 'Passkey prompt was cancelled', cancelled: true };
+        }
+
+        return await authedPost(endpoints.verifyStepUp, {
+            step_up_token: stepUpToken,
+            method: 'passkey',
+            id: bufToB64(assertion.rawId),
+            clientDataJSON: bufToB64(assertion.response.clientDataJSON),
+            authenticatorData: bufToB64(assertion.response.authenticatorData),
+            signature: bufToB64(assertion.response.signature),
+        });
+    } catch (error) {
+        if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+            return { success: false, message: 'Passkey prompt was cancelled', cancelled: true };
+        }
+
+        return { success: false, message: error.message };
+    }
 };
 
 const removePasskey = async (passkeyId) => {
-    return authedPost(endpoints.deletePasskey, { passkey_id: passkeyId });
+    return requestStepUp('remove_passkey', { passkey_id: passkeyId });
+};
+
+
+const requestEmailChange = async (email, currentPassword = '') => {
+    return authedPost(endpoints.requestEmailChange, { email, current_password: currentPassword });
 };
 
 const listSessions = async () => {
@@ -122,6 +166,7 @@ export {
     fetchMyAccount,
     updateMyAccount,
     dismissPasskeyPrompt,
+    requestEmailChange,
     resendEmailVerification,
     confirmEmailChange,
     cancelEmailChange,
@@ -129,7 +174,10 @@ export {
     startTotpSetup,
     confirmTotpSetup,
     cancelTotpSetup,
-    removeTotp,
+    requestStepUp,
+    resendStepUpEmailCode,
+    verifyStepUpCode,
+    verifyStepUpPasskey,
     registerPasskey,
     removePasskey,
     listSessions,

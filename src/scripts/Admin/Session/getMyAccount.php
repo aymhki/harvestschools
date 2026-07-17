@@ -29,12 +29,12 @@ try {
 
     $conn->set_charset("utf8mb4");
 
-    $sessionCheck = validate_admin_session($conn);
+    $sessionCheck = validate_admin_session($conn, ['allow_during_mfa_setup' => true]);
     if (!$sessionCheck['success']) { echo json_encode($sessionCheck); exit; }
     $userId = $sessionCheck['user_id'];
 
     $stmt = $conn->prepare(
-        "SELECT name, username, email, email_verified_at, pending_email, preferred_mfa,
+        "SELECT name, username, email, email_verified_at, pending_email, preferred_mfa, logins_without_mfa,
                 (totp_secret IS NOT NULL AND totp_secret <> '') AS has_totp,
                 (totp_secret_pending IS NOT NULL AND totp_secret_pending <> ''
                  AND totp_secret_pending_at > (NOW() - INTERVAL ? SECOND)) AS totp_pending
@@ -102,6 +102,9 @@ try {
         "passkeys"         => $passkeys,
         "verifySendState"  => $verifySendState,
         "mfaMode"          => mfa_config('mfa_mode'),
+        "graceUsed"        => (int)$row['logins_without_mfa'],
+        "graceAllowed"     => (int)mfa_config('mfa_setup_grace_logins'),
+        "gateClosed"       => empty($mfaInfo['methods']) && (int)$row['logins_without_mfa'] >= (int)mfa_config('mfa_setup_grace_logins'),
     ]]);
 
 } catch (Exception $e) {

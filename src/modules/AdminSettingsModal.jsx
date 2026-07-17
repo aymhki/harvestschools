@@ -9,8 +9,8 @@ import Form from './Form.jsx';
 import Spinner from './Spinner.jsx';
 import {
     fetchMyAccount,
-    updateMyAccount,
     dismissPasskeyPrompt,
+    requestEmailChange,
     resendEmailVerification,
     confirmEmailChange,
     cancelEmailChange,
@@ -18,7 +18,10 @@ import {
     startTotpSetup,
     confirmTotpSetup,
     cancelTotpSetup,
-    removeTotp,
+    requestStepUp,
+    resendStepUpEmailCode,
+    verifyStepUpCode,
+    verifyStepUpPasskey,
     registerPasskey,
     removePasskey,
     listSessions,
@@ -29,6 +32,63 @@ import {passkeySupported} from '../services/General/PasskeyUtils.jsx';
 import {isMobileApp} from '../services/Admin/Session/MainAdminServices.jsx';
 import {adminLoginPageUrl, msgTimeout} from '../services/General/GeneralUtils.jsx';
 
+const METHOD_LABELS = {
+    passkey: 'Passkey',
+    totp: 'Authenticator app',
+    email: 'Email code',
+};
+
+const METHOD_BLURBS = {
+    passkey: 'Fingerprint, face or device PIN.',
+    totp: 'A rotating code from an authenticator app.',
+    email: 'A code sent to your verified address.',
+};
+
+const STEP_UP_TITLES = {
+    update_profile: 'Confirm your account changes',
+    change_email: 'Confirm your new email',
+    remove_email: 'Confirm removing your email',
+    setup_totp: 'Confirm replacing your authenticator',
+    remove_totp: 'Confirm removing your authenticator',
+    remove_passkey: 'Confirm removing this passkey',
+};
+
+const bootstrapPasswordField = (id) => ({
+    id,
+    type: 'password',
+    name: 'current-password',
+    label: 'Current Password',
+    displayLabel: 'Current Password',
+    httpName: 'current-password',
+    required: true,
+    placeholder: 'Current Password',
+    errorMsg: 'Please enter your current password',
+    value: '',
+    setValue: null,
+    widthOfField: 1,
+    labelOutside: true,
+    labelOnTop: true,
+    dontLetTheBrowserSaveField: true,
+});
+
+const codeField = (id, displayLabel) => ({
+    id,
+    type: 'text',
+    name: 'code',
+    label: 'Verification Code',
+    displayLabel,
+    httpName: 'one-time-code',
+    required: true,
+    placeholder: '000000',
+    errorMsg: 'Enter the 6-digit code',
+    regex: '^[0-9]{6}$',
+    value: '',
+    setValue: null,
+    widthOfField: 1,
+    labelOutside: true,
+    labelOnTop: true,
+    dontLetTheBrowserSaveField: true,
+});
 
 function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) {
     const navigate = useNavigate();
@@ -46,66 +106,18 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
     const [resendIn, setResendIn] = useState(0);
 
     const [totpSetup, setTotpSetup] = useState(null);
-    const [totpPanel, setTotpPanel] = useState(null);
-
     const [sessions, setSessions] = useState(null);
 
-    const [resetProfileForm, setResetProfileForm] = useState(false);
+    const [stepUp, setStepUp] = useState(null);
+    const [stepUpMethod, setStepUpMethod] = useState(null);
+    const [stepUpResendIn, setStepUpResendIn] = useState(0);
+
     const profileFooterRef = useRef(null);
     const [, forceFooterRender] = useState(0);
     const statusTimerRef = useRef(null);
     const isMountedRef = useRef(true);
 
     const canUsePasskeys = passkeySupported() && !isMobileApp();
-
-    const METHOD_LABELS = {
-        passkey: 'Passkey',
-        totp: 'Authenticator app',
-        email: 'Email code',
-    };
-
-    const METHOD_BLURBS = {
-        passkey: 'Fingerprint, face or device PIN.',
-        totp: 'A rotating code from an authenticator app.',
-        email: 'A code sent to your verified address.',
-    };
-
-    const passwordField = (id, displayLabel = 'Current Password') => ({
-        id,
-        type: 'password',
-        name: 'current-password',
-        label: 'Current Password',
-        displayLabel,
-        httpName: 'current-password',
-        required: true,
-        placeholder: 'Current Password',
-        errorMsg: 'Please enter your current password',
-        value: '',
-        setValue: null,
-        widthOfField: 1,
-        labelOutside: true,
-        labelOnTop: true,
-        dontLetTheBrowserSaveField: true,
-    });
-
-    const codeField = (id, displayLabel) => ({
-        id,
-        type: 'text',
-        name: 'code',
-        label: 'Verification Code',
-        displayLabel,
-        httpName: 'one-time-code',
-        required: true,
-        placeholder: '000000',
-        errorMsg: 'Enter the 6-digit code',
-        regex: '^[0-9]{6}$',
-        value: '',
-        setValue: null,
-        widthOfField: 1,
-        labelOutside: true,
-        labelOnTop: true,
-        dontLetTheBrowserSaveField: true,
-    });
 
     const animateSettingsModal = useSpring({
         opacity: show ? 1 : 0,
@@ -145,12 +157,8 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
 
     const loadSessions = useCallback(async () => {
         const result = await listSessions();
-
         if (!isMountedRef.current) { return; }
-
-        if (result && result.success) {
-            setSessions(result.sessions || []);
-        }
+        if (result && result.success) { setSessions(result.sessions || []); }
     }, []);
 
     const loadAccount = useCallback(async () => {
@@ -160,10 +168,12 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
 
         if (result && result.success && result.account) {
             setAccount(result.account);
+
             if (result.account.pendingEmail) {
                 setResendIn(result.account.verifySendState?.retryAfter ?? 0);
             }
-            await loadSessions();
+
+            if (!result.account.gateClosed) { await loadSessions(); }
         } else if (!handleSessionExpired(result)) {
             flash((result && result.message) || 'Could not load account details', true);
         }
@@ -173,38 +183,153 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         if (!show) { return; }
 
         setAccount(null);
-        setActiveTab(notice === 'mfa_setup' || notice === 'passkey_prompt' ? SECURITY_TAB : PROFILE_TAB);
         setTotpSetup(null);
-        setTotpPanel(null);
         setEmailPanel(null);
         setSessions(null);
+        setStepUp(null);
+        setStepUpMethod(null);
         setStatusMsg(null);
         setErrorMsg(null);
+        setActiveTab(notice === 'mfa_setup' || notice === 'passkey_prompt' ? SECURITY_TAB : PROFILE_TAB);
         loadAccount();
     }, [show, notice, loadAccount]);
 
+
+    useEffect(() => {
+        if (account?.gateClosed) { setActiveTab(SECURITY_TAB); }
+    }, [account?.gateClosed]);
+
     useEffect(() => {
         if (resendIn <= 0) { return undefined; }
-
-        const timer = setInterval(() => {
-            setResendIn((seconds) => (seconds <= 1 ? 0 : seconds - 1));
-        }, 1000);
-
+        const timer = setInterval(() => setResendIn((s) => (s <= 1 ? 0 : s - 1)), 1000);
         return () => clearInterval(timer);
     }, [resendIn]);
 
-    const runOrThrow = async (result, fallback) => {
-        if (result && result.success) { return result; }
-        if (handleSessionExpired(result)) { return null; }
-        throw new Error((result && result.message) || fallback);
+    useEffect(() => {
+        if (stepUpResendIn <= 0) { return undefined; }
+        const timer = setInterval(() => setStepUpResendIn((s) => (s <= 1 ? 0 : s - 1)), 1000);
+        return () => clearInterval(timer);
+    }, [stepUpResendIn]);
+
+    const availableMethods = account?.availableMethods || [];
+    const hasAnyMethod = availableMethods.length > 0;
+    const pendingEmail = account?.pendingEmail;
+    const gateClosed = !!account?.gateClosed;
+
+    const refreshAll = async () => {
+        await loadAccount();
+        if (setRefreshCurrentUserData) { setRefreshCurrentUserData(true); }
     };
 
+    const beginStepUp = async (action, payload = {}) => {
+        const result = await requestStepUp(action, payload);
 
-    const currentPasswordFieldId = 1;
-    const nameFieldId = 2;
-    const usernameFieldId = 3;
-    const newPasswordFieldId = 5;
-    const confirmNewPasswordFieldId = 6;
+        if (result && result.success) {
+            setStepUp({
+                token: result.stepUpToken,
+                action: result.action,
+                methods: result.methods || [],
+                maskedEmail: result.maskedEmail,
+            });
+            setStepUpMethod(result.preferred);
+            setStepUpResendIn(result.retryAfter || 0);
+            return true;
+        }
+
+        if (handleSessionExpired(result)) { return true; }
+
+        throw new Error((result && result.message) || 'Could not start verification');
+    };
+
+    const applyStepUpResult = async (result) => {
+        if (result.action === 'setup_totp' && result.otpauthUri) {
+            const qrDataUrl = await QRCode.toDataURL(result.otpauthUri, { width: 220, margin: 1 });
+            setTotpSetup({ secret: result.secret, qrDataUrl, isReplacement: !!result.isReplacement });
+        }
+
+        setStepUp(null);
+        setStepUpMethod(null);
+        setEmailPanel(null);
+        flash(result.message || 'Done.');
+        await refreshAll();
+    };
+
+    const handleStepUpSubmit = async (formData) => {
+        const values = Object.fromEntries(formData.entries());
+        const result = await verifyStepUpCode(stepUp.token, stepUpMethod, values[`field_${stepUpCodeFieldId}`]);
+
+        if (result && result.success) {
+            await applyStepUpResult(result);
+            return true;
+        }
+
+        if (handleSessionExpired(result)) { return true; }
+
+        if (result && (result.code === 429 || result.code === 401) && /expired|Start again/i.test(result.message || '')) {
+            setStepUp(null);
+            setStepUpMethod(null);
+            throw new Error(result.message);
+        }
+
+        const left = typeof result?.attemptsLeft === 'number' && result.attemptsLeft > 0
+            ? ` ${result.attemptsLeft} ${result.attemptsLeft === 1 ? 'try' : 'tries'} left.`
+            : '';
+
+        throw new Error(((result && result.message) || 'Verification failed') + left);
+    };
+
+    const handleStepUpPasskey = async () => {
+        setIsBusy(true);
+
+        try {
+            const result = await verifyStepUpPasskey(stepUp.token);
+
+            if (result && result.success) {
+                await applyStepUpResult(result);
+            } else if (result && !result.cancelled && !handleSessionExpired(result)) {
+                flash(result.message || 'Passkey verification failed', true);
+            }
+        } finally {
+            setIsBusy(false);
+        }
+    };
+
+    const handleStepUpResend = async () => {
+        if (stepUpResendIn > 0) { return; }
+
+        setIsBusy(true);
+
+        try {
+            const result = await resendStepUpEmailCode(stepUp.token);
+            if (typeof result?.retryAfter === 'number') { setStepUpResendIn(result.retryAfter); }
+
+            if (result && result.success) {
+                flash('Code sent.');
+            } else if (!handleSessionExpired(result)) {
+                flash((result && result.message) || 'Could not send the code', true);
+            }
+        } finally {
+            setIsBusy(false);
+        }
+    };
+
+    const cancelStepUp = () => {
+        setStepUp(null);
+        setStepUpMethod(null);
+        setStepUpResendIn(0);
+    };
+
+    const nameFieldId = 1;
+    const usernameFieldId = 2;
+    const newPasswordFieldId = 3;
+    const confirmNewPasswordFieldId = 4;
+    const emailFieldId = 10;
+    const emailBootstrapPasswordFieldId = 11;
+    const emailCodeFieldId = 13;
+    const passkeyLabelFieldId = 20;
+    const totpCodeFieldId = 30;
+    const stepUpCodeFieldId = 40;
+
 
     const handleProfileSubmit = async (formData) => {
         const values = Object.fromEntries(formData.entries());
@@ -214,76 +339,48 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             throw new Error('New passwords do not match');
         }
 
-        const result = await updateMyAccount({
-            current_password: values[`field_${currentPasswordFieldId}`],
+        return beginStepUp('update_profile', {
             name: values[`field_${nameFieldId}`],
             username: values[`field_${usernameFieldId}`],
             new_password: newPassword,
         });
-
-        const ok = await runOrThrow(result, 'Could not update account');
-
-        if (!ok) {
-            return true;
-        }
-
-        flash(ok.message || 'Account updated.');
-        setRefreshCurrentUserData(true);
-        setResetProfileForm(true);
-        await loadAccount();
-        return true;
     };
 
-    const emailFieldId = 10;
-    const emailPasswordFieldId = 11;
-    const emailRemovePasswordFieldId = 12;
-    const emailCodeFieldId = 13;
 
     const handleEmailSubmit = async (formData) => {
         const values = Object.fromEntries(formData.entries());
+        const email = (values[`field_${emailFieldId}`] || '').trim();
 
-        const result = await updateMyAccount({
-            current_password: values[`field_${emailPasswordFieldId}`],
-            email: (values[`field_${emailFieldId}`] || '').trim(),
-        });
+        if (hasAnyMethod) { return beginStepUp('change_email', { email }); }
 
-        const ok = await runOrThrow(result, 'Could not update your email');
-        if (!ok) { return true; }
+        const result = await requestEmailChange(email, values[`field_${emailBootstrapPasswordFieldId}`]);
 
-        setEmailPanel(null);
-        setResendIn(ok.retryAfter || 0);
-        flash(ok.verificationMessage || ok.message || 'Saved.');
-        await loadAccount();
-        return true;
-    };
+        if (result && result.success) {
+            setEmailPanel(null);
+            setResendIn(result.retryAfter || 0);
+            flash(result.message || 'Check your inbox for the code.');
+            await refreshAll();
+            return true;
+        }
 
-    const handleEmailRemoveSubmit = async (formData) => {
-        const values = Object.fromEntries(formData.entries());
+        if (handleSessionExpired(result)) { return true; }
 
-        const result = await updateMyAccount({
-            current_password: values[`field_${emailRemovePasswordFieldId}`],
-            email: '',
-        });
-
-        const ok = await runOrThrow(result, 'Could not remove your email');
-        if (!ok) { return true; }
-
-        setEmailPanel(null);
-        flash(ok.message || 'Email removed.');
-        await loadAccount();
-        return true;
+        throw new Error((result && result.message) || 'Could not update your email');
     };
 
     const handleVerifyEmailSubmit = async (formData) => {
         const values = Object.fromEntries(formData.entries());
         const result = await confirmEmailChange(values[`field_${emailCodeFieldId}`]);
 
-        const ok = await runOrThrow(result, 'That code did not work');
-        if (!ok) { return true; }
+        if (result && result.success) {
+            flash(result.message || 'Email verified.');
+            await refreshAll();
+            return true;
+        }
 
-        flash(ok.message || 'Email verified.');
-        await loadAccount();
-        return true;
+        if (handleSessionExpired(result)) { return true; }
+
+        throw new Error((result && result.message) || 'That code did not work');
     };
 
     const handleResendVerification = async () => {
@@ -293,7 +390,6 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
 
         try {
             const result = await resendEmailVerification();
-
             if (typeof result?.retryAfter === 'number') { setResendIn(result.retryAfter); }
 
             if (result && result.success) {
@@ -315,10 +411,24 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             if (result && result.success) {
                 setResendIn(0);
                 flash('Email change cancelled.');
-                await loadAccount();
+                await refreshAll();
             } else if (!handleSessionExpired(result)) {
                 flash((result && result.message) || 'Could not cancel', true);
             }
+        } finally {
+            setIsBusy(false);
+        }
+    };
+
+    const handleRemoveEmail = async () => {
+        if (!window.confirm('Remove your email address?')) { return; }
+
+        setIsBusy(true);
+
+        try {
+            await beginStepUp('remove_email');
+        } catch (error) {
+            flash(error.message, true);
         } finally {
             setIsBusy(false);
         }
@@ -343,20 +453,21 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         }
     };
 
-    const passkeyLabelFieldId = 20;
-
     const handleAddPasskeySubmit = async (formData) => {
         const values = Object.fromEntries(formData.entries());
         const result = await registerPasskey((values[`field_${passkeyLabelFieldId}`] || '').trim());
 
-        if (result && result.cancelled) { return true; }
+        if (result && result.cancelled) { return false; }
 
-        const ok = await runOrThrow(result, 'Could not add passkey');
-        if (!ok) { return true; }
+        if (result && result.success) {
+            flash('Passkey added.');
+            await refreshAll();
+            return true;
+        }
 
-        flash('Passkey added.');
-        await loadAccount();
-        return true;
+        if (handleSessionExpired(result)) { return true; }
+
+        throw new Error((result && result.message) || 'Could not add passkey');
     };
 
     const handleRemovePasskey = async (passkeyId, label) => {
@@ -365,66 +476,52 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         setIsBusy(true);
 
         try {
-            const result = await removePasskey(passkeyId);
-
-            if (result && result.success) {
-                flash('Passkey removed.');
-                await loadAccount();
-            } else if (!handleSessionExpired(result)) {
-                flash((result && result.message) || 'Could not remove passkey', true);
-            }
+            await beginStepUp('remove_passkey', { passkey_id: passkeyId });
+        } catch (error) {
+            flash(error.message, true);
         } finally {
             setIsBusy(false);
         }
     };
 
-    const totpCodeFieldId = 30;
-    const totpReplacePasswordFieldId = 31;
-    const totpRemovePasswordFieldId = 32;
-
-    const beginTotpSetup = async (password = '') => {
+    const handleStartTotp = async () => {
         setIsBusy(true);
 
         try {
-            const result = await startTotpSetup(password);
+            if (hasAnyMethod) {
+                await beginStepUp('setup_totp');
+                return;
+            }
+
+            const result = await startTotpSetup();
 
             if (result && result.success && result.otpauthUri) {
                 const qrDataUrl = await QRCode.toDataURL(result.otpauthUri, { width: 220, margin: 1 });
                 setTotpSetup({ secret: result.secret, qrDataUrl, isReplacement: !!result.isReplacement });
-                setTotpPanel(null);
-                return true;
+            } else if (!handleSessionExpired(result)) {
+                flash((result && result.message) || 'Could not start authenticator setup', true);
             }
-
-            if (result && result.requiresPassword) {
-                setTotpPanel('replace');
-                if (password) { throw new Error(result.message || 'Current password is incorrect'); }
-                return true;
-            }
-
-            if (handleSessionExpired(result)) { return true; }
-
-            throw new Error((result && result.message) || 'Could not start authenticator setup');
+        } catch (error) {
+            flash(error.message, true);
         } finally {
             setIsBusy(false);
         }
-    };
-
-    const handleTotpReplaceSubmit = async (formData) => {
-        const values = Object.fromEntries(formData.entries());
-        return beginTotpSetup(values[`field_${totpReplacePasswordFieldId}`]);
     };
 
     const handleConfirmTotpSubmit = async (formData) => {
         const values = Object.fromEntries(formData.entries());
         const result = await confirmTotpSetup(values[`field_${totpCodeFieldId}`]);
 
-        const ok = await runOrThrow(result, 'Incorrect code');
-        if (!ok) { return true; }
+        if (result && result.success) {
+            setTotpSetup(null);
+            flash('Authenticator app enabled.');
+            await refreshAll();
+            return true;
+        }
 
-        setTotpSetup(null);
-        flash('Authenticator app enabled.');
-        await loadAccount();
-        return true;
+        if (handleSessionExpired(result)) { return true; }
+
+        throw new Error((result && result.message) || 'Incorrect code');
     };
 
     const handleCancelTotpSetup = async () => {
@@ -439,17 +536,18 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         }
     };
 
-    const handleRemoveTotpSubmit = async (formData) => {
-        const values = Object.fromEntries(formData.entries());
-        const result = await removeTotp(values[`field_${totpRemovePasswordFieldId}`]);
+    const handleRemoveTotp = async () => {
+        if (!window.confirm('Remove your authenticator app?')) { return; }
 
-        const ok = await runOrThrow(result, 'Could not remove the authenticator app');
-        if (!ok) { return true; }
+        setIsBusy(true);
 
-        setTotpPanel(null);
-        flash('Authenticator app removed.');
-        await loadAccount();
-        return true;
+        try {
+            await beginStepUp('remove_totp');
+        } catch (error) {
+            flash(error.message, true);
+        } finally {
+            setIsBusy(false);
+        }
     };
 
     const handleDismissPasskeyPrompt = async () => {
@@ -463,257 +561,8 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         }
     };
 
-    const availableMethods = account?.availableMethods || [];
-    const pendingEmail = account?.pendingEmail;
-
-    const miniForm = (key, fields, onSubmit, submitText) => (
-        <Form key={key}
-              fields={fields}
-              mailTo={''}
-              formTitle={`Admin Settings ${key}`}
-              captchaLength={1}
-              noInputFieldsCache={true}
-              noCaptcha={true}
-              noClearOption={true}
-              centerSubmitButton={true}
-              fullMarginField={true}
-              forceEnglishForm={true}
-              hasSetSubmittingLocal={true}
-              setSubmittingLocal={setIsBusy}
-              hasDifferentOnSubmitBehaviour={true}
-              differentOnSubmitBehaviour={onSubmit}
-              hasDifferentSubmitButtonText={true}
-              differentSubmitButtonText={submitText}
-        />
-    );
-
-    const renderMethodCard = () => (
-        <div className={'admin-settings-card'}>
-            <h4>Preferred method</h4>
-            <p className={'admin-settings-hint'}>
-                Offered first when you log in. You can always pick another method on the login screen.
-            </p>
-
-            {availableMethods.length === 0 ? (
-                <p className={'admin-settings-hint'}>
-                    Nothing set up yet. Verify an email, add a passkey, or set up an authenticator app below.
-                </p>
-            ) : (
-                <div className={'admin-settings-method-grid'}>
-                    {['passkey', 'totp', 'email', 'auto'].map((method) => {
-                        const isAuto = method === 'auto';
-                        const available = isAuto || availableMethods.includes(method);
-                        const selected = isAuto ? !account?.preferredMfa : account?.preferredMfa === method;
-
-                        return (
-                            <button
-                                key={method}
-                                type={'button'}
-                                className={selected ? 'selected' : ''}
-                                disabled={isBusy || !available}
-                                aria-pressed={selected}
-                                onClick={() => handleSetPreferred(method)}
-                            >
-                                <span>{isAuto ? 'Automatic' : METHOD_LABELS[method]}</span>
-                                <span className={'admin-settings-method-blurb'}>
-                                    {isAuto
-                                        ? 'Use the strongest method I have set up.'
-                                        : available ? METHOD_BLURBS[method] : 'Not set up yet'}
-                                </span>
-                            </button>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
-    );
-
-    const renderEmailCard = () => (
-        <div className={'admin-settings-card'}>
-            <h4>Email</h4>
-            <p className={'admin-settings-hint'}>
-                Must be an @harvestschools.com or @alfajralbasem.com address. Login codes are only ever sent
-                to an address you have confirmed.
-            </p>
-
-            {account?.email ? (
-                <div className={'admin-settings-value-row'}>
-                    <span className={'admin-settings-value'}>{account.email}</span>
-                    <span className={`admin-settings-badge${account.emailVerified ? '' : ' unverified'}`}>
-                        {account.emailVerified ? 'Verified' : 'Not verified'}
-                    </span>
-                </div>
-            ) : (
-                <p className={'admin-settings-hint'}>No email address on this account yet.</p>
-            )}
-
-            {pendingEmail && (
-                <>
-                    <p>Confirm <strong>{pendingEmail}</strong></p>
-                    <p className={'admin-settings-hint'}>
-                        Any code we sent you recently still works. Resending does not cancel the earlier ones.
-                    </p>
-                    {miniForm(
-                        'verify-email',
-                        [codeField(emailCodeFieldId, 'Verification Code')],
-                        handleVerifyEmailSubmit,
-                        ['Verify', 'Verifying...']
-                    )}
-                    <div className={'admin-settings-buttons-row'}>
-                        <button type={'button'} disabled={isBusy || resendIn > 0} onClick={handleResendVerification}>
-                            {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
-                        </button>
-                        <button type={'button'} disabled={isBusy} onClick={handleCancelEmailChange}>
-                            Cancel change
-                        </button>
-                    </div>
-                </>
-            )}
-
-            {!pendingEmail && emailPanel === 'edit' && miniForm(
-                'edit-email',
-                [
-                    {
-                        id: emailFieldId,
-                        type: 'email',
-                        name: 'email',
-                        label: 'Email',
-                        displayLabel: 'New Email Address',
-                        httpName: 'email',
-                        required: true,
-                        placeholder: 'name@harvestschools.com',
-                        errorMsg: 'Please enter a valid email address',
-                        value: account?.email || '',
-                        setValue: null,
-                        widthOfField: 1,
-                        labelOutside: true,
-                        labelOnTop: true,
-                        dontLetTheBrowserSaveField: true,
-                    },
-                    passwordField(emailPasswordFieldId),
-                ],
-                handleEmailSubmit,
-                ['Send verification code', 'Sending...']
-            )}
-
-            {!pendingEmail && emailPanel === 'remove' && miniForm(
-                'remove-email',
-                [passwordField(emailRemovePasswordFieldId, 'Current Password (to remove your email)')],
-                handleEmailRemoveSubmit,
-                ['Remove email', 'Removing...']
-            )}
-
-            {!pendingEmail && (
-                <div className={'admin-settings-buttons-row'}>
-                    <button
-                        type={'button'}
-                        disabled={isBusy}
-                        onClick={() => setEmailPanel(emailPanel === 'edit' ? null : 'edit')}
-                    >
-                        {emailPanel === 'edit' ? 'Cancel' : account?.email ? 'Change email' : 'Add email'}
-                    </button>
-                    {account?.email && (
-                        <button
-                            type={'button'}
-                            disabled={isBusy}
-                            onClick={() => setEmailPanel(emailPanel === 'remove' ? null : 'remove')}
-                        >
-                            {emailPanel === 'remove' ? 'Cancel' : 'Remove email'}
-                        </button>
-                    )}
-                </div>
-            )}
-        </div>
-    );
-
-    const renderTotpCard = () => (
-        <div className={'admin-settings-card'}>
-            <h4>Authenticator app</h4>
-            <p className={'admin-settings-hint'}>
-                Works offline and does not depend on email delivery.
-            </p>
-
-            {totpSetup ? (
-                <>
-                    <p className={'admin-settings-hint'}>
-                        Scan this with your authenticator app, then enter the 6-digit code it shows.
-                        {totpSetup.isReplacement && ' Your old authenticator stops working once this is confirmed.'}
-                    </p>
-                    <img
-                        className={'admin-settings-totp-qr'}
-                        src={totpSetup.qrDataUrl}
-                        alt={'Authenticator app setup QR code'}
-                    />
-                    <p className={'admin-settings-hint admin-settings-totp-secret'}>
-                        Can&apos;t scan? Enter this key manually: <code>{totpSetup.secret}</code>
-                    </p>
-                    {miniForm(
-                        'confirm-totp',
-                        [codeField(totpCodeFieldId, 'Code From Your App')],
-                        handleConfirmTotpSubmit,
-                        ['Confirm', 'Confirming...']
-                    )}
-                    <div className={'admin-settings-buttons-row'}>
-                        <button type={'button'} disabled={isBusy} onClick={handleCancelTotpSetup}>
-                            Cancel setup
-                        </button>
-                    </div>
-                </>
-            ) : account?.hasTotp ? (
-                <>
-                    <div className={'admin-settings-value-row'}>
-                        <span className={'admin-settings-value'}>Authenticator app</span>
-                        <span className={'admin-settings-badge'}>Enabled</span>
-                    </div>
-
-                    {totpPanel === 'replace' && miniForm(
-                        'replace-totp',
-                        [passwordField(totpReplacePasswordFieldId, 'Current Password (to replace your authenticator)')],
-                        handleTotpReplaceSubmit,
-                        ['Continue', 'Checking...']
-                    )}
-
-                    {totpPanel === 'remove' && miniForm(
-                        'remove-totp',
-                        [passwordField(totpRemovePasswordFieldId, 'Current Password (to remove your authenticator)')],
-                        handleRemoveTotpSubmit,
-                        ['Remove authenticator', 'Removing...']
-                    )}
-
-                    <div className={'admin-settings-buttons-row'}>
-                        <button
-                            type={'button'}
-                            disabled={isBusy}
-                            onClick={() => setTotpPanel(totpPanel === 'replace' ? null : 'replace')}
-                        >
-                            {totpPanel === 'replace' ? 'Cancel' : 'Replace'}
-                        </button>
-                        <button
-                            type={'button'}
-                            disabled={isBusy}
-                            onClick={() => setTotpPanel(totpPanel === 'remove' ? null : 'remove')}
-                        >
-                            {totpPanel === 'remove' ? 'Cancel' : 'Remove'}
-                        </button>
-                    </div>
-                </>
-            ) : (
-                <div className={'admin-settings-buttons-row'}>
-                    <button type={'button'} disabled={isBusy} onClick={() => beginTotpSetup()}>
-                        Set up authenticator app
-                    </button>
-                </div>
-            )}
-        </div>
-    );
-
-
     const handleRevokeSession = async (publicId, device, isCurrent) => {
-        const prompt = isCurrent
-            ? 'Sign out of this device?'
-            : `Sign out of ${device}?`;
-
-        if (!window.confirm(prompt)) { return; }
+        if (!window.confirm(isCurrent ? 'Sign out of this device?' : `Sign out of ${device}?`)) { return; }
 
         setIsBusy(true);
 
@@ -762,12 +611,296 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         return `expires in ${hours} hour${hours === 1 ? '' : 's'}`;
     };
 
+    const miniForm = (key, fields, onSubmit, submitText) => (
+        <Form key={key}
+              fields={fields}
+              mailTo={''}
+              formTitle={`Admin Settings ${key}`}
+              captchaLength={1}
+              noInputFieldsCache={true}
+              noCaptcha={true}
+              noClearOption={true}
+              centerSubmitButton={true}
+              fullMarginField={true}
+              forceEnglishForm={true}
+              noSuccessMessage={true}
+              hasSetSubmittingLocal={true}
+              setSubmittingLocal={setIsBusy}
+              hasDifferentOnSubmitBehaviour={true}
+              differentOnSubmitBehaviour={onSubmit}
+              hasDifferentSubmitButtonText={true}
+              differentSubmitButtonText={submitText}
+        />
+    );
+
+    const renderStepUpCard = () => (
+        <div className={'admin-settings-card warning'}>
+            <h4>{STEP_UP_TITLES[stepUp.action] || 'Verify it\u2019s you'}</h4>
+
+            {stepUp.methods.length > 1 && (
+                <div className={'admin-settings-buttons-row'}>
+                    {stepUp.methods.map((m) => (
+                        <button
+                            key={m}
+                            type={'button'}
+                            className={m === stepUpMethod ? 'selected' : ''}
+                            disabled={isBusy}
+                            onClick={() => setStepUpMethod(m)}
+                        >
+                            {METHOD_LABELS[m]}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {stepUpMethod === 'passkey' ? (
+                <div className={'admin-settings-buttons-row'}>
+                    <button type={'button'} disabled={isBusy} onClick={handleStepUpPasskey}>
+                        Verify with your passkey
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <p className={'admin-settings-hint'}>
+                        {stepUpMethod === 'email'
+                            ? `Enter the code sent to ${stepUp.maskedEmail}`
+                            : 'Enter the 6-digit code from your authenticator app'}
+                    </p>
+                    {miniForm(
+                        `step-up-${stepUpMethod}`,
+                        [codeField(stepUpCodeFieldId, 'Verification Code')],
+                        handleStepUpSubmit,
+                        ['Verify', 'Verifying...']
+                    )}
+                    {stepUpMethod === 'email' && (
+                        <div className={'admin-settings-buttons-row'}>
+                            <button type={'button'} disabled={isBusy || stepUpResendIn > 0} onClick={handleStepUpResend}>
+                                {stepUpResendIn > 0 ? `Resend in ${stepUpResendIn}s` : 'Resend code'}
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+
+            <div className={'admin-settings-buttons-row'}>
+                <button type={'button'} disabled={isBusy} onClick={cancelStepUp}>Cancel</button>
+            </div>
+        </div>
+    );
+
+    const renderMethodCard = () => (
+        <div className={'admin-settings-card'}>
+            <h4>Preferred method</h4>
+            <p className={'admin-settings-hint'}>
+                Offered first when you log in, and used to confirm account changes.
+            </p>
+
+            {!hasAnyMethod ? (
+                <p className={'admin-settings-hint'}>
+                    Nothing set up yet. Verify an email, add a passkey, or set up an authenticator app below.
+                </p>
+            ) : (
+                <div className={'admin-settings-method-grid'}>
+                    {['passkey', 'totp', 'email', 'auto'].map((method) => {
+                        const isAuto = method === 'auto';
+                        const available = isAuto || availableMethods.includes(method);
+                        const selected = isAuto ? !account?.preferredMfa : account?.preferredMfa === method;
+
+                        return (
+                            <button
+                                key={method}
+                                type={'button'}
+                                className={selected ? 'selected' : ''}
+                                disabled={isBusy || !available}
+                                aria-pressed={selected}
+                                onClick={() => handleSetPreferred(method)}
+                            >
+                                <span>{isAuto ? 'Automatic' : METHOD_LABELS[method]}</span>
+                                <span className={'admin-settings-method-blurb'}>
+                                    {isAuto
+                                        ? 'Use the strongest method I have set up.'
+                                        : available ? METHOD_BLURBS[method] : 'Not set up yet'}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+
+    const renderEmailCard = () => (
+        <div className={'admin-settings-card'}>
+            <h4>Email</h4>
+            <p className={'admin-settings-hint'}>
+                Must be an @harvestschools.com or @alfajralbasem.com address. Codes are only sent to an
+                address you have confirmed.
+            </p>
+
+            {account?.email ? (
+                <div className={'admin-settings-value-row'}>
+                    <span className={'admin-settings-value'}>{account.email}</span>
+                    <span className={`admin-settings-badge${account.emailVerified ? '' : ' unverified'}`}>
+                        {account.emailVerified ? 'Verified' : 'Not verified'}
+                    </span>
+                </div>
+            ) : (
+                <p className={'admin-settings-hint'}>No email address on this account yet.</p>
+            )}
+
+            {pendingEmail && (
+                <>
+                    <p>Confirm <strong>{pendingEmail}</strong></p>
+                    <p className={'admin-settings-hint'}>
+                        Any code sent recently still works. Resending does not cancel the earlier ones.
+                    </p>
+                    {miniForm('verify-email', [codeField(emailCodeFieldId, 'Verification Code')], handleVerifyEmailSubmit, ['Verify', 'Verifying...'])}
+                    <div className={'admin-settings-buttons-row'}>
+                        <button type={'button'} disabled={isBusy || resendIn > 0} onClick={handleResendVerification}>
+                            {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
+                        </button>
+                        <button type={'button'} disabled={isBusy} onClick={handleCancelEmailChange}>Cancel change</button>
+                    </div>
+                </>
+            )}
+
+            {!pendingEmail && emailPanel === 'edit' && miniForm(
+                'edit-email',
+                hasAnyMethod
+                    ? [{
+                        id: emailFieldId, type: 'email', name: 'email', label: 'Email',
+                        displayLabel: 'New Email Address', httpName: 'email', required: true,
+                        placeholder: 'name@harvestschools.com', errorMsg: 'Please enter a valid email address',
+                        value: account?.email || '', setValue: null, widthOfField: 1,
+                        labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                    }]
+                    : [{
+                        id: emailFieldId, type: 'email', name: 'email', label: 'Email',
+                        displayLabel: 'New Email Address', httpName: 'email', required: true,
+                        placeholder: 'name@harvestschools.com', errorMsg: 'Please enter a valid email address',
+                        value: account?.email || '', setValue: null, widthOfField: 1,
+                        labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                    }, bootstrapPasswordField(emailBootstrapPasswordFieldId)],
+                handleEmailSubmit,
+                [hasAnyMethod ? 'Continue' : 'Send verification code', 'Sending...']
+            )}
+
+            {!pendingEmail && (
+                <div className={'admin-settings-buttons-row'}>
+                    <button
+                        type={'button'}
+                        disabled={isBusy}
+                        onClick={() => setEmailPanel(emailPanel === 'edit' ? null : 'edit')}
+                    >
+                        {emailPanel === 'edit' ? 'Cancel' : account?.email ? 'Change email' : 'Add email'}
+                    </button>
+                    {account?.email && (
+                        <button type={'button'} className={'danger'} disabled={isBusy} onClick={handleRemoveEmail}>
+                            Remove email
+                        </button>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+
+    const renderTotpCard = () => (
+        <div className={'admin-settings-card'}>
+            <h4>Authenticator app</h4>
+            <p className={'admin-settings-hint'}>Works offline and does not depend on email delivery.</p>
+
+            {totpSetup ? (
+                <>
+                    <p className={'admin-settings-hint'}>
+                        Scan this with your authenticator app, then enter the 6-digit code it shows.
+                        {totpSetup.isReplacement && ' Your old authenticator stops working once this is confirmed.'}
+                    </p>
+                    <img className={'admin-settings-totp-qr'} src={totpSetup.qrDataUrl} alt={'Authenticator app setup QR code'}/>
+                    <p className={'admin-settings-hint admin-settings-totp-secret'}>
+                        Can&apos;t scan? Enter this key manually: <code>{totpSetup.secret}</code>
+                    </p>
+                    {miniForm('confirm-totp', [codeField(totpCodeFieldId, 'Code From Your App')], handleConfirmTotpSubmit, ['Confirm', 'Confirming...'])}
+                    <div className={'admin-settings-buttons-row'}>
+                        <button type={'button'} disabled={isBusy} onClick={handleCancelTotpSetup}>Cancel setup</button>
+                    </div>
+                </>
+            ) : account?.hasTotp ? (
+                <>
+                    <div className={'admin-settings-value-row'}>
+                        <span className={'admin-settings-value'}>Authenticator app</span>
+                        <span className={'admin-settings-badge'}>Enabled</span>
+                    </div>
+                    <div className={'admin-settings-buttons-row'}>
+                        <button type={'button'} disabled={isBusy} onClick={handleStartTotp}>Replace</button>
+                        <button type={'button'} className={'danger'} disabled={isBusy} onClick={handleRemoveTotp}>Remove</button>
+                    </div>
+                </>
+            ) : (
+                <div className={'admin-settings-buttons-row'}>
+                    <button type={'button'} disabled={isBusy} onClick={handleStartTotp}>Set up authenticator app</button>
+                </div>
+            )}
+        </div>
+    );
+
+    const renderPasskeyCard = () => (
+        <div className={'admin-settings-card'}>
+            <h4>Passkeys</h4>
+            <p className={'admin-settings-hint'}>The strongest option. Nothing to type and nothing that can be phished.</p>
+
+            {account?.passkeys && account.passkeys.length > 0 ? (
+                <ul className={'admin-settings-passkey-list'}>
+                    {account.passkeys.map((passkey) => (
+                        <li key={passkey.id} className={'admin-settings-passkey-row'}>
+                            <div className={'admin-settings-value'}>
+                                <div>{passkey.label || 'Passkey'}</div>
+                                <div className={'admin-settings-passkey-meta'}>
+                                    Added {passkey.createdAt}
+                                    {passkey.lastUsed ? `, last used ${passkey.lastUsed}` : ', never used'}
+                                </div>
+                            </div>
+                            <button
+                                type={'button'}
+                                className={'danger'}
+                                disabled={isBusy}
+                                onClick={() => handleRemovePasskey(passkey.id, passkey.label)}
+                            >
+                                Remove
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p className={'admin-settings-hint'}>No passkeys yet.</p>
+            )}
+
+            {canUsePasskeys ? miniForm(
+                'add-passkey',
+                [{
+                    id: passkeyLabelFieldId, type: 'text', name: 'passkey-label', label: 'Passkey Label',
+                    displayLabel: 'Device Name (optional)', httpName: 'passkey-label', required: false,
+                    placeholder: 'e.g. Work Laptop', errorMsg: 'Please enter a device name',
+                    value: '', setValue: null, widthOfField: 1,
+                    labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                }],
+                handleAddPasskeySubmit,
+                ['Add a passkey', 'Waiting for your device...']
+            ) : (
+                <p className={'admin-settings-hint'}>
+                    {isMobileApp()
+                        ? 'Passkeys are managed from a web browser. This app already supports biometric sign-in on this device.'
+                        : 'This browser does not support passkeys.'}
+                </p>
+            )}
+        </div>
+    );
+
     const renderSessionsCard = () => (
         <div className={'admin-settings-card'}>
             <h4>Active sessions</h4>
             <p className={'admin-settings-hint'}>
-                Every device currently signed in to your account. If you do not recognise one, sign it out
-                and then change your password.
+                Every device signed in to your account. If you do not recognise one, sign it out and change
+                your password.
             </p>
 
             {sessions === null ? (
@@ -779,18 +912,16 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                     {sessions.map((session) => (
                         <li key={session.publicId} className={'admin-settings-passkey-row'}>
                             <div className={'admin-settings-value'}>
-                                <div>
-                                    {session.device}
-                                    {session.isCurrent && ' — this device'}
-                                </div>
+                                <div>{session.device}{session.isCurrent && ' \u2014 this device'}</div>
                                 <div className={'admin-settings-passkey-meta'}>
                                     Signed in {session.createdAt}, last active {session.lastSeen}
                                     {`, ${formatRemaining(session.expiresInSeconds)}`}
-                                    {!session.bound && ' — not device-bound'}
+                                    {!session.bound && ' \u2014 not device-bound'}
                                 </div>
                             </div>
                             <button
                                 type={'button'}
+                                className={'danger'}
                                 disabled={isBusy}
                                 onClick={() => handleRevokeSession(session.publicId, session.device, session.isCurrent)}
                             >
@@ -811,69 +942,6 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         </div>
     );
 
-    const renderPasskeyCard = () => (
-        <div className={'admin-settings-card'}>
-            <h4>Passkeys</h4>
-            <p className={'admin-settings-hint'}>
-                The strongest option. Nothing to type and nothing that can be phished.
-            </p>
-
-            {account?.passkeys && account.passkeys.length > 0 ? (
-                <ul className={'admin-settings-passkey-list'}>
-                    {account.passkeys.map((passkey) => (
-                        <li key={passkey.id} className={'admin-settings-passkey-row'}>
-                            <div className={'admin-settings-value'}>
-                                <div>{passkey.label || 'Passkey'}</div>
-                                <div className={'admin-settings-passkey-meta'}>
-                                    Added {passkey.createdAt}
-                                    {passkey.lastUsed ? `, last used ${passkey.lastUsed}` : ', never used'}
-                                </div>
-                            </div>
-                            <button
-                                type={'button'}
-                                disabled={isBusy}
-                                onClick={() => handleRemovePasskey(passkey.id, passkey.label)}
-                            >
-                                Remove
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p className={'admin-settings-hint'}>No passkeys yet.</p>
-            )}
-
-            {canUsePasskeys ? miniForm(
-                'add-passkey',
-                [{
-                    id: passkeyLabelFieldId,
-                    type: 'text',
-                    name: 'passkey-label',
-                    label: 'Passkey Label',
-                    displayLabel: 'Device Name (optional)',
-                    httpName: 'passkey-label',
-                    required: false,
-                    placeholder: 'e.g. Work Laptop',
-                    errorMsg: 'Please enter a device name',
-                    value: '',
-                    setValue: null,
-                    widthOfField: 1,
-                    labelOutside: true,
-                    labelOnTop: true,
-                    dontLetTheBrowserSaveField: true,
-                }],
-                handleAddPasskeySubmit,
-                ['Add a passkey', 'Waiting for your device...']
-            ) : (
-                <p className={'admin-settings-hint'}>
-                    {isMobileApp()
-                        ? 'Passkeys are managed from a web browser. This app already supports biometric sign-in on this device.'
-                        : 'This browser does not support passkeys.'}
-                </p>
-            )}
-        </div>
-    );
-
     return (
         <animated.div style={animateSettingsModal} className={'general-large-admin-action-modal'}>
             <div className={'general-large-admin-action-modal-overlay'} onClick={onClose}/>
@@ -888,6 +956,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                             role={'tab'}
                             aria-selected={activeTab === PROFILE_TAB}
                             className={activeTab === PROFILE_TAB ? 'active' : ''}
+                            disabled={gateClosed}
                             onClick={() => setActiveTab(PROFILE_TAB)}
                         >
                             Profile
@@ -909,11 +978,28 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                         <>
                             {(isBusy || !account) && <Spinner/>}
 
-                            {notice === 'passkey_prompt' && (
+                            {gateClosed && (
+                                <div className={'admin-settings-card warning'}>
+                                    <p className={'admin-settings-error'}>
+                                        Your account is locked until you set up a login verification method. Add a
+                                        verified email, an authenticator app, or a passkey below.
+                                    </p>
+                                </div>
+                            )}
+
+                            {!gateClosed && !hasAnyMethod && account && (
+                                <div className={'admin-settings-card warning'}>
+                                    <p className={'admin-settings-hint'}>
+                                        {`You have ${Math.max(0, (account.graceAllowed || 0) - (account.graceUsed || 0))} login(s) left before your account is locked until a verification method is set up.`}
+                                    </p>
+                                </div>
+                            )}
+
+                            {notice === 'passkey_prompt' && !gateClosed && (
                                 <div className={'admin-settings-card'}>
                                     <p>
-                                        Want faster, phishing-resistant sign-ins? Add a passkey and you can verify
-                                        future logins with your fingerprint, face, or device PIN.
+                                        Want faster, phishing-resistant sign-ins? Add a passkey and verify future
+                                        logins with your fingerprint, face, or device PIN.
                                     </p>
                                     <div className={'admin-settings-buttons-row'}>
                                         <button type={'button'} disabled={isBusy} onClick={handleDismissPasskeyPrompt}>
@@ -923,89 +1009,55 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                                 </div>
                             )}
 
-                            {notice === 'mfa_setup' && (
-                                <div className={'admin-settings-card'}>
-                                    <p className={'admin-settings-error'}>
-                                        This account has no login verification method yet. Verify an email address,
-                                        add a passkey, or set up an authenticator app below.
-                                    </p>
-                                </div>
-                            )}
-
                             {statusMsg && <p className={'admin-settings-status'} role={'status'}>{statusMsg}</p>}
                             {errorMsg && <p className={'admin-settings-error'} role={'alert'}>{errorMsg}</p>}
 
-                            {account && activeTab === PROFILE_TAB && (
+                            {account && stepUp && (
+                                <div className={'admin-settings-section'}>{renderStepUpCard()}</div>
+                            )}
+
+                            {account && !stepUp && activeTab === PROFILE_TAB && !gateClosed && (
                                 <div className={'admin-settings-section'}>
+                                    {!hasAnyMethod && (
+                                        <div className={'admin-settings-card warning'}>
+                                            <p className={'admin-settings-hint'}>
+                                                Set up a verification method before changing your name, username or
+                                                password. Changes are confirmed with that method, not your password.
+                                            </p>
+                                        </div>
+                                    )}
                                     <Form fields={[
-                                        passwordField(currentPasswordFieldId, 'Current Password (required to save any change)'),
                                         {
-                                            id: nameFieldId,
-                                            type: 'text',
-                                            name: 'name',
-                                            label: 'Name',
-                                            displayLabel: 'Name',
-                                            httpName: 'name',
-                                            required: true,
-                                            placeholder: 'Name',
-                                            errorMsg: 'Please enter name',
-                                            value: account.name || '',
-                                            setValue: null,
-                                            widthOfField: 2,
-                                            labelOutside: true,
-                                            labelOnTop: true,
-                                            dontLetTheBrowserSaveField: true,
+                                            id: nameFieldId, type: 'text', name: 'name', label: 'Name',
+                                            displayLabel: 'Name', httpName: 'name', required: true,
+                                            placeholder: 'Name', errorMsg: 'Please enter name',
+                                            value: account.name || '', setValue: null, widthOfField: 2,
+                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                                         },
                                         {
-                                            id: usernameFieldId,
-                                            type: 'text',
-                                            name: 'username',
-                                            label: 'Username',
-                                            displayLabel: 'Username',
-                                            httpName: 'username',
-                                            required: true,
-                                            placeholder: 'Username',
-                                            errorMsg: 'Please enter username',
-                                            value: account.username || '',
-                                            setValue: null,
-                                            widthOfField: 2,
-                                            labelOutside: true,
-                                            labelOnTop: true,
-                                            dontLetTheBrowserSaveField: true,
+                                            id: usernameFieldId, type: 'text', name: 'username', label: 'Username',
+                                            displayLabel: 'Username', httpName: 'username', required: true,
+                                            placeholder: 'Username', errorMsg: 'Please enter username',
+                                            value: account.username || '', setValue: null, widthOfField: 2,
+                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                                         },
                                         {
-                                            id: newPasswordFieldId,
-                                            type: 'password',
-                                            name: 'new-password',
+                                            id: newPasswordFieldId, type: 'password', name: 'new-password',
                                             label: 'New Password',
                                             displayLabel: 'New Password (leave blank to keep your current one)',
-                                            httpName: 'new-password',
-                                            required: false,
-                                            placeholder: 'New Password',
-                                            errorMsg: 'Please enter new password',
-                                            value: '',
-                                            setValue: null,
-                                            widthOfField: 2,
-                                            labelOutside: true,
-                                            labelOnTop: true,
-                                            dontLetTheBrowserSaveField: true,
+                                            httpName: 'new-password', required: false,
+                                            placeholder: 'New Password', errorMsg: 'Please enter new password',
+                                            value: '', setValue: null, widthOfField: 2,
+                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                                         },
                                         {
-                                            id: confirmNewPasswordFieldId,
-                                            type: 'password',
-                                            name: 'confirm-new-password',
-                                            label: 'Confirm New Password',
-                                            displayLabel: 'Confirm New Password',
-                                            httpName: 'confirm-new-password',
-                                            required: false,
-                                            placeholder: 'Confirm New Password',
+                                            id: confirmNewPasswordFieldId, type: 'password',
+                                            name: 'confirm-new-password', label: 'Confirm New Password',
+                                            displayLabel: 'Confirm New Password', httpName: 'confirm-new-password',
+                                            required: false, placeholder: 'Confirm New Password',
                                             errorMsg: 'Please confirm new password',
-                                            value: '',
-                                            setValue: null,
-                                            widthOfField: 2,
-                                            labelOutside: true,
-                                            labelOnTop: true,
-                                            dontLetTheBrowserSaveField: true,
+                                            value: '', setValue: null, widthOfField: 2,
+                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                                             mustMatchFieldWithId: newPasswordFieldId,
                                         },
                                     ]}
@@ -1016,8 +1068,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                                           noCaptcha={true}
                                           noClearOption={true}
                                           forceEnglishForm={true}
-                                          resetFormFromParent={resetProfileForm}
-                                          setResetForFromParent={setResetProfileForm}
+                                          noSuccessMessage={true}
                                           hasDifferentOnSubmitBehaviour={true}
                                           differentOnSubmitBehaviour={handleProfileSubmit}
                                           formInModalPopup={true}
@@ -1032,13 +1083,13 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                                 </div>
                             )}
 
-                            {account && activeTab === SECURITY_TAB && (
+                            {account && !stepUp && activeTab === SECURITY_TAB && (
                                 <div className={'admin-settings-section'}>
                                     {renderMethodCard()}
                                     {renderEmailCard()}
                                     {renderTotpCard()}
                                     {renderPasskeyCard()}
-                                    {renderSessionsCard()}
+                                    {!gateClosed && renderSessionsCard()}
                                 </div>
                             )}
                         </>
