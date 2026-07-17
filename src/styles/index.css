@@ -13,7 +13,7 @@
 @font-face {
     font-family: 'Futura';
     src: url('/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
-        url('/assets/fonts/Futura/FuturaLT.woff') format('woff');
+    url('/assets/fonts/Futura/FuturaLT.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -22,7 +22,7 @@
 @font-face {
     font-family: 'Futura-Bold';
     src: url('/assets/fonts/Futura/FuturaLT-Bold.woff2') format('woff2'),
-        url('/assets/fonts/Futura/FuturaLT-Bold.woff') format('woff');
+    url('/assets/fonts/Futura/FuturaLT-Bold.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -32,7 +32,7 @@
 @font-face {
     font-family: 'American Typewriter';
     src: url('/assets/fonts/American Typewriter/American Typewriter.woff2') format('woff2'),
-        url('/assets/fonts/American Typewriter/American Typewriter.woff') format('woff');
+    url('/assets/fonts/American Typewriter/American Typewriter.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -59,7 +59,7 @@
 @font-face {
     font-family: 'American Typewriter Light';
     src: url('/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff2') format('woff2'),
-        url('/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff') format('woff');
+    url('/assets/fonts/American Typewriter Light/ITC American Typewriter Light.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -68,7 +68,7 @@
 @font-face {
     font-family: 'Arslan Wessam A';
     src: url('/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff2') format('woff2'),
-        url('/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff') format('woff');
+    url('/assets/fonts/Arslan Wessam A/Arslan Wessam A.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -77,7 +77,7 @@
 @font-face {
     font-family: 'Janna LT Bold';
     src: url('/assets/fonts/Janna LT Bold/Janna LT Bold.woff2') format('woff2'),
-        url('/assets/fonts/Janna LT Bold/Janna LT Bold.woff') format('woff');
+    url('/assets/fonts/Janna LT Bold/Janna LT Bold.woff') format('woff');
     font-weight: auto;
     font-style: auto;
     font-display: swap;
@@ -104,6 +104,8 @@
     --fb-black-color: #000000;
     --fb-black-gradient-color: #0f0f0f;
     --fb-link-color: #052ced;
+    --success-color: #1f6f43;
+
     --read-only-field-grey-color: #ccc;
     --fb-white-gradient: #f0f0f0f0;
     --fb-white-color: #ffffff;
@@ -399,6 +401,7 @@ label:lang(ar) {
 
     :root {
         --fb-link-color: deepskyblue;
+        --success-color: #7fc59b;
     }
 
     a {
@@ -436,4 +439,3 @@ label:lang(ar) {
         color: var(--fb-white-color);
     }
 }
-

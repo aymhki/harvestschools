@@ -1,7 +1,8 @@
 <?php
-require_once '../../permissionLevels.php';
+require_once __DIR__ . '/permissionLevels.php';
 require_once __DIR__ . '/mfaConfig.php';
 require_once __DIR__ . '/securityHeaders.php';
+require_once __DIR__ . '/mfaHelpers.php';
 
 function session_binding_mode_for_request() {
     if (mfa_is_local_request()) {
@@ -46,12 +47,46 @@ function presented_device_secret($bindingMode) {
     return '';
 }
 
+function check_mfa_setup_gate($conn, $userId, $allowDuringSetup = false) {
+    $graceLogins = (int)mfa_config('mfa_setup_grace_logins');
+
+    if ($graceLogins <= 0) { return null; }
+
+    $stmt = $conn->prepare("SELECT logins_without_mfa FROM admin_users WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$row) { return null; }
+    if ((int)$row['logins_without_mfa'] < $graceLogins) { return null; }
+    $mfaInfo = get_available_mfa_methods($conn, $userId);
+
+    if (!empty($mfaInfo['methods'])) {
+        $stmt = $conn->prepare("UPDATE admin_users SET logins_without_mfa = 0 WHERE id = ?");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $stmt->close();
+
+        return null;
+    }
+
+    if ($allowDuringSetup) { return null; }
+
+    return [
+        "success"          => false,
+        "message"          => "Set up a login verification method to continue using your account.",
+        "mfaSetupRequired" => true,
+        "code"             => 428
+    ];
+}
+
 function get_bearer_token_hash() {
     $token = get_bearer_token();
     return $token ? hash('sha256', $token) : null;
 }
 
-function validate_admin_session($conn) {
+function validate_admin_session($conn, $options = []) {
     $tokenHash = get_bearer_token_hash();
 
     if (!$tokenHash) {
@@ -109,7 +144,11 @@ function validate_admin_session($conn) {
     $stmt->execute();
     $stmt->close();
 
-    return ["success" => true, "user_id" => (int)$row['user_id'], "code" => 200];
+    $userId = (int)$row['user_id'];
+    $gate = check_mfa_setup_gate($conn, $userId, !empty($options['allow_during_mfa_setup']));
+    if ($gate !== null) { return $gate; }
+
+    return ["success" => true, "user_id" => $userId, "code" => 200];
 }
 
 function delete_admin_session_row($conn, $tokenHash) {
@@ -141,8 +180,8 @@ function get_bearer_token() {
     return null;
 }
 
-function check_admin_user_permission($conn, $requiredPermission, $explicitSessionId = null) {
-    $sessionCheck = validate_admin_session($conn);
+function check_admin_user_permission($conn, $requiredPermission, $explicitSessionId = null, $options = []) {
+    $sessionCheck = validate_admin_session($conn, $options);
 
     if (!$sessionCheck['success']) {
         return $sessionCheck;
@@ -218,6 +257,7 @@ function issue_admin_session($conn, $userId, $fingerprintHash = null) {
     $idleTtl     = (int)mfa_config('session_idle_ttl_seconds');
     $absoluteTtl = (int)mfa_config('session_absolute_ttl_seconds');
     $maxSessions = max(1, (int)mfa_config('session_max_per_user'));
+
     $stmt = $conn->prepare(
         "DELETE FROM admin_sessions
          WHERE user_id = ?
@@ -239,6 +279,7 @@ function issue_admin_session($conn, $userId, $fingerprintHash = null) {
 
     $token     = bin2hex(random_bytes(32));
     $tokenHash = hash('sha256', $token);
+
     $publicId = bin2hex(random_bytes(16));
 
     $bindingMode      = session_binding_mode_for_request();
@@ -276,6 +317,7 @@ function issue_admin_session($conn, $userId, $fingerprintHash = null) {
         'bindingMode'  => $bindingMode,
     ];
 }
+
 
 function describe_user_agent($userAgent) {
     $ua = (string)$userAgent;

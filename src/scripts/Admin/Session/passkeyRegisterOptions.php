@@ -21,7 +21,7 @@ try {
 
     $conn->set_charset("utf8mb4");
 
-    $sessionCheck = validate_admin_session($conn);
+    $sessionCheck = validate_admin_session($conn, ['allow_during_mfa_setup' => true]);
     if (!$sessionCheck['success']) { echo json_encode($sessionCheck); exit; }
     $userId = $sessionCheck['user_id'];
 
@@ -38,8 +38,6 @@ try {
 
     $userRow = $result->fetch_assoc();
 
-    // Exclude credentials this user already registered, so the authenticator
-    // refuses to create a duplicate passkey for the same account.
     $excludeIds = [];
     $stmt = $conn->prepare("SELECT credential_id FROM admin_passkeys WHERE user_id = ?");
     $stmt->bind_param("i", $userId);

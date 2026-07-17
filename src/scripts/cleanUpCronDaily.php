@@ -14,6 +14,7 @@ try {
 
     $conn->set_charset("utf8mb4");
     $conn->query("DELETE FROM admin_sessions WHERE last_seen  < NOW() - INTERVAL 12 HOUR OR created_at < NOW() - INTERVAL 7 DAY; ");
+    $conn->query("DELETE FROM admin_step_up_challenges WHERE expires_at < NOW() - INTERVAL 1 DAY;");
     echo "Cron Job Successfully ran\n";
 
 } catch (Exception $e) {

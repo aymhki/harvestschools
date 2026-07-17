@@ -69,6 +69,8 @@ try {
     $userRow    = $result->fetch_assoc();
     $userId     = (int)$userRow['id'];
     $storedHash = (string)$userRow['password_hash'];
+
+
     $failWindow = (int)mfa_config('login_fail_window_seconds');
     $failMax    = (int)mfa_config('login_fail_max_per_window');
 
@@ -155,6 +157,8 @@ try {
         exit;
     }
 
+    $graceUsed = record_login_without_mfa($conn, $userId, !empty($mfaInfo['methods']));
+
     $session = issue_admin_session($conn, $userId, $fingerprint);
     log_admin_event($conn, $userId, 'login_success', $fingerprint);
 
@@ -167,6 +171,11 @@ try {
         "deviceSecret"    => $session['deviceSecret'],
         "bindingMode"     => $session['bindingMode'],
         "needsEmailSetup" => empty($mfaInfo['methods']),
+        "mfaSetupGrace"   => [
+            "used"      => $graceUsed,
+            "allowed"   => (int)mfa_config('mfa_setup_grace_logins'),
+            "remaining" => max(0, (int)mfa_config('mfa_setup_grace_logins') - $graceUsed),
+        ],
     ]);
     exit;
 

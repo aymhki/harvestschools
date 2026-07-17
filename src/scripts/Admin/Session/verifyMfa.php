@@ -149,6 +149,9 @@ try {
     $stmt->execute();
     $stmt->close();
 
+
+    record_login_without_mfa($conn, $userId, true);
+
     $session = issue_admin_session($conn, $userId, $row['fingerprint_hash']);
     log_admin_event($conn, $userId, 'mfa_pass', $row['fingerprint_hash']);
     log_admin_event($conn, $userId, 'login_success', $row['fingerprint_hash']);
