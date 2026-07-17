@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/mfaConfig.php';
 
-
 function base32_encode_bytes($data) {
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     $bits = '';
@@ -39,7 +38,6 @@ function base32_decode_str($b32) {
 
     return $out;
 }
-
 
 function totp_code($secretB32, $timeSlice = null) {
     $key       = base32_decode_str($secretB32);
@@ -100,7 +98,6 @@ function totp_verify_for_user($conn, $userId, $userRow, $code) {
         $consumed = $stmt->affected_rows;
         $stmt->close();
 
-        // Lost a race with a concurrent request that used the same slice.
         if ($consumed === 0) { return false; }
     }
 
@@ -284,7 +281,6 @@ function mfa_record_send($conn, $purpose, $ownerKey, $userId) {
     $stmt->close();
 }
 
-
 function mfa_send_code_email($toAddress, $code, $context = 'login') {
     $from     = mfa_config('mail_from');
     $fromName = mfa_config('mail_from_name');
@@ -315,6 +311,63 @@ function mfa_send_code_email($toAddress, $code, $context = 'login') {
     return @mail($toAddress, $subject, $body, $headers, "-f {$from}");
 }
 
+
+function start_email_verification($conn, $userId, $newEmail) {
+    $stmt = $conn->prepare(
+        "SELECT id FROM admin_users
+         WHERE (LOWER(email) = LOWER(?) OR LOWER(pending_email) = LOWER(?)) AND id != ?"
+    );
+    $stmt->bind_param("ssi", $newEmail, $newEmail, $userId);
+    $stmt->execute();
+    $taken = $stmt->get_result()->num_rows > 0;
+    $stmt->close();
+
+    if ($taken) {
+        return [
+            "success" => false,
+            "message" => "That email is already used by another admin account",
+            "code"    => 400
+        ];
+    }
+
+    $stmt = $conn->prepare(
+        "UPDATE admin_users SET pending_email = ?, pending_email_set_at = NOW() WHERE id = ?"
+    );
+    $stmt->bind_param("si", $newEmail, $userId);
+    $stmt->execute();
+    $stmt->close();
+
+    $ownerKey = mfa_owner_key_for_user($userId);
+    $state    = mfa_send_state($conn, 'email_verify', $ownerKey);
+
+    if (!$state['allowed']) {
+        return [
+            "success"      => true,
+            "message"      => "Address saved. Please wait before requesting a code.",
+            "pendingEmail" => $newEmail,
+            "codeSent"     => false,
+            "retryAfter"   => (int)$state['retry_after'],
+            "code"         => 200
+        ];
+    }
+
+    mfa_record_send($conn, 'email_verify', $ownerKey, $userId);
+    $code = mfa_issue_email_code($conn, 'email_verify', $ownerKey, $userId, $newEmail);
+    $sent = mfa_send_code_email($newEmail, $code, 'email_verify');
+
+    $after = mfa_send_state($conn, 'email_verify', $ownerKey);
+
+    return [
+        "success"      => true,
+        "message"      => $sent
+            ? "We sent a 6-digit code to {$newEmail}. Enter it to confirm the address."
+            : "Address saved, but the code could not be sent. Use Resend to try again.",
+        "pendingEmail" => $newEmail,
+        "codeSent"     => $sent,
+        "retryAfter"   => (int)$after['retry_after'],
+        "code"         => 200
+    ];
+}
 
 function mfa_should_challenge($conn, $userId, $fingerprintHash) {
     $mode = mfa_config('mfa_mode');
@@ -378,7 +431,6 @@ function compute_mfa_required($conn, $userId, $fingerprintHash) {
 
     return null;
 }
-
 
 function get_available_mfa_methods($conn, $userId) {
     $methods = [];

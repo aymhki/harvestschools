@@ -27,6 +27,9 @@ function Form({
                   noClearOption,
                   hasDifferentSubmitButtonText,
                   differentSubmitButtonText,
+                  hasDifferentSuccessMessage,
+                  differentSuccessMessage,
+                  noSuccessMessage,
                   centerSubmitButton,
                   easySimpleCaptcha,
                   fullMarginField,
@@ -79,14 +82,14 @@ function Form({
         if (field.onChangeResult) {
             field.onChangeResult.forEach((result) => {
                 const fieldToChange = fieldRefs.current[result.idOfTheFieldThatShouldChangeBasedOnThisNewValue];
-                
+
                 if (fieldToChange && fieldToChange.current) {
                     let newValue;
                     if (result.whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue === 'multiply') {
                         newValue = result.firstValueToMultiplyWith * value;
                     } else if (result.whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue === 'add & multiply') {
                         let finalValueToSet = 0;
-                        
+
                         Object.keys(result.fieldIdsToAddAndMultiplyTogether).forEach((key) => {
                             const fieldRef = fieldRefs.current[key];
                             if (fieldRef && fieldRef.current) {
@@ -95,7 +98,7 @@ function Form({
                                 finalValueToSet += fieldValue * fieldCost;
                             }
                         });
-                        
+
                         newValue = finalValueToSet;
                     } else if (result.whatToDoWithTheValueOfTheFieldThatShouldChangeBasedOnThisNewValue === 'set') {
                         const fieldIdsToCheckIfBiggerThanZero = result.fieldIdsToCheckIfBiggerThanZero;
@@ -105,7 +108,7 @@ function Form({
                         });
                         newValue = isAnyFieldBiggerThanZero ? result.valueToSetOnValuesBiggerThanZero : result.valueToSetOnValuesZero;
                     }
-                    
+
                     if (newValue !== undefined) {
                         if (result.isCurrency) {
                             fieldToChange.current.value = `${newValue} EGP`;
@@ -116,12 +119,12 @@ function Form({
                 }
             });
         }
-        
+
     }, []);
 
-    
+
     const resetFormCommon = (shouldClearFieldDefaults = false) => {
-        
+
         if (shouldClearFieldDefaults) {
             const newFields = fields.map(field => ({
                 ...field,
@@ -132,7 +135,7 @@ function Form({
         } else {
             setDynamicFields([...fields]);
         }
-        
+
         Object.keys(fieldRefs.current).forEach(fieldId => {
             const ref = fieldRefs.current[fieldId];
             if (ref.current) {
@@ -143,15 +146,15 @@ function Form({
                 }
             }
         });
-        
+
         setFileInputs({});
         setCaptchaValue(generateCaptcha());
-        
+
         enteredCaptcha.current = '';
-        
+
         setGeneralFormError('');
         setSuccessMessage('');
-        
+
         if (hasSetSubmittingLocal) {
             setSubmittingLocal(false);
         }
@@ -159,7 +162,7 @@ function Form({
             setPrefilledInitialized(false);
         }
     };
-    
+
     const resetFormCompletely = useCallback(() => {
         resetFormCommon(false);
     }, [fields]);
@@ -183,7 +186,7 @@ function Form({
             })
         );
     }, [t, fields]);
-    
+
     const resetForm = () => {
         resetFormCompletely();
         clearCache();
@@ -192,24 +195,24 @@ function Form({
             differentResetBehaviour()
         }
     }
-    
+
     const generateCaptcha = useCallback(() => {
         let captcha = '';
-        
+
         for (let i = 0; i < captchaMaxLength; i++) {
             captcha += characters.charAt(Math.floor(Math.random() * characters.length));
         }
-        
+
         return captcha;
     }, [captchaMaxLength, characters])
-    
+
     const getWidthClass = (widthOfField) => {
         if (widthOfField === 1) return fullMarginField ? 'full-width-with-margin' : 'full-width';
         if (widthOfField === 1.5) return 'two-thirds-width';
         if (widthOfField === 2) return 'half-width';
         return 'third-width';
     };
-    
+
     const getCommonInputProps = (field) => ({
         id: field.id,
         name: field.httpName,
@@ -235,10 +238,10 @@ function Form({
         return dependents;
     };
 
-    
+
     const getPlaceholder = (field) =>
         `${field.placeholder || getWhichLabelToUse(field)}${field.required ? '*' : ''}`;
-    
+
     const getLabelText = (field) =>
         `${getWhichLabelToUse(field)}${field.required ? '*' : ''}`;
 
@@ -249,16 +252,16 @@ function Form({
             return field.label;
         }
     }
-    
+
     const renderLabel = (field, htmlFor = field.id) => (
         <label htmlFor={htmlFor} className="form-label-outside">
             {getLabelText(field)}
         </label>
     );
-    
+
     const renderWithOptionalLabel = (field, children) => {
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         if (field.labelOutside && field.labelOnTop) {
             return (
                 <div className={`field-with-label-on-top ${widthClass} ${field.alwaysEnglish ? 'always-english' : ''}`}>
@@ -267,45 +270,45 @@ function Form({
                 </div>
             );
         }
-        
+
         return children;
     };
-    
+
     const renderTextInput = (field, type = field.type) => {
         const baseProps = getCommonInputProps(field);
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         const inputProps = {
             ...baseProps,
             type,
             placeholder: getPlaceholder(field),
             className: `text-form-field ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`,
         };
-        
+
         if (field.dontLetTheBrowserSaveField) {
             inputProps.name = 'hidden';
             inputProps.autoComplete = 'new-password';
             inputProps['data-lpignore'] = 'true';
         }
-        
+
         const input = <input {...inputProps} className={`${inputProps.className} ${!field.labelOutside || !field.labelOnTop ? widthClass : ''}`}/>;
-        
+
         return renderWithOptionalLabel(field, input);
     };
-    
+
     const renderNumberInput = (field) => {
         const baseProps = getCommonInputProps(field);
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         const handleNumberChange = (delta) => (e) => {
             e.preventDefault();
             const ref = fieldRefs.current[field.id];
             const hasMax = field.maximumValue !== undefined && field.maximumValue !== null;
             const hasMin = field.minimumValue !== undefined && field.minimumValue !== null;
-            
+
             if (ref && ref.current) {
                 const currentValue = parseInt(ref.current.value) || 0;
-                
+
                 if ((
                     ( (currentValue + delta <= field.maximumValue) || !hasMax ) &&
                     ( (currentValue + delta >= field.minimumValue) || !hasMin ) &&
@@ -314,25 +317,25 @@ function Form({
                     ref.current.value = currentValue + delta;
                     ref.current.setCustomValidity('');
 
-                    
+
                     processFieldOnChangeResult(field, currentValue + delta);
-                    
+
                     if (!noInputFieldsCache) {
                         saveToCache(field, currentValue + delta);
                     }
                 }
-                
+
             }
         };
-        
+
         const numberInput = (
             <div className={`number-input-container ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${ (field.readOnlyField || formIsReadOnly || submitting) ? 'read-only-field' : ''} ${(field.alwaysEnglish) ? 'always-english' : ''}`}>
                 <button className="number-input-reduce-button" type="button" onClick={handleNumberChange(-1)}
-                disabled={field.readOnlyField || submitting || formIsReadOnly || false}
+                        disabled={field.readOnlyField || submitting || formIsReadOnly || false}
                 >
                     <span><RemoveIcon/></span>
                 </button>
-                
+
                 <input
                     {...baseProps}
                     type="text"
@@ -341,35 +344,35 @@ function Form({
                     min={field.minimumValue || ''}
                     max={field.maximumValue || ''}
                 />
-                
+
                 <button className="number-input-add-button" type="button" onClick={handleNumberChange(1)}
-                disabled={field.readOnlyField || submitting || formIsReadOnly || false}
+                        disabled={field.readOnlyField || submitting || formIsReadOnly || false}
                 >
                     <span><AddIcon/></span>
                 </button>
             </div>
         );
-        
+
         return renderWithOptionalLabel(field, numberInput);
     };
-    
+
     const renderPasswordInput = (field) => {
         const baseProps = getCommonInputProps(field);
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         const inputProps = {
             ...baseProps,
             type: field.dontLetTheBrowserSaveField ? "text" : (showPasswords ? "text" : "password"),
             placeholder: getPlaceholder(field),
             className: `text-form-field ${(!showPasswords && field.dontLetTheBrowserSaveField) ? 'txtPassword' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`
         };
-        
+
         if (field.dontLetTheBrowserSaveField) {
             inputProps.name = 'hidden';
             inputProps.autoComplete = 'new-password';
             inputProps['data-lpignore'] = 'true';
         }
-        
+
         const passwordField = (
             <div className={`password-field-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.alwaysEnglish ? 'always-english' : ''}`}>
                 <input {...inputProps} />
@@ -384,14 +387,14 @@ function Form({
                 </button>
             </div>
         );
-        
+
         return renderWithOptionalLabel(field, passwordField);
     };
-    
+
     const renderDateInput = (field) => {
         const baseProps = getCommonInputProps(field);
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         const handleKeyDown = (e) => {
             if (e.key === 'Tab') {
                 setShowSelectDateModal(false);
@@ -399,15 +402,15 @@ function Form({
                 setSelectedDateDay('');
                 setSelectedDateYear('');
                 setSelectedDateError('');
-                
+
                 const ref = fieldRefs.current[selectedDateFieldID];
-                
+
                 if (ref && ref.current) {
                     ref.current.value = '';
                 }
             }
         };
-        
+
         const dateInput = (
             <input
                 {...baseProps}
@@ -419,14 +422,14 @@ function Form({
                 className={`text-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
             />
         );
-        
+
         return renderWithOptionalLabel(field, dateInput);
     };
-    
+
     const renderTextarea = (field) => {
         const baseProps = getCommonInputProps(field);
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         const textarea = (
             <textarea
                 {...baseProps}
@@ -434,7 +437,7 @@ function Form({
                 className={`textarea-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.large ? 'large-height-textarea' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
             />
         );
-        
+
         return renderWithOptionalLabel(field, textarea);
     };
 
@@ -556,7 +559,7 @@ function Form({
 
         return renderWithOptionalLabel(field, grid);
     };
-    
+
     const renderSelect = (field) => {
         if (field.multiple) {
             return renderMultipleSelectCheckboxGrid(field);
@@ -564,7 +567,7 @@ function Form({
 
         const baseProps = getCommonInputProps(field);
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         const selectElement = (
             <select
                 {...baseProps}
@@ -581,19 +584,19 @@ function Form({
                 ))}
             </select>
         );
-        
+
         return renderWithOptionalLabel(field, selectElement);
     };
-    
+
     const renderChoiceInputs = (field, type) => {
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         return field.choices && field.choices.map((choice, index) => {
             const choiceRefKey = `${field.id}_${index}`;
             if (!fieldRefs.current[choiceRefKey]) {
                 fieldRefs.current[choiceRefKey] = createRef();
             }
-            
+
             return (
                 <label key={index}>
                     <input
@@ -613,14 +616,14 @@ function Form({
             );
         });
     };
-    
+
     const renderFileInput = (field) => {
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         if (!fieldRefs.current[field.id]) {
             fieldRefs.current[field.id] = createRef();
         }
-        
+
         return (
             <div className={`file-form-field-styled ${widthClass}`} >
                 <label htmlFor={field.id}>
@@ -628,12 +631,12 @@ function Form({
                 </label>
                 <div className="file-form-field-styled-buttons-wrapper">
                     <button type="button" disabled={submitting}
-                    onClick={() => {
-                        const ref = fieldRefs.current[field.id];
-                        if (ref && ref.current) {
-                            ref.current.click();
-                        }
-                    }}
+                            onClick={() => {
+                                const ref = fieldRefs.current[field.id];
+                                if (ref && ref.current) {
+                                    ref.current.click();
+                                }
+                            }}
                     >
                         {t("all-forms.upload")}
                     </button>
@@ -644,7 +647,7 @@ function Form({
                                 e.preventDefault();
                                 field.file = null;
                                 setFileInputs(prev => ({...prev, [field.id]: null}));
-                                
+
                                 const ref = fieldRefs.current[field.id];
                                 if (ref && ref.current) {
                                     ref.current.value = '';
@@ -682,10 +685,10 @@ function Form({
             </div>
         );
     };
-    
+
     const renderButton = (field) => {
         const widthClass = getWidthClass(field.widthOfField);
-        
+
         return (
             <button
                 className={`form-button ${widthClass}`}
@@ -698,11 +701,11 @@ function Form({
             </button>
         );
     };
-    
+
     const renderSection = ( field ) => {
         const widthClass = getWidthClass(field.widthOfField);
-        
-        
+
+
         return (
             <div className= {`form-title-section ${widthClass}`}
                  ref={fieldRefs.current[field.id]}
@@ -713,13 +716,13 @@ function Form({
             </div>
         );
     }
-    
+
     const renderFieldBasedOnType = (field) => {
         if (field.type === 'hidden') {
             if (!fieldRefs.current[field.id]) {
                 fieldRefs.current[field.id] = createRef();
             }
-            
+
             return (
                 <input
                     type="hidden"
@@ -747,7 +750,7 @@ function Form({
             </Fragment>
         );
     };
-    
+
     const handleCopy = (event) => {
         event.preventDefault();
     };
@@ -770,7 +773,7 @@ function Form({
         setSelectedDateFieldLabel(fieldLabel);
         setShowSelectDateModal(true);
     }
-    
+
     const handleDateSelection = (day, month, year) => {
         if (!day || !month || !year) {
             setSelectedDateError( 'Please select a valid date');
@@ -790,26 +793,26 @@ function Form({
         setSelectedDateYear(year);
         const dateValue = `${year}-${month}-${day}`;
         const ref = fieldRefs.current[selectedDateFieldID];
-        
+
         if (ref && ref.current) {
             ref.current.value = dateValue;
         }
-        
+
         setSelectedDateMonth('');
         setSelectedDateDay('');
         setSelectedDateYear('');
         setShowSelectDateModal(false);
-        
+
         if (!noInputFieldsCache) {
             saveToCache({id: selectedDateFieldID, label: selectedDateFieldLabel}, dateValue);
         }
     }
-    
+
     const processFieldRules = useCallback((currentFields, field, value) => {
         if (field.rules) {
-            
+
             const rule = field.rules.find(r => r.value === value);
-            
+
             if (rule) {
                 const newFields = currentFields.filter(f => {
                     let keep = true;
@@ -830,17 +833,17 @@ function Form({
                     });
                     return keep;
                 });
-                
+
                 const currentIndex = newFields.findIndex(f => f.name === field.name);
-                
+
                 rule.ruleResult.forEach(newField => {
                     newFields.splice(currentIndex + 1, 0, newField);
                 });
-                
+
                 return newFields;
-                
+
             } else {
-                
+
                 return currentFields.filter(f => {
                     let keep = true;
                     field.rules.forEach(rule => {
@@ -858,15 +861,15 @@ function Form({
                             }
                         });
                     });
-                    
+
                     return keep;
                 });
             }
         }
-        
+
         return currentFields;
     }, []);
-    
+
     const onChange = (e, field) => {
         const maxSizeInBytes = 2 * 1024 * 1024;
         const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
@@ -893,26 +896,26 @@ function Form({
                 e.target.reportValidity();
                 setGeneralFormError('');
                 setSuccessMessage('');
-                
+
                 if (!noInputFieldsCache) {
                     saveToCache(field, value);
                 }
             }
-            
+
             const newFields = processFieldRules(dynamicFields, field, value);
             setDynamicFields(newFields);
-            
+
             processFieldOnChangeResult(field, value);
         }
     }
-    
+
     const onSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (submitting) {
             return;
         }
-        
+
         if (enteredCaptcha.current && enteredCaptcha.current.value !== captchaValue && !noCaptcha) {
             setGeneralFormError(t('all-forms.captcha-error'));
             setTimeout(() => {
@@ -920,16 +923,16 @@ function Form({
             }, msgTimeout);
             return;
         }
-        
+
         for (let i = 0; i < dynamicFields.length; i++) {
             if (dynamicFields[i].mustMatchFieldWithId) {
                 const field1Ref = fieldRefs.current[dynamicFields[i].id];
                 const field2Ref = fieldRefs.current[dynamicFields[i].mustMatchFieldWithId];
-                
+
                 if (field1Ref?.current && field2Ref?.current) {
                     const firstValue = field1Ref.current.value;
                     const secondValue = field2Ref.current.value;
-                    
+
                     if (firstValue && secondValue) {
                         if (firstValue !== secondValue) {
                             const field1 = getWhichLabelToUse(dynamicFields[i]);
@@ -940,21 +943,21 @@ function Form({
                             setTimeout(() => {
                                 setGeneralFormError('');
                             }, msgTimeout);
-                            
+
                             return;
                         }
                     }
                 }
             }
-            
+
             if (dynamicFields[i].mustNotMatchFieldWithId) {
                 const field1Ref = fieldRefs.current[dynamicFields[i].id];
                 const field2Ref = fieldRefs.current[dynamicFields[i].mustNotMatchFieldWithId];
-                
+
                 if (field1Ref?.current && field2Ref?.current) {
                     const firstValue = field1Ref.current.value;
                     const secondValue = field2Ref.current.value;
-                    
+
                     if (firstValue && secondValue) {
                         if (firstValue === secondValue) {
                             const field1 = getWhichLabelToUse(dynamicFields[i]);
@@ -990,21 +993,21 @@ function Form({
 
             }
         }
-        
+
         setSubmitting(true);
-        
+
         if (hasSetSubmittingLocal) {
             setSubmittingLocal(true);
         }
-        
+
         setGeneralFormError('');
         setSuccessMessage('');
-        
+
         try {
             const formData = new FormData();
             dynamicFields.forEach(field => {
                 let value;
-                
+
                 if (field.type === 'file' && field.file) {
                     const file = field.file;
                     const fileExtension = file.name.split('.').pop();
@@ -1050,35 +1053,40 @@ function Form({
                         value = field.readOnlyField ? (field.value || '') : '';
                     }
                 }
-                
+
                 formData.append(`field_${field.id}`, value);
                 formData.append(`label_${field.id}`, field.label);
             });
-            
+
             formData.append('mailTo', mailTo);
             formData.append('formTitle', formTitle);
-            
+
             if (hasDifferentOnSubmitBehaviour && differentOnSubmitBehaviour) {
                 try {
                     const result = await differentOnSubmitBehaviour(formData);
-                    
+
                     if (result) {
-                        setSuccessMessage( t('all-forms.success-message'));
+                        const resolvedMessage = typeof result === 'string' ? result : hasDifferentSuccessMessage ? differentSuccessMessage : t('all-forms.success-message');
+                        const showMessage = !noSuccessMessage && !!resolvedMessage;
+
+                        if (showMessage) {
+                            setSuccessMessage(resolvedMessage);
+                        }
+
                         setTimeout(() => {
                             setSuccessMessage('');
                             resetFormCompletely();
                             clearCache();
-
-                        }, msgTimeout);
+                        }, showMessage ? msgTimeout : 0);
                     }
                 } catch (error) {
                     setGeneralFormError(error.message || ( t('all-forms.general-error')));
                     setTimeout(() => {
                         setGeneralFormError('');
                     }, msgTimeout);
-                    
+
                     setSubmitting(false);
-                    
+
                     if (hasSetSubmittingLocal) {
                         setSubmittingLocal(false)
                     }
@@ -1087,7 +1095,11 @@ function Form({
                 try {
                     const result = await submitFormRequest(formData)
                     if (result.success) {
-                        setSuccessMessage( t('all-forms.success-message'));
+                        if (!noSuccessMessage) {
+                            setSuccessMessage(hasDifferentSuccessMessage
+                                ? differentSuccessMessage
+                                : t('all-forms.success-message'));
+                        }
                         setTimeout(() => {
                             setSuccessMessage('');
                             if (formInModalPopup) {
@@ -1119,20 +1131,20 @@ function Form({
             setTimeout(() => {setGeneralFormError('');}, msgTimeout);
         } finally {
             setSubmitting(false);
-            
+
             if (hasSetSubmittingLocal) {
                 setSubmittingLocal(false);
             }
         }
     };
-    
+
     useEffect(() => {
         if ( noInputFieldsCache || cacheHaveBeenLoaded || (!refsHaveBeenSet) ) {
             return;
         }
-        
+
         const cachedValues = loadCachedValues();
-        
+
         dynamicFields.forEach(field => {
             const cachedValue = cachedValues[field.id];
             if (cachedValue !== undefined && field.value === '') {
@@ -1152,32 +1164,32 @@ function Form({
                     }
                 }
             }
-            
+
         });
-        
-        
+
+
         let currentFields = [...dynamicFields];
-        
+
         dynamicFields.forEach(field => {
             const cachedValue = cachedValues[field.id];
-            
+
             if (field.rules && cachedValue) {
                 currentFields = processFieldRules(currentFields, field, cachedValue);
             }
         });
-        
+
         setDynamicFields(currentFields);
-        
+
         setCacheHaveBeenLoaded(true);
 
-    
+
     }, [dynamicFields, noInputFieldsCache, cacheHaveBeenLoaded, fieldRefs, processFieldRules, refsHaveBeenSet, loadCachedValues]);
-    
+
     useEffect(() => {
         dynamicFields.forEach(field => {
             if (!fieldRefs.current[field.id]) {
                 fieldRefs.current[field.id] = createRef();
-                
+
                 if (field.value !== undefined && field.value !== null && field.value !== '') {
                     const ref = fieldRefs.current[field.id];
                     if (ref && ref.current) {
@@ -1190,16 +1202,16 @@ function Form({
                 }
             }
         });
-        
+
         setRefsHaveBeenSet(true);
     }, [dynamicFields]);
-    
+
     useEffect(() => {
         if (refsHaveBeenSet) {
             dynamicFields.forEach(field => {
                 if (field.value !== undefined && field.value !== null && field.value !== '') {
                     const ref = fieldRefs.current[ field.id ];
-                    
+
                     if ( ref && ref.current ) {
                         if ( field.type === 'checkbox' || field.type === 'radio' ) {
                             ref.current.checked = field.value;
@@ -1220,17 +1232,17 @@ function Form({
             })
         }
     }, [refsHaveBeenSet, dynamicFields, fieldRefs]);
-    
+
     useEffect(() => {
         if (captchaValue === '') {
             setCaptchaValue(generateCaptcha());
         }
     }, [captchaValue, setCaptchaValue, generateCaptcha]);
-    
+
     useEffect(() => {
         if (resetFormFromParent) {
             resetFormCompletely();
-            
+
             if (setResetForFromParent) {
                 setResetForFromParent(false);
             }
@@ -1244,13 +1256,13 @@ function Form({
 
     const CaptchaField = () => {
         if (noCaptcha) return null;
-        
+
         const captchaWrapperClass = captchaLength === 2
             ? (fullMarginField ? 'captcha-wrapper-with-half-width-full-margin' : 'captcha-wrapper-half-width')
             : (fullMarginField ? 'captcha-wrapper-with-full-margin' : 'captcha-wrapper');
         const fieldWidthClass = captchaLength === 2 ? 'full-width' : 'half-width';
         const refreshButtonClass = captchaLength === 2 ? 'captcha-refresh-button-half-width' : 'refresh-captcha-button';
-        
+
         return (
             <>
                 {!easySimpleCaptcha && (
@@ -1292,7 +1304,7 @@ function Form({
             </>
         );
     };
-    
+
     const SubmitButton = () => {
         if (hasDifferentSubmitButtonText) {
             const buttonText = (submitting ? differentSubmitButtonText[1] : differentSubmitButtonText[0]);
@@ -1309,7 +1321,7 @@ function Form({
             </button>
         );
     };
-    
+
     const ResetButtons = () => (
         <div className="reset-buttons-wrapper">
             {!noClearOption && (
@@ -1319,16 +1331,16 @@ function Form({
             )}
         </div>
     );
-    
+
     const FormFooter = () => {
         if (formIsReadOnly) return null;
         const footerClass = `form-footer ${centerSubmitButton ? 'center-buttons' : footerButtonsSpaceBetween ? '' : ''}`;
         const buttonsWrapperClass = `form-footer-buttons-wrapper ${centerSubmitButton ? 'center-buttons' : footerButtonsSpaceBetween ? '' : 'left-buttons'}`;
-        
+
         const submitButton = (
             <SubmitButton/>
         );
-        
+
         const resetButtons = (
             <ResetButtons/>
         );
@@ -1359,7 +1371,7 @@ function Form({
             </div>
         );
     };
-    
+
     const DateModal = () => {
         const closeModal = () => {
             setShowSelectDateModal(false);
@@ -1367,25 +1379,25 @@ function Form({
             setSelectedDateDay('');
             setSelectedDateYear('');
             setSelectedDateError('');
-            
+
             const ref = fieldRefs.current[selectedDateFieldID];
-            
+
             if (ref && ref.current) {
                 ref.current.value = '';
             }
         };
-        
+
         const handleSubmit = (e) => {
             e.preventDefault();
             handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
         };
-        
+
         const handleKeyDown = (e) => {
             if (e.key === 'Enter') {
                 handleDateSelection(selectedDateDay, selectedDateMonth, selectedDateYear);
             }
         };
-        
+
         const generateDayOptions = () => {
             if (selectedDateMonth && selectedDateYear && parseInt(selectedDateYear) && parseInt(selectedDateMonth)) {
                 const daysInMonth = new Date(parseInt(selectedDateYear), parseInt(selectedDateMonth), 0).getDate();
@@ -1395,7 +1407,7 @@ function Form({
             }
             return null;
         };
-        
+
         return (
             <animated.div style={animateDateModal} className="form-select-date-modal">
                 <div className="form-select-date-modal-overlay" onClick={closeModal}/>
@@ -1466,7 +1478,7 @@ function Form({
             </animated.div>
         );
     };
-    
+
     const MainForm = () => {
         return (
             <>
@@ -1479,7 +1491,7 @@ function Form({
             </>
         );
     };
-    
+
     return (
         <>
             {MainForm()}
@@ -1534,6 +1546,9 @@ Form.propTypes = {
     noClearOption: PropTypes.bool,
     hasDifferentSubmitButtonText: PropTypes.bool,
     differentSubmitButtonText: PropTypes.arrayOf(PropTypes.string),
+    hasDifferentSuccessMessage: PropTypes.bool,
+    differentSuccessMessage: PropTypes.string,
+    noSuccessMessage: PropTypes.bool,
     centerSubmitButton: PropTypes.bool,
     easySimpleCaptcha: PropTypes.bool,
     fullMarginField: PropTypes.bool,

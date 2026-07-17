@@ -29,7 +29,7 @@ try {
 
     $conn->set_charset("utf8mb4");
 
-    $sessionCheck = validate_admin_session($conn);
+    $sessionCheck = validate_admin_session($conn, ['allow_during_mfa_setup' => true]);
     if (!$sessionCheck['success']) { echo json_encode($sessionCheck); exit; }
     $userId = $sessionCheck['user_id'];
 
@@ -52,9 +52,9 @@ try {
         $storedHash      = (string)$row['password_hash'];
 
         $passwordOk = $storedHash !== '' && (
-            password_verify($currentPassword, $storedHash) ||
-            hash_equals($storedHash, hash('sha256', $currentPassword))
-        );
+                password_verify($currentPassword, $storedHash) ||
+                hash_equals($storedHash, hash('sha256', $currentPassword))
+            );
 
         if (!$passwordOk) {
             echo json_encode([

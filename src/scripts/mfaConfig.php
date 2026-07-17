@@ -1,4 +1,5 @@
 <?php
+
 function mfa_default_config() {
     return [
         'mfa_mode' => 'always',
@@ -17,6 +18,8 @@ function mfa_default_config() {
         'login_fail_max_per_window' => 10,
         'session_idle_ttl_seconds' => 43200,
         'session_absolute_ttl_seconds' => 604800,
+        'mfa_setup_grace_logins' => 3,
+        'step_up_ttl_seconds' => 600,
         'session_max_per_user' => 4,
         'session_binding_cookie' => 'hs_admin_dbind',
         'mail_from'      => 'no-reply@admin.harvestschools.com',

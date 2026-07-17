@@ -126,10 +126,13 @@ try {
     $stmt->bind_param("s", $mfaHash);
     $stmt->execute();
     $stmt->close();
+
     $stmt = $conn->prepare("UPDATE admin_users SET mfa_verified_once = 1, preferred_mfa = COALESCE(preferred_mfa, 'passkey') WHERE id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $stmt->close();
+
+    record_login_without_mfa($conn, $userId, true);
 
     $session = issue_admin_session($conn, $userId, $challengeRow['fingerprint_hash']);
     log_admin_event($conn, $userId, 'mfa_pass', $challengeRow['fingerprint_hash']);
