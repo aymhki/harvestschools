@@ -31,73 +31,13 @@ try {
 
     $sessionCheck = validate_admin_session($conn);
     if (!$sessionCheck['success']) { echo json_encode($sessionCheck); exit; }
-    $userId = $sessionCheck['user_id'];
-
-    $data            = json_decode(file_get_contents('php://input'), true);
-    $currentPassword = is_array($data) ? (string)($data['current_password'] ?? '') : '';
-
-    $stmt = $conn->prepare("SELECT password_hash, totp_secret FROM admin_users WHERE id = ?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-
-    if (!$row) {
-        echo json_encode(["success" => false, "message" => "User not found", "code" => 404]);
-        exit;
-    }
-
-    if (empty($row['totp_secret'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "No authenticator app is set up on this account",
-            "code"    => 400
-        ]);
-        exit;
-    }
-
-    $storedHash = (string)$row['password_hash'];
-    $passwordOk = $storedHash !== '' && (
-        password_verify($currentPassword, $storedHash) ||
-        hash_equals($storedHash, hash('sha256', $currentPassword))
-    );
-
-    if (!$passwordOk) {
-        echo json_encode(["success" => false, "message" => "Current password is incorrect", "code" => 401]);
-        exit;
-    }
-
-    $mfaInfo   = get_available_mfa_methods($conn, $userId);
-    $remaining = array_values(array_diff($mfaInfo['methods'], ['totp']));
-
-    if (empty($remaining)) {
-        echo json_encode([
-            "success" => false,
-            "message" => "This is your only login verification method. Add a verified email or a passkey first.",
-            "code"    => 400
-        ]);
-        exit;
-    }
-
-    $stmt = $conn->prepare(
-        "UPDATE admin_users
-         SET totp_secret = NULL,
-             totp_secret_pending = NULL,
-             totp_secret_pending_at = NULL,
-             last_totp_slice = NULL,
-             preferred_mfa = IF(preferred_mfa = 'totp', NULL, preferred_mfa)
-         WHERE id = ?"
-    );
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $stmt->close();
-
-    log_admin_event($conn, $userId, 'totp_removed', null);
 
     echo json_encode([
-        "success" => true,
-        "message" => "Authenticator app removed",
-        "code" => 200
+        "success"        => false,
+        "message"        => "Verifying your identity is required to remove your authenticator app.",
+        "stepUpRequired" => true,
+        "stepUpAction"   => "remove_totp",
+        "code"           => 403
     ]);
 
 } catch (Exception $e) {

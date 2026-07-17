@@ -47,6 +47,30 @@ function presented_device_secret($bindingMode) {
     return '';
 }
 
+function record_login_without_mfa($conn, $userId, $hasMethods) {
+    if ($hasMethods) {
+        $stmt = $conn->prepare("UPDATE admin_users SET logins_without_mfa = 0 WHERE id = ? AND logins_without_mfa <> 0");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $stmt->close();
+
+        return 0;
+    }
+
+    $stmt = $conn->prepare("UPDATE admin_users SET logins_without_mfa = logins_without_mfa + 1 WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->close();
+
+    $stmt = $conn->prepare("SELECT logins_without_mfa FROM admin_users WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $used = (int)($stmt->get_result()->fetch_assoc()['logins_without_mfa'] ?? 0);
+    $stmt->close();
+
+    return $used;
+}
+
 function check_mfa_setup_gate($conn, $userId, $allowDuringSetup = false) {
     $graceLogins = (int)mfa_config('mfa_setup_grace_logins');
 

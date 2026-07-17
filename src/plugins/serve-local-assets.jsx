@@ -68,7 +68,7 @@ export function serveLocalAssets(localAssetsDir, options = {}) {
                     const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
 
                     if (start >= fileSize || start > end) {
-                        res.statusCode = 416 // Range Not Satisfiable
+                        res.statusCode = 416
                         res.setHeader('Content-Range', `bytes */${fileSize}`)
                         return res.end()
                     }

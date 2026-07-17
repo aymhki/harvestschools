@@ -1,6 +1,5 @@
 <?php
 
-// ── Config ───────────────────────────────────────────────────────────────────
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
 
@@ -28,8 +27,6 @@ $ALLOWED_MIME = [
 
 $PROCESSABLE = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-// ── Validate path ─────────────────────────────────────────────────────────────
-
 $requested = isset($_GET['path']) ? trim($_GET['path'], '/') : '';
 if (empty($requested)) { http_response_code(400); exit('Missing path'); }
 
@@ -54,7 +51,6 @@ if (!isset($ALLOWED_MIME[$src_ext])) {
 }
 
 
-// ── Optional parameters ───────────────────────────────────────────────────────
 
 $width    = isset($_GET['w'])        ? max(1, intval($_GET['w']))        : null;
 $height   = isset($_GET['h'])        ? max(1, intval($_GET['h']))        : null;
@@ -63,13 +59,11 @@ $quality  = isset($_GET['quality'])  ? min(100, max(1, intval($_GET['quality']))
 $download = isset($_GET['download']) && $_GET['download'] === '1';
 $dlname   = isset($_GET['filename']) ? basename($_GET['filename'])       : basename($full_path);
 
-// Validate requested format
 if ($format && !isset($ALLOWED_MIME[$format])) { http_response_code(400); exit('Invalid format'); }
 
 $out_ext  = $format ?: $src_ext;
 $out_mime = $ALLOWED_MIME[$out_ext];
 
-// ── Image processing ──────────────────────────────────────────────────────────
 
 $needs_processing = in_array($src_ext, $PROCESSABLE) && ($width || $height || ($format && $format !== $src_ext));
 $serve_path = $full_path;
@@ -81,7 +75,6 @@ if ($needs_processing) {
     if (!file_exists($cache_file)) {
         if (!is_dir($CACHE_BASE)) mkdir($CACHE_BASE, 0755, true);
 
-        // Load
         $img = match($src_ext) {
             'jpg', 'jpeg' => imagecreatefromjpeg($full_path),
             'png'         => imagecreatefrompng($full_path),
@@ -92,7 +85,6 @@ if ($needs_processing) {
 
         if (!$img) { http_response_code(500); exit('Failed to load image'); }
 
-        // Resize — maintains aspect ratio if only one dimension given
         if ($width || $height) {
             $orig_w = imagesx($img);
             $orig_h = imagesy($img);
@@ -102,7 +94,6 @@ if ($needs_processing) {
 
             $resized = imagecreatetruecolor($width, $height);
 
-            // Preserve transparency
             if (in_array($out_ext, ['png', 'webp', 'gif'])) {
                 imagealphablending($resized, false);
                 imagesavealpha($resized, true);
@@ -115,7 +106,6 @@ if ($needs_processing) {
             $img = $resized;
         }
 
-        // Save to cache
         match($out_ext) {
             'jpg', 'jpeg' => imagejpeg($img, $cache_file, $quality),
             'png'         => imagepng($img, $cache_file, intval(9 - ($quality / 100 * 9))),
@@ -128,13 +118,10 @@ if ($needs_processing) {
 
     $serve_path = $cache_file;
 
-    // Update download filename extension if format changed
     if ($format) {
         $dlname = pathinfo($dlname, PATHINFO_FILENAME) . '.' . $format;
     }
 }
-
-// ── Caching headers ───────────────────────────────────────────────────────────
 
 $file_size     = filesize($serve_path);
 $last_modified = filemtime($serve_path);
@@ -157,12 +144,8 @@ header('Last-Modified: '   . gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
 header('Accept-Ranges: bytes');
 header('Cache-Control: public, max-age=31536000, immutable');
 header('Access-Control-Allow-Origin: *');
-
-// ── Disposition — inline for display, attachment for download ─────────────────
-
 header('Content-Disposition: ' . ($download ? 'attachment' : 'inline') . '; filename="' . $dlname . '"');
 
-// ── Range requests (video seeking) ───────────────────────────────────────────
 
 if ($is_range_request) {
     [, $range_spec]          = explode('=', $_SERVER['HTTP_RANGE'], 2);
@@ -198,8 +181,6 @@ if ($is_range_request) {
     fclose($fp);
     exit;
 }
-
-// ── Full response ─────────────────────────────────────────────────────────────
 
 header('Content-Length: ' . $file_size);
 readfile($serve_path);

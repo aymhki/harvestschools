@@ -215,6 +215,11 @@ const ENDPOINTS = {
     setPreferredMfa: '/scripts/Admin/Session/setPreferredMfa.php',
     requestEmailVerification: '/scripts/Admin/Session/requestEmailVerification.php',
     confirmEmailVerification: '/scripts/Admin/Session/confirmEmailVerification.php',
+    requestEmailChange: '/scripts/Admin/Session/requestEmailChange.php',
+    requestStepUp: '/scripts/Admin/Session/requestStepUp.php',
+    requestStepUpEmailCode: '/scripts/Admin/Session/requestStepUpEmailCode.php',
+    stepUpPasskeyOptions: '/scripts/Admin/Session/stepUpPasskeyOptions.php',
+    verifyStepUp: '/scripts/Admin/Session/verifyStepUp.php',
 };
 
 const BASE_URLS = {
@@ -356,4 +361,3 @@ export {
     buildAuthHeaders,
     buildLoginHeaders
 }
-

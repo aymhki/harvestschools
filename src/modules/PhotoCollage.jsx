@@ -29,10 +29,6 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     const changePhoto = (newIndex) => {
         setIsTransitioning(true);
         setCurrentIndex(newIndex);
-        // setTimeout(() => {
-        //
-        //     setIsTransitioning(false);
-        // }, 500); // Match this duration with the CSS transition duration
     };
 
     const nextPhoto = () => {
@@ -49,13 +45,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
 
 
     const renderSlider = () => {
-        // let photosWidth = photos.map(photo => {
-        //     let img = new Image();
-        //     img.src = photo.src;
-        //     return img.width;
-        // });
-
-        let maxIndex = 0; //photosWidth.indexOf(Math.max(...photosWidth));
+        let maxIndex = 0;
 
         return (
             <div className="photo-slider">

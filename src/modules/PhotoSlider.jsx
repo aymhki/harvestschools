@@ -28,7 +28,7 @@ function PhotoSlider({ photos, darken }) {
         if (exiting !== null) {
             const timer = setTimeout(() => {
                 setExiting(null);
-            }, 1000); // Match animation duration in css
+            }, 1000);
             return () => clearTimeout(timer);
         }
     }, [exiting]);
@@ -36,7 +36,7 @@ function PhotoSlider({ photos, darken }) {
     useEffect(() => {
         const timer = setInterval(() => {
             nextSlide();
-        }, 10000); // Change slide every 30 seconds
+        }, 10000);
         return () => clearInterval(timer);
     }, [current]);
 

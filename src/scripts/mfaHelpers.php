@@ -503,3 +503,74 @@ function mfa_gc($conn) {
     $conn->query("DELETE FROM admin_mfa_send_log WHERE sent_at < (NOW() - INTERVAL 1 DAY)");
     $conn->query("DELETE FROM admin_mfa_challenges WHERE expires_at < (NOW() - INTERVAL 1 DAY)");
 }
+
+function step_up_create($conn, $userId, $action, $payload) {
+    $conn->query("DELETE FROM admin_step_up_challenges WHERE expires_at < NOW()");
+
+    $stmt = $conn->prepare("DELETE FROM admin_step_up_challenges WHERE user_id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->close();
+
+    $token = bin2hex(random_bytes(32));
+    $hash  = hash('sha256', $token);
+    $ttl   = (int)mfa_config('step_up_ttl_seconds');
+    $json  = json_encode($payload === null ? new stdClass() : $payload);
+
+    $stmt = $conn->prepare(
+        "INSERT INTO admin_step_up_challenges (id, user_id, action, payload, expires_at)
+         VALUES (?, ?, ?, ?, NOW() + INTERVAL ? SECOND)"
+    );
+    $stmt->bind_param("sissi", $hash, $userId, $action, $json, $ttl);
+    $stmt->execute();
+    $stmt->close();
+
+    return $token;
+}
+
+function step_up_load($conn, $token) {
+    if (!is_string($token) || $token === '') { return null; }
+
+    $hash = hash('sha256', $token);
+
+    $stmt = $conn->prepare(
+        "SELECT id, user_id, action, payload, attempts, webauthn_challenge
+         FROM admin_step_up_challenges WHERE id = ? AND expires_at > NOW()"
+    );
+    $stmt->bind_param("s", $hash);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    return $row ?: null;
+}
+
+function step_up_delete($conn, $challengeId) {
+    $stmt = $conn->prepare("DELETE FROM admin_step_up_challenges WHERE id = ?");
+    $stmt->bind_param("s", $challengeId);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function step_up_bump_attempts($conn, $challengeId) {
+    $stmt = $conn->prepare("UPDATE admin_step_up_challenges SET attempts = attempts + 1, webauthn_challenge = NULL WHERE id = ?");
+    $stmt->bind_param("s", $challengeId);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function step_up_send_email_code($conn, $userId, $token, $email) {
+    $ownerKey = mfa_owner_key_for_token($token);
+    $state    = mfa_send_state($conn, 'step_up', $ownerKey);
+
+    if (!$state['allowed']) {
+        return ['sent' => false, 'retryAfter' => (int)$state['retry_after']];
+    }
+
+    mfa_record_send($conn, 'step_up', $ownerKey, $userId);
+    $code = mfa_issue_email_code($conn, 'step_up', $ownerKey, $userId, $email);
+    $sent = mfa_send_code_email($email, $code, 'login');
+    $after = mfa_send_state($conn, 'step_up', $ownerKey);
+
+    return ['sent' => $sent, 'retryAfter' => (int)$after['retry_after']];
+}
