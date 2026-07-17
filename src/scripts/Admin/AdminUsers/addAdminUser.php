@@ -112,9 +112,9 @@ try {
     }
 
     $hashedPassword = password_hash($newAdminPassword, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO admin_users (username, name, password_hash, email) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO admin_users (username, name, password_hash, email, email_verified_at) VALUES (?, ?, ?, ?, IF(? = '', NULL, NOW()))";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $newUsername, $newAdminName, $hashedPassword, $newAdminEmail);
+    $stmt->bind_param("sssss", $newUsername, $newAdminName, $hashedPassword, $newAdminEmail, $newAdminEmail);
     $stmt->execute();
     $new_user_id = mysqli_insert_id($conn);
     $conn->commit();
@@ -132,7 +132,7 @@ try {
     if (isset($conn)) {
         $conn->rollback();
     }
-    
+
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {
     if (isset($conn) ) {
