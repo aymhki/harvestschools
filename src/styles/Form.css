@@ -573,6 +573,12 @@
     font-family: var(--english-normal-font);
 }
 
+.captcha-wrapper:lang(ar),
+.captcha-wrapper-half-width:lang(ar) {
+    margin-inline-end: 0;
+    margin-inline-start: calc(-1 * var(--ff-gap));
+}
+
 .refresh-captcha-button {
     font-size: xx-large;
     border-radius: 10rem;
