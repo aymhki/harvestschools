@@ -1632,7 +1632,7 @@ function Table({
                                             whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
                                             position: (isStickyRow || isStickyCol) ? 'sticky' : 'relative',
                                             zIndex: isCorner ? 3 : (isStickyRow || isStickyCol ? 2 : undefined),
-                                            backgroundColor: (isStickyRow || isStickyCol) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                            backgroundColor: (isStickyRow || isStickyCol) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
                                         };
                                         if (isStickyRow) {
                                             inlineStyles.top = rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0;
@@ -1743,7 +1743,7 @@ function Table({
                                                 textAlign: 'center',
                                                 position: (actualRowIndex < stickyRows || row.length < stickyCols) ? 'sticky' : 'relative',
                                                 zIndex: (actualRowIndex < stickyRows && row.length < stickyCols) ? 3 : ((actualRowIndex < stickyRows || row.length < stickyCols) ? 2 : undefined),
-                                                backgroundColor: (actualRowIndex < stickyRows || row.length < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                                backgroundColor: (actualRowIndex < stickyRows || row.length < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
                                                 top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
                                                 left: row.length < stickyCols ? (colWidths.slice(0, row.length).reduce((a, b) => a + b, 0) || 0) : undefined,
                                             }}>
@@ -1794,7 +1794,7 @@ function Table({
                                                 textAlign: 'center',
                                                 position: (actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? 'sticky' : 'relative',
                                                 zIndex: (actualRowIndex < stickyRows && customActionCellIndex < stickyCols) ? 3 : ((actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? 2 : undefined),
-                                                backgroundColor: (actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                                backgroundColor: (actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
                                                 top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
                                                 left: customActionCellIndex < stickyCols ? (colWidths.slice(0, customActionCellIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
                                             }}>
@@ -1850,7 +1850,7 @@ function Table({
                                                 textAlign: 'center',
                                                 position: (actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? 'sticky' : 'relative',
                                                 zIndex: (actualRowIndex < stickyRows && deleteCellIndex < stickyCols) ? 3 : ((actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? 2 : undefined),
-                                                backgroundColor: (actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--harvest-off-white-color)' : undefined,
+                                                backgroundColor: (actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
                                                 top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
                                                 left: deleteCellIndex < stickyCols ? (colWidths.slice(0, deleteCellIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
                                             }}>
