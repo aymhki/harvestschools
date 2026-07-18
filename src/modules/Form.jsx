@@ -10,10 +10,62 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
-import {msgTimeout} from "../services/General/GeneralUtils.jsx";
+import {msgTimeout, turnstileSiteKey} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 import {createPortal} from "react-dom";
+
+const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+const TURNSTILE_SCRIPT_TIMEOUT_MS = 8000;
+
+let turnstileScriptPromise = null;
+
+const loadTurnstileScript = () => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+        return Promise.resolve(false);
+    }
+
+    if (window.turnstile) {
+        return Promise.resolve(true);
+    }
+
+    if (turnstileScriptPromise) {
+        return turnstileScriptPromise;
+    }
+
+    turnstileScriptPromise = new Promise((resolve) => {
+        let settled = false;
+
+        const settle = (loaded) => {
+            if (settled) {
+                return;
+            }
+
+            settled = true;
+
+            if (!loaded) {
+                turnstileScriptPromise = null;
+            }
+
+            resolve(loaded);
+        };
+
+        try {
+            const script = document.createElement('script');
+            script.src = TURNSTILE_SCRIPT_URL;
+            script.async = true;
+            script.defer = true;
+            script.onload = () => settle(!!window.turnstile);
+            script.onerror = () => settle(false);
+            document.head.appendChild(script);
+            setTimeout(() => settle(!!window.turnstile), TURNSTILE_SCRIPT_TIMEOUT_MS);
+        } catch (ignored) {
+            settle(false);
+        }
+    });
+
+    return turnstileScriptPromise;
+};
 
 const captchaSeededUnitRandom = (seed, index) => {
     const str = `${seed}_${index}`;
@@ -89,6 +141,10 @@ function Form({
     const fieldRefs = useRef({});
     const enteredCaptcha = useRef('');
     const captchaCanvasRef = useRef(null);
+    const turnstileContainerRef = useRef(null);
+    const turnstileWidgetIdRef = useRef(null);
+    const turnstileTokenRef = useRef('');
+    const [turnstileStatus, setTurnstileStatus] = useState('pending');
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
     const { t } = useTranslation(['all-forms'], forceEnglishForm ? { lng: 'en' } : {});
@@ -168,6 +224,15 @@ function Form({
         setCaptchaValue(generateCaptcha());
 
         enteredCaptcha.current = '';
+        turnstileTokenRef.current = '';
+
+        if (turnstileWidgetIdRef.current !== null && typeof window !== 'undefined' && window.turnstile && typeof window.turnstile.reset === 'function') {
+            try {
+                window.turnstile.reset(turnstileWidgetIdRef.current);
+            } catch (ignored) {
+                console.log(ignored);
+            }
+        }
 
         setGeneralFormError('');
         setSuccessMessage('');
@@ -933,12 +998,22 @@ function Form({
             return;
         }
 
-        if (enteredCaptcha.current && enteredCaptcha.current.value !== captchaValue && !noCaptcha) {
-            setGeneralFormError(t('all-forms.captcha-error'));
-            setTimeout(() => {
-                setGeneralFormError('');
-            }, msgTimeout);
-            return;
+        if (!noCaptcha) {
+            if (turnstileStatus === 'failed') {
+                if (enteredCaptcha.current && enteredCaptcha.current.value !== captchaValue) {
+                    setGeneralFormError(t('all-forms.captcha-error'));
+                    setTimeout(() => {
+                        setGeneralFormError('');
+                    }, msgTimeout);
+                    return;
+                }
+            } else if (!turnstileTokenRef.current) {
+                setGeneralFormError(t('all-forms.human-verification-pending'));
+                setTimeout(() => {
+                    setGeneralFormError('');
+                }, msgTimeout);
+                return;
+            }
         }
 
         for (let i = 0; i < dynamicFields.length; i++) {
@@ -1077,6 +1152,10 @@ function Form({
 
             formData.append('mailTo', mailTo);
             formData.append('formTitle', formTitle);
+
+            if (!noCaptcha && turnstileTokenRef.current) {
+                formData.append('cf-turnstile-response', turnstileTokenRef.current);
+            }
 
             if (hasDifferentOnSubmitBehaviour && differentOnSubmitBehaviour) {
                 try {
@@ -1254,7 +1333,75 @@ function Form({
         if (captchaValue === '') {
             setCaptchaValue(generateCaptcha());
         }
-    }, [captchaValue, setCaptchaValue, generateCaptcha]);
+    }, [captchaValue, setCaptchaValue, generateCaptcha, turnstileStatus]);
+
+    useEffect(() => {
+        if (noCaptcha) {
+            return;
+        }
+
+        let cancelled = false;
+
+        loadTurnstileScript().then((loaded) => {
+            if (cancelled) {
+                return;
+            }
+
+            if (!loaded || !window.turnstile || typeof window.turnstile.render !== 'function' || !turnstileContainerRef.current) {
+                setTurnstileStatus('failed');
+                return;
+            }
+
+            try {
+                const widgetId = window.turnstile.render(turnstileContainerRef.current, {
+                    sitekey: turnstileSiteKey,
+                    theme: 'auto',
+                    size: 'flexible',
+                    callback: (token) => {
+                        turnstileTokenRef.current = token || '';
+                        setTurnstileStatus('ready');
+                    },
+                    'error-callback': () => {
+                        turnstileTokenRef.current = '';
+                        setTurnstileStatus('failed');
+                    },
+                    'expired-callback': () => {
+                        turnstileTokenRef.current = '';
+
+                        if (turnstileWidgetIdRef.current !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
+                            try {
+                                window.turnstile.reset(turnstileWidgetIdRef.current);
+                            } catch (ignored) {
+                                setTurnstileStatus('failed');
+                            }
+                        }
+                    },
+                    'timeout-callback': () => {
+                        turnstileTokenRef.current = '';
+                    },
+                });
+
+                turnstileWidgetIdRef.current = widgetId;
+            } catch (ignored) {
+                setTurnstileStatus('failed');
+            }
+        });
+
+        return () => {
+            cancelled = true;
+
+            if (turnstileWidgetIdRef.current !== null && typeof window !== 'undefined' && window.turnstile && typeof window.turnstile.remove === 'function') {
+                try {
+                    window.turnstile.remove(turnstileWidgetIdRef.current);
+                } catch (ignored) {
+                    console.log(ignored);
+                }
+            }
+
+            turnstileWidgetIdRef.current = null;
+            turnstileTokenRef.current = '';
+        };
+    }, [noCaptcha]);
 
     const drawCaptcha = useCallback(() => {
         const canvas = captchaCanvasRef.current;
@@ -1331,7 +1478,7 @@ function Form({
     }, [captchaValue]);
 
     useEffect(() => {
-        if (noCaptcha) {
+        if (noCaptcha || turnstileStatus !== 'failed') {
             return;
         }
 
@@ -1376,7 +1523,7 @@ function Form({
                 darkSchemeMediaQuery.removeEventListener('change', handleColorSchemeChange);
             }
         };
-    }, [drawCaptcha, noCaptcha]);
+    }, [drawCaptcha, noCaptcha, turnstileStatus]);
 
     useEffect(() => {
         if (resetFormFromParent) {
@@ -1404,43 +1551,50 @@ function Form({
 
         return (
             <>
-                {!easySimpleCaptcha && (
-                    <label htmlFor="captcha" className="form-label-outside">
-                        { t("all-forms.captcha")}*
-                    </label>
-                )}
-                <div className={captchaWrapperClass}>
-                    <input
-                        className={`text-form-field ${fieldWidthClass} captcha-input`}
-                        type="text"
-                        placeholder=""
-                        required
-                        ref={enteredCaptcha}
-                        onPaste={handlePaste}
-                    />
-                    <canvas
-                        className={`text-form-field ${fieldWidthClass} captcha-box`}
-                        ref={captchaCanvasRef}
-                        role="img"
-                        aria-label={t("all-forms.captcha")}
-                        onCopy={handleCopy}
-                        onCut={handleCut}
-                        onPaste={handlePaste}
-                        onMouseDown={handleMouseDown}
-                        onKeyDown={handleKeyDown}
-                        onTouchStart={handleMouseDown}
-                    />
-                    <button
-                        className={refreshButtonClass}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setCaptchaValue(generateCaptcha());
-                        }}
-                        type="button"
-                    >
-                        ⟳
-                    </button>
+                <div className={`${fullMarginField ? 'turnstile-wrapper-with-full-margin' : 'turnstile-wrapper'}${turnstileStatus === 'failed' ? ' turnstile-wrapper-hidden' : ''}`}>
+                    <div ref={turnstileContainerRef} className="turnstile-container"/>
                 </div>
+                {(turnstileStatus === 'failed' || true) && (
+                    <>
+                        {!easySimpleCaptcha && (
+                            <label htmlFor="captcha" className="form-label-outside">
+                                { t("all-forms.captcha")}*
+                            </label>
+                        )}
+                        <div className={captchaWrapperClass}>
+                            <input
+                                className={`text-form-field ${fieldWidthClass} captcha-input`}
+                                type="text"
+                                placeholder=""
+                                required
+                                ref={enteredCaptcha}
+                                onPaste={handlePaste}
+                            />
+                            <canvas
+                                className={`text-form-field ${fieldWidthClass} captcha-box`}
+                                ref={captchaCanvasRef}
+                                role="img"
+                                aria-label={t("all-forms.captcha")}
+                                onCopy={handleCopy}
+                                onCut={handleCut}
+                                onPaste={handlePaste}
+                                onMouseDown={handleMouseDown}
+                                onKeyDown={handleKeyDown}
+                                onTouchStart={handleMouseDown}
+                            />
+                            <button
+                                className={refreshButtonClass}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setCaptchaValue(generateCaptcha());
+                                }}
+                                type="button"
+                            >
+                                ⟳
+                            </button>
+                        </div>
+                    </>
+                )}
             </>
         );
     };
