@@ -65,7 +65,7 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Improve the sessions table to include fingerprinting.
 - [x] Arabic captcha width and padding looks off.
 - [x] Look into proper captcha for forms.
-- [ ] Look into adding the same security headers from admin domain to the main domain.
+- [x] Look into adding the same security headers from admin domain to the main domain.
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
