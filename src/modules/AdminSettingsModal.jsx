@@ -23,7 +23,6 @@ import {
     verifyStepUpCode,
     verifyStepUpPasskey,
     registerPasskey,
-    removePasskey,
     listSessions,
     revokeSession,
     revokeAllOtherSessions,
