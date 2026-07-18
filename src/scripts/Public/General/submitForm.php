@@ -1,8 +1,20 @@
 <?php
 require_once '../../headers.php';
+require_once '../../turnstileHelpers.php';
 set_cors_headers();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $turnstileCheck = verify_turnstile_token_if_present();
+
+    if (!$turnstileCheck['ok']) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Human verification failed. Please refresh the page and try again.',
+            'code' => 403
+        ]);
+        exit;
+    }
+
     try {
         $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'inquiries@harvestschools.com';
         $subject = isset($_POST['formTitle']) ? $_POST['formTitle'] : 'Form Submission';

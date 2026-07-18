@@ -493,6 +493,28 @@
     border-radius: var(--ff-radius);
 }
 
+.turnstile-wrapper,
+.turnstile-wrapper-with-full-margin {
+    flex: 0 1 100%;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.turnstile-wrapper {
+    margin-inline-end: calc(-1 * var(--ff-gap));
+}
+
+.turnstile-wrapper-hidden {
+    display: none;
+}
+
+.turnstile-container {
+    width: 100%;
+    min-width: 0;
+}
+
 .captcha-wrapper,
 .captcha-wrapper-half-width {
     margin-inline-end: calc(-1 * var(--ff-gap));
@@ -519,6 +541,7 @@
 .captcha-input.half-width,
 .captcha-box.half-width {
     flex: 1 1 0%;
+    height: calc(1.5em + 1rem + (2 * var(--ff-border-width)));
 }
 
 .captcha-input.full-width,
@@ -553,6 +576,7 @@
 .refresh-captcha-button {
     font-size: xx-large;
     border-radius: 10rem;
+    margin: 0;
     padding: 0 0 0 0.5rem;
     text-align: center;
     justify-content: center;
