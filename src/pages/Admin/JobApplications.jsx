@@ -6,6 +6,8 @@ import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {fetchJobApplicationsRequest} from "../../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
 import {jobApplicationManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx"
+import { Capacitor } from '@capacitor/core';
+import {Browser} from "@capacitor/browser";
 
 function JobApplications() {
     const navigate = useNavigate();
@@ -34,7 +36,15 @@ function JobApplications() {
 
     function onJobApplicationFileUrlClick(cellValue) {
         const url = `/view-job-application-file?file=${encodeURIComponent(cellValue)}`;
-        window.open(url, '_blank');
+
+        if (Capacitor.isNativePlatform()) {
+            Browser.open({
+                url : `https://admin.harvestschools.com${url}`,
+                presentationStyle: 'popover'
+            })
+        } else {
+            window.open(url, '_blank');
+        }
     }
 
     const columnDataTypes = {
