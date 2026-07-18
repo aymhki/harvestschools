@@ -3,17 +3,16 @@
     --as-ink: var(--primary-color);
     --as-line: var(--primary-color);
     --as-tint: var(--fb-off-white-color);
-    --as-gap: 1rem;
 
     display: flex;
     flex-direction: column;
+    min-height: auto;
     max-height: 90vh;
     color: var(--as-ink);
 }
 
-
 .admin-settings-modal-container button:not(.toggle-password-visibility) {
-    margin: 0.6rem 0.75rem 0.6rem 0;
+    margin: 0.75rem 1.25rem 0.75rem 0;
 }
 
 .admin-settings-modal-container button:not(.toggle-password-visibility):disabled {
@@ -23,30 +22,42 @@
 }
 
 .admin-settings-modal-container button.danger {
+    background-color: var(--fb-white-color);
     color: var(--secondary-color);
     box-shadow: 0 0 0.5rem var(--secondary-color);
+}
+
+.admin-settings-modal-container button.danger:hover:not(:disabled) {
+    background-color: var(--secondary-color);
+    color: var(--fb-white-color);
+    filter: drop-shadow(0 0 0.5rem var(--secondary-color));
 }
 
 .admin-settings-modal-header {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 1.5rem;
 }
 
-.admin-settings-tabs {
+.admin-settings-modal-container h3 {
+    margin: 0;
+}
+
+.admin-settings-modal-container .admin-settings-tabs {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
-    gap: 0.5rem;
+    gap: 1rem;
     border-bottom: 0.1rem solid var(--as-line);
 }
 
-.admin-settings-tabs button {
-    margin: 0 !important;
-    padding: 0.6rem 1.2rem;
+.admin-settings-modal-container .admin-settings-tabs button {
+    margin: 0;
+    padding: 0.9rem 1.75rem;
     background: none;
+    background-color: transparent;
     box-shadow: none;
     filter: none;
     border: none;
@@ -55,66 +66,75 @@
     color: var(--as-ink);
     font-family: var(--english-title-font);
     font-size: 1rem;
-    opacity: 0.6;
+    opacity: 0.55;
 }
 
-.admin-settings-tabs button:hover:not(:disabled) {
+.admin-settings-modal-container .admin-settings-tabs button:hover:not(:disabled) {
     background: none;
+    background-color: transparent;
+    box-shadow: none;
     color: var(--as-ink);
     opacity: 1;
     filter: none;
 }
 
-.admin-settings-tabs button.active {
+.admin-settings-modal-container .admin-settings-tabs button.active {
     border-bottom-color: var(--as-line);
     opacity: 1;
 }
 
 .admin-settings-modal-content {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 1rem;
+    padding: 1.5rem;
     text-align: start;
 }
 
 .admin-settings-section {
     display: flex;
     flex-direction: column;
-    gap: var(--as-gap);
-    margin: 0.75rem 0;
+    gap: 2rem;
+    margin: 1.5rem 0;
 }
 
 .admin-settings-card {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: stretch;
+    gap: 1.5rem;
     border: 0.1rem solid var(--as-line);
     border-radius: var(--ff-radius);
-    padding: 1.25rem;
+    padding: 2rem;
     min-width: 0;
 }
 
-.admin-settings-card.danger-zone {
-    border-color: var(--secondary-color);
+.admin-settings-card > * {
+    flex: 0 0 auto;
 }
 
-.admin-settings-card h4 {
-    margin: 0 0 0.25rem 0;
-    color: var(--as-ink);
+.admin-settings-modal-container .admin-settings-card h4 {
+    margin: 0;
     font-family: var(--english-title-font);
+    font-size: 1.25rem;
+    line-height: 1.3;
+    color: var(--as-ink);
+}
+
+.admin-settings-card h4 + .admin-settings-hint {
+    margin-top: -0.75rem;
 }
 
 .admin-settings-card p {
     margin: 0;
     color: var(--as-ink);
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 .admin-settings-hint {
     font-size: 0.9rem;
-    opacity: 0.75;
+    opacity: 0.7;
 }
 
 .admin-settings-value-row {
@@ -122,20 +142,21 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     min-width: 0;
+    margin: 0.25rem 0;
 }
 
 .admin-settings-value {
     word-break: break-word;
     min-width: 0;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 .admin-settings-badge {
     border: 0.1rem solid currentColor;
     border-radius: var(--ff-radius);
-    padding: 0.25rem 0.75rem;
+    padding: 0.35rem 0.9rem;
     font-size: 0.8rem;
     white-space: nowrap;
     color: var(--success-color);
@@ -145,58 +166,54 @@
     color: var(--secondary-color);
 }
 
-.admin-settings-buttons-row {
+.admin-settings-modal-container .admin-settings-buttons-row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    gap: 1.25rem;
     min-width: 0;
-    margin: -0.6rem -0.75rem -0.6rem 0;
+    margin: 0.25rem 0;
 }
 
-.admin-settings-method-grid {
+.admin-settings-modal-container .admin-settings-buttons-row button {
+    margin: 0;
+}
+
+.admin-settings-modal-container .admin-settings-method-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
+    gap: 1.25rem;
     min-width: 0;
-    margin-top: 0.25rem;
+    margin: 0.25rem 0;
 }
 
-.admin-settings-method-grid button {
+.admin-settings-modal-container .admin-settings-method-grid button {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 1rem;
     width: 100%;
     min-width: 0;
-    margin: 0 !important;
-    padding: 0.9rem 1rem;
+    margin: 0;
+    padding: 1.25rem;
     text-align: start;
     white-space: normal;
     overflow-wrap: anywhere;
-    background-color: var(--as-surface);
-    color: var(--as-ink);
-    box-shadow: none;
-    border: 0.1rem solid var(--as-line);
+    border-radius: var(--ff-radius);
     font-size: 0.95rem;
 }
 
-.admin-settings-method-grid button:hover:not(:disabled) {
-    background-color: var(--as-tint);
-    color: var(--as-ink);
-    filter: none;
-}
-
-.admin-settings-method-grid button.selected {
-    background-color: var(--as-tint);
-    border-width: 0.2rem;
+.admin-settings-modal-container .admin-settings-method-grid button.selected {
+    background-color: var(--read-only-field-grey-color);
+    color: var(--primary-color);
 }
 
 .admin-settings-method-radio {
     flex: 0 0 auto;
     width: 1.1rem;
     height: 1.1rem;
-    margin-top: 0.15rem;
+    margin-top: 0.25rem;
     border: 0.15rem solid currentColor;
     border-radius: 50%;
     opacity: 0.5;
@@ -204,13 +221,13 @@
 
 .admin-settings-method-grid button.selected .admin-settings-method-radio {
     opacity: 1;
-    box-shadow: inset 0 0 0 0.2rem var(--as-surface), inset 0 0 0 1rem currentColor;
+    box-shadow: inset 0 0 0 0.2rem var(--read-only-field-grey-color), inset 0 0 0 1rem currentColor;
 }
 
 .admin-settings-method-text {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.4rem;
     min-width: 0;
 }
 
@@ -228,7 +245,6 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
 }
 
 .admin-settings-list-row {
@@ -237,21 +253,20 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
     border-bottom: 0.1rem solid var(--as-line);
-    padding: 0.75rem 0;
+    padding: 1.25rem 0;
     min-width: 0;
 }
 
-.admin-settings-list-row:last-child {
-    border-bottom: none;
-}
+.admin-settings-list-row:first-child { padding-top: 0; }
+.admin-settings-list-row:last-child  { border-bottom: none; padding-bottom: 0; }
 
 .admin-settings-list-meta {
     font-size: 0.8rem;
-    opacity: 0.75;
+    opacity: 0.7;
     line-height: 1.5;
-    margin-top: 0.25rem;
+    margin-top: 0.4rem;
 }
 
 .admin-settings-totp-qr {
@@ -269,15 +284,18 @@
 .admin-settings-totp-secret code {
     word-break: break-all;
     user-select: all;
-    padding: 0.15rem 0.4rem;
+    padding: 0.25rem 0.6rem;
     border-radius: 0.25rem;
     background-color: var(--as-tint);
 }
 
 .admin-settings-status,
 .admin-settings-error {
-    margin: 0.75rem 0;
-    line-height: 1.6;
+    margin: 1rem 0;
+    padding: 1rem 1.25rem;
+    border-radius: var(--ff-radius);
+    border: 0.1rem solid currentColor;
+    line-height: 1.7;
 }
 
 .admin-settings-status { color: var(--success-color); }
@@ -289,16 +307,22 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 0.25rem;
+    gap: 1.25rem;
     width: 100%;
     height: auto;
-    padding-top: 0.5rem;
+    padding-top: 1rem;
+}
+
+.admin-settings-modal-footer button {
+    margin: 0.75rem 0 !important;
 }
 
 @media (max-width: 768px) {
-    .admin-settings-method-grid { grid-template-columns: 1fr; }
-    .admin-settings-modal-content { padding: 0.75rem; }
-    .admin-settings-tabs button { flex: 1; padding: 0.6rem 0.5rem; }
+    .admin-settings-modal-container .admin-settings-method-grid { grid-template-columns: 1fr; }
+    .admin-settings-modal-content { padding: 1rem; }
+    .admin-settings-modal-container .admin-settings-tabs button { flex: 1; padding: 0.9rem 0.5rem; }
+    .admin-settings-card { padding: 1.5rem; gap: 1.25rem; }
+    .admin-settings-section { gap: 1.5rem; }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -311,43 +335,12 @@
         background-color: var(--as-surface);
     }
 
-    .admin-settings-modal-container button:not(.toggle-password-visibility) {
-        background-color: transparent;
-        color: var(--fb-white-color);
-        box-shadow: 0 0 0.3rem var(--fb-white-color);
-    }
-
-    .admin-settings-modal-container button:not(.toggle-password-visibility):hover:not(:disabled) {
-        background-color: var(--fb-white-color);
-        color: var(--light-dark-accent-color);
-        filter: none;
-    }
-
-    .admin-settings-modal-container button.danger {
-        color: var(--secondary-color);
-        box-shadow: 0 0 0.3rem var(--secondary-color);
-    }
-
-    .admin-settings-modal-container button.danger:hover:not(:disabled) {
-        background-color: var(--secondary-color);
-        color: var(--fb-white-color);
-    }
-
-    .admin-settings-tabs button,
-    .admin-settings-tabs button:hover:not(:disabled) {
+    .admin-settings-modal-container .admin-settings-tabs button,
+    .admin-settings-modal-container .admin-settings-tabs button:hover:not(:disabled) {
         background: none;
+        background-color: transparent;
         box-shadow: none;
+        filter: none;
         color: var(--fb-white-color);
-    }
-
-    .admin-settings-method-grid button,
-    .admin-settings-method-grid button:hover:not(:disabled) {
-        box-shadow: none;
-        color: var(--fb-white-color);
-    }
-
-    .admin-settings-method-grid button:hover:not(:disabled),
-    .admin-settings-method-grid button.selected {
-        background-color: var(--dark-accent-color);
     }
 }

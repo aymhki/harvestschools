@@ -126,12 +126,16 @@ const revokeAllOtherSessions = async () => {
 };
 
 const registerPasskey = async (label) => {
+    let alreadyHasOne = false;
+
     try {
         const optionsResult = await authedPost(endpoints.passkeyRegisterOptions);
 
         if (!optionsResult || !optionsResult.success || !optionsResult.options) {
             return optionsResult || { success: false, message: 'Could not start passkey registration' };
         }
+
+        alreadyHasOne = (optionsResult.options?.publicKey?.excludeCredentials || []).length > 0;
 
         const credential = await navigator.credentials.create(decodeCreateArgs(optionsResult.options));
 
@@ -146,12 +150,19 @@ const registerPasskey = async (label) => {
             label: label || '',
         });
     } catch (error) {
-        if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
-            return { success: false, message: 'Passkey prompt was cancelled', cancelled: true };
+        if (error && error.name === 'InvalidStateError') {
+            return { success: false, message: 'This device already has a passkey for your account. Remove it first, or use a different device.' };
         }
 
-        if (error && error.name === 'InvalidStateError') {
-            return { success: false, message: 'A passkey for this account already exists on this device' };
+        if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+            if (alreadyHasOne) {
+                return {
+                    success: false,
+                    message: 'No passkey was added. This device may already have one for your account, or the prompt was dismissed.',
+                };
+            }
+
+            return { success: false, message: 'Passkey prompt was cancelled', cancelled: true };
         }
 
         return { success: false, message: error.message };

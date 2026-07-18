@@ -138,9 +138,12 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         }
     }, [show, account, activeTab]);
 
+    const contentRef = useRef(null);
+
     const flash = useCallback((msg, isError) => {
         setStatusMsg(isError ? null : msg);
         setErrorMsg(isError ? msg : null);
+        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         if (statusTimerRef.current) { clearTimeout(statusTimerRef.current); }
         statusTimerRef.current = setTimeout(() => {
             if (isMountedRef.current) { setStatusMsg(null); setErrorMsg(null); }
@@ -688,6 +691,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                     <button type={'button'} disabled={isBusy} onClick={handleStepUpPasskey}>
                         Verify with your passkey
                     </button>
+                    <button type={'button'} disabled={isBusy} onClick={cancelStepUp}>Cancel</button>
                 </div>
             ) : (
                 <>
@@ -702,19 +706,17 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                         handleStepUpSubmit,
                         ['Verify', 'Verifying...']
                     )}
-                    {stepUpMethod === 'email' && (
-                        <div className={'admin-settings-buttons-row'}>
+                    <div className={'admin-settings-buttons-row'}>
+                        {stepUpMethod === 'email' && (
                             <button type={'button'} disabled={isBusy || stepUpResendIn > 0} onClick={handleStepUpResend}>
                                 {stepUpResendIn > 0 ? `Resend in ${stepUpResendIn}s` : 'Resend code'}
                             </button>
-                        </div>
-                    )}
+                        )}
+                        <button type={'button'} disabled={isBusy} onClick={cancelStepUp}>Cancel</button>
+                    </div>
                 </>
             )}
 
-            <div className={'admin-settings-buttons-row'}>
-                <button type={'button'} disabled={isBusy} onClick={cancelStepUp}>Cancel</button>
-            </div>
         </div>
     );
 
@@ -1006,7 +1008,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                     </div>
                 </div>
 
-                <div className={'general-large-admin-action-modal-content admin-settings-modal-content'}>
+                <div className={'general-large-admin-action-modal-content admin-settings-modal-content'} ref={contentRef}>
                     {show && (
                         <>
                             {(isBusy || !account) && <Spinner/>}
