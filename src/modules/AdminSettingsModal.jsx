@@ -273,11 +273,11 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             setTotpSetup({ secret: result.secret, qrDataUrl, isReplacement: !!result.isReplacement });
         }
 
+        await refreshAll();
         setStepUp(null);
         setStepUpMethod(null);
         setEmailPanel(null);
         flash(result.message || 'Done.');
-        await refreshAll();
     };
 
     const handleStepUpSubmit = async (formData) => {
@@ -365,11 +365,13 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             throw new Error('New passwords do not match');
         }
 
-        return beginStepUp('update_profile', {
+        await beginStepUp('update_profile', {
             name: values[`field_${nameFieldId}`],
             username: values[`field_${usernameFieldId}`],
             new_password: newPassword,
         });
+
+        return false;
     };
 
 
@@ -377,7 +379,10 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         const values = Object.fromEntries(formData.entries());
         const email = (values[`field_${emailFieldId}`] || '').trim();
 
-        if (hasAnyMethod) { return beginStepUp('change_email', { email }); }
+        if (hasAnyMethod) {
+            await beginStepUp('change_email', { email });
+            return false;
+        }
 
         const result = await requestEmailChange(email, values[`field_${emailBootstrapPasswordFieldId}`]);
 
@@ -1061,41 +1066,42 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                                             </p>
                                         </div>
                                     )}
-                                    <Form fields={[
-                                        {
-                                            id: nameFieldId, type: 'text', name: 'name', label: 'Name',
-                                            displayLabel: 'Name', httpName: 'name', required: true,
-                                            placeholder: 'Name', errorMsg: 'Please enter name',
-                                            defaultValue: account.name || '', value: '', setValue: null, widthOfField: 2,
-                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
-                                        },
-                                        {
-                                            id: usernameFieldId, type: 'text', name: 'username', label: 'Username',
-                                            displayLabel: 'Username', httpName: 'username', required: true,
-                                            placeholder: 'Username', errorMsg: 'Please enter username',
-                                            defaultValue: account.username || '', value: '', setValue: null, widthOfField: 2,
-                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
-                                        },
-                                        {
-                                            id: newPasswordFieldId, type: 'password', name: 'new-password',
-                                            label: 'New Password',
-                                            displayLabel: 'New Password (leave blank to keep your current one)',
-                                            httpName: 'new-password', required: false,
-                                            placeholder: 'New Password', errorMsg: 'Please enter new password',
-                                            value: '', setValue: null, widthOfField: 2,
-                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
-                                        },
-                                        {
-                                            id: confirmNewPasswordFieldId, type: 'password',
-                                            name: 'confirm-new-password', label: 'Confirm New Password',
-                                            displayLabel: 'Confirm New Password', httpName: 'confirm-new-password',
-                                            required: false, placeholder: 'Confirm New Password',
-                                            errorMsg: 'Please confirm new password',
-                                            value: '', setValue: null, widthOfField: 2,
-                                            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
-                                            mustMatchFieldWithId: newPasswordFieldId,
-                                        },
-                                    ]}
+                                    <Form key={`profile-${account.name}|${account.username}`}
+                                          fields={[
+                                              {
+                                                  id: nameFieldId, type: 'text', name: 'name', label: 'Name',
+                                                  displayLabel: 'Name', httpName: 'name', required: true,
+                                                  placeholder: 'Name', errorMsg: 'Please enter name',
+                                                  defaultValue: account.name || '', value: '', setValue: null, widthOfField: 2,
+                                                  labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                                              },
+                                              {
+                                                  id: usernameFieldId, type: 'text', name: 'username', label: 'Username',
+                                                  displayLabel: 'Username', httpName: 'username', required: true,
+                                                  placeholder: 'Username', errorMsg: 'Please enter username',
+                                                  defaultValue: account.username || '', value: '', setValue: null, widthOfField: 2,
+                                                  labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                                              },
+                                              {
+                                                  id: newPasswordFieldId, type: 'password', name: 'new-password',
+                                                  label: 'New Password',
+                                                  displayLabel: 'New Password (leave blank to keep your current one)',
+                                                  httpName: 'new-password', required: false,
+                                                  placeholder: 'New Password', errorMsg: 'Please enter new password',
+                                                  value: '', setValue: null, widthOfField: 2,
+                                                  labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                                              },
+                                              {
+                                                  id: confirmNewPasswordFieldId, type: 'password',
+                                                  name: 'confirm-new-password', label: 'Confirm New Password',
+                                                  displayLabel: 'Confirm New Password', httpName: 'confirm-new-password',
+                                                  required: false, placeholder: 'Confirm New Password',
+                                                  errorMsg: 'Please confirm new password',
+                                                  value: '', setValue: null, widthOfField: 2,
+                                                  labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                                                  mustMatchFieldWithId: newPasswordFieldId,
+                                              },
+                                          ]}
                                           mailTo={''}
                                           formTitle={'Admin Account Settings Form'}
                                           captchaLength={1}
