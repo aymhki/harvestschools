@@ -1,7 +1,7 @@
 .admin-login-page {
     --al-surface: var(--fb-white-color);
     --al-ink: var(--primary-color);
-    --al-tint: var(--fb-off-white-color);
+    --al-tint: var(--read-only-field-grey-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,7 +50,7 @@
 
 .admin-login-mfa button:not(.toggle-password-visibility),
 .admin-login-biometric-only button:not(.toggle-password-visibility) {
-    margin: 0.6rem 0.75rem;
+    margin: 0.75rem 1rem;
 }
 
 .admin-login-mfa button:disabled,
@@ -83,9 +83,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.75rem;
     width: 100%;
-    padding: 1rem 0;
+    padding: 1.5rem 0;
 }
 
 .admin-login-mfa-title {
@@ -114,7 +114,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 1rem;
     width: 100%;
     margin-top: 0.5rem;
 }
@@ -174,8 +174,9 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
     width: 100%;
-    margin-top: 0.25rem;
+    margin-top: 0.75rem;
 }
 
 .admin-login-mfa-error,
@@ -208,7 +209,7 @@
     .admin-login-page {
         --al-surface: var(--light-dark-accent-color);
         --al-ink: var(--fb-white-color);
-        --al-tint: var(--dark-accent-color);
+        --al-tint: var(--read-only-field-grey-color);
 
         background: radial-gradient(circle, var(--fb-white-color), var(--fb-black-gradient-color));
     }
@@ -217,46 +218,20 @@
         filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
-    .admin-login-mfa button:hover,
-    .admin-login-biometric-only button:hover {
-        filter: drop-shadow(0 0 0.4rem var(--fb-white-color));
-    }
-
-    .admin-login-mfa-picker button:hover:not(:disabled) {
-        filter: none;
-        background-color: var(--fb-white-color);
-        color: var(--primary-color);
-    }
-
-    .admin-login-mfa-picker button.current,
-    .admin-login-mfa-picker button.current:hover {
-        background-color: var(--secondary-color);
-        border-color: var(--secondary-color);
-        color: var(--fb-white-color);
-    }
-
-    .admin-login-mfa button:not(.toggle-password-visibility),
-    .admin-login-biometric-only button:not(.toggle-password-visibility) {
+    .admin-login-mfa .admin-login-mfa-picker button {
         background-color: transparent;
+        border-color: var(--fb-white-color);
         color: var(--fb-white-color);
-        box-shadow: 0 0 0.3rem var(--fb-white-color);
-    }
-
-    .admin-login-mfa button:not(.toggle-password-visibility):hover:not(:disabled),
-    .admin-login-biometric-only button:not(.toggle-password-visibility):hover:not(:disabled) {
-        background-color: var(--fb-white-color);
-        color: var(--light-dark-accent-color);
+        box-shadow: none;
         filter: none;
     }
 
-    .admin-login-mfa-picker button,
-    .admin-login-mfa-picker button:hover:not(:disabled) {
+    .admin-login-mfa .admin-login-mfa-picker button:hover:not(:disabled),
+    .admin-login-mfa .admin-login-mfa-picker button.current {
+        background-color: var(--read-only-field-grey-color);
+        border-color: var(--read-only-field-grey-color);
+        color: var(--primary-color);
         box-shadow: none;
-        color: var(--fb-white-color);
-    }
-
-    .admin-login-mfa-picker button:hover:not(:disabled),
-    .admin-login-mfa-picker button.current {
-        background-color: var(--dark-accent-color);
+        filter: none;
     }
 }

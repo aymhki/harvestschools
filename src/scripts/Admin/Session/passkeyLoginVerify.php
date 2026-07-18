@@ -127,7 +127,7 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    $stmt = $conn->prepare("UPDATE admin_users SET mfa_verified_once = 1, preferred_mfa = COALESCE(preferred_mfa, 'passkey') WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE admin_users SET mfa_verified_once = 1 WHERE id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $stmt->close();
