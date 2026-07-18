@@ -82,6 +82,15 @@
     display: block;
 }
 
+.form-label-outside:lang(ar) {
+    direction: rtl;
+    text-align: right;
+}
+
+.always-english .form-label-outside:lang(ar) {
+    align-self: flex-end;
+}
+
 .always-english {
     direction: ltr !important;
     font-family: var(--english-normal-font) !important;
