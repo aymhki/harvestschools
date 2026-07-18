@@ -109,15 +109,17 @@
     left: 0;
 }
 
-
 .general-large-admin-action-modal-container {
     position: absolute;
     border-radius: 1rem;
     padding: 1rem;
     background-color: var(--fb-white-color);
-    width: 80%;
-    min-height: 50%;
     z-index: var(--admin-action-popup-modals-z-index);
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    max-height: 90vh;
+    max-width: 90vw;
 }
 
 
@@ -147,8 +149,10 @@
 
 
 .general-large-admin-action-modal-content {
-    overflow-y: scroll;
-    max-height: 80vh;
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .general-large-admin-action-modal-content-note {
@@ -236,20 +240,15 @@
     .general-large-admin-action-modal-header h3 {
         line-height: 1.5;
     }
-
-    .general-large-admin-action-modal-container {
-        width: 90%;
-        min-height: 80%;
-    }
-
-    .general-large-admin-action-modal-content{
-        max-height: 70vh;
-    }
 }
 
 @media (max-width: 768px) {
     .general-small-admin-action-modal-container {
         width: 90%;
+    }
+
+    .general-large-admin-action-modal-container {
+        max-width: 100%;
     }
 
     .general-large-admin-action-modal-content-note {
