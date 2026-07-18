@@ -682,6 +682,8 @@
 .turnstile-loading {
     font-size: 0.85em;
     opacity: 0.7;
+    width: 100%;
+    text-align: center;
 }
 
 @media (max-width: 1600px) {
