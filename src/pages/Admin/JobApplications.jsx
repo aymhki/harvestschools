@@ -38,10 +38,7 @@ function JobApplications() {
         const url = `/view-job-application-file?file=${encodeURIComponent(cellValue)}`;
 
         if (Capacitor.isNativePlatform()) {
-            Browser.open({
-                url : `https://admin.harvestschools.com${url}`,
-                presentationStyle: 'popover'
-            })
+            navigate(url);
         } else {
             window.open(url, '_blank');
         }
