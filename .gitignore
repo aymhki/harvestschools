@@ -36,8 +36,7 @@ PopulateGraduationBookingDataScript/main.py
 tmp.md
 tmp.sql
 
-configs/botConfig.php
-configs/config-tmp.php
+configs
 bot/shared/sql
 bot/whatsapp/review.md
 

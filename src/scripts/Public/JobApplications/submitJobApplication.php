@@ -1,5 +1,6 @@
 <?php
 require_once '../../headers.php';
+require_once '../../turnstileHelpers.php';
 set_cors_headers();
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
@@ -9,6 +10,13 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $turnstileCheck = verify_turnstile_token_if_present();
+
+    if (!$turnstileCheck['ok']) {
+        echo json_encode(['success' => false, 'message' => 'Human verification failed. Please refresh the page and try again.', 'code' => 403]);
+        exit;
+    }
+
     try {
         $conn = new mysqli($servername, $username, $password, $dbname);
         if ($conn->connect_error) {
@@ -25,8 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $attachmentLinks = [];
 
         $fileLabels = [
-            'Personal Photo', 'CV', 'Cover Letter',
-            'Other Documents: First', 'Other Documents: Second', 'Other Documents: Third'
+            'Personal Photo', 'CV', 'Cover Letter', 'Other Documents: First', 'Other Documents: Second', 'Other Documents: Third'
         ];
 
         $formData = [];
@@ -46,8 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $fileLabels = [
-            'Personal Photo', 'CV', 'Cover Letter',
-            'Other Documents: First', 'Other Documents: Second', 'Other Documents: Third'
+            'Personal Photo', 'CV', 'Cover Letter', 'Other Documents: First', 'Other Documents: Second', 'Other Documents: Third'
         ];
 
         $uploadedFileLabels = [];
@@ -237,4 +243,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.', 'code' => 405]);
 }
-

@@ -10,13 +10,11 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
-import {msgTimeout, turnstileSiteKey} from "../services/General/GeneralUtils.jsx";
+import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 import {createPortal} from "react-dom";
 
-const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-const TURNSTILE_SCRIPT_TIMEOUT_MS = 8000;
 
 let turnstileScriptPromise = null;
 
@@ -1554,7 +1552,7 @@ function Form({
                 <div className={`${fullMarginField ? 'turnstile-wrapper-with-full-margin' : 'turnstile-wrapper'}${turnstileStatus === 'failed' ? ' turnstile-wrapper-hidden' : ''}`}>
                     <div ref={turnstileContainerRef} className="turnstile-container"/>
                 </div>
-                {(turnstileStatus === 'failed' || true) && (
+                {turnstileStatus === 'failed' && (
                     <>
                         {!easySimpleCaptcha && (
                             <label htmlFor="captcha" className="form-label-outside">
@@ -1572,7 +1570,13 @@ function Form({
                             />
                             <canvas
                                 className={`text-form-field ${fieldWidthClass} captcha-box`}
-                                ref={captchaCanvasRef}
+                                ref={(node) => {
+                                    captchaCanvasRef.current = node;
+
+                                    if (node) {
+                                        requestAnimationFrame(() => drawCaptcha());
+                                    }
+                                }}
                                 role="img"
                                 aria-label={t("all-forms.captcha")}
                                 onCopy={handleCopy}
