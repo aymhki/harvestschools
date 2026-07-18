@@ -80,6 +80,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Set locales version
+        run: echo "VITE_LOCALES_VERSION=$(git rev-parse --short=12 HEAD)" >> $GITHUB_ENV
+
       - name: Build main + admin + mobile-app + corporate
         run: |
           npm run build:main
