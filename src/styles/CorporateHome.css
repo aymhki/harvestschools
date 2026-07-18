@@ -63,6 +63,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    gap: 2rem;
     margin: 2rem;
     min-width: 20rem;
 }
