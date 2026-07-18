@@ -50,15 +50,11 @@ tree --gitignore -I 'assets|.git' -a
 - [x] h1/2/3 of the options page line height is not set.
 - [x] The clear and save buttons of the admin large action modal popup could be in the modal footer rather than the form footer.
 - [x] Fix the home page video width for both chrome and safari.
-- [ ] Large Action Modal Popup Needs to height readjustment for desktop view.
+- [x] Large Action Modal Popup Needs to height readjustment for desktop view.
 - [x] Admin Login Height Container needs to be bigger (use % instead vh or use nothing at all).
 - [x] If the early playschool department is selected in the main menu of the intermediate mode, there is no need to prompt the user to select stage group in the chat bot.
 - [x] Add an update config button to the info system management page in the admin portal for each tab table.
-- [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
-- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
-- [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
 - [x] Create basic corporate site.
-- [ ] Setup the info for the D-U-N-S Number.
 - [x] Fix the home page map.
 - [x] Getting dashboard permissions and validating them should all work through the new permissions table in the db.
 - [x] The custom multi select form field should support a special set value entries at which custom actions like check all and uncheck all work and at which a higher priority sort order is given.
@@ -67,7 +63,10 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Use encrypt for all admin sessions.
 - [x] Look into MFA  for admin logins.
 - [x] Improve the sessions table to include fingerprinting.
-- [ ] Arabic captcha width and padding looks off.
-- [ ] Look into proper captcha for forms.
+- [x] Arabic captcha width and padding looks off.
+- [x] Look into proper captcha for forms.
 - [ ] Look into adding the same security headers from admin domain to the main domain.
-- [ ] 
+- [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
+- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
+- [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
+- [ ] Setup the info for the D-U-N-S Number.
