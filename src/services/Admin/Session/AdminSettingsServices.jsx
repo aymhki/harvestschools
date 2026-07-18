@@ -104,9 +104,6 @@ const verifyStepUpPasskey = async (stepUpToken) => {
     }
 };
 
-const removePasskey = async (passkeyId) => {
-    return requestStepUp('remove_passkey', { passkey_id: passkeyId });
-};
 
 
 const requestEmailChange = async (email, currentPassword = '') => {
@@ -185,7 +182,6 @@ export {
     verifyStepUpCode,
     verifyStepUpPasskey,
     registerPasskey,
-    removePasskey,
     listSessions,
     revokeSession,
     revokeAllOtherSessions
