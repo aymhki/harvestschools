@@ -144,8 +144,6 @@
     padding-bottom: 0.5rem;
 }
 
-.logout-btn .nav-item-content { color: #ff6b6b; }
-.logout-btn:hover .nav-item-content { background-color: #ff6b6b; color: white; }
 
 .admin-sidebar-language-switcher.ar {
     font-family: var(--arabic-normal-font);
@@ -244,10 +242,6 @@
         font-size: 0.85rem;
     }
 
-    .sidebar-footer .sidebar-links li.logout-btn a,
-    .sidebar-footer .sidebar-links li.logout-btn .nav-item-content {
-        border-color: var(--secondary-color);
-    }
 }
 
 
