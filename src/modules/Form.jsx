@@ -1552,6 +1552,9 @@ function Form({
                 <div className={`${fullMarginField ? 'turnstile-wrapper-with-full-margin' : 'turnstile-wrapper'}${turnstileStatus === 'failed' ? ' turnstile-wrapper-hidden' : ''}`}>
                     <div ref={turnstileContainerRef} className="turnstile-container"/>
                 </div>
+                {turnstileStatus === 'pending' && (
+                    <p className="turnstile-loading">Verifying you&apos;re human...</p>
+                )}
                 {turnstileStatus === 'failed' && (
                     <>
                         {!easySimpleCaptcha && (

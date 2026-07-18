@@ -8,6 +8,7 @@ import { Capacitor } from '@capacitor/core';
 
 const i18nInstance = i18n.use(initReactI18next);
 
+
 if (typeof window !== 'undefined') {
     const customDetector = {
         name: 'customUrlDetector',
@@ -31,8 +32,14 @@ if (typeof window !== 'undefined') {
     i18nInstance.use(languageDetector);
 }
 
-const getLocalesLoadPath = () =>
-    Capacitor.isNativePlatform() ? 'https://harvestschools.com/locales/{{lng}}/{{ns}}.json' : '/locales/{{lng}}/{{ns}}.json';
+const LOCALES_VERSION = import.meta.env.VITE_LOCALES_VERSION || 'dev';
+
+const getLocalesLoadPath = () => {
+    const base = Capacitor.isNativePlatform()
+        ? 'https://harvestschools.com/locales/{{lng}}/{{ns}}.json'
+        : '/locales/{{lng}}/{{ns}}.json';
+    return `${base}?v=${LOCALES_VERSION}`;
+};
 
 i18nInstance
     .use(Backend)
