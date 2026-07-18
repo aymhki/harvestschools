@@ -32,8 +32,8 @@ const getSessionsFromLocalStorage = (sessionName) => {
     return {sessionId, sessionTime};
 }
 
-const getAdminSessionId = () => {
-    return localStorage.getItem('harvest_schools_admin_session_id');
+const getAdminSessionId = async () => {
+    return Capacitor.isNativePlatform() ? await getMobileSession('harvest_schools_admin') : localStorage.getItem('harvest_schools_admin_session_id');
 }
 
 const getGraduationBookingSessionId = () => {

@@ -40,7 +40,7 @@ function JobApplications() {
         if (Capacitor.isNativePlatform()) {
             navigate(url);
         } else {
-            navigate(url);
+            window.open(url, '_blank');
         }
     }
 

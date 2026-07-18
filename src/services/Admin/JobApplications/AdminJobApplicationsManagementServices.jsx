@@ -62,7 +62,7 @@ const serveJobApplicationFile = async (searchParams, setIsLoading, setError, set
 
     try {
         const response = await fetch(`${endpoints.serveJobApplicationFile}${filePath}`, { method: 'GET',
-            headers: await buildAuthHeaders(getAdminSessionId())
+            headers: await buildAuthHeaders( await getAdminSessionId() )
         } );
 
         const contentType = response.headers.get("content-type");
