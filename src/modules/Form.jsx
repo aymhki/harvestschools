@@ -15,6 +15,22 @@ import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 import {createPortal} from "react-dom";
 
+const captchaSeededUnitRandom = (seed, index) => {
+    const str = `${seed}_${index}`;
+    let h = 2166136261 >>> 0;
+
+    for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+    }
+
+    h ^= h >>> 13;
+    h = Math.imul(h, 0x5bd1e995);
+    h ^= h >>> 15;
+
+    return ((h >>> 0) % 100000) / 100000;
+};
+
 function Form({
                   fields,
                   mailTo,
@@ -72,6 +88,7 @@ function Form({
     const [captchaValue, setCaptchaValue] = useState('');
     const fieldRefs = useRef({});
     const enteredCaptcha = useRef('');
+    const captchaCanvasRef = useRef(null);
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
     const { t } = useTranslation(['all-forms'], forceEnglishForm ? { lng: 'en' } : {});
@@ -1239,6 +1256,128 @@ function Form({
         }
     }, [captchaValue, setCaptchaValue, generateCaptcha]);
 
+    const drawCaptcha = useCallback(() => {
+        const canvas = captchaCanvasRef.current;
+
+        if (!canvas || !captchaValue) {
+            return;
+        }
+
+        const computedStyle = window.getComputedStyle(canvas);
+        const fontSize = parseFloat(computedStyle.fontSize) || 16;
+        const letterSpacing = parseFloat(computedStyle.letterSpacing) || 0;
+        const fontFamily = computedStyle.fontFamily || 'sans-serif';
+        const fontWeight = computedStyle.fontWeight || '400';
+        const fontStyle = computedStyle.fontStyle || 'normal';
+        const textColor = computedStyle.color;
+        const strikeThroughColor = computedStyle.textDecorationColor || textColor;
+        const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+        const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+        const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+        const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+        const borderLeft = parseFloat(computedStyle.borderLeftWidth) || 0;
+        const borderRight = parseFloat(computedStyle.borderRightWidth) || 0;
+        const borderTop = parseFloat(computedStyle.borderTopWidth) || 0;
+        const borderBottom = parseFloat(computedStyle.borderBottomWidth) || 0;
+        const rect = canvas.getBoundingClientRect();
+        const contentWidth = Math.max(0, rect.width - paddingLeft - paddingRight - borderLeft - borderRight);
+        const contentHeight = Math.max(0, rect.height - paddingTop - paddingBottom - borderTop - borderBottom);
+
+        if (contentWidth === 0 || contentHeight === 0) {
+            return;
+        }
+
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.round(contentWidth * devicePixelRatio));
+        canvas.height = Math.max(1, Math.round(contentHeight * devicePixelRatio));
+
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            return;
+        }
+
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+        ctx.clearRect(0, 0, contentWidth, contentHeight);
+        ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = textColor;
+
+        const captchaCharacters = captchaValue.split('');
+        const characterWidths = captchaCharacters.map(character => ctx.measureText(character).width);
+        const totalTextWidth = characterWidths.reduce((sum, width) => sum + width, 0) + (letterSpacing * Math.max(0, captchaCharacters.length - 1));
+        const centerY = contentHeight / 2;
+        let currentX = (contentWidth - totalTextWidth) / 2;
+
+        captchaCharacters.forEach((character, characterIndex) => {
+            const rotation = (captchaSeededUnitRandom(captchaValue, characterIndex * 2) - 0.5) * 0.26;
+            const verticalJitter = (captchaSeededUnitRandom(captchaValue, (characterIndex * 2) + 1) - 0.5) * fontSize * 0.16;
+
+            ctx.save();
+            ctx.translate(currentX + (characterWidths[characterIndex] / 2), centerY + verticalJitter);
+            ctx.rotate(rotation);
+            ctx.fillText(character, -(characterWidths[characterIndex] / 2), 0);
+            ctx.restore();
+
+            currentX += characterWidths[characterIndex] + letterSpacing;
+        });
+
+        ctx.strokeStyle = strikeThroughColor;
+        ctx.lineWidth = Math.max(1, fontSize / 14);
+        ctx.beginPath();
+        ctx.moveTo(Math.max(0, (contentWidth - totalTextWidth) / 2), centerY);
+        ctx.lineTo(Math.min(contentWidth, ((contentWidth - totalTextWidth) / 2) + totalTextWidth), centerY);
+        ctx.stroke();
+    }, [captchaValue]);
+
+    useEffect(() => {
+        if (noCaptcha) {
+            return;
+        }
+
+        drawCaptcha();
+
+        const canvas = captchaCanvasRef.current;
+        let resizeObserver = null;
+        let cleanedUp = false;
+
+        if (canvas && typeof ResizeObserver !== 'undefined') {
+            resizeObserver = new ResizeObserver(() => {
+                drawCaptcha();
+            });
+            resizeObserver.observe(canvas);
+        }
+
+        const darkSchemeMediaQuery = (typeof window.matchMedia === 'function') ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+        const handleColorSchemeChange = () => {
+            drawCaptcha();
+        };
+
+        if (darkSchemeMediaQuery && typeof darkSchemeMediaQuery.addEventListener === 'function') {
+            darkSchemeMediaQuery.addEventListener('change', handleColorSchemeChange);
+        }
+
+        if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+            document.fonts.ready.then(() => {
+                if (!cleanedUp) {
+                    drawCaptcha();
+                }
+            });
+        }
+
+        return () => {
+            cleanedUp = true;
+
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            }
+
+            if (darkSchemeMediaQuery && typeof darkSchemeMediaQuery.removeEventListener === 'function') {
+                darkSchemeMediaQuery.removeEventListener('change', handleColorSchemeChange);
+            }
+        };
+    }, [drawCaptcha, noCaptcha]);
+
     useEffect(() => {
         if (resetFormFromParent) {
             resetFormCompletely();
@@ -1279,17 +1418,18 @@ function Form({
                         ref={enteredCaptcha}
                         onPaste={handlePaste}
                     />
-                    <div
+                    <canvas
                         className={`text-form-field ${fieldWidthClass} captcha-box`}
+                        ref={captchaCanvasRef}
+                        role="img"
+                        aria-label={t("all-forms.captcha")}
                         onCopy={handleCopy}
                         onCut={handleCut}
                         onPaste={handlePaste}
                         onMouseDown={handleMouseDown}
                         onKeyDown={handleKeyDown}
                         onTouchStart={handleMouseDown}
-                    >
-                        {captchaValue}
-                    </div>
+                    />
                     <button
                         className={refreshButtonClass}
                         onClick={(e) => {
