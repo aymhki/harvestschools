@@ -528,6 +528,7 @@
 
 .captcha-box {
     display: flex;
+    height: calc(1.5em + 1rem + (2 * var(--ff-border-width)));
     background-color: var(--fb-white-gradient);
     text-decoration: line-through;
     text-decoration-color: var(--fb-white-color);
