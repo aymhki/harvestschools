@@ -121,6 +121,9 @@ const graduationBookingLoginPageUrl = '/events/graduation-booking';
 const graduationBookingDashboardPageUrl = '/events/graduation-booking/dashboard';
 const adminLoginPageUrl = '/admin-login';
 const adminDashboardPageUrl = '/admin-dashboard';
+const alumniStudentsPageUrl = '/students-life/alumni-students';
+const alumniLoginPageUrl = '/students-life/alumni-students/login';
+const alumniProfilePageUrl = '/students-life/alumni-students/profile';
 const costPerChildInOpenDaySignup = 150;
 
 const adminUserManagementPermissionLevel = "1000";
@@ -220,6 +223,34 @@ const ENDPOINTS = {
     requestStepUpEmailCode: '/scripts/Admin/Session/requestStepUpEmailCode.php',
     stepUpPasskeyOptions: '/scripts/Admin/Session/stepUpPasskeyOptions.php',
     verifyStepUp: '/scripts/Admin/Session/verifyStepUp.php',
+    submitAlumniSignup: '/scripts/Public/AlumniStudents/submitAlumniSignup.php',
+    validateAlumniLogin: '/scripts/Public/AlumniStudents/validateAlumniLogin.php',
+    alumniPasskeyLoginOptions: '/scripts/Public/AlumniStudents/alumniPasskeyLoginOptions.php',
+    alumniPasskeyLoginVerify: '/scripts/Public/AlumniStudents/alumniPasskeyLoginVerify.php',
+    getApprovedAlumniPosts: '/scripts/Public/AlumniStudents/getApprovedAlumniPosts.php',
+    serveAlumniPublicFile: '/scripts/Public/AlumniStudents/serveAlumniPublicFile.php',
+    checkAlumniSession: '/scripts/Alumni/checkAlumniSession.php',
+    deleteAlumniSession: '/scripts/Alumni/deleteAlumniSession.php',
+    getMyAlumniAccount: '/scripts/Alumni/getMyAlumniAccount.php',
+    submitAlumniProfileUpdate: '/scripts/Alumni/submitAlumniProfileUpdate.php',
+    cancelAlumniProfileUpdate: '/scripts/Alumni/cancelAlumniProfileUpdate.php',
+    changeAlumniPassword: '/scripts/Alumni/changeAlumniPassword.php',
+    alumniPasskeyRegisterOptions: '/scripts/Alumni/alumniPasskeyRegisterOptions.php',
+    alumniPasskeyRegisterVerify: '/scripts/Alumni/alumniPasskeyRegisterVerify.php',
+    deleteAlumniPasskey: '/scripts/Alumni/deleteAlumniPasskey.php',
+    submitAlumniPost: '/scripts/Alumni/submitAlumniPost.php',
+    editAlumniPost: '/scripts/Alumni/editAlumniPost.php',
+    deleteAlumniPost: '/scripts/Alumni/deleteAlumniPost.php',
+    uploadAlumniPostImage: '/scripts/Alumni/uploadAlumniPostImage.php',
+    getAllAlumniAccounts: '/scripts/Admin/AlumniStudents/getAllAlumniAccounts.php',
+    setAlumniAccountStatus: '/scripts/Admin/AlumniStudents/setAlumniAccountStatus.php',
+    reviewAlumniProfileUpdate: '/scripts/Admin/AlumniStudents/reviewAlumniProfileUpdate.php',
+    deleteAlumniAccount: '/scripts/Admin/AlumniStudents/deleteAlumniAccount.php',
+    getAllAlumniPosts: '/scripts/Admin/AlumniStudents/getAllAlumniPosts.php',
+    reviewAlumniPost: '/scripts/Admin/AlumniStudents/reviewAlumniPost.php',
+    setAlumniPostPlacement: '/scripts/Admin/AlumniStudents/setAlumniPostPlacement.php',
+    deleteAlumniPostByAdmin: '/scripts/Admin/AlumniStudents/deleteAlumniPostByAdmin.php',
+    serveAlumniFile: '/scripts/Admin/AlumniStudents/serveAlumniFile.php?file=',
 };
 
 const BASE_URLS = {
@@ -233,6 +264,22 @@ const ADMIN_BASE_URLS = {
 };
 
 const endpoints = generateEndpoints();
+
+const getAlumniSessionId = () => {
+    return localStorage.getItem('harvest_schools_alumni_session_id');
+}
+
+const alumniPublicFileUrl = (pathOrUrl) => {
+    if (!pathOrUrl) {
+        return '';
+    }
+
+    if (/^https?:\/\//i.test(pathOrUrl)) {
+        return pathOrUrl;
+    }
+
+    return `${endpoints.serveAlumniPublicFile}?file=${encodeURIComponent(pathOrUrl)}`;
+}
 
 const logoutCurrentAdmin = async (navigate) => {
     const native = Capacitor.isNativePlatform();
@@ -339,6 +386,11 @@ export {
     graduationBookingDashboardPageUrl,
     adminLoginPageUrl,
     adminDashboardPageUrl,
+    alumniStudentsPageUrl,
+    alumniLoginPageUrl,
+    alumniProfilePageUrl,
+    alumniPublicFileUrl,
+    getAlumniSessionId,
     endpoints,
     BASE_URLS,
     costPerChildInOpenDaySignup,

@@ -6,6 +6,8 @@ import AdminFooter from "../modules/AdminFooter.jsx";
 import NavigationBar from "../modules/NavigationBar.jsx";
 import '../styles/App.css';
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from "../services/Admin/Session/AdminNavigationServices.jsx";
+import { serveAlumniFile } from "../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx";
+import {serveJobApplicationFile} from "../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
 
 const NotFound = lazy(() => import('../pages/NotFound.jsx'))
 const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin.jsx'))
@@ -81,7 +83,8 @@ function AdminRouter() {
                         <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />
                         <Route path="/borrowing-system-management" element={<BorrowingSystemManagement />} />
                         <Route path="/info-system-management" element={<InfoSystemManagement />} />
-                        <Route path="/view-job-application-file" element={<FileViewer />} />
+                        <Route path="/view-job-application-file" element={<FileViewer fetchFileService={serveJobApplicationFile}/>} />
+                        <Route path="/view-alumni-file" element={<FileViewer fetchFileService={serveAlumniFile} />} />
                         <Route path="/admin-users-management" element={<AdminUsersManagement loggedInUserId={loggedInUserId} setRefreshCurrentUserData={setRefreshCurrentUserData}/>} />
                         <Route path="/alumni-students-management" element={<AlumniStudentsManagement />} />
                         <Route path="*" element={<NotFound />} />

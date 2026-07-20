@@ -333,6 +333,13 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
                         }}><Link to="/students-life/library">
                             {t("nav.library")}
                         </Link></li>
+
+                        <li onClick={() => {
+                            (isMobile ? toggleMenu() : null);
+                            navigate('/students-life/alumni-students');
+                        }}><Link to="/students-life/alumni-students">
+                            {t("nav.alumni-students")}
+                        </Link></li>
                     </ul>
                 </li>
 

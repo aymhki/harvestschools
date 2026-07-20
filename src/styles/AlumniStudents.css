@@ -1,0 +1,1023 @@
+
+.alumni-students-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.alumni-students-page-header {
+    display: flex;
+    flex-direction: column;
+    max-width: 52rem;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.alumni-students-page-header-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.alumni-students-page-header p {
+    line-height: 1.7;
+    margin: 0;
+    flex-grow: 0;
+}
+
+.alumni-students-page-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+
+.alumni-danger-button {
+    color: var(--secondary-color);
+    box-shadow: 0 0 0.5rem var(--secondary-color);
+}
+
+.alumni-danger-button:hover {
+    filter: drop-shadow(0 0 0.5rem var(--secondary-color));
+    background-color: var(--secondary-color);
+    color: var(--fb-white-color);
+}
+
+.alumni-students-page-posts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 52rem;
+}
+
+.alumni-students-page-empty {
+    text-align: center;
+    max-width: 40rem;
+    line-height: 1.7;
+}
+
+.alumni-login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    min-height: 100vh;
+    width: 100%;
+    background: radial-gradient(circle, var(--fb-white-color), var(--primary-color));
+    overflow-x: hidden;
+}
+
+.alumni-login-page-form-controller {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.alumni-login-form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(92vw, 40rem);
+    background-color: var(--fb-white-color);
+    border-radius: 1rem;
+    padding: 1.5rem 1rem;
+    box-sizing: border-box;
+    transition: box-shadow 0.5s;
+    max-height: 85vh;
+    overflow: scroll;
+    gap: 2rem;
+}
+
+.alumni-login-form-wrapper.sign-up-wrapper-variant {
+    width: min(92vw, 90rem);
+}
+
+
+.alumni-login-form-wrapper h2 {
+    text-align: center;
+    margin: 0 0 0.25rem 0;
+}
+
+.alumni-login-form-wrapper > p {
+    text-align: center;
+    margin: 0 1rem;
+    line-height: 1.6;
+}
+
+.alumni-login-switch-mode {
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin: 0.75rem 0 0 0;
+    text-align: center;
+}
+
+.alumni-post-card {
+    width: 100%;
+    background-color: var(--fb-white-color);
+    border-radius: 1rem;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+    padding: 1.5rem;
+    box-sizing: border-box;
+    text-align: start;
+}
+
+.alumni-post-card-preview {
+    overflow: clip;
+}
+
+.alumni-post-card-content {
+    max-height: 30rem;
+    overflow: hidden;
+}
+
+
+.alumni-post-card-title {
+    color: var(--primary-color);
+    margin: 0.75rem 0 0.5rem 0;
+    line-height: 1.4;
+}
+
+.alumni-post-card-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alumni-post-card-avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--primary-color);
+    box-sizing: border-box;
+}
+
+.alumni-post-card-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.alumni-post-card-author-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.alumni-post-card-author-name {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin: 0;
+}
+
+.alumni-post-card-author-details {
+    opacity: 0.8;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.alumni-post-card-excerpt {
+    line-height: 1.7;
+    margin: 0 0 0.75rem 0;
+}
+
+.alumni-post-card-read-more {
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: var(--fb-link-color);
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    font-size: 0.95rem;
+    text-decoration: underline;
+}
+
+.alumni-post-card-read-more:hover {
+    background: none;
+    color: var(--secondary-color);
+    filter: none;
+}
+
+.alumni-login-mode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.alumni-login-mode-buttons button.alumni-login-active-mode {
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+}
+
+.alumni-login-tab-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.alumni-login-buttons-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.alumni-login-method-switch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.alumni-passkey-login-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--read-only-field-grey-color);
+    width: 90%;
+}
+
+.alumni-passkey-login-row p {
+    font-size: 0.9rem;
+    margin: 0;
+    text-align: center;
+}
+
+.alumni-passkey-login-row input[type="text"] {
+    border: 1px solid var(--read-only-field-grey-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    width: min(100%, 18rem);
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.alumni-inline-error-message {
+    color: var(--secondary-color);
+    text-align: center;
+    margin: 0.5rem 0 0 0;
+}
+
+.alumni-inline-success-message {
+    color: var(--success-color);
+    text-align: center;
+    margin: 0.5rem 0 0 0;
+}
+
+
+.alumni-profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    box-sizing: border-box;
+}
+
+.alumni-profile-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 3rem;
+    padding: 3rem;
+    box-sizing: border-box;
+}
+
+.alumni-profile-header-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+    width: min(100%, 52rem);
+    background-color: var(--fb-white-color);
+    border-radius: 1rem;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+.alumni-profile-header-avatar {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.alumni-profile-header-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    font-size: 2.25rem;
+    font-weight: bold;
+}
+
+.alumni-profile-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 14rem;
+    text-align: start;
+}
+
+.alumni-profile-header-info h2 {
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.alumni-profile-header-info p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.alumni-profile-header-username {
+    opacity: 0.75;
+    font-size: 0.9rem;
+}
+
+.alumni-profile-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.alumni-profile-header-actions button,
+.alumni-profile-post-item-actions button,
+.alumni-profile-passkey-row button,
+.alumni-profile-section-header button {
+    margin: 0.35rem;
+    padding: 0.5rem 0.8rem;
+    font-size: medium;
+}
+
+.alumni-profile-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: min(100%, 52rem);
+    background-color: var(--fb-white-color);
+    border-radius: 1rem;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+.alumni-profile-section-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alumni-profile-section-header h2 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.3rem;
+    text-align: start;
+}
+
+.alumni-status-chip {
+    display: inline-block;
+    border-radius: 1rem;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--fb-white-color);
+    white-space: nowrap;
+}
+
+.alumni-status-chip-pending {
+    background-color: #b8860b;
+}
+
+.alumni-status-chip-approved {
+    background-color: var(--success-color);
+}
+
+.alumni-status-chip-rejected,
+.alumni-status-chip-disabled {
+    background-color: var(--secondary-color);
+}
+
+.alumni-status-chip-placement {
+    background-color: var(--primary-color);
+}
+
+.alumni-pending-update-banner {
+    background-color: var(--fb-off-white-color);
+    border-inline-start: 0.25rem solid #b8860b;
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 0.75rem 1rem;
+    line-height: 1.6;
+    text-align: start;
+}
+
+.alumni-pending-update-banner ul {
+    margin: 0.5rem 0 0.75rem 0;
+    padding-inline-start: 1.25rem;
+}
+
+.alumni-note-from-school {
+    background-color: var(--fb-off-white-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0 0;
+    text-align: start;
+}
+
+.alumni-profile-post-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    text-align: start;
+    box-shadow: 0 0 1rem var(--primary-color);
+}
+
+.alumni-profile-post-item-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.alumni-profile-post-item-header h3 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.alumni-profile-post-item-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.alumni-profile-post-item-meta {
+    opacity: 0.8;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.alumni-profile-post-item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.alumni-profile-passkey-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--read-only-field-grey-color);
+    border-radius: 0.5rem;
+    padding: 0.6rem 1rem;
+}
+
+.alumni-profile-passkey-row p {
+    margin: 0;
+    text-align: start;
+}
+
+.alumni-profile-passkey-row p span {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.alumni-profile-empty-hint {
+    opacity: 0.8;
+    text-align: start;
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+.alumni-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--admin-action-popup-modals-overlay-z-index);
+}
+
+.alumni-modal-overlay {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: var(--admin-action-popup-modals-overlay-z-index);
+    top: 0;
+    left: 0;
+}
+
+.alumni-modal-container {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: var(--fb-white-color);
+    z-index: var(--admin-action-popup-modals-z-index);
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    max-height: 95vh;
+    max-width: 98vw;
+    width: min(98vw, 48rem);
+}
+
+.alumni-modal-container.alumni-markdown-post-editor {
+    width: 98vw;
+    height: 95vh;
+}
+
+.alumni-modal-container-narrow {
+    width: min(90vw, 30rem);
+}
+
+.alumni-modal-header {
+    margin: 0.5rem;
+}
+
+.alumni-modal-header h3 {
+    color: var(--primary-color);
+    margin: 0.5rem;
+    text-align: center;
+}
+
+.alumni-modal-content {
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    text-align: start;
+}
+
+.alumni-modal-content label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.alumni-modal-content input[type="text"],
+.alumni-modal-content input[type="password"] {
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.alumni-modal-content-note {
+    font-size: medium;
+    opacity: 0.85;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.alumni-modal-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.alumni-modal-footer button {
+
+}
+
+.alumni-markdown-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.alumni-markdown-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--fb-off-white-color);
+    border-radius: 0.8rem;
+    padding: 0.4rem;
+}
+
+.alumni-markdown-editor-toolbar button {
+    margin: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
+    box-shadow: 0 0 0.25rem var(--primary-color);
+}
+
+.alumni-markdown-editor-toolbar select {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.85rem;
+    width: 15%;
+}
+
+.alumni-markdown-editor-toolbar-separator {
+    width: 1px;
+    align-self: stretch;
+    background-color: var(--read-only-field-grey-color);
+    margin: 0 0.25rem;
+}
+
+.alumni-markdown-editor-preview-toggle-active {
+    background-color: var(--primary-color) !important;
+    color: var(--fb-white-color) !important;
+}
+
+.alumni-markdown-editor-panels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.alumni-markdown-editor-panels.with-preview {
+    grid-template-columns: 1fr 1fr;
+}
+
+.alumni-markdown-editor-panels textarea {
+    width: 100%;
+    min-height: 50vh;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    line-height: 2rem;
+    box-sizing: border-box;
+}
+
+.alumni-markdown-editor-preview {
+    border: 1px dashed var(--read-only-field-grey-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    min-height: 50vh;
+    max-height: 50vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.alumni-markdown-editor-preview-empty {
+    opacity: 0.6;
+    margin: 0;
+}
+
+.alumni-markdown-editor-hint {
+    opacity: 0.7;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin: 0;
+    text-align: start;
+}
+
+.alumni-markdown-editor-error {
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    margin: 0;
+    text-align: start;
+}
+
+
+.home-page-alumni-highlights-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding: 5rem 1rem;
+    box-sizing: border-box;
+}
+
+.home-page-alumni-highlights-section h1 {
+    text-align: center;
+}
+
+.home-page-alumni-highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 1.25rem;
+    width: 90%;
+    align-items: stretch;
+}
+
+
+.alumni-admin-review-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    text-align: start;
+    width: 100%;
+}
+
+.alumni-admin-review-details p {
+    margin: 0;
+    line-height: 1.6;
+    padding-inline-start: 1rem;
+}
+
+.alumni-admin-review-details p strong {
+    color: var(--primary-color);
+}
+
+.alumni-admin-diff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.alumni-admin-diff-table th,
+.alumni-admin-diff-table td {
+    border: 1px solid var(--fb-off-white-color);
+    padding: 0.5rem 0.75rem;
+    text-align: start;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.alumni-admin-diff-table th {
+    background-color: var(--fb-off-white-color);
+    color: var(--primary-color);
+}
+
+.alumni-admin-diff-table tr.alumni-admin-diff-changed td {
+    background-color: rgba(201, 67, 73, 0.08);
+}
+
+.alumni-admin-review-link {
+    color: var(--fb-link-color);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    font-weight: normal;
+    letter-spacing: normal;
+}
+
+.alumni-admin-review-link:hover {
+    background: none;
+    color: var(--secondary-color);
+    filter: none;
+}
+
+.alumni-admin-post-preview {
+    border: 1px solid var(--fb-off-white-color);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    max-height: 24rem;
+    overflow-y: auto;
+}
+
+.alumni-admin-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.alumni-admin-note-field {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 0.9rem;
+    text-align: start;
+}
+
+.alumni-admin-note-field textarea {
+    border: 1px solid var(--read-only-field-grey-color);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    min-height: 4rem;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.alumni-admin-placement-selects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.alumni-admin-placement-selects label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.alumni-admin-placement-selects select {
+    border-radius: 0.6rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+@media (max-width: 768px) {
+
+    .alumni-profile-wrapper {
+        padding: 0;
+    }
+    .alumni-students-page {
+        padding-top: 5rem;
+    }
+
+    .alumni-markdown-editor-panels.with-preview {
+        grid-template-columns: 1fr;
+    }
+
+    .alumni-profile-header-card {
+        flex-direction: column;
+        text-align: center;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .alumni-profile-header-info {
+        align-items: center;
+        text-align: center;
+    }
+
+    .alumni-profile-header-actions {
+        justify-content: center;
+    }
+
+
+    .alumni-modal-footer {
+        flex-wrap: wrap;
+    }
+
+    .alumni-markdown-editor-toolbar select {
+        width: 35%;
+    }
+
+    .alumni-students-page-header-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .home-page-alumni-highlights-section {
+        margin: 1rem auto;
+    }
+
+    .alumni-login-method-switch {
+        flex-wrap: wrap;
+    }
+}
+
+
+@media (prefers-color-scheme: dark) {
+    .alumni-login-form-wrapper {
+        background-color: var(--light-dark-accent-color);
+    }
+
+    .alumni-login-page {
+        background: radial-gradient(circle, var(--fb-white-color), var(--fb-black-gradient-color)) ;
+    }
+
+    .alumni-admin-review-details p strong {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-profile-header-card {
+        background-color: var(--light-dark-accent-color);
+        border: 1px solid var(--fb-white-color);
+        box-shadow: var(--fb-white-color);
+        filter: drop-shadow(0px 1rem 1rem var(--fb-white-color));
+    }
+
+    .alumni-profile-header-info h2 {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-profile-header-avatar-fallback {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+
+    .alumni-profile-section {
+        background-color: var(--light-dark-accent-color);
+        border: 1px solid var(--fb-white-color);
+        box-shadow: var(--fb-white-color);
+        filter: drop-shadow(0px 1rem 1rem var(--fb-white-color));
+    }
+
+    .alumni-profile-section-header h2 {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-modal-container {
+        background-color: var(--light-dark-accent-color);
+    }
+
+    .alumni-modal-header h3 {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-markdown-editor-toolbar {
+        background-color: var(--dark-accent-color);
+        margin: 1rem 0;
+    }
+
+    .alumni-pending-update-banner {
+        background-color: var(--dark-accent-color);
+    }
+
+    .alumni-profile-post-item-header h3 {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-post-card {
+        background-color: var(--light-dark-accent-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
+    }
+
+    .alumni-post-card-title {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-post-card-author-name {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-post-card-avatar {
+        border-color: var(--fb-white-color);
+    }
+
+    .alumni-profile-header-avatar {
+        border-color: var(--fb-white-color);
+    }
+
+    .alumni-status-chip {
+        color: var(--primary-color);
+        background-color: var(--fb-white-color);
+    }
+
+    .alumni-profile-post-item {
+        box-shadow: 0 0 1rem var(--fb-white-color);
+    }
+
+    .alumni-post-card-avatar-fallback {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+}

@@ -33,6 +33,15 @@ function StudentsLife() {
         buttonText: t("common.learn-more", {ns: 'common'}),
         titleInArabic: false,
         descriptionInArabic: false
+    },
+    {
+        title: t("students-life-pages.options-page.alumni-students-option"),
+        image: "/images/StudentsLifePages/AlumniStudents1.png",
+        description: t("students-life-pages.options-page.alumni-students-option-description"),
+        link: "/students-life/alumni-students",
+        buttonText: t("common.learn-more", {ns: 'common'}),
+        titleInArabic: false,
+        descriptionInArabic: false
     }
   ];
 

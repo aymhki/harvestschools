@@ -1179,6 +1179,15 @@ function Form({
                         setGeneralFormError('');
                     }, msgTimeout);
 
+                    turnstileTokenRef.current = '';
+                    if (!noCaptcha && turnstileWidgetIdRef.current !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
+                        try {
+                            window.turnstile.reset(turnstileWidgetIdRef.current);
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }
+
                     setSubmitting(false);
 
                     if (hasSetSubmittingLocal) {

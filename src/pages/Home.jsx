@@ -5,11 +5,28 @@ import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
 import { useTranslation } from 'react-i18next';
 import { servePublicAsset } from "../services/General/GeneralServices.jsx";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AlumniPostCard from "../modules/AlumniPostCard.jsx";
+import '../styles/AlumniStudents.css';
+import { fetchApprovedAlumniPosts } from "../services/Public/AlumniStudents/AlumniStudentsPublicServices.jsx";
+import { alumniStudentsPageUrl } from "../services/General/GeneralUtils.jsx";
 
 
 function Home() {
 
     const { t } = useTranslation(['home']);
+    const navigate = useNavigate();
+    const [alumniHighlights, setAlumniHighlights] = useState([]);
+
+    useEffect(() => {
+        const loadAlumniHighlights = async () => {
+            const posts = await fetchApprovedAlumniPosts('home', 3);
+            setAlumniHighlights(posts);
+        };
+
+        loadAlumniHighlights();
+    }, []);
     
 
     const homeSliderPhotos = [
@@ -99,6 +116,26 @@ function Home() {
                 />
             </div>
 
+
+            {alumniHighlights.length > 0 && (
+                <div className="home-page-alumni-highlights-section">
+                    <h1>
+                        {t("home.alumni-highlights")}
+                    </h1>
+
+                    <div className="home-page-alumni-highlights-grid">
+                        {alumniHighlights.map(post => (
+                            <AlumniPostCard
+                                key={post.id}
+                                post={post}
+                                variant={"preview"}
+                                onReadMore={() => navigate(alumniStudentsPageUrl)}
+                                expandToFullOnReadMore={false}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <div className="home-page-explore-section">
                 <ParallaxScrollSection title={null} text={null} backgroundImage={servePublicAsset('/images/HomePage/Explore360.v5.avif')} darken={true} buttonText={t("common.explore", {ns: 'common'})} buttonLink={'/gallery/360-tour'} />

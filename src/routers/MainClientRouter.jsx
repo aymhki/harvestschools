@@ -36,6 +36,9 @@ const AmericanStaff = lazy(() => import('../pages/Academics/Staff/AmericanStaff.
 const KindergartenStaff = lazy(() => import('../pages/Academics/Staff/KindergartenStaff.jsx'));
 const StudentLife = lazy(() => import("../pages/StudentsLife/StudentsLife.jsx"));
 const StudentsUnion = lazy(() => import('../pages/StudentsLife/StudentsUnion.jsx'));
+const AlumniStudents = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniStudents.jsx'));
+const AlumniLogin = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniLogin.jsx'));
+const AlumniProfile = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniProfile.jsx'));
 const Activities = lazy(() => import('../pages/StudentsLife/Activities.jsx'));
 const Library = lazy(() => import('../pages/StudentsLife/Library/Library.jsx'));
 const EnglishFairyTales = lazy(() => import('../pages/StudentsLife/Library/EnglishFairyTales.jsx'));
@@ -125,6 +128,9 @@ function MainClientRouter() {
                             <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
                             <Route path="/students-life" element={<StudentLife />} />
                             <Route path="/students-life/students-union" element={<StudentsUnion />} />
+                            <Route path="/students-life/alumni-students" element={<AlumniStudents />} />
+                            <Route path="/students-life/alumni-students/login" element={<AlumniLogin />} />
+                            <Route path="/students-life/alumni-students/profile" element={<AlumniProfile />} />
                             <Route path="/students-life/activities" element={<Activities />} />
                             <Route path="/students-life/library" element={<Library />} />
                             <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />

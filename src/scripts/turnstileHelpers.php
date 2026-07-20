@@ -34,7 +34,6 @@ function verify_turnstile_token_if_present() {
 
     $responseBody = curl_exec($ch);
     $curlErrorNumber = curl_errno($ch);
-    curl_close($ch);
 
     if ($curlErrorNumber !== 0 || $responseBody === false) {
         return ['ok' => true, 'mode' => 'cf-unreachable'];

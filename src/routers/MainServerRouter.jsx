@@ -35,6 +35,9 @@ import AmericanStaff from '../pages/Academics/Staff/AmericanStaff.jsx';
 import KindergartenStaff from '../pages/Academics/Staff/KindergartenStaff.jsx';
 import StudentLife from "../pages/StudentsLife/StudentsLife.jsx";
 import StudentsUnion from '../pages/StudentsLife/StudentsUnion.jsx';
+import AlumniStudents from '../pages/StudentsLife/AlumniStudents/AlumniStudents.jsx';
+import AlumniLogin from '../pages/StudentsLife/AlumniStudents/AlumniLogin.jsx';
+import AlumniProfile from '../pages/StudentsLife/AlumniStudents/AlumniProfile.jsx';
 import Activities from '../pages/StudentsLife/Activities.jsx';
 import Library from '../pages/StudentsLife/Library/Library.jsx';
 import EnglishFairyTales from '../pages/StudentsLife/Library/EnglishFairyTales.jsx';
@@ -123,6 +126,9 @@ function MainServerRouter() {
                         <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
                         <Route path="/students-life" element={<StudentLife />} />
                         <Route path="/students-life/students-union" element={<StudentsUnion />} />
+                        <Route path="/students-life/alumni-students" element={<AlumniStudents />} />
+                        <Route path="/students-life/alumni-students/login" element={<AlumniLogin />} />
+                        <Route path="/students-life/alumni-students/profile" element={<AlumniProfile />} />
                         <Route path="/students-life/activities" element={<Activities />} />
                         <Route path="/students-life/library" element={<Library />} />
                         <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />

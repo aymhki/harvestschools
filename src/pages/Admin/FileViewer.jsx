@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Spinner from '../../modules/Spinner';
 import '../../styles/FileViewer.css';
-import {serveJobApplicationFile} from "../../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
+import PropTypes from "prop-types";
 
 
-function FileViewer() {
+function FileViewer({fetchFileService}) {
     const [searchParams] = useSearchParams();
-
 
     const [fileBlobUrl, setFileBlobUrl] = useState(null);
     const [filename, setFilename] = useState('file');
@@ -15,12 +14,13 @@ function FileViewer() {
     const [error, setError] = useState(null);
     const [canEmbed, setCanEmbed] = useState(false);
     const [mimeType, setMimeType] = useState('');
+    const serveFile = fetchFileService;
 
     useEffect(() => {
 
         try {
             setIsLoading(true);
-            serveJobApplicationFile(searchParams, setIsLoading, setError, setCanEmbed, setMimeType, setFilename, setFileBlobUrl);
+            serveFile(searchParams, setIsLoading, setError, setCanEmbed, setMimeType, setFilename, setFileBlobUrl);
         } catch (error) {
             console.log(error);
         } finally {
@@ -90,5 +90,9 @@ function FileViewer() {
         </>
     );
 }
+
+FileViewer.propTypes = {
+    fetchFileService: PropTypes.func.isRequired,
+};
 
 export default FileViewer;

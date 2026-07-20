@@ -1,0 +1,176 @@
+.markdown-content {
+    width: 100%;
+    color: var(--dark-accent-color);
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    font-synthesis: weight style;
+}
+
+.markdown-content::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+    color: var(--primary-color);
+    line-height: 1.4;
+    margin: 1.25rem 0 0.5rem 0;
+}
+
+.markdown-content h2 {
+    font-size: 1.5rem;
+}
+
+.markdown-content h3 {
+    font-size: 1.25rem;
+}
+
+.markdown-content h4 {
+    font-size: 1.1rem;
+}
+
+.markdown-content p {
+    margin: 0.65rem 0;
+}
+
+.markdown-content strong {
+    font-family: var(--english-normal-font-bold);
+    font-weight: 700;
+}
+.markdown-content em {
+    font-style: italic;
+}
+
+.markdown-content a {
+    color: var(--fb-link-color);
+    text-decoration: underline;
+}
+
+.markdown-content code {
+    background-color: var(--fb-off-white-color);
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.35rem;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin: 0.65rem 0;
+    padding-inline-start: 1.5rem;
+}
+
+.markdown-content li {
+    margin: 0.25rem 0;
+}
+
+.markdown-content blockquote {
+    margin: 0.85rem 0;
+    padding: 0.5rem 1rem;
+    border-inline-start: 0.25rem solid var(--secondary-color);
+    background-color: var(--fb-off-white-color);
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-style: italic;
+}
+
+.markdown-content hr {
+    border: none;
+    border-top: 1px solid var(--read-only-field-grey-color);
+    margin: 1.25rem 0;
+}
+
+.markdown-inline-image {
+    display: inline-block;
+    max-width: 100%;
+    max-height: 12rem;
+    border-radius: 0.5rem;
+    vertical-align: middle;
+}
+
+.markdown-image-figure {
+    margin: 1rem 0;
+    max-width: 100%;
+}
+
+.markdown-image-figure img {
+    display: block;
+    max-width: 100%;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+.markdown-image-figure figcaption {
+    font-size: 0.85rem;
+    color: var(--dark-accent-color);
+    opacity: 0.75;
+    margin-top: 0.35rem;
+    text-align: center;
+}
+
+.markdown-image-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    max-width: min(100%, 34rem);
+}
+
+.markdown-image-center img {
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 28rem;
+}
+
+.markdown-image-full {
+    width: 100%;
+}
+
+.markdown-image-full img {
+    width: 100%;
+    max-height: 32rem;
+    object-fit: cover;
+}
+
+.markdown-image-left {
+    float: left;
+    max-width: min(45%, 18rem);
+    margin: 0.35rem 1.25rem 0.75rem 0;
+}
+
+.markdown-image-right {
+    float: right;
+    max-width: min(45%, 18rem);
+    margin: 0.35rem 0 0.75rem 1.25rem;
+}
+
+[dir="rtl"] .markdown-image-left {
+    margin: 0.35rem 0 0.75rem 1.25rem;
+}
+
+[dir="rtl"] .markdown-image-right {
+    margin: 0.35rem 1.25rem 0.75rem 0;
+}
+
+@media (max-width: 768px) {
+    .markdown-image-left,
+    .markdown-image-right {
+        float: none;
+        max-width: 100%;
+        margin: 1rem auto;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .markdown-content h2,
+    .markdown-content h3,
+    .markdown-content h4 {
+        color: var(--fb-white-color);
+    }
+
+    .markdown-image-figure figcaption {
+        color: var(--fb-off-white-color);
+    }
+}

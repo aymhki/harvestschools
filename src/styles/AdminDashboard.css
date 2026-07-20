@@ -151,6 +151,7 @@
 .general-large-admin-action-modal-content {
     flex: 0 1 auto;
     min-height: 0;
+    width: min(90vw, 40rem);
     overflow-y: auto;
     overflow-x: hidden;
 }

@@ -70,3 +70,6 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
 - [ ] Setup the info for the D-U-N-S Number.
+- [ ] Date Modal in the form component does not open to the selected field's date.
+- [ ] The alumni profile flash may need to be removed.
+- [ ] The alumni management tab keeps flickering and reloading.
