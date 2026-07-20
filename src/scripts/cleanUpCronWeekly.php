@@ -16,6 +16,7 @@ try {
     $conn->query("DELETE FROM admin_mfa_codes    WHERE expires_at < NOW() - INTERVAL 1 DAY;");
     $conn->query("DELETE FROM admin_mfa_send_log WHERE sent_at    < NOW() - INTERVAL 1 DAY;");
     $conn->query("DELETE FROM admin_mfa_challenges WHERE expires_at < NOW() - INTERVAL 1 DAY;");
+    $conn->query("DELETE FROM alumni_login_events WHERE created_at < NOW() - INTERVAL 180 DAY;");
     echo "Cron Job Successfully ran\n";
 
 } catch (Exception $e) {

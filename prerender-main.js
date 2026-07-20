@@ -39,6 +39,7 @@ const routesToPrerender = [
     '/academics/staff/kindergarten-staff',
     '/students-life',
     '/students-life/students-union',
+    '/students-life/alumni-students',
     '/students-life/activities',
     '/students-life/library',
     '/students-life/library/english-fairy-tales',

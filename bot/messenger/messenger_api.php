@@ -13,7 +13,6 @@ function msgr_request($payload) {
         CURLOPT_POSTFIELDS => json_encode($payload)
     ]);
     $resp = curl_exec($ch);
-    curl_close($ch);
     return $resp;
 }
 

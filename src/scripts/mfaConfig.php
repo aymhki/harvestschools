@@ -2,7 +2,7 @@
 
 function mfa_default_config() {
     return [
-        'mfa_mode' => 'always',
+        'mfa_mode' => 'risk',
         'email_code_ttl_seconds' => 600,
         'email_code_max_active' => 5,
         'resend_cooldown_base_seconds' => 30,

@@ -10,6 +10,8 @@ import '../styles/App.css'
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from '../services/Admin/Session/AdminNavigationServices.jsx'
 import { App as CapacitorApp } from '@capacitor/app';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
+import { serveAlumniFile } from "../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx";
+import {serveJobApplicationFile} from "../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
 import '../styles/AppUpdateGate.css'
 
 const Home = lazy(() => import('../pages/Home.jsx'))
@@ -41,6 +43,9 @@ const AmericanStaff = lazy(() => import('../pages/Academics/Staff/AmericanStaff.
 const KindergartenStaff = lazy(() => import('../pages/Academics/Staff/KindergartenStaff.jsx'))
 const StudentLife = lazy(() => import('../pages/StudentsLife/StudentsLife.jsx'))
 const StudentsUnion = lazy(() => import('../pages/StudentsLife/StudentsUnion.jsx'))
+const AlumniStudents = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniStudents.jsx'))
+const AlumniLogin = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniLogin.jsx'))
+const AlumniProfile = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniProfile.jsx'))
 const Activities = lazy(() => import('../pages/StudentsLife/Activities.jsx'))
 const Library = lazy(() => import('../pages/StudentsLife/Library/Library.jsx'))
 const EnglishFairyTales = lazy(() => import('../pages/StudentsLife/Library/EnglishFairyTales.jsx'))
@@ -116,6 +121,9 @@ const routeConfig = [
     { path: '/academics/staff/kindergarten-staff', element: () => <KindergartenStaff /> },
     { path: '/students-life', element: () => <StudentLife /> },
     { path: '/students-life/students-union', element: () => <StudentsUnion /> },
+    { path: '/students-life/alumni-students', element: () => <AlumniStudents /> },
+    { path: '/students-life/alumni-students/login', element: () => <AlumniLogin /> },
+    { path: '/students-life/alumni-students/profile', element: () => <AlumniProfile /> },
     { path: '/students-life/activities', element: () => <Activities /> },
     { path: '/students-life/library', element: () => <Library /> },
     { path: '/students-life/library/english-fairy-tales', element: () => <EnglishFairyTales /> },
@@ -158,7 +166,8 @@ const routeConfig = [
     { path: '/open-day-signups-management', section: 'admin', element: () => <OpenDaySignupsManagement /> },
     { path: '/borrowing-system-management', section: 'admin', element: () => <BorrowingSystemManagement /> },
     { path: '/info-system-management', section: 'admin', element: () => <InfoSystemManagement /> },
-    { path: '/view-job-application-file', section: 'admin', element: () => <FileViewer /> },
+    { path: '/view-job-application-file', section: 'admin', element: () => <FileViewer fetchFileService={serveJobApplicationFile}/> },
+    { path: '/view-alumni-file', section: 'admin', element: () => <FileViewer fetchFileService={serveAlumniFile} /> },
     {
         path: '/admin-users-management',
         section: 'admin',

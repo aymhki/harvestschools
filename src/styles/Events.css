@@ -78,7 +78,7 @@
     align-items: center;
     min-height: 100vh;
     min-width: 100vw;
-    background: radial-gradient(circle, var(--fb-white-color), #1a2a6c);
+    background: radial-gradient(circle, var(--fb-white-color), var(--primary-color));
 }
 
 .booking-login-page-form-controller {

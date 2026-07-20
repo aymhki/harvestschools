@@ -1,0 +1,476 @@
+import {Helmet} from "react-helmet-async";
+import {useNavigate} from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import {useTranslation} from "react-i18next";
+
+import Spinner from "../../../modules/Spinner.jsx";
+import Form from "../../../modules/Form.jsx";
+
+import '../../../styles/AlumniStudents.css';
+
+import {headToAlumniProfileOnValidSession} from "../../../services/Alumni/AlumniNavigationServices.jsx";
+import {
+    validateAlumniLogin,
+    performAlumniPasskeyLogin,
+    submitAlumniSignup
+} from "../../../services/Alumni/MainAlumniServices.jsx";
+import {msgTimeout} from "../../../services/General/GeneralUtils.jsx";
+import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
+
+function AlumniLogin() {
+    const navigate = useNavigate();
+    const {t} = useTranslation(['students-life-pages']);
+
+    const [submittingLocal, setSubmittingLocal] = useState(false);
+    const [mode, setMode] = useState('sign-in');
+
+    const [signInMethod, setSignInMethod] = useState(passkeySupported() ? 'passkey' : 'password');
+    const [passkeyError, setPasskeyError] = useState('');
+
+
+    const [signupSuccess, setSignupSuccess] = useState(false);
+    const [signupSuccessMessage, setSignupSuccessMessage] = useState('');
+
+    const signInAlumniStudentButtonsRef = useRef(null);
+
+    const signInUsernameFieldId = 1;
+    const signInPasswordFieldId = 2;
+
+    const signUpUsernameFieldId = 11;
+    const signUpNameFieldId = 12;
+    const signUpEmailFieldId = 13;
+    const signUpPositionFieldId = 14;
+    const signUpGraduationDateFieldId = 15;
+    const signUpBioFieldId = 16;
+    const signUpPasswordFieldId = 17;
+    const signUpConfirmPasswordFieldId = 18;
+    const signUpProfilePictureFieldId = 19;
+    const signUpProfilePictureFieldLabel = 'Profile Picture';
+
+    useEffect(() => {
+        headToAlumniProfileOnValidSession(navigate, setSubmittingLocal);
+    }, []);
+
+    const handleAlumniLogin = async (formData) => {
+        if (submittingLocal) {
+            return;
+        }
+
+        setSubmittingLocal(true);
+
+        try {
+            const result = await validateAlumniLogin(formData, signInUsernameFieldId, signInPasswordFieldId, navigate);
+
+            if (result && !result.success) {
+                throw new Error(result.message || result);
+            } else {
+                return true;
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        } finally {
+            setSubmittingLocal(false);
+        }
+    }
+
+    const handlePasskeyLogin = async (formData) => {
+        if (submittingLocal) {
+            return;
+        }
+
+        const username = formData?.get(`field_${signInUsernameFieldId}`)?.toString().trim();
+
+        if (!username) {
+            setPasskeyError(t("students-life-pages.alumni-login-page.passkey-missing-username"));
+            setTimeout(() => setPasskeyError(''), msgTimeout);
+            return;
+        }
+
+        setSubmittingLocal(true);
+
+        try {
+            const result = await performAlumniPasskeyLogin(username, navigate);
+
+            if (result && !result.success && !result.cancelled) {
+                setPasskeyError(result.message || t("students-life-pages.alumni-login-page.passkey-failed"));
+                setTimeout(() => setPasskeyError(''), msgTimeout);
+            } else {
+                return true;
+            }
+        } catch (error) {
+            setPasskeyError(error.message);
+            setTimeout(() => setPasskeyError(''), msgTimeout);
+        } finally {
+            setSubmittingLocal(false);
+        }
+    }
+
+    const handleAlumniSignup = async (formData) => {
+        if (submittingLocal) {
+            return;
+        }
+
+        setSubmittingLocal(true);
+
+        try {
+            const formDataJson = Object.fromEntries(formData.entries());
+            const signupFormData = new FormData();
+
+            signupFormData.append('username', formDataJson[`field_${signUpUsernameFieldId}`] || '');
+            signupFormData.append('name', formDataJson[`field_${signUpNameFieldId}`] || '');
+            signupFormData.append('email', formDataJson[`field_${signUpEmailFieldId}`] || '');
+            signupFormData.append('position', formDataJson[`field_${signUpPositionFieldId}`] || '');
+            signupFormData.append('graduation_date', formDataJson[`field_${signUpGraduationDateFieldId}`] || '');
+            signupFormData.append('bio', formDataJson[`field_${signUpBioFieldId}`] || '');
+            signupFormData.append('password', formDataJson[`field_${signUpPasswordFieldId}`] || '');
+            signupFormData.append('confirm_password', formDataJson[`field_${signUpConfirmPasswordFieldId}`] || '');
+
+            const profilePicture = formData.get(signUpProfilePictureFieldLabel);
+
+            if (profilePicture instanceof File && profilePicture.size > 0) {
+                signupFormData.append('profile_picture', profilePicture, profilePicture.name);
+            }
+
+            const turnstileToken = formData.get('cf-turnstile-response');
+
+            if (turnstileToken) {
+                signupFormData.append('cf-turnstile-response', turnstileToken);
+            }
+
+            const result = await submitAlumniSignup(signupFormData);
+
+            if (result && result.success) {
+                const message = result.message || t("students-life-pages.alumni-login-page.sign-up-success");
+
+                setSignupSuccessMessage(message);
+                setSignupSuccess(true);
+
+                return message;
+            } else {
+                throw new Error((result && result.message) || 'An error occurred while signing up.');
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        } finally {
+            setSubmittingLocal(false);
+        }
+    }
+
+    const signInUsernameField = {
+        id: signInUsernameFieldId,
+        type: 'text',
+        name: 'username',
+        label: 'Username',
+        required: true,
+        displayLabel: t("students-life-pages.alumni-login-page.username-field"),
+        placeholder: t("students-life-pages.alumni-login-page.username-field"),
+        errorMsg: 'Please enter your username',
+        value: '',
+        setValue: null,
+        widthOfField: 1,
+        httpName: 'username',
+    };
+
+    const signInPasswordField = {
+        id: signInPasswordFieldId,
+        type: 'password',
+        name: 'password',
+        label: 'Password',
+        required: true,
+        displayLabel: t("students-life-pages.alumni-login-page.password-field"),
+        placeholder: t("students-life-pages.alumni-login-page.password-field"),
+        errorMsg: 'Please enter your password',
+        value: '',
+        setValue: null,
+        widthOfField: 1,
+        httpName: 'password',
+    };
+
+    const isPasskeyMode = signInMethod === 'passkey' && passkeySupported();
+
+    return (
+        <>
+            {submittingLocal && <Spinner/>}
+
+            <Helmet>
+                <title>Harvest International School | Students Life | Alumni Sign In</title>
+                <meta name="description" content="Sign in or sign up to the Harvest International School alumni students platform to share your stories, updates, and achievements with the Harvest community."/>
+                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Alumni, Alumni Sign In, Alumni Sign Up, خريجين, تسجيل دخول الخريجين"/>
+                <meta name="author" content="Harvest International School"/>
+                <meta name="robots" content="index, follow"/>
+                <meta name="googlebot" content="index, follow"/>
+            </Helmet>
+
+            <div className={'alumni-login-page'}>
+                <div className={'alumni-login-page-form-controller'}>
+                    <div className={`alumni-login-form-wrapper ${mode === 'sign-up' ? 'sign-up-wrapper-variant' : ''}`}>
+
+                        <h2>
+                            {mode === 'sign-in'
+                                ? t("students-life-pages.alumni-login-page.sign-in-title")
+                                : t("students-life-pages.alumni-login-page.sign-up-title")}
+                        </h2>
+
+
+                        {(!signupSuccess) && (
+                            <p>
+                            {mode === 'sign-in'
+                                ? t("students-life-pages.alumni-login-page.sign-in-description")
+                                : t("students-life-pages.alumni-login-page.sign-up-description")}
+                            </p>
+                        )}
+
+                        {mode === 'sign-in' ? (
+                            <div className={"alumni-login-tab-content"}>
+
+                                {isPasskeyMode ? (
+                                    <Form key={"alumni-sign-in-passkey-form"}
+                                          mailTo={''}
+                                          sendPdf={false}
+                                          formTitle={"Alumni Sign In Form"}
+                                          lang={'en'}
+                                          captchaLength={1}
+                                          noInputFieldsCache={true}
+                                          noCaptcha={false}
+                                          hasDifferentOnSubmitBehaviour={true}
+                                          differentOnSubmitBehaviour={handlePasskeyLogin}
+                                          hasDifferentSubmitButtonText={true}
+                                          differentSubmitButtonText={[t("students-life-pages.alumni-login-page.passkey-button"), t("students-life-pages.alumni-login-page.signing-in-button")]}
+                                          noClearOption={true}
+                                          centerSubmitButton={true}
+                                          fullMarginField={true}
+                                          hasSetSubmittingLocal={true}
+                                          setSubmittingLocal={setSubmittingLocal}
+                                          fields={[signInUsernameField]}
+                                          formFooterButtonsAreOutside={true}
+                                          footerButtonsPortalTarget={signInAlumniStudentButtonsRef}
+                                    />
+                                ) : (
+                                    <Form key={"alumni-sign-in-password-form"}
+                                          mailTo={''}
+                                          sendPdf={false}
+                                          formTitle={"Alumni Sign In Form"}
+                                          lang={'en'}
+                                          captchaLength={1}
+                                          noInputFieldsCache={true}
+                                          noCaptcha={false}
+                                          hasDifferentOnSubmitBehaviour={true}
+                                          differentOnSubmitBehaviour={handleAlumniLogin}
+                                          hasDifferentSubmitButtonText={true}
+                                          differentSubmitButtonText={[t("students-life-pages.alumni-login-page.sign-in-button"), t("students-life-pages.alumni-login-page.signing-in-button")]}
+                                          noClearOption={true}
+                                          centerSubmitButton={true}
+                                          fullMarginField={true}
+                                          hasSetSubmittingLocal={true}
+                                          setSubmittingLocal={setSubmittingLocal}
+                                          formHasPasswordField={true}
+                                          fields={[signInUsernameField, signInPasswordField]}
+                                          formFooterButtonsAreOutside={true}
+                                          footerButtonsPortalTarget={signInAlumniStudentButtonsRef}
+                                    />
+                                )}
+
+                                {passkeyError && (
+                                    <p className={"alumni-inline-error-message"}>{passkeyError}</p>
+                                )}
+
+                                <div className={'alumni-login-buttons-wrapper'}>
+
+                                </div>
+
+
+                                <div className={"alumni-login-method-switch"}>
+                                    <div ref={signInAlumniStudentButtonsRef} className="modal-footer-buttons-portal-target"/>
+
+                                    {isPasskeyMode ? (
+                                        <button onClick={() => setSignInMethod('password')}>
+                                            {t("students-life-pages.alumni-login-page.sign-in-with-password-instead")}
+                                        </button>
+                                    ) : passkeySupported() && (
+                                        <button onClick={() => setSignInMethod('passkey')}>
+                                            {t("students-life-pages.alumni-login-page.sign-in-with-passkey-instead")}
+                                        </button>
+                                    )}
+                                </div>
+
+                                <p className={"alumni-login-switch-mode"} onClick={() => setMode('sign-up')}>
+                                    {t("students-life-pages.alumni-login-page.switch-to-sign-up")}
+                                </p>
+
+                            </div>
+                        ) : (
+                            <div className={"alumni-login-tab-content"}>
+
+                                {signupSuccess ? (
+                                    <div className={"alumni-signup-success-message"}>
+                                        <p>{signupSuccessMessage}</p>
+                                    </div>
+                                ) : (
+                                    <Form key={"alumni-sign-up-form"}
+                                          mailTo={''}
+                                          sendPdf={false}
+                                          formTitle={"Alumni Sign Up Form"}
+                                          lang={'en'}
+                                          captchaLength={1}
+                                          noInputFieldsCache={true}
+                                          hasDifferentOnSubmitBehaviour={true}
+                                          differentOnSubmitBehaviour={handleAlumniSignup}
+                                          hasDifferentSubmitButtonText={true}
+                                          differentSubmitButtonText={[t("students-life-pages.alumni-login-page.sign-up-button"), t("students-life-pages.alumni-login-page.signing-up-button")]}
+                                          noClearOption={true}
+                                          centerSubmitButton={true}
+                                          fullMarginField={true}
+                                          hasSetSubmittingLocal={true}
+                                          setSubmittingLocal={setSubmittingLocal}
+                                          formHasPasswordField={true}
+                                          fields={[
+                                              {
+                                                  id: signUpUsernameFieldId,
+                                                  type: 'text',
+                                                  name: 'username',
+                                                  label: 'Username',
+                                                  required: true,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.username-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.username-field"),
+                                                  errorMsg: 'Username must be 3-30 characters of letters, numbers, and underscores',
+                                                  regex: '^[a-zA-Z0-9_]{3,30}$',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 3,
+                                                  httpName: 'username',
+                                              },
+                                              {
+                                                  id: signUpNameFieldId,
+                                                  type: 'text',
+                                                  name: 'name',
+                                                  label: 'Full Name',
+                                                  required: true,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.name-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.name-field"),
+                                                  errorMsg: 'Please enter your full name',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 3,
+                                                  httpName: 'name',
+                                              },
+                                              {
+                                                  id: signUpEmailFieldId,
+                                                  type: 'email',
+                                                  name: 'email',
+                                                  label: 'Email',
+                                                  required: true,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.email-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.email-field"),
+                                                  errorMsg: 'Please enter a valid email address',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 3,
+                                                  httpName: 'email',
+                                              },
+                                              {
+                                                  id: signUpPositionFieldId,
+                                                  type: 'text',
+                                                  name: 'position',
+                                                  label: 'Current Position',
+                                                  required: false,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.position-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.position-field-placeholder"),
+                                                  errorMsg: 'Please enter your current position',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 2,
+                                                  httpName: 'position',
+                                              },
+                                              {
+                                                  id: signUpGraduationDateFieldId,
+                                                  type: 'date',
+                                                  name: 'graduation-date',
+                                                  label: 'Graduation Date',
+                                                  required: true,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.graduation-date-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.graduation-date-field"),
+                                                  errorMsg: 'Please enter your graduation date',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 2,
+                                                  httpName: 'graduation-date',
+                                              },
+                                              {
+                                                  id: signUpBioFieldId,
+                                                  type: 'textarea',
+                                                  name: 'bio',
+                                                  label: 'About You',
+                                                  required: false,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.bio-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.bio-field-placeholder"),
+                                                  errorMsg: 'Please tell us about yourself',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 2,
+                                                  httpName: 'bio',
+                                              },
+                                              {
+                                                  id: signUpProfilePictureFieldId,
+                                                  type: 'file',
+                                                  name: 'profile-picture',
+                                                  label: signUpProfilePictureFieldLabel,
+                                                  required: false,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.profile-picture-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.profile-picture-field"),
+                                                  allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff', 'image/svg+xml', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'],
+                                                  errorMsg: 'Please upload your profile picture in a valid image format',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 2,
+                                                  httpName: 'profile-picture',
+                                              },
+                                              {
+                                                  id: signUpPasswordFieldId,
+                                                  type: 'password',
+                                                  name: 'password',
+                                                  label: 'Password',
+                                                  required: true,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.password-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.password-field"),
+                                                  errorMsg: 'Password must be at least 8 characters with an uppercase letter, a lowercase letter, a number, and a special character',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 2,
+                                                  httpName: 'password',
+                                              },
+                                              {
+                                                  id: signUpConfirmPasswordFieldId,
+                                                  type: 'password',
+                                                  name: 'confirm-password',
+                                                  label: 'Confirm Password',
+                                                  required: true,
+                                                  displayLabel: t("students-life-pages.alumni-login-page.confirm-password-field"),
+                                                  placeholder: t("students-life-pages.alumni-login-page.confirm-password-field"),
+                                                  errorMsg: 'Please confirm your password',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 2,
+                                                  httpName: 'confirm-password',
+                                                  mustMatchFieldWithId: signUpPasswordFieldId,
+                                              },
+                                          ]}
+                                    />
+                                )}
+
+                                {!signupSuccess && (
+                                    <p className={"alumni-login-switch-mode"} onClick={() => setMode('sign-in')}>
+                                        {t("students-life-pages.alumni-login-page.switch-to-sign-in")}
+                                    </p>
+                                )}
+
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default AlumniLogin;

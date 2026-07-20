@@ -14,7 +14,6 @@ function llm_curl_post($url, $headers, $payload) {
     $body = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curlErr = curl_error($ch);
-    curl_close($ch);
 
     if ($curlErr) {
         file_put_contents(__DIR__ . '/error.log', date('c') . " LLM CURL ERROR: {$curlErr}\n", FILE_APPEND);
