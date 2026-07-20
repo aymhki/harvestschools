@@ -73,3 +73,6 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Date Modal in the form component does not open to the selected field's date.
 - [ ] The alumni profile flash may need to be removed.
 - [ ] The alumni management tab keeps flickering and reloading.
+- [ ] The alumni change password modal needs to use the custom form for password fields.
+- [ ] Remove passkey from capacitor app for the alumni pages.
+- 
