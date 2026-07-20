@@ -20,7 +20,7 @@ import {
     uploadAlumniPostImage,
     logoutCurrentAlumni,
 } from "../../../services/Alumni/MainAlumniServices.jsx";
-import {alumniPublicFileUrl, msgTimeout} from "../../../services/General/GeneralUtils.jsx";
+import {alumniPublicFileUrl, msgTimeout, isMobileApp} from "../../../services/General/GeneralUtils.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
 
 const PENDING_UPDATE_FIELD_LABELS = {
@@ -59,6 +59,9 @@ function AlumniProfile() {
     const [postToPreview, setPostToPreview] = useState(null);
 
     const [newPasskeyLabel, setNewPasskeyLabel] = useState('');
+
+    const canUsePasskeys = passkeySupported() && !isMobileApp();
+
 
     const animateEditProfileModal = useSpring({
         opacity: showEditProfileModal ? 1 : 0,
@@ -531,7 +534,7 @@ function AlumniProfile() {
                                         </div>
                                     ))}
 
-                                    {passkeySupported() ? (
+                                    {canUsePasskeys ? (
                                         <div className={"alumni-admin-actions-row"}>
                                             <input
                                                 type="text"
@@ -546,9 +549,13 @@ function AlumniProfile() {
                                             </button>
                                         </div>
                                     ) : (
+
                                         <p className={"alumni-profile-empty-hint"}>
-                                            Passkeys are not supported on this device or browser.
+                                            {isMobileApp() ? 'Passkeys are managed from a web browser. This app already supports biometric sign-in on this device.' :
+                                                'Passkeys are not supported on this device or browser.'
+                                            }
                                         </p>
+
                                     )}
                                 </div>
                             </>
