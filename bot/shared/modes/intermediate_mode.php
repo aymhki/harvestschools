@@ -76,6 +76,7 @@ function handleIntermediateMode($from, $message) {
     global $SCHOOL_CONFIG;
     $config = $SCHOOL_CONFIG;
 
+
     if ($type === 'interactive') {
         $replyId = $message['interactive']['list_reply']['id'] ?? $message['interactive']['button_reply']['id'] ?? '';
 
@@ -256,7 +257,7 @@ function handleIntermediateMode($from, $message) {
                 $stageName = $stageData['name'][$lang];
                 $responseText = "";
 
-                if ($stageData['offered']) {
+                if ($stageData['offered'] && !SHOW_UNOFFERED_STAGES) {
                     if ($action === 'age') {
                         $ageStr = $stageData['age'][$lang];
                         $responseText = ($lang === 'en')
@@ -279,7 +280,6 @@ function handleIntermediateMode($from, $message) {
                             ? "*{$stageName}* is currently offered at Harvest Schools."
                             : "مرحلة *{$stageName}* متاحة حالياً للتسجيل في مدارس هارڤست.";
                     }
-
                 } else {
                     $responseText = ($lang === 'en')
                         ? "Sorry, *{$stageName}* is currently NOT offered at Harvest Schools."
@@ -507,16 +507,16 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     $rows = [];
 
     foreach ($stageData['stages'] as $stageId => $stage) {
-//        if ($filterUnoffered && !$stage['offered']) continue;
+        if ($filterUnoffered && !$stage['offered'] && !SHOW_UNOFFERED_STAGES) continue;
         $id = "res_{$action}_{$stageId}";
         $rows[] = ["id" => $id, "title" => $stage['name'][$lang]];
     }
 
     $bodyText = $ui['stage_body'][$lang];
 
-//    if ($filterUnoffered) {
-//        $bodyText .= "\n\n_" . $ui['unoffered_note'][$lang] . "_";
-//    }
+    if ($filterUnoffered && !SHOW_UNOFFERED_STAGES) {
+        $bodyText .= "\n\n_" . $ui['unoffered_note'][$lang] . "_";
+    }
 
     if (count($rows) > 0) {
         $sections = [

@@ -440,7 +440,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
 
             if (result && result.success) {
                 setResendIn(0);
-                flash('Email change cancelled.');
+                flash('Email update cancelled.');
                 await refreshAll();
             } else if (!handleSessionExpired(result)) {
                 flash((result && result.message) || 'Could not cancel', true);
@@ -798,7 +798,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                         <button type={'button'} disabled={isBusy || resendIn > 0} onClick={handleResendVerification}>
                             {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
                         </button>
-                        <button type={'button'} disabled={isBusy} onClick={handleCancelEmailChange}>Cancel change</button>
+                        <button type={'button'} disabled={isBusy} onClick={handleCancelEmailChange}>Cancel update</button>
                     </div>
                 </>
             )}
@@ -831,7 +831,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                         disabled={isBusy}
                         onClick={() => setEmailPanel(emailPanel === 'edit' ? null : 'edit')}
                     >
-                        {emailPanel === 'edit' ? 'Cancel' : account?.email ? 'Change email' : 'Add email'}
+                        {emailPanel === 'edit' ? 'Cancel' : account?.email ? 'Update email' : 'Add email'}
                     </button>
                     {account?.email && (
                         <button type={'button'} className={'danger'} disabled={isBusy} onClick={handleRemoveEmail}>
