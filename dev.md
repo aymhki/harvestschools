@@ -80,3 +80,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Add forget password to admin accounts with MFA.
 - [ ] Look into adding location with iP address to active sessions as well as show Capacitor in the session browser for admin login.
 - [ ] Look into adding biometric login for both alumni students and graduation bookings similar to the admin login.
+- [ ] Alumni students should be able to submit a request to delete their accounts to the administrators.
+- [ ] Both alumni students and graduation bookings should be able to reset their passwords via forgot password option followed by a verification code sent to their email(s).
+- [ ] When resetting the password for admin login the capacitor app biometric login should be updated.
+- [ ] Unify the router to elements across domains

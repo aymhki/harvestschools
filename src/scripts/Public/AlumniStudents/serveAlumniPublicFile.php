@@ -1,6 +1,6 @@
 <?php
 require_once '../../headers.php';
-require_once '../../alumniAuthHelpers.php';
+require_once '../../Alumni/alumniAuthHelpers.php';
 set_cors_headers();
 
 function send_alumni_file_error(string $message, int $code = 500): void {

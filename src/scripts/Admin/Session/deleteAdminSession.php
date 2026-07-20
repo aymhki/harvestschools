@@ -1,7 +1,7 @@
 <?php
 require_once '../../headers.php';
-require_once '../../authHelpers.php';
-require_once '../../mfaHelpers.php';
+require_once '../authHelpers.php';
+require_once 'mfaHelpers.php';
 set_cors_headers();
 
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');

@@ -1,8 +1,9 @@
 <?php
-require_once __DIR__ . '/permissionLevels.php';
-require_once __DIR__ . '/mfaConfig.php';
-require_once __DIR__ . '/securityHeaders.php';
-require_once __DIR__ . '/mfaHelpers.php';
+require_once __DIR__ . '/../permissionLevels.php';
+require_once __DIR__ . '/Session/mfaConfig.php';
+require_once __DIR__ . '/../securityHeaders.php';
+require_once __DIR__ . '/Session/mfaHelpers.php';
+require_once __DIR__ . '/../headers.php';
 
 function session_binding_mode_for_request() {
     if (mfa_is_local_request()) {
@@ -105,10 +106,7 @@ function check_mfa_setup_gate($conn, $userId, $allowDuringSetup = false) {
     ];
 }
 
-function get_bearer_token_hash() {
-    $token = get_bearer_token();
-    return $token ? hash('sha256', $token) : null;
-}
+
 
 function validate_admin_session($conn, $options = []) {
     $tokenHash = get_bearer_token_hash();
@@ -182,27 +180,7 @@ function delete_admin_session_row($conn, $tokenHash) {
     $stmt->close();
 }
 
-function get_bearer_token() {
-    $headers = null;
 
-    if (isset($_SERVER['Authorization'])) {
-        $headers = trim($_SERVER['Authorization']);
-    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
-        $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
-    } elseif (function_exists('apache_request_headers')) {
-        $requestHeaders = apache_request_headers();
-        $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-        if (isset($requestHeaders['Authorization'])) {
-            $headers = trim($requestHeaders['Authorization']);
-        }
-    }
-
-    if (!empty($headers) && preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-        return $matches[1];
-    }
-
-    return null;
-}
 
 function check_admin_user_permission($conn, $requiredPermission, $explicitSessionId = null, $options = []) {
     $sessionCheck = validate_admin_session($conn, $options);

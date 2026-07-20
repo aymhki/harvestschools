@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/authHelpers.php';
+require_once __DIR__ . '/../headers.php';
 
 function alumni_config($key = null) {
     static $config = null;

@@ -1,7 +1,7 @@
 <?php
 require_once '../../headers.php';
-require_once '../../authHelpers.php';
-require_once '../../mfaHelpers.php';
+require_once '../authHelpers.php';
+require_once 'mfaHelpers.php';
 require_once '../../webauthnHelpers.php';
 set_cors_headers();
 
@@ -55,7 +55,7 @@ try {
         exit;
     }
 
-    $webauthn = get_webauthn_instance();
+    $webauthn = get_admin_webauthn_instance();
     $args     = $webauthn->getGetArgs($credentialIds, 240, true, true, true, true, true, 'required');
     $challenge = base64_encode($webauthn->getChallenge()->getBinaryString());
 

@@ -1,7 +1,7 @@
 <?php
 require_once '../../headers.php';
-require_once '../../authHelpers.php';
-require_once '../../mfaHelpers.php';
+require_once '../authHelpers.php';
+require_once 'mfaHelpers.php';
 require_once '../../webauthnHelpers.php';
 set_cors_headers();
 
@@ -144,7 +144,7 @@ try {
 
         if ($pkResult->num_rows > 0) {
             $pkRow    = $pkResult->fetch_assoc();
-            $webauthn = get_webauthn_instance();
+            $webauthn = get_admin_webauthn_instance();
 
             try {
                 $ok = $webauthn->processGet(

@@ -1,7 +1,7 @@
 <?php
 require_once '../../headers.php';
 require_once '../../turnstileHelpers.php';
-require_once '../../alumniAuthHelpers.php';
+require_once '../../Alumni/alumniAuthHelpers.php';
 set_cors_headers();
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';

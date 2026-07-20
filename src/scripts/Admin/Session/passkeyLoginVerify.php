@@ -1,7 +1,7 @@
 <?php
 require_once '../../headers.php';
-require_once '../../authHelpers.php';
-require_once '../../mfaHelpers.php';
+require_once '../authHelpers.php';
+require_once 'mfaHelpers.php';
 require_once '../../webauthnHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
@@ -79,7 +79,7 @@ try {
 
     $verified  = false;
     $pkRow     = null;
-    $webauthn  = get_webauthn_instance();
+    $webauthn  = get_admin_webauthn_instance();
     $failMessage = "Passkey verification failed";
 
     if ($pkResult->num_rows > 0) {
