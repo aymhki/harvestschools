@@ -19,6 +19,7 @@ import {
     setAlumniPostPlacement,
     deleteAlumniPostByAdmin,
 } from "../../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx";
+import {Capacitor} from "@capacitor/core";
 
 const PROFILE_UPDATE_FIELDS = [
     {key: 'username', label: 'Username'},
@@ -124,7 +125,13 @@ function AlumniStudentsManagement() {
     const openAlumniFile = (filePath) => {
         if (!filePath) { return; }
         const url = `/view-alumni-file?file=${encodeURIComponent(filePath)}`;
-        window.open(url, '_blank');
+
+
+        if (Capacitor.isNativePlatform()) {
+            navigate(url);
+        } else {
+            window.open(url, '_blank');
+        }
     };
 
     const finishModalAction = async (result, closeModal, reloadFn) => {

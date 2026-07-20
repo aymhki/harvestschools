@@ -75,4 +75,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] The alumni management tab keeps flickering and reloading.
 - [ ] The alumni change password modal needs to use the custom form for password fields.
 - [ ] Remove passkey from capacitor app for the alumni pages.
+- [ ] Viewing alumni files doesn't work from admin management page tables.
 - 
