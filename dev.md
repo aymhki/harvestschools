@@ -74,7 +74,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] The alumni profile flash may need to be removed.
 - [ ] The alumni management tab keeps flickering and reloading.
 - [ ] The alumni change password modal needs to use the custom form for password fields.
-- [ ] Remove passkey from capacitor app for the alumni pages.
+- [x] Remove passkey from capacitor app for the alumni pages.
 - [ ] Viewing alumni files doesn't work from admin management page tables.
 - [ ] Add www. to app links hostnames in iOS and android.
 - [ ] Add forget password to admin accounts with MFA.
@@ -82,5 +82,6 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Look into adding biometric login for both alumni students and graduation bookings similar to the admin login.
 - [ ] Alumni students should be able to submit a request to delete their accounts to the administrators.
 - [ ] Both alumni students and graduation bookings should be able to reset their passwords via forgot password option followed by a verification code sent to their email(s).
-- [ ] When resetting the password for admin login the capacitor app biometric login should be updated.
-- [ ] Unify the router to elements across domains
+- [x] When resetting the password for admin login the capacitor app biometric login should be updated.
+- [ ] Unify the router to elements across domains.
+- [ ] Table filter modal fields css needs to be adjusted to match form fields.

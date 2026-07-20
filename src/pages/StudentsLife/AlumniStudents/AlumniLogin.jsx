@@ -14,8 +14,9 @@ import {
     performAlumniPasskeyLogin,
     submitAlumniSignup
 } from "../../../services/Alumni/MainAlumniServices.jsx";
-import {msgTimeout} from "../../../services/General/GeneralUtils.jsx";
+import {msgTimeout, isMobileApp} from "../../../services/General/GeneralUtils.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
+
 
 function AlumniLogin() {
     const navigate = useNavigate();
@@ -186,7 +187,7 @@ function AlumniLogin() {
         httpName: 'password',
     };
 
-    const isPasskeyMode = signInMethod === 'passkey' && passkeySupported();
+    const isPasskeyMode = signInMethod === 'passkey' && passkeySupported() && !isMobileApp();
 
     return (
         <>
@@ -286,7 +287,7 @@ function AlumniLogin() {
                                         <button onClick={() => setSignInMethod('password')}>
                                             {t("students-life-pages.alumni-login-page.sign-in-with-password-instead")}
                                         </button>
-                                    ) : passkeySupported() && (
+                                    ) : (passkeySupported() && !isMobileApp()) && (
                                         <button onClick={() => setSignInMethod('passkey')}>
                                             {t("students-life-pages.alumni-login-page.sign-in-with-passkey-instead")}
                                         </button>

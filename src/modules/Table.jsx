@@ -61,9 +61,9 @@ function Table({
     const [rowMapping, setRowMapping] = useState([]);
     const {t} = useTranslation('common', forceEnglishTable ? {lng: 'en'} : {});
     const showPaginationOnMobile = true
-    const maxItemsBeforePagination = 300;
-    const mobilePageSize = 50;
-    const desktopPageSize = 100;
+    const maxItemsBeforePagination = 100;
+    const mobilePageSize = 40;
+    const desktopPageSize = 80;
     const [pageSize, setPageSize] = useState(isMobile ? mobilePageSize : desktopPageSize);
     const headerRowCount = tableHeader ? 2 : 1;
     const [currentPage, setCurrentPage] = useState(1);

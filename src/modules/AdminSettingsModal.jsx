@@ -28,8 +28,7 @@ import {
     revokeAllOtherSessions,
 } from '../services/Admin/Session/AdminSettingsServices.jsx';
 import {passkeySupported} from '../services/General/PasskeyUtils.jsx';
-import {isMobileApp} from '../services/Admin/Session/MainAdminServices.jsx';
-import {adminLoginPageUrl, msgTimeout} from '../services/General/GeneralUtils.jsx';
+import {adminLoginPageUrl, msgTimeout, isMobileApp} from '../services/General/GeneralUtils.jsx';
 
 const METHOD_LABELS = {
     passkey: 'Passkey',

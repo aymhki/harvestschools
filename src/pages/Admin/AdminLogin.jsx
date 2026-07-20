@@ -7,14 +7,14 @@ import {headToAdminDashboardOnValidSession} from "../../services/Admin/Session/A
 import {
     validateAdminLogin,
     validateAdminLoginWithCredentials,
-    isMobileApp,
     requestEmailCode,
     completeMfa,
     performPasskeyMfa,
     requestPasswordReset,
     requestResetEmailCode,
     completePasswordReset,
-    performPasskeyReset
+    performPasskeyReset,
+    updateAdminBiometricCredentials
 } from "../../services/Admin/Session/MainAdminServices.jsx";
 import {useTranslation} from "react-i18next";
 import {
@@ -26,7 +26,7 @@ import {
     verifyBiometricIdentity,
 } from "../../services/General/CapacitorSecureAuthUtils.jsx";
 import {passkeySupported} from "../../services/General/PasskeyUtils.jsx";
-import {mfaResendCooldownSeconds} from "../../services/General/GeneralUtils.jsx";
+import {mfaResendCooldownSeconds, isMobileApp} from "../../services/General/GeneralUtils.jsx";
 
 
 function AdminLogin() {
@@ -43,6 +43,7 @@ function AdminLogin() {
     const [loginMode, setLoginMode] = useState('checking');
     const [prefillUsername, setPrefillUsername] = useState('');
     const [resetState, setResetState] = useState(null);
+    const [resetUsername, setResetUsername] = useState('');
     const usernameFieldId = 1
     const passwordFieldId = 2
     const mfaCodeFieldId = 3
@@ -70,6 +71,7 @@ function AdminLogin() {
         setMfaError(null);
         setResendIn(0);
         setEmailCodeSent(false);
+        setResetUsername('');
     };
 
     const exitMfaToFullForm = (notice) => {
@@ -273,6 +275,7 @@ function AdminLogin() {
             setMfaError(null);
             setResendIn(0);
             setEmailCodeSent(false);
+            setResetUsername(username.trim());
             setLoginMode('resetVerify');
 
             if (startingMethod === 'email') {
@@ -306,9 +309,10 @@ function AdminLogin() {
         return newPassword;
     };
 
-    const finishReset = (result) => {
+    const finishReset = async (result, newPassword) => {
         if (result && result.success) {
             exitMfaToFullForm(result.message || 'Your password has been updated. You can now log in with your new password.');
+            await updateAdminBiometricCredentials(resetUsername, newPassword)
             return true;
         }
 
@@ -334,7 +338,7 @@ function AdminLogin() {
         const code = Object.fromEntries(formData.entries())[`field_${mfaCodeFieldId}`] || '';
         const result = await completePasswordReset(resetState.resetToken, mfaMethod, code, newPassword);
 
-        return finishReset(result);
+        return await finishReset(result, newPassword);
     };
 
     const handleResetPasskeySubmit = async (formData) => {
@@ -348,7 +352,7 @@ function AdminLogin() {
             return true;
         }
 
-        return finishReset(result);
+        return await finishReset(result, newPassword);
     };
 
     const switchResetMethod = (method) => {

@@ -7,8 +7,8 @@ import {
     sessionDuration,
     getSessionsFromLocalStorage,
     endpoints,
+    isMobileApp,
     getClientFingerprint, buildLoginHeaders} from "../../General/GeneralUtils.jsx";
-import { Capacitor } from '@capacitor/core';
 import {
     getMobileSession,
     setMobileSession,
@@ -20,7 +20,6 @@ import {
 
 import { decodeGetArgs, bufToB64, passkeySupported } from "../../General/PasskeyUtils.jsx";
 
-const isMobileApp = () => Capacitor.isNativePlatform();
 
 const checkAdminSession = async (navigate, allowedPermission) => {
     const sessionId = await validateAdminSessionLocally();
@@ -202,6 +201,15 @@ const performAdminLogin = async (username, password, navigate, persistBiometricC
         return { success: false, message: error.message, code: 0 };
     }
 };
+
+const updateAdminBiometricCredentials = async (username, password) => {
+    if ( username && password && isMobileApp() ) {
+        const biometricHardwareAvailable = await isBiometricAvailable();
+        if (biometricHardwareAvailable) {
+            await saveBiometricCredentials('harvest_schools_admin', username, password);
+        }
+    }
+}
 
 const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, navigate) => {
     const formDataEntries = Array.from(formData.entries());
@@ -463,12 +471,12 @@ export {
     checkAdminSessionFromAdminDashboard,
     checkAdminSessionFromAdminLogin,
     validateAdminSessionLocally,
-    isMobileApp,
     requestEmailCode,
     completeMfa,
     performPasskeyMfa,
     requestPasswordReset,
     requestResetEmailCode,
     completePasswordReset,
-    performPasskeyReset
+    performPasskeyReset,
+    updateAdminBiometricCredentials
 }

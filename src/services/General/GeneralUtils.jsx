@@ -5,6 +5,8 @@ import {useEffect, useState} from "react";
 import { Capacitor } from '@capacitor/core';
 import {clearMobileSession, getMobileSession, getDeviceBindingSecret} from "./CapacitorSecureAuthUtils.jsx"
 
+const isMobileApp = () => Capacitor.isNativePlatform();
+
 const isDevelopment = () => {
     return !import.meta.env.PROD;
 };
@@ -418,5 +420,6 @@ export {
     buildAuthHeaders,
     buildLoginHeaders,
     TURNSTILE_SCRIPT_URL,
-    TURNSTILE_SCRIPT_TIMEOUT_MS
+    TURNSTILE_SCRIPT_TIMEOUT_MS,
+    isMobileApp
 }
