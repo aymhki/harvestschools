@@ -507,16 +507,16 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     $rows = [];
 
     foreach ($stageData['stages'] as $stageId => $stage) {
-        if ($filterUnoffered && !$stage['offered']) continue;
+//        if ($filterUnoffered && !$stage['offered']) continue;
         $id = "res_{$action}_{$stageId}";
         $rows[] = ["id" => $id, "title" => $stage['name'][$lang]];
     }
 
     $bodyText = $ui['stage_body'][$lang];
 
-    if ($filterUnoffered) {
-        $bodyText .= "\n\n_" . $ui['unoffered_note'][$lang] . "_";
-    }
+//    if ($filterUnoffered) {
+//        $bodyText .= "\n\n_" . $ui['unoffered_note'][$lang] . "_";
+//    }
 
     if (count($rows) > 0) {
         $sections = [
