@@ -888,8 +888,8 @@
     .alumni-profile-header-card {
         flex-direction: column;
         text-align: center;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .alumni-profile-header-info {
@@ -1019,5 +1019,10 @@
     .alumni-post-card-avatar-fallback {
         background-color: var(--fb-white-color);
         color: var(--primary-color);
+    }
+
+    .alumni-markdown-editor-preview-toggle-active {
+        background-color: var(--light-dark-accent-color) !important;
+        color: var(--fb-white-color) !important;
     }
 }
