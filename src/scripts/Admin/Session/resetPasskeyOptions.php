@@ -20,24 +20,27 @@ try {
 
     $conn->set_charset("utf8mb4");
 
-    $data = json_decode(file_get_contents('php://input'), true);
-    $mfaToken = $data['mfa_token'] ?? '';
+    $data       = json_decode(file_get_contents('php://input'), true);
+    $resetToken = $data['reset_token'] ?? '';
 
-    if (!$mfaToken) {
-        echo json_encode(["success" => false, "message" => "Missing MFA token", "code" => 400]);
+    if (!$resetToken) {
+        echo json_encode(["success" => false, "message" => "Missing reset token", "code" => 400]);
         exit;
     }
 
-    $mfaHash = hash('sha256', $mfaToken);
+    $resetHash = hash('sha256', $resetToken);
 
-    $stmt = $conn->prepare("SELECT user_id FROM admin_mfa_challenges WHERE id = ? AND purpose = 'login' AND expires_at > NOW()");
-    $stmt->bind_param("s", $mfaHash);
+    $stmt = $conn->prepare(
+        "SELECT user_id FROM admin_mfa_challenges
+         WHERE id = ? AND purpose = 'reset' AND expires_at > NOW()"
+    );
+    $stmt->bind_param("s", $resetHash);
     $stmt->execute();
     $result = $stmt->get_result();
     $stmt->close();
 
     if ($result->num_rows === 0) {
-        echo json_encode(["success" => false, "message" => "Invalid or expired MFA session", "code" => 401]);
+        echo json_encode(["success" => false, "message" => "Invalid or expired reset session", "code" => 401]);
         exit;
     }
 
@@ -76,16 +79,20 @@ try {
     $challenge = base64_encode($webauthn->getChallenge()->getBinaryString());
 
     $stmt = $conn->prepare("UPDATE admin_mfa_challenges SET webauthn_challenge = ? WHERE id = ?");
-    $stmt->bind_param("ss", $challenge, $mfaHash);
+    $stmt->bind_param("ss", $challenge, $resetHash);
     $stmt->execute();
     $stmt->close();
 
-    echo json_encode(["success" => true, "code" => 200, "options" => $args]);
+    echo json_encode([
+        "success" => true,
+        "options" => $args,
+        "code"    => 200
+    ]);
 
-} catch (lbuchs\WebAuthn\WebAuthnException $e) {
-    echo json_encode(["success" => false, "message" => "Passkey login failed: " . $e->getMessage(), "code" => 400]);
 } catch (Exception $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => 500]);
 } finally {
-    if (isset($conn)) { $conn->close(); }
+    if (isset($conn) && $conn instanceof mysqli) {
+        $conn->close();
+    }
 }

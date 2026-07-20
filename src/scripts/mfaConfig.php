@@ -24,6 +24,7 @@ function mfa_default_config() {
         'session_binding_cookie' => 'hs_admin_dbind',
         'mail_from'      => 'no-reply@admin.harvestschools.com',
         'mail_from_name' => 'Harvest Schools Admin',
+        'admin_email'    => 'ayman.hassan@admin.harvestschools.com',
     ];
 }
 

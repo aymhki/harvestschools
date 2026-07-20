@@ -290,6 +290,10 @@ function mfa_send_code_email($toAddress, $code, $context = 'login') {
         $subject = 'Verify this email address';
         $intro   = "Use this code to confirm this address on your Harvest Schools admin account:";
         $footer  = "If you did not request this, you can ignore this message and the address will not be added.";
+    } elseif ($context === 'reset') {
+        $subject = 'Harvest Admin password reset code';
+        $intro   = "Your password reset code is:";
+        $footer  = "If you did not request a password reset, you can safely ignore this message. Your password will not be changed.";
     } else {
         $subject = 'Harvest Admin verification code';
         $intro   = "Your admin login verification code is:";
@@ -309,6 +313,101 @@ function mfa_send_code_email($toAddress, $code, $context = 'login') {
     $headers .= "Auto-Submitted: auto-generated\r\n";
 
     return @mail($toAddress, $subject, $body, $headers, "-f {$from}");
+}
+
+
+function mfa_send_admin_reset_notice($conn, $userId, $username) {
+    $adminEmail = (string)mfa_config('admin_email');
+
+    if ($adminEmail === '' || !filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+
+    $from     = mfa_config('mail_from');
+    $fromName = mfa_config('mail_from_name');
+
+    $safeUsername = preg_replace('/[\r\n]+/', ' ', (string)$username);
+
+    $stmt = $conn->prepare(
+        "SELECT name, email, email_verified_at, pending_email, preferred_mfa,
+                mfa_verified_once, last_login_at
+         FROM admin_users WHERE id = ?"
+    );
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc() ?: [];
+    $stmt->close();
+
+    $stmt = $conn->prepare(
+        "SELECT public_id, user_agent, binding_mode,
+                DATE_FORMAT(created_at, '%b %e, %Y at %l:%i %p') AS created_label,
+                DATE_FORMAT(last_seen,  '%b %e, %Y at %l:%i %p') AS last_seen_label
+         FROM admin_sessions WHERE user_id = ? ORDER BY last_seen DESC"
+    );
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $sessionsResult = $stmt->get_result();
+    $stmt->close();
+
+    $sessionLines = '';
+    $sessionCount = 0;
+
+    while ($s = $sessionsResult->fetch_assoc()) {
+        $sessionCount++;
+        $sessionLines .= "  - [{$s['public_id']}] {$s['binding_mode']} | created {$s['created_label']} | last seen {$s['last_seen_label']}\r\n"
+            . "    agent: " . substr((string)$s['user_agent'], 0, 120) . "\r\n";
+    }
+
+    if ($sessionCount === 0) { $sessionLines = "  (none)\r\n"; }
+
+    $stmt = $conn->prepare(
+        "SELECT event, fingerprint_hash,
+                DATE_FORMAT(created_at, '%b %e, %Y at %l:%i %p') AS when_label
+         FROM admin_login_events WHERE user_id = ? ORDER BY created_at DESC LIMIT 10"
+    );
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $eventsResult = $stmt->get_result();
+    $stmt->close();
+
+    $eventLines = '';
+
+    while ($ev = $eventsResult->fetch_assoc()) {
+        $fp = $ev['fingerprint_hash'] ? substr((string)$ev['fingerprint_hash'], 0, 12) : 'n/a';
+        $eventLines .= "  - {$ev['when_label']} | {$ev['event']} | fp: {$fp}\r\n";
+    }
+
+    if ($eventLines === '') { $eventLines = "  (none)\r\n"; }
+
+    $subject = 'Admin password reset assistance needed';
+
+    $body = "An admin dashboard user requested a password reset but has no verification (MFA) methods set up on their account, so they cannot reset it themselves.\r\n\r\n"
+        . "Requested at: " . gmdate('Y-m-d H:i:s') . " UTC\r\n\r\n"
+        . "== Account ==\r\n"
+        . "  User ID: {$userId}\r\n"
+        . "  Username: {$safeUsername}\r\n"
+        . "  Name: " . (string)($user['name'] ?? '(unknown)') . "\r\n"
+        . "  Email: " . (string)($user['email'] ?? '(none)')
+        . (!empty($user['email_verified_at']) ? " (verified)" : " (not verified)") . "\r\n"
+        . "  Pending email: " . (string)($user['pending_email'] ?? '(none)') . "\r\n"
+        . "  Preferred MFA: " . (string)($user['preferred_mfa'] ?? '(none)') . "\r\n"
+        . "  Ever passed MFA: " . (!empty($user['mfa_verified_once']) ? 'yes' : 'no') . "\r\n"
+        . "  Last login at: " . (string)($user['last_login_at'] ?? '(never)') . "\r\n\r\n"
+        . "== Active sessions ({$sessionCount}) ==\r\n"
+        . $sessionLines . "\r\n"
+        . "== Last 10 login events ==\r\n"
+        . $eventLines . "\r\n"
+        . "Please reach out to them to help them regain access to their account.\r\n";
+
+    $headers  = "From: {$fromName} <{$from}>\r\n";
+    $headers .= "Reply-To: {$from}\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $headers .= "Content-Transfer-Encoding: 8bit\r\n";
+    $headers .= "X-Auto-Response-Suppress: All\r\n";
+    $headers .= "Auto-Submitted: auto-generated\r\n";
+
+    return @mail($adminEmail, $subject, $body, $headers, "-f {$from}");
 }
 
 

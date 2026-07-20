@@ -47,7 +47,7 @@ try {
                 u.totp_secret, u.last_totp_slice, u.preferred_mfa
          FROM admin_mfa_challenges c
          JOIN admin_users u ON u.id = c.user_id
-         WHERE c.id = ? AND c.expires_at > NOW()"
+         WHERE c.id = ? AND c.purpose = 'login' AND c.expires_at > NOW()"
     );
     $stmt->bind_param("s", $mfaHash);
     $stmt->execute();

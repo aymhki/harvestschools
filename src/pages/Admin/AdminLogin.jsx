@@ -10,7 +10,11 @@ import {
     isMobileApp,
     requestEmailCode,
     completeMfa,
-    performPasskeyMfa
+    performPasskeyMfa,
+    requestPasswordReset,
+    requestResetEmailCode,
+    completePasswordReset,
+    performPasskeyReset
 } from "../../services/Admin/Session/MainAdminServices.jsx";
 import {useTranslation} from "react-i18next";
 import {
@@ -38,9 +42,14 @@ function AdminLogin() {
     const [loginNotice, setLoginNotice] = useState(null);
     const [loginMode, setLoginMode] = useState('checking');
     const [prefillUsername, setPrefillUsername] = useState('');
+    const [resetState, setResetState] = useState(null);
     const usernameFieldId = 1
     const passwordFieldId = 2
     const mfaCodeFieldId = 3
+    const forgotUsernameFieldId = 4
+    const newPasswordFieldId = 5
+    const confirmPasswordFieldId = 6
+    const passwordPolicyRegex = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$'
     const { t } = useTranslation(['admin'], {lng:'en'});
     const mobile = isMobileApp();
 
@@ -55,6 +64,7 @@ function AdminLogin() {
 
     const resetMfaState = () => {
         setMfaState(null);
+        setResetState(null);
         setMfaMethod(null);
         setMfaStatus(null);
         setMfaError(null);
@@ -214,6 +224,142 @@ function AdminLogin() {
 
         if (method === 'email' && !emailCodeSent) {
             sendEmailCode(mfaState.mfaToken, { silent: true });
+        }
+    };
+
+    const sendResetEmailCode = useCallback(async (token, {silent = false} = {}) => {
+        if (!token) { return; }
+
+        const result = await requestResetEmailCode(token);
+
+        if (!isMountedRef.current) { return; }
+
+        if (typeof result?.retryAfter === 'number') {
+            setResendIn(result.retryAfter);
+        } else if (result?.success) {
+            setResendIn(mfaResendCooldownSeconds);
+        }
+
+        if (result?.success) {
+            setEmailCodeSent(true);
+            setMfaError(null);
+            if (!silent) { setMfaStatus('A new code is on its way.'); }
+        } else if (!silent || result?.code === 429) {
+            setMfaStatus(null);
+            setMfaError(result?.message || 'Could not send the code. Try another method.');
+        }
+    }, []);
+
+    const handleForgotPassword = async (formData) => {
+        const username = Object.fromEntries(formData.entries())[`field_${forgotUsernameFieldId}`] || '';
+        const result = await requestPasswordReset(username.trim());
+
+        if (result && result.mfaRequired) {
+            const usableMethods = (result.methods || []).filter(
+                (m) => !(m === 'passkey' && (mobile || !passkeySupported()))
+            );
+
+            if (usableMethods.length === 0) {
+                throw new Error('No verification method is available on this device. Please try from another device or contact an administrator.');
+            }
+
+            const startingMethod = usableMethods.includes(result.preferred)
+                ? result.preferred
+                : usableMethods[0];
+
+            setResetState({ ...result, methods: usableMethods });
+            setMfaMethod(startingMethod);
+            setMfaStatus(null);
+            setMfaError(null);
+            setResendIn(0);
+            setEmailCodeSent(false);
+            setLoginMode('resetVerify');
+
+            if (startingMethod === 'email') {
+                sendResetEmailCode(result.resetToken, { silent: true });
+            }
+
+            return true;
+        }
+
+        if (result && result.success && result.adminNotified) {
+            exitMfaToFullForm(result.message || 'An email has been sent to a site administrator who will reach out to help you.');
+            return true;
+        }
+
+        if (result && !result.success) {
+            throw new Error(result.message || 'Could not start the password reset');
+        }
+
+        return true;
+    };
+
+    const extractNewPassword = (formData) => {
+        const entries = Object.fromEntries(formData.entries());
+        const newPassword = entries[`field_${newPasswordFieldId}`] || '';
+        const confirmPassword = entries[`field_${confirmPasswordFieldId}`] || '';
+
+        if (newPassword !== confirmPassword) {
+            throw new Error('Passwords do not match');
+        }
+
+        return newPassword;
+    };
+
+    const finishReset = (result) => {
+        if (result && result.success) {
+            exitMfaToFullForm(result.message || 'Your password has been updated. You can now log in with your new password.');
+            return true;
+        }
+
+        if (result && (isExpiredMfaResult(result) || result.code === 429)) {
+            exitMfaToFullForm(result.code === 429
+                ? 'Too many incorrect attempts. Please start the reset again.'
+                : 'Your reset session expired. Please start again.');
+            return true;
+        }
+
+        const suffix = typeof result?.attemptsLeft === 'number' && result.attemptsLeft > 0
+            ? ` ${result.attemptsLeft} ${result.attemptsLeft === 1 ? 'try' : 'tries'} left.`
+            : '';
+
+        throw new Error((result?.message || 'Verification failed') + suffix);
+    };
+
+    const handleResetCodeSubmit = async (formData) => {
+        setMfaStatus(null);
+        setMfaError(null);
+
+        const newPassword = extractNewPassword(formData);
+        const code = Object.fromEntries(formData.entries())[`field_${mfaCodeFieldId}`] || '';
+        const result = await completePasswordReset(resetState.resetToken, mfaMethod, code, newPassword);
+
+        return finishReset(result);
+    };
+
+    const handleResetPasskeySubmit = async (formData) => {
+        setMfaStatus(null);
+        setMfaError(null);
+
+        const newPassword = extractNewPassword(formData);
+        const result = await performPasskeyReset(resetState.resetToken, newPassword);
+
+        if (result && result.cancelled) {
+            return true;
+        }
+
+        return finishReset(result);
+    };
+
+    const switchResetMethod = (method) => {
+        if (!resetState || !resetState.methods.includes(method) || method === mfaMethod) { return; }
+
+        setMfaMethod(method);
+        setMfaStatus(null);
+        setMfaError(null);
+
+        if (method === 'email' && !emailCodeSent) {
+            sendResetEmailCode(resetState.resetToken, { silent: true });
         }
     };
 
@@ -428,7 +574,7 @@ function AdminLogin() {
                               lang={'en'}
                               captchaLength={1}
                               noInputFieldsCache={true}
-                              noCaptcha={true}
+                              noCaptcha={false}
                               noClearOption={true}
                               centerSubmitButton={true}
                               fullMarginField={true}
@@ -449,6 +595,205 @@ function AdminLogin() {
 
             {renderMfaPicker()}
             {renderMfaActions()}
+        </div>
+    );
+
+    const renderResetMethodPicker = () => {
+        if (!resetState || resetState.methods.length <= 1) { return null; }
+
+        return (
+            <div className={'admin-login-mfa-picker'}>
+                <p className={'admin-login-mfa-picker-label'}>Verify with</p>
+                {resetState.methods.map((m) => (
+                    <button
+                        key={m}
+                        type={'button'}
+                        className={m === mfaMethod ? 'current' : ''}
+                        disabled={submittingLocal}
+                        aria-pressed={m === mfaMethod}
+                        onClick={() => switchResetMethod(m)}
+                    >
+                        <span className={'admin-login-mfa-picker-radio'} aria-hidden={'true'}/>
+                        {METHOD_SWITCH_LABELS[m]}
+                    </button>
+                ))}
+            </div>
+        );
+    };
+
+    const buildNewPasswordFields = () => ([
+        {
+            id: newPasswordFieldId,
+            type: 'password',
+            name: 'new-password',
+            label: 'New Password',
+            displayLabel: 'New Password',
+            httpName: 'new-password',
+            required: true,
+            placeholder: 'New Password',
+            errorMsg: 'At least 8 characters with uppercase, lowercase, number, and special character',
+            regex: passwordPolicyRegex,
+            value: '',
+            setValue: null,
+            widthOfField: 1,
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+        },
+        {
+            id: confirmPasswordFieldId,
+            type: 'password',
+            name: 'confirm-password',
+            label: 'Confirm New Password',
+            displayLabel: 'Confirm New Password',
+            httpName: 'new-password',
+            required: true,
+            placeholder: 'Confirm New Password',
+            errorMsg: 'Please confirm your new password',
+            value: '',
+            setValue: null,
+            widthOfField: 1,
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+        },
+    ]);
+
+    const renderForgotScreen = () => (
+        <div className={'admin-login-mfa'}>
+            <p className={'admin-login-mfa-title'}>Reset your password</p>
+            <p className={'admin-login-mfa-instructions'}>
+                Enter your username. If you have a verification method set up, you can reset your password with it.
+            </p>
+
+            <div className={'admin-login-mfa-form-wrapper'}>
+                <Form key={'forgot-password-form'}
+                      fields={[
+                          {
+                              id: forgotUsernameFieldId,
+                              type: 'text',
+                              name: 'username',
+                              label: 'Username',
+                              displayLabel: 'Username',
+                              httpName: 'username',
+                              required: true,
+                              placeholder: 'Username',
+                              errorMsg: 'Please enter your username',
+                              value: '',
+                              setValue: null,
+                              widthOfField: 1,
+                              labelOutside: true,
+                              labelOnTop: true,
+                          },
+                      ]}
+                      mailTo={''}
+                      formTitle={'Admin Forgot Password Form'}
+                      lang={'en'}
+                      captchaLength={1}
+                      noInputFieldsCache={true}
+                      noCaptcha={false}
+                      noClearOption={true}
+                      centerSubmitButton={true}
+                      fullMarginField={true}
+                      forceEnglishForm={true}
+                      hasSetSubmittingLocal={true}
+                      setSubmittingLocal={setSubmittingLocal}
+                      hasDifferentOnSubmitBehaviour={true}
+                      differentOnSubmitBehaviour={handleForgotPassword}
+                      hasDifferentSubmitButtonText={true}
+                      differentSubmitButtonText={['Continue', 'Checking...']}
+                />
+            </div>
+
+            <div className={'admin-login-mfa-actions'}>
+                <button type={'button'} disabled={submittingLocal} onClick={() => exitMfaToFullForm(null)}>
+                    Back to login
+                </button>
+            </div>
+        </div>
+    );
+
+    const renderResetScreen = () => (
+        <div className={'admin-login-mfa'}>
+            <p className={'admin-login-mfa-title'}>Set a new password</p>
+
+            <p className={'admin-login-mfa-instructions'}>
+                {mfaMethod === 'passkey'
+                    ? 'Choose a new password, then confirm with your fingerprint, face, or device PIN.'
+                    : mfaMethod === 'email'
+                        ? `Choose a new password and enter the 6-digit code sent to ${resetState.maskedEmail}`
+                        : 'Choose a new password and enter the 6-digit code from your authenticator app'}
+            </p>
+
+            <div className={'admin-login-mfa-form-wrapper'}>
+                <Form key={`reset-${mfaMethod}`}
+                      fields={
+                          mfaMethod === 'passkey'
+                              ? buildNewPasswordFields()
+                              : [
+                                  ...buildNewPasswordFields(),
+                                  {
+                                      id: mfaCodeFieldId,
+                                      type: 'text',
+                                      name: 'mfa-code',
+                                      label: 'Verification Code',
+                                      displayLabel: 'Verification Code',
+                                      httpName: 'one-time-code',
+                                      required: true,
+                                      placeholder: '000000',
+                                      errorMsg: 'Enter the 6-digit code',
+                                      regex: '^[0-9]{6}$',
+                                      value: '',
+                                      setValue: null,
+                                      widthOfField: 1,
+                                      labelOutside: true,
+                                      labelOnTop: true,
+                                      dontLetTheBrowserSaveField: true,
+                                  },
+                              ]
+                      }
+                      mailTo={''}
+                      formTitle={`Admin Password Reset ${mfaMethod} Form`}
+                      lang={'en'}
+                      captchaLength={1}
+                      noInputFieldsCache={true}
+                      noCaptcha={false}
+                      noClearOption={true}
+                      centerSubmitButton={true}
+                      fullMarginField={true}
+                      forceEnglishForm={true}
+                      hasSetSubmittingLocal={true}
+                      setSubmittingLocal={setSubmittingLocal}
+                      hasDifferentOnSubmitBehaviour={true}
+                      differentOnSubmitBehaviour={mfaMethod === 'passkey' ? handleResetPasskeySubmit : handleResetCodeSubmit}
+                      hasDifferentSubmitButtonText={true}
+                      differentSubmitButtonText={
+                          mfaMethod === 'passkey'
+                              ? ['Verify with passkey', 'Verifying...']
+                              : ['Reset Password', 'Resetting...']
+                      }
+                />
+            </div>
+
+            {mfaStatus && <p className={'admin-login-mfa-status'} role={'status'}>{mfaStatus}</p>}
+            {mfaError && <p className={'admin-login-mfa-error'} role={'alert'}>{mfaError}</p>}
+
+            {renderResetMethodPicker()}
+
+            <div className={'admin-login-mfa-actions'}>
+                {mfaMethod === 'email' && (
+                    <button
+                        type={'button'}
+                        disabled={submittingLocal || resendIn > 0}
+                        onClick={() => sendResetEmailCode(resetState.resetToken)}
+                    >
+                        {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
+                    </button>
+                )}
+                <button type={'button'} disabled={submittingLocal} onClick={() => exitMfaToFullForm(null)}>
+                    Back to login
+                </button>
+            </div>
         </div>
     );
 
@@ -487,7 +832,7 @@ function AdminLogin() {
                   lang={'en'}
                   captchaLength={1}
                   noInputFieldsCache={true}
-                  noCaptcha={loginMode === 'recovery'}
+                  noCaptcha={false}
                   hasDifferentOnSubmitBehaviour={true}
                   differentOnSubmitBehaviour={handleAdminLogin}
                   hasDifferentSubmitButtonText={true}
@@ -532,6 +877,20 @@ function AdminLogin() {
                       ]
                   }
             />
+            {loginMode === 'full' && (
+                <button
+                    type={'button'}
+                    className={'admin-login-forgot-password-btn'}
+                    disabled={submittingLocal}
+                    onClick={() => {
+                        resetMfaState();
+                        setLoginNotice(null);
+                        setLoginMode('forgot');
+                    }}
+                >
+                    Forgot password?
+                </button>
+            )}
         </div>
     );
 
@@ -551,6 +910,8 @@ function AdminLogin() {
                         )}
                         {loginMode === 'biometric' && renderBiometricScreen()}
                         {loginMode === 'mfa' && mfaState && renderMfaScreen()}
+                        {loginMode === 'forgot' && renderForgotScreen()}
+                        {loginMode === 'resetVerify' && resetState && renderResetScreen()}
                         {(loginMode === 'recovery' || loginMode === 'full') && renderForm()}
                     </div>
                 </div>
