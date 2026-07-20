@@ -257,7 +257,7 @@ function handleIntermediateMode($from, $message) {
                 $stageName = $stageData['name'][$lang];
                 $responseText = "";
 
-                if ($stageData['offered'] && !SHOW_UNOFFERED_STAGES) {
+                if ( (!$stageData['offered'] && SHOW_UNOFFERED_STAGES === 1) ||  $stageData['offered']) {
                     if ($action === 'age') {
                         $ageStr = $stageData['age'][$lang];
                         $responseText = ($lang === 'en')
@@ -507,14 +507,14 @@ function sendStageMenuIntermediate($to, $lang, $action, $deptKey, $secKey) {
     $rows = [];
 
     foreach ($stageData['stages'] as $stageId => $stage) {
-        if ($filterUnoffered && !$stage['offered'] && !SHOW_UNOFFERED_STAGES) continue;
+        if ($filterUnoffered && !$stage['offered'] && SHOW_UNOFFERED_STAGES === 0) continue;
         $id = "res_{$action}_{$stageId}";
         $rows[] = ["id" => $id, "title" => $stage['name'][$lang]];
     }
 
     $bodyText = $ui['stage_body'][$lang];
 
-    if ($filterUnoffered && !SHOW_UNOFFERED_STAGES) {
+    if ($filterUnoffered && SHOW_UNOFFERED_STAGES === 0) {
         $bodyText .= "\n\n_" . $ui['unoffered_note'][$lang] . "_";
     }
 
