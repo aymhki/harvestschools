@@ -119,7 +119,7 @@
     flex-direction: column;
     min-height: auto;
     max-height: 90vh;
-    max-width: 90vw;
+    max-width: min(95vw, 80rem);
 }
 
 
@@ -151,10 +151,14 @@
 .general-large-admin-action-modal-content {
     flex: 0 1 auto;
     min-height: 0;
-    width: min(90vw, 40rem);
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+.admin-settings-modal-content {
+
+}
+
 
 .general-large-admin-action-modal-content-note {
     font-size: medium;
