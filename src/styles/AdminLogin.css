@@ -53,6 +53,35 @@
     margin: 0.75rem 1rem;
 }
 
+.admin-login-forgot-password-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0.25rem 0 1rem 0;
+    color: var(--primary-color);
+    opacity: 0.75;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: opacity 0.3s;
+    box-shadow: none;
+    filter:none;
+}
+
+.admin-login-forgot-password-btn:hover {
+    background: none;
+    color: var(--primary-color)
+}
+
+.admin-login-forgot-password-btn:hover:not(:disabled) {
+    opacity: 1;
+}
+
+.admin-login-forgot-password-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
 .admin-login-mfa button:disabled,
 .admin-login-biometric-only button:disabled,
 .admin-login-recovery-only-prompt-wrapper button:disabled {
@@ -233,5 +262,13 @@
         color: var(--primary-color);
         box-shadow: none;
         filter: none;
+    }
+
+    .admin-login-forgot-password-btn {
+        color: var(--fb-white-color)
+    }
+
+    .admin-login-forgot-password-btn:hover {
+        color: var(--fb-white-color)
     }
 }

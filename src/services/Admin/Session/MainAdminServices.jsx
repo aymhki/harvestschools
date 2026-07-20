@@ -354,6 +354,108 @@ const performPasskeyMfa = async (mfaToken, navigate) => {
     }
 };
 
+const requestPasswordReset = async (username) => {
+    try {
+        const fingerprint = await getClientFingerprint();
+        const response = await fetch(endpoints.requestPasswordReset, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({ username, fingerprint }),
+        });
+        const result = await response.json();
+
+        if (result && result.success && result.mfa_required) {
+            return {
+                success: true,
+                mfaRequired: true,
+                resetToken: result.resetToken,
+                methods: result.methods || [],
+                preferred: result.preferred,
+                maskedEmail: result.maskedEmail,
+            };
+        }
+
+        return result;
+    } catch (error) {
+        return { success: false, message: error.message, code: 0 };
+    }
+};
+
+const requestResetEmailCode = async (resetToken) => {
+    try {
+        const response = await fetch(endpoints.requestResetEmailCode, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({ reset_token: resetToken }),
+        });
+
+        return await response.json();
+    } catch (error) {
+        return { success: false, message: error.message, code: 0 };
+    }
+};
+
+const completePasswordReset = async (resetToken, method, code, newPassword) => {
+    try {
+        const response = await fetch(endpoints.verifyPasswordReset, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({
+                reset_token: resetToken,
+                method,
+                code,
+                new_password: newPassword,
+            }),
+        });
+
+        return await response.json();
+    } catch (error) {
+        return { success: false, message: error.message, code: 0 };
+    }
+};
+
+const performPasskeyReset = async (resetToken, newPassword) => {
+    try {
+        const optionsResponse = await fetch(endpoints.resetPasskeyOptions, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({ reset_token: resetToken }),
+        });
+        const optionsResult = await optionsResponse.json();
+
+        if (!optionsResult || !optionsResult.success || !optionsResult.options) {
+            return optionsResult || { success: false, message: 'Could not start passkey verification', code: 0 };
+        }
+
+        const credential = await navigator.credentials.get(decodeGetArgs(optionsResult.options));
+
+        if (!credential) {
+            return { success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true };
+        }
+
+        const verifyResponse = await fetch(endpoints.verifyPasswordReset, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({
+                reset_token: resetToken,
+                method: 'passkey',
+                new_password: newPassword,
+                id: bufToB64(credential.rawId),
+                clientDataJSON: bufToB64(credential.response.clientDataJSON),
+                authenticatorData: bufToB64(credential.response.authenticatorData),
+                signature: bufToB64(credential.response.signature),
+            }),
+        });
+
+        return await verifyResponse.json();
+    } catch (error) {
+        if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+            return { success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true };
+        }
+        return { success: false, message: error.message, code: 0 };
+    }
+};
+
 export {
     checkAdminSession,
     validateAdminLogin,
@@ -364,5 +466,9 @@ export {
     isMobileApp,
     requestEmailCode,
     completeMfa,
-    performPasskeyMfa
+    performPasskeyMfa,
+    requestPasswordReset,
+    requestResetEmailCode,
+    completePasswordReset,
+    performPasskeyReset
 }

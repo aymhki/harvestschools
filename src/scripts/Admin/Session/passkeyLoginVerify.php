@@ -41,7 +41,7 @@ try {
     $stmt = $conn->prepare(
         "SELECT user_id, attempts, fingerprint_hash, webauthn_challenge
          FROM admin_mfa_challenges
-         WHERE id = ? AND expires_at > NOW()"
+         WHERE id = ? AND purpose = 'login' AND expires_at > NOW()"
     );
     $stmt->bind_param("s", $mfaHash);
     $stmt->execute();
