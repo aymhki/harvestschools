@@ -75,6 +75,7 @@ function InfoSystemManagement() {
         'SESSION_TIMEOUT_MINUTES': ['30', '60', '120'],
         'BOT_ON': ['Yes', 'No'],
         'NUMBER_OF_MESSAGES_BEFORE_LLM_ASKS_FOR_FEEDBACK': ['3', '5', '10', '20'],
+        'SHOW_UNOFFERED_STAGES': ['Yes', 'No']
     }
 
     const settingKeyFormFieldId = 1;
