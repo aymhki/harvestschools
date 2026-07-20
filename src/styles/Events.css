@@ -316,3 +316,29 @@
     }
 
 }
+.booking-login-biometric-only {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.booking-login-biometric-only button {
+    margin: 0.75rem 1rem;
+}
+
+.booking-login-biometric-only button:disabled,
+.booking-login-different-login-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: none;
+}
+
+.booking-login-notice {
+    max-width: 80%;
+    text-align: center;
+    color: var(--secondary-color);
+    margin: 0.75rem 0;
+    line-height: 1.6;
+}

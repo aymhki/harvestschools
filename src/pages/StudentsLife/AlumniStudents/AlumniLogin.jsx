@@ -10,20 +10,33 @@ import '../../../styles/AlumniStudents.css';
 
 import {headToAlumniProfileOnValidSession} from "../../../services/Alumni/AlumniNavigationServices.jsx";
 import {
+    ALUMNI_SESSION_NAME,
     validateAlumniLogin,
+    validateAlumniLoginWithCredentials,
     performAlumniPasskeyLogin,
     submitAlumniSignup
 } from "../../../services/Alumni/MainAlumniServices.jsx";
 import {msgTimeout, isMobileApp} from "../../../services/General/GeneralUtils.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
+import {
+    isBiometricAvailable,
+    hasSavedBiometricCredentials,
+    getBiometricCredentials,
+    deleteBiometricCredentials,
+    verifyBiometricIdentity,
+} from "../../../services/General/CapacitorSecureAuthUtils.jsx";
 
 
 function AlumniLogin() {
     const navigate = useNavigate();
     const {t} = useTranslation(['students-life-pages']);
+    const isMountedRef = useRef(true);
 
     const [submittingLocal, setSubmittingLocal] = useState(false);
     const [mode, setMode] = useState('sign-in');
+    const [loginMode, setLoginMode] = useState('checking');
+    const [prefillUsername, setPrefillUsername] = useState('');
+    const [loginNotice, setLoginNotice] = useState(null);
 
     const [signInMethod, setSignInMethod] = useState(passkeySupported() ? 'passkey' : 'password');
     const [passkeyError, setPasskeyError] = useState('');
@@ -49,8 +62,112 @@ function AlumniLogin() {
     const signUpProfilePictureFieldLabel = 'Profile Picture';
 
     useEffect(() => {
-        headToAlumniProfileOnValidSession(navigate, setSubmittingLocal);
+        isMountedRef.current = true;
+
+        const autoSessionCheck = async () => {
+            setSubmittingLocal(true);
+
+            try {
+                await headToAlumniProfileOnValidSession(navigate, setSubmittingLocal);
+
+                if (!isMountedRef.current) {return;}
+
+                if (!isMobileApp()) {
+                    setLoginMode('full');
+                    return;
+                }
+
+                const biometricHardwareAvailable = await isBiometricAvailable();
+                if (!isMountedRef.current) {return;}
+
+                if (!biometricHardwareAvailable) {
+                    setLoginMode('full');
+                    return;
+                }
+
+                const credentialsSaved = await hasSavedBiometricCredentials(ALUMNI_SESSION_NAME);
+                if (!isMountedRef.current) {return;}
+
+                if (credentialsSaved) {
+                    setLoginMode('biometric');
+                } else {
+                    setLoginMode('full');
+                }
+            } finally {
+                if (isMountedRef.current) {
+                    setSubmittingLocal(false);
+                }
+            }
+        };
+
+        autoSessionCheck();
+
+        return () => {
+            isMountedRef.current = false;
+        };
     }, []);
+
+    const resetToFirstTimeMobileExperience = async () => {
+        await deleteBiometricCredentials(ALUMNI_SESSION_NAME);
+
+        if (isMountedRef.current) {
+            setPrefillUsername('');
+            setLoginNotice(null);
+            setLoginMode('full');
+        }
+    };
+
+    const attemptBiometricLogin = async () => {
+        setSubmittingLocal(true);
+        try {
+            const verified = await verifyBiometricIdentity({
+                reason: 'Log in to your alumni profile',
+                title: 'Alumni Sign In',
+                subtitle: 'Use your biometrics to sign in',
+                description: 'Confirm your identity to continue',
+                fallbackTitle: 'Log in to your alumni profile',
+            });
+
+            if (!verified) {
+                return;
+            }
+
+            const credentials = await getBiometricCredentials(ALUMNI_SESSION_NAME);
+            if (!credentials || !credentials.username || !credentials.password) {
+                return;
+            }
+
+            const result = await validateAlumniLoginWithCredentials(
+                credentials.username,
+                credentials.password,
+                navigate
+            );
+
+            if (result && !result.success) {
+                const credentialsLikelyChanged = result.code === 401 || result.code === 404;
+                if (credentialsLikelyChanged) {
+                    const wantsToUpdateCredentials = window.confirm(
+                        "Did you change your username or password? Tap OK to enter your new username and password. Tap Cancel to remove biometric sign-in on this device."
+                    );
+                    if (wantsToUpdateCredentials) {
+                        if (isMountedRef.current) {
+                            setPrefillUsername(credentials.username);
+                            setSignInMethod('password');
+                            setLoginMode('recovery');
+                        }
+                    } else {
+                        await resetToFirstTimeMobileExperience();
+                    }
+                } else if (isMountedRef.current) {
+                    setLoginNotice(result.message || 'Could not sign in with biometrics. Please try again.');
+                }
+            }
+        } finally {
+            if (isMountedRef.current) {
+                setSubmittingLocal(false);
+            }
+        }
+    };
 
     const handleAlumniLogin = async (formData) => {
         if (submittingLocal) {
@@ -167,6 +284,7 @@ function AlumniLogin() {
         placeholder: t("students-life-pages.alumni-login-page.username-field"),
         errorMsg: 'Please enter your username',
         value: '',
+        defaultValue: prefillUsername,
         setValue: null,
         widthOfField: 1,
         httpName: 'username',
@@ -188,6 +306,28 @@ function AlumniLogin() {
     };
 
     const isPasskeyMode = signInMethod === 'passkey' && passkeySupported() && !isMobileApp();
+
+    const renderBiometricScreen = () => (
+        <div className={"alumni-login-biometric-only"}>
+            <button
+                type={'button'}
+                onClick={attemptBiometricLogin}
+                disabled={submittingLocal}
+            >
+                {t("students-life-pages.alumni-login-page.biometric-button")}
+            </button>
+            <button
+                type={'button'}
+                onClick={() => {
+                    setLoginNotice(null);
+                    setLoginMode('full');
+                }}
+                disabled={submittingLocal}
+            >
+                {t("students-life-pages.alumni-login-page.biometric-different-login")}
+            </button>
+        </div>
+    );
 
     return (
         <>
@@ -213,7 +353,7 @@ function AlumniLogin() {
                         </h2>
 
 
-                        {(!signupSuccess) && (
+                        {(!signupSuccess) && !(mode === 'sign-in' && loginMode === 'biometric') && (
                             <p>
                             {mode === 'sign-in'
                                 ? t("students-life-pages.alumni-login-page.sign-in-description")
@@ -221,8 +361,23 @@ function AlumniLogin() {
                             </p>
                         )}
 
+                        {mode === 'sign-in' && loginNotice && loginMode !== 'biometric' && (
+                            <p className={"alumni-inline-error-message"}>{loginNotice}</p>
+                        )}
+
                         {mode === 'sign-in' ? (
+                            loginMode === 'biometric' ? (
+                                renderBiometricScreen()
+                            ) : loginMode === 'checking' ? null : (
                             <div className={"alumni-login-tab-content"}>
+
+                                {loginMode === 'recovery' && (
+                                    <div className={"alumni-login-method-switch"}>
+                                        <button type={'button'} onClick={resetToFirstTimeMobileExperience}>
+                                            {t("students-life-pages.alumni-login-page.biometric-different-login")}
+                                        </button>
+                                    </div>
+                                )}
 
                                 {isPasskeyMode ? (
                                     <Form key={"alumni-sign-in-passkey-form"}
@@ -299,6 +454,7 @@ function AlumniLogin() {
                                 </p>
 
                             </div>
+                            )
                         ) : (
                             <div className={"alumni-login-tab-content"}>
 

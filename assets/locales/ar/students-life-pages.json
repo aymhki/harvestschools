@@ -2435,7 +2435,9 @@
       "switch-to-sign-up": "ليس لديك حساب؟ أنشئ حساباً",
       "switch-to-sign-in": "لديك حساب بالفعل؟ سجّل الدخول",
       "sign-in-with-password-instead": "استخدام بكلمة المرور",
-      "sign-in-with-passkey-instead": "استخدام مفتاح المرور"
+      "sign-in-with-passkey-instead": "استخدام مفتاح المرور",
+      "biometric-button": "تسجيل الدخول بالمصادقة الحيوية",
+      "biometric-different-login": "استخدام طريقة دخول أخرى"
 
     }
   }

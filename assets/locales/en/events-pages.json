@@ -271,7 +271,9 @@
         "username-field": "Username",
         "password-field": "Password",
         "login-btn": "Login",
-        "logging-in-btn": "Logging in..."
+        "logging-in-btn": "Logging in...",
+        "biometric-button": "Sign in with biometrics",
+        "biometric-different-login": "Use a different login"
       },
       "dashboard-page": {
         "title": "Dashboard",
