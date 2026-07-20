@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../securityHeaders.php';
+
 function mfa_default_config() {
     return [
         'mfa_mode' => 'risk',
@@ -62,14 +64,3 @@ function mfa_config($key = null) {
     return $config[$key] ?? null;
 }
 
-function mfa_is_local_request() {
-    $host = strtolower(explode(':', (string)($_SERVER['HTTP_HOST'] ?? ''))[0]);
-
-    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
-        return true;
-    }
-
-    $remote = $_SERVER['REMOTE_ADDR'] ?? '';
-
-    return in_array($remote, ['127.0.0.1', '::1'], true);
-}

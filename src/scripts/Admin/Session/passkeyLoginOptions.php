@@ -60,7 +60,7 @@ try {
         exit;
     }
 
-    $webauthn = get_webauthn_instance();
+    $webauthn = get_admin_webauthn_instance();
 
     $args = $webauthn->getGetArgs(
         $credentialIds,

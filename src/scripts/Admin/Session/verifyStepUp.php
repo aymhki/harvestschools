@@ -1,9 +1,9 @@
 <?php
 require_once '../../headers.php';
-require_once '../../authHelpers.php';
-require_once '../../mfaHelpers.php';
+require_once '../authHelpers.php';
+require_once 'mfaHelpers.php';
 require_once '../../webauthnHelpers.php';
-require_once '../../accountActions.php';
+require_once 'accountActions.php';
 set_cors_headers();
 
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
@@ -92,7 +92,7 @@ try {
 
         if ($pkResult->num_rows > 0) {
             $pkRow    = $pkResult->fetch_assoc();
-            $webauthn = get_webauthn_instance();
+            $webauthn = get_admin_webauthn_instance();
 
             try {
                 $ok = $webauthn->processGet(

@@ -113,8 +113,6 @@ function mfa_owner_key_for_user($userId) {
 }
 
 function mfa_issue_email_code($conn, $purpose, $ownerKey, $userId, $destination) {
-    // mfa_gc($conn);
-
     $code     = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
     $codeHash = hash('sha256', $code);
     $ttl      = (int)mfa_config('email_code_ttl_seconds');
@@ -595,13 +593,6 @@ function log_admin_event($conn, $userId, $event, $fingerprintHash = null) {
     $stmt->close();
 }
 
-function mfa_gc($conn) {
-    if (random_int(1, 20) !== 1) { return; }
-
-    $conn->query("DELETE FROM admin_mfa_codes WHERE expires_at < (NOW() - INTERVAL 1 DAY)");
-    $conn->query("DELETE FROM admin_mfa_send_log WHERE sent_at < (NOW() - INTERVAL 1 DAY)");
-    $conn->query("DELETE FROM admin_mfa_challenges WHERE expires_at < (NOW() - INTERVAL 1 DAY)");
-}
 
 function step_up_create($conn, $userId, $action, $payload) {
     $conn->query("DELETE FROM admin_step_up_challenges WHERE expires_at < NOW()");

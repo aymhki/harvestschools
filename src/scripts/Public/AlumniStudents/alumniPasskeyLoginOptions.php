@@ -1,6 +1,6 @@
 <?php
 require_once '../../headers.php';
-require_once '../../alumniAuthHelpers.php';
+require_once '../../Alumni/alumniAuthHelpers.php';
 require_once '../../webauthnHelpers.php';
 set_cors_headers();
 

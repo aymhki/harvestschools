@@ -1,6 +1,6 @@
 <?php
 require_once '../../headers.php';
-require_once '../../authHelpers.php';
+require_once '../authHelpers.php';
 require_once '../../webauthnHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
@@ -55,7 +55,7 @@ try {
         exit;
     }
 
-    $webauthn = get_webauthn_instance();
+    $webauthn = get_admin_webauthn_instance();
 
     $credentialData = $webauthn->processCreate(
         $clientDataJSON,
