@@ -76,4 +76,4 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] The alumni change password modal needs to use the custom form for password fields.
 - [ ] Remove passkey from capacitor app for the alumni pages.
 - [ ] Viewing alumni files doesn't work from admin management page tables.
-- 
+- [ ] Add www. to app links hostnames in iOS and android.
