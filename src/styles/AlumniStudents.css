@@ -1026,3 +1026,20 @@
         color: var(--fb-white-color) !important;
     }
 }
+.alumni-login-biometric-only {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.alumni-login-biometric-only button:not(.toggle-password-visibility) {
+    margin: 0.75rem 1rem;
+}
+
+.alumni-login-biometric-only button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: none;
+}

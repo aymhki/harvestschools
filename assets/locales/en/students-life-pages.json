@@ -2440,7 +2440,9 @@
       "switch-to-sign-up": "Don't have an account? Sign up",
       "switch-to-sign-in": "Already have an account? Sign in",
       "sign-in-with-password-instead": "Use password instead",
-      "sign-in-with-passkey-instead": "Use passkey instead"
+      "sign-in-with-passkey-instead": "Use passkey instead",
+      "biometric-button": "Sign in with biometrics",
+      "biometric-different-login": "Use a different login"
     }
   }
 }

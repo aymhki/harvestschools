@@ -6,7 +6,13 @@ import {
     getSessionsFromLocalStorage,
     resetSession,
     sessionDuration,
+    isMobileApp,
 } from "../General/GeneralUtils.jsx";
+
+import {
+    isBiometricAvailable,
+    saveBiometricCredentials,
+} from "../General/CapacitorSecureAuthUtils.jsx";
 
 import {decodeCreateArgs, decodeGetArgs, bufToB64, passkeySupported} from "../General/PasskeyUtils.jsx";
 
@@ -118,7 +124,7 @@ const checkAlumniSessionFromProfile = async (navigate) => {
     }
 }
 
-const performAlumniLogin = async (username, password, navigate) => {
+const performAlumniLogin = async (username, password, navigate, persistBiometricCredentials) => {
     try {
         const response = await fetch(endpoints.validateAlumniLogin, {
             method: 'POST',
@@ -127,6 +133,14 @@ const performAlumniLogin = async (username, password, navigate) => {
         });
 
         const result = await response.json();
+
+        if (result && result.success && result.sessionToken
+            && isMobileApp() && persistBiometricCredentials) {
+            const biometricHardwareAvailable = await isBiometricAvailable();
+            if (biometricHardwareAvailable) {
+                await saveBiometricCredentials(ALUMNI_SESSION_NAME, username, password);
+            }
+        }
 
         if (result && result.success && result.sessionToken) {
             storeAlumniSessionAndEnter(result.sessionToken, navigate);
@@ -143,7 +157,20 @@ const validateAlumniLogin = async (formData, usernameFieldId, passwordFieldId, n
     const formDataEntries = Array.from(formData.entries());
     const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
     const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
-    return performAlumniLogin(username, password, navigate);
+    return performAlumniLogin(username, password, navigate, true);
+}
+
+const validateAlumniLoginWithCredentials = async (username, password, navigate) => {
+    return performAlumniLogin(username, password, navigate, false);
+}
+
+const updateAlumniBiometricCredentials = async (username, password) => {
+    if ( username && password && isMobileApp() ) {
+        const biometricHardwareAvailable = await isBiometricAvailable();
+        if (biometricHardwareAvailable) {
+            await saveBiometricCredentials(ALUMNI_SESSION_NAME, username, password);
+        }
+    }
 }
 
 const performAlumniPasskeyLogin = async (username, navigate) => {
@@ -389,12 +416,15 @@ const uploadAlumniPostImage = async (file, navigate) => {
 }
 
 export {
+    ALUMNI_SESSION_NAME,
     validateAlumniSessionLocally,
     buildAlumniAuthHeaders,
     logoutCurrentAlumni,
     checkAlumniSessionFromLogin,
     checkAlumniSessionFromProfile,
     validateAlumniLogin,
+    validateAlumniLoginWithCredentials,
+    updateAlumniBiometricCredentials,
     performAlumniPasskeyLogin,
     submitAlumniSignup,
     fetchMyAlumniAccount,

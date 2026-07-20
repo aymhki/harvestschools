@@ -9,8 +9,16 @@ import {
     resetSession,
     getSessionsFromLocalStorage,
     endpoints,
-    buildAuthHeaders
+    buildAuthHeaders,
+    isMobileApp
 } from "../../General/GeneralUtils.jsx";
+
+import {
+    isBiometricAvailable,
+    saveBiometricCredentials,
+} from "../../General/CapacitorSecureAuthUtils.jsx";
+
+const GRADUATION_BOOKING_SESSION_NAME = 'harvest_schools_graduation_booking';
 
 
 const fetchGraduationBookingConfirmationRequest = async (bookingId, extrasId, username, password_hash) => {
@@ -143,11 +151,7 @@ const checkGraduationBookingSessionFromBookingDashboard = async (navigate) => {
     }
 }
 
-const validateGraduationBookingLogin = async (formData, usernameFieldId, passwordFieldId, navigate) => {
-    const formDataEntries = Array.from(formData.entries());
-    const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
-    const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
-
+const performGraduationBookingLogin = async (username, password, navigate, persistBiometricCredentials) => {
     try {
         const response = await fetch(endpoints.validateGraduationBookingLogin, {
             method: 'POST',
@@ -157,10 +161,18 @@ const validateGraduationBookingLogin = async (formData, usernameFieldId, passwor
         const result = await response.json();
 
         if (result.success) {
+
+            if (isMobileApp() && persistBiometricCredentials) {
+                const biometricHardwareAvailable = await isBiometricAvailable();
+                if (biometricHardwareAvailable) {
+                    await saveBiometricCredentials(GRADUATION_BOOKING_SESSION_NAME, username, password);
+                }
+            }
+
             const sessionResponse = await fetch(endpoints.createGraduationBookingSession, {
                 method: 'POST',
                 body: JSON.stringify({username: username, user_id: result.id}),
-                headers: await buildAuthHeaders(createSessions('harvest_schools_graduation_booking'))
+                headers: await buildAuthHeaders(createSessions(GRADUATION_BOOKING_SESSION_NAME))
             });
 
             const sessionResult = await sessionResponse.json();
@@ -176,6 +188,18 @@ const validateGraduationBookingLogin = async (formData, usernameFieldId, passwor
     } catch (error) {
         return error.message;
     }
+}
+
+const validateGraduationBookingLogin = async (formData, usernameFieldId, passwordFieldId, navigate) => {
+    const formDataEntries = Array.from(formData.entries());
+    const username = formDataEntries.find(entry => entry[0] === ('field_' + usernameFieldId))[1];
+    const password = formDataEntries.find(entry => entry[0] === ('field_' + passwordFieldId))[1];
+
+    return performGraduationBookingLogin(username, password, navigate, true);
+}
+
+const validateGraduationBookingLoginWithCredentials = async (username, password, navigate) => {
+    return performGraduationBookingLogin(username, password, navigate, false);
 }
 
 const checkGraduationBookingSessionFromBookingLogin = async (navigate) => {
@@ -248,9 +272,11 @@ const validateGraduationBookingSessionLocally = () => {
 
 
 export {
+    GRADUATION_BOOKING_SESSION_NAME,
     checkGraduationBookingSession,
     checkGraduationBookingSessionFromBookingLogin,
     validateGraduationBookingLogin,
+    validateGraduationBookingLoginWithCredentials,
     checkGraduationBookingSessionFromBookingDashboard,
     fetchGraduationBookingInfoBySessionRequest,
     submitUpdateGraduationBookingExtrasRequest,

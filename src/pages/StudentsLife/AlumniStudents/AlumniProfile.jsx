@@ -12,6 +12,7 @@ import {
     submitAlumniProfileUpdate,
     cancelAlumniProfileUpdate,
     changeAlumniPassword,
+    updateAlumniBiometricCredentials,
     registerAlumniPasskey,
     deleteAlumniPasskey,
     submitAlumniPost,
@@ -212,6 +213,9 @@ function AlumniProfile() {
         if (result && result.success) {
             setShowChangePasswordModal(false);
             flashMessage(result.message);
+            if (profile && profile.username) {
+                await updateAlumniBiometricCredentials(profile.username, newPassword);
+            }
         } else {
             setModalError((result && result.message) || 'The password could not be changed.');
         }

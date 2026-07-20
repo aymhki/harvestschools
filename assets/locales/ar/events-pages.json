@@ -271,7 +271,9 @@
         "login-btn": "تسجيل الدخول",
         "logging-in-btn": "جارِ تسجيل الدخول...",
         "username-field": "اسم المستخدم",
-        "password-field": "كلمة المرور"
+        "password-field": "كلمة المرور",
+        "biometric-button": "تسجيل الدخول بالمصادقة الحيوية",
+        "biometric-different-login": "استخدام طريقة دخول أخرى"
       },
       "dashboard-page": {
         "title": "لوحة تحكم الحجوزات",
