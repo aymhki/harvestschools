@@ -270,8 +270,8 @@
         "title": "Booking Login",
         "username-field": "Username",
         "password-field": "Password",
-        "login-btn": "Login",
-        "logging-in-btn": "Logging in...",
+        "login-btn": "Sign in",
+        "logging-in-btn": "Signing in...",
         "biometric-button": "Sign in with biometrics",
         "biometric-different-login": "Use a different login"
       },
