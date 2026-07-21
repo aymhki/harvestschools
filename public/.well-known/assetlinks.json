@@ -5,9 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.harvestschools.app",
       "sha256_cert_fingerprints": [
-        "5A:6A:4F:0A:08:04:9C:7C:C1:5D:CC:92:51:CA:7C:AB:F9:11:56:36:ED:3F:97:34:6C:01:F1:65:7F:5C:23:09",
-        "RELEASE_UPLOAD_FINGERPRINT",
-        "GOOGLE_PLAY_APP_SIGNING_FINGERPRINT"
+        "50:A0:C2:DB:AB:0F:DC:4B:0E:43:E7:7F:2B:39:5E:2C:CB:1E:3A:69:72:A7:B6:8C:84:A8:FA:CB:84:B8:2F:8B",
+        "5A:6A:4F:0A:08:04:9C:7C:C1:5D:CC:92:51:CA:7C:AB:F9:11:56:36:ED:3F:97:34:6C:01:F1:65:7F:5C:23:09"
       ]
     }
   }
