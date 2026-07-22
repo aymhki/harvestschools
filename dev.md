@@ -65,7 +65,7 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Admin login mfa risk handler should consider biometric login from capacitor app safe enough as well as consider iP address country/region.
 - [x] Alumni students should be able to submit a request to delete their accounts to the administrators.
 - [x] Unify the router to elements across domains.
-- [ ] Table filter modal fields css needs to be adjusted to match form fields.
+- [x] Table filter modal fields css needs to be adjusted to match form fields.
 - [ ] Graduation booking login and alumni students login should store, set, extend, get, and delete session using SecureStoragePlugin for capacitor on the app similar to the admin login.
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
