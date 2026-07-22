@@ -106,7 +106,7 @@ function AppSplash({ showProgress = false, progress = 0 }) {
     return (
         <div className="app-splash" dir={language === 'ar' ? 'rtl' : 'ltr'}>
             <div className="app-splash__mark" aria-hidden="true">
-                <svg viewBox="0 0 256 256" role="presentation" focusable="false">
+                <svg viewBox="0 0 512 512" role="presentation" focusable="false">
                     <path
                         className="app-splash__mark-letter app-splash__mark-letter--h"
                         d="m49.5,181.6h-19.9v-106.5h19.9v42.2h27.8v-42.2h19.9v106.5h-19.9v-48.7h-27.8z"
@@ -124,15 +124,7 @@ function AppSplash({ showProgress = false, progress = 0 }) {
                 <span className="app-splash__halo" />
             </div>
 
-            <p className="app-splash__wordmark">Harvest International School</p>
-
-            <p
-                className={`app-splash__message ${isMessageVisible ? 'is-visible' : ''}`}
-                role="status"
-                aria-live="polite"
-            >
-                {messages[messageIndex]}
-            </p>
+            {/*<p className="app-splash__wordmark">Harvest International School</p>*/}
 
             {showProgress ? (
                 <div className="app-splash__progress-track" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
@@ -143,6 +135,14 @@ function AppSplash({ showProgress = false, progress = 0 }) {
                     <span />
                 </div>
             )}
+
+            <p
+                className={`app-splash__message ${isMessageVisible ? 'is-visible' : ''}`}
+                role="status"
+                aria-live="polite"
+            >
+                {messages[messageIndex]}
+            </p>
         </div>
     )
 }

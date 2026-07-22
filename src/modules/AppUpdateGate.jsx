@@ -15,7 +15,7 @@ import OfflineBanner from './OfflineBanner.jsx'
 import '../styles/AppUpdateGate.css'
 import PropTypes from 'prop-types'
 
-const SHOW_DOWNLOAD_PROGRESS_BAR = false
+const SHOW_DOWNLOAD_PROGRESS_BAR = true
 
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
