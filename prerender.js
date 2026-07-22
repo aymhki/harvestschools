@@ -1,23 +1,27 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { prerenderTargets } from './src/routes/routes.js';
+
+const targetName = process.argv[2];
+const target = prerenderTargets[targetName];
+
+if (!target) {
+    console.error(`Unknown prerender target "${targetName}". Valid targets: ${Object.keys(prerenderTargets).join(', ')}`);
+    process.exit(1);
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const toAbsolute = (p) => path.resolve(__dirname, p);
 
-const template = fs.readFileSync(toAbsolute('dist/corporate/static/index.html'), 'utf-8');
-const { render } = await import('./dist/corporate/prerender/entry-prerender-corporate.js');
+const { distDir, entry, domain, routes: routesToPrerender, sitemapExclude } = target;
 
-const routesToPrerender = [
-    '/',
-    '/home',
-    '/not-found',
-];
+const { render } = await import(entry);
 
-console.log('Starting pre-rendering...');
+console.log(`Starting pre-rendering (${targetName})...`);
 
-const originalIndexPath = toAbsolute('dist/corporate/static/index.html');
-const tempIndexPath = toAbsolute('dist/corporate/static/index.original.html');
+const originalIndexPath = toAbsolute(`${distDir}/index.html`);
+const tempIndexPath = toAbsolute(`${distDir}/index.original.html`);
 if (fs.existsSync(originalIndexPath)) {
     fs.renameSync(originalIndexPath, tempIndexPath);
 }
@@ -31,7 +35,7 @@ for (const url of routesToPrerender) {
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(`<!--helmet-tags-->`, helmet);
 
-    const dirPath = `dist/corporate/static${url}`;
+    const dirPath = `${distDir}${url}`;
     const absoluteDirPath = toAbsolute(dirPath);
 
     if (!fs.existsSync(absoluteDirPath)) {
@@ -43,8 +47,8 @@ for (const url of routesToPrerender) {
     console.log('pre-rendered:', filePath);
 }
 
-const prerenderedRoot = toAbsolute('dist/corporate/static/index.html');
-const homeHtmlPath = toAbsolute('dist/corporate/static/home.html');
+const prerenderedRoot = toAbsolute(`${distDir}/index.html`);
+const homeHtmlPath = toAbsolute(`${distDir}/home.html`);
 
 if (fs.existsSync(prerenderedRoot)) {
     if (routesToPrerender.includes('/home')) {
@@ -58,19 +62,11 @@ if (fs.existsSync(tempIndexPath)) {
     fs.renameSync(tempIndexPath, originalIndexPath);
 }
 
-
 console.log('Pre-rendering complete.');
 
-
 function generateSitemap() {
-    const domain = 'https://www.alfajralbasem.com';
-
-    const excludedRoutes = [
-        '/not-found',
-    ];
-
     const urls = routesToPrerender
-        .filter(route => !excludedRoutes.includes(route))
+        .filter(route => !sitemapExclude.includes(route))
         .map(route => {
             const url = `${domain}${route}`;
             return `
@@ -87,7 +83,7 @@ function generateSitemap() {
     ${urls.join('')}
 </urlset>`;
 
-    const sitemapPath = toAbsolute('dist/corporate/static/sitemap.xml');
+    const sitemapPath = toAbsolute(`${distDir}/sitemap.xml`);
     fs.writeFileSync(sitemapPath, sitemapContent);
     console.log('sitemap.xml generated at:', sitemapPath);
 }

@@ -1,25 +1,22 @@
-import {Suspense, lazy, useEffect, useState} from 'react'
-import {Routes, Route, Navigate, useLocation, useNavigate} from 'react-router-dom'
-import Spinner from '../modules/Spinner.jsx'
-import AdminSidebar from "../modules/AdminSidebar.jsx";
-import AdminFooter from "../modules/AdminFooter.jsx";
-import NavigationBar from "../modules/NavigationBar.jsx";
+import { Suspense, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Spinner from '../modules/Spinner.jsx';
+import AdminSidebar from '../modules/AdminSidebar.jsx';
+import AdminFooter from '../modules/AdminFooter.jsx';
+import NavigationBar from '../modules/NavigationBar.jsx';
 import '../styles/App.css';
-import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from "../services/Admin/Session/AdminNavigationServices.jsx";
-import { serveAlumniFile } from "../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx";
-import {serveJobApplicationFile} from "../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
+import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from '../services/Admin/Session/AdminNavigationServices.jsx';
+import { serveAlumniFile } from '../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx';
+import { serveJobApplicationFile } from '../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx';
+import { adminRoutes } from '../routes/routes.js';
+import AppRoutes from '../routes/AppRoutes.jsx';
+import { makeLazyPages, findRoute } from '../routes/shared.js';
 
-const NotFound = lazy(() => import('../pages/NotFound.jsx'))
-const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin.jsx'))
-const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard.jsx'))
-const BorrowingSystemManagement = lazy(() => import('../pages/Admin/BorrowingSystemManagement.jsx'))
-const GraduationBookingManagement = lazy(() => import('../pages/Admin/GraduationBookingManagement.jsx'))
-const InfoSystemManagement = lazy(() => import('../pages/Admin/InfoSystemManagement.jsx'))
-const JobApplications = lazy(() => import('../pages/Admin/JobApplications.jsx'))
-const OpenDaySignupsManagement = lazy(() => import('../pages/Admin/OpenDaySignupsManagement.jsx'))
-const FileViewer = lazy(() => import('../pages/Admin/FileViewer.jsx'))
-const AdminUsersManagement = lazy(() => import('../pages/Admin/AdminUsersManagement.jsx'))
-const AlumniStudentsManagement = lazy(() => import('../pages/Admin/AlumniStudentsManagement.jsx'))
+const pages = makeLazyPages(
+    import.meta.glob(['../pages/Admin/**/*.jsx', '../pages/NotFound.jsx'])
+);
+
+const services = { serveAlumniFile, serveJobApplicationFile };
 
 function AdminRouter() {
     const location = useLocation();
@@ -36,8 +33,8 @@ function AdminRouter() {
     const [adminPermissions, setAdminPermissions] = useState([]);
     const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false);
     const [userDataWereNeverFetched, setUserDataWereNeverFetched] = useState(true);
-    const excludePaths = ['/admin-login'];
-    const shouldExclude = excludePaths.includes(location.pathname);
+
+    const shouldExclude = findRoute(adminRoutes, location.pathname)?.adminEntry === true;
 
     const handleTogglePin = () => {
         setIsSidebarPinned(prev => !prev);
@@ -58,10 +55,22 @@ function AdminRouter() {
         }
     }, [shouldExclude, navigate, adminLinks.length, refreshCurrentUserData, userDataWereNeverFetched]);
 
+    const ctx = {
+        isMobileApp: false,
+        services,
+        adminLinks,
+        adminPermissions,
+        isAuthLoading,
+        loggedInName,
+        loggedInUsername,
+        loggedInUserId,
+        setRefreshCurrentUserData,
+    };
+
     return (
         <div className="App admin-app">
-            {shouldExclude && <NavigationBar compactOrAdmin={true} isMobileApp={false}/>}
-            <div className={`content ${!shouldExclude ?  'admin-content' : '' } ${isSidebarPinned ? 'pinned' : ''}`}>
+            {shouldExclude && <NavigationBar compactOrAdmin={true} isMobileApp={false} />}
+            <div className={`content ${!shouldExclude ? 'admin-content' : ''} ${isSidebarPinned ? 'pinned' : ''}`}>
                 {!shouldExclude && (
                     <AdminSidebar
                         adminLinks={adminLinks}
@@ -73,27 +82,13 @@ function AdminRouter() {
                     />
                 )}
 
-                <Suspense fallback={<div style={{minHeight: '100vh'}}><Spinner /></div>}>
-                    <Routes>
-                        <Route path="/" element={<Navigate to="/admin-login" replace />} />
-                        <Route path="/admin-login" element={<AdminLogin isMobileApp={false}/>} />
-                        <Route path="/admin-dashboard" element={<AdminDashboard dashboardOptions={adminLinks} adminPermissions={adminPermissions} isLoading={isAuthLoading} loggedInName={loggedInName}/>} />
-                        <Route path="/job-applications" element={<JobApplications />} />
-                        <Route path="/graduation-booking-management" element={<GraduationBookingManagement />} />
-                        <Route path="/open-day-signups-management" element={<OpenDaySignupsManagement />} />
-                        <Route path="/borrowing-system-management" element={<BorrowingSystemManagement />} />
-                        <Route path="/info-system-management" element={<InfoSystemManagement />} />
-                        <Route path="/view-job-application-file" element={<FileViewer fetchFileService={serveJobApplicationFile}/>} />
-                        <Route path="/view-alumni-file" element={<FileViewer fetchFileService={serveAlumniFile} />} />
-                        <Route path="/admin-users-management" element={<AdminUsersManagement loggedInUserId={loggedInUserId} setRefreshCurrentUserData={setRefreshCurrentUserData}/>} />
-                        <Route path="/alumni-students-management" element={<AlumniStudentsManagement />} />
-                        <Route path="*" element={<NotFound />} />
-                    </Routes>
+                <Suspense fallback={<div style={{ minHeight: '100vh' }}><Spinner /></div>}>
+                    <AppRoutes routes={adminRoutes} pages={pages} ctx={ctx} />
                 </Suspense>
             </div>
             <AdminFooter />
         </div>
-    )
+    );
 }
 
 export default AdminRouter;

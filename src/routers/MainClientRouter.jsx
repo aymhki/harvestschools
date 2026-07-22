@@ -1,94 +1,27 @@
 import '../styles/App.css';
-import { Route, Routes, useLocation } from 'react-router-dom';
-import {lazy, Suspense, useEffect} from 'react';
+import { Suspense } from 'react';
+import { useLocation } from 'react-router-dom';
 
-import NavigationBar from "../modules/NavigationBar.jsx";
-import Footer from "../modules/Footer.jsx";
-import ErrorBoundary from "../modules/ErrorBoundary.jsx";
-import {useTranslation} from "react-i18next";
+import NavigationBar from '../modules/NavigationBar.jsx';
+import Footer from '../modules/Footer.jsx';
+import ErrorBoundary from '../modules/ErrorBoundary.jsx';
+import { mainRoutes } from '../routes/routes.js';
+import AppRoutes from '../routes/AppRoutes.jsx';
+import { makeLazyPages, useLangSync, findRoute } from '../routes/shared.js';
 
-const Home = lazy(() => import('../pages/Home.jsx'));
-const Faqs = lazy(() => import('../pages/FAQs/FAQs.jsx'));
-const MinimumStageAge = lazy(() => import('../pages/FAQs/MinimumStageAge.jsx'));
-const Vacancies = lazy(() => import('../pages/Vacancies.jsx'));
-const MoreInfo = lazy(() => import("../pages/FAQs/MoreInfo.jsx"));
-const Admission = lazy(() => import("../pages/Admission/Admission.jsx"));
-const AdmissionProcess = lazy(() => import('../pages/Admission/AdmissionProcess.jsx'));
-const AdmissionRequirements = lazy(() => import('../pages/Admission/AdmissionRequirements.jsx'));
-const InsideEgyptRequirements = lazy(() => import('../pages/Admission/InsideEgyptRequirements.jsx'));
-const OutsideEgyptRequirements = lazy(() => import('../pages/Admission/OutsideEgyptRequirements.jsx'));
-const OutsideEgyptRequirementsForeigners = lazy(() => import('../pages/Admission/OutsideEgyptRequirementsForeigners.jsx'));
-const AdmissionFees = lazy(() => import("../pages/Admission/AdmissionFees.jsx"));
-const Academics = lazy(() => import('../pages/Academics/Academics.jsx'));
-const British = lazy(() => import("../pages/Academics/British.jsx"));
-const NationalAcademics = lazy(() => import('../pages/Academics/National.jsx'));
-const AmericanAcademics = lazy(() => import('../pages/Academics/American.jsx'));
-const KindergartenAcademics = lazy(() => import('../pages/Academics/KindergartenAcademics.jsx'));
-const KindergartenInternationalAcademics = lazy(() => import('../pages/Academics/KindergartenInternationalAcademics.jsx'));
-const KindergartenNationalAcademics = lazy(() => import('../pages/Academics/KindergartenNationalAcademics.jsx'));
-const PreKindergartenAcademics = lazy(() => import('../pages/Academics/PreKindergartenAcademics.jsx'));
-const PartnersAcademics = lazy(() => import('../pages/Academics/Partners.jsx'));
-const Facilities = lazy(() => import("../pages/Academics/Facilities.jsx"));
-const StaffAcademics = lazy(() => import('../pages/Academics/Staff.jsx'));
-const NationalStaff = lazy(() => import('../pages/Academics/Staff/NationalStaff.jsx'));
-const BritishStaff = lazy(() => import('../pages/Academics/Staff/BritishStaff.jsx'));
-const AmericanStaff = lazy(() => import('../pages/Academics/Staff/AmericanStaff.jsx'));
-const KindergartenStaff = lazy(() => import('../pages/Academics/Staff/KindergartenStaff.jsx'));
-const StudentLife = lazy(() => import("../pages/StudentsLife/StudentsLife.jsx"));
-const StudentsUnion = lazy(() => import('../pages/StudentsLife/StudentsUnion.jsx'));
-const AlumniStudents = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniStudents.jsx'));
-const AlumniLogin = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniLogin.jsx'));
-const AlumniProfile = lazy(() => import('../pages/StudentsLife/AlumniStudents/AlumniProfile.jsx'));
-const Activities = lazy(() => import('../pages/StudentsLife/Activities.jsx'));
-const Library = lazy(() => import('../pages/StudentsLife/Library/Library.jsx'));
-const EnglishFairyTales = lazy(() => import('../pages/StudentsLife/Library/EnglishFairyTales.jsx'));
-const EnglishDrama = lazy(() => import('../pages/StudentsLife/Library/EnglishDrama.jsx'));
-const EnglishLevels = lazy(() => import('../pages/StudentsLife/Library/EnglishLevels.jsx'));
-const EnglishGeneral = lazy(() => import('../pages/StudentsLife/Library/EnglishGeneral.jsx'));
-const ArabicInformation = lazy(() => import('../pages/StudentsLife/Library/ArabicInformation.jsx'));
-const ArabicGeneral = lazy(() => import('../pages/StudentsLife/Library/ArabicGeneral.jsx'));
-const ArabicReligion = lazy(() => import('../pages/StudentsLife/Library/ArabicReligion.jsx'));
-const ArabicStories = lazy(() => import('../pages/StudentsLife/Library/ArabicStories.jsx'));
-const Events = lazy(() => import("../pages/Events/Events.jsx"));
-const NationalCalendar = lazy(() => import("../pages/Events/NationalCalendar.jsx"));
-const BritishCalendar = lazy(() => import('../pages/Events/BritishCalendar.jsx'));
-const AmericanCalendar = lazy(() => import('../pages/Events/AmericanCalendar.jsx'));
-const KgCalendarEvents = lazy(() => import('../pages/Events/KGCalendars.jsx'));
-const AmericanKGCalendar = lazy(() => import('../pages/Events/AmericanKGCalendar.jsx'));
-const BritishKGCalendar = lazy(() => import('../pages/Events/BritishKGCalendar.jsx'));
-const NationalKGCalendar = lazy(() => import('../pages/Events/NationalKGCalendar.jsx'));
-const GraduationBookingLogin = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingLogin.jsx"));
-const GraduationBookingDashboard = lazy(() => import('../pages/Events/GraduationBooking/GraduationBookingDashboard.jsx'));
-const GraduationBookingMedia = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingMedia.jsx"));
-const GraduationBookingExtras = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingExtras.jsx"));
-const GraduationBookingStatusInfo = lazy(() => import("../pages/Events/GraduationBooking/GraduationBookingStatusInfo.jsx"));
-const GraduationBookingConfirmation = lazy(() => import('../pages/Events/GraduationBooking/GraduationBookingConfirmation.jsx'));
-const OpenDaySignup = lazy(() => import('../pages/Events/OpenDaySignup.jsx'))
-const Gallery = lazy(() => import("../pages/Gallery/Gallery.jsx"));
-const PhotosGallery = lazy(() => import('../pages/Gallery/Photos.jsx'));
-const VideosGallery = lazy(() => import('../pages/Gallery/Videos.jsx'));
-const Tour360Gallery = lazy(() => import('../pages/Gallery/360Tour.jsx'));
-const Covid19 = lazy(() => import('../pages/FAQs/Covid19.jsx'));
-const NotFound = lazy(() => import('../pages/NotFound.jsx'));
+const pages = makeLazyPages(
+    import.meta.glob([
+        '../pages/**/*.jsx',
+        '!../pages/Admin/**',
+        '!../pages/CorporateHome.jsx',
+    ])
+);
 
 function MainClientRouter() {
     const location = useLocation();
-    const { i18n } = useTranslation();
+    useLangSync();
 
-    useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const langParam = searchParams.get('lang');
-        if (langParam && ['en', 'ar'].includes(langParam)) {
-            if (i18n.language !== langParam) {
-                i18n.changeLanguage(langParam);
-            }
-        }
-        document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = i18n.language;
-    }, [location.search, i18n]);
-
-    const excludePaths = ['/academics/staff'];
-    const shouldExclude = excludePaths.includes(location.pathname);
+    const shouldExclude = findRoute(mainRoutes, location.pathname)?.chromeExcluded === true;
 
     return (
         <div className="App">
@@ -96,72 +29,7 @@ function MainClientRouter() {
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}></div>}>
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/home" element={<Home />} />
-                            <Route path="/more-info" element={<MoreInfo />} />
-                            <Route path="/faqs" element={<Faqs />} />
-                            <Route path="/minimum-stage-age" element={<MinimumStageAge />} />
-                            <Route path="/covid-19" element={<Covid19 />} />
-                            <Route path="/vacancies" element={<Vacancies />} />
-                            <Route path="/admission" element={<Admission />} />
-                            <Route path="/admission/admission-process" element={<AdmissionProcess />} />
-                            <Route path="/admission/admission-requirements" element={<AdmissionRequirements />} />
-                            <Route path="/admission/inside-egypt-requirements" element={<InsideEgyptRequirements />} />
-                            <Route path="/admission/outside-egypt-requirements" element={<OutsideEgyptRequirements />} />
-                            <Route path="/admission/outside-egypt-requirements-foreigners" element={<OutsideEgyptRequirementsForeigners />} />
-                            <Route path="/admission/admission-fees" element={<AdmissionFees />} />
-                            <Route path="/academics" element={<Academics isMobileApp={false}/>} />\
-                            <Route path="/academics/kindergarten" element={<KindergartenAcademics />} />
-                            <Route path="/academics/kindergarten-international" element={<KindergartenInternationalAcademics />} />
-                            <Route path="/academics/kindergarten-national" element={<KindergartenNationalAcademics />} />
-                            <Route path="/academics/pre-kindergarten" element={<PreKindergartenAcademics />} />
-                            <Route path="/academics/british" element={<British />} />
-                            <Route path="/academics/national" element={<NationalAcademics />} />
-                            <Route path="/academics/american" element={<AmericanAcademics />} />
-                            <Route path="/academics/partners" element={<PartnersAcademics />} />
-                            <Route path="/academics/facilities" element={<Facilities />} />
-                            <Route path="/academics/staff" element={<StaffAcademics />} />
-                            <Route path="/academics/staff/national-staff" element={<NationalStaff />} />
-                            <Route path="/academics/staff/british-staff" element={<BritishStaff />} />
-                            <Route path="/academics/staff/american-staff" element={<AmericanStaff />} />
-                            <Route path="/academics/staff/kindergarten-staff" element={<KindergartenStaff />} />
-                            <Route path="/students-life" element={<StudentLife />} />
-                            <Route path="/students-life/students-union" element={<StudentsUnion />} />
-                            <Route path="/students-life/alumni-students" element={<AlumniStudents />} />
-                            <Route path="/students-life/alumni-students/login" element={<AlumniLogin />} />
-                            <Route path="/students-life/alumni-students/profile" element={<AlumniProfile />} />
-                            <Route path="/students-life/activities" element={<Activities />} />
-                            <Route path="/students-life/library" element={<Library />} />
-                            <Route path="/students-life/library/english-fairy-tales" element={<EnglishFairyTales />} />
-                            <Route path="/students-life/library/english-drama" element={<EnglishDrama />} />
-                            <Route path="/students-life/library/english-levels" element={<EnglishLevels />} />
-                            <Route path="/students-life/library/english-general" element={<EnglishGeneral />} />
-                            <Route path="/students-life/library/arabic-information" element={<ArabicInformation />} />
-                            <Route path="/students-life/library/arabic-general" element={<ArabicGeneral />} />
-                            <Route path="/students-life/library/arabic-religion" element={<ArabicReligion />} />
-                            <Route path="/students-life/library/arabic-stories" element={<ArabicStories />} />
-                            <Route path="/events" element={<Events />} />
-                            <Route path="/events/national-calendar" element={<NationalCalendar />} />
-                            <Route path="/events/british-calendar" element={<BritishCalendar />} />
-                            <Route path="/events/american-calendar" element={<AmericanCalendar />} />
-                            <Route path="/events/kg-calendars" element={<KgCalendarEvents />} />
-                            <Route path="/events/american-kg-calendar" element={<AmericanKGCalendar />} />
-                            <Route path="/events/british-kg-calendar" element={<BritishKGCalendar />} />
-                            <Route path="/events/national-kg-calendar" element={<NationalKGCalendar />} />
-                            <Route path="/events/graduation-booking" element={<GraduationBookingLogin />} />
-                            <Route path="/events/graduation-booking/dashboard" element={<GraduationBookingDashboard />} />
-                            <Route path="/events/graduation-booking/media" element={<GraduationBookingMedia />} />
-                            <Route path="/events/graduation-booking/extras" element={<GraduationBookingExtras />} />
-                            <Route path="/events/graduation-booking/info" element={<GraduationBookingStatusInfo />} />
-                            <Route path="/events/graduation-booking-confirmation" element={<GraduationBookingConfirmation />} />
-                            <Route path="/events/open-day-signup" element={<OpenDaySignup />} />
-                            <Route path="/gallery" element={<Gallery />} />
-                            <Route path="/gallery/photos" element={<PhotosGallery />} />
-                            <Route path="/gallery/videos" element={<VideosGallery />} />
-                            <Route path="/gallery/360-tour" element={<Tour360Gallery />} />
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
+                        <AppRoutes routes={mainRoutes} pages={pages} ctx={{ isMobileApp: false }} />
                     </Suspense>
                 </ErrorBoundary>
             </div>
