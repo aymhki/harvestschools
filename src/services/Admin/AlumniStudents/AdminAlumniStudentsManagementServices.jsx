@@ -174,7 +174,7 @@ const serveAlumniFile = async (searchParams, setIsLoading, setError, setCanEmbed
     try {
         const response = await fetch(`${endpoints.serveAlumniFile}${encodeURIComponent(filePath)}`, {
             method: 'GET',
-            headers: await buildAuthHeaders(getAdminSessionId())
+            headers: await buildAuthHeaders( await getAdminSessionId() )
         });
 
         const contentType = response.headers.get("content-type");
