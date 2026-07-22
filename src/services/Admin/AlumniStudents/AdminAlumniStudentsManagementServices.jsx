@@ -8,7 +8,7 @@ import {
     getAdminSessionId
 } from "../../General/GeneralUtils.jsx";
 
-const fetchAllAlumniAccounts = async (navigate, setAccountsData, setAccountRecordsById, setUpdatesData, setUpdateRecordsById) => {
+const fetchAllAlumniAccounts = async (navigate, setAccountsData, setAccountRecordsById, setUpdatesData, setUpdateRecordsById, setDeletionRequestsData, setDeletionRequestRecordsById) => {
     const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
@@ -18,6 +18,8 @@ const fetchAllAlumniAccounts = async (navigate, setAccountsData, setAccountRecor
 
     setAccountsData(null);
     setUpdatesData(null);
+
+    if (setDeletionRequestsData) { setDeletionRequestsData(null); }
 
     try {
         const response = await fetch(endpoints.getAllAlumniAccounts, {
@@ -32,6 +34,9 @@ const fetchAllAlumniAccounts = async (navigate, setAccountsData, setAccountRecor
             setAccountRecordsById(result.accountRecordsById || {});
             setUpdatesData(result.updatesData);
             setUpdateRecordsById(result.updateRecordsById || {});
+
+            if (setDeletionRequestsData) { setDeletionRequestsData(result.deletionRequestsData || null); }
+            if (setDeletionRequestRecordsById) { setDeletionRequestRecordsById(result.deletionRequestRecordsById || {}); }
         } else {
             setAccountsData(null);
             setUpdatesData(null);
@@ -122,6 +127,14 @@ const reviewAlumniProfileUpdate = async (updateId, decision, adminNote) => {
     });
 }
 
+const reviewAlumniDeletionRequest = async (requestId, decision, adminNote) => {
+    return postAdminAlumniAction(endpoints.reviewAlumniDeletionRequest, {
+        request_id: requestId,
+        decision,
+        admin_note: adminNote || '',
+    });
+}
+
 const deleteAlumniAccount = async (alumniId) => {
     return postAdminAlumniAction(endpoints.deleteAlumniAccount, {alumni_id: alumniId});
 }
@@ -200,6 +213,7 @@ export {
     fetchAllAlumniPosts,
     setAlumniAccountStatus,
     reviewAlumniProfileUpdate,
+    reviewAlumniDeletionRequest,
     deleteAlumniAccount,
     reviewAlumniPost,
     setAlumniPostPlacement,

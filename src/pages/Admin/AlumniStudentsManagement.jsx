@@ -14,6 +14,7 @@ import {
     fetchAllAlumniPosts,
     setAlumniAccountStatus,
     reviewAlumniProfileUpdate,
+    reviewAlumniDeletionRequest,
     deleteAlumniAccount,
     reviewAlumniPost,
     setAlumniPostPlacement,
@@ -68,12 +69,16 @@ function AlumniStudentsManagement() {
     const [updateRecordsById, setUpdateRecordsById] = useState({});
     const [postsData, setPostsData] = useState(null);
     const [postRecordsById, setPostRecordsById] = useState({});
+    const [deletionRequestsData, setDeletionRequestsData] = useState(null);
+    const [deletionRequestRecordsById, setDeletionRequestRecordsById] = useState({});
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [selectedUpdate, setSelectedUpdate] = useState(null);
+    const [selectedDeletionRequest, setSelectedDeletionRequest] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);
     const [showAccountReviewModal, setShowAccountReviewModal] = useState(false);
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
     const [showUpdateReviewModal, setShowUpdateReviewModal] = useState(false);
+    const [showDeletionReviewModal, setShowDeletionReviewModal] = useState(false);
     const [showPostReviewModal, setShowPostReviewModal] = useState(false);
     const [showPlacementModal, setShowPlacementModal] = useState(false);
     const [showDeletePostModal, setShowDeletePostModal] = useState(false);
@@ -107,6 +112,12 @@ function AlumniStudentsManagement() {
         pointerEvents: showUpdateReviewModal ? 'auto' : 'none',
     });
 
+    const animateDeletionReviewModal = useSpring({
+        opacity: showDeletionReviewModal ? 1 : 0,
+        transform: showDeletionReviewModal ? 'translateY(0%)' : 'translateY(100%)',
+        pointerEvents: showDeletionReviewModal ? 'auto' : 'none',
+    });
+
     const animatePostReviewModal = useSpring({
         opacity: showPostReviewModal ? 1 : 0,
         transform: showPostReviewModal ? 'translateY(0%)' : 'translateY(100%)',
@@ -127,7 +138,7 @@ function AlumniStudentsManagement() {
 
     const reloadAccountsData = async () => {
         setIsLoading(true);
-        await fetchAllAlumniAccounts(navigate, setAccountsData, setAccountRecordsById, setUpdatesData, setUpdateRecordsById);
+        await fetchAllAlumniAccounts(navigate, setAccountsData, setAccountRecordsById, setUpdatesData, setUpdateRecordsById, setDeletionRequestsData, setDeletionRequestRecordsById);
         setIsLoading(false);
     };
 
@@ -139,7 +150,7 @@ function AlumniStudentsManagement() {
 
     const reloadEverything = async () => {
         setIsLoading(true);
-        await fetchAllAlumniAccounts(navigate, setAccountsData, setAccountRecordsById, setUpdatesData, setUpdateRecordsById);
+        await fetchAllAlumniAccounts(navigate, setAccountsData, setAccountRecordsById, setUpdatesData, setUpdateRecordsById, setDeletionRequestsData, setDeletionRequestRecordsById);
         await fetchAllAlumniPosts(navigate, setPostsData, setPostRecordsById);
         setIsLoading(false);
     };
@@ -238,6 +249,28 @@ function AlumniStudentsManagement() {
         await finishModalAction(result, () => setShowUpdateReviewModal(false), reloadAccountsData);
     };
 
+    const openDeletionReviewModal = (rowIndex) => {
+        if (!deletionRequestsData || !deletionRequestsData[rowIndex]) { return; }
+        const requestId = deletionRequestsData[rowIndex][0];
+        const record = deletionRequestRecordsById[String(requestId)];
+
+        if (!record) { return; }
+
+        setSelectedDeletionRequest(record);
+        resetAdminNote();
+        setModalError('');
+        setShowDeletionReviewModal(true);
+    };
+
+    const handleReviewDeletionRequest = async (decision) => {
+        if (!selectedDeletionRequest || modalBusy) { return; }
+
+        setModalBusy(true);
+        setModalError('');
+        const result = await reviewAlumniDeletionRequest(selectedDeletionRequest.id, decision, adminNoteRef.current);
+        await finishModalAction(result, () => setShowDeletionReviewModal(false), reloadEverything);
+    };
+
     const openPostReviewModal = (rowIndex) => {
         if (!postsData || !postsData[rowIndex]) { return; }
         const postId = postsData[rowIndex][0];
@@ -321,7 +354,7 @@ function AlumniStudentsManagement() {
                        'Profile Picture': openAlumniFile,
                    }}
                    sortConfigParam={{column: 0, direction: 'descending'}}
-                   filterableColumns={['Status', 'Pending Update']}
+                   filterableColumns={['Status', 'Pending Update', 'Deletion Requested']}
                    headerModuleElements={[
                        (
                            <button key={1} onClick={reloadAccountsData} disabled={isLoading}>
@@ -350,6 +383,35 @@ function AlumniStudentsManagement() {
                        headerText: 'Actions',
                        actions: [
                            {label: 'Review', onClick: openUpdateReviewModal},
+                       ],
+                   }}
+                   sortConfigParam={{column: 0, direction: 'descending'}}
+                   filterableColumns={['Status']}
+                   headerModuleElements={[
+                       (
+                           <button key={1} onClick={reloadAccountsData} disabled={isLoading}>
+                               {isLoading ? 'Loading...' : 'Reload Table Data'}
+                           </button>
+                       )
+                   ]}
+                   footerModuleElements={[]}
+                   isLoading={isLoading}
+                   compact={true}
+                   scrollable={true}
+                   allowSticky={true}
+            />
+        </div>
+    );
+
+    const DeletionRequestsTab = () => (
+        <div>
+            <Table tableData={deletionRequestsData}
+                   title={"Account Deletion Requests"}
+                   noDataMessage={"No account deletion requests were found"}
+                   customActionColumn={{
+                       headerText: 'Actions',
+                       actions: [
+                           {label: 'Review', onClick: openDeletionReviewModal},
                        ],
                    }}
                    sortConfigParam={{column: 0, direction: 'descending'}}
@@ -415,6 +477,11 @@ function AlumniStudentsManagement() {
         },
         {
             id: 2,
+            label: 'Deletion Requests',
+            component: DeletionRequestsTab
+        },
+        {
+            id: 3,
             label: 'Posts',
             component: PostsTab
         },
@@ -611,6 +678,66 @@ function AlumniStudentsManagement() {
 
                                 <button onClick={() => handleReviewProfileUpdate('approved')} disabled={modalBusy}>
                                     Approve &amp; Apply
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </animated.div>
+
+            <animated.div style={animateDeletionReviewModal} className={"general-large-admin-action-modal"}>
+                <div className={"general-large-admin-action-modal-overlay"} onClick={() => setShowDeletionReviewModal(false)}/>
+
+                <div className={"general-large-admin-action-modal-container"}>
+                    <div className={"general-large-admin-action-modal-header"}>
+                        <h3>Review Account Deletion Request</h3>
+                    </div>
+
+                    <div className={"general-large-admin-action-modal-content"}>
+                        {selectedDeletionRequest && (
+                            <div className={"alumni-admin-review-details"}>
+                                <p>
+                                    <strong>Account:</strong> {selectedDeletionRequest.username}
+                                    {' · '}<strong>Submitted:</strong> {selectedDeletionRequest.submittedAt}
+                                    {' · '}<strong>Status:</strong> {selectedDeletionRequest.status}
+                                </p>
+
+                                <p><strong>Name:</strong> {selectedDeletionRequest.name}</p>
+                                <p><strong>Email:</strong> {selectedDeletionRequest.email}</p>
+                                <p><strong>Graduation Date:</strong> {selectedDeletionRequest.graduationDate || '—'}</p>
+                                <p><strong>Reason given:</strong> {selectedDeletionRequest.reason || 'No reason was given'}</p>
+
+                                {selectedDeletionRequest.status === 'pending' && (
+                                    <p className={"alumni-inline-error-message"}>
+                                        Approving this request permanently deletes the account &apos;{selectedDeletionRequest.username}&apos;,
+                                        along with all of its posts, profile updates, passkeys, and uploaded files. This cannot be reversed.
+                                    </p>
+                                )}
+
+                                {selectedDeletionRequest.status === 'pending'
+                                    ? renderNoteField('Note to the alumni student (optional)')
+                                    : selectedDeletionRequest.adminNote && (
+                                    <p><strong>Review Note:</strong> {selectedDeletionRequest.adminNote}</p>
+                                )}
+
+                                {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={"general-large-admin-action-modal-footer"}>
+                        <button onClick={() => setShowDeletionReviewModal(false)} disabled={modalBusy}>
+                            Close
+                        </button>
+
+                        {selectedDeletionRequest && selectedDeletionRequest.status === 'pending' && (
+                            <>
+                                <button onClick={() => handleReviewDeletionRequest('rejected')} disabled={modalBusy}>
+                                    Reject
+                                </button>
+
+                                <button onClick={() => handleReviewDeletionRequest('approved')} disabled={modalBusy}>
+                                    Approve &amp; Delete Account
                                 </button>
                             </>
                         )}

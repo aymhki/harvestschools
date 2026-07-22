@@ -11,6 +11,8 @@ import {
     fetchMyAlumniAccount,
     submitAlumniProfileUpdate,
     cancelAlumniProfileUpdate,
+    requestAlumniAccountDeletion,
+    cancelAlumniAccountDeletionRequest,
     changeAlumniPassword,
     updateAlumniBiometricCredentials,
     registerAlumniPasskey,
@@ -46,6 +48,8 @@ function AlumniProfile() {
     const [showPostComposerModal, setShowPostComposerModal] = useState(false);
     const [showDeletePostModal, setShowDeletePostModal] = useState(false);
     const [showPostPreviewModal, setShowPostPreviewModal] = useState(false);
+    const [showDeleteAccountRequestModal, setShowDeleteAccountRequestModal] = useState(false);
+    const [deleteAccountReason, setDeleteAccountReason] = useState('');
     const [modalError, setModalError] = useState('');
     const [modalBusy, setModalBusy] = useState(false);
 
@@ -92,6 +96,12 @@ function AlumniProfile() {
         pointerEvents: showPostPreviewModal ? 'auto' : 'none',
     });
 
+    const animateDeleteAccountRequestModal = useSpring({
+        opacity: showDeleteAccountRequestModal ? 1 : 0,
+        transform: showDeleteAccountRequestModal ? 'translateY(0%)' : 'translateY(100%)',
+        pointerEvents: showDeleteAccountRequestModal ? 'auto' : 'none',
+    });
+
     const loadAccount = async () => {
         setIsLoading(true);
         const result = await fetchMyAlumniAccount(navigate);
@@ -125,6 +135,10 @@ function AlumniProfile() {
     const passkeys = account && Array.isArray(account.passkeys) ? account.passkeys : [];
     const rejectedUpdate = account && Array.isArray(account.updateHistory)
         ? account.updateHistory.find(update => update.status === 'rejected')
+        : null;
+    const pendingDeletionRequest = account ? account.pendingDeletionRequest : null;
+    const rejectedDeletionRequest = account && Array.isArray(account.deletionRequestHistory)
+        ? account.deletionRequestHistory.find(request => request.status === 'rejected')
         : null;
 
     const editProfileFieldIds = {
@@ -187,6 +201,44 @@ function AlumniProfile() {
             await loadAccount();
         } else {
             flashMessage((result && result.message) || 'Could not cancel the pending update.', true);
+        }
+    };
+
+    const openDeleteAccountRequestModal = () => {
+        setShowEditProfileModal(false);
+        setDeleteAccountReason('');
+        setModalError('');
+        setShowDeleteAccountRequestModal(true);
+    };
+
+    const handleRequestAccountDeletion = async () => {
+        if (modalBusy) { return; }
+
+        setModalBusy(true);
+        setModalError('');
+
+        const result = await requestAlumniAccountDeletion(deleteAccountReason.trim(), navigate);
+        setModalBusy(false);
+
+        if (result && result.success) {
+            setShowDeleteAccountRequestModal(false);
+            flashMessage(result.message);
+            await loadAccount();
+        } else {
+            setModalError((result && result.message) || 'The deletion request could not be submitted.');
+        }
+    };
+
+    const handleCancelDeletionRequest = async () => {
+        setIsLoading(true);
+        const result = await cancelAlumniAccountDeletionRequest(navigate);
+        setIsLoading(false);
+
+        if (result && result.success) {
+            flashMessage(result.message);
+            await loadAccount();
+        } else {
+            flashMessage((result && result.message) || 'Could not cancel the deletion request.', true);
         }
     };
 
@@ -432,6 +484,39 @@ function AlumniProfile() {
 
                                         <p className={"alumni-note-from-school"}>
                                             Note from the school: {rejectedUpdate.adminNote}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {pendingDeletionRequest && (
+                                    <div className={"alumni-profile-section"}>
+                                        <div className={"alumni-profile-section-header"}>
+                                            <h2>Account Deletion Request</h2>
+                                            <span className={"alumni-status-chip alumni-status-chip-pending"}>Awaiting review</span>
+                                        </div>
+
+                                        <div className={"alumni-pending-update-banner"}>
+                                            You asked for your account to be deleted, and the school is reviewing your request (submitted {pendingDeletionRequest.submittedAt}).
+                                            Your account and posts stay active until the school approves it. If it is approved, your account, posts, and uploaded files will be permanently deleted.
+                                        </div>
+
+                                        <div className={"alumni-profile-post-item-actions"}>
+                                            <button onClick={handleCancelDeletionRequest}>
+                                                Cancel this request
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {!pendingDeletionRequest && rejectedDeletionRequest && rejectedDeletionRequest.adminNote && (
+                                    <div className={"alumni-profile-section"}>
+                                        <div className={"alumni-profile-section-header"}>
+                                            <h2>Last Deletion Request</h2>
+                                            <span className={"alumni-status-chip alumni-status-chip-rejected"}>Not approved</span>
+                                        </div>
+
+                                        <p className={"alumni-note-from-school"}>
+                                            Note from the school: {rejectedDeletionRequest.adminNote}
                                         </p>
                                     </div>
                                 )}
@@ -719,11 +804,58 @@ function AlumniProfile() {
                                 Close
                             </button>
 
+                            {!pendingDeletionRequest && (
+                                <button className={"alumni-danger-button"} onClick={openDeleteAccountRequestModal}>
+                                    Request Account Deletion
+                                </button>
+                            )}
+
                             <div ref={submitProfileChangeForApprovalButtonRef} className={'alumni-profile-submit-profile-change-button'}/>
                         </div>
                     </div>
                 </animated.div>
             )}
+
+            <animated.div style={animateDeleteAccountRequestModal} className={"alumni-modal"}>
+                <div className={"alumni-modal-overlay"} onClick={() => setShowDeleteAccountRequestModal(false)}/>
+
+                <div className={"alumni-modal-container alumni-modal-container-narrow"}>
+                    <div className={"alumni-modal-header"}>
+                        <h3>Request Account Deletion</h3>
+                    </div>
+
+                    <div className={"alumni-modal-content"}>
+                        <p className={"alumni-modal-content-note"}>
+                            This sends a request to the school to permanently delete your alumni account, including your posts, profile updates, passkeys, and uploaded files.
+                            Your account stays active until the school approves the request, and you can cancel it from your profile page at any time before then.
+                        </p>
+
+                        <div className={"alumni-modal-content-padding-wrapper"}>
+                            <label className={"form-label-outside"}>
+                                Reason (optional)
+                                <textarea
+                                    value={deleteAccountReason}
+                                    className={"textarea-form-field field-with-label-on-top"}
+                                    placeholder={"Let the school know why you would like your account deleted"}
+                                    onChange={(e) => setDeleteAccountReason(e.target.value)}
+                                />
+                            </label>
+                        </div>
+
+                        {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
+                    </div>
+
+                    <div className={"alumni-modal-footer"}>
+                        <button onClick={() => setShowDeleteAccountRequestModal(false)}>
+                            Cancel
+                        </button>
+
+                        <button className={"alumni-danger-button"} onClick={handleRequestAccountDeletion} disabled={modalBusy}>
+                            {modalBusy ? 'Submitting...' : 'Submit Deletion Request'}
+                        </button>
+                    </div>
+                </div>
+            </animated.div>
 
             <animated.div style={animateChangePasswordModal} className={"alumni-modal"}>
                 <div className={"alumni-modal-overlay"} onClick={() => setShowChangePasswordModal(false)}/>

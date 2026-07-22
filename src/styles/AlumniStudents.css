@@ -571,6 +571,10 @@
     width: min(98vw, 48rem);
 }
 
+.alumni-modal-content-padding-wrapper {
+    padding: 1rem;
+}
+
 .alumni-modal-container.alumni-markdown-post-editor {
     width: 98vw;
     height: 95vh;
