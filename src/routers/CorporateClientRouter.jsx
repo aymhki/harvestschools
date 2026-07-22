@@ -1,41 +1,27 @@
 import '../styles/CorporateApp.css';
-import { Route, Routes, useLocation } from 'react-router-dom';
-import {lazy, Suspense, useEffect} from 'react';
-import NavigationBar from "../modules/CorporateNavigationBar.jsx";
-import Footer from "../modules/CorporateFooter.jsx";
-import ErrorBoundary from "../modules/ErrorBoundary.jsx";
-import {useTranslation} from "react-i18next";
+import { Suspense } from 'react';
 
-const Home = lazy(() => import('../pages/CorporateHome.jsx'));
-const NotFound = lazy(() => import('../pages/NotFound.jsx'));
+import NavigationBar from '../modules/CorporateNavigationBar.jsx';
+import Footer from '../modules/CorporateFooter.jsx';
+import ErrorBoundary from '../modules/ErrorBoundary.jsx';
+import { corporateRoutes } from '../routes/routes.js';
+import AppRoutes from '../routes/AppRoutes.jsx';
+import { makeLazyPages, useLangSync } from '../routes/shared.js';
+
+const pages = makeLazyPages(
+    import.meta.glob(['../pages/CorporateHome.jsx', '../pages/NotFound.jsx'])
+);
 
 function CorporateClientRouter() {
-    const location = useLocation();
-    const { i18n } = useTranslation();
-
-    useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const langParam = searchParams.get('lang');
-        if (langParam && ['en', 'ar'].includes(langParam)) {
-            if (i18n.language !== langParam) {
-                i18n.changeLanguage(langParam);
-            }
-        }
-        document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = i18n.language;
-    }, [location.search, i18n]);
+    useLangSync();
 
     return (
         <div className="App">
-             <NavigationBar compactOrAdmin={false} isMobileApp={false}/>
+            <NavigationBar compactOrAdmin={false} isMobileApp={false}/>
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}></div>}>
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/home" element={<Home />} />
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
+                        <AppRoutes routes={corporateRoutes} pages={pages} />
                     </Suspense>
                 </ErrorBoundary>
             </div>

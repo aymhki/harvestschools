@@ -1,19 +1,3 @@
-
-## When adding a new page to the website:
-1. Create the page jsx file in the `src/pages` directory or subdirectory.
-2. Import and add the page route with its adjacent component in `src/MainClientRouter.jsx` and `src/MainServerRouter.jsx` (Add to `src/AdminRouter.jsx` if it is an admin page).
-3. Add the page route to `prerender-main.js` if it was not one of the admin pages that should not be indexed.
-
-- Note: Do not add ract helment to the new page if it is an admin page as they are not meant to be indexed by search engines.
-
-## When editing an existing page url:
-1. Update it in the navbar component
-2. Update it in the `src/MainServerRouter.jsx` and `src/MainClientRouter.jsx` files or `src/AdminRouter.jsx` if it is an admin page.
-3. Update it in their parent options page if it had one.
-4. Update it in any `navigate` refrences in the codebase.
-5. Update it in `prerender-main.js` if it was not one of the admin pages that should not be indexed.
-
-
 # Proper `tree` command for the project:
 ```bash
 tree --gitignore -I 'assets|.git' -a 
@@ -80,9 +64,9 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Look into adding location with iP address to active sessions as well as show Capacitor in the session browser for admin login.
 - [x] Admin login mfa risk handler should consider biometric login from capacitor app safe enough as well as consider iP address country/region.
 - [x] Alumni students should be able to submit a request to delete their accounts to the administrators.
-- [ ] Unify the router to elements across domains.
+- [x] Unify the router to elements across domains.
 - [ ] Table filter modal fields css needs to be adjusted to match form fields.
-- [ ] Graduation booking login and alumni students login should store, set, extend, and delete session using SecureStoragePlugin for capacitor on the app similar to the admin login.
+- [ ] Graduation booking login and alumni students login should store, set, extend, get, and delete session using SecureStoragePlugin for capacitor on the app similar to the admin login.
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.

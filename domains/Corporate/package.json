@@ -3,6 +3,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5176",
-    "build": "rm -rf ../../dist/corporate/static ../../dist/corporate/prerender && vite build --outDir ../../dist/corporate/static && vite build --ssr ../../src/entry-prerender-corporate.jsx --outDir ../../dist/corporate/prerender && node ../../prerender-corporate.js"
+    "build": "rm -rf ../../dist/corporate/static ../../dist/corporate/prerender && vite build --outDir ../../dist/corporate/static && vite build --ssr ../../src/entry-prerender-corporate.jsx --outDir ../../dist/corporate/prerender && node ../../prerender.js corporate"
   }
 }
