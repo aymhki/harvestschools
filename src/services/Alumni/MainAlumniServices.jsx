@@ -470,6 +470,14 @@ const cancelAlumniProfileUpdate = async (navigate) => {
     return postAlumniJsonRequest(endpoints.cancelAlumniProfileUpdate, {}, navigate);
 }
 
+const requestAlumniAccountDeletion = async (reason, navigate) => {
+    return postAlumniJsonRequest(endpoints.requestAlumniAccountDeletion, {reason: reason || ''}, navigate);
+}
+
+const cancelAlumniAccountDeletionRequest = async (navigate) => {
+    return postAlumniJsonRequest(endpoints.cancelAlumniAccountDeletionRequest, {}, navigate);
+}
+
 const changeAlumniPassword = async (currentPassword, newPassword, confirmNewPassword, navigate) => {
     return postAlumniJsonRequest(endpoints.changeAlumniPassword, {
         current_password: currentPassword,
@@ -589,6 +597,8 @@ export {
     fetchMyAlumniAccount,
     submitAlumniProfileUpdate,
     cancelAlumniProfileUpdate,
+    requestAlumniAccountDeletion,
+    cancelAlumniAccountDeletionRequest,
     changeAlumniPassword,
     registerAlumniPasskey,
     deleteAlumniPasskey,

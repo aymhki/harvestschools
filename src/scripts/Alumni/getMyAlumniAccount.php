@@ -108,6 +108,40 @@ try {
     }
 
     $stmt = $conn->prepare(
+        "SELECT id, reason, status, admin_note,
+                DATE_FORMAT(created_at, '%b %e, %Y at %l:%i %p') AS created_label,
+                DATE_FORMAT(reviewed_at, '%b %e, %Y at %l:%i %p') AS reviewed_label
+         FROM alumni_deletion_requests
+         WHERE alumni_id = ?
+         ORDER BY created_at DESC
+         LIMIT 3"
+    );
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $deletionRequestsResult = $stmt->get_result();
+    $stmt->close();
+
+    $pendingDeletionRequest = null;
+    $deletionRequestHistory = [];
+
+    while ($row = $deletionRequestsResult->fetch_assoc()) {
+        $entry = [
+            "id"          => (int)$row['id'],
+            "reason"      => $row['reason'],
+            "status"      => $row['status'],
+            "adminNote"   => $row['admin_note'],
+            "submittedAt" => $row['created_label'],
+            "reviewedAt"  => $row['reviewed_label'],
+        ];
+
+        if ($row['status'] === 'pending' && $pendingDeletionRequest === null) {
+            $pendingDeletionRequest = $entry;
+        } else {
+            $deletionRequestHistory[] = $entry;
+        }
+    }
+
+    $stmt = $conn->prepare(
         "SELECT id, title, content, status, show_on_home, show_on_alumni_page, admin_note,
                 DATE_FORMAT(created_at, '%b %e, %Y') AS created_label,
                 DATE_FORMAT(reviewed_at, '%b %e, %Y') AS reviewed_label
@@ -200,6 +234,8 @@ try {
         "profile"       => $profile,
         "pendingUpdate" => $pendingUpdate,
         "updateHistory" => $updateHistory,
+        "pendingDeletionRequest" => $pendingDeletionRequest,
+        "deletionRequestHistory" => $deletionRequestHistory,
         "posts"         => array_values($posts),
         "passkeys"      => $passkeys,
     ]);

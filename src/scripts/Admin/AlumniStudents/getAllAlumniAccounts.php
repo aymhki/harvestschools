@@ -25,7 +25,7 @@ try {
         exit;
     }
 
-    $accountsHeaders = ["ID", "Username", "Name", "Email", "Position", "Graduation Date", "Status", "Pending Update", "Profile Picture", "Signed Up", "Last Login"];
+    $accountsHeaders = ["ID", "Username", "Name", "Email", "Position", "Graduation Date", "Status", "Pending Update", "Deletion Requested", "Profile Picture", "Signed Up", "Last Login"];
     $accountsRows = [];
     $accountRecordsById = [];
 
@@ -35,7 +35,8 @@ try {
                 a.bio, a.profile_picture_link, a.account_status, a.admin_note,
                 DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i') AS created_label,
                 DATE_FORMAT(a.last_login_at, '%Y-%m-%d %H:%i') AS last_login_label,
-                (SELECT COUNT(*) FROM alumni_profile_updates u WHERE u.alumni_id = a.id AND u.status = 'pending') AS pending_updates
+                (SELECT COUNT(*) FROM alumni_profile_updates u WHERE u.alumni_id = a.id AND u.status = 'pending') AS pending_updates,
+                (SELECT COUNT(*) FROM alumni_deletion_requests d WHERE d.alumni_id = a.id AND d.status = 'pending') AS pending_deletion_requests
          FROM alumni_students a
          ORDER BY a.created_at DESC";
 
@@ -58,6 +59,7 @@ try {
             (string)($row['graduation_date'] ?? ''),
             ucfirst((string)$row['account_status']),
             ((int)$row['pending_updates'] > 0) ? 'Yes' : 'No',
+            ((int)$row['pending_deletion_requests'] > 0) ? 'Yes' : 'No',
             (string)$row['profile_picture_link'],
             (string)$row['created_label'],
             (string)($row['last_login_label'] ?? ''),
@@ -77,6 +79,7 @@ try {
             "signedUpAt"         => $row['created_label'],
             "lastLoginAt"        => $row['last_login_label'],
             "hasPendingUpdate"   => (int)$row['pending_updates'] > 0,
+            "hasPendingDeletionRequest" => (int)$row['pending_deletion_requests'] > 0,
         ];
     }
 
@@ -155,6 +158,55 @@ try {
         ];
     }
 
+    $deletionRequestsHeaders = ["ID", "Username", "Name", "Email", "Status", "Submitted", "Reviewed"];
+    $deletionRequestsRows = [];
+    $deletionRequestRecordsById = [];
+
+    $deletionRequestsSql =
+        "SELECT r.id, r.alumni_id, r.reason, r.status, r.admin_note,
+                DATE_FORMAT(r.created_at, '%Y-%m-%d %H:%i') AS created_label,
+                DATE_FORMAT(r.reviewed_at, '%Y-%m-%d %H:%i') AS reviewed_label,
+                a.username, a.name, a.email,
+                DATE_FORMAT(a.graduation_date, '%Y-%m-%d') AS graduation_date
+         FROM alumni_deletion_requests r
+         JOIN alumni_students a ON a.id = r.alumni_id
+         ORDER BY (r.status = 'pending') DESC, r.created_at DESC";
+
+    $result = $conn->query($deletionRequestsSql);
+
+    if (!$result) {
+        echo json_encode(["success" => false, "message" => "Query failed: " . $conn->error, "code" => 500]);
+        exit;
+    }
+
+    while ($row = $result->fetch_assoc()) {
+        $requestId = (int)$row['id'];
+
+        $deletionRequestsRows[] = [
+            (string)$requestId,
+            (string)$row['username'],
+            (string)$row['name'],
+            (string)$row['email'],
+            ucfirst((string)$row['status']),
+            (string)$row['created_label'],
+            (string)($row['reviewed_label'] ?? ''),
+        ];
+
+        $deletionRequestRecordsById[(string)$requestId] = [
+            "id"             => $requestId,
+            "alumniId"       => (int)$row['alumni_id'],
+            "username"       => $row['username'],
+            "name"           => $row['name'],
+            "email"          => $row['email'],
+            "graduationDate" => $row['graduation_date'],
+            "reason"         => $row['reason'],
+            "status"         => $row['status'],
+            "adminNote"      => $row['admin_note'],
+            "submittedAt"    => $row['created_label'],
+            "reviewedAt"     => $row['reviewed_label'],
+        ];
+    }
+
     echo json_encode([
         "success"            => true,
         "message"            => "Data retrieved successfully",
@@ -163,6 +215,8 @@ try {
         "accountRecordsById" => $accountRecordsById,
         "updatesData"        => array_merge([$updatesHeaders], $updatesRows),
         "updateRecordsById"  => $updateRecordsById,
+        "deletionRequestsData"       => array_merge([$deletionRequestsHeaders], $deletionRequestsRows),
+        "deletionRequestRecordsById" => $deletionRequestRecordsById,
     ]);
 
 } catch (Throwable $e) {
