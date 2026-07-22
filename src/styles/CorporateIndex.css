@@ -116,6 +116,7 @@
     --table-module-filter-popup-z-index: 2002;
     --form-date-popup-modal-overlay-z-index: 2001;
     --form-date-popup-modal-z-index: 2002;
+    --form-field-dropdown-overlay-z-index: 9000;
     --spinner-overlay-z-index: 100000;
 
     --parallax-scroll-base-z-index: 1;

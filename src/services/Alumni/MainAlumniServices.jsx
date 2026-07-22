@@ -7,6 +7,9 @@ import {
     resetSession,
     sessionDuration,
     isMobileApp,
+    buildLoginHeaders,
+    buildRecoveryHeaders,
+    getCurrentLangCode,
 } from "../General/GeneralUtils.jsx";
 
 import {
@@ -162,6 +165,157 @@ const validateAlumniLogin = async (formData, usernameFieldId, passwordFieldId, n
 
 const validateAlumniLoginWithCredentials = async (username, password, navigate) => {
     return performAlumniLogin(username, password, navigate, false);
+}
+
+
+const performAlumniDiscoverablePasskeyLogin = async (navigate) => {
+    try {
+        if (!passkeySupported()) {
+            return {success: false, message: 'Passkeys are not supported on this device or browser', code: 0};
+        }
+
+        const optionsResponse = await fetch(endpoints.alumniPasskeyDiscoverableLoginOptions, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({}),
+        });
+        const optionsResult = await optionsResponse.json();
+
+        if (!optionsResult || !optionsResult.success || !optionsResult.options) {
+            return optionsResult || {success: false, message: 'Could not start passkey sign in', code: 0};
+        }
+
+        const credential = await navigator.credentials.get(decodeGetArgs(optionsResult.options));
+
+        if (!credential) {
+            return {success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true};
+        }
+
+        const userHandle = credential.response.userHandle
+            ? bufToB64(credential.response.userHandle)
+            : null;
+
+        const verifyResponse = await fetch(endpoints.alumniPasskeyDiscoverableLoginVerify, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                auth_token: optionsResult.authToken,
+                id: bufToB64(credential.rawId),
+                userHandle,
+                clientDataJSON: bufToB64(credential.response.clientDataJSON),
+                authenticatorData: bufToB64(credential.response.authenticatorData),
+                signature: bufToB64(credential.response.signature),
+            }),
+        });
+        const result = await verifyResponse.json();
+
+        if (result && result.success && result.sessionToken) {
+            storeAlumniSessionAndEnter(result.sessionToken, navigate);
+            return {success: true};
+        }
+
+        return result;
+    } catch (error) {
+        if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+            return {success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true};
+        }
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
+const requestAlumniPasswordReset = async (username) => {
+    try {
+        const response = await fetch(endpoints.requestAlumniPasswordReset, {
+            method: 'POST',
+            headers: await buildRecoveryHeaders(),
+            body: JSON.stringify({username}),
+        });
+        const result = await response.json();
+
+        if (result && result.success && result.reset_required) {
+            return {
+                success: true,
+                resetRequired: true,
+                resetToken: result.resetToken,
+                methods: result.methods || [],
+                maskedEmail: result.maskedEmail,
+            };
+        }
+        return result;
+    } catch (error) {
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
+const requestAlumniResetEmailCode = async (resetToken) => {
+    try {
+        const response = await fetch(endpoints.requestAlumniResetEmailCode, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({reset_token: resetToken, lang: getCurrentLangCode()}),
+        });
+        return await response.json();
+    } catch (error) {
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
+const completeAlumniPasswordResetWithCode = async (resetToken, code, newPassword) => {
+    try {
+        const response = await fetch(endpoints.verifyAlumniPasswordReset, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({reset_token: resetToken, method: 'email', code, new_password: newPassword}),
+        });
+        return await response.json();
+    } catch (error) {
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
+const completeAlumniPasswordResetWithPasskey = async (resetToken, newPassword) => {
+    try {
+        if (!passkeySupported()) {
+            return {success: false, message: 'Passkeys are not supported on this device or browser', code: 0};
+        }
+
+        const optionsResponse = await fetch(endpoints.alumniResetPasskeyOptions, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({reset_token: resetToken}),
+        });
+        const optionsResult = await optionsResponse.json();
+
+        if (!optionsResult || !optionsResult.success || !optionsResult.options) {
+            return optionsResult || {success: false, message: 'Could not start passkey verification', code: 0};
+        }
+
+        const credential = await navigator.credentials.get(decodeGetArgs(optionsResult.options));
+
+        if (!credential) {
+            return {success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true};
+        }
+
+        const verifyResponse = await fetch(endpoints.verifyAlumniPasswordReset, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({
+                reset_token: resetToken,
+                method: 'passkey',
+                new_password: newPassword,
+                id: bufToB64(credential.rawId),
+                clientDataJSON: bufToB64(credential.response.clientDataJSON),
+                authenticatorData: bufToB64(credential.response.authenticatorData),
+                signature: bufToB64(credential.response.signature),
+            }),
+        });
+        return await verifyResponse.json();
+    } catch (error) {
+        if (error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+            return {success: false, message: 'Passkey prompt was cancelled', code: 0, cancelled: true};
+        }
+        return {success: false, message: error.message, code: 0};
+    }
 }
 
 const updateAlumniBiometricCredentials = async (username, password) => {
@@ -426,6 +580,11 @@ export {
     validateAlumniLoginWithCredentials,
     updateAlumniBiometricCredentials,
     performAlumniPasskeyLogin,
+    performAlumniDiscoverablePasskeyLogin,
+    requestAlumniPasswordReset,
+    requestAlumniResetEmailCode,
+    completeAlumniPasswordResetWithCode,
+    completeAlumniPasswordResetWithPasskey,
     submitAlumniSignup,
     fetchMyAlumniAccount,
     submitAlumniProfileUpdate,

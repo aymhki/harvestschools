@@ -1,14 +1,14 @@
 import '../../styles/AdminDashboard.css';
 import '../../styles/AlumniStudents.css';
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Table from "../../modules/Table.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
 import MarkdownContent from "../../modules/MarkdownContent.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
-import {alumniStudentsManagementPermissionLevel, msgTimeout} from "../../services/General/GeneralUtils.jsx";
+import {alumniStudentsManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 import {
     fetchAllAlumniAccounts,
     fetchAllAlumniPosts,
@@ -20,6 +20,7 @@ import {
     deleteAlumniPostByAdmin,
 } from "../../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx";
 import {Capacitor} from "@capacitor/core";
+import PropTypes from "prop-types";
 
 const PROFILE_UPDATE_FIELDS = [
     {key: 'username', label: 'Username'},
@@ -31,34 +32,62 @@ const PROFILE_UPDATE_FIELDS = [
     {key: 'profilePictureLink', label: 'Profile Picture'},
 ];
 
+
+function AdminNoteField({label, valueRef}) {
+    const [note, setNote] = useState('');
+    return (
+        <label className={"alumni-admin-note-field"}>
+            {label}
+            <textarea
+                value={note}
+                className="textarea-form-field"
+                maxLength={500}
+                placeholder={"Optional note that is included in the email sent to the alumni student"}
+                onChange={(e) => {
+                    setNote(e.target.value);
+                    valueRef.current = e.target.value;
+                }}
+            />
+        </label>
+    );
+}
+
+AdminNoteField.propTypes = {
+    label: PropTypes.string.isRequired,
+    valueRef: PropTypes.shape({
+        current: PropTypes.any
+    }).isRequired
+}
+
 function AlumniStudentsManagement() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-
     const [accountsData, setAccountsData] = useState(null);
     const [accountRecordsById, setAccountRecordsById] = useState({});
     const [updatesData, setUpdatesData] = useState(null);
     const [updateRecordsById, setUpdateRecordsById] = useState({});
     const [postsData, setPostsData] = useState(null);
     const [postRecordsById, setPostRecordsById] = useState({});
-
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [selectedUpdate, setSelectedUpdate] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);
-
     const [showAccountReviewModal, setShowAccountReviewModal] = useState(false);
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
     const [showUpdateReviewModal, setShowUpdateReviewModal] = useState(false);
     const [showPostReviewModal, setShowPostReviewModal] = useState(false);
     const [showPlacementModal, setShowPlacementModal] = useState(false);
     const [showDeletePostModal, setShowDeletePostModal] = useState(false);
-
-    const [adminNote, setAdminNote] = useState('');
     const [placementHome, setPlacementHome] = useState('no');
     const [placementAlumniPage, setPlacementAlumniPage] = useState('no');
     const [notifyAuthorOnDelete, setNotifyAuthorOnDelete] = useState(true);
     const [modalBusy, setModalBusy] = useState(false);
     const [modalError, setModalError] = useState('');
+    const adminNoteRef = useRef('');
+    const [noteFieldKey, setNoteFieldKey] = useState(0);
+    const resetAdminNote = () => {
+        adminNoteRef.current = '';
+        setNoteFieldKey((k) => k + 1);
+    };
 
     const animateAccountReviewModal = useSpring({
         opacity: showAccountReviewModal ? 1 : 0,
@@ -124,9 +153,8 @@ function AlumniStudentsManagement() {
 
     const openAlumniFile = (filePath) => {
         if (!filePath) { return; }
+
         const url = `/view-alumni-file?file=${encodeURIComponent(filePath)}`;
-
-
         if (Capacitor.isNativePlatform()) {
             navigate(url);
         } else {
@@ -153,7 +181,7 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedAccount(record);
-        setAdminNote('');
+        resetAdminNote();
         setModalError('');
         setShowAccountReviewModal(true);
     };
@@ -175,7 +203,7 @@ function AlumniStudentsManagement() {
 
         setModalBusy(true);
         setModalError('');
-        const result = await setAlumniAccountStatus(selectedAccount.id, newStatus, adminNote);
+        const result = await setAlumniAccountStatus(selectedAccount.id, newStatus, adminNoteRef.current);
         await finishModalAction(result, () => setShowAccountReviewModal(false), reloadAccountsData);
     };
 
@@ -196,7 +224,7 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedUpdate(record);
-        setAdminNote('');
+        resetAdminNote();
         setModalError('');
         setShowUpdateReviewModal(true);
     };
@@ -206,7 +234,7 @@ function AlumniStudentsManagement() {
 
         setModalBusy(true);
         setModalError('');
-        const result = await reviewAlumniProfileUpdate(selectedUpdate.id, decision, adminNote);
+        const result = await reviewAlumniProfileUpdate(selectedUpdate.id, decision, adminNoteRef.current);
         await finishModalAction(result, () => setShowUpdateReviewModal(false), reloadAccountsData);
     };
 
@@ -218,7 +246,7 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedPost(record);
-        setAdminNote('');
+        resetAdminNote();
         setModalError('');
         setShowPostReviewModal(true);
     };
@@ -246,7 +274,7 @@ function AlumniStudentsManagement() {
 
         setSelectedPost(record);
         setNotifyAuthorOnDelete(true);
-        setAdminNote('');
+        resetAdminNote();
         setModalError('');
         setShowDeletePostModal(true);
     };
@@ -256,7 +284,7 @@ function AlumniStudentsManagement() {
 
         setModalBusy(true);
         setModalError('');
-        const result = await reviewAlumniPost(selectedPost.id, target, decision, adminNote);
+        const result = await reviewAlumniPost(selectedPost.id, target, decision, adminNoteRef.current);
         await finishModalAction(result, () => setShowPostReviewModal(false), reloadPostsData);
     };
 
@@ -274,7 +302,7 @@ function AlumniStudentsManagement() {
 
         setModalBusy(true);
         setModalError('');
-        const result = await deleteAlumniPostByAdmin(selectedPost.id, notifyAuthorOnDelete, adminNote);
+        const result = await deleteAlumniPostByAdmin(selectedPost.id, notifyAuthorOnDelete, adminNoteRef.current);
         await finishModalAction(result, () => setShowDeletePostModal(false), reloadPostsData);
     };
 
@@ -393,22 +421,12 @@ function AlumniStudentsManagement() {
     ];
 
     const renderNoteField = (labelText) => (
-        <label className={"alumni-admin-note-field"}>
-            {labelText}
-            <textarea
-                value={adminNote}
-                className="textarea-form-field"
-                maxLength={500}
-                placeholder={"Optional note that is included in the email sent to the alumni student"}
-                onChange={(e) => setAdminNote(e.target.value)}
-            />
-        </label>
+        <AdminNoteField key={noteFieldKey} label={labelText} valueRef={adminNoteRef}/>
     );
 
     return (
         <>
             {isLoading && <Spinner/>}
-
             <div className={"alumni-students-management-page"}>
                 <TabsPage tabData={tabData} initialTab={0} title={"Alumni Students Management"}/>
             </div>
@@ -530,50 +548,50 @@ function AlumniStudentsManagement() {
 
                                 <table className={"alumni-admin-diff-table"}>
                                     <thead>
-                                        <tr>
-                                            <th>Field</th>
-                                            <th>Current</th>
-                                            <th>Requested</th>
-                                        </tr>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Current</th>
+                                        <th>Requested</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        {PROFILE_UPDATE_FIELDS.map(field => {
-                                            const requestedValue = selectedUpdate.requested[field.key];
-                                            const currentValue = selectedUpdate.current[field.key];
-                                            const changed = requestedValue !== null && requestedValue !== undefined;
+                                    {PROFILE_UPDATE_FIELDS.map(field => {
+                                        const requestedValue = selectedUpdate.requested[field.key];
+                                        const currentValue = selectedUpdate.current[field.key];
+                                        const changed = requestedValue !== null && requestedValue !== undefined;
 
-                                            return (
-                                                <tr key={field.key} className={changed ? 'alumni-admin-diff-changed' : ''}>
-                                                    <td>{field.label}</td>
-                                                    <td>
-                                                        {field.key === 'profilePictureLink' ? (
-                                                            currentValue ? (
-                                                                <button className={"alumni-admin-review-link"} onClick={() => openAlumniFile(currentValue)}>
-                                                                    View current picture
-                                                                </button>
-                                                            ) : '—'
-                                                        ) : (currentValue || '—')}
-                                                    </td>
-                                                    <td>
-                                                        {changed ? (
-                                                            field.key === 'profilePictureLink' ? (
-                                                                <button className={"alumni-admin-review-link"} onClick={() => openAlumniFile(requestedValue)}>
-                                                                    View requested picture
-                                                                </button>
-                                                            ) : requestedValue
-                                                        ) : 'No change'}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
+                                        return (
+                                            <tr key={field.key} className={changed ? 'alumni-admin-diff-changed' : ''}>
+                                                <td>{field.label}</td>
+                                                <td>
+                                                    {field.key === 'profilePictureLink' ? (
+                                                        currentValue ? (
+                                                            <button className={"alumni-admin-review-link"} onClick={() => openAlumniFile(currentValue)}>
+                                                                View current picture
+                                                            </button>
+                                                        ) : '—'
+                                                    ) : (currentValue || '—')}
+                                                </td>
+                                                <td>
+                                                    {changed ? (
+                                                        field.key === 'profilePictureLink' ? (
+                                                            <button className={"alumni-admin-review-link"} onClick={() => openAlumniFile(requestedValue)}>
+                                                                View requested picture
+                                                            </button>
+                                                        ) : requestedValue
+                                                    ) : 'No change'}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                     </tbody>
                                 </table>
 
                                 {selectedUpdate.status === 'pending'
                                     ? renderNoteField('Note to the alumni student (optional)')
                                     : selectedUpdate.adminNote && (
-                                        <p><strong>Review Note:</strong> {selectedUpdate.adminNote}</p>
-                                    )}
+                                    <p><strong>Review Note:</strong> {selectedUpdate.adminNote}</p>
+                                )}
 
                                 {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
                             </div>

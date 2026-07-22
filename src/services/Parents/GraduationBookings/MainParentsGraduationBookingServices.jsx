@@ -10,6 +10,9 @@ import {
     getSessionsFromLocalStorage,
     endpoints,
     buildAuthHeaders,
+    buildLoginHeaders,
+    buildRecoveryHeaders,
+    getCurrentLangCode,
     isMobileApp
 } from "../../General/GeneralUtils.jsx";
 
@@ -271,8 +274,103 @@ const validateGraduationBookingSessionLocally = () => {
 
 
 
+/* ------------------------------------------------------------------ */
+/* Password reset (email code to parent emails, admin fallback)         */
+/* ------------------------------------------------------------------ */
+
+const requestGraduationBookingPasswordReset = async (username) => {
+    try {
+        const response = await fetch(endpoints.requestGraduationBookingPasswordReset, {
+            method: 'POST',
+            headers: await buildRecoveryHeaders(),
+            body: JSON.stringify({username, lang: getCurrentLangCode()}),
+        });
+        const result = await response.json();
+
+        if (result && result.success && result.reset_required) {
+            return {
+                success: true,
+                resetRequired: true,
+                resetToken: result.resetToken,
+                maskedEmails: result.maskedEmails || [],
+            };
+        }
+        return result;
+    } catch (error) {
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
+const requestGraduationBookingResetEmailCode = async (resetToken) => {
+    try {
+        const response = await fetch(endpoints.requestGraduationBookingResetEmailCode, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({reset_token: resetToken, lang: getCurrentLangCode()}),
+        });
+        return await response.json();
+    } catch (error) {
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
+const completeGraduationBookingPasswordReset = async (resetToken, code, newPassword, username) => {
+    try {
+        const response = await fetch(endpoints.verifyGraduationBookingPasswordReset, {
+            method: 'POST',
+            headers: buildLoginHeaders(),
+            body: JSON.stringify({reset_token: resetToken, code, new_password: newPassword}),
+        });
+        const result = await response.json();
+
+        // Keep the biometric credential store in sync after a successful reset.
+        if (result && result.success && username && isMobileApp()) {
+            const biometricHardwareAvailable = await isBiometricAvailable();
+            if (biometricHardwareAvailable) {
+                await saveBiometricCredentials(GRADUATION_BOOKING_SESSION_NAME, username, newPassword);
+            }
+        }
+        return result;
+    } catch (error) {
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
+const listGraduationBookingStudents = async () => {
+    try {
+        const response = await fetch(endpoints.searchGraduationBookingStudents, {
+            method: 'POST',
+            headers: await buildRecoveryHeaders(),
+            body: JSON.stringify({all: true}),
+        });
+        const result = await response.json();
+        return (result && result.success) ? (result.results || []) : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+
+const recoverGraduationBookingUsername = async (method, payload) => {
+    try {
+        const response = await fetch(endpoints.recoverGraduationBookingUsername, {
+            method: 'POST',
+            headers: await buildRecoveryHeaders(),
+            body: JSON.stringify({method, lang: getCurrentLangCode(), ...payload}),
+        });
+        return await response.json();
+    } catch (error) {
+        return {success: false, message: error.message, code: 0};
+    }
+}
+
 export {
     GRADUATION_BOOKING_SESSION_NAME,
+    requestGraduationBookingPasswordReset,
+    requestGraduationBookingResetEmailCode,
+    completeGraduationBookingPasswordReset,
+    listGraduationBookingStudents,
+    recoverGraduationBookingUsername,
     checkGraduationBookingSession,
     checkGraduationBookingSessionFromBookingLogin,
     validateGraduationBookingLogin,

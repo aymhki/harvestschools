@@ -20,7 +20,9 @@ export const i18nConfig = {
         'nav',
         'students-life-pages',
         'vacancies-page',
-        'corporate-home'
+        'corporate-home',
+        'corporate-footer',
+        'corporate-nav'
     ],
     detection: {
         order: ['customUrlDetector', 'localStorage', 'navigator'],

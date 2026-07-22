@@ -176,6 +176,15 @@ const buildLoginHeaders = () => ({
 });
 
 
+const buildRecoveryHeaders = async () => ({
+    'Content-Type': 'application/json',
+    'X-Client-Platform': Capacitor.isNativePlatform() ? 'native' : 'web',
+    'X-Client-Fingerprint': await getClientFingerprint(),
+});
+
+const getCurrentLangCode = () => (i18n.language === 'ar' ? 'ar' : 'en');
+
+
 const ENDPOINTS = {
     checkGraduationBookingSession: '/scripts/Parents/GraduationBookings/checkGraduationBookingSession.php',
     getAllGraduationBookings: '/scripts/Admin/GraduationBookings/getAllGraduationBookings.php',
@@ -233,6 +242,17 @@ const ENDPOINTS = {
     validateAlumniLogin: '/scripts/Public/AlumniStudents/validateAlumniLogin.php',
     alumniPasskeyLoginOptions: '/scripts/Public/AlumniStudents/alumniPasskeyLoginOptions.php',
     alumniPasskeyLoginVerify: '/scripts/Public/AlumniStudents/alumniPasskeyLoginVerify.php',
+    alumniPasskeyDiscoverableLoginOptions: '/scripts/Public/AlumniStudents/alumniPasskeyDiscoverableLoginOptions.php',
+    alumniPasskeyDiscoverableLoginVerify: '/scripts/Public/AlumniStudents/alumniPasskeyDiscoverableLoginVerify.php',
+    requestAlumniPasswordReset: '/scripts/Public/AlumniStudents/requestAlumniPasswordReset.php',
+    requestAlumniResetEmailCode: '/scripts/Public/AlumniStudents/requestAlumniResetEmailCode.php',
+    alumniResetPasskeyOptions: '/scripts/Public/AlumniStudents/alumniResetPasskeyOptions.php',
+    verifyAlumniPasswordReset: '/scripts/Public/AlumniStudents/verifyAlumniPasswordReset.php',
+    requestGraduationBookingPasswordReset: '/scripts/Parents/GraduationBookings/requestGraduationBookingPasswordReset.php',
+    requestGraduationBookingResetEmailCode: '/scripts/Parents/GraduationBookings/requestGraduationBookingResetEmailCode.php',
+    verifyGraduationBookingPasswordReset: '/scripts/Parents/GraduationBookings/verifyGraduationBookingPasswordReset.php',
+    searchGraduationBookingStudents: '/scripts/Parents/GraduationBookings/searchGraduationBookingStudents.php',
+    recoverGraduationBookingUsername: '/scripts/Parents/GraduationBookings/recoverGraduationBookingUsername.php',
     getApprovedAlumniPosts: '/scripts/Public/AlumniStudents/getApprovedAlumniPosts.php',
     serveAlumniPublicFile: '/scripts/Public/AlumniStudents/serveAlumniPublicFile.php',
     checkAlumniSession: '/scripts/Alumni/checkAlumniSession.php',
@@ -419,6 +439,8 @@ export {
     getClientFingerprint,
     buildAuthHeaders,
     buildLoginHeaders,
+    buildRecoveryHeaders,
+    getCurrentLangCode,
     TURNSTILE_SCRIPT_URL,
     TURNSTILE_SCRIPT_TIMEOUT_MS,
     isMobileApp

@@ -4,13 +4,16 @@ import '../styles/TabsPage.css';
 
 function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = false, elementsAcrossTabsAtTheTop, title }) {
     const storageKey = title ? `activeTab_${title}` : null;
+
     const [activeTab, setActiveTab] = useState(() => {
         if (storageKey) {
             const saved = Number(localStorage.getItem(storageKey));
             if (saved && tabData.some((t) => t.id === saved)) return saved;
         }
+
         return initialTab || tabData[0].id;
     });
+
     const currentIndex = tabData.findIndex((tab) => tab.id === activeTab);
 
     const handlePrevTab = () => {
@@ -63,23 +66,20 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
 
     const tabPanel = (
         <div className={`tab-panel ${barOnTopInMobile ? 'tab-panel-top-bar' : 'tab-panel-bottom-bar'} ${stickyOnDesktop ? 'tab-panel-sticky-desktop' : ''}`} role="tabpanel">
-            {tabData.map((tab) => {
-                const ActiveTabComponent = tab.component;
-                return (
-                    <div
-                        key={tab.id}
-                        className={`tab-content ${activeTab === tab.id ? 'active' : ''}`}
-                    >
-                        {elementsAcrossTabsAtTheTop && elementsAcrossTabsAtTheTop.map((element, index) => (
-                            <Fragment key={index}>
-                                {element}
-                            </Fragment>
-                        ))}
+            {tabData.map((tab) => (
+                <div
+                    key={tab.id}
+                    className={`tab-content ${activeTab === tab.id ? 'active' : ''}`}
+                >
+                    {elementsAcrossTabsAtTheTop && elementsAcrossTabsAtTheTop.map((element, index) => (
+                        <Fragment key={index}>
+                            {element}
+                        </Fragment>
+                    ))}
 
-                        {ActiveTabComponent && <ActiveTabComponent />}
-                    </div>
-                );
-            })}
+                    {tab.element !== undefined ? tab.element : (typeof tab.component === 'function' ? tab.component() : null)}
+                </div>
+            ))}
         </div>
     );
 
@@ -96,7 +96,8 @@ TabsPage.propTypes = {
         PropTypes.shape({
             id: PropTypes.number.isRequired,
             label: PropTypes.string.isRequired,
-            component: PropTypes.elementType.isRequired,
+            component: PropTypes.func,
+            element: PropTypes.node,
         })
     ).isRequired,
     initialTab: PropTypes.number,
