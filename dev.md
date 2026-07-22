@@ -77,11 +77,11 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Add www. to app links hostnames in iOS and android.
 - [x] Add forget password to admin accounts with MFA.
 - [x] Look into adding biometric login for both alumni students and graduation bookings similar to the admin login.
-- [ ] Look into adding location with iP address to active sessions as well as show Capacitor in the session browser for admin login.
+- [x] Look into adding location with iP address to active sessions as well as show Capacitor in the session browser for admin login.
+- [x] Admin login mfa risk handler should consider biometric login from capacitor app safe enough as well as consider iP address country/region.
 - [ ] Alumni students should be able to submit a request to delete their accounts to the administrators.
 - [ ] Unify the router to elements across domains.
 - [ ] Table filter modal fields css needs to be adjusted to match form fields.
-- [ ] Admin login mfa risk handler should consider biometric login from capacitor app safe enough as well as consider iP address country/region.
 - [ ] Graduation booking login and alumni students login should store, set, extend, and delete session using SecureStoragePlugin for capacitor on the app similar to the admin login.
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
