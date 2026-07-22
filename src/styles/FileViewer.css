@@ -18,6 +18,18 @@
 }
 
 
+.file-image-viewer {
+    display: block;
+    max-width: 100%;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+    border: 0.3rem solid var(--read-only-field-grey-color);
+    border-radius: 0.5rem;
+}
+
 .file-viewer-actions-wrapper {
     display: flex;
     justify-content: center;
@@ -52,6 +64,10 @@
     }
 
     .file-embed-viewer {
+        height: 85vh;
+    }
+
+    .file-image-viewer {
         height: 85vh;
     }
 }
