@@ -67,6 +67,8 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Unify the router to elements across domains.
 - [x] Table filter modal fields css needs to be adjusted to match form fields.
 - [x] Graduation booking login and alumni students login should store, set, extend, get, and delete session using SecureStoragePlugin for capacitor on the app similar to the admin login.
+- [x] Passkey should not be shown as a step up option in the admin side if opened from the capacitor app.
+- [x] Alumni profile forgot password should also update biometric credentials in the capacitor app similar to the change password of the alumni profile.
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.

@@ -18,6 +18,7 @@ import {
     requestAlumniResetEmailCode,
     completeAlumniPasswordResetWithCode,
     completeAlumniPasswordResetWithPasskey,
+    updateAlumniBiometricCredentials,
     submitAlumniSignup
 } from "../../../services/Alumni/MainAlumniServices.jsx";
 import {msgTimeout, isMobileApp, mfaResendCooldownSeconds} from "../../../services/General/GeneralUtils.jsx";
@@ -168,9 +169,10 @@ function AlumniLogin() {
         return newPassword;
     };
 
-    const finishAlumniReset = (result) => {
+    const finishAlumniReset = async (result, newPassword) => {
         if (result && result.success) {
             backToSignIn(result.message || 'Your password has been updated. You can now sign in with your new password.');
+            await updateAlumniBiometricCredentials(resetUsername, newPassword);
             return true;
         }
         if (result && (result.code === 429 || /expired/i.test(result.message || ''))) {
@@ -188,7 +190,7 @@ function AlumniLogin() {
         const newPassword = extractNewAlumniPassword(formData);
         const code = Object.fromEntries(formData.entries())[`field_${resetCodeFieldId}`] || '';
         const result = await completeAlumniPasswordResetWithCode(resetState.resetToken, code, newPassword);
-        return finishAlumniReset(result);
+        return await finishAlumniReset(result, newPassword);
     };
 
     const handleAlumniResetPasskey = async (formData) => {
@@ -197,7 +199,7 @@ function AlumniLogin() {
         const newPassword = extractNewAlumniPassword(formData);
         const result = await completeAlumniPasswordResetWithPasskey(resetState.resetToken, newPassword);
         if (result && result.cancelled) { return true; }
-        return finishAlumniReset(result);
+        return await finishAlumniReset(result, newPassword);
     };
 
     const switchResetMethod = (method) => {
