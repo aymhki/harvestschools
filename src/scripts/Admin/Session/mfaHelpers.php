@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/mfaConfig.php';
+require_once __DIR__ . '/ipHelpers.php';
 
 function base32_encode_bytes($data) {
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -466,39 +467,17 @@ function start_email_verification($conn, $userId, $newEmail) {
     ];
 }
 
-function mfa_should_challenge($conn, $userId, $fingerprintHash) {
+function mfa_should_challenge($conn, $userId, $fingerprintHash, $authChannel = null) {
     $mode = mfa_config('mfa_mode');
 
     if ($mode === 'never')  { return null; }
     if ($mode === 'always') { return 'always_on'; }
 
-    return compute_mfa_required($conn, $userId, $fingerprintHash);
+    return compute_mfa_required($conn, $userId, $fingerprintHash, $authChannel);
 }
 
-function compute_mfa_required($conn, $userId, $fingerprintHash) {
-    $stmt = $conn->prepare("SELECT mfa_verified_once, last_login_at FROM admin_users WHERE id = ?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-
-    if (!$row) { return 'unknown_user'; }
-
-    if (empty($row['mfa_verified_once'])) { return 'first_mfa'; }
-
-    if ($row['last_login_at'] === null) { return 'stale_login'; }
-
-    $stmt = $conn->prepare(
-        "SELECT (last_login_at < (NOW() - INTERVAL 7 DAY)) AS stale FROM admin_users WHERE id = ?"
-    );
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $stale = (int)($stmt->get_result()->fetch_assoc()['stale'] ?? 1);
-    $stmt->close();
-
-    if ($stale === 1) { return 'stale_login'; }
-
-    if (empty($fingerprintHash)) { return 'no_fingerprint'; }
+function fingerprint_is_known($conn, $userId, $fingerprintHash) {
+    if (empty($fingerprintHash)) { return false; }
 
     $stmt = $conn->prepare(
         "SELECT 1 FROM admin_login_events
@@ -512,7 +491,59 @@ function compute_mfa_required($conn, $userId, $fingerprintHash) {
     $known = $stmt->get_result()->num_rows > 0;
     $stmt->close();
 
-    if (!$known) { return 'new_device'; }
+    return $known;
+}
+
+function is_native_biometric_login($authChannel) {
+    $platform = strtolower(trim($_SERVER['HTTP_X_CLIENT_PLATFORM'] ?? ''));
+
+    return $authChannel === 'native_biometric' && $platform === 'native';
+}
+
+function compute_mfa_required($conn, $userId, $fingerprintHash, $authChannel = null) {
+    $stmt = $conn->prepare("SELECT mfa_verified_once, last_login_at FROM admin_users WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$row) { return 'unknown_user'; }
+
+    if (empty($row['mfa_verified_once'])) { return 'first_mfa'; }
+
+    $fingerprintKnown = fingerprint_is_known($conn, $userId, $fingerprintHash);
+
+    // A biometric login from the native app on a device that has already
+    // completed a successful login is treated as already second-factored:
+    // the OS verified the person, and the stored credentials only exist on
+    // a device that logged in before.
+    if (is_native_biometric_login($authChannel) && $fingerprintKnown) {
+        return null;
+    }
+
+    $ipTrust = admin_ip_trust_level($conn, $userId, admin_client_ip());
+
+    $stale = true;
+
+    if ($row['last_login_at'] !== null) {
+        $stmt = $conn->prepare(
+            "SELECT (last_login_at < (NOW() - INTERVAL 7 DAY)) AS stale FROM admin_users WHERE id = ?"
+        );
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $stale = ((int)($stmt->get_result()->fetch_assoc()['stale'] ?? 1)) === 1;
+        $stmt->close();
+    }
+
+    // A stale login is forgiven when the request comes from an IP address
+    // this account has successfully logged in from before.
+    if ($stale && $ipTrust !== 'exact_ip') { return 'stale_login'; }
+
+    if (empty($fingerprintHash) && $ipTrust !== 'exact_ip') { return 'no_fingerprint'; }
+
+    // An unknown device is forgiven when the request comes from a known IP,
+    // or from the same region (country + region) as a previously used IP.
+    if (!$fingerprintKnown && $ipTrust === 'none') { return 'new_device'; }
 
     $stmt = $conn->prepare(
         "SELECT COUNT(*) AS c FROM admin_login_events
@@ -585,10 +616,12 @@ function is_valid_admin_email($email) {
 }
 
 function log_admin_event($conn, $userId, $event, $fingerprintHash = null) {
+    $ip = admin_client_ip();
+
     $stmt = $conn->prepare(
-        "INSERT INTO admin_login_events (user_id, fingerprint_hash, event) VALUES (?, ?, ?)"
+        "INSERT INTO admin_login_events (user_id, fingerprint_hash, event, ip_address) VALUES (?, ?, ?, ?)"
     );
-    $stmt->bind_param("iss", $userId, $fingerprintHash, $event);
+    $stmt->bind_param("isss", $userId, $fingerprintHash, $event, $ip);
     $stmt->execute();
     $stmt->close();
 }

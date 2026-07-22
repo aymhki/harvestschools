@@ -47,6 +47,11 @@ try {
         ? substr($data['fingerprint'], 0, 64)
         : null;
 
+    $authChannel = isset($data['auth_channel']) && is_string($data['auth_channel'])
+        && in_array($data['auth_channel'], ['native_biometric'], true)
+        ? $data['auth_channel']
+        : null;
+
     $stmt = $conn->prepare("SELECT id, password_hash FROM admin_users WHERE username = ?");
 
     if (!$stmt) {
@@ -121,7 +126,7 @@ try {
         exit;
     }
 
-    $mfaReason = mfa_should_challenge($conn, $userId, $fingerprint);
+    $mfaReason = mfa_should_challenge($conn, $userId, $fingerprint, $authChannel);
     $mfaInfo   = get_available_mfa_methods($conn, $userId);
 
     if ($mfaReason !== null && !empty($mfaInfo['methods'])) {

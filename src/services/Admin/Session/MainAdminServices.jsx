@@ -159,13 +159,17 @@ const storeSessionAndEnter = async (result, navigate) => {
     navigate(adminDashboardPageUrl, { replace: true });
 };
 
-const performAdminLogin = async (username, password, navigate, persistBiometricCredentials) => {
+const performAdminLogin = async (username, password, navigate, persistBiometricCredentials, authChannel = null) => {
     try {
         const fingerprint = await getClientFingerprint();
+        const body = { username, password, fingerprint };
+
+        if (authChannel) { body.auth_channel = authChannel; }
+
         const response = await fetch(endpoints.validateAdminLogin, {
             method: 'POST',
             headers: buildLoginHeaders(),
-            body: JSON.stringify({ username, password, fingerprint })
+            body: JSON.stringify(body)
         });
         const result = await response.json();
 
@@ -219,7 +223,7 @@ const validateAdminLogin = async (formData, usernameFieldId, passwordFieldId, na
 }
 
 const validateAdminLoginWithCredentials = async (username, password, navigate) => {
-    return performAdminLogin(username, password, navigate, false);
+    return performAdminLogin(username, password, navigate, false, isMobileApp() ? 'native_biometric' : null);
 }
 
 const checkAdminSessionFromAdminLogin = async (navigate) => {

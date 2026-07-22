@@ -76,8 +76,8 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Viewing alumni files doesn't work from admin management page tables.
 - [x] Add www. to app links hostnames in iOS and android.
 - [x] Add forget password to admin accounts with MFA.
+- [x] Look into adding biometric login for both alumni students and graduation bookings similar to the admin login.
 - [ ] Look into adding location with iP address to active sessions as well as show Capacitor in the session browser for admin login.
-- [ ] Look into adding biometric login for both alumni students and graduation bookings similar to the admin login.
 - [ ] Alumni students should be able to submit a request to delete their accounts to the administrators.
 - [ ] Unify the router to elements across domains.
 - [ ] Table filter modal fields css needs to be adjusted to match form fields.

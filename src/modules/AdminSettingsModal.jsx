@@ -951,6 +951,13 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                         <li key={session.publicId} className={'admin-settings-list-row'}>
                             <div className={'admin-settings-value'}>
                                 <div>{session.device}{session.isCurrent && ' \u2014 this device'}</div>
+                                {(session.ip || session.location) && (
+                                    <div className={'admin-settings-list-meta'}>
+                                        {session.ip}
+                                        {session.ip && session.location && ' \u2014 '}
+                                        {session.location}
+                                    </div>
+                                )}
                                 <div className={'admin-settings-list-meta'}>
                                     Signed in {session.createdAt}, last active {session.lastSeen}
                                     {`, ${formatRemaining(session.expiresInSeconds)}`}

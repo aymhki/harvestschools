@@ -295,12 +295,24 @@ function issue_admin_session($conn, $userId, $fingerprintHash = null) {
 
     $userAgent = substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255);
 
+    $clientPlatform = strtolower(trim($_SERVER['HTTP_X_CLIENT_PLATFORM'] ?? ''));
+
+    if (!in_array($clientPlatform, ['native', 'web'], true)) {
+        $clientPlatform = null;
+    }
+
+    $ipAddress = admin_client_ip();
+
+    if ($ipAddress !== null) {
+        admin_ip_geolocate($conn, $ipAddress);
+    }
+
     $stmt = $conn->prepare(
         "INSERT INTO admin_sessions
-            (id, public_id, user_id, fingerprint_hash, binding_mode, device_secret_hash, user_agent)
-         VALUES (?, ?, ?, ?, ?, ?, ?)"
+            (id, public_id, user_id, fingerprint_hash, binding_mode, device_secret_hash, user_agent, client_platform, ip_address)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
-    $stmt->bind_param("ssissss", $tokenHash, $publicId, $userId, $fingerprintHash, $bindingMode, $deviceSecretHash, $userAgent);
+    $stmt->bind_param("ssissssss", $tokenHash, $publicId, $userId, $fingerprintHash, $bindingMode, $deviceSecretHash, $userAgent, $clientPlatform, $ipAddress);
     $stmt->execute();
     $stmt->close();
 
@@ -321,8 +333,21 @@ function issue_admin_session($conn, $userId, $fingerprintHash = null) {
 }
 
 
-function describe_user_agent($userAgent) {
+function describe_user_agent($userAgent, $clientPlatform = null) {
     $ua = (string)$userAgent;
+
+    if ($clientPlatform === 'native') {
+        $platform = 'Unknown OS';
+        foreach ([
+                     'Android'  => 'Android',
+                     'iPhone'   => 'iPhone',
+                     'iPad'     => 'iPad',
+                 ] as $needle => $name) {
+            if (strpos($ua, $needle) !== false) { $platform = $name; break; }
+        }
+
+        return 'Harvest Schools app on ' . $platform;
+    }
 
     if ($ua === '') { return 'Unknown device'; }
 
@@ -357,16 +382,18 @@ function list_admin_sessions($conn, $userId, $currentTokenHash) {
     $absoluteTtl = (int)mfa_config('session_absolute_ttl_seconds');
 
     $stmt = $conn->prepare(
-        "SELECT id, public_id, user_agent, binding_mode,
-                DATE_FORMAT(created_at, '%b %e, %Y at %l:%i %p') AS created_label,
-                DATE_FORMAT(last_seen,  '%b %e, %Y at %l:%i %p') AS last_seen_label,
-                TIMESTAMPDIFF(SECOND, last_seen, NOW()) AS seconds_idle,
-                GREATEST(0, ? - TIMESTAMPDIFF(SECOND, created_at, NOW())) AS seconds_remaining
-         FROM admin_sessions
-         WHERE user_id = ?
-           AND last_seen >= (NOW() - INTERVAL ? SECOND)
-           AND created_at >= (NOW() - INTERVAL ? SECOND)
-         ORDER BY last_seen DESC"
+        "SELECT s.id, s.public_id, s.user_agent, s.binding_mode, s.client_platform, s.ip_address,
+                g.country, g.country_code, g.region, g.city,
+                DATE_FORMAT(s.created_at, '%b %e, %Y at %l:%i %p') AS created_label,
+                DATE_FORMAT(s.last_seen,  '%b %e, %Y at %l:%i %p') AS last_seen_label,
+                TIMESTAMPDIFF(SECOND, s.last_seen, NOW()) AS seconds_idle,
+                GREATEST(0, ? - TIMESTAMPDIFF(SECOND, s.created_at, NOW())) AS seconds_remaining
+         FROM admin_sessions s
+         LEFT JOIN admin_ip_geolocations g ON g.ip = s.ip_address
+         WHERE s.user_id = ?
+           AND s.last_seen >= (NOW() - INTERVAL ? SECOND)
+           AND s.created_at >= (NOW() - INTERVAL ? SECOND)
+         ORDER BY s.last_seen DESC"
     );
     $stmt->bind_param("iiii", $absoluteTtl, $userId, $idleTtl, $absoluteTtl);
     $stmt->execute();
@@ -378,7 +405,13 @@ function list_admin_sessions($conn, $userId, $currentTokenHash) {
     while ($row = $result->fetch_assoc()) {
         $sessions[] = [
             'publicId'         => $row['public_id'],
-            'device'           => describe_user_agent($row['user_agent']),
+            'device'           => describe_user_agent($row['user_agent'], $row['client_platform'] ?? null),
+            'ip'               => $row['ip_address'],
+            'location'         => admin_ip_location_label([
+                'city'    => $row['city'],
+                'region'  => $row['region'],
+                'country' => $row['country'],
+            ]),
             'createdAt'        => $row['created_label'],
             'lastSeen'         => $row['last_seen_label'],
             'secondsIdle'      => (int)$row['seconds_idle'],
