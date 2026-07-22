@@ -80,10 +80,6 @@ const detectLanguage = () => {
 }
 
 
-/**
- * Deliberately dependency free: this renders before i18n, before fonts and
- * before any cached asset is available, so everything it needs is inline.
- */
 function AppSplash({ showProgress = false, progress = 0 }) {
     const language = useMemo(detectLanguage, [])
 
@@ -110,22 +106,18 @@ function AppSplash({ showProgress = false, progress = 0 }) {
     return (
         <div className="app-splash" dir={language === 'ar' ? 'rtl' : 'ltr'}>
             <div className="app-splash__mark" aria-hidden="true">
-                <svg viewBox="0 0 120 120" role="presentation" focusable="false">
-                    <defs>
-                        <linearGradient id="appSplashMarkGradient" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stopColor="var(--primary-color)" />
-                            <stop offset="100%" stopColor="var(--secondary-color)" />
-                        </linearGradient>
-                    </defs>
-
-                    <rect x="4" y="4" width="112" height="112" rx="28" fill="url(#appSplashMarkGradient)" />
-
+                <svg viewBox="0 0 256 256" role="presentation" focusable="false">
                     <path
-                        d="M38 34 L38 86 M38 60 L82 60 M82 34 L82 86"
-                        stroke="var(--fb-white-color)"
-                        strokeWidth="9"
-                        strokeLinecap="round"
-                        fill="none"
+                        className="app-splash__mark-letter app-splash__mark-letter--h"
+                        d="m49.5,181.6h-19.9v-106.5h19.9v42.2h27.8v-42.2h19.9v106.5h-19.9v-48.7h-27.8z"
+                    />
+                    <path
+                        className="app-splash__mark-letter app-splash__mark-letter--i"
+                        d="m186,54.2v-26.4h-113.9v26.4h44v148.3h-44v26.3h113.9v-26.3h-42.2v-148.3z"
+                    />
+                    <path
+                        className="app-splash__mark-letter app-splash__mark-letter--s"
+                        d="m223.3,105.5h-19.1q0.1,-8.7 -1.6,-12.7 -2.6,-6.2 -10.2,-6.2 -11.1,0 -11.1,9.9 0,5.4 3.3,9.1 2.1,2.3 8.1,6.1 17.9,11.2 24.3,17.5 9,8.8 9,22.3 0,14.7 -8.8,22.7 -8.9,7.9 -24,7.9 -32.3,0 -32.3,-32.3v-7.9h19.9v6.3q0,17.9 12.4,17.9 12.4,0 12.4,-12.5 0,-8.1 -8,-14.1 -8.4,-5.5 -16.7,-11.2 -10,-6.8 -15,-13.5 -5,-6.8 -5,-16.1 0,-28.2 31.3,-28.2 20.6,0 27.4,13.5 3.6,6.8 3.7,21.5z"
                     />
                 </svg>
 
@@ -162,4 +154,4 @@ AppSplash.propTypes = {
 }
 
 
-export default AppSplash
+export default AppSplash;

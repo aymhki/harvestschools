@@ -27,8 +27,16 @@
 .app-splash__mark svg {
     width: 100%;
     height: 100%;
-    border-radius: 1.75rem;
     filter: drop-shadow(0 0.6rem 1.4rem rgba(31, 33, 82, 0.28));
+}
+
+.app-splash__mark-letter--h,
+.app-splash__mark-letter--s {
+    fill: var(--primary-color);
+}
+
+.app-splash__mark-letter--i {
+    fill: var(--secondary-color);
 }
 
 .app-splash__halo {
@@ -149,6 +157,12 @@
 
     .app-splash__mark svg {
         filter: drop-shadow(0 0.6rem 1.4rem rgba(0, 0, 0, 0.55));
+    }
+
+    .app-splash__mark-letter--h,
+    .app-splash__mark-letter--i,
+    .app-splash__mark-letter--s {
+        fill: var(--fb-white-color);
     }
 
     .app-splash__halo {
