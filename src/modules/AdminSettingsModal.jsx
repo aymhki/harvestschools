@@ -144,11 +144,15 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
     const flash = useCallback((msg, isError) => {
         setStatusMsg(isError ? null : msg);
         setErrorMsg(isError ? msg : null);
+
         contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+
         if (statusTimerRef.current) { clearTimeout(statusTimerRef.current); }
+
         statusTimerRef.current = setTimeout(() => {
             if (isMountedRef.current) { setStatusMsg(null); setErrorMsg(null); }
         }, msgTimeout);
+
     }, []);
 
     const handleSessionExpired = (result) => {
@@ -248,14 +252,24 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
 
         if (result && result.success) {
 
+            const usableMethods = (result.methods || []).filter((m) => !(m === 'passkey' && !canUsePasskeys));
+
+            if (usableMethods.length === 0) {
+                throw new Error('No verification method is available on this device. Please try from another device or contact an administrator.');
+            }
+
+            const startingMethod = usableMethods.includes(result.preferred)
+                ? result.preferred
+                : usableMethods[0];
+
             setStepUp({
                 token: result.stepUpToken,
                 action: result.action,
-                methods: result.methods || [],
+                methods: usableMethods,
                 maskedEmail: result.maskedEmail,
             });
 
-            setStepUpMethod(result.preferred);
+            setStepUpMethod(startingMethod);
             setStepUpResendIn(result.retryAfter || 0);
             stepUpEmailSentRef.current = !!result.emailSent;
             return true;
