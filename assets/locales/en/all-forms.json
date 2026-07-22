@@ -19,6 +19,7 @@
     "upload": "Upload",
     "remove": "Remove",
     "year-month-day": " (YYYY-MM-DD)",
-    "field-required": "Field '{{field1}}' is required"
+    "field-required": "Field '{{field1}}' is required",
+    "no-results": "No Results"
   }
 }

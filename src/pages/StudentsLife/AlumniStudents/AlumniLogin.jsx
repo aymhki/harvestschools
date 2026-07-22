@@ -13,10 +13,14 @@ import {
     ALUMNI_SESSION_NAME,
     validateAlumniLogin,
     validateAlumniLoginWithCredentials,
-    performAlumniPasskeyLogin,
+    performAlumniDiscoverablePasskeyLogin,
+    requestAlumniPasswordReset,
+    requestAlumniResetEmailCode,
+    completeAlumniPasswordResetWithCode,
+    completeAlumniPasswordResetWithPasskey,
     submitAlumniSignup
 } from "../../../services/Alumni/MainAlumniServices.jsx";
-import {msgTimeout, isMobileApp} from "../../../services/General/GeneralUtils.jsx";
+import {msgTimeout, isMobileApp, mfaResendCooldownSeconds} from "../../../services/General/GeneralUtils.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
 import {
     isBiometricAvailable,
@@ -38,7 +42,6 @@ function AlumniLogin() {
     const [prefillUsername, setPrefillUsername] = useState('');
     const [loginNotice, setLoginNotice] = useState(null);
 
-    const [signInMethod, setSignInMethod] = useState(passkeySupported() ? 'passkey' : 'password');
     const [passkeyError, setPasskeyError] = useState('');
 
 
@@ -60,6 +63,163 @@ function AlumniLogin() {
     const signUpConfirmPasswordFieldId = 18;
     const signUpProfilePictureFieldId = 19;
     const signUpProfilePictureFieldLabel = 'Profile Picture';
+
+    const [authView, setAuthView] = useState('signin');
+    const [resetState, setResetState] = useState(null);
+    const [resetUsername, setResetUsername] = useState('');
+    const [resetMethod, setResetMethod] = useState(null);
+    const [resetStatus, setResetStatus] = useState(null);
+    const [resetError, setResetError] = useState(null);
+    const [resendIn, setResendIn] = useState(0);
+    const [emailCodeSent, setEmailCodeSent] = useState(false);
+
+    const forgotUsernameFieldId = 41;
+    const resetCodeFieldId = 42;
+    const newPasswordFieldId = 43;
+    const confirmPasswordFieldId = 44;
+    const passwordPolicyRegex = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$';
+
+    const passkeyUsable = passkeySupported() && !isMobileApp();
+
+    useEffect(() => {
+        if (resendIn <= 0) { return undefined; }
+        const timer = setInterval(() => setResendIn((s) => (s <= 1 ? 0 : s - 1)), 1000);
+        return () => clearInterval(timer);
+    }, [resendIn]);
+
+    const resetRecoveryState = () => {
+        setResetState(null);
+        setResetUsername('');
+        setResetMethod(null);
+        setResetStatus(null);
+        setResetError(null);
+        setResendIn(0);
+        setEmailCodeSent(false);
+    };
+
+    const backToSignIn = (notice) => {
+        resetRecoveryState();
+        setAuthView('signin');
+        setLoginNotice(notice || null);
+    };
+
+    const sendAlumniResetEmailCode = async (resetToken, {silent = false} = {}) => {
+        if (!resetToken) { return; }
+        const result = await requestAlumniResetEmailCode(resetToken);
+        if (!isMountedRef.current) { return; }
+
+        if (typeof result?.retryAfter === 'number') {
+            setResendIn(result.retryAfter);
+        } else if (result?.success) {
+            setResendIn(mfaResendCooldownSeconds);
+        }
+
+        if (result?.success) {
+            setEmailCodeSent(true);
+            setResetError(null);
+            if (!silent) { setResetStatus('A new code is on its way.'); }
+        } else if (!silent || result?.code === 429) {
+            setResetStatus(null);
+            setResetError(result?.message || 'Could not send the code. Try another method.');
+        }
+    };
+
+    const handleAlumniForgot = async (formData) => {
+        const username = (Object.fromEntries(formData.entries())[`field_${forgotUsernameFieldId}`] || '').trim();
+        const result = await requestAlumniPasswordReset(username);
+
+        if (result && result.resetRequired) {
+            const usableMethods = (result.methods || []).filter((m) => !(m === 'passkey' && !passkeyUsable));
+            if (usableMethods.length === 0) {
+                throw new Error('No verification method is available on this device. Please try another device or contact the school.');
+            }
+            const startingMethod = usableMethods.includes('email') ? 'email' : usableMethods[0];
+            setResetState({...result, methods: usableMethods});
+            setResetUsername(username);
+            setResetMethod(startingMethod);
+            resetRecoveryFlags();
+            setAuthView('reset');
+            if (startingMethod === 'email') { sendAlumniResetEmailCode(result.resetToken, {silent: true}); }
+            return true;
+        }
+
+        if (result && result.success && result.adminNotified) {
+            backToSignIn(result.message || 'A site administrator has been notified and will reach out to help you.');
+            return true;
+        }
+
+        if (result && !result.success) { throw new Error(result.message || 'Could not start the password reset'); }
+        return true;
+    };
+
+    const resetRecoveryFlags = () => {
+        setResetStatus(null);
+        setResetError(null);
+        setResendIn(0);
+        setEmailCodeSent(false);
+    };
+
+    const extractNewAlumniPassword = (formData) => {
+        const entries = Object.fromEntries(formData.entries());
+        const newPassword = entries[`field_${newPasswordFieldId}`] || '';
+        const confirmPassword = entries[`field_${confirmPasswordFieldId}`] || '';
+        if (newPassword !== confirmPassword) { throw new Error('Passwords do not match'); }
+        return newPassword;
+    };
+
+    const finishAlumniReset = (result) => {
+        if (result && result.success) {
+            backToSignIn(result.message || 'Your password has been updated. You can now sign in with your new password.');
+            return true;
+        }
+        if (result && (result.code === 429 || /expired/i.test(result.message || ''))) {
+            backToSignIn(result.code === 429 ? 'Too many attempts. Please start again.' : 'Your reset session expired. Please start again.');
+            return true;
+        }
+        const suffix = typeof result?.attemptsLeft === 'number' && result.attemptsLeft > 0
+            ? ` ${result.attemptsLeft} ${result.attemptsLeft === 1 ? 'try' : 'tries'} left.` : '';
+        throw new Error((result?.message || 'Verification failed') + suffix);
+    };
+
+    const handleAlumniResetCode = async (formData) => {
+        setResetStatus(null);
+        setResetError(null);
+        const newPassword = extractNewAlumniPassword(formData);
+        const code = Object.fromEntries(formData.entries())[`field_${resetCodeFieldId}`] || '';
+        const result = await completeAlumniPasswordResetWithCode(resetState.resetToken, code, newPassword);
+        return finishAlumniReset(result);
+    };
+
+    const handleAlumniResetPasskey = async (formData) => {
+        setResetStatus(null);
+        setResetError(null);
+        const newPassword = extractNewAlumniPassword(formData);
+        const result = await completeAlumniPasswordResetWithPasskey(resetState.resetToken, newPassword);
+        if (result && result.cancelled) { return true; }
+        return finishAlumniReset(result);
+    };
+
+    const switchResetMethod = (method) => {
+        if (!resetState || !resetState.methods.includes(method) || method === resetMethod) { return; }
+        setResetMethod(method);
+        setResetStatus(null);
+        setResetError(null);
+        if (method === 'email' && !emailCodeSent) { sendAlumniResetEmailCode(resetState.resetToken, {silent: true}); }
+    };
+
+    const handleDiscoverablePasskeyLogin = async () => {
+        if (submittingLocal) { return; }
+        setSubmittingLocal(true);
+        try {
+            const result = await performAlumniDiscoverablePasskeyLogin(navigate);
+            if (result && !result.success && !result.cancelled) {
+                setPasskeyError(result.message || t("students-life-pages.alumni-login-page.passkey-failed"));
+                setTimeout(() => setPasskeyError(''), msgTimeout);
+            }
+        } finally {
+            setSubmittingLocal(false);
+        }
+    };
 
     useEffect(() => {
         isMountedRef.current = true;
@@ -191,38 +351,6 @@ function AlumniLogin() {
         }
     }
 
-    const handlePasskeyLogin = async (formData) => {
-        if (submittingLocal) {
-            return;
-        }
-
-        const username = formData?.get(`field_${signInUsernameFieldId}`)?.toString().trim();
-
-        if (!username) {
-            setPasskeyError(t("students-life-pages.alumni-login-page.passkey-missing-username"));
-            setTimeout(() => setPasskeyError(''), msgTimeout);
-            return;
-        }
-
-        setSubmittingLocal(true);
-
-        try {
-            const result = await performAlumniPasskeyLogin(username, navigate);
-
-            if (result && !result.success && !result.cancelled) {
-                setPasskeyError(result.message || t("students-life-pages.alumni-login-page.passkey-failed"));
-                setTimeout(() => setPasskeyError(''), msgTimeout);
-            } else {
-                return true;
-            }
-        } catch (error) {
-            setPasskeyError(error.message);
-            setTimeout(() => setPasskeyError(''), msgTimeout);
-        } finally {
-            setSubmittingLocal(false);
-        }
-    }
-
     const handleAlumniSignup = async (formData) => {
         if (submittingLocal) {
             return;
@@ -305,7 +433,6 @@ function AlumniLogin() {
         httpName: 'password',
     };
 
-    const isPasskeyMode = signInMethod === 'passkey' && passkeySupported() && !isMobileApp();
 
     const renderBiometricScreen = () => (
         <div className={"alumni-login-biometric-only"}>
@@ -326,6 +453,132 @@ function AlumniLogin() {
             >
                 {t("students-life-pages.alumni-login-page.biometric-different-login")}
             </button>
+        </div>
+    );
+
+    const buildNewPasswordFields = () => ([
+        {
+            id: newPasswordFieldId, type: 'password', name: 'new-password',
+            label: 'New Password', displayLabel: t("students-life-pages.alumni-login-page.new-password-field"),
+            httpName: 'new-password', required: true,
+            placeholder: t("students-life-pages.alumni-login-page.new-password-field"),
+            errorMsg: t("students-life-pages.alumni-login-page.password-policy-error"),
+            regex: passwordPolicyRegex, value: '', setValue: null, widthOfField: 1,
+            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+        },
+        {
+            id: confirmPasswordFieldId, type: 'password', name: 'confirm-password',
+            label: 'Confirm New Password', displayLabel: t("students-life-pages.alumni-login-page.confirm-new-password-field"),
+            httpName: 'new-password', required: true,
+            placeholder: t("students-life-pages.alumni-login-page.confirm-new-password-field"),
+            errorMsg: t("students-life-pages.alumni-login-page.confirm-password-error"),
+            value: '', setValue: null, widthOfField: 1, mustMatchFieldWithId: newPasswordFieldId,
+            labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+        },
+    ]);
+
+    const renderResetMethodPicker = () => {
+        if (!resetState || resetState.methods.length <= 1) { return null; }
+        const labels = {
+            email: t("students-life-pages.alumni-login-page.reset-method-email"),
+            passkey: t("students-life-pages.alumni-login-page.reset-method-passkey"),
+        };
+        return (
+            <div className={'alumni-login-method-picker'}>
+                <p className={'alumni-login-method-picker-label'}>
+                    {t("students-life-pages.alumni-login-page.verify-with")}
+                </p>
+                {resetState.methods.map((m) => (
+                    <button key={m} type={'button'} disabled={submittingLocal}
+                            className={m === resetMethod ? 'current' : ''}
+                            aria-pressed={m === resetMethod}
+                            onClick={() => switchResetMethod(m)}>
+                        <span className={'alumni-login-method-radio'} aria-hidden={'true'}/>
+                        {labels[m]}
+                    </button>
+                ))}
+            </div>
+        );
+    };
+
+    const renderAlumniForgotScreen = () => (
+        <div className={"alumni-login-tab-content"}>
+            <h2 className={"alumni-login-recovery-title"}>{t("students-life-pages.alumni-login-page.forgot-title")}</h2>
+            <p>{t("students-life-pages.alumni-login-page.forgot-instructions")}</p>
+            <Form key={'alumni-forgot-form'}
+                  mailTo={''} sendPdf={false} formTitle={'Alumni Forgot Password Form'} noSuccessMessage={true}
+                  lang={'en'} captchaLength={1} noInputFieldsCache={true} noCaptcha={false}
+                  noClearOption={true} centerSubmitButton={true} fullMarginField={true}
+                  hasSetSubmittingLocal={true} setSubmittingLocal={setSubmittingLocal}
+                  hasDifferentOnSubmitBehaviour={true} differentOnSubmitBehaviour={handleAlumniForgot}
+                  hasDifferentSubmitButtonText={true}
+                  differentSubmitButtonText={[t("students-life-pages.alumni-login-page.forgot-continue"), t("students-life-pages.alumni-login-page.checking")]}
+                  fields={[{
+                      id: forgotUsernameFieldId, type: 'text', name: 'username',
+                      label: 'Username', displayLabel: t("students-life-pages.alumni-login-page.username-field"),
+                      httpName: 'username', required: true,
+                      placeholder: t("students-life-pages.alumni-login-page.username-field"),
+                      errorMsg: t("students-life-pages.alumni-login-page.username-required"),
+                      value: '', setValue: null, widthOfField: 1, labelOutside: true, labelOnTop: true,
+                  }]}
+            />
+            <p className={"alumni-login-switch-mode"} onClick={() => backToSignIn(null)}>
+                {t("students-life-pages.alumni-login-page.back-to-sign-in")}
+            </p>
+        </div>
+    );
+
+    const renderAlumniResetScreen = () => (
+        <div className={"alumni-login-tab-content"}>
+            <h2 className={"alumni-login-recovery-title"}>{t("students-life-pages.alumni-login-page.reset-title")}</h2>
+            <p>
+                {resetMethod === 'passkey'
+                    ? t("students-life-pages.alumni-login-page.reset-instructions-passkey")
+                    : t("students-life-pages.alumni-login-page.reset-instructions-email", {email: resetState?.maskedEmail || ''})}
+            </p>
+            <Form key={`alumni-reset-${resetMethod}`}
+                  mailTo={''} sendPdf={false} formTitle={`Alumni Password Reset ${resetMethod} Form`} noSuccessMessage={true}
+                  lang={'en'} captchaLength={1} noInputFieldsCache={true} noCaptcha={false}
+                  noClearOption={true} centerSubmitButton={true} fullMarginField={true}
+                  formHasPasswordField={true}
+                  hasSetSubmittingLocal={true} setSubmittingLocal={setSubmittingLocal}
+                  hasDifferentOnSubmitBehaviour={true}
+                  differentOnSubmitBehaviour={resetMethod === 'passkey' ? handleAlumniResetPasskey : handleAlumniResetCode}
+                  hasDifferentSubmitButtonText={true}
+                  differentSubmitButtonText={resetMethod === 'passkey'
+                      ? [t("students-life-pages.alumni-login-page.reset-with-passkey"), t("students-life-pages.alumni-login-page.verifying")]
+                      : [t("students-life-pages.alumni-login-page.reset-submit"), t("students-life-pages.alumni-login-page.resetting")]}
+                  fields={resetMethod === 'passkey' ? buildNewPasswordFields() : [
+                      ...buildNewPasswordFields(),
+                      {
+                          id: resetCodeFieldId, type: 'text', name: 'reset-code',
+                          label: 'Verification Code', displayLabel: t("students-life-pages.alumni-login-page.verification-code-field"),
+                          httpName: 'one-time-code', required: true, placeholder: '000000',
+                          errorMsg: t("students-life-pages.alumni-login-page.verification-code-error"),
+                          regex: '^[0-9]{6}$', value: '', setValue: null, widthOfField: 1,
+                          labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
+                      },
+                  ]}
+            />
+
+            {resetStatus && <p className={"alumni-inline-status-message"} role={'status'}>{resetStatus}</p>}
+            {resetError && <p className={"alumni-inline-error-message"} role={'alert'}>{resetError}</p>}
+
+            {renderResetMethodPicker()}
+
+            <div className={"alumni-login-method-switch"}>
+                {resetMethod === 'email' && (
+                    <button type={'button'} disabled={submittingLocal || resendIn > 0}
+                            onClick={() => sendAlumniResetEmailCode(resetState.resetToken)}>
+                        {resendIn > 0
+                            ? t("students-life-pages.alumni-login-page.resend-in", {seconds: resendIn})
+                            : t("students-life-pages.alumni-login-page.resend-code")}
+                    </button>
+                )}
+                <button type={'button'} disabled={submittingLocal} onClick={() => backToSignIn(null)}>
+                    {t("students-life-pages.alumni-login-page.back-to-sign-in")}
+                </button>
+            </div>
         </div>
     );
 
@@ -369,6 +622,9 @@ function AlumniLogin() {
                             loginMode === 'biometric' ? (
                                 renderBiometricScreen()
                             ) : loginMode === 'checking' ? null : (
+                            authView === 'forgot' ? renderAlumniForgotScreen()
+                            : authView === 'reset' ? renderAlumniResetScreen()
+                            : (
                             <div className={"alumni-login-tab-content"}>
 
                                 {loginMode === 'recovery' && (
@@ -379,81 +635,56 @@ function AlumniLogin() {
                                     </div>
                                 )}
 
-                                {isPasskeyMode ? (
-                                    <Form key={"alumni-sign-in-passkey-form"}
-                                          mailTo={''}
-                                          sendPdf={false}
-                                          formTitle={"Alumni Sign In Form"}
-                                          lang={'en'}
-                                          captchaLength={1}
-                                          noInputFieldsCache={true}
-                                          noCaptcha={false}
-                                          hasDifferentOnSubmitBehaviour={true}
-                                          differentOnSubmitBehaviour={handlePasskeyLogin}
-                                          hasDifferentSubmitButtonText={true}
-                                          differentSubmitButtonText={[t("students-life-pages.alumni-login-page.passkey-button"), t("students-life-pages.alumni-login-page.signing-in-button")]}
-                                          noClearOption={true}
-                                          centerSubmitButton={true}
-                                          fullMarginField={true}
-                                          hasSetSubmittingLocal={true}
-                                          setSubmittingLocal={setSubmittingLocal}
-                                          fields={[signInUsernameField]}
-                                          formFooterButtonsAreOutside={true}
-                                          footerButtonsPortalTarget={signInAlumniStudentButtonsRef}
-                                    />
-                                ) : (
-                                    <Form key={"alumni-sign-in-password-form"}
-                                          mailTo={''}
-                                          sendPdf={false}
-                                          formTitle={"Alumni Sign In Form"}
-                                          lang={'en'}
-                                          captchaLength={1}
-                                          noInputFieldsCache={true}
-                                          noCaptcha={false}
-                                          hasDifferentOnSubmitBehaviour={true}
-                                          differentOnSubmitBehaviour={handleAlumniLogin}
-                                          hasDifferentSubmitButtonText={true}
-                                          differentSubmitButtonText={[t("students-life-pages.alumni-login-page.sign-in-button"), t("students-life-pages.alumni-login-page.signing-in-button")]}
-                                          noClearOption={true}
-                                          centerSubmitButton={true}
-                                          fullMarginField={true}
-                                          hasSetSubmittingLocal={true}
-                                          setSubmittingLocal={setSubmittingLocal}
-                                          formHasPasswordField={true}
-                                          fields={[signInUsernameField, signInPasswordField]}
-                                          formFooterButtonsAreOutside={true}
-                                          footerButtonsPortalTarget={signInAlumniStudentButtonsRef}
-                                    />
-                                )}
+                                <Form key={"alumni-sign-in-password-form"}
+                                      mailTo={''}
+                                      sendPdf={false}
+                                      formTitle={"Alumni Sign In Form"}
+                                      lang={'en'}
+                                      captchaLength={1}
+                                      noInputFieldsCache={true}
+                                      noCaptcha={false}
+                                      hasDifferentOnSubmitBehaviour={true}
+                                      differentOnSubmitBehaviour={handleAlumniLogin}
+                                      hasDifferentSubmitButtonText={true}
+                                      differentSubmitButtonText={[t("students-life-pages.alumni-login-page.sign-in-button"), t("students-life-pages.alumni-login-page.signing-in-button")]}
+                                      noClearOption={true}
+                                      centerSubmitButton={true}
+                                      fullMarginField={true}
+                                      hasSetSubmittingLocal={true}
+                                      setSubmittingLocal={setSubmittingLocal}
+                                      formHasPasswordField={true}
+                                      fields={[signInUsernameField, signInPasswordField]}
+                                      formFooterButtonsAreOutside={true}
+                                      footerButtonsPortalTarget={signInAlumniStudentButtonsRef}
+                                />
 
                                 {passkeyError && (
                                     <p className={"alumni-inline-error-message"}>{passkeyError}</p>
                                 )}
 
-                                <div className={'alumni-login-buttons-wrapper'}>
-
-                                </div>
-
-
                                 <div className={"alumni-login-method-switch"}>
                                     <div ref={signInAlumniStudentButtonsRef} className="modal-footer-buttons-portal-target"/>
 
-                                    {isPasskeyMode ? (
-                                        <button onClick={() => setSignInMethod('password')}>
-                                            {t("students-life-pages.alumni-login-page.sign-in-with-password-instead")}
-                                        </button>
-                                    ) : (passkeySupported() && !isMobileApp()) && (
-                                        <button onClick={() => setSignInMethod('passkey')}>
-                                            {t("students-life-pages.alumni-login-page.sign-in-with-passkey-instead")}
+                                    {passkeyUsable && (
+                                        <button type={'button'} className={'alumni-login-passkey-btn'} disabled={submittingLocal}
+                                                onClick={handleDiscoverablePasskeyLogin}>
+                                            {t("students-life-pages.alumni-login-page.use-a-passkey")}
                                         </button>
                                     )}
                                 </div>
 
-                                <p className={"alumni-login-switch-mode"} onClick={() => setMode('sign-up')}>
-                                    {t("students-life-pages.alumni-login-page.switch-to-sign-up")}
-                                </p>
+                                <div className={"alumni-login-secondary-links"}>
+                                    <span className={"alumni-login-switch-mode"} onClick={() => setMode('sign-up')}>
+                                        {t("students-life-pages.alumni-login-page.switch-to-sign-up")}
+                                    </span>
+                                    <span className={'alumni-login-switch-mode'}
+                                            onClick={() => { resetRecoveryState(); setLoginNotice(null); setAuthView('forgot'); }}>
+                                        {t("students-life-pages.alumni-login-page.forgot-password")}
+                                    </span>
+                                </div>
 
                             </div>
+                            )
                             )
                         ) : (
                             <div className={"alumni-login-tab-content"}>

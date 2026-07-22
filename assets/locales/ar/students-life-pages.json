@@ -2437,8 +2437,33 @@
       "sign-in-with-password-instead": "استخدام بكلمة المرور",
       "sign-in-with-passkey-instead": "استخدام مفتاح المرور",
       "biometric-button": "تسجيل الدخول بالمصادقة الحيوية",
-      "biometric-different-login": "استخدام طريقة دخول أخرى"
-
+      "biometric-different-login": "استخدام طريقة دخول أخرى",
+      "forgot-password": "هل نسيت كلمة المرور؟",
+      "use-a-passkey": "استخدم مفتاح المرور",
+      "forgot-instructions": "أدخل اسم المستخدم وسنساعدك في إعادة تعيين كلمة المرور.",
+      "forgot-continue": "متابعة",
+      "checking": "جارٍ التحقق…",
+      "back-to-sign-in": "العودة لتسجيل الدخول",
+      "username-required": "يرجى إدخال اسم المستخدم",
+      "reset-method-email": "إرسال رمز بالبريد",
+      "reset-method-passkey": "استخدام مفتاح المرور",
+      "reset-instructions-email": "أرسلنا رمزًا مكوّنًا من 6 أرقام إلى {{email}}. أدخله أدناه مع كلمة المرور الجديدة.",
+      "reset-instructions-passkey": "تحقّق باستخدام مفتاح المرور، ثم عيّن كلمة المرور الجديدة أدناه.",
+      "new-password-field": "كلمة المرور الجديدة",
+      "confirm-new-password-field": "تأكيد كلمة المرور الجديدة",
+      "password-policy-error": "٨ أحرف على الأقل مع حرف كبير وصغير ورقم ورمز",
+      "confirm-password-error": "يجب أن تتطابق كلمتا المرور",
+      "verification-code-field": "رمز التحقق",
+      "verification-code-error": "أدخل الرمز المكوّن من 6 أرقام",
+      "reset-submit": "إعادة تعيين كلمة المرور",
+      "resetting": "جارٍ إعادة التعيين…",
+      "reset-with-passkey": "تحقّق وأعد التعيين",
+      "verifying": "جارٍ التحقق…",
+      "resend-code": "إعادة إرسال الرمز",
+      "resend-in": "إعادة الإرسال خلال {{seconds}} ثانية",
+      "verify-with": "التحقق باستخدام",
+      "forgot-title": "إعادة تعيين كلمة المرور",
+      "reset-title": "إعادة تعيين كلمة المرور"
     }
   }
 }

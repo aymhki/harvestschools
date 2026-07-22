@@ -1,6 +1,6 @@
 import {Helmet} from "react-helmet-async";
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useSpring, animated} from "react-spring";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
@@ -46,10 +46,6 @@ function AlumniProfile() {
     const [showPostComposerModal, setShowPostComposerModal] = useState(false);
     const [showDeletePostModal, setShowDeletePostModal] = useState(false);
     const [showPostPreviewModal, setShowPostPreviewModal] = useState(false);
-
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [modalError, setModalError] = useState('');
     const [modalBusy, setModalBusy] = useState(false);
 
@@ -58,10 +54,12 @@ function AlumniProfile() {
     const [composerContent, setComposerContent] = useState('');
     const [postToDelete, setPostToDelete] = useState(null);
     const [postToPreview, setPostToPreview] = useState(null);
-
+    const changePasswordSubmitButtonRef = useRef(null);
+    const submitProfileChangeForApprovalButtonRef = useRef(null);
     const [newPasskeyLabel, setNewPasskeyLabel] = useState('');
 
     const canUsePasskeys = passkeySupported() && !isMobileApp();
+    const profilePageRef = useRef(null);
 
 
     const animateEditProfileModal = useSpring({
@@ -117,6 +115,8 @@ function AlumniProfile() {
             setPageMessage(message);
             setTimeout(() => setPageMessage(''), msgTimeout);
         }
+
+        profilePageRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const profile = account ? account.profile : null;
@@ -136,7 +136,14 @@ function AlumniProfile() {
         bio: 6,
         profilePicture: 7,
     };
+
     const editProfilePictureFieldLabel = 'New Profile Picture';
+
+    const changePasswordFieldIds = {
+        currentPassword: 1,
+        newPassword: 2,
+        confirmNewPassword: 3,
+    }
 
     const handleSubmitProfileUpdate = async (formData) => {
         try {
@@ -184,15 +191,17 @@ function AlumniProfile() {
     };
 
     const openChangePasswordModal = () => {
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmNewPassword('');
         setModalError('');
         setShowChangePasswordModal(true);
     };
 
-    const handleChangePassword = async () => {
+    const handleChangePassword = async (formData) => {
         if (modalBusy) { return; }
+
+        const entries = Object.fromEntries(formData.entries());
+        const currentPassword = entries[`field_${changePasswordFieldIds.currentPassword}`] || '';
+        const newPassword = entries[`field_${changePasswordFieldIds.newPassword}`] || '';
+        const confirmNewPassword = entries[`field_${changePasswordFieldIds.confirmNewPassword}`] || '';
 
         if (!currentPassword || !newPassword || !confirmNewPassword) {
             setModalError('Please fill in all three password fields.');
@@ -333,7 +342,7 @@ function AlumniProfile() {
 
             <div className={"alumni-profile-page"}>
                 <div className={"extreme-padding-container"}>
-                    <div className={"alumni-profile-wrapper"}>
+                    <div className={"alumni-profile-wrapper"} ref={profilePageRef}>
                         {pageMessage && <p className={"alumni-inline-success-message"}>{pageMessage}</p>}
                         {pageError && <p className={"alumni-inline-error-message"}>{pageError}</p>}
 
@@ -597,6 +606,8 @@ function AlumniProfile() {
                                       noClearOption={true}
                                       centerSubmitButton={true}
                                       fullMarginField={true}
+                                      formFooterButtonsAreOutside={true}
+                                      footerButtonsPortalTarget={submitProfileChangeForApprovalButtonRef}
                                       fields={[
                                           {
                                               id: editProfileFieldIds.username,
@@ -666,7 +677,7 @@ function AlumniProfile() {
                                               errorMsg: 'Please enter your graduation date',
                                               value: profile.graduationDate || '',
                                               setValue: null,
-                                              widthOfField: 2,
+                                              widthOfField: 1,
                                               httpName: 'graduation-date',
                                           },
                                           {
@@ -680,7 +691,7 @@ function AlumniProfile() {
                                               errorMsg: 'Please tell us about yourself',
                                               value: profile.bio || '',
                                               setValue: null,
-                                              widthOfField: 1,
+                                              widthOfField: 2,
                                               httpName: 'bio',
                                           },
                                           {
@@ -695,7 +706,7 @@ function AlumniProfile() {
                                               errorMsg: 'Please upload your profile picture in a valid image format',
                                               value: '',
                                               setValue: null,
-                                              widthOfField: 1,
+                                              widthOfField: 2,
                                               httpName: 'new-profile-picture',
                                           },
                                       ]}
@@ -707,6 +718,8 @@ function AlumniProfile() {
                             <button onClick={() => setShowEditProfileModal(false)}>
                                 Close
                             </button>
+
+                            <div ref={submitProfileChangeForApprovalButtonRef} className={'alumni-profile-submit-profile-change-button'}/>
                         </div>
                     </div>
                 </animated.div>
@@ -721,35 +734,95 @@ function AlumniProfile() {
                     </div>
 
                     <div className={"alumni-modal-content"}>
-                        <label>
-                            Current password
-                            <input
-                                type="password"
-                                value={currentPassword}
-                                autoComplete="current-password"
-                                onChange={(e) => setCurrentPassword(e.target.value)}
-                            />
-                        </label>
-
-                        <label>
-                            New password
-                            <input
-                                type="password"
-                                value={newPassword}
-                                autoComplete="new-password"
-                                onChange={(e) => setNewPassword(e.target.value)}
-                            />
-                        </label>
-
-                        <label>
-                            Confirm the new password
-                            <input
-                                type="password"
-                                value={confirmNewPassword}
-                                autoComplete="new-password"
-                                onChange={(e) => setConfirmNewPassword(e.target.value)}
-                            />
-                        </label>
+                        <Form
+                            fields={[
+                                {
+                                    id: changePasswordFieldIds.currentPassword,
+                                    name: 'current-password',
+                                    httpName: 'current-password',
+                                    type: 'password',
+                                    widthOfField: 1,
+                                    label: 'Current Password',
+                                    displayLabel: 'Current Password',
+                                    labelOutside: true,
+                                    labelOnTop: true,
+                                    required: true,
+                                    value: '',
+                                    setValue: null,
+                                    errorMsg: 'Please enter your current password',
+                                    regex: '',
+                                    placeholder: 'Current Password',
+                                    dontLetTheBrowserSaveField: true,
+                                    defaultValue: '',
+                                    alwaysEnglish: true,
+                                    lang: 'en',
+                                },
+                                {
+                                    id: changePasswordFieldIds.newPassword,
+                                    name: 'new-password',
+                                    httpName: 'new-password',
+                                    type: 'password',
+                                    widthOfField: 1,
+                                    label: 'New Password',
+                                    displayLabel: 'New Password',
+                                    labelOutside: true,
+                                    labelOnTop: true,
+                                    required: true,
+                                    value: '',
+                                    setValue: null,
+                                    errorMsg: 'Please enter your new password',
+                                    regex: '',
+                                    placeholder: 'New Password',
+                                    dontLetTheBrowserSaveField: true,
+                                    defaultValue: '',
+                                    alwaysEnglish: true,
+                                    lang: 'en',
+                                },
+                                {
+                                    id: changePasswordFieldIds.confirmNewPassword,
+                                    name: 'confirm-new-password',
+                                    httpName: 'confirm-new-password',
+                                    type: 'password',
+                                    widthOfField: 1,
+                                    label: 'Confirm New Password',
+                                    displayLabel: 'Confirm New Password',
+                                    labelOutside: true,
+                                    labelOnTop: true,
+                                    required: true,
+                                    value: '',
+                                    setValue: null,
+                                    errorMsg: 'Please confirm your new password',
+                                    regex: '',
+                                    placeholder: 'Current Password',
+                                    dontLetTheBrowserSaveField: true,
+                                    defaultValue: '',
+                                    alwaysEnglish: true,
+                                    lang: 'en',
+                                }
+                            ]}
+                            mailTo={''}
+                            formTitle={'Change Password'}
+                            captchaLength={1}
+                            noInputFieldsCache={true}
+                            noCaptcha={false}
+                            hasDifferentOnSubmitBehaviour={true}
+                            differentOnSubmitBehaviour={handleChangePassword}
+                            noClearOption={true}
+                            hasDifferentSubmitButtonText={true}
+                            differentSubmitButtonText={['Change Password', 'Changing Password']}
+                            hasDifferentSuccessMessage={true}
+                            differentSuccessMessage={'Password changed successfully'}
+                            centerSubmitButton={true}
+                            easySimpleCaptcha={true}
+                            fullMarginField={true}
+                            hasSetSubmittingLocal={true}
+                            setSubmittingLocal={setModalBusy}
+                            formInModalPopup={true}
+                            setShowFormModalPopup={setShowChangePasswordModal}
+                            forceEnglishForm={true}
+                            formFooterButtonsAreOutside={true}
+                            footerButtonsPortalTarget={changePasswordSubmitButtonRef}
+                        />
 
                         <p className={"alumni-modal-content-note"}>
                             The new password must be at least 8 characters long with an uppercase letter, a lowercase letter, a number, and a special character. Changing the password signs you out of your other devices.
@@ -763,9 +836,8 @@ function AlumniProfile() {
                             Cancel
                         </button>
 
-                        <button onClick={handleChangePassword} disabled={modalBusy}>
-                            {modalBusy ? 'Changing...' : 'Change Password'}
-                        </button>
+                        <div ref={changePasswordSubmitButtonRef} className={"alumni-profile-change-password-submit-button"} />
+
                     </div>
                 </div>
             </animated.div>

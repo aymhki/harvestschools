@@ -81,6 +81,68 @@ const captchaSeededUnitRandom = (seed, index) => {
     return ((h >>> 0) % 100000) / 100000;
 };
 
+const ARABIC_MARKS_REGEX = /[\u064B-\u065F\u0670\u0640]/g;
+
+const AR_TO_LAT = {
+    'ا': 'a', 'أ': 'a', 'إ': 'i', 'آ': 'a', 'ٱ': 'a', 'ب': 'b', 'ت': 't', 'ث': 's',
+    'ج': 'g', 'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'z', 'ر': 'r', 'ز': 'z', 'س': 's',
+    'ش': 'sh', 'ص': 's', 'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f',
+    'ق': 'k', 'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n', 'ه': 'h', 'ة': 'h', 'و': 'w',
+    'ي': 'y', 'ى': 'a', 'ء': '', 'ئ': 'y', 'ؤ': 'w',
+    '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4', '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
+};
+
+const FRANCO_DIGITS = { '2': '', '3': 'a', '5': 'kh', '6': 't', '7': 'h', '8': 'gh', '9': 's' };
+
+const toTransliterationKey = (text) => {
+    let out = '';
+    const source = String(text).toLowerCase().replace(ARABIC_MARKS_REGEX, '');
+    for (const ch of source) {
+        out += Object.prototype.hasOwnProperty.call(AR_TO_LAT, ch) ? AR_TO_LAT[ch] : ch;
+    }
+
+    if (/[a-z]/.test(out)) {
+        out = out.replace(/[235679 8]/g, (d) => FRANCO_DIGITS[d] ?? d);
+    }
+
+    return out
+        .replace(/ch/g, 'sh')
+        .replace(/th/g, 's')
+        .replace(/dh/g, 'z')
+        .replace(/ph/g, 'f')
+        .replace(/j/g, 'g')
+        .replace(/[qc]/g, 'k')
+        .replace(/x/g, 'ks')
+        .replace(/p/g, 'b')
+        .replace(/v/g, 'f')
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/(.)\1+/g, '$1')
+        .replace(/[aeiou]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+};
+
+const normalizeArabicText = (text) => String(text)
+    .replace(ARABIC_MARKS_REGEX, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي');
+
+
+
+const searchSelectMatches = (choice, query) => {
+    const trimmedQuery = String(query || '').trim();
+    if (!trimmedQuery) return true;
+    const normChoice = normalizeArabicText(choice).toLowerCase();
+    const normQuery = normalizeArabicText(trimmedQuery).toLowerCase();
+    if (normChoice.includes(normQuery)) return true;
+    const choiceKey = toTransliterationKey(choice);
+    const queryKey = toTransliterationKey(trimmedQuery);
+    return queryKey.length > 0 && choiceKey.includes(queryKey);
+};
+
 function Form({
                   fields,
                   mailTo,
@@ -147,6 +209,29 @@ function Form({
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
     const { t } = useTranslation(['all-forms'], forceEnglishForm ? { lng: 'en' } : {});
     const formId = useId();
+    const [searchSelectSelections, setSearchSelectSelections] = useState({});
+    const [searchSelectQueries, setSearchSelectQueries] = useState({});
+    const [openSearchSelectId, setOpenSearchSelectId] = useState(null);
+    const [searchSelectHighlight, setSearchSelectHighlight] = useState(-1);
+    const searchSelectWrapperRefs = useRef({});
+    const [searchSelectDropdownRect, setSearchSelectDropdownRect] = useState(null);
+    const searchSelectDropdownRef = useRef(null);
+
+    const measureSearchSelectDropdown = useCallback(() => {
+        if (openSearchSelectId === null) return;
+        const wrapperRef = searchSelectWrapperRefs.current[openSearchSelectId];
+        if (!wrapperRef?.current) return;
+        const rect = wrapperRef.current.getBoundingClientRect();
+        const dropdownMaxHeight = 224; // keep in sync with CSS max-height (14rem)
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const openUp = spaceBelow < Math.min(dropdownMaxHeight, 160) && rect.top > spaceBelow;
+        setSearchSelectDropdownRect({
+            left: rect.left,
+            width: rect.width,
+            top: openUp ? undefined : rect.bottom + 4,
+            bottom: openUp ? window.innerHeight - rect.top + 4 : undefined,
+        });
+    }, [openSearchSelectId]);
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -219,6 +304,18 @@ function Form({
         });
 
         setFileInputs({});
+
+        setSearchSelectSelections(() => {
+            const cleared = {};
+            fields.forEach(f => {
+                if (f.type === 'search-select') cleared[f.id] = [];
+            });
+            return cleared;
+        });
+
+        setSearchSelectQueries({});
+        setOpenSearchSelectId(null);
+        setSearchSelectHighlight(-1);
         setCaptchaValue(generateCaptcha());
 
         enteredCaptcha.current = '';
@@ -478,16 +575,16 @@ function Form({
         const handleKeyDown = (e) => {
             if (e.key === 'Tab') {
                 setShowSelectDateModal(false);
-                setSelectedDateMonth('');
-                setSelectedDateDay('');
-                setSelectedDateYear('');
+                // setSelectedDateMonth('');
+                // setSelectedDateDay('');
+                // setSelectedDateYear('');
                 setSelectedDateError('');
 
-                const ref = fieldRefs.current[selectedDateFieldID];
-
-                if (ref && ref.current) {
-                    ref.current.value = '';
-                }
+                // const ref = fieldRefs.current[selectedDateFieldID];
+                //
+                // if (ref && ref.current) {
+                //     ref.current.value = '';
+                // }
             }
         };
 
@@ -497,7 +594,7 @@ function Form({
                 type="text"
                 placeholder={`${field.placeholder ? field.placeholder + t("all-forms.year-month-day") : getWhichLabelToUse(field) + t("all-forms.year-month-day")}${field.required ? '*' : ''}`}
                 readOnly={true}
-                onFocus={() => showSelectDateModalForField(field.id, getWhichLabelToUse(field))}
+                onFocus={() => showSelectDateModalForField(field.id, getWhichLabelToUse(field), fieldRefs.current[field.id]?.current?.value)}
                 onKeyDown={handleKeyDown}
                 className={`text-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
             />
@@ -824,6 +921,7 @@ function Form({
                 {field.type === 'select' && renderSelect(field)}
                 {field.type === 'radio' && renderChoiceInputs(field, 'radio')}
                 {field.type === 'checkbox' && renderChoiceInputs(field, 'checkbox')}
+                {field.type === 'search-select' && renderSearchSelect(field)}
                 {field.type === 'file' && renderFileInput(field)}
                 {field.type === 'button' && renderButton(field)}
                 {field.type === 'section' && ( renderSection(field) ) }
@@ -834,25 +932,252 @@ function Form({
     const handleCopy = (event) => {
         event.preventDefault();
     };
+
     const handleCut = (event) => {
         event.preventDefault();
     };
+
     const handlePaste = (event) => {
         event.preventDefault();
     };
+
     const handleMouseDown = (event) => {
         event.preventDefault();
     };
+
     const handleKeyDown = (event) => {
         if (event.ctrlKey) {
             event.preventDefault();
         }
     };
-    const showSelectDateModalForField = (fieldID, fieldLabel) => {
+
+    const showSelectDateModalForField = (fieldID, fieldLabel, currentValue) => {
         setSelectedDateFieldID(fieldID);
         setSelectedDateFieldLabel(fieldLabel);
+
+        if (currentValue) {
+            const [year, month, day] = currentValue.split('-');
+            setSelectedDateYear(year || '');
+            setSelectedDateMonth(month ? String(parseInt(month, 10)) : '');
+            setSelectedDateDay(day ? String(parseInt(day, 10)) : '');
+        } else {
+            setSelectedDateYear('');
+            setSelectedDateMonth('');
+            setSelectedDateDay('');
+        }
+
         setShowSelectDateModal(true);
     }
+
+    const parseSearchSelectValues = (val) => {
+        if (!val) return [];
+        if (Array.isArray(val)) return val;
+        return String(val).split(',').map(v => v.trim()).filter(Boolean);
+    };
+
+    const getSearchSelectSelected = (field) => {
+        if (field.readOnlyField || formIsReadOnly) {
+            return parseSearchSelectValues(field.value || field.defaultValue || '');
+        }
+        if (searchSelectSelections[field.id] !== undefined) {
+            return searchSelectSelections[field.id];
+        }
+        return parseSearchSelectValues(field.defaultValue || field.value || '');
+    };
+
+    const applySearchSelectSelection = (field, selected) => {
+        setSearchSelectSelections(prev => ({ ...prev, [field.id]: selected }));
+        const commaValue = selected.join(',');
+        const hiddenRef = fieldRefs.current[field.id];
+        if (hiddenRef?.current) hiddenRef.current.value = commaValue;
+        setGeneralFormError('');
+        setSuccessMessage('');
+        if (!noInputFieldsCache) {
+            saveToCache(field, commaValue);
+        }
+        const newFields = processFieldRules(dynamicFields, field, commaValue);
+        setDynamicFields(newFields);
+        processFieldOnChangeResult(field, commaValue);
+    };
+
+    const renderSearchSelect = (field) => {
+        const widthClass = getWidthClass(field.widthOfField);
+
+        if (!fieldRefs.current[field.id]) fieldRefs.current[field.id] = createRef();
+        if (!searchSelectWrapperRefs.current[field.id]) searchSelectWrapperRefs.current[field.id] = createRef();
+
+        const isFieldReadOnly = field.readOnlyField || formIsReadOnly || submitting;
+        const selected = getSearchSelectSelected(field);
+        const typedQuery = searchSelectQueries[field.id];
+        const filterText = typedQuery ?? '';
+        const displayText = typedQuery ?? (!field.multiple ? (selected[0] || '') : '');
+        const isOpen = openSearchSelectId === field.id && !isFieldReadOnly;
+
+        const filteredChoices = (field.choices || []).filter(choice =>
+            (!field.multiple || !selected.includes(choice)) && searchSelectMatches(choice, filterText)
+        );
+
+        const clearQuery = () => setSearchSelectQueries(prev => {
+            const next = { ...prev };
+            delete next[field.id];
+            return next;
+        });
+
+        const closeDropdown = () => {
+            setOpenSearchSelectId(null);
+            setSearchSelectHighlight(-1);
+            clearQuery();
+        };
+
+        const openDropdown = () => {
+            if (!isFieldReadOnly) {
+                setOpenSearchSelectId(field.id);
+                setSearchSelectHighlight(-1);
+            }
+        };
+
+        const pickChoice = (choice) => {
+            if (field.multiple) {
+                if (!selected.includes(choice)) {
+                    applySearchSelectSelection(field, [...selected, choice]);
+                }
+
+                clearQuery();
+                setSearchSelectHighlight(-1);
+
+            } else {
+                applySearchSelectSelection(field, [choice]);
+                closeDropdown();
+            }
+        };
+
+        const removeChoice = (choice) => {
+            applySearchSelectSelection(field, selected.filter(c => c !== choice));
+        };
+
+        const handleInputChange = (e) => {
+            setSearchSelectQueries(prev => ({ ...prev, [field.id]: e.target.value }));
+            setSearchSelectHighlight(0);
+            if (openSearchSelectId !== field.id) setOpenSearchSelectId(field.id);
+        };
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (!isOpen) { openDropdown(); setSearchSelectHighlight(0); return; }
+                setSearchSelectHighlight(h => (filteredChoices.length === 0 ? -1 : Math.min(h + 1, filteredChoices.length - 1)));
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setSearchSelectHighlight(h => Math.max(h - 1, 0));
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (isOpen && searchSelectHighlight >= 0 && filteredChoices[searchSelectHighlight]) {
+                    pickChoice(filteredChoices[searchSelectHighlight]);
+                } else if (isOpen && filteredChoices.length === 1) {
+                    pickChoice(filteredChoices[0]);
+                } else {
+                    const exactMatch = (field.choices || []).find(
+                        c => String(c).toLowerCase() === String(displayText).trim().toLowerCase()
+                    );
+                    if (exactMatch) pickChoice(exactMatch);
+                }
+            } else if (e.key === 'Escape' || e.key === 'Tab') {
+                closeDropdown();
+            } else if (e.key === 'Backspace' && field.multiple && !filterText && selected.length > 0 && !isFieldReadOnly) {
+                removeChoice(selected[selected.length - 1]);
+            }
+        };
+
+        const markup = (
+            <div
+                className={`search-select-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${isFieldReadOnly ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`}
+                ref={searchSelectWrapperRefs.current[field.id]}
+                {...(field.lang !== undefined && { lang: field.lang })}
+            >
+                <input
+                    type="hidden"
+                    id={field.id}
+                    name={field.httpName}
+                    ref={fieldRefs.current[field.id]}
+                    defaultValue={selected.join(',')}
+                />
+                <div
+                    className="search-select-input-area"
+                    onClick={(e) => {
+                        openDropdown();
+                        e.currentTarget.querySelector('.search-select-search-input')?.focus();
+                    }}
+                >
+                    {field.multiple && selected.map(choice => (
+                        <span key={choice} className="search-select-tag">
+                        <span className="search-select-tag-label">{choice}</span>
+                            {!isFieldReadOnly && (
+                                <button
+                                    type="button"
+                                    className="search-select-tag-remove"
+                                    aria-label={`${t('all-forms.remove')} ${choice}`}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={(e) => { e.stopPropagation(); removeChoice(choice); }}
+                                >
+                                    ×
+                                </button>
+                            )}
+                    </span>
+                    ))}
+                    <input
+                        type="text"
+                        className="search-select-search-input"
+                        id={`${field.id}_search`}
+                        value={displayText}
+                        placeholder={selected.length === 0 ? getPlaceholder(field) : ''}
+                        disabled={submitting}
+                        readOnly={isFieldReadOnly}
+                        autoComplete="off"
+                        role="combobox"
+                        aria-expanded={isOpen}
+                        aria-autocomplete="list"
+                        onFocus={openDropdown}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                    />
+                </div>
+                {isOpen && searchSelectDropdownRect && createPortal(
+                    <ul
+                        className={`search-select-dropdown ${field.alwaysEnglish ? 'always-english' : ''}`}
+                        style={{
+                            left: searchSelectDropdownRect.left,
+                            right: 'auto',
+                            width: searchSelectDropdownRect.width,
+                            top: searchSelectDropdownRect.top,
+                            bottom: searchSelectDropdownRect.bottom,
+                        }}
+                        role="listbox"
+                        ref={searchSelectDropdownRef}
+                        {...(field.lang !== undefined && { lang: field.lang })}
+                    >
+                        {filteredChoices.length === 0 && (
+                            <li className="search-select-no-results">{t('all-forms.no-results')}</li>
+                        )}
+                        {filteredChoices.map((choice, index) => (
+                            <li
+                                key={choice}
+                                role="option"
+                                aria-selected={!field.multiple && selected[0] === choice}
+                                className={`search-select-option ${index === searchSelectHighlight ? 'highlighted' : ''} ${!field.multiple && selected[0] === choice ? 'selected' : ''}`}
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => pickChoice(choice)}
+                                onMouseEnter={() => setSearchSelectHighlight(index)}
+                            >
+                                {choice}
+                            </li>
+                        ))}
+                    </ul>,
+                    document.body
+                )}
+            </div>
+        );
+        return renderWithOptionalLabel(field, markup);
+    };
 
     const handleDateSelection = (day, month, year) => {
         if (!day || !month || !year) {
@@ -1082,6 +1407,14 @@ function Form({
                 }
 
             }
+
+            if (dynamicFields[i].type === 'search-select' && dynamicFields[i].required) {
+                if (getSearchSelectSelected(dynamicFields[i]).length === 0) {
+                    setGeneralFormError(t('all-forms.field-required', { field1: getWhichLabelToUse(dynamicFields[i]) }));
+                    setTimeout(() => setGeneralFormError(''), msgTimeout);
+                    return;
+                }
+            }
         }
 
         setSubmitting(true);
@@ -1119,10 +1452,7 @@ function Form({
 
                             if (field.readOnlyField || formIsReadOnly) {
 
-                                const vals = Array.isArray(field.value)
-                                    ? field.value
-                                    : String(field.value || '').split(',').map(v => v.trim()).filter(Boolean);
-
+                                const vals = Array.isArray(field.value) ? field.value : String(field.value || '').split(',').map(v => v.trim()).filter(Boolean);
                                 value = vals.join(',');
 
                             } else {
@@ -1136,6 +1466,9 @@ function Form({
 
                                 value = selected.join(',');
                             }
+
+                        } else if (field.type === 'search-select') {
+                            value = getSearchSelectSelected(field).join(',');
                         } else {
                             value = ref.current.value || '';
                         }
@@ -1253,15 +1586,28 @@ function Form({
             if (cachedValue !== undefined && field.value === '') {
                 const ref = fieldRefs.current[field.id];
                 if (ref && ref.current) {
+
                     if (field.type === 'checkbox' || field.type === 'radio') {
                         ref.current.checked = cachedValue;
+
                     } else if (field.type === 'select' && field.multiple) {
+
                         ref.current.value = cachedValue;
                         const vals = String(cachedValue).split(',').map(v => v.trim()).filter(Boolean);
+
                         (field.choices || []).forEach((choice, i) => {
                             const choiceRef = fieldRefs.current[`${field.id}_${i}`];
                             if (choiceRef?.current) choiceRef.current.checked = vals.includes(choice);
                         });
+
+                    } else if (field.type === 'search-select') {
+                        ref.current.value = cachedValue;
+
+                        setSearchSelectSelections(prev => ({
+                            ...prev,
+                            [field.id]: String(cachedValue).split(',').map(v => v.trim()).filter(Boolean)
+                        }));
+
                     } else {
                         ref.current.value = cachedValue;
                     }
@@ -1316,17 +1662,25 @@ function Form({
                     const ref = fieldRefs.current[ field.id ];
 
                     if ( ref && ref.current ) {
+
                         if ( field.type === 'checkbox' || field.type === 'radio' ) {
                             ref.current.checked = field.value;
+
                         } else if (field.type === 'select' && field.multiple) {
-                            const vals = Array.isArray(field.value)
-                                ? field.value
-                                : String(field.value).split(',').map(v => v.trim()).filter(Boolean);
+
+                            const vals = Array.isArray(field.value) ? field.value : String(field.value).split(',').map(v => v.trim()).filter(Boolean);
                             ref.current.value = vals.join(',');
+
                             (field.choices || []).forEach((choice, i) => {
                                 const choiceRef = fieldRefs.current[`${field.id}_${i}`];
                                 if (choiceRef?.current) choiceRef.current.checked = vals.includes(choice);
                             });
+
+                        } else if (field.type === 'search-select') {
+                            if (searchSelectSelections[field.id] === undefined) {
+                                ref.current.value = parseSearchSelectValues(field.value).join(',');
+                            }
+
                         } else {
                             ref.current.value = field.value;
                         }
@@ -1546,6 +1900,51 @@ function Form({
         }
     }, [resetFormFromParent, setResetForFromParent, fields.length, resetFormCompletely]);
 
+    useEffect(() => {
+        if (openSearchSelectId === null) return;
+
+        const handlePointerDown = (e) => {
+            const wrapperRef = searchSelectWrapperRefs.current[openSearchSelectId];
+            const clickedInWrapper = wrapperRef?.current?.contains(e.target);
+            const clickedInDropdown = searchSelectDropdownRef.current?.contains(e.target);
+            if (!clickedInWrapper && !clickedInDropdown) {
+                setOpenSearchSelectId(null);
+                setSearchSelectHighlight(-1);
+                setSearchSelectQueries(prev => {
+                    const next = { ...prev };
+                    delete next[openSearchSelectId];
+                    return next;
+                });
+            }
+        };
+
+        document.addEventListener('mousedown', handlePointerDown);
+        document.addEventListener('touchstart', handlePointerDown);
+
+        return () => {
+            document.removeEventListener('mousedown', handlePointerDown);
+            document.removeEventListener('touchstart', handlePointerDown);
+        };
+
+    }, [openSearchSelectId]);
+
+    useEffect(() => {
+        if (openSearchSelectId === null) {
+            setSearchSelectDropdownRect(null);
+            return;
+        }
+        measureSearchSelectDropdown();
+        window.addEventListener('scroll', measureSearchSelectDropdown, true);
+        window.addEventListener('resize', measureSearchSelectDropdown);
+        return () => {
+            window.removeEventListener('scroll', measureSearchSelectDropdown, true);
+            window.removeEventListener('resize', measureSearchSelectDropdown);
+        };
+    }, [openSearchSelectId, measureSearchSelectDropdown]);
+
+    useEffect(() => {
+        measureSearchSelectDropdown();
+    }, [searchSelectQueries, searchSelectSelections, measureSearchSelectDropdown]);
 
     const CaptchaField = () => {
         if (noCaptcha) return null;
@@ -1685,16 +2084,16 @@ function Form({
     const DateModal = () => {
         const closeModal = () => {
             setShowSelectDateModal(false);
-            setSelectedDateMonth('');
-            setSelectedDateDay('');
-            setSelectedDateYear('');
+            // setSelectedDateMonth('');
+            // setSelectedDateDay('');
+            // setSelectedDateYear('');
             setSelectedDateError('');
 
-            const ref = fieldRefs.current[selectedDateFieldID];
-
-            if (ref && ref.current) {
-                ref.current.value = '';
-            }
+            // const ref = fieldRefs.current[selectedDateFieldID];
+            //
+            // if (ref && ref.current) {
+            //     ref.current.value = '';
+            // }
         };
 
         const handleSubmit = (e) => {

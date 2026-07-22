@@ -66,22 +66,24 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Arabic captcha width and padding looks off.
 - [x] Look into proper captcha for forms.
 - [x] Look into adding the same security headers from admin domain to the main domain.
-- [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
-- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
-- [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
-- [ ] Setup the info for the D-U-N-S Number.
-- [ ] Date Modal in the form component does not open to the selected field's date.
-- [ ] The alumni profile flash may need to be removed.
-- [ ] The alumni management tab keeps flickering and reloading.
-- [ ] The alumni change password modal needs to use the custom form for password fields.
+- [x] Date Modal in the form component does not open to the selected field's date.
+- [x] The alumni profile flash may need to be removed.
+- [x] The alumni management tab keeps flickering and reloading.
+- [x] The alumni change password modal needs to use the custom form for password fields.
 - [x] Remove passkey from capacitor app for the alumni pages.
+- [x] Both alumni students and graduation bookings should be able to reset their passwords via forgot password option followed by a verification code sent to their email(s).
+- [x] When resetting the password for admin login the capacitor app biometric login should be updated.
 - [ ] Viewing alumni files doesn't work from admin management page tables.
 - [ ] Add www. to app links hostnames in iOS and android.
 - [ ] Add forget password to admin accounts with MFA.
 - [ ] Look into adding location with iP address to active sessions as well as show Capacitor in the session browser for admin login.
 - [ ] Look into adding biometric login for both alumni students and graduation bookings similar to the admin login.
 - [ ] Alumni students should be able to submit a request to delete their accounts to the administrators.
-- [ ] Both alumni students and graduation bookings should be able to reset their passwords via forgot password option followed by a verification code sent to their email(s).
-- [x] When resetting the password for admin login the capacitor app biometric login should be updated.
 - [ ] Unify the router to elements across domains.
 - [ ] Table filter modal fields css needs to be adjusted to match form fields.
+- [ ] Admin login mfa risk handler should consider biometric login from capacitor app safe enough as well as consider iP address country/region.
+- [ ] Graduation booking login and alumni students login should store, set, extend, and delete session using SecureStoragePlugin for capacitor on the app similar to the admin login.
+- [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
+- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
+- [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.
+- [ ] Setup the info for the D-U-N-S Number.
