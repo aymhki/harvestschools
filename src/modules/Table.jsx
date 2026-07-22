@@ -2004,7 +2004,7 @@ function Table({
                                 <div className={"advanced-filter-search-container-in-filter-popup"}>
                                     <label>Condition: </label>
                                     <select
-                                        className={"table-module-filter-search-input-field"}
+                                        className={"select-form-field table-module-filter-search-input-field"}
                                         value={columnFilters[columnToFilterBasedOn].operator}
                                         onChange={(e) => setColumnFilters(prev => ({
                                             ...prev,
@@ -2042,7 +2042,7 @@ function Table({
                                 <div className={"advanced-filter-search-container-in-filter-popup"}>
                                     <label>Value: </label>
                                     <input
-                                        className={"table-module-filter-search-input-field"}
+                                        className={"text-form-field table-module-filter-search-input-field"}
                                         type={columnFilters[columnToFilterBasedOn].type === 'date' ? 'date' : (columnFilters[columnToFilterBasedOn].type === 'number' || columnFilters[columnToFilterBasedOn].type === 'currency' ? 'number' : 'text')}
                                         value={columnFilters[columnToFilterBasedOn].value}
                                         onChange={(e) => setColumnFilters(prev => ({
@@ -2059,7 +2059,7 @@ function Table({
                                     <div className={"advanced-filter-search-container-in-filter-popup"}>
                                         <label>And: </label>
                                         <input
-                                            className={"table-module-filter-search-input-field"}
+                                            className={"text-form-field table-module-filter-search-input-field"}
                                             type={columnFilters[columnToFilterBasedOn].type === 'date' ? 'date' : (columnFilters[columnToFilterBasedOn].type === 'number' || columnFilters[columnToFilterBasedOn].type === 'currency' ? 'number' : 'text')}
                                             value={columnFilters[columnToFilterBasedOn].value2 || ''}
                                             onChange={(e) => setColumnFilters(prev => ({
@@ -2079,7 +2079,7 @@ function Table({
                                     <h3>Filter by Unique Values</h3>
                                     <input
                                         type="text"
-                                        className={"table-module-filter-search-input-field"}
+                                        className={"text-form-field table-module-filter-search-input-field"}
                                         placeholder={"Search unique values..."}
                                         value={uniqueValueSearch}
                                         onChange={(e) => setUniqueValueSearch(e.target.value)}

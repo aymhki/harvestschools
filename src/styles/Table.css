@@ -575,8 +575,8 @@ td button {
 .min-max-banner-in-filter-popup {
     margin-bottom: 1rem;
     font-size: 0.9rem;
-    color: #666;
-    background-color: #f9f9f9;
+    color: var(--primary-color);
+    background-color: var(--fb-off-white-color);
     padding: 0.5rem;
     border-radius: 0.1rem;
 }
@@ -1044,5 +1044,10 @@ td button {
 
     .table-scroll-container {
         box-shadow: 0 0 0.5rem 0 var(--fb-white-color);
+    }
+
+    .min-max-banner-in-filter-popup {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
     }
 }
