@@ -15,6 +15,7 @@ function FileViewer({fetchFileService}) {
     const [canEmbed, setCanEmbed] = useState(false);
     const [mimeType, setMimeType] = useState('');
     const serveFile = fetchFileService;
+    const isImage = mimeType.startsWith('image/');
 
     useEffect(() => {
 
@@ -69,11 +70,19 @@ function FileViewer({fetchFileService}) {
                                 fileBlobUrl && (
                                     <>
                                         {canEmbed ? (
-                                            <embed
-                                                src={fileBlobUrl}
-                                                type={mimeType}
-                                                className="file-embed-viewer"
-                                            />
+                                            isImage ? (
+                                                <img
+                                                    src={fileBlobUrl}
+                                                    alt={filename}
+                                                    className="file-image-viewer"
+                                                />
+                                            ) : (
+                                                <embed
+                                                    src={fileBlobUrl}
+                                                    type={mimeType}
+                                                    className="file-embed-viewer"
+                                                />
+                                            )
                                         ) : (
                                             <div className="download-message">
                                                 <p>This file cannot be previewed.</p>
