@@ -28,6 +28,7 @@ import {
     getBiometricCredentials,
     deleteBiometricCredentials,
     verifyBiometricIdentity,
+    clearMobileSession,
 } from "../../../services/General/CapacitorSecureAuthUtils.jsx";
 
 
@@ -269,6 +270,7 @@ function AlumniLogin() {
 
     const resetToFirstTimeMobileExperience = async () => {
         await deleteBiometricCredentials(ALUMNI_SESSION_NAME);
+        await clearMobileSession(ALUMNI_SESSION_NAME);
 
         if (isMountedRef.current) {
             setPrefillUsername('');

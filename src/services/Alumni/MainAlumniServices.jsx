@@ -15,23 +15,53 @@ import {
 import {
     isBiometricAvailable,
     saveBiometricCredentials,
+    getMobileSession,
+    setMobileSession,
+    extendMobileSession,
+    clearMobileSession,
 } from "../General/CapacitorSecureAuthUtils.jsx";
 
 import {decodeCreateArgs, decodeGetArgs, bufToB64, passkeySupported} from "../General/PasskeyUtils.jsx";
 
 const ALUMNI_SESSION_NAME = 'harvest_schools_alumni';
 
-const validateAlumniSessionLocally = () => {
-    const localStorageData = getSessionsFromLocalStorage(ALUMNI_SESSION_NAME);
-    const sessionId = localStorageData.sessionId;
-    const sessionTime = parseInt(localStorageData.sessionTime, 10);
+const validateAlumniSessionLocally = async () => {
 
-    if (sessionId && sessionTime && (Date.now() - sessionTime) <= sessionDuration) {
-        return sessionId;
+    if (isMobileApp()) {
+        const mobileSessionId = await getMobileSession(ALUMNI_SESSION_NAME);
+
+        if (mobileSessionId) {
+            return mobileSessionId;
+        }
+    } else {
+        const localStorageData = getSessionsFromLocalStorage(ALUMNI_SESSION_NAME);
+        const sessionId = localStorageData.sessionId;
+        const sessionTime = parseInt(localStorageData.sessionTime, 10);
+
+        if (sessionId && sessionTime && (Date.now() - sessionTime) <= sessionDuration) {
+            return sessionId;
+        }
+
+        resetSession(ALUMNI_SESSION_NAME);
     }
 
-    resetSession(ALUMNI_SESSION_NAME);
     return null;
+}
+
+const extendAlumniSessionLocally = async (sessionId) => {
+    if (isMobileApp()) {
+        await extendMobileSession(ALUMNI_SESSION_NAME, sessionId);
+    } else {
+        extendSession(ALUMNI_SESSION_NAME, sessionId);
+    }
+}
+
+const clearAlumniSessionLocally = async () => {
+    if (isMobileApp()) {
+        await clearMobileSession(ALUMNI_SESSION_NAME);
+    } else {
+        resetSession(ALUMNI_SESSION_NAME);
+    }
 }
 
 const buildAlumniAuthHeaders = (sessionId, includeJsonContentType = false) => {
@@ -46,13 +76,19 @@ const buildAlumniAuthHeaders = (sessionId, includeJsonContentType = false) => {
     return headers;
 }
 
-const storeAlumniSessionAndEnter = (sessionToken, navigate) => {
-    extendSession(ALUMNI_SESSION_NAME, sessionToken);
+const storeAlumniSessionAndEnter = async (sessionToken, navigate) => {
+
+    if (isMobileApp()) {
+        await setMobileSession(ALUMNI_SESSION_NAME, sessionToken);
+    } else {
+        extendSession(ALUMNI_SESSION_NAME, sessionToken);
+    }
+
     navigate(alumniProfilePageUrl, {replace: true});
 }
 
 const logoutCurrentAlumni = async (navigate) => {
-    const sessionId = validateAlumniSessionLocally();
+    const sessionId = await validateAlumniSessionLocally();
 
     if (sessionId) {
         try {
@@ -65,12 +101,12 @@ const logoutCurrentAlumni = async (navigate) => {
         }
     }
 
-    resetSession(ALUMNI_SESSION_NAME);
+    await clearAlumniSessionLocally();
     navigate(alumniLoginPageUrl, {replace: true});
 }
 
 const checkAlumniSessionFromLogin = async (navigate) => {
-    const sessionId = validateAlumniSessionLocally();
+    const sessionId = await validateAlumniSessionLocally();
 
     if (!sessionId) { return; }
 
@@ -83,7 +119,7 @@ const checkAlumniSessionFromLogin = async (navigate) => {
         const result = await response.json();
 
         if (result.success) {
-            extendSession(ALUMNI_SESSION_NAME, sessionId);
+            await extendAlumniSessionLocally(sessionId);
             navigate(alumniProfilePageUrl, {replace: true});
         } else if (result.message) {
             console.log(result.message);
@@ -94,7 +130,7 @@ const checkAlumniSessionFromLogin = async (navigate) => {
 }
 
 const checkAlumniSessionFromProfile = async (navigate) => {
-    const sessionId = validateAlumniSessionLocally();
+    const sessionId = await validateAlumniSessionLocally();
 
     if (!sessionId) {
         navigate(alumniLoginPageUrl, {replace: true});
@@ -110,7 +146,7 @@ const checkAlumniSessionFromProfile = async (navigate) => {
         const result = await response.json();
 
         if (result.success) {
-            extendSession(ALUMNI_SESSION_NAME, sessionId);
+            await extendAlumniSessionLocally(sessionId);
             return sessionId;
         }
 
@@ -118,7 +154,7 @@ const checkAlumniSessionFromProfile = async (navigate) => {
             console.log(result.message);
         }
 
-        resetSession(ALUMNI_SESSION_NAME);
+        await clearAlumniSessionLocally();
         navigate(alumniLoginPageUrl, {replace: true});
         return null;
     } catch (error) {
@@ -146,7 +182,7 @@ const performAlumniLogin = async (username, password, navigate, persistBiometric
         }
 
         if (result && result.success && result.sessionToken) {
-            storeAlumniSessionAndEnter(result.sessionToken, navigate);
+            await storeAlumniSessionAndEnter(result.sessionToken, navigate);
             return {success: true};
         }
 
@@ -210,7 +246,7 @@ const performAlumniDiscoverablePasskeyLogin = async (navigate) => {
         const result = await verifyResponse.json();
 
         if (result && result.success && result.sessionToken) {
-            storeAlumniSessionAndEnter(result.sessionToken, navigate);
+            await storeAlumniSessionAndEnter(result.sessionToken, navigate);
             return {success: true};
         }
 
@@ -364,7 +400,7 @@ const performAlumniPasskeyLogin = async (username, navigate) => {
         const result = await verifyResponse.json();
 
         if (result && result.success && result.sessionToken) {
-            storeAlumniSessionAndEnter(result.sessionToken, navigate);
+            await storeAlumniSessionAndEnter(result.sessionToken, navigate);
             return {success: true};
         }
 
@@ -413,7 +449,7 @@ const fetchMyAlumniAccount = async (navigate) => {
         }
 
         if (result && (result.code === 401 || result.code === 403 || result.code === 404)) {
-            resetSession(ALUMNI_SESSION_NAME);
+            await clearAlumniSessionLocally();
             navigate(alumniLoginPageUrl, {replace: true});
         }
 
@@ -425,7 +461,7 @@ const fetchMyAlumniAccount = async (navigate) => {
 }
 
 const postAlumniJsonRequest = async (endpoint, payload, navigate) => {
-    const sessionId = validateAlumniSessionLocally();
+    const sessionId = await validateAlumniSessionLocally();
 
     if (!sessionId) {
         if (navigate) { navigate(alumniLoginPageUrl, {replace: true}); }
@@ -446,7 +482,7 @@ const postAlumniJsonRequest = async (endpoint, payload, navigate) => {
 }
 
 const submitAlumniProfileUpdate = async (formData, navigate) => {
-    const sessionId = validateAlumniSessionLocally();
+    const sessionId = await validateAlumniSessionLocally();
 
     if (!sessionId) {
         if (navigate) { navigate(alumniLoginPageUrl, {replace: true}); }
@@ -487,7 +523,7 @@ const changeAlumniPassword = async (currentPassword, newPassword, confirmNewPass
 }
 
 const registerAlumniPasskey = async (label, navigate) => {
-    const sessionId = validateAlumniSessionLocally();
+    const sessionId = await validateAlumniSessionLocally();
 
     if (!sessionId) {
         if (navigate) { navigate(alumniLoginPageUrl, {replace: true}); }
@@ -552,7 +588,7 @@ const deleteAlumniPost = async (postId, navigate) => {
 }
 
 const uploadAlumniPostImage = async (file, navigate) => {
-    const sessionId = validateAlumniSessionLocally();
+    const sessionId = await validateAlumniSessionLocally();
 
     if (!sessionId) {
         if (navigate) { navigate(alumniLoginPageUrl, {replace: true}); }
@@ -580,6 +616,8 @@ const uploadAlumniPostImage = async (file, navigate) => {
 export {
     ALUMNI_SESSION_NAME,
     validateAlumniSessionLocally,
+    extendAlumniSessionLocally,
+    clearAlumniSessionLocally,
     buildAlumniAuthHeaders,
     logoutCurrentAlumni,
     checkAlumniSessionFromLogin,

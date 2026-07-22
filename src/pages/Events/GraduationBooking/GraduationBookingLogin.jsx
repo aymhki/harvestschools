@@ -23,14 +23,11 @@ import {
     getBiometricCredentials,
     deleteBiometricCredentials,
     verifyBiometricIdentity,
+    clearMobileSession,
 } from "../../../services/General/CapacitorSecureAuthUtils.jsx";
 
 
-const GB_DEPARTMENTS = ['International', 'National', 'Kindergarten', 'American', 'British'];
-const GB_GRADES = ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'IF1', 'IF2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'];
-
 const GB_PASSWORD_POLICY_REGEX = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$';
-
 
 function GraduationBookingLogin() {
     const navigate = useNavigate();
@@ -110,6 +107,7 @@ function GraduationBookingLogin() {
 
     const resetToFirstTimeMobileExperience = async () => {
         await deleteBiometricCredentials(GRADUATION_BOOKING_SESSION_NAME);
+        await clearMobileSession(GRADUATION_BOOKING_SESSION_NAME);
 
         if (isMountedRef.current) {
             setPrefillUsername('');

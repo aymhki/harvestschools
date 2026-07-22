@@ -38,8 +38,8 @@ const getAdminSessionId = async () => {
     return Capacitor.isNativePlatform() ? await getMobileSession('harvest_schools_admin') : localStorage.getItem('harvest_schools_admin_session_id');
 }
 
-const getGraduationBookingSessionId = () => {
-    return localStorage.getItem('harvest_schools_graduation_booking_session_id');
+const getGraduationBookingSessionId = async () => {
+    return Capacitor.isNativePlatform() ? await getMobileSession('harvest_schools_graduation_booking') : localStorage.getItem('harvest_schools_graduation_booking_session_id');
 }
 
 const formatDateFromPacific = (pacificTimeString) => {
@@ -294,8 +294,8 @@ const ADMIN_BASE_URLS = {
 
 const endpoints = generateEndpoints();
 
-const getAlumniSessionId = () => {
-    return localStorage.getItem('harvest_schools_alumni_session_id');
+const getAlumniSessionId = async () => {
+    return Capacitor.isNativePlatform() ? await getMobileSession('harvest_schools_alumni') : localStorage.getItem('harvest_schools_alumni_session_id');
 }
 
 const alumniPublicFileUrl = (pathOrUrl) => {

@@ -19,9 +19,37 @@ import {
 import {
     isBiometricAvailable,
     saveBiometricCredentials,
+    generateSecureSessionId,
+    getMobileSession,
+    setMobileSession,
+    extendMobileSession,
+    clearMobileSession,
 } from "../../General/CapacitorSecureAuthUtils.jsx";
 
 const GRADUATION_BOOKING_SESSION_NAME = 'harvest_schools_graduation_booking';
+
+const createGraduationBookingSessionLocally = async () => {
+    if (isMobileApp()) {
+        const sessionId = generateSecureSessionId();
+        await setMobileSession(GRADUATION_BOOKING_SESSION_NAME, sessionId);
+        return sessionId;
+    }
+
+    return createSessions(GRADUATION_BOOKING_SESSION_NAME);
+}
+
+const clearGraduationBookingSessionLocally = async () => {
+    if (isMobileApp()) {
+        await clearMobileSession(GRADUATION_BOOKING_SESSION_NAME);
+    } else {
+        resetSession(GRADUATION_BOOKING_SESSION_NAME);
+    }
+}
+
+const logoutGraduationBooking = async (navigate) => {
+    await clearGraduationBookingSessionLocally();
+    navigate(graduationBookingLoginPageUrl, { replace: true });
+}
 
 
 const fetchGraduationBookingConfirmationRequest = async (bookingId, extrasId, username, password_hash) => {
@@ -46,7 +74,7 @@ const fetchGraduationBookingConfirmationRequest = async (bookingId, extrasId, us
 
 const submitUpdateGraduationBookingExtrasRequest = async (formData, bookingId, navigate) => {
     try {
-        const sessionId = validateGraduationBookingSessionLocally();
+        const sessionId = await validateGraduationBookingSessionLocally();
         
         if (!sessionId) {
             return 'Session expired';
@@ -94,7 +122,7 @@ const submitUpdateGraduationBookingExtrasRequest = async (formData, bookingId, n
 
 const fetchGraduationBookingInfoBySessionRequest = async (navigate) => {
     try {
-        const sessionId = validateGraduationBookingSessionLocally();
+        const sessionId = await validateGraduationBookingSessionLocally();
 
         if (!sessionId) {
             navigate(graduationBookingLoginPageUrl, { replace: true });
@@ -125,7 +153,7 @@ const fetchGraduationBookingInfoBySessionRequest = async (navigate) => {
 }
 
 const checkGraduationBookingSessionFromBookingDashboard = async (navigate) => {
-    const sessionId = validateGraduationBookingSessionLocally();
+    const sessionId = await validateGraduationBookingSessionLocally();
 
     if (!sessionId) {
         navigate(graduationBookingLoginPageUrl, { replace: true });
@@ -172,10 +200,12 @@ const performGraduationBookingLogin = async (username, password, navigate, persi
                 }
             }
 
+            const newSessionId = await createGraduationBookingSessionLocally();
+
             const sessionResponse = await fetch(endpoints.createGraduationBookingSession, {
                 method: 'POST',
                 body: JSON.stringify({username: username, user_id: result.id}),
-                headers: await buildAuthHeaders(createSessions(GRADUATION_BOOKING_SESSION_NAME))
+                headers: await buildAuthHeaders(newSessionId)
             });
 
             const sessionResult = await sessionResponse.json();
@@ -183,6 +213,7 @@ const performGraduationBookingLogin = async (username, password, navigate, persi
             if (sessionResult.success) {
                 navigate(graduationBookingDashboardPageUrl, { replace: true });
             } else {
+                await clearGraduationBookingSessionLocally();
                 return sessionResult;
             }
         } else {
@@ -206,7 +237,7 @@ const validateGraduationBookingLoginWithCredentials = async (username, password,
 }
 
 const checkGraduationBookingSessionFromBookingLogin = async (navigate) => {
-    const sessionId = validateGraduationBookingSessionLocally();
+    const sessionId = await validateGraduationBookingSessionLocally();
     if (!sessionId) {return;}
 
     try {
@@ -218,6 +249,13 @@ const checkGraduationBookingSessionFromBookingLogin = async (navigate) => {
         const result = await response.json();
 
         if (result.success) {
+
+            if (isMobileApp()) {
+                await extendMobileSession(GRADUATION_BOOKING_SESSION_NAME, sessionId);
+            } else {
+                extendSession(GRADUATION_BOOKING_SESSION_NAME, sessionId);
+            }
+
             navigate(graduationBookingDashboardPageUrl, { replace: true });
         } else {
            if (result.message) {
@@ -230,7 +268,7 @@ const checkGraduationBookingSessionFromBookingLogin = async (navigate) => {
 }
 
 const checkGraduationBookingSession = async (navigate) => {
-    const sessionId = validateGraduationBookingSessionLocally();
+    const sessionId = await validateGraduationBookingSessionLocally();
 
     if (!sessionId) {
         navigate(graduationBookingLoginPageUrl, { replace: true });
@@ -246,12 +284,19 @@ const checkGraduationBookingSession = async (navigate) => {
         const result = await response.json();
 
         if (result.success) {
-            extendSession('harvest_schools_graduation_booking', sessionId);
+
+            if (isMobileApp()) {
+                await extendMobileSession(GRADUATION_BOOKING_SESSION_NAME, sessionId);
+            } else {
+                extendSession(GRADUATION_BOOKING_SESSION_NAME, sessionId);
+            }
+
         } else {
             if (result.message) {
                 console.log(result.message);
             }
 
+            await clearGraduationBookingSessionLocally();
             navigate(graduationBookingLoginPageUrl, { replace: true });
         }
     } catch (error) {
@@ -259,24 +304,29 @@ const checkGraduationBookingSession = async (navigate) => {
     }
 }
 
-const validateGraduationBookingSessionLocally = () => {
-    const localStorage = getSessionsFromLocalStorage('harvest_schools_graduation_booking');
-    const sessionId = localStorage.sessionId;
-    const sessionTime = parseInt(localStorage.sessionTime, 10);
+const validateGraduationBookingSessionLocally = async () => {
 
-    if (!sessionId || !sessionTime || (Date.now() - sessionTime) > sessionDuration) {
-        resetSession('harvest_schools_graduation_booking');
-        return null;
+    if (isMobileApp()) {
+        const mobileSessionId = await getMobileSession(GRADUATION_BOOKING_SESSION_NAME);
+
+        if (mobileSessionId) {
+            return mobileSessionId;
+        }
     } else {
-        return sessionId;
+        const localStorageData = getSessionsFromLocalStorage(GRADUATION_BOOKING_SESSION_NAME);
+        const sessionId = localStorageData.sessionId;
+        const sessionTime = parseInt(localStorageData.sessionTime, 10);
+
+        if (sessionId && sessionTime && (Date.now() - sessionTime) <= sessionDuration) {
+            return sessionId;
+        }
+
+        resetSession(GRADUATION_BOOKING_SESSION_NAME);
     }
+
+    return null;
 }
 
-
-
-/* ------------------------------------------------------------------ */
-/* Password reset (email code to parent emails, admin fallback)         */
-/* ------------------------------------------------------------------ */
 
 const requestGraduationBookingPasswordReset = async (username) => {
     try {
@@ -323,7 +373,6 @@ const completeGraduationBookingPasswordReset = async (resetToken, code, newPassw
         });
         const result = await response.json();
 
-        // Keep the biometric credential store in sync after a successful reset.
         if (result && result.success && username && isMobileApp()) {
             const biometricHardwareAvailable = await isBiometricAvailable();
             if (biometricHardwareAvailable) {
@@ -366,6 +415,9 @@ const recoverGraduationBookingUsername = async (method, payload) => {
 
 export {
     GRADUATION_BOOKING_SESSION_NAME,
+    validateGraduationBookingSessionLocally,
+    clearGraduationBookingSessionLocally,
+    logoutGraduationBooking,
     requestGraduationBookingPasswordReset,
     requestGraduationBookingResetEmailCode,
     completeGraduationBookingPasswordReset,

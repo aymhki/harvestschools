@@ -3,9 +3,9 @@ import '../../../styles/Events.css'
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../../modules/Spinner.jsx";
-import {resetSession, graduationBookingLoginPageUrl } from "../../../services/General/GeneralUtils.jsx"
 import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
+import {logoutGraduationBooking} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
 
 function GraduationBookingDashboard() {
     const {t} = useTranslation(['events-pages'])
@@ -57,9 +57,8 @@ function GraduationBookingDashboard() {
                         title={t("events-pages.graduation-booking-pages.dashboard-page.title")}
                         divElements={[(
                             <div className={"booking-dashboard-page-footer"} key={1}>
-                                <button onClick={() => {
-                                    resetSession('harvest_schools_graduation_booking');
-                                    navigate(graduationBookingLoginPageUrl, { replace: true });
+                                <button onClick={async () => {
+                                    await logoutGraduationBooking(navigate);
                                 }}>
                                     {t("events-pages.graduation-booking-pages.dashboard-page.logout-btn")}
                                 </button>
