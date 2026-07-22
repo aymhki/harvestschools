@@ -120,7 +120,7 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
     return (
         <nav className={`navbar ${compactOrAdmin ? 'compact-navbar' : ''}`} >
             <div className={`logo-container ${compactOrAdmin ? 'compact-logo-container' : ''}`}>
-                <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate('/home'); } }>
+                <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate(isMobileApp ? '/app-home' : '/home'); } }>
                     <img src={servePublicAsset("/images/HarvestLogos/HarvestLogoCropped.avif")} alt="Harvest Logo" className={`logo ${compactOrAdmin ? 'compact-logo' : ''}`}/>
                 </Link>
 
@@ -172,7 +172,7 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
             }} className={(isMobile) ? "nav-links-mobile" : "nav-links"}>
                 <li onClick={() => {
                     (isMobile ? toggleMenu() : null);
-                    navigate('/home');
+                    navigate(isMobileApp ? '/app-home' : '/home');
                 }}><Link to="/" onClick={() => {
                     (isMobile ? toggleMenu() : null);
                     navigate('/');
