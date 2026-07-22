@@ -1,0 +1,180 @@
+.app-splash {
+    position: fixed;
+    inset: 0;
+    z-index: var(--spinner-overlay-z-index);
+    min-height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 2rem calc(2rem + env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) calc(2rem + env(safe-area-inset-left));
+    text-align: center;
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+}
+
+.app-splash__mark {
+    position: relative;
+    width: 6.5rem;
+    height: 6.5rem;
+    display: grid;
+    place-items: center;
+    animation: app-splash-mark-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-splash__mark svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 1.75rem;
+    filter: drop-shadow(0 0.6rem 1.4rem rgba(31, 33, 82, 0.28));
+}
+
+.app-splash__halo {
+    position: absolute;
+    inset: -0.6rem;
+    border-radius: 2.25rem;
+    border: 2px solid var(--primary-color);
+    opacity: 0.18;
+    animation: app-splash-halo 2.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.app-splash__wordmark {
+    margin: 0;
+    font-family: var(--english-normal-font-bold);
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: 0.14rem;
+    text-transform: uppercase;
+    opacity: 0.72;
+}
+
+.app-splash__message {
+    margin: 0;
+    min-height: 3rem;
+    max-width: 22rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    letter-spacing: 0.01rem;
+    opacity: 0;
+    transform: translateY(0.4rem);
+    transition: opacity 0.32s ease, transform 0.32s ease;
+}
+
+.app-splash__message.is-visible {
+    opacity: 0.9;
+    transform: translateY(0);
+}
+
+.app-splash__shimmer {
+    width: min(60vw, 180px);
+    height: 0.28rem;
+    border-radius: 999px;
+    background-color: rgba(31, 33, 82, 0.12);
+    overflow: hidden;
+}
+
+.app-splash__shimmer span {
+    display: block;
+    width: 40%;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    animation: app-splash-shimmer 1.4s ease-in-out infinite;
+}
+
+.app-splash__progress-track {
+    width: min(80vw, 220px);
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: rgba(31, 33, 82, 0.15);
+    overflow: hidden;
+}
+
+.app-splash__progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 0.2s ease;
+}
+
+@keyframes app-splash-mark-in {
+    from {
+        opacity: 0;
+        transform: scale(0.88);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes app-splash-halo {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.18;
+    }
+
+    50% {
+        transform: scale(1.06);
+        opacity: 0.05;
+    }
+}
+
+@keyframes app-splash-shimmer {
+    0% {
+        transform: translateX(-110%);
+    }
+
+    100% {
+        transform: translateX(360%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-splash__mark,
+    .app-splash__halo,
+    .app-splash__shimmer span {
+        animation: none;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .app-splash {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+
+    .app-splash__mark svg {
+        filter: drop-shadow(0 0.6rem 1.4rem rgba(0, 0, 0, 0.55));
+    }
+
+    .app-splash__halo {
+        border-color: var(--fb-white-color);
+    }
+
+    .app-splash__shimmer {
+        background-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .app-splash__progress-track {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .app-splash__progress-fill {
+        background-color: var(--fb-white-color);
+    }
+}
+
+@media (max-width: 380px) {
+    .app-splash__mark {
+        width: 5.5rem;
+        height: 5.5rem;
+    }
+
+    .app-splash__message {
+        font-size: 0.98rem;
+    }
+}

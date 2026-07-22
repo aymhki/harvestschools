@@ -1,0 +1,119 @@
+.offline-banner {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    z-index: var(--spinner-overlay-z-index);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.75rem 0.7rem 0.9rem;
+    border-radius: 0.9rem;
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    box-shadow: 0 0.5rem 1.4rem rgba(0, 0, 0, 0.28);
+    animation: offline-banner-in 0.28s ease-out both;
+}
+
+.offline-banner__dot {
+    flex: 0 0 auto;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: var(--secondary-color);
+    animation: offline-banner-pulse 1.8s ease-in-out infinite;
+}
+
+.offline-banner__message {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.35;
+    letter-spacing: 0.01rem;
+}
+
+.offline-banner__action {
+    flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 0.6rem;
+    background: transparent;
+    color: inherit;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: bold;
+    letter-spacing: 0.03rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.offline-banner__action:hover {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.offline-banner__action:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.offline-banner__close {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 1.35rem;
+    line-height: 1;
+    padding: 0 0.35rem;
+    cursor: pointer;
+    opacity: 0.75;
+}
+
+.offline-banner__close:hover {
+    opacity: 1;
+}
+
+@keyframes offline-banner-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes offline-banner-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .offline-banner,
+    .offline-banner__dot {
+        animation: none;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .offline-banner {
+        background-color: var(--dark-accent-color);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+}
+
+@media (max-width: 380px) {
+    .offline-banner__message {
+        font-size: 0.82rem;
+    }
+
+    .offline-banner__action {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.78rem;
+    }
+}

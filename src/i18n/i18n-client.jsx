@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 import { i18nConfig } from './i18n-shared';
 import { Capacitor } from '@capacitor/core';
+import { OfflineAwareLocaleBackend } from '../services/General/OfflineLocalesService.jsx';
 
 
 const i18nInstance = i18n.use(initReactI18next);
@@ -34,19 +35,23 @@ if (typeof window !== 'undefined') {
 
 const LOCALES_VERSION = import.meta.env.VITE_LOCALES_VERSION || 'dev';
 
-const getLocalesLoadPath = () => {
-    const base = Capacitor.isNativePlatform()
-        ? 'https://harvestschools.com/locales/{{lng}}/{{ns}}.json'
-        : '/locales/{{lng}}/{{ns}}.json';
-    return `${base}?v=${LOCALES_VERSION}`;
-};
+const getLocalesLoadPath = () => `/locales/{{lng}}/{{ns}}.json?v=${LOCALES_VERSION}`;
 
-i18nInstance
-    .use(Backend)
-    .init({
-        ...i18nConfig,
-        backend: { loadPath: getLocalesLoadPath() },
-        react: { useSuspense: false },
-    });
+if (Capacitor.isNativePlatform()) {
+    i18nInstance
+        .use(OfflineAwareLocaleBackend)
+        .init({
+            ...i18nConfig,
+            react: { useSuspense: false },
+        });
+} else {
+    i18nInstance
+        .use(Backend)
+        .init({
+            ...i18nConfig,
+            backend: { loadPath: getLocalesLoadPath() },
+            react: { useSuspense: false },
+        });
+}
 
 export default i18n;
