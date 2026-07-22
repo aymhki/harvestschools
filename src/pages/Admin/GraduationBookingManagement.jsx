@@ -28,6 +28,7 @@ function GraduationBookingManagement() {
     const [deleteError, setDeleteError] = useState(null);
     const [showEditBookingModal, setShowEditBookingModal] = useState(false);
     const [editBookingModalPreFilledCoreFields, setEditBookingModalPreFilledCoreFields] = useState(null);
+    const [editBookingModalDynamicSections, setEditBookingModalDynamicSections] = useState(null);
     const [resetEditBookingModal, setResetEditBookingModal] = useState(false);
     const addBookingModalFooterButtonsRef = useRef(null);
     const editBookingModalFooterButtonsRef = useRef(null);
@@ -44,26 +45,11 @@ function GraduationBookingManagement() {
     const cdCountFieldId = 10;
     const additionalAttendeesFieldId = 11;
     const extrasPaymentStatusFieldId = 12;
-    const firstStudentSectionTitleId = 13;
-    const firstStudentNameId = 14;
-    const firstStudentSchoolDivisionId = 15;
-    const firstStudentGradeId = 16;
-    const secondStudentSectionTitleId = 17;
-    const secondStudentNameId = 18;
-    const secondStudentSchoolDivisionId = 19;
-    const secondStudentGradeId = 20;
-    const thirdStudentSectionTitleId = 21;
-    const thirdStudentNameId = 22;
-    const thirdStudentSchoolDivisionId = 23;
-    const thirdStudentGradeId = 24;
-    const fourthStudentSectionTitleId = 25;
-    const fourthStudentNameId = 26;
-    const fourthStudentSchoolDivisionId = 27;
-    const fourthStudentGradeId = 28;
-    const fifthStudentSectionTitleId = 29;
-    const fifthStudentNameId = 30;
-    const fifthStudentSchoolDivisionId = 31;
-    const fifthStudentGradeId = 32;
+    const studentsDynamicSectionId = 100;
+    const studentNameTemplateFieldId = 14;
+    const studentSchoolDivisionTemplateFieldId = 15;
+    const studentGradeTemplateFieldId = 16;
+    const minNumberOfStudents = 1;
 
     const colIndexForBookingId = 0;
     const colIndexForBookingUsername = 6;
@@ -309,24 +295,11 @@ function GraduationBookingManagement() {
             alwaysEnglish: true,
             displayLabel: 'Extras Payment Status'
         },
+    ]
+
+    const studentSectionTemplateFields = [
         {
-            id: firstStudentSectionTitleId,
-            type: 'section',
-            name: 'student-section',
-            label: 'New Student',
-            required: true,
-            placeholder: 'Student Section',
-            errorMsg: '',
-            value: '',
-            setValue: null,
-            widthOfField: 1,
-            httpName: 'student-section',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Section',
-        },
-        {
-            id: firstStudentNameId,
+            id: studentNameTemplateFieldId,
             type: 'text',
             name: 'student-name',
             label: 'Student Name',
@@ -342,7 +315,7 @@ function GraduationBookingManagement() {
             displayLabel: 'Student Name'
         },
         {
-            id: firstStudentSchoolDivisionId,
+            id: studentSchoolDivisionTemplateFieldId,
             type: 'select',
             name: 'student-school-division',
             label: 'Student School Division',
@@ -360,284 +333,12 @@ function GraduationBookingManagement() {
             displayLabel: 'Student School Division'
         },
         {
-            id: firstStudentGradeId,
+            id: studentGradeTemplateFieldId,
             type: 'select',
             name: 'student-grade',
             label: 'Student Grade',
-            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'IF1', 'IF2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+            choices: ['Pre Play', 'Playschool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'IF1', 'IF2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
             required: true,
-            placeholder: 'Student Grade',
-            errorMsg: 'Please enter the student grade',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-grade',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student Grade'
-        },
-        {
-            id: secondStudentSectionTitleId,
-            type: 'section',
-            name: 'student-section',
-            label: 'New Student',
-            required: false,
-            placeholder: 'Student Section',
-            errorMsg: '',
-            value: '',
-            setValue: null,
-            widthOfField: 1,
-            httpName: 'student-section',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Section',
-        },
-        {
-            id: secondStudentNameId,
-            type: 'text',
-            name: 'student-name',
-            label: 'Student Name',
-            required: false,
-            placeholder: 'Student Name',
-            errorMsg: 'Please enter the student name',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-name',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Name'
-        },
-        {
-            id: secondStudentSchoolDivisionId,
-            type: 'select',
-            name: 'student-school-division',
-            label: 'Student School Division',
-            choices: ['International', 'National', 'Kindergarten', 'American', 'British'],
-            required: false,
-            placeholder: 'Student School Division',
-            errorMsg: 'Please enter the student school division',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-school-division',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student School Division'
-        },
-        {
-            id: secondStudentGradeId,
-            type: 'select',
-            name: 'student-grade',
-            label: 'Student Grade',
-            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'IF1', 'IF2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-            required: false,
-            placeholder: 'Student Grade',
-            errorMsg: 'Please enter the student grade',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-grade',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student Grade'
-        },
-        {
-            id: thirdStudentSectionTitleId,
-            type: 'section',
-            name: 'student-section',
-            label: 'New Student',
-            required: false,
-            placeholder: 'Student Section',
-            errorMsg: '',
-            value: '',
-            setValue: null,
-            widthOfField: 1,
-            httpName: 'student-section',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Section',
-        },
-        {
-            id: thirdStudentNameId,
-            type: 'text',
-            name: 'student-name',
-            label: 'Student Name',
-            required: false,
-            placeholder: 'Student Name',
-            errorMsg: 'Please enter the student name',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-name',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Name'
-        },
-        {
-            id: thirdStudentSchoolDivisionId,
-            type: 'select',
-            name: 'student-school-division',
-            label: 'Student School Division',
-            choices: ['International', 'National', 'Kindergarten', 'American', 'British'],
-            required: false,
-            placeholder: 'Student School Division',
-            errorMsg: 'Please enter the student school division',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-school-division',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student School Division'
-        },
-        {
-            id: thirdStudentGradeId,
-            type: 'select',
-            name: 'student-grade',
-            label: 'Student Grade',
-            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'IF1', 'IF2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-            required: false,
-            placeholder: 'Student Grade',
-            errorMsg: 'Please enter the student grade',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-grade',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student Grade'
-        },
-        {
-            id: fourthStudentSectionTitleId,
-            type: 'section',
-            name: 'student-section',
-            label: 'New Student',
-            required: false,
-            placeholder: 'Student Section',
-            errorMsg: '',
-            value: '',
-            setValue: null,
-            widthOfField: 1,
-            httpName: 'student-section',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Section',
-        },
-        {
-            id: fourthStudentNameId,
-            type: 'text',
-            name: 'student-name',
-            label: 'Student Name',
-            required: false,
-            placeholder: 'Student Name',
-            errorMsg: 'Please enter the student name',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-name',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Name'
-        },
-        {
-            id: fourthStudentSchoolDivisionId,
-            type: 'select',
-            name: 'student-school-division',
-            label: 'Student School Division',
-            choices: ['International', 'National', 'Kindergarten', 'American', 'British'],
-            required: false,
-            placeholder: 'Student School Division',
-            errorMsg: 'Please enter the student school division',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-school-division',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student School Division'
-        },
-        {
-            id: fourthStudentGradeId,
-            type: 'select',
-            name: 'student-grade',
-            label: 'Student Grade',
-            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'IF1', 'IF2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-            required: false,
-            placeholder: 'Student Grade',
-            errorMsg: 'Please enter the student grade',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-grade',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student Grade'
-        },
-        {
-            id: fifthStudentSectionTitleId,
-            type: 'section',
-            name: 'student-section',
-            label: 'New Student',
-            required: false,
-            placeholder: 'Student Section',
-            errorMsg: '',
-            value: '',
-            setValue: null,
-            widthOfField: 1,
-            httpName: 'student-section',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Section',
-        },
-        {
-            id: fifthStudentNameId,
-            type: 'text',
-            name: 'student-name',
-            label: 'Student Name',
-            required: false,
-            placeholder: 'Student Name',
-            errorMsg: 'Please enter the student name',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-name',
-            labelOutside: true,
-            labelOnTop: true,
-            displayLabel: 'Student Name'
-        },
-        {
-            id: fifthStudentSchoolDivisionId,
-            type: 'select',
-            name: 'student-school-division',
-            label: 'Student School Division',
-            choices: ['International', 'National', 'Kindergarten', 'American', 'British'],
-            required: false,
-            placeholder: 'Student School Division',
-            errorMsg: 'Please enter the student school division',
-            value: '',
-            setValue: null,
-            widthOfField: 3,
-            httpName: 'student-school-division',
-            labelOutside: true,
-            labelOnTop: true,
-            alwaysEnglish: true,
-            displayLabel: 'Student School Division'
-        },
-        {
-            id: fifthStudentGradeId,
-            type: 'select',
-            name: 'student-grade',
-            label: 'Student Grade',
-            choices: ['Pre Play', 'PlaySchool', 'FS1', 'FS2', 'Pre-K', 'K', 'KG1', 'KG2', 'IF1', 'IF2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-            required: false,
             placeholder: 'Student Grade',
             errorMsg: 'Please enter the student grade',
             value: '',
@@ -650,6 +351,18 @@ function GraduationBookingManagement() {
             displayLabel: 'Student Grade'
         },
     ]
+
+    const buildStudentsDynamicSection = (instances) => ({
+        sectionId: studentsDynamicSectionId,
+        title: 'Student',
+        addButtonLabel: 'Add Student',
+        removeButtonLabel: 'Remove Student',
+        insertAfterFieldId: extrasPaymentStatusFieldId,
+        minInstances: minNumberOfStudents,
+        maxInstances: maxNumberOfStudents,
+        fields: studentSectionTemplateFields,
+        instances: instances || [],
+    });
 
     const cancelAddBookingModal = () => {
         setShowAddBookingModal(false);
@@ -737,7 +450,9 @@ function GraduationBookingManagement() {
         const parentPhonesArray = parentPhones.split(', ');
         const studentIdsArray = studentIds.split(', ');
 
-        const editBookingModalCoreFields = addBookingModalCoreFormFields.map((field) => {
+        const editBookingModalCoreFields = addBookingModalCoreFormFields.map((coreField) => {
+            const field = {...coreField};
+
             if (field.id === bookingUsernameFieldId) {
                 field.value = bookingUsername;
                 field.widthOfField = 1;
@@ -780,28 +495,17 @@ function GraduationBookingManagement() {
             return field;
         });
 
+        const editStudentInstances = [];
+
         for (let i = 0; i < studentIdsArray.length && i < maxNumberOfStudents; i++) {
-            const studentFieldIds = [
-                { nameId: firstStudentNameId, divisionId: firstStudentSchoolDivisionId, gradeId: firstStudentGradeId },
-                { nameId: secondStudentNameId, divisionId: secondStudentSchoolDivisionId, gradeId: secondStudentGradeId },
-                { nameId: thirdStudentNameId, divisionId: thirdStudentSchoolDivisionId, gradeId: thirdStudentGradeId },
-                { nameId: fourthStudentNameId, divisionId: fourthStudentSchoolDivisionId, gradeId: fourthStudentGradeId },
-                { nameId: fifthStudentNameId, divisionId: fifthStudentSchoolDivisionId, gradeId: fifthStudentGradeId }
-            ];
-
-            const currentStudentFields = studentFieldIds[i];
-
-            editBookingModalCoreFields.forEach(field => {
-                if (field.id === currentStudentFields.nameId) {
-                    field.value = studentNamesArray[i] || '';
-                } else if (field.id === currentStudentFields.divisionId) {
-                    field.value = studentSchoolDivisionsArray[i] || '';
-                } else if (field.id === currentStudentFields.gradeId) {
-                    field.value = studentGradesArray[i] || '';
-                }
+            editStudentInstances.push({
+                [studentNameTemplateFieldId]: studentNamesArray[i] || '',
+                [studentSchoolDivisionTemplateFieldId]: studentSchoolDivisionsArray[i] || '',
+                [studentGradeTemplateFieldId]: studentGradesArray[i] || '',
             });
         }
 
+        setEditBookingModalDynamicSections([buildStudentsDynamicSection(editStudentInstances)]);
         setEditBookingModalPreFilledCoreFields(editBookingModalCoreFields);
         setShowEditBookingModal(true);
     }
@@ -821,6 +525,7 @@ function GraduationBookingManagement() {
                 setShowAddBookingModal(false);
                 setRowIndexToEdit(null);
                 setEditBookingModalPreFilledCoreFields(null);
+                setEditBookingModalDynamicSections(null);
                 fetchBookings();
                 return true;
             } else {
@@ -837,6 +542,7 @@ function GraduationBookingManagement() {
     const handleCancelEditBookingModal = () => {
         setShowEditBookingModal(false);
         setEditBookingModalPreFilledCoreFields(null);
+        setEditBookingModalDynamicSections(null);
     }
 
     const fetchBookings = async () => {
@@ -967,6 +673,7 @@ function GraduationBookingManagement() {
                     </div>
                     <div className={"general-large-admin-action-modal-content"}>
                         <Form fields={addBookingModalCoreFormFields}
+                              dynamicSections={[buildStudentsDynamicSection([])]}
                               mailTo={''}
                               sendPdf={false}
                               formTitle={"Add Booking Modal Form"}
@@ -1066,8 +773,9 @@ function GraduationBookingManagement() {
                     </div>
 
                     <div className={"general-large-admin-action-modal-content"}>
-                        {editBookingModalPreFilledCoreFields && (
+                        {editBookingModalPreFilledCoreFields && editBookingModalDynamicSections && (
                             <Form fields={editBookingModalPreFilledCoreFields}
+                                  dynamicSections={editBookingModalDynamicSections}
                                   mailTo={''}
                                   sendPdf={false}
                                   formTitle={"Edit Booking Modal Form"}

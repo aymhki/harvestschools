@@ -20,6 +20,7 @@
     "remove": "Remove",
     "year-month-day": " (YYYY-MM-DD)",
     "field-required": "Field '{{field1}}' is required",
-    "no-results": "No Results"
+    "no-results": "No Results",
+    "dynamic-section-min-error": "At least {{min}} '{{title}}' section(s) must be added before submitting"
   }
 }

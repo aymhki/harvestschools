@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import {useEffect, useState, useRef, createRef, useId} from "react";
+import {useEffect, useState, useRef, createRef, useId, useMemo} from "react";
 import {Fragment} from "react";
 import '../styles/Form.css'
 import {v6 as uuidv6} from 'uuid';
@@ -175,6 +175,7 @@ function Form({
                   differentResetBehaviour,
                   formFooterButtonsAreOutside,
                   footerButtonsPortalTarget,
+                  dynamicSections,
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -195,7 +196,76 @@ function Form({
     const [selectedDateError, setSelectedDateError] = useState('');
     const animateDateModal = useSpring({ opacity: showSelectDateModal ? 1 : 0, transform: showSelectDateModal ? 'translateY(0)' : 'translateY(-100%)' });
     const [showPasswords, setShowPasswords] = useState(false);
-    const {loadCachedValues, saveToCache, clearCache} = useFormCache(formTitle, fields);
+    const dynamicInstanceUidCounter = useRef(0);
+    const dynamicInstanceSeeds = useRef({});
+    const DYNAMIC_CACHE_MAX_PROBE = 25;
+
+    const normalizedDynamicSections = useMemo(() => (
+        Array.isArray(dynamicSections)
+            ? dynamicSections.filter(section =>
+                section &&
+                section.sectionId !== undefined &&
+                section.sectionId !== null &&
+                Array.isArray(section.fields) &&
+                section.fields.length > 0
+            )
+            : []
+    ), [dynamicSections]);
+
+    const getDynamicSectionMaxInstances = (section) => (
+        (section.maxInstances === undefined || section.maxInstances === null) ? Infinity : section.maxInstances
+    );
+
+    const getDynamicRuntimeFieldId = (sectionId, instanceUid, templateFieldId) => `dyn_${sectionId}_${instanceUid}_${templateFieldId}`;
+    const getDynamicInstanceRefKeyPrefix = (sectionId, instanceUid) => `dyn_${sectionId}_${instanceUid}_`;
+    const getDynamicCacheId = (sectionId, ordinal, templateFieldId) => `dyn_${sectionId}_i${ordinal}_${templateFieldId}`;
+
+    const buildInitialDynamicInstances = (sections, includeSeedsFromProps = true) => {
+        const initialInstances = {};
+
+        sections.forEach(section => {
+            const instances = [];
+
+            if (includeSeedsFromProps) {
+                (section.instances || []).forEach(seedValues => {
+                    const uid = dynamicInstanceUidCounter.current++;
+                    dynamicInstanceSeeds.current[uid] = seedValues || {};
+                    instances.push({uid: uid});
+                });
+            }
+
+            initialInstances[section.sectionId] = instances;
+        });
+
+        return initialInstances;
+    };
+
+    const [dynamicSectionInstances, setDynamicSectionInstances] = useState(() => buildInitialDynamicInstances(normalizedDynamicSections));
+
+    const cacheableFields = useMemo(() => {
+        if (noInputFieldsCache || normalizedDynamicSections.length === 0) {
+            return fields;
+        }
+
+        const extendedFields = [...fields];
+
+        normalizedDynamicSections.forEach(section => {
+            const probeBound = Math.min(getDynamicSectionMaxInstances(section), DYNAMIC_CACHE_MAX_PROBE);
+
+            for (let ordinal = 0; ordinal < probeBound; ordinal++) {
+                section.fields.forEach(templateField => {
+                    extendedFields.push({
+                        id: getDynamicCacheId(section.sectionId, ordinal, templateField.id),
+                        label: templateField.label
+                    });
+                });
+            }
+        });
+
+        return extendedFields;
+    }, [fields, normalizedDynamicSections, noInputFieldsCache]);
+
+    const {loadCachedValues, saveToCache, clearCache} = useFormCache(formTitle, cacheableFields);
     const [prefilledInitialized, setPrefilledInitialized] = useState(false);
     const [captchaValue, setCaptchaValue] = useState('');
     const fieldRefs = useRef({});
@@ -222,7 +292,7 @@ function Form({
         const wrapperRef = searchSelectWrapperRefs.current[openSearchSelectId];
         if (!wrapperRef?.current) return;
         const rect = wrapperRef.current.getBoundingClientRect();
-        const dropdownMaxHeight = 224; // keep in sync with CSS max-height (14rem)
+        const dropdownMaxHeight = 224;
         const spaceBelow = window.innerHeight - rect.bottom;
         const openUp = spaceBelow < Math.min(dropdownMaxHeight, 160) && rect.top > spaceBelow;
         setSearchSelectDropdownRect({
@@ -278,6 +348,323 @@ function Form({
 
     }, []);
 
+    const getDynamicSection = (sectionId) => normalizedDynamicSections.find(section => section.sectionId === sectionId);
+
+    const getDynamicInstanceOrdinal = (sectionId, instanceUid) => (
+        (dynamicSectionInstances[sectionId] || []).findIndex(instance => instance.uid === instanceUid)
+    );
+
+    const ensureFieldRef = (fieldId) => {
+        if (!fieldRefs.current[fieldId]) {
+            fieldRefs.current[fieldId] = createRef();
+        }
+
+        return fieldRefs.current[fieldId];
+    };
+
+    const buildDynamicInstanceField = (section, instance, templateField) => {
+        const runtimeId = getDynamicRuntimeFieldId(section.sectionId, instance.uid, templateField.id);
+        const seedValues = dynamicInstanceSeeds.current[instance.uid] || {};
+        const seedValue = seedValues[templateField.id];
+
+        const remapInSectionFieldId = (targetFieldId) => {
+            if (targetFieldId !== undefined && targetFieldId !== null && section.fields.some(sectionField => sectionField.id === targetFieldId)) {
+                return getDynamicRuntimeFieldId(section.sectionId, instance.uid, targetFieldId);
+            }
+
+            return targetFieldId;
+        };
+
+        const instanceField = {
+            ...templateField,
+            id: runtimeId,
+            httpName: `${templateField.httpName}-${section.sectionId}-${instance.uid}`,
+            defaultValue: seedValue !== undefined ? seedValue : (templateField.defaultValue || ''),
+            __dynamicSection: {
+                sectionId: section.sectionId,
+                uid: instance.uid,
+                templateId: templateField.id,
+                templateLabel: templateField.label
+            }
+        };
+
+        if ((templateField.type === 'radio' || templateField.type === 'checkbox') && seedValue !== undefined) {
+            instanceField.value = seedValue;
+        }
+
+        if (templateField.mustMatchFieldWithId !== undefined) {
+            instanceField.mustMatchFieldWithId = remapInSectionFieldId(templateField.mustMatchFieldWithId);
+        }
+
+        if (templateField.mustNotMatchFieldWithId !== undefined) {
+            instanceField.mustNotMatchFieldWithId = remapInSectionFieldId(templateField.mustNotMatchFieldWithId);
+        }
+
+        if (templateField.onChangeResult) {
+            instanceField.onChangeResult = templateField.onChangeResult.map(result => {
+                const remappedResult = {...result};
+
+                if (remappedResult.idOfTheFieldThatShouldChangeBasedOnThisNewValue !== undefined) {
+                    remappedResult.idOfTheFieldThatShouldChangeBasedOnThisNewValue = remapInSectionFieldId(remappedResult.idOfTheFieldThatShouldChangeBasedOnThisNewValue);
+                }
+
+                if (remappedResult.fieldIdsToAddAndMultiplyTogether) {
+                    const remappedIds = {};
+
+                    Object.keys(remappedResult.fieldIdsToAddAndMultiplyTogether).forEach(key => {
+                        const numericKey = isNaN(Number(key)) ? key : Number(key);
+                        remappedIds[remapInSectionFieldId(numericKey)] = remappedResult.fieldIdsToAddAndMultiplyTogether[key];
+                    });
+
+                    remappedResult.fieldIdsToAddAndMultiplyTogether = remappedIds;
+                }
+
+                if (remappedResult.fieldIdsToCheckIfBiggerThanZero) {
+                    remappedResult.fieldIdsToCheckIfBiggerThanZero = remappedResult.fieldIdsToCheckIfBiggerThanZero.map(fieldId => remapInSectionFieldId(fieldId));
+                }
+
+                return remappedResult;
+            });
+        }
+
+        if (instanceField.rules) {
+            delete instanceField.rules;
+        }
+
+        ensureFieldRef(runtimeId);
+
+        return instanceField;
+    };
+
+    const composedFields = useMemo(() => {
+        if (normalizedDynamicSections.length === 0) {
+            return dynamicFields;
+        }
+
+        const buildSectionBlock = (section) => {
+            const sectionBlock = [];
+            const instances = dynamicSectionInstances[section.sectionId] || [];
+
+            instances.forEach((instance, ordinal) => {
+                sectionBlock.push({
+                    id: `dynh_${section.sectionId}_${instance.uid}`,
+                    type: 'dynamic-section-instance-header',
+                    label: `${section.title} ${ordinal + 1}`,
+                    __dynamicSectionHeader: {sectionId: section.sectionId, uid: instance.uid}
+                });
+
+                section.fields.forEach(templateField => {
+                    sectionBlock.push(buildDynamicInstanceField(section, instance, templateField));
+                });
+            });
+
+            if (!formIsReadOnly && instances.length < getDynamicSectionMaxInstances(section)) {
+                sectionBlock.push({
+                    id: `dyna_${section.sectionId}`,
+                    type: 'dynamic-section-add-button',
+                    label: section.addButtonLabel || `+ ${section.title}`,
+                    __dynamicSectionAdd: {sectionId: section.sectionId}
+                });
+            }
+
+            return sectionBlock;
+        };
+
+        const anchoredSections = {};
+        const unanchoredSections = [];
+
+        normalizedDynamicSections.forEach(section => {
+            if (
+                section.insertAfterFieldId !== undefined &&
+                section.insertAfterFieldId !== null &&
+                dynamicFields.some(field => field.id === section.insertAfterFieldId)
+            ) {
+                if (!anchoredSections[section.insertAfterFieldId]) {
+                    anchoredSections[section.insertAfterFieldId] = [];
+                }
+
+                anchoredSections[section.insertAfterFieldId].push(section);
+            } else {
+                unanchoredSections.push(section);
+            }
+        });
+
+        const mergedFields = [];
+
+        dynamicFields.forEach(field => {
+            mergedFields.push(field);
+
+            (anchoredSections[field.id] || []).forEach(section => {
+                mergedFields.push(...buildSectionBlock(section));
+            });
+        });
+
+        unanchoredSections.forEach(section => {
+            mergedFields.push(...buildSectionBlock(section));
+        });
+
+        return mergedFields;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dynamicFields, dynamicSectionInstances, normalizedDynamicSections, formIsReadOnly]);
+
+    const getFieldSubmitValue = (field) => {
+        const ref = fieldRefs.current[field.id];
+
+        if (ref && ref.current) {
+            if (field.type === 'checkbox' || field.type === 'radio') {
+                return ref.current.checked ? ref.current.value : '';
+            } else if (field.type === 'select' && field.multiple) {
+                if (field.readOnlyField || formIsReadOnly) {
+                    const vals = Array.isArray(field.value) ? field.value : String(field.value || '').split(',').map(v => v.trim()).filter(Boolean);
+                    return vals.join(',');
+                } else {
+                    const selected = [];
+
+                    (field.choices || []).forEach((choice, i) => {
+                        const choiceRef = fieldRefs.current[`${field.id}_${i}`];
+                        if (choiceRef?.current?.checked) selected.push(choice);
+                    });
+
+                    return selected.join(',');
+                }
+            } else if (field.type === 'search-select') {
+                return getSearchSelectSelected(field).join(',');
+            } else {
+                return ref.current.value || '';
+            }
+        }
+
+        return field.readOnlyField ? (field.value || '') : '';
+    };
+
+    const saveFieldToCache = (field, value) => {
+        if (noInputFieldsCache) {
+            return;
+        }
+
+        if (field.__dynamicSection) {
+            const ordinal = getDynamicInstanceOrdinal(field.__dynamicSection.sectionId, field.__dynamicSection.uid);
+
+            if (ordinal === -1) {
+                return;
+            }
+
+            saveToCache(
+                {
+                    id: getDynamicCacheId(field.__dynamicSection.sectionId, ordinal, field.__dynamicSection.templateId),
+                    label: field.__dynamicSection.templateLabel
+                },
+                value
+            );
+        } else {
+            saveToCache(field, value);
+        }
+    };
+
+    const addDynamicInstance = (sectionId) => {
+        const section = getDynamicSection(sectionId);
+
+        if (!section) {
+            return;
+        }
+
+        setDynamicSectionInstances(previousInstances => {
+            const instances = previousInstances[sectionId] || [];
+
+            if (instances.length >= getDynamicSectionMaxInstances(section)) {
+                return previousInstances;
+            }
+
+            const uid = dynamicInstanceUidCounter.current++;
+            dynamicInstanceSeeds.current[uid] = {};
+
+            return {...previousInstances, [sectionId]: [...instances, {uid: uid}]};
+        });
+
+        setGeneralFormError('');
+        setSuccessMessage('');
+    };
+
+    const removeDynamicInstance = (sectionId, instanceUid) => {
+        const section = getDynamicSection(sectionId);
+
+        if (!section) {
+            return;
+        }
+
+        const currentInstances = dynamicSectionInstances[sectionId] || [];
+        const remainingInstances = currentInstances.filter(instance => instance.uid !== instanceUid);
+
+        if (remainingInstances.length === currentInstances.length) {
+            return;
+        }
+
+        if (!noInputFieldsCache) {
+            remainingInstances.forEach((instance, ordinal) => {
+                section.fields.forEach(templateField => {
+                    const instanceField = buildDynamicInstanceField(section, instance, templateField);
+
+                    saveToCache(
+                        {id: getDynamicCacheId(sectionId, ordinal, templateField.id), label: templateField.label},
+                        getFieldSubmitValue(instanceField)
+                    );
+                });
+            });
+
+            section.fields.forEach(templateField => {
+                saveToCache(
+                    {id: getDynamicCacheId(sectionId, remainingInstances.length, templateField.id), label: templateField.label},
+                    ''
+                );
+            });
+        }
+
+        const refKeyPrefix = getDynamicInstanceRefKeyPrefix(sectionId, instanceUid);
+
+        Object.keys(fieldRefs.current).forEach(refKey => {
+            if (String(refKey).startsWith(refKeyPrefix)) {
+                delete fieldRefs.current[refKey];
+            }
+        });
+
+        Object.keys(searchSelectWrapperRefs.current).forEach(refKey => {
+            if (String(refKey).startsWith(refKeyPrefix)) {
+                delete searchSelectWrapperRefs.current[refKey];
+            }
+        });
+
+        const pruneKeysWithPrefix = (previousObject) => {
+            const nextObject = {};
+
+            Object.keys(previousObject).forEach(key => {
+                if (!String(key).startsWith(refKeyPrefix)) {
+                    nextObject[key] = previousObject[key];
+                }
+            });
+
+            return nextObject;
+        };
+
+        setSearchSelectSelections(pruneKeysWithPrefix);
+        setSearchSelectQueries(pruneKeysWithPrefix);
+        setFileInputs(pruneKeysWithPrefix);
+
+        if (openSearchSelectId !== null && String(openSearchSelectId).startsWith(refKeyPrefix)) {
+            setOpenSearchSelectId(null);
+            setSearchSelectHighlight(-1);
+        }
+
+        delete dynamicInstanceSeeds.current[instanceUid];
+
+        setDynamicSectionInstances(previousInstances => ({
+            ...previousInstances,
+            [sectionId]: (previousInstances[sectionId] || []).filter(instance => instance.uid !== instanceUid)
+        }));
+
+        setGeneralFormError('');
+        setSuccessMessage('');
+    };
+
 
     const resetFormCommon = (shouldClearFieldDefaults = false) => {
 
@@ -316,6 +703,24 @@ function Form({
         setSearchSelectQueries({});
         setOpenSearchSelectId(null);
         setSearchSelectHighlight(-1);
+
+        if (normalizedDynamicSections.length > 0) {
+            Object.keys(fieldRefs.current).forEach(refKey => {
+                if (String(refKey).startsWith('dyn_')) {
+                    delete fieldRefs.current[refKey];
+                }
+            });
+
+            Object.keys(searchSelectWrapperRefs.current).forEach(refKey => {
+                if (String(refKey).startsWith('dyn_')) {
+                    delete searchSelectWrapperRefs.current[refKey];
+                }
+            });
+
+            dynamicInstanceSeeds.current = {};
+            setDynamicSectionInstances(buildInitialDynamicInstances(normalizedDynamicSections, !shouldClearFieldDefaults));
+        }
+
         setCaptchaValue(generateCaptcha());
 
         enteredCaptcha.current = '';
@@ -498,7 +903,7 @@ function Form({
                     processFieldOnChangeResult(field, currentValue + delta);
 
                     if (!noInputFieldsCache) {
-                        saveToCache(field, currentValue + delta);
+                        saveFieldToCache(field, currentValue + delta);
                     }
                 }
 
@@ -649,7 +1054,7 @@ function Form({
             setGeneralFormError('');
             setSuccessMessage('');
 
-            if (!noInputFieldsCache) saveToCache(field, commaValue);
+            if (!noInputFieldsCache) saveFieldToCache(field, commaValue);
 
             const newFields = processFieldRules(dynamicFields, field, commaValue);
             setDynamicFields(newFields);
@@ -894,6 +1299,51 @@ function Form({
         );
     }
 
+    const renderDynamicSectionInstanceHeader = (field) => {
+        const section = getDynamicSection(field.__dynamicSectionHeader.sectionId);
+        const widthClass = getWidthClass(1);
+
+        return (
+            <div className={`form-title-section dynamic-section-instance-header ${widthClass}`} id={field.id}>
+                <div className="dynamic-section-instance">
+                    <h3>
+                        {field.label}
+                    </h3>
+                </div>
+
+                {!formIsReadOnly && (
+                    <div className="dynamic-section-control">
+                        <button
+                            type="button"
+                            className="remove-section-button"
+                            disabled={submitting}
+                            onClick={() => removeDynamicInstance(field.__dynamicSectionHeader.sectionId, field.__dynamicSectionHeader.uid)}
+                        >
+                            {(section && section.removeButtonLabel) || t('all-forms.remove')}
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const renderDynamicSectionAddButton = (field) => {
+        const widthClass = getWidthClass(1);
+
+        return (
+            <div className={`dynamic-section-button-wrapper ${widthClass}`} id={field.id}>
+                <button
+                    type="button"
+                    className="add-section-button"
+                    disabled={submitting}
+                    onClick={() => addDynamicInstance(field.__dynamicSectionAdd.sectionId)}
+                >
+                    {field.label}
+                </button>
+            </div>
+        );
+    };
+
     const renderFieldBasedOnType = (field) => {
         if (field.type === 'hidden') {
             if (!fieldRefs.current[field.id]) {
@@ -925,6 +1375,8 @@ function Form({
                 {field.type === 'file' && renderFileInput(field)}
                 {field.type === 'button' && renderButton(field)}
                 {field.type === 'section' && ( renderSection(field) ) }
+                {field.type === 'dynamic-section-instance-header' && renderDynamicSectionInstanceHeader(field)}
+                {field.type === 'dynamic-section-add-button' && renderDynamicSectionAddButton(field)}
             </Fragment>
         );
     };
@@ -993,7 +1445,7 @@ function Form({
         setGeneralFormError('');
         setSuccessMessage('');
         if (!noInputFieldsCache) {
-            saveToCache(field, commaValue);
+            saveFieldToCache(field, commaValue);
         }
         const newFields = processFieldRules(dynamicFields, field, commaValue);
         setDynamicFields(newFields);
@@ -1209,7 +1661,13 @@ function Form({
         setShowSelectDateModal(false);
 
         if (!noInputFieldsCache) {
-            saveToCache({id: selectedDateFieldID, label: selectedDateFieldLabel}, dateValue);
+            const dateField = composedFields.find(field => field.id === selectedDateFieldID);
+
+            if (dateField && dateField.__dynamicSection) {
+                saveFieldToCache(dateField, dateValue);
+            } else {
+                saveToCache({id: selectedDateFieldID, label: selectedDateFieldLabel}, dateValue);
+            }
         }
     }
 
@@ -1303,7 +1761,7 @@ function Form({
                 setSuccessMessage('');
 
                 if (!noInputFieldsCache) {
-                    saveToCache(field, value);
+                    saveFieldToCache(field, value);
                 }
             }
 
@@ -1339,10 +1797,30 @@ function Form({
             }
         }
 
-        for (let i = 0; i < dynamicFields.length; i++) {
-            if (dynamicFields[i].mustMatchFieldWithId) {
-                const field1Ref = fieldRefs.current[dynamicFields[i].id];
-                const field2Ref = fieldRefs.current[dynamicFields[i].mustMatchFieldWithId];
+        for (let i = 0; i < normalizedDynamicSections.length; i++) {
+            const section = normalizedDynamicSections[i];
+            const minInstances = section.minInstances || 0;
+            const instanceCount = (dynamicSectionInstances[section.sectionId] || []).length;
+
+            if (instanceCount < minInstances) {
+                setGeneralFormError(t('all-forms.dynamic-section-min-error', {min: minInstances, title: section.title}));
+                setTimeout(() => {
+                    setGeneralFormError('');
+                }, msgTimeout);
+                return;
+            }
+        }
+
+        for (let i = 0; i < composedFields.length; i++) {
+            const currentField = composedFields[i];
+
+            if (currentField.type === 'dynamic-section-instance-header' || currentField.type === 'dynamic-section-add-button') {
+                continue;
+            }
+
+            if (currentField.mustMatchFieldWithId) {
+                const field1Ref = fieldRefs.current[currentField.id];
+                const field2Ref = fieldRefs.current[currentField.mustMatchFieldWithId];
 
                 if (field1Ref?.current && field2Ref?.current) {
                     const firstValue = field1Ref.current.value;
@@ -1350,8 +1828,8 @@ function Form({
 
                     if (firstValue && secondValue) {
                         if (firstValue !== secondValue) {
-                            const field1 = getWhichLabelToUse(dynamicFields[i]);
-                            const field2 = getWhichLabelToUse(dynamicFields.find(field => field.id === dynamicFields[i].mustMatchFieldWithId));
+                            const field1 = getWhichLabelToUse(currentField);
+                            const field2 = getWhichLabelToUse(composedFields.find(field => field.id === currentField.mustMatchFieldWithId));
 
                             setGeneralFormError( t('all-forms.fields-must-match-error', {field1: field1, field2: field2} ) );
 
@@ -1365,9 +1843,9 @@ function Form({
                 }
             }
 
-            if (dynamicFields[i].mustNotMatchFieldWithId) {
-                const field1Ref = fieldRefs.current[dynamicFields[i].id];
-                const field2Ref = fieldRefs.current[dynamicFields[i].mustNotMatchFieldWithId];
+            if (currentField.mustNotMatchFieldWithId) {
+                const field1Ref = fieldRefs.current[currentField.id];
+                const field2Ref = fieldRefs.current[currentField.mustNotMatchFieldWithId];
 
                 if (field1Ref?.current && field2Ref?.current) {
                     const firstValue = field1Ref.current.value;
@@ -1375,8 +1853,8 @@ function Form({
 
                     if (firstValue && secondValue) {
                         if (firstValue === secondValue) {
-                            const field1 = getWhichLabelToUse(dynamicFields[i]);
-                            const field2 = getWhichLabelToUse(dynamicFields.find(field => field.id === dynamicFields[i].mustNotMatchFieldWithId));
+                            const field1 = getWhichLabelToUse(currentField);
+                            const field2 = getWhichLabelToUse(composedFields.find(field => field.id === currentField.mustNotMatchFieldWithId));
 
                             setGeneralFormError( t('all-forms.fields-must-not-match-error', {field1: field1, field2: field2} ) );
 
@@ -1390,27 +1868,27 @@ function Form({
                 }
             }
 
-            if (dynamicFields[i].type === 'select' && dynamicFields[i].multiple && dynamicFields[i].required) {
+            if (currentField.type === 'select' && currentField.multiple && currentField.required) {
 
                 const selected = [];
 
-                (dynamicFields[i].choices || []).forEach((choice, j) => {
-                    const choiceRef = fieldRefs.current[`${dynamicFields[i].id}_${j}`];
+                (currentField.choices || []).forEach((choice, j) => {
+                    const choiceRef = fieldRefs.current[`${currentField.id}_${j}`];
                     if (choiceRef?.current?.checked) selected.push(choice);
                 });
 
 
                 if (selected.length === 0) {
-                    setGeneralFormError( t('all-forms.field-required', { field1: getWhichLabelToUse(dynamicFields[i]) } ) );
+                    setGeneralFormError( t('all-forms.field-required', { field1: getWhichLabelToUse(currentField) } ) );
                     setTimeout(() => setGeneralFormError(''), msgTimeout);
                     return;
                 }
 
             }
 
-            if (dynamicFields[i].type === 'search-select' && dynamicFields[i].required) {
-                if (getSearchSelectSelected(dynamicFields[i]).length === 0) {
-                    setGeneralFormError(t('all-forms.field-required', { field1: getWhichLabelToUse(dynamicFields[i]) }));
+            if (currentField.type === 'search-select' && currentField.required) {
+                if (getSearchSelectSelected(currentField).length === 0) {
+                    setGeneralFormError(t('all-forms.field-required', { field1: getWhichLabelToUse(currentField) }));
                     setTimeout(() => setGeneralFormError(''), msgTimeout);
                     return;
                 }
@@ -1428,57 +1906,40 @@ function Form({
 
         try {
             const formData = new FormData();
-            dynamicFields.forEach(field => {
-                let value;
+            composedFields.forEach(field => {
+                if (field.type === 'dynamic-section-instance-header' || field.type === 'dynamic-section-add-button') {
+                    return;
+                }
 
-                if (field.type === 'file' && field.file) {
-                    const file = field.file;
+                let value;
+                const dynamicSectionInfo = field.__dynamicSection;
+                const ordinalForDynamicField = dynamicSectionInfo ? getDynamicInstanceOrdinal(dynamicSectionInfo.sectionId, dynamicSectionInfo.uid) : -1;
+                const fieldKeySuffix = dynamicSectionInfo
+                    ? `${dynamicSectionInfo.sectionId}_i${ordinalForDynamicField}_f${dynamicSectionInfo.templateId}`
+                    : `${field.id}`;
+                const labelForField = dynamicSectionInfo ? dynamicSectionInfo.templateLabel : field.label;
+                const uploadedFile = (field.type === 'file') ? (field.file || fileInputs[field.id]) : null;
+
+                if (field.type === 'file' && uploadedFile) {
+                    const file = uploadedFile;
                     const fileExtension = file.name.split('.').pop();
                     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
                     const uniqueFileName = `${fileNameWithoutExt}-${uuidv6()}.${fileExtension}`;
                     const renamedFile = new File([file], uniqueFileName, {type: file.type});
                     value = uniqueFileName;
-                    formData.append(`uniqueFileName_${field.label}`, uniqueFileName);
-                    formData.append(field.label, renamedFile, uniqueFileName);
+                    const fileFieldLabel = dynamicSectionInfo ? `${labelForField} ${ordinalForDynamicField + 1}` : field.label;
+                    formData.append(`uniqueFileName_${fileFieldLabel}`, uniqueFileName);
+                    formData.append(fileFieldLabel, renamedFile, uniqueFileName);
                 } else {
-                    const ref = fieldRefs.current[field.id];
-                    if (ref && ref.current) {
-
-                        if (field.type === 'checkbox' || field.type === 'radio') {
-
-                            value = ref.current.checked ? ref.current.value : '';
-
-                        } else if (field.type === 'select' && field.multiple) {
-
-                            if (field.readOnlyField || formIsReadOnly) {
-
-                                const vals = Array.isArray(field.value) ? field.value : String(field.value || '').split(',').map(v => v.trim()).filter(Boolean);
-                                value = vals.join(',');
-
-                            } else {
-
-                                const selected = [];
-
-                                (field.choices || []).forEach((choice, i) => {
-                                    const choiceRef = fieldRefs.current[`${field.id}_${i}`];
-                                    if (choiceRef?.current?.checked) selected.push(choice);
-                                });
-
-                                value = selected.join(',');
-                            }
-
-                        } else if (field.type === 'search-select') {
-                            value = getSearchSelectSelected(field).join(',');
-                        } else {
-                            value = ref.current.value || '';
-                        }
-                    } else {
-                        value = field.readOnlyField ? (field.value || '') : '';
-                    }
+                    value = getFieldSubmitValue(field);
                 }
 
-                formData.append(`field_${field.id}`, value);
-                formData.append(`label_${field.id}`, field.label);
+                formData.append(`field_${fieldKeySuffix}`, value);
+                formData.append(`label_${fieldKeySuffix}`, labelForField);
+            });
+
+            normalizedDynamicSections.forEach(section => {
+                formData.append(`dynamicSectionCount_${section.sectionId}`, String((dynamicSectionInstances[section.sectionId] || []).length));
             });
 
             formData.append('mailTo', mailTo);
@@ -1629,10 +2090,53 @@ function Form({
 
         setDynamicFields(currentFields);
 
+        normalizedDynamicSections.forEach(section => {
+            if ((section.instances || []).length > 0) {
+                return;
+            }
+
+            if ((dynamicSectionInstances[section.sectionId] || []).length > 0) {
+                return;
+            }
+
+            const probeBound = Math.min(getDynamicSectionMaxInstances(section), DYNAMIC_CACHE_MAX_PROBE);
+            const spawnedInstances = [];
+
+            for (let ordinal = 0; ordinal < probeBound; ordinal++) {
+                const seedValues = {};
+                let hasAnyCachedValue = false;
+
+                section.fields.forEach(templateField => {
+                    const cachedValue = cachedValues[getDynamicCacheId(section.sectionId, ordinal, templateField.id)];
+
+                    if (cachedValue !== undefined) {
+                        seedValues[templateField.id] = cachedValue;
+                        hasAnyCachedValue = true;
+                    }
+                });
+
+                if (!hasAnyCachedValue) {
+                    break;
+                }
+
+                const uid = dynamicInstanceUidCounter.current++;
+                dynamicInstanceSeeds.current[uid] = seedValues;
+                spawnedInstances.push({uid: uid});
+            }
+
+            if (spawnedInstances.length > 0) {
+                setDynamicSectionInstances(previousInstances => ({
+                    ...previousInstances,
+                    [section.sectionId]: [...(previousInstances[section.sectionId] || []), ...spawnedInstances]
+                }));
+            }
+        });
+
         setCacheHaveBeenLoaded(true);
 
 
-    }, [dynamicFields, noInputFieldsCache, cacheHaveBeenLoaded, fieldRefs, processFieldRules, refsHaveBeenSet, loadCachedValues]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dynamicFields, noInputFieldsCache, cacheHaveBeenLoaded, fieldRefs, processFieldRules, refsHaveBeenSet, loadCachedValues, normalizedDynamicSections, dynamicSectionInstances]);
 
     useEffect(() => {
         dynamicFields.forEach(field => {
@@ -2192,7 +2696,7 @@ function Form({
         return (
             <>
                 <form className="form" onSubmit={onSubmit} method="post" onReset={resetForm} id={formId}>
-                    {dynamicFields.map((field) => (renderFieldBasedOnType(field)))}
+                    {composedFields.map((field) => (renderFieldBasedOnType(field)))}
                     {CaptchaField()}
                     {FormFooter()}
                 </form>
@@ -2275,6 +2779,17 @@ Form.propTypes = {
     differentResetBehaviour: PropTypes.func,
     formFooterButtonsAreOutside: PropTypes.bool,
     footerButtonsPortalTarget: PropTypes.object,
+    dynamicSections: PropTypes.arrayOf(PropTypes.shape({
+        sectionId: PropTypes.number.isRequired,
+        title: PropTypes.string.isRequired,
+        addButtonLabel: PropTypes.string,
+        removeButtonLabel: PropTypes.string,
+        insertAfterFieldId: PropTypes.number,
+        minInstances: PropTypes.number,
+        maxInstances: PropTypes.number,
+        fields: PropTypes.arrayOf(PropTypes.shape(fieldShape)).isRequired,
+        instances: PropTypes.arrayOf(PropTypes.object),
+    })),
 };
 
 export default Form;

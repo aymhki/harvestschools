@@ -63,7 +63,6 @@
     font-size: large;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-width: 10rem;
     font-family: var(--english-title-font);
 }
 

@@ -400,10 +400,6 @@
 .remove-section-button {
     background-color: var(--ff-panel-bg);
     color: var(--secondary-color);
-    padding: 1rem;
-    font-size: large;
-    cursor: pointer;
-    border-radius: var(--ff-radius);
     box-shadow: 0 0 0.5rem var(--secondary-color);
 }
 
@@ -414,10 +410,13 @@
 }
 
 .add-section-button {
-    padding: 1rem;
-    font-size: large;
-    border-radius: var(--ff-radius);
-    cursor: pointer;
+
+}
+
+.dynamic-section-button-wrapper.full-width {
+    align-content: flex-end;
+    justify-content: flex-end;
+    align-items: flex-end;
 }
 
 .general-form-error {
@@ -463,6 +462,13 @@
 
 .reset-buttons-wrapper {
     display: flex;
+}
+
+.dynamic-section-instance-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .dynamic-section-instance {
