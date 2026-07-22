@@ -27,6 +27,7 @@ import {
     revokeSession,
     revokeAllOtherSessions,
 } from '../services/Admin/Session/AdminSettingsServices.jsx';
+import {updateAdminBiometricCredentials} from '../services/Admin/Session/MainAdminServices.jsx';
 import {passkeySupported} from '../services/General/PasskeyUtils.jsx';
 import {adminLoginPageUrl, msgTimeout, isMobileApp} from '../services/General/GeneralUtils.jsx';
 
@@ -109,6 +110,8 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
     const [stepUp, setStepUp] = useState(null);
     const [stepUpMethod, setStepUpMethod] = useState(null);
     const [stepUpResendIn, setStepUpResendIn] = useState(0);
+
+    const pendingProfileCredentialsRef = useRef(null);
 
     const profileFooterRef = useRef(null);
     const [, forceFooterRender] = useState(0);
@@ -271,6 +274,12 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             setTotpSetup({ secret: result.secret, qrDataUrl, isReplacement: !!result.isReplacement });
         }
 
+        if (result.action === 'update_profile' && pendingProfileCredentialsRef.current) {
+            const { username, password } = pendingProfileCredentialsRef.current;
+            await updateAdminBiometricCredentials(username, password);
+            pendingProfileCredentialsRef.current = null;
+        }
+
         await refreshAll();
         setStepUp(null);
         setStepUpMethod(null);
@@ -290,6 +299,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
         if (handleSessionExpired(result)) { return true; }
 
         if (result && (result.code === 429 || result.code === 401) && /expired|Start again/i.test(result.message || '')) {
+            pendingProfileCredentialsRef.current = null;
             setStepUp(null);
             setStepUpMethod(null);
             throw new Error(result.message);
@@ -338,6 +348,7 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
     };
 
     const cancelStepUp = () => {
+        pendingProfileCredentialsRef.current = null;
         setStepUp(null);
         setStepUpMethod(null);
         setStepUpResendIn(0);
@@ -363,9 +374,15 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
             throw new Error('New passwords do not match');
         }
 
+        const newUsername = values[`field_${usernameFieldId}`] || '';
+
+        pendingProfileCredentialsRef.current = newPassword
+            ? { username: newUsername || account?.username, password: newPassword }
+            : null;
+
         await beginStepUp('update_profile', {
             name: values[`field_${nameFieldId}`],
-            username: values[`field_${usernameFieldId}`],
+            username: newUsername,
             new_password: newPassword,
         });
 
