@@ -146,7 +146,7 @@ header('Accept-Ranges: bytes');
 $is_locale_file = (strpos($requested, 'locales/') === 0) || ($out_ext === 'json' && strpos($requested, 'locales') !== false);
 
 if ($is_locale_file) {
-    header('Cache-Control: public, max-age=300, must-revalidate');
+    header('Cache-Control: ppublic, max-age=86400, stale-while-revalidate=604800');
 } else {
     header('Cache-Control: public, max-age=31536000, immutable');
 }

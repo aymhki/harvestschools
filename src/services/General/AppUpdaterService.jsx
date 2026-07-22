@@ -150,8 +150,25 @@ const runMobileAppUpdateCheck = async ({ onProgress } = {}) => {
     }
 }
 
+const getCurrentBundleVersion = async () => {
+    if (!Capacitor.isNativePlatform()) {
+        return null
+    }
+
+    try {
+        const { bundle } = await CapacitorUpdater.current()
+
+        return bundle && bundle.version ? bundle.version : null
+    } catch (versionError) {
+        console.warn('Could not read the current bundle version', versionError)
+
+        return null
+    }
+}
+
 export {
     runMobileAppUpdateCheck,
     getAndClearRestorePath,
-    attachPullToRefreshListener
+    attachPullToRefreshListener,
+    getCurrentBundleVersion
 }

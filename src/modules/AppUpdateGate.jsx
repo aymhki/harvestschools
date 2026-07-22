@@ -1,25 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
 import { Network } from '@capacitor/network'
 import {
     runMobileAppUpdateCheck,
     getAndClearRestorePath,
-    attachPullToRefreshListener
+    attachPullToRefreshListener,
+    getCurrentBundleVersion,
 } from '../services/General/AppUpdaterService.jsx'
-import Spinner from './Spinner.jsx'
+import { OfflineProvider } from '../services/General/OfflineContext.jsx'
+import { bootstrapOfflineAssets, runOfflinePrefetch } from '../services/General/OfflinePrefetchService.jsx'
+import AppSplash from './AppSplash.jsx'
+import OfflineBanner from './OfflineBanner.jsx'
 import '../styles/AppUpdateGate.css'
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types'
+
+
+const SHOW_DOWNLOAD_PROGRESS_BAR = false
+
 
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
 
     const [phase, setPhase] = useState('checking')
     const [progress, setProgress] = useState(0)
+    const [isOffline, setIsOffline] = useState(false)
     const offlineListenerRef = useRef(null)
+    const hasBootstrappedRef = useRef(false)
 
-
-    const restoreSavedPathIfNeeded = async () => {
+    const restoreSavedPathIfNeeded = useCallback(async () => {
         const restorePath = await getAndClearRestorePath()
 
         if (!restorePath) {
@@ -31,10 +40,25 @@ function AppUpdateGate({ children }) {
         if (restorePath !== here) {
             navigate(restorePath, { replace: true })
         }
-    }
+    }, [navigate])
 
-    const runCheck = () => {
+    const schedulePrefetch = useCallback(async () => {
+        if (!Capacitor.isNativePlatform()) {
+            return
+        }
 
+        try {
+            const bundleVersion = await getCurrentBundleVersion()
+
+            runOfflinePrefetch({ bundleVersion }).catch((prefetchError) => {
+                console.warn('Offline prefetch failed', prefetchError)
+            })
+        } catch (prefetchError) {
+            console.warn('Could not schedule the offline prefetch', prefetchError)
+        }
+    }, [])
+
+    const runCheck = useCallback(() => {
         setPhase('checking')
         setProgress(0)
 
@@ -48,30 +72,56 @@ function AppUpdateGate({ children }) {
 
             if (status === 'ok' && result.updated) {
                 setPhase('ready')
+                setIsOffline(false)
+
                 return
             }
 
             if (status === 'skipped' || status === 'ok') {
-                setPhase('ready');
-                await restoreSavedPathIfNeeded();
+                setPhase('ready')
+                setIsOffline(false)
+
+                await restoreSavedPathIfNeeded()
+
+                schedulePrefetch()
+
                 return
             }
 
             if (status === 'offline') {
-                setPhase('offline')
+                setPhase('ready')
+                setIsOffline(true)
+                await restoreSavedPathIfNeeded()
                 return
             }
 
-            setPhase('error')
+            setPhase('ready')
+            setIsOffline(false)
+            await restoreSavedPathIfNeeded()
+            schedulePrefetch()
+        }).catch((checkError) => {
+            console.warn('Update check threw unexpectedly', checkError)
+            setPhase('ready')
         })
-    }
+    }, [restoreSavedPathIfNeeded, schedulePrefetch])
 
     useEffect(() => {
-        runCheck()
+        if (hasBootstrappedRef.current) {
+            return
+        }
+
+        hasBootstrappedRef.current = true
+        bootstrapOfflineAssets().catch((bootstrapError) => {
+            console.warn('Could not bootstrap the cached offline assets', bootstrapError)
+        })
     }, [])
 
     useEffect(() => {
-        if (phase !== 'offline') {
+        runCheck()
+    }, [runCheck])
+
+    useEffect(() => {
+        if (!isOffline) {
             return undefined
         }
 
@@ -83,7 +133,8 @@ function AppUpdateGate({ children }) {
 
         Network.addListener('networkStatusChange', (status) => {
             if (status.connected) {
-                runCheck()
+                setIsOffline(false)
+                schedulePrefetch()
             }
         }).then((handle) => {
             if (isMounted) {
@@ -101,80 +152,29 @@ function AppUpdateGate({ children }) {
                 offlineListenerRef.current = null
             }
         }
-    }, [phase])
+    }, [isOffline, schedulePrefetch])
 
     useEffect(() => {
         return attachPullToRefreshListener()
     }, [])
 
-    if (phase === 'ready') {
-        return children
-    }
-
-    if (phase === 'offline') {
-        return (
-            <div className="app-update-gate">
-                <p className="app-update-gate__message" role="status" aria-live="polite">
-                    You don&apos;t seem to be connected to the internet. Please check your connection and try again.
-                </p>
-                <button
-                    type="button"
-                    className="app-update-gate__button"
-                    onClick={() => runCheck()}
-                >
-                    Try Again
-                </button>
-            </div>
-        )
-    }
-
-    if (phase === 'error') {
-        return (
-            <div className="app-update-gate">
-                <p className="app-update-gate__message" role="status" aria-live="assertive">
-                    Sorry, looks like our servers are down right now :( please try again later
-                </p>
-
-                <button
-                    type="button"
-                    className="app-update-gate__button"
-                    onClick={() => runCheck()}
-                >
-                    Try Again
-                </button>
-
-            </div>
-        )
-    }
-
-    if (phase === 'downloading') {
-        return (
-            <div className="app-update-gate">
-                <div
-                    className="app-update-gate__progress-track"
-                    role="progressbar"
-                    aria-valuenow={progress}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                >
-                    <div
-                        className="app-update-gate__progress-fill"
-                        style={{ width: `${progress}%` }}
-                    />
-                </div>
-            </div>
-        )
+    if (phase === 'checking' || phase === 'downloading') {
+        return <AppSplash showProgress={SHOW_DOWNLOAD_PROGRESS_BAR} progress={progress} />
     }
 
     return (
-        <div className="app-update-gate">
-            <Spinner />
-        </div>
+        <OfflineProvider initialOffline={isOffline}>
+            {children}
+
+            <OfflineBanner onRetry={runCheck} />
+        </OfflineProvider>
     )
 }
 
+
 AppUpdateGate.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 }
+
 
 export default AppUpdateGate
