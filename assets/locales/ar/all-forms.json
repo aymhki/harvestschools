@@ -20,6 +20,7 @@
     "remove": "إزالة",
     "year-month-day": " (سنة-شهر-يوم) ",
     "field-required": "هذه الخانة '{{field1}}' مطلوبة",
-    "no-results": "لا نتائج"
+    "no-results": "لا نتائج",
+    "dynamic-section-min-error": "يجب إضافة {{min}} على الأقل من قسم '{{title}}' قبل الإرسال"
   }
 }

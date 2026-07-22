@@ -46,44 +46,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $formData = [];
 
-        $studentFieldMappings = [
-            14 => ['section' => 1, 'field' => 'Student Name'],
-            15 => ['section' => 1, 'field' => 'Student School Division'],
-            16 => ['section' => 1, 'field' => 'Student Grade'],
-            18 => ['section' => 2, 'field' => 'Student Name'],
-            19 => ['section' => 2, 'field' => 'Student School Division'],
-            20 => ['section' => 2, 'field' => 'Student Grade'],
-            22 => ['section' => 3, 'field' => 'Student Name'],
-            23 => ['section' => 3, 'field' => 'Student School Division'],
-            24 => ['section' => 3, 'field' => 'Student Grade'],
-            26 => ['section' => 4, 'field' => 'Student Name'],
-            27 => ['section' => 4, 'field' => 'Student School Division'],
-            28 => ['section' => 4, 'field' => 'Student Grade'],
-            30 => ['section' => 5, 'field' => 'Student Name'],
-            31 => ['section' => 5, 'field' => 'Student School Division'],
-            32 => ['section' => 5, 'field' => 'Student Grade'],
+        $studentsDynamicSectionId = 100;
+        $maxNumberOfStudents = 5;
+        $studentTemplateFieldLabels = [
+            14 => 'Student Name',
+            15 => 'Student School Division',
+            16 => 'Student Grade',
         ];
+        $studentFieldPattern = '/^field_' . $studentsDynamicSectionId . '_i(\d+)_f(\d+)$/';
 
         $studentSections = [];
-        for ($i = 1; $i <= 5; $i++) {
-            $studentSections[$i] = [];
-        }
 
         foreach ($_POST as $key => $value) {
-            if (strpos($key, 'field_') === 0) {
-                $fieldId = (int)substr($key, 6);
+            if (preg_match($studentFieldPattern, $key, $matches)) {
+                $sectionOrdinal = (int)$matches[1];
+                $templateFieldId = (int)$matches[2];
+
+                if (isset($studentTemplateFieldLabels[$templateFieldId])) {
+                    if (!isset($studentSections[$sectionOrdinal])) {
+                        $studentSections[$sectionOrdinal] = [];
+                    }
+
+                    $studentSections[$sectionOrdinal][$studentTemplateFieldLabels[$templateFieldId]] = $value;
+                }
+            } else if (strpos($key, 'field_') === 0) {
+                $fieldId = substr($key, 6);
                 $labelKey = 'label_' . $fieldId;
 
-                if (isset($studentFieldMappings[$fieldId])) {
-                    $mapping = $studentFieldMappings[$fieldId];
-                    $sectionNumber = $mapping['section'];
-                    $fieldName = $mapping['field'];
-                    $studentSections[$sectionNumber][$fieldName] = $value;
-                } else if (isset($_POST[$labelKey])) {
+                if (isset($_POST[$labelKey])) {
                     $label = $_POST[$labelKey];
                     $formData[$label] = $value;
                 }
             }
+        }
+
+        ksort($studentSections);
+
+        if (count($studentSections) > $maxNumberOfStudents) {
+            $errorInfo['success'] = false;
+            $errorInfo['message'] = 'A maximum of ' . $maxNumberOfStudents . ' students is allowed per booking';
+            $errorInfo['code'] = 400;
+            echo json_encode($errorInfo);
+            return;
         }
 
 
