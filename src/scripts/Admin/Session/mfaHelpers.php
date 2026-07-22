@@ -513,10 +513,6 @@ function compute_mfa_required($conn, $userId, $fingerprintHash, $authChannel = n
 
     $fingerprintKnown = fingerprint_is_known($conn, $userId, $fingerprintHash);
 
-    // A biometric login from the native app on a device that has already
-    // completed a successful login is treated as already second-factored:
-    // the OS verified the person, and the stored credentials only exist on
-    // a device that logged in before.
     if (is_native_biometric_login($authChannel) && $fingerprintKnown) {
         return null;
     }
@@ -535,14 +531,11 @@ function compute_mfa_required($conn, $userId, $fingerprintHash, $authChannel = n
         $stmt->close();
     }
 
-    // A stale login is forgiven when the request comes from an IP address
-    // this account has successfully logged in from before.
+
     if ($stale && $ipTrust !== 'exact_ip') { return 'stale_login'; }
 
     if (empty($fingerprintHash) && $ipTrust !== 'exact_ip') { return 'no_fingerprint'; }
 
-    // An unknown device is forgiven when the request comes from a known IP,
-    // or from the same region (country + region) as a previously used IP.
     if (!$fingerprintKnown && $ipTrust === 'none') { return 'new_device'; }
 
     $stmt = $conn->prepare(
