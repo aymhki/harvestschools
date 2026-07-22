@@ -15,9 +15,7 @@ import OfflineBanner from './OfflineBanner.jsx'
 import '../styles/AppUpdateGate.css'
 import PropTypes from 'prop-types'
 
-
 const SHOW_DOWNLOAD_PROGRESS_BAR = false
-
 
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
@@ -165,7 +163,6 @@ function AppUpdateGate({ children }) {
     return (
         <OfflineProvider initialOffline={isOffline}>
             {children}
-
             <OfflineBanner onRetry={runCheck} />
         </OfflineProvider>
     )
