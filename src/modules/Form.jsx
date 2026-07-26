@@ -292,8 +292,18 @@ function Form({
         const wrapperRef = searchSelectWrapperRefs.current[openSearchSelectId];
         if (!wrapperRef?.current) return;
         const rect = wrapperRef.current.getBoundingClientRect();
+        const visibleHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+        if (rect.bottom <= 0 || rect.top >= visibleHeight) {
+            setOpenSearchSelectId(null);
+            setSearchSelectHighlight(-1);
+            setSearchSelectDropdownRect(null);
+
+            return;
+        }
+
         const dropdownMaxHeight = 224;
-        const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const viewportHeight = visibleHeight;
         const spaceBelow = viewportHeight - rect.bottom;
         const spaceAbove = rect.top;
         const openUp = spaceBelow < Math.min(dropdownMaxHeight, 160) && spaceAbove > spaceBelow;

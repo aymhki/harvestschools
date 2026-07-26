@@ -13,6 +13,7 @@
 		00B7B20F2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */; };
 		00C1A5012FFF10A10001AA01 /* WalletPassPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */; };
 		00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */; };
+		00C1A5052FFF10A10001AA01 /* HarvestBridgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5042FFF10A10001AA01 /* HarvestBridgeViewController.swift */; };
 		00DE439C2FF9F50C002827AF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DE439B2FF9F506002827AF /* SceneDelegate.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
@@ -30,6 +31,7 @@
 		00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPassPlugin.swift; sourceTree = "<group>"; };
 		00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProcessRecovery.swift; sourceTree = "<group>"; };
+		00C1A5042FFF10A10001AA01 /* HarvestBridgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestBridgeViewController.swift; sourceTree = "<group>"; };
 		00DE439B2FF9F506002827AF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		00DE439D2FF9F53B002827AF /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 				004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */,
 				00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */,
 				00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */,
+				00C1A5042FFF10A10001AA01 /* HarvestBridgeViewController.swift */,
 				004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */,
 				00DE439D2FF9F53B002827AF /* App.entitlements */,
 				00DE439B2FF9F506002827AF /* SceneDelegate.swift */,
@@ -182,6 +185,7 @@
 				004BE4042FFC3FA10006DEFD /* PullToRefreshController.swift in Sources */,
 				00C1A5012FFF10A10001AA01 /* WalletPassPlugin.swift in Sources */,
 				00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */,
+				00C1A5052FFF10A10001AA01 /* HarvestBridgeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

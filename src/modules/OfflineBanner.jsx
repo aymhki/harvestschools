@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { useOffline } from '../services/General/OfflineContext.jsx'
@@ -22,22 +23,16 @@ const COPY = {
 }
 
 
-const detectLanguage = () => {
-    try {
-        const stored = localStorage.getItem('i18nextLng')
-
-        return stored && stored.startsWith('ar') ? 'ar' : 'en'
-    } catch {
-        return 'en'
-    }
-}
-
-
 function OfflineBanner({ onRetry }) {
+    const { i18n } = useTranslation()
     const { isOffline, lastChangedAt, refreshNetworkStatus } = useOffline()
     const [isDismissed, setIsDismissed] = useState(false)
     const [isRetrying, setIsRetrying] = useState(false)
-    const copy = useMemo(() => COPY[detectLanguage()] || COPY.en, [])
+
+    /* The copy stays in this file so the banner still reads correctly when the
+     * cached locale files are not available, but it follows the live language
+     * instead of a value read once at mount. */
+    const copy = COPY[String(i18n.language || '').startsWith('ar') ? 'ar' : 'en']
 
     useEffect(() => {
         if (isOffline) {

@@ -62,6 +62,8 @@ public class WalletPassPlugin: CAPPlugin, CAPBridgedPlugin {
 
             controller.delegate = self
 
+            controller.modalPresentationStyle = .overFullScreen
+
             self.pendingCall = call
 
             presenter.present(controller, animated: true)

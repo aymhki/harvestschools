@@ -27,7 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func setUpFloatingChrome(retryCount: Int = 0) {
-        guard let bridgeVC = window?.rootViewController as? CAPBridgeViewController else { return }
+        guard let bridgeVC = window?.rootViewController as? HarvestBridgeViewController else { return }
         _ = bridgeVC.view
 
         guard let webView = bridgeVC.bridge?.webView else {
