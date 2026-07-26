@@ -4,16 +4,55 @@ import WebKit
 
 class HarvestBridgeViewController: CAPBridgeViewController {
 
-    private var isRecoveringWebView = false
+    private var isReloadingWebView = false
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleApplicationDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        recoverWebViewIfBlank()
+        restoreWebViewRendering()
     }
 
-    private func recoverWebViewIfBlank() {
-        guard let webView = bridge?.webView, !isRecoveringWebView else {
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag) { [weak self] in
+            completion?()
+
+            self?.restoreWebViewRendering()
+        }
+    }
+
+    @objc private func handleApplicationDidBecomeActive() {
+        restoreWebViewRendering()
+    }
+
+    private func restoreWebViewRendering() {
+        guard let webView = bridge?.webView, webView.window != nil else {
+            return
+        }
+
+        webView.isHidden = true
+
+        DispatchQueue.main.async {
+            webView.isHidden = false
+            webView.setNeedsLayout()
+            webView.layoutIfNeeded()
+
+            self.reloadWebViewIfContentIsGone(webView)
+        }
+    }
+
+    private func reloadWebViewIfContentIsGone(_ webView: WKWebView) {
+        guard !isReloadingWebView else {
             return
         }
 
@@ -21,18 +60,18 @@ class HarvestBridgeViewController: CAPBridgeViewController {
             let childCount = (result as? NSNumber)?.intValue ?? 0
 
             if error != nil || childCount == 0 {
-                self?.reloadWebView(webView)
+                self?.isReloadingWebView = true
+
+                webView.reload()
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self?.isReloadingWebView = false
+                }
             }
         }
     }
 
-    private func reloadWebView(_ webView: WKWebView) {
-        isRecoveringWebView = true
-
-        webView.reload()
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.isRecoveringWebView = false
-        }
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }

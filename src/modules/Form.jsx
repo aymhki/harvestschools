@@ -282,39 +282,10 @@ function Form({
     const [searchSelectSelections, setSearchSelectSelections] = useState({});
     const [searchSelectQueries, setSearchSelectQueries] = useState({});
     const [openSearchSelectId, setOpenSearchSelectId] = useState(null);
+    const [searchSelectOpensUpwards, setSearchSelectOpensUpwards] = useState(false);
     const [searchSelectHighlight, setSearchSelectHighlight] = useState(-1);
     const searchSelectWrapperRefs = useRef({});
-    const [searchSelectDropdownRect, setSearchSelectDropdownRect] = useState(null);
     const searchSelectDropdownRef = useRef(null);
-
-    const measureSearchSelectDropdown = useCallback(() => {
-        if (openSearchSelectId === null) return;
-        const wrapperRef = searchSelectWrapperRefs.current[openSearchSelectId];
-        if (!wrapperRef?.current) return;
-        const rect = wrapperRef.current.getBoundingClientRect();
-        const visibleHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-        if (rect.bottom <= 0 || rect.top >= visibleHeight) {
-            setOpenSearchSelectId(null);
-            setSearchSelectHighlight(-1);
-            setSearchSelectDropdownRect(null);
-
-            return;
-        }
-
-        const dropdownMaxHeight = 224;
-        const viewportHeight = visibleHeight;
-        const spaceBelow = viewportHeight - rect.bottom;
-        const spaceAbove = rect.top;
-        const openUp = spaceBelow < Math.min(dropdownMaxHeight, 160) && spaceAbove > spaceBelow;
-        setSearchSelectDropdownRect({
-            left: rect.left,
-            width: rect.width,
-            top: openUp ? undefined : rect.bottom + 4,
-            bottom: openUp ? viewportHeight - rect.top + 4 : undefined,
-            maxHeight: Math.max(Math.min(dropdownMaxHeight, openUp ? spaceAbove - 8 : spaceBelow - 8), 96),
-        });
-    }, [openSearchSelectId]);
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -1496,6 +1467,15 @@ function Form({
 
         const openDropdown = () => {
             if (!isFieldReadOnly) {
+                const wrapper = searchSelectWrapperRefs.current[field.id]?.current;
+
+                if (wrapper) {
+                    const rect = wrapper.getBoundingClientRect();
+                    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+                    setSearchSelectOpensUpwards((viewportHeight - rect.bottom) < 200 && rect.top > (viewportHeight - rect.bottom));
+                }
+
                 setOpenSearchSelectId(field.id);
                 setSearchSelectHighlight(-1);
             }
@@ -1559,7 +1539,7 @@ function Form({
 
         const markup = (
             <div
-                className={`search-select-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${isFieldReadOnly ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`}
+                className={`search-select-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${isFieldReadOnly ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''} ${isOpen ? 'has-open-dropdown' : ''} ${isOpen && searchSelectOpensUpwards ? 'opens-upwards' : ''}`}
                 ref={searchSelectWrapperRefs.current[field.id]}
                 {...(field.lang !== undefined && { lang: field.lang })}
             >
@@ -1610,17 +1590,9 @@ function Form({
                         onKeyDown={handleKeyDown}
                     />
                 </div>
-                {isOpen && searchSelectDropdownRect && createPortal(
+                {isOpen && (
                     <ul
                         className={`search-select-dropdown ${field.alwaysEnglish ? 'always-english' : ''}`}
-                        style={{
-                            left: searchSelectDropdownRect.left,
-                            right: 'auto',
-                            width: searchSelectDropdownRect.width,
-                            top: searchSelectDropdownRect.top,
-                            bottom: searchSelectDropdownRect.bottom,
-                            maxHeight: searchSelectDropdownRect.maxHeight,
-                        }}
                         role="listbox"
                         ref={searchSelectDropdownRef}
                         {...(field.lang !== undefined && { lang: field.lang })}
@@ -1643,8 +1615,7 @@ function Form({
                                 {choice}
                             </li>
                         ))}
-                    </ul>,
-                    document.body
+                    </ul>
                 )}
             </div>
         );
@@ -2450,28 +2421,6 @@ function Form({
         };
 
     }, [openSearchSelectId]);
-
-    useEffect(() => {
-        if (openSearchSelectId === null) {
-            setSearchSelectDropdownRect(null);
-            return;
-        }
-        measureSearchSelectDropdown();
-        window.addEventListener('scroll', measureSearchSelectDropdown, true);
-        window.addEventListener('resize', measureSearchSelectDropdown);
-        window.visualViewport?.addEventListener('resize', measureSearchSelectDropdown);
-        window.visualViewport?.addEventListener('scroll', measureSearchSelectDropdown);
-        return () => {
-            window.removeEventListener('scroll', measureSearchSelectDropdown, true);
-            window.removeEventListener('resize', measureSearchSelectDropdown);
-            window.visualViewport?.removeEventListener('resize', measureSearchSelectDropdown);
-            window.visualViewport?.removeEventListener('scroll', measureSearchSelectDropdown);
-        };
-    }, [openSearchSelectId, measureSearchSelectDropdown]);
-
-    useEffect(() => {
-        measureSearchSelectDropdown();
-    }, [searchSelectQueries, searchSelectSelections, measureSearchSelectDropdown]);
 
     const CaptchaField = () => {
         if (noCaptcha) return null;

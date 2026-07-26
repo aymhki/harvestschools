@@ -34,6 +34,12 @@ public class MainActivity extends BridgeActivity {
 
     private ImageButton backButton;
     private ImageButton forwardButton;
+    private CardView floatingNavBarCard;
+    private final android.os.Handler revealHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable revealRunnable;
+    private boolean isNavBarHidden = false;
+    private static final long NAV_BAR_REVEAL_DELAY_MS = 1200L;
+    private static final int NAV_BAR_SCROLL_TOLERANCE_PX = 12;
     private SwipeRefreshLayout swipeRefreshLayout;
     private CoordinatorLayout rootLayout;
     private volatile String currentShareUrl = "https://harvestschools.com";
@@ -124,6 +130,7 @@ public class MainActivity extends BridgeActivity {
         installWebViewRecovery();
         installEdgeSwipeNavigation(webView);
         addFloatingNavBar(root, webView);
+        installNavBarAutoHide(webView);
         startPollingLoop(webView);
     }
 
@@ -176,6 +183,42 @@ public class MainActivity extends BridgeActivity {
         });
     }
 
+
+    private void installNavBarAutoHide(WebView webView) {
+        webView.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (Math.abs(scrollY - oldScrollY) <= NAV_BAR_SCROLL_TOLERANCE_PX) {
+                return;
+            }
+
+            setNavBarHidden(true);
+            scheduleNavBarReveal();
+        });
+    }
+
+    private void scheduleNavBarReveal() {
+        if (revealRunnable != null) {
+            revealHandler.removeCallbacks(revealRunnable);
+        }
+
+        revealRunnable = () -> setNavBarHidden(false);
+
+        revealHandler.postDelayed(revealRunnable, NAV_BAR_REVEAL_DELAY_MS);
+    }
+
+    private void setNavBarHidden(boolean hidden) {
+        if (floatingNavBarCard == null || hidden == isNavBarHidden) {
+            return;
+        }
+
+        isNavBarHidden = hidden;
+
+        floatingNavBarCard.animate()
+                .alpha(hidden ? 0f : 1f)
+                .translationY(hidden ? dp(24) : 0f)
+                .setDuration(220)
+                .start();
+    }
+
     private void addFloatingNavBar(CoordinatorLayout root, WebView webView) {
         int outerPad = dp(10);
 
@@ -210,6 +253,7 @@ public class MainActivity extends BridgeActivity {
         lp.setMargins(dp(12), 0, 0, dp(6));
         card.setLayoutParams(lp);
         root.addView(card);
+        floatingNavBarCard = card;
         updateNavButtonState(webView);
     }
 

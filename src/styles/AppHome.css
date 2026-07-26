@@ -321,6 +321,12 @@
     opacity: 0.6;
 }
 
+.app-home .app-home-version-value {
+    font-family: var(--english-normal-font);
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
 .app-home-links {
     display: flex;
     flex-wrap: wrap;

@@ -707,6 +707,10 @@
     min-width: 0;
 }
 
+.search-select-wrapper.has-open-dropdown {
+    z-index: var(--form-field-dropdown-overlay-z-index);
+}
+
 .search-select-input-area {
     display: flex;
     flex-wrap: wrap;
@@ -778,17 +782,32 @@
     background: transparent;
 }
 
+/* Anchored to the field itself rather than positioned from measured
+ * coordinates: it stays stuck to the bottom of the field through any scroll or
+ * keyboard movement, and being out of flow it never pushes the fields below. */
 .search-select-dropdown {
-    position: fixed;
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    right: 0;
     max-height: 14rem;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     margin: 0;
     padding: 0.25rem;
     list-style: none;
     background-color: var(--ff-panel-bg);
     border: var(--ff-border-width) solid var(--ff-field-border);
     border-radius: var(--ff-radius);
-    z-index: var(--form-field-dropdown-overlay-z-index);
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.18);
+    z-index: var(--form-field-dropdown-z-index);
+}
+
+/* Fields that sit at the bottom of a form open upwards instead. */
+.search-select-wrapper.opens-upwards .search-select-dropdown {
+    top: auto;
+    bottom: calc(100% + 0.25rem);
 }
 
 .search-select-option,

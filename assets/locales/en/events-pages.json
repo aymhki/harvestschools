@@ -20,7 +20,6 @@
       "subscribe-btn": "Get Notified",
       "unsubscribe-btn": "Turn Off Notifications",
       "notifications-modal-title": "School date notifications",
-      "test-reminder-sending": "Sending…",
       "update-reminders-btn": "Update Notifications",
       "saving-reminders-btn": "Saving…",
       "reminders-scheduled-note": "Notifications for the next {{total}} dates are saved on this device.",
@@ -28,9 +27,6 @@
       "reminder-offset-same-day": "On the day",
       "reminder-offset-one-day-before": "A day before",
       "reminder-offset-one-week-before": "A week before",
-      "test-reminder-btn": "Test Notifications",
-      "test-reminder-title": "Harvest International School",
-      "test-reminder-body": "Notifications are working on this device.",
       "notifications-blocked-note": "Notifications are turned off for this app. You can turn them back on from the device settings."
     },
     "national-calendar-page": {

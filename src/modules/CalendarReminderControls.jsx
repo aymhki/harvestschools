@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useSpring, animated } from 'react-spring'
 import { Haptics, NotificationType } from '@capacitor/haptics'
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined'
+import NotificationsOffOutlinedIcon from '@mui/icons-material/NotificationsOffOutlined'
 import Form from './Form.jsx'
 import { getCalendarById } from '../services/General/SchoolCalendarsService.jsx'
 import {
@@ -12,7 +13,6 @@ import {
     getCalendarSubscription,
     getNotificationPermission,
     getScheduledReminderCount,
-    sendTestReminder,
     subscribeToCalendar,
     unsubscribeFromCalendar,
 } from '../services/General/CalendarSubscriptionService.jsx'
@@ -20,8 +20,6 @@ import '../styles/CalendarActions.css'
 
 
 const REMINDER_OFFSET_FIELD_ID = 1
-const TEST_REMINDER_FIELD_ID = 2
-const UNSUBSCRIBE_FIELD_ID = 3
 
 
 function CalendarReminderControls({ calendarId }) {
@@ -40,8 +38,6 @@ function CalendarReminderControls({ calendarId }) {
     const [scheduledCount, setScheduledCount] = useState(0)
 
     const [isBlocked, setIsBlocked] = useState(false)
-
-    const [isSendingTest, setIsSendingTest] = useState(false)
 
     const modalFooterButtonsRef = useRef(null)
 
@@ -121,71 +117,27 @@ function CalendarReminderControls({ calendarId }) {
         setScheduledCount(0)
 
         Haptics.notification({ type: NotificationType.Warning }).catch(() => null)
-
-        closeModal()
     }
 
-    const handleTestReminder = async () => {
-        setIsSendingTest(true)
-
-        const status = await sendTestReminder({ translate: t })
-
-        setIsBlocked(status === 'denied')
-        setIsSendingTest(false)
-    }
-
-    const reminderFormFields = useMemo(() => {
-        const fields = [
-            {
-                id: REMINDER_OFFSET_FIELD_ID,
-                type: 'select',
-                name: 'reminder-offset',
-                label: 'Reminder Offset',
-                displayLabel: t('events-pages.common.reminder-offset-label'),
-                required: true,
-                errorMsg: t('events-pages.common.reminder-offset-label'),
-                defaultValue: offsetLabelsByDays.get(offsetDays),
-                setValue: null,
-                widthOfField: 1,
-                httpName: 'reminder-offset',
-                labelOutside: true,
-                labelOnTop: true,
-                dontLetTheBrowserSaveField: true,
-                choices: REMINDER_OFFSET_CHOICES.map((choice) => offsetLabelsByDays.get(choice.days)),
-            },
-        ]
-
-        if (isSubscribed) {
-            fields.push({
-                id: TEST_REMINDER_FIELD_ID,
-                type: 'button',
-                name: 'test-reminder',
-                label: isSendingTest
-                    ? t('events-pages.common.test-reminder-sending')
-                    : t('events-pages.common.test-reminder-btn'),
-                displayLabel: t('events-pages.common.test-reminder-btn'),
-                required: false,
-                widthOfField: 2,
-                httpName: 'test-reminder',
-                onClick: handleTestReminder,
-            })
-
-            fields.push({
-                id: UNSUBSCRIBE_FIELD_ID,
-                type: 'button',
-                name: 'unsubscribe',
-                label: t('events-pages.common.unsubscribe-btn'),
-                displayLabel: t('events-pages.common.unsubscribe-btn'),
-                required: false,
-                widthOfField: 2,
-                httpName: 'unsubscribe',
-                onClick: handleUnsubscribe,
-            })
-        }
-
-        return fields
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [t, offsetDays, offsetLabelsByDays, isSubscribed, isSendingTest])
+    const reminderFormFields = useMemo(() => ([
+        {
+            id: REMINDER_OFFSET_FIELD_ID,
+            type: 'select',
+            name: 'reminder-offset',
+            label: 'Reminder Offset',
+            displayLabel: t('events-pages.common.reminder-offset-label'),
+            required: true,
+            errorMsg: t('events-pages.common.reminder-offset-label'),
+            defaultValue: offsetLabelsByDays.get(offsetDays),
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'reminder-offset',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            choices: REMINDER_OFFSET_CHOICES.map((choice) => offsetLabelsByDays.get(choice.days)),
+        },
+    ]), [t, offsetDays, offsetLabelsByDays])
 
     useEffect(() => {
         loadCurrentState()
@@ -209,6 +161,14 @@ function CalendarReminderControls({ calendarId }) {
                         ? t('events-pages.common.update-reminders-btn')
                         : t('events-pages.common.subscribe-btn')}
                 </button>
+
+                {isSubscribed && (
+                    <button className={'calendar-actions-unsubscribe-button'} onClick={handleUnsubscribe}>
+                        <NotificationsOffOutlinedIcon />
+
+                        {t('events-pages.common.unsubscribe-btn')}
+                    </button>
+                )}
 
                 {isSubscribed && scheduledCount > 0 && (
                     <p className={'calendar-actions-note'}>

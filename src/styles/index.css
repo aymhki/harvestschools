@@ -158,6 +158,7 @@
     --form-date-popup-modal-overlay-z-index: 2001;
     --form-date-popup-modal-z-index: 2002;
     --form-field-dropdown-overlay-z-index: 9000;
+    --form-field-dropdown-z-index: 9001;
     --calendar-actions-modal-z-index: 2002;
     --spinner-overlay-z-index: 100000;
 
