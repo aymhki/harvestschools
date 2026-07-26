@@ -85,28 +85,34 @@ const addPassToAppleWallet = async (url) => {
 
     const base64 = await readBlobAsBase64(await response.blob())
 
-    await WalletPass.addPass({ base64 })
+    return await WalletPass.addPass({ base64 })
 }
 
 
 const openWalletPass = async (offer) => {
     const url = getWalletPassUrlFor(offer)
 
-    let opened = false
+    let result = { handled: false, alreadyInWallet: false, openedInWallet: false }
 
     if (url) {
         if (Capacitor.getPlatform() === APPLE_WALLET_PLATFORM) {
-            await addPassToAppleWallet(url)
+            const passResult = await addPassToAppleWallet(url)
+
+            result = {
+                handled: true,
+                alreadyInWallet: Boolean(passResult && passResult.alreadyInWallet),
+                openedInWallet: Boolean(passResult && passResult.opened),
+            }
         } else {
             await Browser.open({ url, presentationStyle: 'popover' })
+
+            result = { handled: true, alreadyInWallet: false, openedInWallet: false }
         }
 
         Haptics.notification({ type: NotificationType.Success }).catch(() => null)
-
-        opened = true
     }
 
-    return opened
+    return result
 }
 
 

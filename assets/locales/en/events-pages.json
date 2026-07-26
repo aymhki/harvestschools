@@ -378,6 +378,7 @@
         "total-cost-for-base-and-extras": "Total Cost for Base and Extras:",
         "download-confirmation-btn": "Download Confirmation",
         "add-to-apple-wallet-btn": "Add to Apple Wallet",
+        "pass-already-in-wallet": "This pass is already in your Wallet.",
         "save-to-google-wallet-btn": "Save to Google Wallet",
         "share-confirmation-btn": "Save or Share Confirmation",
         "retry-btn": "Retry",
