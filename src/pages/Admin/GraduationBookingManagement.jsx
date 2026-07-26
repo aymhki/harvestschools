@@ -1,17 +1,21 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState, useRef} from "react";
+import {useEffect, useState, useRef, useMemo} from "react";
 import {msgTimeout, graduationBookingManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
+import debounce from "lodash.debounce";
 import {
     fetchGraduationBookingsRequest,
     handleAddGraduationBookingRequest,
     handleDeleteGraduationBookingRequest,
-    handleEditGraduationBookingRequest
+    handleEditGraduationBookingRequest,
+    fetchGraduationCeremonyDetailsRequest,
+    handleUpdateGraduationCeremonyDetailsRequest
 } from "../../services/Admin/GraduationBookings/AdminGraduationBookingManagementServices.jsx";
+import {searchPlaces} from "../../services/General/GooglePlacesService.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 
 function GraduationBookingManagement() {
@@ -32,6 +36,20 @@ function GraduationBookingManagement() {
     const [resetEditBookingModal, setResetEditBookingModal] = useState(false);
     const addBookingModalFooterButtonsRef = useRef(null);
     const editBookingModalFooterButtonsRef = useRef(null);
+    const [showUpdateVenueModal, setShowUpdateVenueModal] = useState(false);
+    const [ceremonyDetails, setCeremonyDetails] = useState(null);
+    const [ceremonyLocationChoices, setCeremonyLocationChoices] = useState([]);
+    const updateVenueModalFooterButtonsRef = useRef(null);
+    const ceremonyPlacesByLabel = useRef({});
+
+    const ceremonyDateFieldId = 1;
+    const ceremonyLocationFieldId = 2;
+    const ceremonyHourFieldId = 3;
+    const ceremonyMinuteFieldId = 4;
+    const ceremonyMeridiemFieldId = 5;
+    const ceremonyTimeZoneFieldId = 6;
+    const ceremonyLocationSearchDelay = 100;
+    const fallbackTimeZone = 'Africa/Cairo';
 
     const bookingUsernameFieldId = 1;
     const bookingPasswordFieldId = 2;
@@ -77,6 +95,11 @@ function GraduationBookingManagement() {
     const animateEditBookingModal = useSpring({
         opacity: showEditBookingModal ? 1 : 0,
         transform: showEditBookingModal ? 'translateY(0)' : 'translateY(-100%)'
+    });
+
+    const animateUpdateVenueModal = useSpring({
+        opacity: showUpdateVenueModal ? 1 : 0,
+        transform: showUpdateVenueModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
     const addBookingModalCoreFormFields = [
@@ -545,6 +568,216 @@ function GraduationBookingManagement() {
         setEditBookingModalDynamicSections(null);
     }
 
+    const buildPaddedChoices = (count, startAt) =>
+        Array.from({length: count}, (unused, index) => String(index + startAt).padStart(2, '0'));
+
+    const getDeviceTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || fallbackTimeZone;
+
+    const availableTimeZones = useMemo(() => (
+        typeof Intl.supportedValuesOf === 'function'
+            ? Intl.supportedValuesOf('timeZone')
+            : [getDeviceTimeZone(), fallbackTimeZone]
+    ), []);
+
+    const buildCeremonyLocationLabel = (details) =>
+        details ? [details.locationName, details.locationAddress].filter(Boolean).join(' — ') : '';
+
+    const splitCeremonyTime = (ceremonyTime) => {
+        const parts = String(ceremonyTime || '').split(':');
+        const hourOfDay = Number(parts[0]);
+        let splitTime = {hour: '', minute: '', meridiem: ''};
+
+        if (parts.length >= 2 && !Number.isNaN(hourOfDay)) {
+            splitTime = {
+                hour: String(hourOfDay % 12 === 0 ? 12 : hourOfDay % 12).padStart(2, '0'),
+                minute: String(Number(parts[1])).padStart(2, '0'),
+                meridiem: hourOfDay >= 12 ? 'PM' : 'AM',
+            };
+        }
+
+        return splitTime;
+    };
+
+    const searchCeremonyLocations = useMemo(() => debounce(async (query) => {
+        const places = await searchPlaces(query);
+
+        places.forEach((place) => {
+            ceremonyPlacesByLabel.current[place.label] = place;
+        });
+
+        setCeremonyLocationChoices(places.map((place) => place.label));
+    }, ceremonyLocationSearchDelay), []);
+
+    const savedCeremonyLocationLabel = buildCeremonyLocationLabel(ceremonyDetails);
+    const savedCeremonyTime = splitCeremonyTime(ceremonyDetails ? ceremonyDetails.ceremonyTime : '');
+
+    const updateVenueModalFormFields = [
+        {
+            id: ceremonyDateFieldId,
+            type: 'date',
+            name: 'ceremony-date',
+            label: 'Ceremony Date',
+            displayLabel: 'Ceremony Date',
+            required: true,
+            errorMsg: 'Please choose the ceremony date',
+            defaultValue: (ceremonyDetails && ceremonyDetails.ceremonyDate) || '',
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'ceremony-date',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true,
+        },
+        {
+            id: ceremonyLocationFieldId,
+            type: 'search-select',
+            name: 'ceremony-location',
+            label: 'Ceremony Location',
+            displayLabel: 'Ceremony Location',
+            placeholder: 'Search for a place',
+            required: true,
+            errorMsg: 'Please search for and choose the ceremony location',
+            defaultValue: savedCeremonyLocationLabel,
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'ceremony-location',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true,
+            choices: ceremonyLocationChoices,
+            onSearchQueryChange: searchCeremonyLocations,
+        },
+        {
+            id: ceremonyHourFieldId,
+            type: 'select',
+            name: 'ceremony-hour',
+            label: 'Ceremony Hour',
+            displayLabel: 'Hour',
+            required: true,
+            errorMsg: 'Please choose the ceremony hour',
+            defaultValue: savedCeremonyTime.hour,
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'ceremony-hour',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true,
+            choices: buildPaddedChoices(12, 1),
+        },
+        {
+            id: ceremonyMinuteFieldId,
+            type: 'number',
+            name: 'ceremony-minute',
+            label: 'Ceremony Minute',
+            displayLabel: 'Minute',
+            placeholder: 'Minute',
+            required: true,
+            errorMsg: 'Please enter a minute between 0 and 59',
+            defaultValue: savedCeremonyTime.minute,
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'ceremony-minute',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true,
+            minimumValue: 0,
+            maximumValue: 59,
+        },
+        {
+            id: ceremonyMeridiemFieldId,
+            type: 'select',
+            name: 'ceremony-meridiem',
+            label: 'Ceremony Meridiem',
+            displayLabel: 'AM / PM',
+            required: true,
+            errorMsg: 'Please choose AM or PM',
+            defaultValue: savedCeremonyTime.meridiem,
+            setValue: null,
+            widthOfField: 3,
+            httpName: 'ceremony-meridiem',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true,
+            choices: ['AM', 'PM'],
+        },
+        {
+            id: ceremonyTimeZoneFieldId,
+            type: 'search-select',
+            name: 'ceremony-time-zone',
+            label: 'Ceremony Time Zone',
+            displayLabel: 'Ceremony Time Zone',
+            placeholder: 'Search for a time zone',
+            required: true,
+            errorMsg: 'Please choose the ceremony time zone',
+            defaultValue: (ceremonyDetails && ceremonyDetails.timeZone) || '',
+            setValue: null,
+            widthOfField: 1,
+            httpName: 'ceremony-time-zone',
+            labelOutside: true,
+            labelOnTop: true,
+            dontLetTheBrowserSaveField: true,
+            alwaysEnglish: true,
+            choices: availableTimeZones,
+        },
+    ];
+
+    const openUpdateVenueModal = async () => {
+        setIsLoading(true);
+
+        const details = await fetchGraduationCeremonyDetailsRequest();
+
+        ceremonyPlacesByLabel.current = {};
+
+        if (details && details.locationName) {
+            ceremonyPlacesByLabel.current[buildCeremonyLocationLabel(details)] = {
+                name: details.locationName,
+                address: details.locationAddress,
+                placeId: details.locationPlaceId,
+                latitude: details.locationLatitude,
+                longitude: details.locationLongitude,
+            };
+        }
+
+        setCeremonyDetails(details || {});
+        setCeremonyLocationChoices([]);
+        setShowUpdateVenueModal(true);
+        setIsLoading(false);
+    };
+
+    const closeUpdateVenueModal = () => {
+        setShowUpdateVenueModal(false);
+        setCeremonyDetails(null);
+        setCeremonyLocationChoices([]);
+        ceremonyPlacesByLabel.current = {};
+    };
+
+    const handleUpdateVenue = async (formData) => {
+        setIsLoading(true);
+
+        try {
+            const selectedLabel = String(formData.get(`field_${ceremonyLocationFieldId}`) || '');
+            const selectedPlace = ceremonyPlacesByLabel.current[selectedLabel] || null;
+            const result = await handleUpdateGraduationCeremonyDetailsRequest(formData, selectedPlace);
+
+            if (result && result.success) {
+                closeUpdateVenueModal();
+                return true;
+            } else {
+                throw new Error(result || 'An error occurred while updating the ceremony details.');
+            }
+
+        } catch (error) {
+            throw new Error(error.message || 'An error occurred while updating the ceremony details.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const fetchBookings = async () => {
         setIsLoading(true);
 
@@ -567,7 +800,7 @@ function GraduationBookingManagement() {
     }, []);
 
     useEffect(() => {
-        if (showAddBookingModal || showDeleteBookingModal || showEditBookingModal) {
+        if (showAddBookingModal || showDeleteBookingModal || showEditBookingModal || showUpdateVenueModal) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
@@ -576,7 +809,13 @@ function GraduationBookingManagement() {
         return () => {
             document.body.style.overflow = '';
         };
-    }, [showAddBookingModal, showDeleteBookingModal, showEditBookingModal]);
+    }, [showAddBookingModal, showDeleteBookingModal, showEditBookingModal, showUpdateVenueModal]);
+
+    useEffect(() => {
+        return () => {
+            searchCeremonyLocations.cancel();
+        };
+    }, [searchCeremonyLocations]);
 
     const columnDataTypes = {
         "date": ["Student Created", "Booking Created"],
@@ -637,6 +876,11 @@ function GraduationBookingManagement() {
                                     setShowAddBookingModal(true);
                                }}>
                                    Add Booking
+                               </button>
+                           ),
+                           (
+                               <button key={5} onClick={openUpdateVenueModal} disabled={isLoading}>
+                                   Update Venue
                                </button>
                            ),
                            (
@@ -812,6 +1056,55 @@ function GraduationBookingManagement() {
                             Cancel
                         </button>
                         <div ref={editBookingModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
+                    </div>
+                </div>
+
+            </animated.div>
+
+            <animated.div style={animateUpdateVenueModal} className={"general-large-admin-action-modal"}>
+                <div className={"general-large-admin-action-modal-overlay"} onClick={closeUpdateVenueModal}/>
+
+                <div className={"general-large-admin-action-modal-container"}>
+                    <div className={"general-large-admin-action-modal-header"}>
+                        <h3>
+                            Update Ceremony Venue
+                        </h3>
+                    </div>
+
+                    <div className={"general-large-admin-action-modal-content"}>
+                        {ceremonyDetails && (
+                            <Form fields={updateVenueModalFormFields}
+                                  mailTo={''}
+                                  sendPdf={false}
+                                  formTitle={"Update Ceremony Venue Modal Form"}
+                                  lang={"en"}
+                                  captchaLength={1}
+                                  noInputFieldsCache={true}
+                                  noCaptcha={true}
+                                  hasDifferentOnSubmitBehaviour={true}
+                                  differentOnSubmitBehaviour={handleUpdateVenue}
+                                  hasDifferentSubmitButtonText={true}
+                                  differentSubmitButtonText={[
+                                      "Save", "Saving..."
+                                  ]}
+                                  formInModalPopup={true}
+                                  setShowFormModalPopup={setShowUpdateVenueModal}
+                                  pedanticIds={false}
+                                  footerButtonsSpaceBetween={true}
+                                  switchFooterButtonsOrder={true}
+                                  thisFormIsEditingAnEntry={true}
+                                  forceEnglishForm={true}
+                                  formFooterButtonsAreOutside={true}
+                                  footerButtonsPortalTarget={updateVenueModalFooterButtonsRef}
+                            />
+                        )}
+                    </div>
+
+                    <div className={"general-large-admin-action-modal-footer"}>
+                        <button className={"update-venue-modal-cancel-button"} onClick={closeUpdateVenueModal}>
+                            Cancel
+                        </button>
+                        <div ref={updateVenueModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
 

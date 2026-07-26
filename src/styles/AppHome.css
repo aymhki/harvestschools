@@ -1,248 +1,419 @@
 .app-home {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 1.5rem 1.15rem calc(3rem + env(safe-area-inset-bottom)) 1.15rem;
-    max-width: 46rem;
-    margin: 0 auto;
+    gap: var(--app-home-section-gap);
     width: 100%;
+    max-width: var(--app-home-content-max-width);
+    margin: 0 auto;
+    padding: calc(var(--app-home-gap) + env(safe-area-inset-top)) var(--app-home-page-side-padding) calc(3rem + env(safe-area-inset-bottom)) var(--app-home-page-side-padding);
     box-sizing: border-box;
     color: var(--primary-color);
 }
 
-.app-home__header {
+.app-home-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: var(--app-home-title-gap);
+    padding-top: 0.5rem;
 }
 
-.app-home__header-text {
+.app-home-logo {
+    flex: 0 0 auto;
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: contain;
+}
+
+.app-home-header-text {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
     min-width: 0;
 }
 
-.app-home__greeting {
-    margin: 0 0 0.2rem 0;
+.app-home-language-button {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.8rem 1.15rem;
     font-size: 0.9rem;
+    letter-spacing: 0.02rem;
+}
+
+.app-home-language-button .app-home-language-icon {
+    font-size: 1.25rem;
+}
+
+.app-home-language-button .app-home-language-label.in-arabic {
+    font-family: var(--arabic-normal-font);
+}
+
+.app-home-language-button .app-home-language-label.in-english {
+    font-family: var(--english-normal-font);
+}
+
+.app-home-greeting {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
     letter-spacing: 0.06rem;
     text-transform: uppercase;
     opacity: 0.6;
 }
 
-.app-home__school {
+.app-home-school {
     margin: 0;
-    font-family: var(--english-title-font);
     font-size: 1.55rem;
-    line-height: 1.2;
+    line-height: 1.3;
+    letter-spacing: 0.05rem;
     font-weight: bold;
 }
 
-[dir="rtl"] .app-home__school {
-    font-family: var(--arabic-title-font);
+.app-home-today {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    letter-spacing: 0.02rem;
+    opacity: 0.7;
 }
 
-.app-home__logo {
-    flex: 0 0 auto;
-    width: 3.25rem;
-    height: 3.25rem;
-    object-fit: contain;
-}
-
-.app-home__logo--placeholder {
-    display: block;
-    border-radius: 0.9rem;
-    background-color: rgba(31, 33, 82, 0.08);
-}
-
-.app-home__section {
+.app-home-section {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    gap: var(--app-home-title-gap);
 }
 
-.app-home__section-head {
+.app-home-section-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
 }
 
-.app-home__section-title {
+.app-home-section-title {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    letter-spacing: 0.05rem;
     font-weight: bold;
-    letter-spacing: 0.03rem;
 }
 
-.app-home__link {
-    border: 0;
-    background: transparent;
-    color: var(--secondary-color);
-    font-size: 0.88rem;
-    font-weight: bold;
+.app-home-text-button {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--app-home-card-radius);
+    font-size: 0.85rem;
     letter-spacing: 0.02rem;
-    padding: 0.2rem 0.1rem;
-    cursor: pointer;
+    background-color: transparent;
+    color: var(--primary-color);
+    box-shadow: none;
 }
 
-.app-home__chip {
+.app-home-text-button:hover {
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+}
+
+.app-home-chip {
+    flex: 0 0 auto;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
     font-size: 0.72rem;
     letter-spacing: 0.04rem;
-    padding: 0.22rem 0.55rem;
-    border-radius: 999px;
-    background-color: rgba(31, 33, 82, 0.09);
-    opacity: 0.85;
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
 }
 
-.app-home__actions {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.7rem;
+.app-home-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--app-home-gap);
+    align-items: stretch;
 }
 
-.app-home__action {
+.app-home-card,
+.app-home-tile {
+    margin: 0;
+    border-radius: var(--app-home-card-radius);
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 0.5rem var(--primary-color);
+    cursor: pointer;
+    transition: transform 0.16s ease, filter 0.25s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.app-home-card:hover,
+.app-home-tile:hover {
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+}
+
+.app-home-card:active,
+.app-home-tile:active {
+    transform: scale(0.98);
+}
+
+.app-home-card:disabled,
+.app-home-tile:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.app-home-card:disabled:hover,
+.app-home-tile:disabled:hover {
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    filter: none;
+}
+
+.app-home-tile {
+    flex: 1 1 var(--app-home-tile-basis);
+    min-width: var(--app-home-tile-basis);
+    min-height: var(--app-home-tile-min-height);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    padding: 0.9rem 0.4rem;
-    border: 1px solid rgba(31, 33, 82, 0.1);
-    border-radius: 1.1rem;
-    background-color: var(--fb-off-white-color);
-    color: inherit;
-    cursor: pointer;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.1rem 0.6rem;
 }
 
-.app-home__action:active {
-    transform: scale(0.96);
+.app-home-tile .app-home-tile-icon {
+    flex: 0 0 auto;
+    font-size: 2rem;
 }
 
-.app-home__action--primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--fb-white-color);
-}
-
-.app-home__action--accent {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-    color: var(--fb-white-color);
-}
-
-.app-home__action-icon {
-    display: grid;
-    place-items: center;
-    width: 1.75rem;
-    height: 1.75rem;
-}
-
-.app-home__action-icon svg {
-    width: 100%;
-    height: 100%;
-}
-
-.app-home__action-label {
-    font-size: 0.72rem;
-    line-height: 1.25;
+.app-home-tile-label {
+    font-size: 0.85rem;
+    line-height: 1.35;
+    letter-spacing: 0;
     text-align: center;
-    letter-spacing: 0.01rem;
-    word-break: break-word;
+    word-break: keep-all;
 }
 
-.app-home__events,
-.app-home__alumni {
+.app-home-list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: var(--app-home-gap);
 }
 
-.app-home__event {
+.app-home-event {
     width: 100%;
+    min-height: var(--app-home-row-min-height);
     display: flex;
     align-items: center;
-    gap: 0.9rem;
-    padding: 0.85rem 0.95rem;
-    border: 1px solid rgba(31, 33, 82, 0.1);
-    border-radius: 1rem;
-    background-color: var(--fb-off-white-color);
-    color: inherit;
+    gap: 1rem;
+    padding: 1.05rem 1.1rem;
     text-align: start;
-    cursor: pointer;
-    transition: transform 0.16s ease, background-color 0.16s ease;
 }
 
-.app-home__event:active {
-    transform: scale(0.99);
-}
-
-.app-home__event-date {
+.app-home-event-date {
     flex: 0 0 auto;
-    min-width: 3.6rem;
+    min-width: 3.75rem;
     padding: 0.4rem 0.5rem;
     border-radius: 0.7rem;
     background-color: var(--primary-color);
     color: var(--fb-white-color);
     font-size: 0.78rem;
     font-weight: bold;
-    text-align: center;
     letter-spacing: 0.02rem;
+    text-align: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.app-home__event-body {
+.app-home-event:hover .app-home-event-date {
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+}
+
+.app-home-event-body {
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
     min-width: 0;
 }
 
-.app-home__event-title {
+.app-home-event-title {
     font-size: 0.95rem;
     line-height: 1.35;
+    letter-spacing: 0;
 }
 
-.app-home__event-distance {
+.app-home-event-meta {
     font-size: 0.78rem;
-    opacity: 0.62;
+    letter-spacing: 0;
+    opacity: 0.75;
 }
 
-.app-home__alumni-card {
-    width: 100%;
+.app-home-alumni-list {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    padding: 0.9rem 1rem;
-    border: 1px solid rgba(31, 33, 82, 0.1);
-    border-radius: 1rem;
-    background-color: var(--fb-off-white-color);
-    color: inherit;
-    text-align: start;
-    cursor: pointer;
+    gap: var(--app-home-gap);
 }
 
-.app-home__alumni-name {
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-
-.app-home__alumni-excerpt {
-    font-size: 0.85rem;
-    line-height: 1.45;
-    opacity: 0.72;
-}
-
-.app-home__empty {
+.app-home-alumni-list .alumni-post-card {
+    width: 100%;
     margin: 0;
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 1px dashed rgba(31, 33, 82, 0.22);
+    box-sizing: border-box;
+}
+
+.app-home-device-row {
+    width: 100%;
+    min-height: var(--app-home-row-min-height);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.05rem 1.1rem;
+    text-align: start;
+}
+
+.app-home-device-row .app-home-device-icon {
+    flex: 0 0 auto;
+    font-size: 1.5rem;
+}
+
+.app-home-device-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.app-home-device-title {
+    font-size: 0.95rem;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.app-home-device-detail {
+    font-size: 0.78rem;
+    letter-spacing: 0;
+    opacity: 0.75;
+}
+
+.app-home-device-action {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 0.02rem;
+    text-transform: uppercase;
+}
+
+.app-home-version {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.02rem;
+    text-align: center;
+    opacity: 0.6;
+}
+
+.app-home-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--app-home-gap);
+    align-items: stretch;
+}
+
+.app-home-link {
+    flex: 1 1 var(--app-home-link-basis);
+    min-width: var(--app-home-link-basis);
+    min-height: var(--app-home-row-min-height);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.7rem;
+    padding: 1rem 1.1rem;
+    text-align: start;
+}
+
+.app-home-link .app-home-link-icon {
+    flex: 0 0 auto;
+    font-size: 1.5rem;
+}
+
+.app-home-link-label {
+    font-size: 0.9rem;
+    line-height: 1.35;
+    letter-spacing: 0;
+    word-break: keep-all;
+}
+
+.app-home-empty {
+    margin: 0;
+    padding: 1.1rem 1.2rem;
+    border-radius: var(--app-home-card-radius);
+    border: 0.1rem dashed var(--primary-color);
     font-size: 0.88rem;
     line-height: 1.5;
+    letter-spacing: 0;
     opacity: 0.7;
+}
+
+[dir="rtl"] .app-home-event,
+[dir="rtl"] .app-home-device-row,
+[dir="rtl"] .app-home-link {
+    text-align: right;
+}
+
+@media (max-width: 380px) {
+    .app-home {
+        --app-home-gap: 1.15rem;
+        --app-home-tile-basis: 6rem;
+        --app-home-link-basis: 8rem;
+    }
+
+    .app-home-school {
+        font-size: 1.35rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .app-home {
+        --app-home-page-side-padding: 3rem;
+        --app-home-section-gap: 4.25rem;
+        --app-home-gap: 2rem;
+        --app-home-title-gap: 1.5rem;
+        --app-home-tile-basis: 9rem;
+        --app-home-tile-min-height: 8rem;
+        --app-home-link-basis: 12rem;
+    }
+
+    .app-home-logo {
+        width: 4.25rem;
+        height: 4.25rem;
+    }
+
+    .app-home-header {
+        padding-inline-end: 10rem;
+    }
+
+    .app-home-language-button {
+        position: absolute;
+        top: calc(var(--app-home-gap) + env(safe-area-inset-top));
+        inset-inline-end: var(--app-home-page-side-padding);
+    }
+
+    .app-home-school {
+        font-size: 1.85rem;
+    }
+
+    .app-home-section-title {
+        font-size: 1.25rem;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -250,50 +421,53 @@
         color: var(--fb-white-color);
     }
 
-    .app-home__logo--placeholder,
-    .app-home__chip {
-        background-color: rgba(255, 255, 255, 0.1);
+    .app-home-card,
+    .app-home-tile {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
-    .app-home__action,
-    .app-home__event,
-    .app-home__alumni-card {
-        background-color: var(--dark-accent-color);
-        border-color: rgba(255, 255, 255, 0.1);
+    .app-home-card:hover,
+    .app-home-tile:hover {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
-    .app-home__action--primary {
-        background-color: var(--primary-color);
-        border-color: rgba(255, 255, 255, 0.18);
+    .app-home-card:disabled:hover,
+    .app-home-tile:disabled:hover {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+        filter: none;
     }
 
-    .app-home__action--accent {
-        background-color: var(--secondary-color);
-        border-color: rgba(255, 255, 255, 0.18);
+    .app-home-text-button {
+        color: var(--fb-white-color);
     }
 
-    .app-home__event-date {
+    .app-home-text-button:hover {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    }
+
+    .app-home-chip {
         background-color: var(--fb-white-color);
         color: var(--primary-color);
     }
 
-    .app-home__empty {
-        border-color: rgba(255, 255, 255, 0.22);
-    }
-}
-
-@media (max-width: 380px) {
-    .app-home__actions {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+    .app-home-event-date {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
     }
 
-    .app-home__school {
-        font-size: 1.35rem;
+    .app-home-event:hover .app-home-event-date {
+        background-color: var(--primary-color);
+        color: var(--fb-white-color);
     }
-}
 
-@media (min-width: 700px) {
-    .app-home__actions {
-        grid-template-columns: repeat(8, minmax(0, 1fr));
+    .app-home-empty {
+        border-color: var(--fb-white-color);
     }
 }

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import {useNavigate} from "react-router-dom";
 import {Fragment} from "react";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
+import CachedImage from "./CachedImage.jsx";
 
 
 function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInThePage, compact})
@@ -26,7 +27,7 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
                             }}>
                                 <p> {option.title} </p>
 
-                                <img src={servePublicAsset(option.image)} alt={option.title}/>
+                                <CachedImage src={servePublicAsset(option.image)} alt={option.title}/>
                             </div>
                         ))}
                     </div>
@@ -64,7 +65,7 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
                             }}>
 
                                 {<h3>{option.title}</h3>}
-                                <img src={servePublicAsset(option.image)} alt={option.title}/>
+                                <CachedImage src={servePublicAsset(option.image)} alt={option.title}/>
                                 {<p>{option.description}</p>}
 
                                 <button

@@ -2,7 +2,7 @@ import '../../styles/Events.css'
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import Table from "../../modules/Table.jsx";
-import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
+import CalendarActions from "../../modules/CalendarActions.jsx";
 
 function BritishKGCalendar() {
     const {t, i18n} = useTranslation(['events-pages'])
@@ -50,13 +50,7 @@ function BritishKGCalendar() {
 
                 <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
 
-                <div className={"download-calendar-button-wrapper"} onClick={() => {
-                    window.open(servePublicAsset("/documents/Calendars/british_kg_calendar_2026.pdf", {download: true}), "_blank");
-                }}>
-                    <button className={"download-calendar-button"}>
-                        {t("events-pages.common.download-calendar-btn")}
-                    </button>
-                </div>
+                <CalendarActions calendarId={"british-kg"}/>
 
                 <p>
                     {t('common.last-updated', {ns: 'common'})} {formattedDate}

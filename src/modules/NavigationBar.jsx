@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import TranslateIcon from '@mui/icons-material/Translate';
 import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
+import CachedImage from "./CachedImage.jsx";
 import {isDevelopment} from "../services/General/GeneralUtils.jsx"
 import { Browser } from '@capacitor/browser';
 
@@ -121,7 +122,7 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
         <nav className={`navbar ${compactOrAdmin ? 'compact-navbar' : ''}`} >
             <div className={`logo-container ${compactOrAdmin ? 'compact-logo-container' : ''}`}>
                 <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate(isMobileApp ? '/app-home' : '/home'); } }>
-                    <img src={servePublicAsset("/images/HarvestLogos/HarvestLogoCropped.avif")} alt="Harvest Logo" className={`logo ${compactOrAdmin ? 'compact-logo' : ''}`}/>
+                    <CachedImage src={servePublicAsset("/images/HarvestLogos/HarvestLogoCropped.avif")} alt="Harvest Logo" className={`logo ${compactOrAdmin ? 'compact-logo' : ''}`} fallbackClassName={`logo ${compactOrAdmin ? 'compact-logo' : ''}`}/>
                 </Link>
 
                 {!compactOrAdmin && (

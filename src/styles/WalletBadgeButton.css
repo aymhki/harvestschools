@@ -1,0 +1,50 @@
+.wallet-badge-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem;
+    padding: 0;
+    border-radius: var(--wallet-badge-radius);
+    background-color: transparent;
+    box-shadow: none;
+    line-height: 0;
+}
+
+.wallet-badge-button:hover {
+    background-color: transparent;
+    filter: none;
+}
+
+.wallet-badge-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.wallet-badge-artwork {
+    display: block;
+    height: var(--wallet-badge-height);
+    width: auto;
+    max-width: 100%;
+}
+
+.wallet-badge-fallback-button {
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+}
+
+.wallet-badge-fallback-button:hover {
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+}
+
+@media (prefers-color-scheme: dark) {
+    .wallet-badge-fallback-button {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+
+    .wallet-badge-fallback-button:hover {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+}

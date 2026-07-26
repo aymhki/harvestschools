@@ -2,7 +2,7 @@
     position: fixed;
     left: 0.75rem;
     right: 0.75rem;
-    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    bottom: calc(3rem + env(safe-area-inset-bottom));
     z-index: var(--spinner-overlay-z-index);
     display: flex;
     align-items: center;

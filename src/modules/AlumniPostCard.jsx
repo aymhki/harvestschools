@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import MarkdownContent, {markdownToPlainText} from "./MarkdownContent.jsx";
+import CachedImage from "./CachedImage.jsx";
 import '../styles/AlumniStudents.css';
 import {alumniPublicFileUrl} from "../services/General/GeneralUtils.jsx";
 import {useState} from "react";
@@ -17,7 +18,7 @@ function AlumniAuthorLine({post}) {
     return (
         <div className={"alumni-post-card-author"}>
             {avatarUrl ? (
-                <img className={"alumni-post-card-avatar"} src={avatarUrl} alt={post.authorName || post.authorUsername} loading="lazy"/>
+                <CachedImage className={"alumni-post-card-avatar"} fallbackClassName={"alumni-post-card-avatar"} src={avatarUrl} alt={post.authorName || post.authorUsername} loading="lazy"/>
             ) : (
                 <div className={"alumni-post-card-avatar alumni-post-card-avatar-fallback"}>
                     {initial}

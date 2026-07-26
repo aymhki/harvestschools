@@ -5,6 +5,7 @@ import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
 import Form from "../modules/Form.jsx";
 import { useTranslation } from 'react-i18next';
 import { servePublicAsset } from "../services/General/GeneralServices.jsx";
+import CachedImage from "../modules/CachedImage.jsx";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AlumniPostCard from "../modules/AlumniPostCard.jsx";
@@ -99,9 +100,9 @@ function Home() {
 
             <div className="home-page-accreditations-section-container">
                 <div className="home-page-accreditations-section">
-                    <img className="accreditation-photo" src={servePublicAsset("/images/HomePage/AccreditedCognia.avif")}
+                    <CachedImage className="accreditation-photo" fallbackClassName="accreditation-photo" src={servePublicAsset("/images/HomePage/AccreditedCognia.avif")}
                          alt="Cognia Accredited"/>
-                    <img className="accreditation-photo" src={servePublicAsset("/images/HomePage/CICIS.avif")} alt="University of Cambridge Accredited" />
+                    <CachedImage className="accreditation-photo" fallbackClassName="accreditation-photo" src={servePublicAsset("/images/HomePage/CICIS.avif")} alt="University of Cambridge Accredited" />
                 </div>
             </div>
 

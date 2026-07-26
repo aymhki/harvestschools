@@ -28,6 +28,12 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Secure Quick Login to User Dashboard</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Take a photo to add it to your alumni post.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose a picture from your photos to add it to your alumni post.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save pictures from the app to your photos.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import '../styles/AppSplash.css'
 
-
 const MESSAGE_ROTATION_MS = 2600
 
 const MESSAGES = {
@@ -106,7 +105,7 @@ function AppSplash({ showProgress = false, progress = 0 }) {
     return (
         <div className="app-splash" dir={language === 'ar' ? 'rtl' : 'ltr'}>
             <div className="app-splash__mark" aria-hidden="true">
-                <svg viewBox="0 0 512 512" role="presentation" focusable="false">
+                <svg viewBox="0 0 256 256" role="presentation" focusable="false">
                     <path
                         className="app-splash__mark-letter app-splash__mark-letter--h"
                         d="m49.5,181.6h-19.9v-106.5h19.9v42.2h27.8v-42.2h19.9v106.5h-19.9v-48.7h-27.8z"
@@ -120,11 +119,7 @@ function AppSplash({ showProgress = false, progress = 0 }) {
                         d="m223.3,105.5h-19.1q0.1,-8.7 -1.6,-12.7 -2.6,-6.2 -10.2,-6.2 -11.1,0 -11.1,9.9 0,5.4 3.3,9.1 2.1,2.3 8.1,6.1 17.9,11.2 24.3,17.5 9,8.8 9,22.3 0,14.7 -8.8,22.7 -8.9,7.9 -24,7.9 -32.3,0 -32.3,-32.3v-7.9h19.9v6.3q0,17.9 12.4,17.9 12.4,0 12.4,-12.5 0,-8.1 -8,-14.1 -8.4,-5.5 -16.7,-11.2 -10,-6.8 -15,-13.5 -5,-6.8 -5,-16.1 0,-28.2 31.3,-28.2 20.6,0 27.4,13.5 3.6,6.8 3.7,21.5z"
                     />
                 </svg>
-
-                <span className="app-splash__halo" />
             </div>
-
-            {/*<p className="app-splash__wordmark">Harvest International School</p>*/}
 
             {showProgress ? (
                 <div className="app-splash__progress-track" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>

@@ -5,11 +5,15 @@
     "@capacitor/android": "^8.4.1",
     "@capacitor/app": "^8.1.0",
     "@capacitor/browser": "^8.0.3",
+    "@capacitor/camera": "^8.2.1",
     "@capacitor/core": "^8.4.1",
     "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.4.1",
+    "@capacitor/local-notifications": "^8.2.1",
     "@capacitor/network": "^8.0.1",
     "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.1",
     "@capgo/capacitor-native-biometric": "^8.6.0",
     "@capgo/capacitor-updater": "^8.50.2",
     "capacitor-secure-storage-plugin": "^0.13.0"
@@ -20,7 +24,7 @@
   "scripts": {
     "dev": "vite --port 5175",
     "android": "npx cap run android",
-    "ios": "npx cap run ios --target-name \"iPhone 16e\"",
+    "ios": "npx cap run ios --target-name \"iPhone 17e\"",
     "build": "rm -rf ../../dist/mobile-app && vite build --outDir ../../dist/mobile-app && npx cap sync"
   }
 }

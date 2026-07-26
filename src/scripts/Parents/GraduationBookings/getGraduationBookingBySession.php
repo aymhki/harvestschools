@@ -1,5 +1,6 @@
 <?php
 require_once '../../headers.php';
+require_once '../../graduationCeremonyHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
@@ -170,7 +171,8 @@ try {
         'booking' => $bookingDetails,
         'extras' => $extras,
         'parents' => $parents,
-        'students' => $students
+        'students' => $students,
+        'ceremony' => graduation_ceremony_details($conn)
     ];
     $tabularData = [];
     $tabularHeaders = [

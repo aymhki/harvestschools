@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
+import CachedImage from "../../modules/CachedImage.jsx";
 
 
 function AdmissionProcess() {
@@ -22,12 +23,12 @@ function AdmissionProcess() {
 
         <div className="extreme-padding-container">
             <div className="admission-process-image-container">
-                <img
+                <CachedImage
                     src={
                         i18n.language === 'ar' ? servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-ar.png') :
                                                 servePublicAsset('/images/AdmissionPages/harvest-schools-admission-process-diagram-en.png')
                     }
-                    className={"admission-process-image"} alt="Admission Process"
+                    className={"admission-process-image"} fallbackClassName={"admission-process-image"} alt="Admission Process"
                 />
             </div>
 

@@ -99,6 +99,43 @@ const getMimeType = (extension) => {
     }
 };
 
+const formatCeremonyDate = (ceremonyDate, langCode) => {
+    let formatted = '';
+
+    const parts = String(ceremonyDate || '').split('-');
+
+    if (parts.length === 3) {
+        const parsed = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+
+        formatted = Number.isNaN(parsed.getTime()) ? '' : new Intl.DateTimeFormat(langCode === 'ar' ? 'ar-EG' : 'en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }).format(parsed);
+    }
+
+    return formatted;
+};
+
+const formatCeremonyTime = (ceremonyTime, langCode) => {
+    let formatted = '';
+
+    const parts = String(ceremonyTime || '').split(':');
+
+    if (parts.length >= 2) {
+        const parsed = new Date(2000, 0, 1, Number(parts[0]), Number(parts[1]));
+
+        formatted = Number.isNaN(parsed.getTime()) ? '' : new Intl.DateTimeFormat(langCode === 'ar' ? 'ar-EG' : 'en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        }).format(parsed);
+    }
+
+    return formatted;
+};
+
 const formatNumberByLocale = (number) => {
     const currentLanguage = i18n.language;
     return new Intl.NumberFormat(currentLanguage === 'ar' ? 'ar-SA' : 'en-US').format(number);
@@ -204,6 +241,9 @@ const ENDPOINTS = {
     getJobApplications: '/scripts/Admin/JobApplications/getJobApplications.php',
     updateGraduationBookingExtras: '/scripts/Parents/GraduationBookings/submitUpdateGraduationBookingExtras.php',
     getGraduationBookingConfirmation: '/scripts/Public/GraduationBookings/getGraduationBookingConfirmation.php',
+    createGraduationBookingWalletPass: '/scripts/Parents/GraduationBookings/createGraduationBookingWalletPass.php',
+    getGraduationCeremonyDetails: '/scripts/Admin/GraduationBookings/getGraduationCeremonyDetails.php',
+    updateGraduationCeremonyDetails: '/scripts/Admin/GraduationBookings/updateGraduationCeremonyDetails.php',
     serveJobApplicationFile: '/scripts/Admin/JobApplications/serveJobApplicationFile.php?file=',
     submitOpenDaySignupForm: '/scripts/Public/OpenDaySignups/submitOpenDaySignupForm.php',
     getOpenDaySignups: '/scripts/Admin/OpenDaySignups/getOpenDaySignups.php',
@@ -424,6 +464,8 @@ export {
     BASE_URLS,
     costPerChildInOpenDaySignup,
     formatNumberByLocale,
+    formatCeremonyDate,
+    formatCeremonyTime,
     useToggleLanguage,
     logoutCurrentAdmin,
     adminUserManagementPermissionLevel,

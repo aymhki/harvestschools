@@ -1,0 +1,69 @@
+.calendar-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 0;
+    color: var(--primary-color);
+}
+
+.calendar-actions-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.calendar-actions-offset {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 10rem;
+}
+
+.calendar-actions-offset-label {
+    font-size: 0.9rem;
+    letter-spacing: 0.02rem;
+}
+
+.calendar-actions-subscribe-button,
+.calendar-actions-export-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.calendar-actions-test-button {
+    margin: 0;
+    font-size: medium;
+    background-color: transparent;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.calendar-actions-test-button:hover {
+    background-color: transparent;
+    color: var(--secondary-color);
+    filter: none;
+}
+
+.calendar-actions-note {
+    margin: 0;
+    max-width: 32rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+    .calendar-actions {
+        color: var(--fb-white-color);
+    }
+
+    .calendar-actions-test-button {
+        color: var(--fb-white-color);
+    }
+}

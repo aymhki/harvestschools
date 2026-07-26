@@ -1,8 +1,8 @@
 import '../../styles/Events.css'
 import Table from "../../modules/Table.jsx";
+import CalendarActions from "../../modules/CalendarActions.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
-import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
 
 
 function BritishCalendar() {
@@ -55,13 +55,7 @@ function BritishCalendar() {
                     {t("events-pages.common.subjected-to-change-notice")}
               </p>
 
-              <div className={"download-calendar-button-wrapper"}  onClick={() => {
-                  window.open(servePublicAsset("/documents/Calendars/british_calendar_2026.pdf", {download: true}), "_blank");
-              }}>
-                  <button className={"download-calendar-button"}>
-                        {t("events-pages.common.download-calendar-btn")}
-                  </button>
-              </div>
+              <CalendarActions calendarId={"british"}/>
 
               <p>
                   {t('common.last-updated', {ns: 'common'})} {formattedDate}

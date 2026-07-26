@@ -118,6 +118,22 @@
     --arabic-normal-font-bold: 'Arian LT Demi', sans-serif;
 
 
+    --cached-image-placeholder-size: 5rem;
+
+    --wallet-badge-height: 3.125rem;
+    --wallet-badge-radius: 1.5625rem;
+
+    --app-home-content-max-width: 60rem;
+    --app-home-page-side-padding: 1.35rem;
+    --app-home-section-gap: 3.5rem;
+    --app-home-gap: 1.5rem;
+    --app-home-title-gap: 1.15rem;
+    --app-home-card-radius: 1rem;
+    --app-home-tile-basis: 7rem;
+    --app-home-tile-min-height: 6.5rem;
+    --app-home-link-basis: 9rem;
+    --app-home-row-min-height: 4rem;
+
     --footer-z-index: 1000;
     --navbar-z-index: 1800;
     --navbar-item-z-index: 1900;
@@ -147,6 +163,15 @@
     --tabs-bar-z-index: 100;
 
     font-family: var(--english-normal-font);
+}
+
+.cached-image-placeholder {
+    display: block;
+    width: var(--cached-image-placeholder-size);
+    height: var(--cached-image-placeholder-size);
+    max-width: 100%;
+    border-radius: 0.5rem;
+    background-color: var(--fb-off-white-color);
 }
 
 .custom-hyperlink-text {
