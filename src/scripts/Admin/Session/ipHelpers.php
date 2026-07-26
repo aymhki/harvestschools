@@ -99,7 +99,6 @@ function admin_ip_geo_fetch($ip) {
 
     $body = curl_exec($curl);
     $status = (int)curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-    curl_close($curl);
 
     if ($body === false || $status !== 200) { return null; }
 

@@ -44,6 +44,7 @@ function CalendarReminderControls({ calendarId }) {
     const animateModal = useSpring({
         opacity: isModalOpen ? 1 : 0,
         transform: isModalOpen ? 'translateY(0)' : 'translateY(-100%)',
+        pointerEvents: isModalOpen ? 'auto' : 'none',
     })
 
     const offsetLabelsByDays = useMemo(
@@ -143,14 +144,6 @@ function CalendarReminderControls({ calendarId }) {
         loadCurrentState()
     }, [loadCurrentState])
 
-    useEffect(() => {
-        document.body.style.overflow = isModalOpen ? 'hidden' : ''
-
-        return () => {
-            document.body.style.overflow = ''
-        }
-    }, [isModalOpen])
-
     return calendar && (
         <>
             <div className={'calendar-actions'}>
@@ -177,10 +170,7 @@ function CalendarReminderControls({ calendarId }) {
                 )}
             </div>
 
-            <animated.div
-                style={animateModal}
-                className={`calendar-actions-modal ${isModalOpen ? 'is-open' : ''}`}
-            >
+            <animated.div style={animateModal} className={'calendar-actions-modal'}>
                 <div className={'calendar-actions-modal-overlay'} onClick={closeModal}/>
 
                 <div className={'calendar-actions-modal-container'}>

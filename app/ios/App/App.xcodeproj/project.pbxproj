@@ -10,6 +10,12 @@
 		004BE3FF2FFC3F620006DEFD /* FloatingNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */; };
 		004BE4042FFC3FA10006DEFD /* PullToRefreshController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */; };
 		004E49E42FFBDDA3001494AA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */; };
+		00AB000000000000000000B1 /* HarvestWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A1 /* HarvestWidgetsBundle.swift */; };
+		00AB000000000000000000B2 /* QuickActionsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A2 /* QuickActionsWidget.swift */; };
+		00AB000000000000000000B3 /* HarvestWidgetsShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A3 /* HarvestWidgetsShared.swift */; };
+		00AB000000000000000000B4 /* HarvestWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A6 /* HarvestWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		00AB000000000000000000B5 /* HomeWidgetPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A7 /* HomeWidgetPlugin.swift */; };
+		00AB000000000000000000B6 /* HarvestWidgetsShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A3 /* HarvestWidgetsShared.swift */; };
 		00B7B20F2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */; };
 		00C1A5012FFF10A10001AA01 /* WalletPassPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */; };
 		00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */; };
@@ -24,10 +30,41 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		00AB000000000000000000A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00AB000000000000000000E1;
+			remoteInfo = HarvestWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		00AB000000000000000000D4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				00AB000000000000000000B4 /* HarvestWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingNavBar.swift; sourceTree = "<group>"; };
 		004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshController.swift; sourceTree = "<group>"; };
 		004E49E32FFBDDA3001494AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		00AB000000000000000000A1 /* HarvestWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestWidgetsBundle.swift; sourceTree = "<group>"; };
+		00AB000000000000000000A2 /* QuickActionsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionsWidget.swift; sourceTree = "<group>"; };
+		00AB000000000000000000A3 /* HarvestWidgetsShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestWidgetsShared.swift; sourceTree = "<group>"; };
+		00AB000000000000000000A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		00AB000000000000000000A5 /* HarvestWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HarvestWidgets.entitlements; sourceTree = "<group>"; };
+		00AB000000000000000000A6 /* HarvestWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HarvestWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		00AB000000000000000000A7 /* HomeWidgetPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeWidgetPlugin.swift; sourceTree = "<group>"; };
 		00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPassPlugin.swift; sourceTree = "<group>"; };
 		00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProcessRecovery.swift; sourceTree = "<group>"; };
@@ -46,6 +83,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		00AB000000000000000000D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3011FED79650016851F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -57,11 +101,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		00AB000000000000000000C1 /* HarvestWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				00AB000000000000000000A1 /* HarvestWidgetsBundle.swift */,
+				00AB000000000000000000A2 /* QuickActionsWidget.swift */,
+				00AB000000000000000000A3 /* HarvestWidgetsShared.swift */,
+				00AB000000000000000000A4 /* Info.plist */,
+				00AB000000000000000000A5 /* HarvestWidgets.entitlements */,
+			);
+			path = HarvestWidgets;
+			sourceTree = "<group>";
+		};
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
+				00AB000000000000000000C1 /* HarvestWidgets */,
 				504EC3051FED79650016851F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				00AB000000000000000000A6 /* HarvestWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -82,6 +140,7 @@
 				00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */,
 				00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */,
 				00C1A5042FFF10A10001AA01 /* HarvestBridgeViewController.swift */,
+				00AB000000000000000000A7 /* HomeWidgetPlugin.swift */,
 				004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */,
 				00DE439D2FF9F53B002827AF /* App.entitlements */,
 				00DE439B2FF9F506002827AF /* SceneDelegate.swift */,
@@ -100,6 +159,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		00AB000000000000000000E1 /* HarvestWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00AB000000000000000000F3 /* Build configuration list for PBXNativeTarget "HarvestWidgets" */;
+			buildPhases = (
+				00AB000000000000000000D1 /* Sources */,
+				00AB000000000000000000D2 /* Frameworks */,
+				00AB000000000000000000D3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HarvestWidgets;
+			productName = HarvestWidgets;
+			productReference = 00AB000000000000000000A6 /* HarvestWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		504EC3031FED79650016851F /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
@@ -107,10 +183,12 @@
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
+				00AB000000000000000000D4 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				00AB000000000000000000A8 /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -129,6 +207,10 @@
 				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0920;
 				TargetAttributes = {
+					00AB000000000000000000E1 = {
+						CreatedOnToolsVersion = 26.0;
+						ProvisioningStyle = Automatic;
+					};
 					504EC3031FED79650016851F = {
 						CreatedOnToolsVersion = 9.2;
 						LastSwiftMigration = 1100;
@@ -153,11 +235,19 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				00AB000000000000000000E1 /* HarvestWidgets */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		00AB000000000000000000D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3021FED79650016851F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -175,6 +265,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		00AB000000000000000000D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00AB000000000000000000B2 /* QuickActionsWidget.swift in Sources */,
+				00AB000000000000000000B1 /* HarvestWidgetsBundle.swift in Sources */,
+				00AB000000000000000000B3 /* HarvestWidgetsShared.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3001FED79650016851F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -186,10 +286,20 @@
 				00C1A5012FFF10A10001AA01 /* WalletPassPlugin.swift in Sources */,
 				00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */,
 				00C1A5052FFF10A10001AA01 /* HarvestBridgeViewController.swift in Sources */,
+				00AB000000000000000000B5 /* HomeWidgetPlugin.swift in Sources */,
+				00AB000000000000000000B6 /* HarvestWidgetsShared.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		00AB000000000000000000A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00AB000000000000000000E1 /* HarvestWidgets */;
+			targetProxy = 00AB000000000000000000A9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */ = {
@@ -211,6 +321,60 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		00AB000000000000000000F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = HarvestWidgets/HarvestWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q4RWJ7728F;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HarvestWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Harvest Quick Actions";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harvestschools.app.HarvestWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		00AB000000000000000000F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = HarvestWidgets/HarvestWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q4RWJ7728F;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HarvestWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Harvest Quick Actions";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harvestschools.app.HarvestWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		504EC3141FED79650016851F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
@@ -375,6 +539,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		00AB000000000000000000F3 /* Build configuration list for PBXNativeTarget "HarvestWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00AB000000000000000000F1 /* Debug */,
+				00AB000000000000000000F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		504EC2FF1FED79650016851F /* Build configuration list for PBXProject "App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

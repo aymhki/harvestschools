@@ -8,6 +8,7 @@ import {
     attachPullToRefreshListener,
     getCurrentBundleVersion,
 } from '../services/General/AppUpdaterService.jsx'
+import { attachDeepLinkListener } from '../services/General/DeepLinkService.jsx'
 import { OfflineProvider } from '../services/General/OfflineContext.jsx'
 import { bootstrapOfflineAssets, runOfflinePrefetch } from '../services/General/OfflinePrefetchService.jsx'
 import AppSplash from './AppSplash.jsx'
@@ -30,6 +31,7 @@ function AppUpdateGate({ children }) {
     const hasBootstrappedRef = useRef(false)
     const hasRunCheckRef = useRef(false)
     const navigateRef = useRef(navigate)
+    const hasOpenedDeepLinkRef = useRef(false)
 
     useEffect(() => {
         navigateRef.current = navigate
@@ -44,7 +46,9 @@ function AppUpdateGate({ children }) {
 
         const here = window.location.pathname + window.location.search + window.location.hash
 
-        if (restorePath !== here) {
+        /* A widget or link that opened the app wins over the page the app was on
+         * before the last reload. */
+        if (restorePath !== here && !hasOpenedDeepLinkRef.current) {
             navigateRef.current(restorePath, { replace: true })
         }
     }, [])
@@ -180,6 +184,14 @@ function AppUpdateGate({ children }) {
 
     useEffect(() => {
         return attachPullToRefreshListener()
+    }, [])
+
+    useEffect(() => {
+        return attachDeepLinkListener((path) => {
+            hasOpenedDeepLinkRef.current = true
+
+            navigateRef.current(path)
+        })
     }, [])
 
     if (isPreparing) {

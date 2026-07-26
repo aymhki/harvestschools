@@ -64,6 +64,34 @@
     opacity: 0.6;
 }
 
+.app-home-weather {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-inline-start: 0.6rem;
+    letter-spacing: 0;
+    text-transform: none;
+    vertical-align: middle;
+}
+
+.app-home-weather-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.app-home-weather-value {
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+.app-home-weather-note {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.02rem;
+    opacity: 0.6;
+}
+
 .app-home-school {
     margin: 0;
     font-size: 1.55rem;

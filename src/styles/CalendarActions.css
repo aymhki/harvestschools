@@ -33,11 +33,6 @@
     justify-content: center;
     padding: var(--calendar-actions-gap);
     box-sizing: border-box;
-    pointer-events: none;
-}
-
-.calendar-actions-modal.is-open {
-    pointer-events: auto;
 }
 
 .calendar-actions-modal-overlay {

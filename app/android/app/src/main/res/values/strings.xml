@@ -4,4 +4,6 @@
     <string name="title_activity_main">H. I. S.</string>
     <string name="package_name">com.harvestschools.app</string>
     <string name="custom_url_scheme">com.harvestschools.app</string>
+    <string name="quick_actions_widget_label">Quick actions</string>
+    <string name="quick_actions_widget_description">Jump straight to the parts of the school app you use the most.</string>
 </resources>

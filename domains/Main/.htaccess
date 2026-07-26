@@ -59,6 +59,12 @@
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
 </IfModule>
 
+<Files "embed.html">
+    Header unset X-Frame-Options
+    Header always unset X-Frame-Options
+    Header always set Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; frame-src https://www.youtube-nocookie.com; base-uri 'none'; form-action 'none'; frame-ancestors 'self' https://harvestschools.com https://www.harvestschools.com capacitor://localhost https://localhost http://localhost:*"
+</Files>
+
 <Files "apple-app-site-association">
     Header set Content-Type "application/json"
 </Files>
