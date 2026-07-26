@@ -123,6 +123,11 @@
     --wallet-badge-height: 3.125rem;
     --wallet-badge-radius: 1.5625rem;
 
+    --calendar-actions-gap: 1rem;
+    --calendar-actions-modal-padding: 1.5rem;
+    --calendar-actions-modal-radius: 1rem;
+    --calendar-actions-modal-max-width: 32rem;
+
     --app-home-content-max-width: 60rem;
     --app-home-page-side-padding: 1.35rem;
     --app-home-section-gap: 3.5rem;
@@ -146,6 +151,7 @@
     --form-date-popup-modal-overlay-z-index: 2001;
     --form-date-popup-modal-z-index: 2002;
     --form-field-dropdown-overlay-z-index: 9000;
+    --calendar-actions-modal-z-index: 2002;
     --spinner-overlay-z-index: 100000;
 
     --parallax-scroll-base-z-index: 1;
@@ -419,6 +425,10 @@ label:lang(ar) {
 
     h3:lang(ar) {
         letter-spacing: 0rem;
+    }
+
+    button {
+
     }
 
 }

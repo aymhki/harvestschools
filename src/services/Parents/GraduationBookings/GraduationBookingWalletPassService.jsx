@@ -1,9 +1,11 @@
-import { Capacitor } from '@capacitor/core'
+import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Browser } from '@capacitor/browser'
 import { Haptics, NotificationType } from '@capacitor/haptics'
 import { endpoints, buildAuthHeaders, isMobileApp } from '../../General/GeneralUtils.jsx'
 import { validateGraduationBookingSessionLocally } from './MainParentsGraduationBookingServices.jsx'
 
+
+const WalletPass = registerPlugin('WalletPass')
 
 const APPLE_WALLET_PLATFORM = 'ios'
 const GOOGLE_WALLET_PLATFORM = 'android'
@@ -54,13 +56,50 @@ const fetchWalletPassOffer = async () => {
 }
 
 
+const readBlobAsBase64 = (blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onerror = () => reject(new Error('The pass could not be read'))
+
+    reader.onload = () => {
+        const result = String(reader.result || '')
+
+        const separatorIndex = result.indexOf(',')
+
+        resolve(separatorIndex >= 0 ? result.slice(separatorIndex + 1) : result)
+    }
+
+    reader.readAsDataURL(blob)
+})
+
+
+/* iOS adds the pass in place through the system review sheet, so the pass file
+ * is downloaded here and handed to the native layer instead of being opened in
+ * a browser. Google Wallet has no equivalent sheet: its save link is a URL. */
+const addPassToAppleWallet = async (url) => {
+    const response = await fetch(url)
+
+    if (!response.ok) {
+        throw new Error('The pass could not be downloaded')
+    }
+
+    const base64 = await readBlobAsBase64(await response.blob())
+
+    await WalletPass.addPass({ base64 })
+}
+
+
 const openWalletPass = async (offer) => {
     const url = getWalletPassUrlFor(offer)
 
     let opened = false
 
     if (url) {
-        await Browser.open({ url, presentationStyle: 'popover' })
+        if (Capacitor.getPlatform() === APPLE_WALLET_PLATFORM) {
+            await addPassToAppleWallet(url)
+        } else {
+            await Browser.open({ url, presentationStyle: 'popover' })
+        }
 
         Haptics.notification({ type: NotificationType.Success }).catch(() => null)
 

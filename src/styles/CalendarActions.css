@@ -2,52 +2,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--calendar-actions-gap);
     width: 100%;
-    padding: 1rem 0;
+    padding: var(--calendar-actions-gap) 0;
     color: var(--primary-color);
 }
 
-.calendar-actions-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.calendar-actions-offset {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    min-width: 10rem;
-}
-
-.calendar-actions-offset-label {
-    font-size: 0.9rem;
-    letter-spacing: 0.02rem;
-}
-
-.calendar-actions-subscribe-button,
-.calendar-actions-export-button {
+.calendar-actions-open-button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin: 0;
-}
-
-.calendar-actions-test-button {
-    margin: 0;
-    font-size: medium;
-    background-color: transparent;
-    box-shadow: none;
-    text-decoration: underline;
-}
-
-.calendar-actions-test-button:hover {
-    background-color: transparent;
-    color: var(--secondary-color);
-    filter: none;
 }
 
 .calendar-actions-note {
@@ -58,12 +23,110 @@
     text-align: center;
 }
 
+.calendar-actions-modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--calendar-actions-modal-z-index);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--calendar-actions-gap);
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.calendar-actions-modal.is-open {
+    pointer-events: auto;
+}
+
+.calendar-actions-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--fb-black-color);
+    opacity: 0.55;
+}
+
+.calendar-actions-modal-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--calendar-actions-modal-max-width);
+    max-height: 85dvh;
+    overflow: hidden;
+    border-radius: var(--calendar-actions-modal-radius);
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 1rem var(--primary-color);
+}
+
+.calendar-actions-modal-header {
+    padding: var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding) 0 var(--calendar-actions-modal-padding);
+}
+
+.calendar-actions-modal-header h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    letter-spacing: 0.05rem;
+}
+
+.calendar-actions-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--calendar-actions-gap);
+    padding: var(--calendar-actions-modal-padding);
+    overflow-y: auto;
+}
+
+.calendar-actions-modal-content .form-container,
+.calendar-actions-modal-content form {
+    width: 100%;
+}
+
+.calendar-actions-modal-content .form-button {
+    margin: 0.35rem 0;
+}
+
+.calendar-actions-modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--calendar-actions-gap);
+    padding: 0 var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding);
+}
+
+.calendar-actions-modal-footer .modal-footer-buttons-portal-target {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--calendar-actions-gap);
+}
+
+.calendar-actions-modal-footer button {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .calendar-actions-modal-container {
+        max-height: 90dvh;
+    }
+
+    .calendar-actions-modal-footer {
+        justify-content: center;
+    }
+}
+
 @media (prefers-color-scheme: dark) {
     .calendar-actions {
         color: var(--fb-white-color);
     }
 
-    .calendar-actions-test-button {
+    .calendar-actions-modal-container {
+        background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
+        box-shadow: 0 0 1rem var(--fb-white-color);
     }
 }

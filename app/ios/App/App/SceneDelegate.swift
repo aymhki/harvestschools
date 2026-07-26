@@ -5,6 +5,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     private var floatingNavBar: FloatingNavBar?
     private var pullToRefreshController: PullToRefreshController?
+    private var webViewProcessRecovery: WebViewProcessRecovery?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -63,6 +64,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         superview.backgroundColor = PullToRefreshController.siteBackgroundColor
         bridgeVC.view.backgroundColor = PullToRefreshController.siteBackgroundColor
+
+        webViewProcessRecovery = WebViewProcessRecovery(webView: webView)
 
         pullToRefreshController = PullToRefreshController(webView: webView, containerView: bridgeVC.view)
 

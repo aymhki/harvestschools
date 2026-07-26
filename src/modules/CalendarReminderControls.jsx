@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
+import { useSpring, animated } from 'react-spring'
 import { Haptics, NotificationType } from '@capacitor/haptics'
+import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined'
 import Form from './Form.jsx'
 import { getCalendarById } from '../services/General/SchoolCalendarsService.jsx'
-import { shareCalendarAsIcs } from '../services/General/CalendarIcsService.jsx'
 import {
     DEFAULT_REMINDER_OFFSET_DAYS,
     REMINDER_OFFSET_CHOICES,
@@ -19,26 +20,55 @@ import '../styles/CalendarActions.css'
 
 
 const REMINDER_OFFSET_FIELD_ID = 1
-const ADD_TO_CALENDAR_FIELD_ID = 2
+const TEST_REMINDER_FIELD_ID = 2
 const UNSUBSCRIBE_FIELD_ID = 3
-const TEST_REMINDER_FIELD_ID = 4
 
 
 function CalendarReminderControls({ calendarId }) {
     const { t, i18n } = useTranslation(['events-pages'])
+
     const calendar = getCalendarById(calendarId)
+
     const language = i18n.language === 'ar' ? 'ar' : 'en'
+
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
     const [isSubscribed, setIsSubscribed] = useState(false)
+
     const [offsetDays, setOffsetDays] = useState(DEFAULT_REMINDER_OFFSET_DAYS)
+
     const [scheduledCount, setScheduledCount] = useState(0)
+
     const [isBlocked, setIsBlocked] = useState(false)
-    const [, setIsBusy] = useState(false)
+
+    const [isSendingTest, setIsSendingTest] = useState(false)
+
+    const modalFooterButtonsRef = useRef(null)
+
+    const animateModal = useSpring({
+        opacity: isModalOpen ? 1 : 0,
+        transform: isModalOpen ? 'translateY(0)' : 'translateY(-100%)',
+    })
+
     const offsetLabelsByDays = useMemo(
         () => new Map(REMINDER_OFFSET_CHOICES.map((choice) => [choice.days, t(choice.labelKey)])),
         [t]
     )
 
-    const readSubmittedOffsetDays = useCallback((formData) => {
+    const loadCurrentState = useCallback(async () => {
+        const [subscription, permission, pendingCount] = await Promise.all([
+            getCalendarSubscription(calendarId),
+            getNotificationPermission(),
+            getScheduledReminderCount(calendarId),
+        ])
+
+        setIsSubscribed(Boolean(subscription) && permission === 'granted')
+        setOffsetDays(subscription ? subscription.offsetDays : DEFAULT_REMINDER_OFFSET_DAYS)
+        setScheduledCount(pendingCount)
+        setIsBlocked(permission === 'denied')
+    }, [calendarId])
+
+    const readSubmittedOffsetDays = (formData) => {
         const submittedLabel = String(formData.get(`field_${REMINDER_OFFSET_FIELD_ID}`) || '')
 
         const matchedChoice = REMINDER_OFFSET_CHOICES.find(
@@ -46,7 +76,17 @@ function CalendarReminderControls({ calendarId }) {
         )
 
         return matchedChoice ? matchedChoice.days : DEFAULT_REMINDER_OFFSET_DAYS
-    }, [offsetLabelsByDays])
+    }
+
+    const closeModal = () => {
+        setIsModalOpen(false)
+    }
+
+    const handleOpenModal = async () => {
+        await loadCurrentState()
+
+        setIsModalOpen(true)
+    }
 
     const handleSubscribe = async (formData) => {
         const requestedOffsetDays = readSubmittedOffsetDays(formData)
@@ -69,40 +109,29 @@ function CalendarReminderControls({ calendarId }) {
 
         Haptics.notification({ type: NotificationType.Success }).catch(() => null)
 
+        closeModal()
+
         return true
     }
 
     const handleUnsubscribe = async () => {
-        setIsBusy(true)
-
         await unsubscribeFromCalendar(calendarId)
 
         setIsSubscribed(false)
         setScheduledCount(0)
-        setIsBusy(false)
 
         Haptics.notification({ type: NotificationType.Warning }).catch(() => null)
-    }
 
-    const handleAddToDeviceCalendar = async () => {
-        setIsBusy(true)
-
-        try {
-            await shareCalendarAsIcs(calendar, t)
-        } catch (shareError) {
-            console.warn('Could not export the calendar', shareError)
-        }
-
-        setIsBusy(false)
+        closeModal()
     }
 
     const handleTestReminder = async () => {
-        setIsBusy(true)
+        setIsSendingTest(true)
 
         const status = await sendTestReminder({ translate: t })
 
         setIsBlocked(status === 'denied')
-        setIsBusy(false)
+        setIsSendingTest(false)
     }
 
     const reminderFormFields = useMemo(() => {
@@ -117,27 +146,30 @@ function CalendarReminderControls({ calendarId }) {
                 errorMsg: t('events-pages.common.reminder-offset-label'),
                 defaultValue: offsetLabelsByDays.get(offsetDays),
                 setValue: null,
-                widthOfField: 2,
+                widthOfField: 1,
                 httpName: 'reminder-offset',
                 labelOutside: true,
                 labelOnTop: true,
                 dontLetTheBrowserSaveField: true,
                 choices: REMINDER_OFFSET_CHOICES.map((choice) => offsetLabelsByDays.get(choice.days)),
             },
-            {
-                id: ADD_TO_CALENDAR_FIELD_ID,
-                type: 'button',
-                name: 'add-to-device-calendar',
-                label: t('events-pages.common.add-to-device-calendar-btn'),
-                displayLabel: t('events-pages.common.add-to-device-calendar-btn'),
-                required: false,
-                widthOfField: 2,
-                httpName: 'add-to-device-calendar',
-                onClick: handleAddToDeviceCalendar,
-            },
         ]
 
         if (isSubscribed) {
+            fields.push({
+                id: TEST_REMINDER_FIELD_ID,
+                type: 'button',
+                name: 'test-reminder',
+                label: isSendingTest
+                    ? t('events-pages.common.test-reminder-sending')
+                    : t('events-pages.common.test-reminder-btn'),
+                displayLabel: t('events-pages.common.test-reminder-btn'),
+                required: false,
+                widthOfField: 2,
+                httpName: 'test-reminder',
+                onClick: handleTestReminder,
+            })
+
             fields.push({
                 id: UNSUBSCRIBE_FIELD_ID,
                 type: 'button',
@@ -149,83 +181,99 @@ function CalendarReminderControls({ calendarId }) {
                 httpName: 'unsubscribe',
                 onClick: handleUnsubscribe,
             })
-
-            fields.push({
-                id: TEST_REMINDER_FIELD_ID,
-                type: 'button',
-                name: 'test-reminder',
-                label: t('events-pages.common.test-reminder-btn'),
-                displayLabel: t('events-pages.common.test-reminder-btn'),
-                required: false,
-                widthOfField: 2,
-                httpName: 'test-reminder',
-                onClick: handleTestReminder,
-            })
         }
 
         return fields
-    }, [t, offsetDays, offsetLabelsByDays, isSubscribed])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [t, offsetDays, offsetLabelsByDays, isSubscribed, isSendingTest])
 
     useEffect(() => {
-        let isActive = true
-
-        const loadCurrentState = async () => {
-            const [subscription, permission, pendingCount] = await Promise.all([
-                getCalendarSubscription(calendarId),
-                getNotificationPermission(),
-                getScheduledReminderCount(calendarId),
-            ])
-
-            if (isActive) {
-                setIsSubscribed(Boolean(subscription) && permission === 'granted')
-                setOffsetDays(subscription ? subscription.offsetDays : DEFAULT_REMINDER_OFFSET_DAYS)
-                setScheduledCount(pendingCount)
-                setIsBlocked(permission === 'denied')
-            }
-        }
-
         loadCurrentState()
+    }, [loadCurrentState])
+
+    useEffect(() => {
+        document.body.style.overflow = isModalOpen ? 'hidden' : ''
 
         return () => {
-            isActive = false
+            document.body.style.overflow = ''
         }
-    }, [calendarId])
+    }, [isModalOpen])
 
     return calendar && (
-        <div className={'calendar-actions'}>
-            <Form fields={reminderFormFields}
-                  mailTo={''}
-                  formTitle={'Calendar Reminders Form'}
-                  noInputFieldsCache={true}
-                  noCaptcha={true}
-                  noClearOption={true}
-                  noSuccessMessage={true}
-                  centerSubmitButton={true}
-                  hasDifferentOnSubmitBehaviour={true}
-                  differentOnSubmitBehaviour={handleSubscribe}
-                  hasDifferentSubmitButtonText={true}
-                  differentSubmitButtonText={[
-                      isSubscribed
-                          ? t('events-pages.common.update-reminders-btn')
-                          : t('events-pages.common.subscribe-btn'),
-                      t('events-pages.common.saving-reminders-btn')
-                  ]}
-                  hasSetSubmittingLocal={true}
-                  setSubmittingLocal={setIsBusy}
-            />
+        <>
+            <div className={'calendar-actions'}>
+                <button className={'calendar-actions-open-button'} onClick={handleOpenModal}>
+                    <NotificationsActiveOutlinedIcon />
 
-            {isSubscribed && scheduledCount > 0 && (
-                <p className={'calendar-actions-note'}>
-                    {t('events-pages.common.reminders-scheduled-note', { total: scheduledCount })}
-                </p>
-            )}
+                    {isSubscribed
+                        ? t('events-pages.common.update-reminders-btn')
+                        : t('events-pages.common.subscribe-btn')}
+                </button>
 
-            {isBlocked && (
-                <p className={'calendar-actions-note'}>
-                    {t('events-pages.common.notifications-blocked-note')}
-                </p>
-            )}
-        </div>
+                {isSubscribed && scheduledCount > 0 && (
+                    <p className={'calendar-actions-note'}>
+                        {t('events-pages.common.reminders-scheduled-note', { total: scheduledCount })}
+                    </p>
+                )}
+            </div>
+
+            <animated.div
+                style={animateModal}
+                className={`calendar-actions-modal ${isModalOpen ? 'is-open' : ''}`}
+            >
+                <div className={'calendar-actions-modal-overlay'} onClick={closeModal}/>
+
+                <div className={'calendar-actions-modal-container'}>
+                    <div className={'calendar-actions-modal-header'}>
+                        <h3>{t('events-pages.common.notifications-modal-title')}</h3>
+                    </div>
+
+                    <div className={'calendar-actions-modal-content'}>
+                        <p className={'calendar-actions-note'}>{t(calendar.titleKey)}</p>
+
+                        {isModalOpen && (
+                            <Form fields={reminderFormFields}
+                                  mailTo={''}
+                                  formTitle={'Calendar Notifications Form'}
+                                  noInputFieldsCache={true}
+                                  noCaptcha={true}
+                                  noClearOption={true}
+                                  noSuccessMessage={true}
+                                  hasDifferentOnSubmitBehaviour={true}
+                                  differentOnSubmitBehaviour={handleSubscribe}
+                                  hasDifferentSubmitButtonText={true}
+                                  differentSubmitButtonText={[
+                                      isSubscribed
+                                          ? t('events-pages.common.update-reminders-btn')
+                                          : t('events-pages.common.subscribe-btn'),
+                                      t('events-pages.common.saving-reminders-btn')
+                                  ]}
+                                  formInModalPopup={true}
+                                  setShowFormModalPopup={setIsModalOpen}
+                                  footerButtonsSpaceBetween={true}
+                                  switchFooterButtonsOrder={true}
+                                  formFooterButtonsAreOutside={true}
+                                  footerButtonsPortalTarget={modalFooterButtonsRef}
+                            />
+                        )}
+
+                        {isBlocked && (
+                            <p className={'calendar-actions-note'}>
+                                {t('events-pages.common.notifications-blocked-note')}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className={'calendar-actions-modal-footer'}>
+                        <button className={'calendar-actions-modal-cancel-button'} onClick={closeModal}>
+                            {t('common.cancel', { ns: 'common' })}
+                        </button>
+
+                        <div ref={modalFooterButtonsRef} className={'modal-footer-buttons-portal-target'}/>
+                    </div>
+                </div>
+            </animated.div>
+        </>
     )
 }
 

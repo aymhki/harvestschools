@@ -649,23 +649,23 @@ function GraduationBookingStatusInfo() {
                                     />
                                 )}
 
-                                <button
-                                    className={'download-confirmation-button'}
-                                    onClick={() => generateGraduationBookingConfirmationPDF(
-                                        isMobileApp() ? 'share' : 'download',
-                                        setIsLoading,
-                                        bookingId,
-                                        bookingUsername,
-                                        detailedData,
-                                        setFetchBookingBySessionError,
+                                {!isMobileApp() && (
+                                    <button
+                                        className={'download-confirmation-button'}
+                                        onClick={() => generateGraduationBookingConfirmationPDF(
+                                            'download',
+                                            setIsLoading,
+                                            bookingId,
+                                            bookingUsername,
+                                            detailedData,
+                                            setFetchBookingBySessionError,
 
-                                    )}
-                                    disabled={isLoading}
-                                >
-                                    {isMobileApp()
-                                        ? t("events-pages.graduation-booking-pages.booking-status-info-page.share-confirmation-btn")
-                                        : t("events-pages.graduation-booking-pages.booking-status-info-page.download-confirmation-btn")}
-                                </button>
+                                        )}
+                                        disabled={isLoading}
+                                    >
+                                        {t("events-pages.graduation-booking-pages.booking-status-info-page.download-confirmation-btn")}
+                                    </button>
+                                )}
                                 {/*<button*/}
                                 {/*    className={'print-confirmation-button'}*/}
                                 {/*    onClick={() => generateConfirmationPDF(*/}
