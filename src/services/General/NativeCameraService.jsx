@@ -1,4 +1,4 @@
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
+import { Camera } from '@capacitor/camera'
 import { isNativeRuntime } from './OfflineStorageService.jsx'
 
 
@@ -18,19 +18,6 @@ const wasCancelled = (captureError) => {
 }
 
 
-const base64ToBlob = (base64, mimeType) => {
-    const binary = atob(base64)
-
-    const bytes = new Uint8Array(binary.length)
-
-    for (let index = 0; index < binary.length; index += 1) {
-        bytes[index] = binary.charCodeAt(index)
-    }
-
-    return new Blob([bytes], { type: mimeType })
-}
-
-
 const capturePhotoAsFile = async () => {
     let capturedFile = null
 
@@ -38,14 +25,12 @@ const capturePhotoAsFile = async () => {
         let photo = null
 
         try {
-            photo = await Camera.getPhoto({
+            photo = await Camera.takePhoto({
                 quality: CAPTURE_QUALITY,
-                width: CAPTURE_MAX_WIDTH,
+                targetWidth: CAPTURE_MAX_WIDTH,
                 correctOrientation: true,
-                allowEditing: false,
+                editable: 'in-app',
                 saveToGallery: false,
-                source: CameraSource.Camera,
-                resultType: CameraResultType.Base64,
                 presentationStyle: 'fullscreen',
             })
         } catch (captureError) {
@@ -56,11 +41,13 @@ const capturePhotoAsFile = async () => {
             }
         }
 
-        if (photo && photo.base64String) {
-            const mimeType = photo.format ? `image/${photo.format}` : CAPTURE_MIME_TYPE
+        if (photo && photo.webPath) {
+            const response = await fetch(photo.webPath)
 
-            capturedFile = new File([base64ToBlob(photo.base64String, mimeType)], buildCapturedFileName(), {
-                type: mimeType,
+            const blob = await response.blob()
+
+            capturedFile = new File([blob], buildCapturedFileName(), {
+                type: blob.type || CAPTURE_MIME_TYPE,
             })
         }
     }

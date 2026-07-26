@@ -47,6 +47,18 @@ const getAndClearRestorePath = async () => {
     return path;
 };
 
+const rememberRestorePath = async (path) => {
+    if (!Capacitor.isNativePlatform()) {
+        return
+    }
+
+    try {
+        await Preferences.set({ key: APP_UPDATE_RESTORE_PATH_KEY, value: path })
+    } catch (storageError) {
+        console.warn('Could not save the current path', storageError)
+    }
+}
+
 const handlePullToRefresh = async () => {
     try {
         const path = window.location.pathname + window.location.search + window.location.hash
@@ -170,5 +182,6 @@ export {
     runMobileAppUpdateCheck,
     getAndClearRestorePath,
     attachPullToRefreshListener,
+    rememberRestorePath,
     getCurrentBundleVersion
 }

@@ -17,6 +17,7 @@ import {
     attachCalendarNotificationHandlers,
     rescheduleAllSubscriptions,
 } from '../services/General/CalendarSubscriptionService.jsx';
+import { rememberRestorePath } from '../services/General/AppUpdaterService.jsx';
 import { mobileRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
@@ -147,6 +148,10 @@ function MobileAppRouter() {
             resumeListener.then(handle => handle.remove());
         };
     }, [navigate, i18n]);
+
+    useEffect(() => {
+        rememberRestorePath(location.pathname + location.search + location.hash);
+    }, [location]);
 
     useEffect(() => {
         const host = isAdminSection ? SHARE_HOSTS.admin : SHARE_HOSTS.client;
