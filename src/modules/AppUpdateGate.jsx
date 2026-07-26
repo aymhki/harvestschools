@@ -40,7 +40,7 @@ function AppUpdateGate({ children }) {
         }
     }, [navigate])
 
-    const schedulePrefetch = useCallback(async () => {
+    const runPrefetch = useCallback(async ({ behindSplash }) => {
         if (!Capacitor.isNativePlatform()) {
             return
         }
@@ -48,11 +48,21 @@ function AppUpdateGate({ children }) {
         try {
             const bundleVersion = await getCurrentBundleVersion()
 
-            runOfflinePrefetch({ bundleVersion }).catch((prefetchError) => {
-                console.warn('Offline prefetch failed', prefetchError)
+            if (behindSplash) {
+                setPhase('installing')
+                setProgress(0)
+            }
+
+            await runOfflinePrefetch({
+                bundleVersion,
+                onProgress: ({ percent }) => {
+                    if (behindSplash) {
+                        setProgress(percent)
+                    }
+                },
             })
         } catch (prefetchError) {
-            console.warn('Could not schedule the offline prefetch', prefetchError)
+            console.warn('Offline prefetch failed', prefetchError)
         }
     }, [])
 
@@ -76,12 +86,13 @@ function AppUpdateGate({ children }) {
             }
 
             if (status === 'skipped' || status === 'ok') {
-                setPhase('ready')
                 setIsOffline(false)
 
                 await restoreSavedPathIfNeeded()
 
-                schedulePrefetch()
+                await runPrefetch({ behindSplash: true })
+
+                setPhase('ready')
 
                 return
             }
@@ -93,15 +104,15 @@ function AppUpdateGate({ children }) {
                 return
             }
 
-            setPhase('ready')
             setIsOffline(false)
             await restoreSavedPathIfNeeded()
-            schedulePrefetch()
+            await runPrefetch({ behindSplash: true })
+            setPhase('ready')
         }).catch((checkError) => {
             console.warn('Update check threw unexpectedly', checkError)
             setPhase('ready')
         })
-    }, [restoreSavedPathIfNeeded, schedulePrefetch])
+    }, [restoreSavedPathIfNeeded, runPrefetch])
 
     useEffect(() => {
         if (hasBootstrappedRef.current) {
@@ -132,7 +143,7 @@ function AppUpdateGate({ children }) {
         Network.addListener('networkStatusChange', (status) => {
             if (status.connected) {
                 setIsOffline(false)
-                schedulePrefetch()
+                runPrefetch({ behindSplash: false })
             }
         }).then((handle) => {
             if (isMounted) {
@@ -150,13 +161,13 @@ function AppUpdateGate({ children }) {
                 offlineListenerRef.current = null
             }
         }
-    }, [isOffline, schedulePrefetch])
+    }, [isOffline, runPrefetch])
 
     useEffect(() => {
         return attachPullToRefreshListener()
     }, [])
 
-    if (phase === 'downloading') {
+    if (phase === 'downloading' || phase === 'installing') {
         return <AppSplash showProgress={SHOW_DOWNLOAD_PROGRESS_BAR} progress={progress} />
     }
 

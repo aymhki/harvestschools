@@ -69,8 +69,8 @@ const COPY = {
         offlineSavedOn: (date) => `Saved on ${date}`,
         offlineAction: 'Update',
         offlineWorking: 'Saving…',
-        version: (bundle) => `App content version ${bundle}`,
-        appVersion: (version, build) => `App version ${version} (${build})`,
+        versionLabel: 'App content version',
+        appVersionLabel: 'App version',
         actions: {
             calendars: 'Calendars',
             booking: 'Graduation booking',
@@ -120,8 +120,8 @@ const COPY = {
         offlineSavedOn: (date) => `تم الحفظ في ${date}`,
         offlineAction: 'تحديث',
         offlineWorking: 'جاري الحفظ…',
-        version: (bundle) => `إصدار محتوى التطبيق ${bundle}`,
-        appVersion: (version, build) => `إصدار التطبيق ${version} (${build})`,
+        versionLabel: 'إصدار محتوى التطبيق',
+        appVersionLabel: 'إصدار التطبيق',
         actions: {
             calendars: 'التقويمات',
             booking: 'حجز الحفل',
@@ -488,11 +488,21 @@ function AppHome() {
                 </div>
 
                 {bundleVersion && (
-                    <p className="app-home-version">{copy.version(bundleVersion)}</p>
+                    <p className="app-home-version">
+                        {copy.versionLabel}{' '}
+
+                        <span className="app-home-version-value">{bundleVersion}</span>
+                    </p>
                 )}
 
                 {appVersion && (
-                    <p className="app-home-version">{copy.appVersion(appVersion.version, appVersion.build)}</p>
+                    <p className="app-home-version">
+                        {copy.appVersionLabel}{' '}
+
+                        <span className="app-home-version-value">
+                            {appVersion.version} ({appVersion.build})
+                        </span>
+                    </p>
                 )}
             </section>
 

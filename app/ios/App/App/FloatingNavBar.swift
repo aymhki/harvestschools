@@ -8,6 +8,12 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
 
     private var backObservation: NSKeyValueObservation?
     private var forwardObservation: NSKeyValueObservation?
+    private var scrollObservation: NSKeyValueObservation?
+
+    private var revealWorkItem: DispatchWorkItem?
+    private var isBarHidden = false
+    private let revealDelay: TimeInterval = 1.2
+    private let scrollTolerance: CGFloat = 6
 
     private let backButton = UIButton(type: .system)
     private let forwardButton = UIButton(type: .system)
@@ -23,6 +29,7 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
         translatesAutoresizingMaskIntoConstraints = false
         buildUI()
         observeWebViewState()
+        observeScrolling(on: webView)
         webView.configuration.userContentController.add(self, name: "nativeShareUrl")
     }
 
@@ -31,7 +38,53 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
     deinit {
         backObservation?.invalidate()
         forwardObservation?.invalidate()
+        scrollObservation?.invalidate()
+        revealWorkItem?.cancel()
         webView?.configuration.userContentController.removeScriptMessageHandler(forName: "nativeShareUrl")
+    }
+
+
+    /* The bar gets out of the way while the page is being scrolled and comes
+     * back a moment after the scrolling settles, so it never sits on top of
+     * something the reader is looking at. */
+    private func observeScrolling(on webView: WKWebView) {
+        var lastOffset = webView.scrollView.contentOffset.y
+
+        scrollObservation = webView.scrollView.observe(\.contentOffset, options: [.new]) { [weak self] scrollView, _ in
+            guard let self = self else { return }
+
+            let offset = scrollView.contentOffset.y
+
+            if abs(offset - lastOffset) > self.scrollTolerance {
+                lastOffset = offset
+
+                self.setBarHidden(true)
+                self.scheduleReveal()
+            }
+        }
+    }
+
+    private func scheduleReveal() {
+        revealWorkItem?.cancel()
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.setBarHidden(false)
+        }
+
+        revealWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + revealDelay, execute: workItem)
+    }
+
+    private func setBarHidden(_ hidden: Bool) {
+        guard hidden != isBarHidden else { return }
+
+        isBarHidden = hidden
+
+        UIView.animate(withDuration: 0.22, delay: 0, options: [.beginFromCurrentState, .curveEaseOut]) {
+            self.alpha = hidden ? 0 : 1
+            self.transform = hidden ? CGAffineTransform(translationX: 0, y: 24) : .identity
+        }
     }
 
     private func buildUI() {
