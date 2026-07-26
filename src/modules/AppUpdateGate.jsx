@@ -25,6 +25,12 @@ function AppUpdateGate({ children }) {
     const [isOffline, setIsOffline] = useState(false)
     const offlineListenerRef = useRef(null)
     const hasBootstrappedRef = useRef(false)
+    const hasRunCheckRef = useRef(false)
+    const navigateRef = useRef(navigate)
+
+    useEffect(() => {
+        navigateRef.current = navigate
+    }, [navigate])
 
     const restoreSavedPathIfNeeded = useCallback(async () => {
         const restorePath = await getAndClearRestorePath()
@@ -36,9 +42,9 @@ function AppUpdateGate({ children }) {
         const here = window.location.pathname + window.location.search + window.location.hash
 
         if (restorePath !== here) {
-            navigate(restorePath, { replace: true })
+            navigateRef.current(restorePath, { replace: true })
         }
-    }, [navigate])
+    }, [])
 
     const runPrefetch = useCallback(async ({ behindSplash }) => {
         if (!Capacitor.isNativePlatform()) {
@@ -66,47 +72,45 @@ function AppUpdateGate({ children }) {
         }
     }, [])
 
-    const runCheck = useCallback(() => {
-        setPhase('checking')
-        setProgress(0)
+    const runCheck = useCallback(({ silent = false } = {}) => {
+        if (!silent) {
+            setPhase('checking')
+            setProgress(0)
+        }
 
         runMobileAppUpdateCheck({
             onProgress: (percent) => {
-                setPhase('downloading')
+                if (!silent) {
+                    setPhase('downloading')
+                }
+
                 setProgress(percent)
             },
         }).then(async (result) => {
             const status = result ? result.status : 'skipped'
 
+            /* A downloaded bundle reloads the web view straight after this, so
+             * the splash stays up rather than flashing the app in between. */
             if (status === 'ok' && result.updated) {
-                setPhase('ready')
                 setIsOffline(false)
-
-                return
-            }
-
-            if (status === 'skipped' || status === 'ok') {
-                setIsOffline(false)
-
-                await restoreSavedPathIfNeeded()
-
-                await runPrefetch({ behindSplash: true })
-
-                setPhase('ready')
 
                 return
             }
 
             if (status === 'offline') {
-                setPhase('ready')
                 setIsOffline(true)
                 await restoreSavedPathIfNeeded()
+                setPhase('ready')
+
                 return
             }
 
             setIsOffline(false)
+
             await restoreSavedPathIfNeeded()
-            await runPrefetch({ behindSplash: true })
+
+            await runPrefetch({ behindSplash: !silent })
+
             setPhase('ready')
         }).catch((checkError) => {
             console.warn('Update check threw unexpectedly', checkError)
@@ -126,6 +130,12 @@ function AppUpdateGate({ children }) {
     }, [])
 
     useEffect(() => {
+        if (hasRunCheckRef.current) {
+            return
+        }
+
+        hasRunCheckRef.current = true
+
         runCheck()
     }, [runCheck])
 
@@ -167,14 +177,14 @@ function AppUpdateGate({ children }) {
         return attachPullToRefreshListener()
     }, [])
 
-    if (phase === 'downloading' || phase === 'installing') {
+    if (phase !== 'ready') {
         return <AppSplash showProgress={SHOW_DOWNLOAD_PROGRESS_BAR} progress={progress} />
     }
 
     return (
         <OfflineProvider initialOffline={isOffline}>
             {children}
-            <OfflineBanner onRetry={runCheck} />
+            <OfflineBanner onRetry={() => runCheck({ silent: true })} />
         </OfflineProvider>
     )
 }
