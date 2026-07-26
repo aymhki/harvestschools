@@ -143,6 +143,9 @@ const searchSelectMatches = (choice, query) => {
     return queryKey.length > 0 && choiceKey.includes(queryKey);
 };
 
+const OPTION_TAP_TOLERANCE = 8;
+
+
 function Form({
                   fields,
                   mailTo,
@@ -286,6 +289,7 @@ function Form({
     const [searchSelectHighlight, setSearchSelectHighlight] = useState(-1);
     const searchSelectWrapperRefs = useRef({});
     const searchSelectDropdownRef = useRef(null);
+    const optionPointerStartRef = useRef(null);
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -1541,6 +1545,7 @@ function Form({
             <div
                 className={`search-select-wrapper ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${isFieldReadOnly ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''} ${isOpen ? 'has-open-dropdown' : ''} ${isOpen && searchSelectOpensUpwards ? 'opens-upwards' : ''}`}
                 ref={searchSelectWrapperRefs.current[field.id]}
+                style={{ anchorName: `--search-select-${field.id}` }}
                 {...(field.lang !== undefined && { lang: field.lang })}
             >
                 <input
@@ -1593,6 +1598,7 @@ function Form({
                 {isOpen && (
                     <ul
                         className={`search-select-dropdown ${field.alwaysEnglish ? 'always-english' : ''}`}
+                        style={{ positionAnchor: `--search-select-${field.id}` }}
                         role="listbox"
                         ref={searchSelectDropdownRef}
                         {...(field.lang !== undefined && { lang: field.lang })}
@@ -1607,9 +1613,27 @@ function Form({
                                 aria-selected={!field.multiple && selected[0] === choice}
                                 className={`search-select-option ${index === searchSelectHighlight ? 'highlighted' : ''} ${!field.multiple && selected[0] === choice ? 'selected' : ''}`}
                                 onPointerDown={(e) => {
-                                    e.preventDefault();
-                                    pickChoice(choice);
+                                    if (e.pointerType === 'mouse') {
+                                        e.preventDefault();
+                                    }
+
+                                    optionPointerStartRef.current = { id: e.pointerId, y: e.clientY, x: e.clientX };
                                 }}
+                                onPointerUp={(e) => {
+                                    const start = optionPointerStartRef.current;
+
+                                    optionPointerStartRef.current = null;
+
+                                    const movedWhileDown = !start
+                                        || start.id !== e.pointerId
+                                        || Math.abs(e.clientY - start.y) > OPTION_TAP_TOLERANCE
+                                        || Math.abs(e.clientX - start.x) > OPTION_TAP_TOLERANCE;
+
+                                    if (!movedWhileDown) {
+                                        pickChoice(choice);
+                                    }
+                                }}
+                                onPointerCancel={() => { optionPointerStartRef.current = null; }}
                                 onMouseEnter={() => setSearchSelectHighlight(index)}
                             >
                                 {choice}
@@ -2667,7 +2691,13 @@ function Form({
     const MainForm = () => {
         return (
             <>
-                <form className="form" onSubmit={onSubmit} method="post" onReset={resetForm} id={formId}>
+                <form
+                    className={`form ${openSearchSelectId !== null ? 'has-open-search-select' : ''}`}
+                    onSubmit={onSubmit}
+                    method="post"
+                    onReset={resetForm}
+                    id={formId}
+                >
                     {composedFields.map((field) => (renderFieldBasedOnType(field)))}
                     {CaptchaField()}
                     {FormFooter()}

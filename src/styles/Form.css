@@ -40,6 +40,16 @@
     overflow-y: auto;
 }
 
+.form.has-open-search-select {
+    overflow: visible;
+}
+
+@supports (anchor-name: --anchor) and (top: anchor(bottom)) {
+    .form.has-open-search-select {
+        overflow-y: auto;
+    }
+}
+
 .full-width,
 .two-thirds-width,
 .half-width,
@@ -782,9 +792,13 @@
     background: transparent;
 }
 
-/* Anchored to the field itself rather than positioned from measured
- * coordinates: it stays stuck to the bottom of the field through any scroll or
- * keyboard movement, and being out of flow it never pushes the fields below. */
+/* The list is anchored to its own field, never positioned from coordinates
+ * measured in javascript, so it cannot drift while the page scrolls or the
+ * keyboard opens, and being out of flow it never pushes the fields below.
+ *
+ * Fallback for browsers without anchor positioning: absolute inside the field
+ * wrapper. The form is a scroll container, so it would clip the list, which is
+ * why .form drops its clipping while a list is open (see .has-open-search-select). */
 .search-select-dropdown {
     position: absolute;
     top: calc(100% + 0.25rem);
@@ -804,10 +818,33 @@
     z-index: var(--form-field-dropdown-z-index);
 }
 
-/* Fields that sit at the bottom of a form open upwards instead. */
+/* Fields near the bottom of the form open upwards instead. */
 .search-select-wrapper.opens-upwards .search-select-dropdown {
     top: auto;
     bottom: calc(100% + 0.25rem);
+}
+
+/* Where anchor positioning is available the list is a fixed element tied to the
+ * field by name: the browser keeps it glued to the field as anything scrolls,
+ * flips it above the field when there is no room below, and nothing clips it
+ * because it is no longer inside the form's overflow. */
+@supports (anchor-name: --anchor) and (top: anchor(bottom)) {
+    .search-select-dropdown {
+        position: fixed;
+        top: anchor(bottom);
+        bottom: auto;
+        left: anchor(left);
+        right: auto;
+        width: anchor-size(width);
+        margin-top: 0.25rem;
+        position-try-fallbacks: flip-block;
+        max-height: 14rem;
+    }
+
+    .search-select-wrapper.opens-upwards .search-select-dropdown {
+        top: anchor(bottom);
+        bottom: auto;
+    }
 }
 
 .search-select-option,
@@ -907,6 +944,10 @@
     .form {
         overflow: hidden;
         gap: 1.5rem;
+    }
+
+    .form.has-open-search-select {
+        overflow: visible;
     }
 
     .two-thirds-width,
