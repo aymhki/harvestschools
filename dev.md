@@ -77,6 +77,12 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Add a repository secret named `VITE_GOOGLE_MAPS_API_KEY` in GitHub (Settings > Secrets and variables > Actions) holding the Google Maps browser key. The deploy workflow already passes it to the build step.
 - [x] Keep the key's Google Cloud application restriction on "Websites" and make sure the referrer list covers every origin that runs the admin portal: `https://admin.harvestschools.com/*`, `capacitor://localhost/*`, `https://localhost/*` and the dev ports.
 - [x] Upload the wallet configs to the production configs folder: `walletPassConfig.php`, `pass-certificate.pem`, `pass-key.pem`, `Certificates.p12`, `wwdr.pem` and the Google service account json. Everything under `assets/` is deployed by the workflow, so the wallet badges and pass images go up on their own.
+- [ ] Fix the subscribe notifications UI on calendar pages in the capacitor app.
+- [ ] Main site link in admin sidebar footer of the capacitor app need to direct to the app home page.
+- [x] Table filter modal overflow scroll in mobile view.
+- [ ] Review the seat count of the apple wallet pass in the backend of `getGraduationBookingWalletPass.php`
+- [ ] The app opens the browser to load the pass rather then display it directly in the review mode of apple wallet like other apps do.
+- [ ] Alumni posts camera hangs after use photo action in the capacitor app.
 - [ ] Regenerating the Apple signing pair from a new Certificates.p12 (OpenSSL 3 cannot read Apple's legacy .p12 directly, so the PHP reads these PEMs):
   ```bash
   cd configs

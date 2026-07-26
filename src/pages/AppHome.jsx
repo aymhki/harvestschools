@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { App as CapacitorApp } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined'
@@ -69,6 +70,7 @@ const COPY = {
         offlineAction: 'Update',
         offlineWorking: 'Saving…',
         version: (bundle) => `App content version ${bundle}`,
+        appVersion: (version, build) => `App version ${version} (${build})`,
         actions: {
             calendars: 'Calendars',
             booking: 'Graduation booking',
@@ -119,6 +121,7 @@ const COPY = {
         offlineAction: 'تحديث',
         offlineWorking: 'جاري الحفظ…',
         version: (bundle) => `إصدار محتوى التطبيق ${bundle}`,
+        appVersion: (version, build) => `إصدار التطبيق ${version} (${build})`,
         actions: {
             calendars: 'التقويمات',
             booking: 'حجز الحفل',
@@ -190,6 +193,8 @@ function AppHome() {
     const [subscribedCalendarCount, setSubscribedCalendarCount] = useState(0)
     const [offlineSavedAt, setOfflineSavedAt] = useState(null)
     const [bundleVersion, setBundleVersion] = useState(null)
+
+    const [appVersion, setAppVersion] = useState(null)
     const [isSavingOfflineContent, setIsSavingOfflineContent] = useState(false)
 
     const greeting = useMemo(() => {
@@ -265,6 +270,14 @@ function AppHome() {
         setSubscribedCalendarCount(calendarIds.length)
         setOfflineSavedAt(prefetchStatus.completedAt)
         setBundleVersion(currentBundleVersion)
+
+        try {
+            const info = await CapacitorApp.getInfo()
+
+            setAppVersion({ version: info.version, build: info.build })
+        } catch (infoError) {
+            console.warn('Could not read the app version', infoError)
+        }
     }, [])
 
     const goTo = (path) => {
@@ -476,6 +489,10 @@ function AppHome() {
 
                 {bundleVersion && (
                     <p className="app-home-version">{copy.version(bundleVersion)}</p>
+                )}
+
+                {appVersion && (
+                    <p className="app-home-version">{copy.appVersion(appVersion.version, appVersion.build)}</p>
                 )}
             </section>
 

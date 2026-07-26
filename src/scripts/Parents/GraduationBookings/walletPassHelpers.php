@@ -188,6 +188,23 @@ function wallet_booking_summary(mysqli $conn, $bookingId) {
                 $stmt->close();
             }
 
+            $parentCount = 0;
+
+            $parentsSql = "SELECT COUNT(*) AS parent_count
+                           FROM graduation_booking_parents_linker
+                           WHERE booking_id = ?";
+
+            $stmt = $conn->prepare($parentsSql);
+
+            if ($stmt) {
+                $stmt->bind_param("i", $bookingId);
+                $stmt->execute();
+                $parentRow = $stmt->get_result()->fetch_assoc();
+                $stmt->close();
+
+                $parentCount = $parentRow ? (int)$parentRow['parent_count'] : 0;
+            }
+
             $extras = null;
 
             $extrasSql = "SELECT extra_id, cd_count, additional_attendees, payment_status
@@ -210,7 +227,9 @@ function wallet_booking_summary(mysqli $conn, $bookingId) {
                 'auth_id'      => (string)$bookingRow['password_hash'],
                 'students'     => $students,
                 'extras'       => $extras,
-                'seat_count'   => count($students) + ($extras ? (int)$extras['additional_attendees'] : 0),
+                /* One seat per parent on the booking plus any extra attendees they
+                 * paid for: the students are on stage, not in the audience. */
+                'seat_count'   => max($parentCount, 1) + ($extras ? (int)$extras['additional_attendees'] : 0),
             ];
         }
     }

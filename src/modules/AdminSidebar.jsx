@@ -167,7 +167,7 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
                     <ul className="sidebar-links">
                         <li>
                             <Link
-                                to={ `${ Capacitor.isNativePlatform() ? '/home' : isDevelopment() ? `http://localhost:5173` : `https://harvestschools.com` }` }
+                                to={ `${ Capacitor.isNativePlatform() ? '/app-home' : isDevelopment() ? `http://localhost:5173` : `https://harvestschools.com` }` }
                                 title={!isExpanded ? 'Return to Main Site' : ''}
                             >
                                 <span className="icon"><PublicIcon /></span>

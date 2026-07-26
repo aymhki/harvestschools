@@ -6,6 +6,11 @@ require_once 'walletPassHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 
+set_cors_headers([
+    'content_type'    => 'application/vnd.apple.pkpass',
+    'allowed_methods' => 'GET, OPTIONS',
+]);
+
 $conn = null;
 
 try {
@@ -34,11 +39,8 @@ try {
         exit('Not found');
     }
 
-    header('Content-Type: application/vnd.apple.pkpass');
     header('Content-Disposition: attachment; filename="graduation-booking-' . $bookingId . '.pkpass"');
     header('Content-Length: ' . strlen($package));
-    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-    header('Pragma: no-cache');
 
     echo $package;
 
