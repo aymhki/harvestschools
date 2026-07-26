@@ -40,6 +40,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         bridgeVC.bridge?.registerPluginInstance(WalletPassPlugin())
+        bridgeVC.bridge?.registerPluginInstance(HomeWidgetPlugin())
         webView.allowsBackForwardNavigationGestures = true
 
         webViewProcessRecovery = WebViewProcessRecovery(webView: webView)

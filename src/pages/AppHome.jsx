@@ -17,12 +17,14 @@ import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettin
 import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined'
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined'
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined'
+import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined'
 import TranslateIcon from '@mui/icons-material/Translate'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined'
 import AlumniPostCard from '../modules/AlumniPostCard.jsx'
+import WidgetActionsControls from '../modules/WidgetActionsControls.jsx'
 import CachedImage from '../modules/CachedImage.jsx'
 import { useOffline } from '../services/General/OfflineContext.jsx'
 import { cachedRequest } from '../services/General/OfflineApiCacheService.jsx'
@@ -33,6 +35,8 @@ import { getPrefetchStatus, runOfflinePrefetch } from '../services/General/Offli
 import { getCurrentBundleVersion } from '../services/General/AppUpdaterService.jsx'
 import { servePublicAsset } from '../services/General/GeneralServices.jsx'
 import { alumniStudentsPageUrl, useToggleLanguage } from '../services/General/GeneralUtils.jsx'
+import { getCurrentWeather } from '../services/General/WeatherService.jsx'
+import { isWidgetSupported } from '../services/General/HomeWidgetService.jsx'
 import '../styles/AppHome.css'
 
 
@@ -71,6 +75,13 @@ const COPY = {
         offlineWorking: 'Saving…',
         versionLabel: 'App content version',
         appVersionLabel: 'App version',
+        widgetTitle: 'Quick actions widget',
+        widgetHint: 'Pick the actions to show on the home screen and lock screen widgets.',
+        widgetAction: 'Choose',
+        widgetChosen: (count) => `${count} actions shown`,
+        widgetOne: '1 action shown',
+        save: 'Save',
+        cancel: 'Cancel',
         actions: {
             calendars: 'Calendars',
             booking: 'Graduation booking',
@@ -90,6 +101,7 @@ const COPY = {
             call: 'Call us',
         },
         switchLanguage: 'العربية',
+        weatherAtSchool: 'Temperature at Harvest International School',
         today: 'Today',
         tomorrow: 'Tomorrow',
         inDays: (days) => `In ${days} days`,
@@ -122,6 +134,13 @@ const COPY = {
         offlineWorking: 'جاري الحفظ…',
         versionLabel: 'إصدار محتوى التطبيق',
         appVersionLabel: 'إصدار التطبيق',
+        widgetTitle: 'أداة الإجراءات السريعة',
+        widgetHint: 'اختر الإجراءات التي تظهر في أدوات الشاشة الرئيسية وشاشة القفل.',
+        widgetAction: 'اختيار',
+        widgetChosen: (count) => `يتم عرض ${count} إجراءات`,
+        widgetOne: 'يتم عرض إجراء واحد',
+        save: 'حفظ',
+        cancel: 'إلغاء',
         actions: {
             calendars: 'التقويمات',
             booking: 'حجز الحفل',
@@ -141,6 +160,7 @@ const COPY = {
             call: 'اتصل بنا',
         },
         switchLanguage: 'English',
+        weatherAtSchool: 'درجة الحرارة في مدارس هارڤست الدولية',
         today: 'اليوم',
         tomorrow: 'غدًا',
         inDays: (days) => `بعد ${days} يومًا`,
@@ -194,6 +214,8 @@ function AppHome() {
     const [offlineSavedAt, setOfflineSavedAt] = useState(null)
     const [bundleVersion, setBundleVersion] = useState(null)
 
+    const [weather, setWeather] = useState(null)
+    const [widgetActionCount, setWidgetActionCount] = useState(0)
     const [appVersion, setAppVersion] = useState(null)
     const [isSavingOfflineContent, setIsSavingOfflineContent] = useState(false)
 
@@ -218,9 +240,23 @@ function AppHome() {
         [locale]
     )
 
+    const temperatureFormatter = useMemo(
+        () => new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
+        [locale]
+    )
+
     const longDateFormatter = useMemo(
         () => new Intl.DateTimeFormat(locale, { weekday: 'long', month: 'long', day: 'numeric' }),
         [locale]
+    )
+
+    const widgetCatalogue = useMemo(
+        () => QUICK_ACTIONS.map((action) => ({
+            id: action.id,
+            path: action.path,
+            label: copy.actions[action.id],
+        })),
+        [copy]
     )
 
     const upcomingEvents = useMemo(
@@ -315,13 +351,22 @@ function AppHome() {
             }
         }
 
+        const loadWeather = async () => {
+            const reading = await getCurrentWeather({ language, allowNetwork: !isOffline })
+
+            if (isActive) {
+                setWeather(reading)
+            }
+        }
+
         loadAlumniHighlights()
         loadDeviceState()
+        loadWeather()
 
         return () => {
             isActive = false
         }
-    }, [isOffline, loadDeviceState])
+    }, [isOffline, language, loadDeviceState])
 
     return (
         <div className="app-home" dir={language === 'ar' ? 'rtl' : 'ltr'}>
@@ -339,7 +384,19 @@ function AppHome() {
                 />
 
                 <div className="app-home-header-text">
-                    <p className="app-home-greeting">{greeting}</p>
+                    <p className="app-home-greeting">
+                        {greeting}
+
+                        {weather && (
+                            <span className="app-home-weather" title={weather.label}>
+                                <span className="app-home-weather-icon" aria-hidden="true">{weather.icon}</span>
+
+                                <span className="app-home-weather-value">
+                                    {`${temperatureFormatter.format(weather.temperature)}°`}
+                                </span>
+                            </span>
+                        )}
+                    </p>
 
                     <h2 className="app-home-school">{copy.school}</h2>
 
@@ -348,6 +405,10 @@ function AppHome() {
 
                         {isOffline && <span className="app-home-chip">{copy.offlineHint}</span>}
                     </p>
+
+                    {weather && !weather.isNearby && (
+                        <p className="app-home-weather-note">{copy.weatherAtSchool}</p>
+                    )}
                 </div>
 
             </header>
@@ -462,6 +523,27 @@ function AppHome() {
 
                         <span className="app-home-device-action">{copy.remindersAction}</span>
                     </button>
+
+                    {isWidgetSupported() && (
+                        <div className="app-home-card app-home-device-row">
+                            <WidgetsOutlinedIcon className="app-home-device-icon" />
+
+                            <span className="app-home-device-body">
+                                <span className="app-home-device-title">{copy.widgetTitle}</span>
+
+                                <span className="app-home-device-detail">
+                                    {widgetActionCount === 1 ? copy.widgetOne : copy.widgetChosen(widgetActionCount)}
+                                </span>
+                            </span>
+
+                            <WidgetActionsControls
+                                catalogue={widgetCatalogue}
+                                copy={copy}
+                                isRightToLeft={language === 'ar'}
+                                onChosenCountChange={setWidgetActionCount}
+                            />
+                        </div>
+                    )}
 
                     <button
                         type="button"

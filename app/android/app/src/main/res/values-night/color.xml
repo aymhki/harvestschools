@@ -7,4 +7,8 @@
     <color name="web_content_background">#242424</color>
 
     <color name="pull_refresh_indicator_color">#F2F2F2</color>
+
+    <color name="harvest_widget_surface">#242425</color>
+    <color name="harvest_widget_text">#FFFFFF</color>
+    <color name="harvest_widget_stroke">#5AFFFFFF</color>
 </resources>

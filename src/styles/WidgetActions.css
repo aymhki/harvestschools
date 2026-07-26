@@ -1,0 +1,142 @@
+.widget-actions-modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--calendar-actions-modal-z-index);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--calendar-actions-gap);
+    box-sizing: border-box;
+}
+
+.widget-actions-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--fb-black-color);
+    opacity: 0.55;
+}
+
+.widget-actions-modal-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--calendar-actions-modal-max-width);
+    max-height: 85dvh;
+    overflow: hidden;
+    border-radius: var(--calendar-actions-modal-radius);
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 1rem var(--primary-color);
+}
+
+.widget-actions-modal-header {
+    padding: var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding) 0 var(--calendar-actions-modal-padding);
+}
+
+.widget-actions-modal-header h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    letter-spacing: 0.05rem;
+}
+
+.widget-actions-note {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    letter-spacing: 0;
+    opacity: 0.75;
+}
+
+.widget-actions-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: var(--calendar-actions-modal-padding);
+    overflow-y: auto;
+}
+
+.widget-actions-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border-radius: var(--app-home-card-radius);
+    background-color: transparent;
+    color: var(--primary-color);
+    box-shadow: 0 0 0.35rem var(--primary-color);
+    text-align: start;
+    transition: background-color 0.2s ease, color 0.2s ease, filter 0.25s ease;
+}
+
+.widget-actions-choice.is-chosen,
+.widget-actions-choice:hover {
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    filter: drop-shadow(0 0 0.35rem var(--primary-color));
+}
+
+.widget-actions-choice-icon {
+    flex: 0 0 auto;
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.widget-actions-choice-label {
+    flex: 1 1 auto;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.widget-actions-choice-state {
+    flex: 0 0 auto;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.widget-actions-modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--calendar-actions-gap);
+    padding: 0 var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding);
+}
+
+.widget-actions-modal-footer button {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .widget-actions-modal-container {
+        max-height: 90dvh;
+    }
+
+    .widget-actions-modal-footer {
+        justify-content: center;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .widget-actions-modal-container {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+        box-shadow: 0 0 1rem var(--fb-white-color);
+    }
+
+    .widget-actions-choice {
+        color: var(--fb-white-color);
+        box-shadow: 0 0 0.35rem var(--fb-white-color);
+    }
+
+    .widget-actions-choice.is-chosen,
+    .widget-actions-choice:hover {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: drop-shadow(0 0 0.35rem var(--fb-white-color));
+    }
+}

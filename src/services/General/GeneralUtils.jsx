@@ -248,6 +248,7 @@ const ENDPOINTS = {
     submitOpenDaySignupForm: '/scripts/Public/OpenDaySignups/submitOpenDaySignupForm.php',
     getOpenDaySignups: '/scripts/Admin/OpenDaySignups/getOpenDaySignups.php',
     servePublicAssetFile: '/scripts/Public/General/servePublicAssetFile.php',
+    getCurrentWeather: '/scripts/Public/General/getCurrentWeather.php',
     getAllAdminUsers: '/scripts/Admin/AdminUsers/getAllAdminUsers.php',
     addAdminUser: '/scripts/Admin/AdminUsers/addAdminUser.php',
     editAdminUser: '/scripts/Admin/AdminUsers/editAdminUser.php',

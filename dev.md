@@ -91,6 +91,9 @@ tree --gitignore -I 'assets|.git' -a
   ```
 - [x] Download the official "Add to Apple Wallet" badge artwork and save the English and Arabic SVGs in `assets/images/Wallet/` next to the Google Wallet ones.
 - [ ] After the D-U-N-S number is issued and the Apple account becomes an organisation account: register a new pass type ID, export a new `Certificates.p12`, regenerate `configs/pass-certificate.pem` and `configs/pass-key.pem` from it, and update `apple_pass_type_id`, `apple_team_id` and `apple_p12_password` in `configs/walletPassConfig.php` on both the machine and the production server.
+- [ ] Enable the App Group `group.com.harvestschools.app` for both App IDs in the Apple Developer portal (`com.harvestschools.app` and `com.harvestschools.app.HarvestWidgets`) and let Xcode regenerate the provisioning profiles, otherwise the widget cannot read the quick actions the app writes.
+- [ ] Deploy the site so the new `domains/Main/.htaccess` goes up: the enforced site wide `frame-ancestors 'none'` is what turned the YouTube previews into white boxes, and the new `<Files "embed.html">` block is what allows the site and the app to frame it again.
+- [ ] Deploy `src/scripts/Public/General/getCurrentWeather.php` (it goes up with the rest of `src/scripts/`); until it is live the app home simply shows no temperature.
 - [ ] Authorise the Android app for the Google Wallet SDK, otherwise the in app save sheet stays unavailable and the app keeps falling back to the save link in the browser: in the Google Pay & Wallet Console under Google Wallet API > App Permissions, add the package name `com.harvestschools.app` together with the SHA-1 fingerprint of the release signing certificate (and the debug one while testing).
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.

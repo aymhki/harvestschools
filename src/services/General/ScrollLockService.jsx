@@ -8,10 +8,11 @@ const MODAL_OVERLAY_SELECTORS = [
     '.general-small-admin-action-modal',
     '.alumni-modal',
     '.calendar-actions-modal',
+    '.widget-actions-modal',
     '.form-select-date-modal',
     '.sidebar-overlay',
-    '.table-module-filter-popup-background',
-    '.table-module-accordion-overlay',
+    '.table-module-filter-popup-container',
+    '.table-module-accordion',
     '.lightbox',
 ]
 
@@ -31,19 +32,38 @@ let isLocked = false
 const isOverlayExempt = (element) => SCROLL_LOCK_EXEMPT_SELECTORS.some((selector) => element.closest(selector) !== null)
 
 
+/* Opacity, display and visibility all inherit their effect from the ancestors
+ * without showing up in the computed style of the element itself, so the whole
+ * chain up to the body has to be checked. */
+const isEffectivelyVisible = (element) => {
+    let current = element
+
+    let isVisible = true
+
+    while (current !== null && isVisible) {
+        const styles = window.getComputedStyle(current)
+
+        isVisible = styles.display !== 'none'
+            && styles.visibility !== 'hidden'
+            && Number(styles.opacity) > MINIMUM_VISIBLE_OPACITY
+
+        current = current.parentElement
+    }
+
+    return isVisible
+}
+
+
+/* Most of the modals stay mounted and are animated in and out with react-spring
+ * rather than being removed, so an overlay only counts as open once it is really
+ * painted: laid out, not hidden and not faded out. */
 const isOverlayOpen = (element) => {
     let isOpen = false
 
-    if (!isOverlayExempt(element)) {
-        const styles = window.getComputedStyle(element)
+    if (!isOverlayExempt(element) && isEffectivelyVisible(element)) {
+        const box = element.getBoundingClientRect()
 
-        const isRendered = styles.display !== 'none' && styles.visibility !== 'hidden'
-
-        const isPainted = Number(styles.opacity) > MINIMUM_VISIBLE_OPACITY
-
-        const box = isRendered && isPainted ? element.getBoundingClientRect() : null
-
-        isOpen = box !== null && box.width > 0 && box.height > 0
+        isOpen = box.width > 0 && box.height > 0
     }
 
     return isOpen

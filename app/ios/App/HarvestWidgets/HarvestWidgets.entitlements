@@ -6,12 +6,5 @@
 	<array>
 		<string>group.com.harvestschools.app</string>
 	</array>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:harvestschools.com</string>
-		<string>applinks:admin.harvestschools.com</string>
-		<string>applinks:www.harvestschools.com</string>
-		<string>applinks:www.admin.harvestschools.com</string>
-	</array>
 </dict>
 </plist>
