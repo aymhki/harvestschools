@@ -750,7 +750,22 @@ td button {
 
     .table-module-header-buttons-wrapper {
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 0.5rem 0.25rem 0.5rem;
+    }
+
+    .table-module-header-buttons-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .table-module-header-buttons-wrapper button {
+        flex: 0 0 auto;
+        margin-bottom: 0;
     }
 
     .table-with-vertical-scrollbar-wrapper {

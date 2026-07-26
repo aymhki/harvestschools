@@ -8,8 +8,10 @@ import androidx.annotation.NonNull;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -26,6 +28,7 @@ import android.view.HapticFeedbackConstants;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.WebViewListener;
 
 public class MainActivity extends BridgeActivity {
 
@@ -118,8 +121,59 @@ public class MainActivity extends BridgeActivity {
         });
         ViewCompat.requestApplyInsets(root);
 
+        installWebViewRecovery();
+        installEdgeSwipeNavigation(webView);
         addFloatingNavBar(root, webView);
         startPollingLoop(webView);
+    }
+
+    private void installWebViewRecovery() {
+        getBridge().addWebViewListener(new WebViewListener() {
+            @Override
+            public boolean onRenderProcessGone(WebView webView, RenderProcessGoneDetail detail) {
+                if (webView == null) {
+                    return false;
+                }
+
+                webView.reload();
+
+                return true;
+            }
+        });
+    }
+
+    private void installEdgeSwipeNavigation(WebView webView) {
+        final int edgeWidth = dp(24);
+        final int travelThreshold = dp(72);
+        final float[] downPoint = new float[2];
+        final boolean[] startedAtEdge = new boolean[2];
+
+        webView.setOnTouchListener((view, event) -> {
+            int action = event.getActionMasked();
+
+            if (action == MotionEvent.ACTION_DOWN) {
+                downPoint[0] = event.getX();
+                downPoint[1] = event.getY();
+                startedAtEdge[0] = event.getX() <= edgeWidth;
+                startedAtEdge[1] = event.getX() >= view.getWidth() - edgeWidth;
+            } else if (action == MotionEvent.ACTION_UP) {
+                float horizontalTravel = event.getX() - downPoint[0];
+                float verticalTravel = Math.abs(event.getY() - downPoint[1]);
+
+                if (verticalTravel < Math.abs(horizontalTravel)) {
+                    if (startedAtEdge[0] && horizontalTravel > travelThreshold && webView.canGoBack()) {
+                        webView.goBack();
+                    } else if (startedAtEdge[1] && horizontalTravel < -travelThreshold && webView.canGoForward()) {
+                        webView.goForward();
+                    }
+                }
+
+                startedAtEdge[0] = false;
+                startedAtEdge[1] = false;
+            }
+
+            return false;
+        });
     }
 
     private void addFloatingNavBar(CoordinatorLayout root, WebView webView) {
@@ -153,7 +207,7 @@ public class MainActivity extends BridgeActivity {
         );
 
         lp.gravity = Gravity.BOTTOM | Gravity.START;
-        lp.setMargins(dp(16), 0, 0, dp(16));
+        lp.setMargins(dp(12), 0, 0, dp(6));
         card.setLayoutParams(lp);
         root.addView(card);
         updateNavButtonState(webView);

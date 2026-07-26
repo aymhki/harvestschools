@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
+import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { useOffline } from '../services/General/OfflineContext.jsx'
 import '../styles/OfflineBanner.css'
 
@@ -63,13 +65,13 @@ function OfflineBanner({ onRetry }) {
 
     return (
         <div className="offline-banner" role="status" aria-live="polite">
-            <span className="offline-banner__dot" aria-hidden="true" />
+            <CloudOffOutlinedIcon className="offline-banner-icon" />
 
-            <p className="offline-banner__message">{copy.message}</p>
+            <p className="offline-banner-message">{copy.message}</p>
 
             <button
                 type="button"
-                className="offline-banner__action"
+                className="offline-banner-action"
                 onClick={handleRetry}
                 disabled={isRetrying}
             >
@@ -78,11 +80,11 @@ function OfflineBanner({ onRetry }) {
 
             <button
                 type="button"
-                className="offline-banner__close"
+                className="offline-banner-close"
                 onClick={() => setIsDismissed(true)}
                 aria-label={copy.dismiss}
             >
-                ×
+                <CloseOutlinedIcon className="offline-banner-close-icon" />
             </button>
         </div>
     )

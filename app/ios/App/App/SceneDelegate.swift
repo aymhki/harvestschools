@@ -65,6 +65,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         superview.backgroundColor = PullToRefreshController.siteBackgroundColor
         bridgeVC.view.backgroundColor = PullToRefreshController.siteBackgroundColor
 
+        bridgeVC.bridge?.registerPluginInstance(WalletPassPlugin())
+        webView.allowsBackForwardNavigationGestures = true
+
         webViewProcessRecovery = WebViewProcessRecovery(webView: webView)
 
         pullToRefreshController = PullToRefreshController(webView: webView, containerView: bridgeVC.view)
@@ -73,8 +76,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         bridgeVC.view.addSubview(navBar)
 
         NSLayoutConstraint.activate([
-            navBar.leadingAnchor.constraint(equalTo: bridgeVC.view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            navBar.bottomAnchor.constraint(equalTo: bridgeVC.view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            navBar.leadingAnchor.constraint(equalTo: bridgeVC.view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
+            navBar.bottomAnchor.constraint(equalTo: bridgeVC.view.safeAreaLayoutGuide.bottomAnchor, constant: -4)
         ])
 
         floatingNavBar = navBar

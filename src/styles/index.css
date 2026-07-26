@@ -123,6 +123,13 @@
     --wallet-badge-height: 3.125rem;
     --wallet-badge-radius: 1.5625rem;
 
+    --offline-banner-side-inset: 1rem;
+    --offline-banner-bottom-inset: 5.5rem;
+    --offline-banner-max-width: 34rem;
+    --offline-banner-gap: 0.85rem;
+    --offline-banner-padding: 1rem 1.1rem;
+    --offline-banner-button-min-height: 2.75rem;
+
     --calendar-actions-gap: 1rem;
     --calendar-actions-modal-padding: 1.5rem;
     --calendar-actions-modal-radius: 1rem;

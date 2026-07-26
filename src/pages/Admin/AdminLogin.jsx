@@ -389,11 +389,19 @@ function AdminLogin() {
             });
 
             if (!verified) {
+                if (isMountedRef.current) {
+                    setLoginNotice('Biometric sign-in was not completed. Please try again or use another login.');
+                }
+
                 return;
             }
 
             const credentials = await getBiometricCredentials(ADMIN_SESSION_NAMESPACE);
             if (!credentials || !credentials.username || !credentials.password) {
+                if (isMountedRef.current) {
+                    setLoginNotice('No saved sign-in was found on this device. Please log in with your username and password.');
+                }
+
                 return;
             }
 
@@ -423,6 +431,11 @@ function AdminLogin() {
 
             if (result && !result.success) {
                 const credentialsLikelyChanged = result.code === 401 || result.code === 404;
+
+                if (!credentialsLikelyChanged && isMountedRef.current) {
+                    setLoginNotice(result.message || 'Could not sign in with biometrics. Please check your connection and try again.');
+                }
+
                 if (credentialsLikelyChanged) {
                     const wantsToUpdateCredentials = window.confirm(
                         "Did you change your username or password? Tap OK to enter your new username and password. Tap Cancel to remove biometric sign-in on this device."
@@ -436,6 +449,10 @@ function AdminLogin() {
                         await resetToFirstTimeMobileExperience();
                     }
                 }
+            }
+        } catch (biometricError) {
+            if (isMountedRef.current) {
+                setLoginNotice(biometricError.message || 'Could not sign in with biometrics. Please check your connection and try again.');
             }
         } finally {
             if (isMountedRef.current) {
@@ -910,7 +927,7 @@ function AdminLogin() {
                                 {t("admin.login-page.title")}
                             </h2>
                         )}
-                        {loginNotice && (loginMode === 'full' || loginMode === 'recovery') && (
+                        {loginNotice && (
                             <p className={'admin-login-notice'}>{loginNotice}</p>
                         )}
                         {loginMode === 'biometric' && renderBiometricScreen()}
