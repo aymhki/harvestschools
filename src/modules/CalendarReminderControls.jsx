@@ -25,7 +25,7 @@ const UNSUBSCRIBE_FIELD_ID = 3
 
 
 function CalendarReminderControls({ calendarId }) {
-    const { t, i18n } = useTranslation(['events-pages'])
+    const { t, i18n } = useTranslation(['events-pages', 'common'])
 
     const calendar = getCalendarById(calendarId)
 
@@ -266,7 +266,7 @@ function CalendarReminderControls({ calendarId }) {
 
                     <div className={'calendar-actions-modal-footer'}>
                         <button className={'calendar-actions-modal-cancel-button'} onClick={closeModal}>
-                            {t('common.cancel', { ns: 'common' })}
+                            {t('common.cancel', { ns: 'common', defaultValue: language === 'ar' ? 'إلغاء' : 'Cancel' })}
                         </button>
 
                         <div ref={modalFooterButtonsRef} className={'modal-footer-buttons-portal-target'}/>

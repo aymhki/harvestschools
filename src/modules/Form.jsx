@@ -293,13 +293,16 @@ function Form({
         if (!wrapperRef?.current) return;
         const rect = wrapperRef.current.getBoundingClientRect();
         const dropdownMaxHeight = 224;
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const openUp = spaceBelow < Math.min(dropdownMaxHeight, 160) && rect.top > spaceBelow;
+        const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const spaceBelow = viewportHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const openUp = spaceBelow < Math.min(dropdownMaxHeight, 160) && spaceAbove > spaceBelow;
         setSearchSelectDropdownRect({
             left: rect.left,
             width: rect.width,
             top: openUp ? undefined : rect.bottom + 4,
-            bottom: openUp ? window.innerHeight - rect.top + 4 : undefined,
+            bottom: openUp ? viewportHeight - rect.top + 4 : undefined,
+            maxHeight: Math.max(Math.min(dropdownMaxHeight, openUp ? spaceAbove - 8 : spaceBelow - 8), 96),
         });
     }, [openSearchSelectId]);
 
@@ -1606,6 +1609,7 @@ function Form({
                             width: searchSelectDropdownRect.width,
                             top: searchSelectDropdownRect.top,
                             bottom: searchSelectDropdownRect.bottom,
+                            maxHeight: searchSelectDropdownRect.maxHeight,
                         }}
                         role="listbox"
                         ref={searchSelectDropdownRef}
@@ -1620,8 +1624,10 @@ function Form({
                                 role="option"
                                 aria-selected={!field.multiple && selected[0] === choice}
                                 className={`search-select-option ${index === searchSelectHighlight ? 'highlighted' : ''} ${!field.multiple && selected[0] === choice ? 'selected' : ''}`}
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => pickChoice(choice)}
+                                onPointerDown={(e) => {
+                                    e.preventDefault();
+                                    pickChoice(choice);
+                                }}
                                 onMouseEnter={() => setSearchSelectHighlight(index)}
                             >
                                 {choice}
@@ -2443,9 +2449,13 @@ function Form({
         measureSearchSelectDropdown();
         window.addEventListener('scroll', measureSearchSelectDropdown, true);
         window.addEventListener('resize', measureSearchSelectDropdown);
+        window.visualViewport?.addEventListener('resize', measureSearchSelectDropdown);
+        window.visualViewport?.addEventListener('scroll', measureSearchSelectDropdown);
         return () => {
             window.removeEventListener('scroll', measureSearchSelectDropdown, true);
             window.removeEventListener('resize', measureSearchSelectDropdown);
+            window.visualViewport?.removeEventListener('resize', measureSearchSelectDropdown);
+            window.visualViewport?.removeEventListener('scroll', measureSearchSelectDropdown);
         };
     }, [openSearchSelectId, measureSearchSelectDropdown]);
 

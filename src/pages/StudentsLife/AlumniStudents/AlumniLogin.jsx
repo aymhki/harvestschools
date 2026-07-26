@@ -293,11 +293,19 @@ function AlumniLogin() {
             });
 
             if (!verified) {
+                if (isMountedRef.current) {
+                    setLoginNotice('Biometric sign-in was not completed. Please try again or use another login.');
+                }
+
                 return;
             }
 
             const credentials = await getBiometricCredentials(ALUMNI_SESSION_NAME);
             if (!credentials || !credentials.username || !credentials.password) {
+                if (isMountedRef.current) {
+                    setLoginNotice('No saved sign-in was found on this device. Please log in with your username and password.');
+                }
+
                 return;
             }
 
@@ -323,8 +331,12 @@ function AlumniLogin() {
                         await resetToFirstTimeMobileExperience();
                     }
                 } else if (isMountedRef.current) {
-                    setLoginNotice(result.message || 'Could not sign in with biometrics. Please try again.');
+                    setLoginNotice(result.message || 'Could not sign in with biometrics. Please check your connection and try again.');
                 }
+            }
+        } catch (biometricError) {
+            if (isMountedRef.current) {
+                setLoginNotice(biometricError.message || 'Could not sign in with biometrics. Please check your connection and try again.');
             }
         } finally {
             if (isMountedRef.current) {
@@ -618,7 +630,7 @@ function AlumniLogin() {
                             </p>
                         )}
 
-                        {mode === 'sign-in' && loginNotice && loginMode !== 'biometric' && (
+                        {mode === 'sign-in' && loginNotice && (
                             <p className={"alumni-inline-error-message"}>{loginNotice}</p>
                         )}
 
