@@ -224,6 +224,17 @@
     flex-wrap: wrap;
 }
 
+.wallet-pass-notice {
+    flex: 1 0 100%;
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    letter-spacing: 0.02rem;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+
 .confirmation-buttons-wrapper-in-booking-extras-page {
     display: flex;
     justify-content: center;
@@ -296,35 +307,6 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
-    .booking-login-page {
-        background: radial-gradient(circle, var(--fb-white-color), var(--fb-black-gradient-color)) ;
-    }
-
-    .booking-login-form-wrapper {
-        background-color: var(--light-dark-accent-color);
-    }
-
-    .booking-login-form-wrapper:hover {
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
-    }
-
-    .booking-extras-form-wrapper {
-        background-color: var(--light-dark-accent-color);
-        color: var(--fb-white-color);
-    }
-
-    .booking-confirmation-page {
-        background-color: var(--light-dark-accent-color);
-        color: var(--fb-white-color);
-    }
-
-    .booking-confirmation-wrapper {
-        background-color: var(--light-dark-accent-color);
-        color: var(--fb-white-color);
-    }
-
-}
 .booking-login-biometric-only {
     display: flex;
     flex-direction: column;
@@ -566,6 +548,37 @@
     }
 
     .booking-login-link-btn:hover:not(:disabled) {
+        color: var(--fb-white-color);
+    }
+
+    .booking-login-page {
+        background: radial-gradient(circle, var(--fb-white-color), var(--fb-black-gradient-color)) ;
+    }
+
+    .booking-login-form-wrapper {
+        background-color: var(--light-dark-accent-color);
+    }
+
+    .booking-login-form-wrapper:hover {
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    }
+
+    .booking-extras-form-wrapper {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+
+    .booking-confirmation-page {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+
+    .booking-confirmation-wrapper {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+
+    .wallet-pass-notice {
         color: var(--fb-white-color);
     }
 }

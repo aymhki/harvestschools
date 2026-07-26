@@ -22,6 +22,7 @@ function GraduationBookingStatusInfo() {
     const [bookingUsername, setBookingUsername] = useState(null);
     const [bookingResult, setBookingResult] = useState(null);
     const [walletPassOffer, setWalletPassOffer] = useState(null);
+    const [walletNotice, setWalletNotice] = useState(null);
 
     useEffect(() => {
         headToGraduationBookingLoginOnInvalidSession(navigate, setIsLoading)
@@ -49,8 +50,14 @@ function GraduationBookingStatusInfo() {
     }, [bookingResult])
 
     const handleAddToWallet = async () => {
+        setWalletNotice(null);
+
         try {
-            await openWalletPass(walletPassOffer);
+            const result = await openWalletPass(walletPassOffer);
+
+            if (result.alreadyInWallet && !result.openedInWallet) {
+                setWalletNotice(t("events-pages.graduation-booking-pages.booking-status-info-page.pass-already-in-wallet"));
+            }
         } catch (walletError) {
             setFetchBookingBySessionError(walletError.message || 'The pass could not be added.');
         }
@@ -647,6 +654,10 @@ function GraduationBookingStatusInfo() {
                                         disabled={isLoading}
                                         onClick={handleAddToWallet}
                                     />
+                                )}
+
+                                {walletNotice && (
+                                    <p className={'wallet-pass-notice'}>{walletNotice}</p>
                                 )}
 
                                 {!isMobileApp() && (

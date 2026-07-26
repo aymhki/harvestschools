@@ -46,7 +46,22 @@ public class WalletPassPlugin: CAPPlugin, CAPBridgedPlugin {
         let library = PKPassLibrary()
 
         if library.containsPass(pass) {
-            call.resolve(["added": false, "alreadyInWallet": true])
+            let existingPass = library.pass(
+                withPassTypeIdentifier: pass.passTypeIdentifier,
+                serialNumber: pass.serialNumber
+            )
+
+            guard let passURL = existingPass?.passURL else {
+                call.resolve(["added": false, "alreadyInWallet": true, "opened": false])
+
+                return
+            }
+
+            DispatchQueue.main.async {
+                UIApplication.shared.open(passURL, options: [:]) { opened in
+                    call.resolve(["added": false, "alreadyInWallet": true, "opened": opened])
+                }
+            }
 
             return
         }

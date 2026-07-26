@@ -20,7 +20,7 @@ const SHOW_DOWNLOAD_PROGRESS_BAR = false
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
 
-    const [phase, setPhase] = useState('checking')
+    const [isPreparing, setIsPreparing] = useState(Capacitor.isNativePlatform())
     const [progress, setProgress] = useState(0)
     const [isOffline, setIsOffline] = useState(false)
     const offlineListenerRef = useRef(null)
@@ -46,7 +46,7 @@ function AppUpdateGate({ children }) {
         }
     }, [])
 
-    const runPrefetch = useCallback(async ({ behindSplash }) => {
+    const runPrefetch = useCallback(async ({ reportProgress }) => {
         if (!Capacitor.isNativePlatform()) {
             return
         }
@@ -54,15 +54,10 @@ function AppUpdateGate({ children }) {
         try {
             const bundleVersion = await getCurrentBundleVersion()
 
-            if (behindSplash) {
-                setPhase('installing')
-                setProgress(0)
-            }
-
             await runOfflinePrefetch({
                 bundleVersion,
                 onProgress: ({ percent }) => {
-                    if (behindSplash) {
+                    if (reportProgress) {
                         setProgress(percent)
                     }
                 },
@@ -72,50 +67,44 @@ function AppUpdateGate({ children }) {
         }
     }, [])
 
-    const runCheck = useCallback(({ silent = false } = {}) => {
+    const prepareApp = useCallback(async ({ silent = false } = {}) => {
+        let bundleIsAboutToReload = false
+
         if (!silent) {
-            setPhase('checking')
+            setIsPreparing(true)
             setProgress(0)
         }
 
-        runMobileAppUpdateCheck({
-            onProgress: (percent) => {
-                if (!silent) {
-                    setPhase('downloading')
-                }
+        try {
+            const result = await runMobileAppUpdateCheck({
+                onProgress: (percent) => {
+                    if (!silent) {
+                        setProgress(percent)
+                    }
+                },
+            })
 
-                setProgress(percent)
-            },
-        }).then(async (result) => {
             const status = result ? result.status : 'skipped'
 
-            /* A downloaded bundle reloads the web view straight after this, so
-             * the splash stays up rather than flashing the app in between. */
-            if (status === 'ok' && result.updated) {
-                setIsOffline(false)
 
-                return
-            }
+            bundleIsAboutToReload = status === 'ok' && Boolean(result.updated)
 
-            if (status === 'offline') {
-                setIsOffline(true)
+            setIsOffline(status === 'offline')
+
+            if (!bundleIsAboutToReload) {
                 await restoreSavedPathIfNeeded()
-                setPhase('ready')
 
-                return
+                if (status !== 'offline') {
+                    await runPrefetch({ reportProgress: !silent })
+                }
             }
+        } catch (prepareError) {
+            console.warn('The app could not finish preparing', prepareError)
+        }
 
-            setIsOffline(false)
-
-            await restoreSavedPathIfNeeded()
-
-            await runPrefetch({ behindSplash: !silent })
-
-            setPhase('ready')
-        }).catch((checkError) => {
-            console.warn('Update check threw unexpectedly', checkError)
-            setPhase('ready')
-        })
+        if (!bundleIsAboutToReload) {
+            setIsPreparing(false)
+        }
     }, [restoreSavedPathIfNeeded, runPrefetch])
 
     useEffect(() => {
@@ -136,8 +125,8 @@ function AppUpdateGate({ children }) {
 
         hasRunCheckRef.current = true
 
-        runCheck()
-    }, [runCheck])
+        prepareApp()
+    }, [prepareApp])
 
     useEffect(() => {
         if (!isOffline) {
@@ -153,7 +142,7 @@ function AppUpdateGate({ children }) {
         Network.addListener('networkStatusChange', (status) => {
             if (status.connected) {
                 setIsOffline(false)
-                runPrefetch({ behindSplash: false })
+                runPrefetch({ reportProgress: false })
             }
         }).then((handle) => {
             if (isMounted) {
@@ -177,14 +166,14 @@ function AppUpdateGate({ children }) {
         return attachPullToRefreshListener()
     }, [])
 
-    if (phase !== 'ready') {
+    if (isPreparing) {
         return <AppSplash showProgress={SHOW_DOWNLOAD_PROGRESS_BAR} progress={progress} />
     }
 
     return (
         <OfflineProvider initialOffline={isOffline}>
             {children}
-            <OfflineBanner onRetry={() => runCheck({ silent: true })} />
+            <OfflineBanner onRetry={() => prepareApp({ silent: true })} />
         </OfflineProvider>
     )
 }
