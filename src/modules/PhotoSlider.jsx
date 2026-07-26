@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/PhotoSlider.css';
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
+import CachedImage from "./CachedImage.jsx";
 
 function PhotoSlider({ photos, darken }) {
     const [current, setCurrent] = useState(0);
@@ -48,10 +49,11 @@ function PhotoSlider({ photos, darken }) {
                 <div
                     className={`slide ${index === current ? 'active' : index === exiting ? 'exiting' : 'not-active'}`}
                     key={photo.id}>
-                    <img
+                    <CachedImage
                         src={servePublicAsset(photo.url)}
                         alt={photo.text}
                         className={darken ? 'slider-photo-dark' : 'slider-photo'}
+                        fallbackClassName={darken ? 'slider-photo-dark' : 'slider-photo'}
                     />
                     <div className="photo-text">
                         <h1>{photo.title}</h1>

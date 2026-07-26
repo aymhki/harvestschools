@@ -84,6 +84,8 @@ jobs:
         run: echo "VITE_LOCALES_VERSION=$(git rev-parse --short=12 HEAD)" >> $GITHUB_ENV
 
       - name: Build main + admin + mobile-app + corporate
+        env:
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
         run: |
           npm run build:main
           npm run build:admin

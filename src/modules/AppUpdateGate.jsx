@@ -15,7 +15,7 @@ import OfflineBanner from './OfflineBanner.jsx'
 import '../styles/AppUpdateGate.css'
 import PropTypes from 'prop-types'
 
-const SHOW_DOWNLOAD_PROGRESS_BAR = true
+const SHOW_DOWNLOAD_PROGRESS_BAR = false
 
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
@@ -156,7 +156,7 @@ function AppUpdateGate({ children }) {
         return attachPullToRefreshListener()
     }, [])
 
-    if (phase === 'checking' || phase === 'downloading') {
+    if (phase === 'downloading') {
         return <AppSplash showProgress={SHOW_DOWNLOAD_PROGRESS_BAR} progress={progress} />
     }
 

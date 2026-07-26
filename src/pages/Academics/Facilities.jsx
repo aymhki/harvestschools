@@ -3,6 +3,7 @@ import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
+import CachedImage from "../../modules/CachedImage.jsx";
 
 function Facilities() {
     const { t } = useTranslation(['academics-pages']);
@@ -49,7 +50,7 @@ function Facilities() {
 
                 <div className="facilities-show-case-grid">
                     {imageSources.map((src, index) => (
-                        <img key={index} src={servePublicAsset(src)} alt={imageAlts[index] || ''} className="facilities-show-case-image"/>
+                        <CachedImage key={index} src={servePublicAsset(src)} alt={imageAlts[index] || ''} className="facilities-show-case-image" fallbackClassName="facilities-show-case-image"/>
                     ))}
                 </div>
 

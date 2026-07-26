@@ -17,17 +17,26 @@
 
 .app-splash__mark {
     position: relative;
-    width: 6.5rem;
-    height: 6.5rem;
+    width: 10rem;
+    height: 10rem;
     display: grid;
     place-items: center;
-    animation: app-splash-mark-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: app-splash-mark-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both,
+    app-splash-mark-pulse 2.4s ease-in-out 0.6s infinite;
+}
+
+@keyframes app-splash-mark-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.06);
+    }
 }
 
 .app-splash__mark svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 0.6rem 1.4rem rgba(31, 33, 82, 0.28));
 }
 
 .app-splash__mark-letter--h,
@@ -37,16 +46,6 @@
 
 .app-splash__mark-letter--i {
     fill: var(--secondary-color);
-}
-
-.app-splash__halo {
-    position: absolute;
-    inset: -0.6rem;
-    border-radius: 2.25rem;
-    border: 2px solid var(--primary-color);
-    opacity: 0.18;
-    animation: app-splash-halo 2.4s ease-in-out infinite;
-    pointer-events: none;
 }
 
 .app-splash__wordmark {
@@ -60,12 +59,17 @@
 }
 
 .app-splash__message {
-    margin: 0;
+    position: absolute;
+    bottom: calc(2.5rem + env(safe-area-inset-bottom));
+    left: 2rem;
+    right: 2rem;
+    margin: 0 auto;
     min-height: 3rem;
     max-width: 22rem;
     font-size: 1.05rem;
     line-height: 1.55;
     letter-spacing: 0.01rem;
+    text-align: center;
     opacity: 0;
     transform: translateY(0.4rem);
     transition: opacity 0.32s ease, transform 0.32s ease;
@@ -77,10 +81,11 @@
 }
 
 .app-splash__shimmer {
+    margin-top: 1rem;
     width: min(60vw, 180px);
     height: 0.28rem;
     border-radius: 999px;
-    background-color: rgba(31, 33, 82, 0.12);
+    background-color: var(--fb-off-white-color);
     overflow: hidden;
 }
 
@@ -89,15 +94,16 @@
     width: 40%;
     height: 100%;
     border-radius: 999px;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    background: var(--primary-color);
     animation: app-splash-shimmer 1.4s ease-in-out infinite;
 }
 
 .app-splash__progress-track {
-    width: min(80vw, 220px);
+    margin-top: 1rem;
+    width: min(80vw, 20rem);
     height: 0.5rem;
     border-radius: 999px;
-    background-color: rgba(31, 33, 82, 0.15);
+    background-color: var(--primary-color);
     overflow: hidden;
 }
 
@@ -119,17 +125,6 @@
     }
 }
 
-@keyframes app-splash-halo {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.18;
-    }
-
-    50% {
-        transform: scale(1.06);
-        opacity: 0.05;
-    }
-}
 
 @keyframes app-splash-shimmer {
     0% {
@@ -143,7 +138,6 @@
 
 @media (prefers-reduced-motion: reduce) {
     .app-splash__mark,
-    .app-splash__halo,
     .app-splash__shimmer span {
         animation: none;
     }
@@ -165,12 +159,8 @@
         fill: var(--fb-white-color);
     }
 
-    .app-splash__halo {
-        border-color: var(--fb-white-color);
-    }
-
     .app-splash__shimmer {
-        background-color: rgba(255, 255, 255, 0.14);
+        background-color: var(--dark-accent-color);
     }
 
     .app-splash__progress-track {
@@ -180,12 +170,16 @@
     .app-splash__progress-fill {
         background-color: var(--fb-white-color);
     }
+
+    .app-splash__shimmer span {
+        background-color: var(--fb-white-color);
+    }
 }
 
 @media (max-width: 380px) {
     .app-splash__mark {
-        width: 5.5rem;
-        height: 5.5rem;
+        width: 7.5rem;
+        height: 7.5rem;
     }
 
     .app-splash__message {

@@ -101,8 +101,8 @@ export const corporateRoutes = [
 ];
 
 export const mobileRoutes = [
-    { path: '/', page: 'AppHome.jsx', chromeExcluded: false },
-    { path: '/app-home', page: 'AppHome.jsx', chromeExcluded: false },
+    { path: '/', page: 'AppHome.jsx', chromeExcluded: true },
+    { path: '/app-home', page: 'AppHome.jsx', chromeExcluded: true },
     ...mainRoutes.filter((r) => r.path !== '*' && r.path !== '/'),
     ...adminRoutes.filter((r) => r.path !== '/' && r.path !== '*'),
     { path: '*', page: 'NotFound.jsx' },

@@ -1,9 +1,12 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
+import {Capacitor} from "@capacitor/core";
 import {fetchGraduationBookingInfoBySessionRequest} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
-import { formatDateFromPacific } from "../../../services/General/GeneralUtils.jsx"
+import {fetchWalletPassOffer, openWalletPass} from "../../../services/Parents/GraduationBookings/GraduationBookingWalletPassService.jsx";
+import { formatDateFromPacific, formatCeremonyDate, formatCeremonyTime, isMobileApp } from "../../../services/General/GeneralUtils.jsx"
 import {generateGraduationBookingConfirmationPDF} from "../../../services/Parents/GraduationBookings/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
 import Spinner from "../../../modules/Spinner.jsx";
+import WalletBadgeButton from "../../../modules/WalletBadgeButton.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
@@ -18,6 +21,7 @@ function GraduationBookingStatusInfo() {
     const [bookingId, setBookingId] = useState(null);
     const [bookingUsername, setBookingUsername] = useState(null);
     const [bookingResult, setBookingResult] = useState(null);
+    const [walletPassOffer, setWalletPassOffer] = useState(null);
 
     useEffect(() => {
         headToGraduationBookingLoginOnInvalidSession(navigate, setIsLoading)
@@ -27,6 +31,30 @@ function GraduationBookingStatusInfo() {
                 }
             )
     }, [])
+
+    useEffect(() => {
+        let isActive = true;
+
+        if (bookingResult && bookingResult.success) {
+            fetchWalletPassOffer().then(offer => {
+                if (isActive) {
+                    setWalletPassOffer(offer);
+                }
+            });
+        }
+
+        return () => {
+            isActive = false;
+        };
+    }, [bookingResult])
+
+    const handleAddToWallet = async () => {
+        try {
+            await openWalletPass(walletPassOffer);
+        } catch (walletError) {
+            setFetchBookingBySessionError(walletError.message || 'The pass could not be added.');
+        }
+    }
 
     const fetchBookingBySessionId = async () => {
         try {
@@ -342,6 +370,61 @@ function GraduationBookingStatusInfo() {
             }
         }
 
+        currentFormFields.push({
+            id: (currentFormFields[currentFormFields.length - 1].id + 1),
+            type: 'section',
+            name: 'ceremony',
+            label: 'Ceremony',
+            displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.ceremony"),
+            required: true,
+            widthOfField: 1,
+            httpName: 'ceremony',
+        });
+
+        const ceremony = result.detailedData.ceremony || {};
+        const notAnnouncedYet = t("events-pages.graduation-booking-pages.booking-status-info-page.ceremony-to-be-announced");
+
+        const ceremonyFields = [
+            {
+                name: 'ceremony-date',
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.ceremony-date"),
+                value: formatCeremonyDate(ceremony.ceremonyDate, i18n.language) || notAnnouncedYet,
+                widthOfField: 2,
+            },
+            {
+                name: 'ceremony-time',
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.ceremony-time"),
+                value: [formatCeremonyTime(ceremony.ceremonyTime, i18n.language), ceremony.timeZone]
+                    .filter(Boolean).join(' · ') || notAnnouncedYet,
+                widthOfField: 2,
+            },
+            {
+                name: 'ceremony-location',
+                displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.ceremony-location"),
+                value: [ceremony.locationName, ceremony.locationAddress].filter(Boolean).join(' — ') || notAnnouncedYet,
+                widthOfField: 1,
+            },
+        ];
+
+        ceremonyFields.forEach((ceremonyField) => {
+            currentFormFields.push({
+                id: (currentFormFields[currentFormFields.length - 1].id + 1),
+                type: 'text',
+                name: ceremonyField.name,
+                label: ceremonyField.displayLabel,
+                displayLabel: ceremonyField.displayLabel,
+                required: false,
+                value: ceremonyField.value,
+                setValue: null,
+                widthOfField: ceremonyField.widthOfField,
+                httpName: ceremonyField.name,
+                labelOutside: true,
+                labelOnTop: true,
+                dontLetTheBrowserSaveField: true,
+                readOnlyField: true,
+            });
+        });
+
         if (result.detailedData.extras) {
             currentFormFields.push({
                 id: (currentFormFields[currentFormFields.length - 1].id + 1),
@@ -554,10 +637,22 @@ function GraduationBookingStatusInfo() {
 
                         { (!fetchBookingBySessionError && finalFormFields && finalFormFields.length > 0 && detailedData && bookingId && bookingUsername) && (
                             <div className={'confirmation-buttons-wrapper-in-booking-info-page'}>
+                                {walletPassOffer && (
+                                    <WalletBadgeButton
+                                        wallet={Capacitor.getPlatform() === 'ios' ? 'apple' : 'google'}
+                                        language={i18n.language}
+                                        label={Capacitor.getPlatform() === 'ios'
+                                            ? t("events-pages.graduation-booking-pages.booking-status-info-page.add-to-apple-wallet-btn")
+                                            : t("events-pages.graduation-booking-pages.booking-status-info-page.save-to-google-wallet-btn")}
+                                        disabled={isLoading}
+                                        onClick={handleAddToWallet}
+                                    />
+                                )}
+
                                 <button
                                     className={'download-confirmation-button'}
                                     onClick={() => generateGraduationBookingConfirmationPDF(
-                                        'download',
+                                        isMobileApp() ? 'share' : 'download',
                                         setIsLoading,
                                         bookingId,
                                         bookingUsername,
@@ -567,7 +662,9 @@ function GraduationBookingStatusInfo() {
                                     )}
                                     disabled={isLoading}
                                 >
-                                    {t("events-pages.graduation-booking-pages.booking-status-info-page.download-confirmation-btn")}
+                                    {isMobileApp()
+                                        ? t("events-pages.graduation-booking-pages.booking-status-info-page.share-confirmation-btn")
+                                        : t("events-pages.graduation-booking-pages.booking-status-info-page.download-confirmation-btn")}
                                 </button>
                                 {/*<button*/}
                                 {/*    className={'print-confirmation-button'}*/}

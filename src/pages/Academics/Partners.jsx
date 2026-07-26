@@ -2,6 +2,7 @@ import '../../styles/Academics.css';
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
+import CachedImage from "../../modules/CachedImage.jsx";
 
 function Partners() {
 
@@ -19,10 +20,10 @@ function Partners() {
           </Helmet>
 
           <div className="extreme-padding-container">
-              <img src={servePublicAsset('/images/AcademicsPages/Partners1.png')}/>
+              <CachedImage src={servePublicAsset('/images/AcademicsPages/Partners1.png')} alt={t('academics-pages.partners.schooleverywhere-title')}/>
               <h1>{t('academics-pages.partners.schooleverywhere-title')}</h1>
               <p>{t('academics-pages.partners.schooleverywhere-description')}</p>
-              <img src={servePublicAsset('/images/AcademicsPages/Partners2.png')}/>
+              <CachedImage src={servePublicAsset('/images/AcademicsPages/Partners2.png')} alt={t('academics-pages.partners.ucmas-title')}/>
               <h1>{t('academics-pages.partners.ucmas-title')}</h1>
               <p>{t('academics-pages.partners.ucmas-description')}</p>
           </div>

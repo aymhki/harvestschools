@@ -2,11 +2,14 @@ import {
     additionalAttendeeCost,
     BASE_URLS,
     cdCost,
+    formatCeremonyDate,
+    formatCeremonyTime,
     formatDateFromPacific,
     isDevelopment,
     msgTimeout
 } from "../../General/GeneralUtils.jsx";
 import {servePublicAsset} from "../../General/GeneralServices.jsx"
+import {shareFileFromBlob} from "../../General/NativeFileShareService.jsx"
 
 const generateGraduationBookingConfirmationPDF = async (action = 'download', setIsLoading, bookingId, bookingUsername, detailedData, setError) => {
     try {
@@ -153,6 +156,40 @@ const generateGraduationBookingConfirmationPDF = async (action = 'download', set
         }
 
         yPosition = Math.max(leftY, rightY) + 10;
+
+        {
+            const ceremony = detailedData?.ceremony || {};
+            const toBeAnnounced = 'To be announced';
+
+            yPosition = checkPageBreak(yPosition, 40);
+
+            pdf.setFont(titleFontName, titleFontWeight);
+            pdf.setFontSize(16);
+            pdf.text('Ceremony', margin, yPosition);
+            yPosition += 10;
+
+            pdf.setFontSize(11);
+
+            const ceremonyRows = [
+                ['Date:', formatCeremonyDate(ceremony.ceremonyDate, 'en') || toBeAnnounced],
+                ['Time:', [formatCeremonyTime(ceremony.ceremonyTime, 'en'), ceremony.timeZone]
+                    .filter(Boolean).join(' · ') || toBeAnnounced],
+                ['Location:', [ceremony.locationName, ceremony.locationAddress].filter(Boolean).join(' — ') || toBeAnnounced],
+            ];
+
+            ceremonyRows.forEach(([label, value]) => {
+                pdf.setFont(textFontName, textFontWeight);
+                pdf.text(label, leftColumnX, yPosition);
+                pdf.setFont(subTextFontName, subTextFontWeight);
+
+                const wrappedValue = pdf.splitTextToSize(value, contentWidth - 25);
+
+                pdf.text(wrappedValue, leftColumnX + 25, yPosition);
+                yPosition += (wrappedValue.length * 6);
+            });
+
+            yPosition += 10;
+        }
 
         if (detailedData?.parents && detailedData.parents.length > 0) {
             yPosition = checkPageBreak(yPosition, 40);
@@ -465,6 +502,10 @@ const generateGraduationBookingConfirmationPDF = async (action = 'download', set
                 const pdfUrl = URL.createObjectURL(pdfBlob);
                 window.open(pdfUrl, '_blank');
             }
+        } else if (action === 'share') {
+            const pdfBlob = pdf.output('blob');
+
+            await shareFileFromBlob(pdfBlob, filename, 'Booking Confirmation');
         } else if (action === 'print') {
             const pdfBlob = pdf.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);

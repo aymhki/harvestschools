@@ -13,6 +13,10 @@ import { useToggleLanguage } from '../services/General/GeneralUtils.jsx';
 import { serveAlumniFile } from '../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx';
 import { serveJobApplicationFile } from '../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx';
 import '../styles/AppUpdateGate.css';
+import {
+    attachCalendarNotificationHandlers,
+    rescheduleAllSubscriptions,
+} from '../services/General/CalendarSubscriptionService.jsx';
 import { mobileRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
@@ -118,6 +122,31 @@ function MobileAppRouter() {
             listener.then(handle => handle.remove());
         };
     }, [navigate]);
+
+    useEffect(() => {
+        const detachNotificationHandlers = attachCalendarNotificationHandlers(navigate);
+
+        const topUpScheduledReminders = () => {
+            rescheduleAllSubscriptions({
+                translate: i18n.getFixedT(i18n.language, 'events-pages'),
+                language: i18n.language === 'ar' ? 'ar' : 'en',
+            }).catch((rescheduleError) => {
+                console.warn('Could not refresh the scheduled calendar reminders', rescheduleError);
+            });
+        };
+
+        const resumeListener = CapacitorApp.addListener('resume', topUpScheduledReminders);
+
+        i18n.on('languageChanged', topUpScheduledReminders);
+
+        topUpScheduledReminders();
+
+        return () => {
+            detachNotificationHandlers();
+            i18n.off('languageChanged', topUpScheduledReminders);
+            resumeListener.then(handle => handle.remove());
+        };
+    }, [navigate, i18n]);
 
     useEffect(() => {
         const host = isAdminSection ? SHARE_HOSTS.admin : SHARE_HOSTS.client;

@@ -1,38 +1,93 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Browser } from '@capacitor/browser'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined'
+import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined'
+import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined'
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined'
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
+import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined'
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined'
+import WorkOutlineIcon from '@mui/icons-material/WorkOutline'
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
+import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined'
+import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined'
+import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined'
+import TranslateIcon from '@mui/icons-material/Translate'
+import WhatsAppIcon from '@mui/icons-material/WhatsApp'
+import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined'
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
+import CallOutlinedIcon from '@mui/icons-material/CallOutlined'
+import AlumniPostCard from '../modules/AlumniPostCard.jsx'
 import CachedImage from '../modules/CachedImage.jsx'
 import { useOffline } from '../services/General/OfflineContext.jsx'
 import { cachedRequest } from '../services/General/OfflineApiCacheService.jsx'
 import { fetchApprovedAlumniPosts } from '../services/Public/AlumniStudents/AlumniStudentsPublicServices.jsx'
+import { getUpcomingEventsAcrossCalendars, startOfToday } from '../services/General/SchoolCalendarsService.jsx'
+import { getSubscribedCalendarIds } from '../services/General/CalendarSubscriptionService.jsx'
+import { getPrefetchStatus, runOfflinePrefetch } from '../services/General/OfflinePrefetchService.jsx'
+import { getCurrentBundleVersion } from '../services/General/AppUpdaterService.jsx'
 import { servePublicAsset } from '../services/General/GeneralServices.jsx'
+import { alumniStudentsPageUrl, useToggleLanguage } from '../services/General/GeneralUtils.jsx'
 import '../styles/AppHome.css'
 
+
+const MAX_UPCOMING_EVENTS = 4
+const MAX_ALUMNI_HIGHLIGHTS = 3
+const MORNING_ENDS_AT_HOUR = 12
+const AFTERNOON_ENDS_AT_HOUR = 17
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 
 const COPY = {
     en: {
         greetingMorning: 'Good morning',
         greetingAfternoon: 'Good afternoon',
         greetingEvening: 'Good evening',
-        school: 'Harvest International School',
+        school: 'Harvest International Schools',
         quickActions: 'Quick actions',
         upcoming: 'Coming up',
         upcomingEmpty: 'No upcoming dates in the current calendars.',
         alumni: 'From our alumni',
         alumniEmpty: 'Alumni stories will appear here once you have been online.',
+        connect: 'Reach us',
+        device: 'On this device',
         savedCopy: 'Saved copy',
+        offlineHint: 'Offline',
         viewAll: 'View all',
+        allDepartments: 'All departments',
+        remindersTitle: 'Event reminders',
+        remindersNone: 'No calendar followed yet',
+        remindersOne: '1 calendar followed',
+        remindersMany: (count) => `${count} calendars followed`,
+        remindersAction: 'Manage',
+        offlineTitle: 'Offline content',
+        offlineNever: 'Not saved yet',
+        offlineSavedOn: (date) => `Saved on ${date}`,
+        offlineAction: 'Update',
+        offlineWorking: 'Saving…',
+        version: (bundle) => `App content version ${bundle}`,
         actions: {
             calendars: 'Calendars',
             booking: 'Graduation booking',
             admission: 'Admission',
             academics: 'Academics',
+            studentsLife: 'Students life',
             gallery: 'Gallery',
-            openDay: 'Open day',
+            moreInfo: 'More info',
             vacancies: 'Vacancies',
+            admin: 'Staff portal',
             website: 'Full site',
         },
+        links: {
+            whatsapp: 'Chat with us',
+            facebook: 'Facebook',
+            directions: 'Directions',
+            call: 'Call us',
+        },
+        switchLanguage: 'العربية',
         today: 'Today',
         tomorrow: 'Tomorrow',
         inDays: (days) => `In ${days} days`,
@@ -41,24 +96,48 @@ const COPY = {
         greetingMorning: 'صباح الخير',
         greetingAfternoon: 'مساء الخير',
         greetingEvening: 'مساء الخير',
-        school: 'مدارس هارفست الدولية',
+        school: 'مدارس هارڤست الدولية',
         quickActions: 'إجراءات سريعة',
         upcoming: 'قريبًا',
         upcomingEmpty: 'لا توجد مواعيد قادمة في التقويمات الحالية.',
         alumni: 'من خريجينا',
         alumniEmpty: 'ستظهر قصص الخريجين هنا بعد الاتصال بالإنترنت.',
+        connect: 'تواصل معنا',
+        device: 'على هذا الجهاز',
         savedCopy: 'نسخة محفوظة',
+        offlineHint: 'بدون اتصال',
         viewAll: 'عرض الكل',
+        allDepartments: 'كل الأقسام',
+        remindersTitle: 'تنبيهات المواعيد',
+        remindersNone: 'لم يتم متابعة أي تقويم',
+        remindersOne: 'تتم متابعة تقويم واحد',
+        remindersMany: (count) => `تتم متابعة ${count} تقويمات`,
+        remindersAction: 'إدارة',
+        offlineTitle: 'المحتوى بدون إنترنت',
+        offlineNever: 'لم يتم الحفظ بعد',
+        offlineSavedOn: (date) => `تم الحفظ في ${date}`,
+        offlineAction: 'تحديث',
+        offlineWorking: 'جاري الحفظ…',
+        version: (bundle) => `إصدار محتوى التطبيق ${bundle}`,
         actions: {
             calendars: 'التقويمات',
             booking: 'حجز الحفل',
             admission: 'القبول',
             academics: 'الأقسام',
+            studentsLife: 'حياة الطلاب',
             gallery: 'معرض الصور',
-            openDay: 'اليوم المفتوح',
+            moreInfo: 'معلومات أكثر',
             vacancies: 'الوظائف',
+            admin: 'بوابة العاملين',
             website: 'الموقع الكامل',
         },
+        links: {
+            whatsapp: 'تحدث معنا',
+            facebook: 'فيسبوك',
+            directions: 'العنوان',
+            call: 'اتصل بنا',
+        },
+        switchLanguage: 'English',
         today: 'اليوم',
         tomorrow: 'غدًا',
         inDays: (days) => `بعد ${days} يومًا`,
@@ -66,161 +145,142 @@ const COPY = {
 }
 
 
-const CALENDAR_SOURCES = [
-    { key: 'events-pages.national-calendar-page.calendar', path: '/events/national-calendar' },
-    { key: 'events-pages.british-calendar-page.calendar', path: '/events/british-calendar' },
-    { key: 'events-pages.american-calendar-page.calendar', path: '/events/american-calendar' },
-    { key: 'events-pages.national-kg-calendar-page.calendar', path: '/events/national-kg-calendar' },
-    { key: 'events-pages.british-kg-calendar-page.calendar', path: '/events/british-kg-calendar' },
-    { key: 'events-pages.american-kg-calendar-page.calendar', path: '/events/american-kg-calendar' },
-]
-
-
 const QUICK_ACTIONS = [
-    { id: 'calendars', path: '/events', tone: 'primary' },
-    { id: 'booking', path: '/events/graduation-booking', tone: 'accent' },
-    { id: 'admission', path: '/admission', tone: 'plain' },
-    { id: 'academics', path: '/academics', tone: 'plain' },
-    { id: 'openDay', path: '/events/open-day-signup', tone: 'plain' },
-    { id: 'gallery', path: '/gallery', tone: 'plain' },
-    { id: 'vacancies', path: '/vacancies', tone: 'plain' },
-    { id: 'website', path: '/home', tone: 'plain' },
+    { id: 'calendars', path: '/events', Icon: CalendarMonthOutlinedIcon },
+    { id: 'booking', path: '/events/graduation-booking', Icon: HowToRegOutlinedIcon },
+    { id: 'admission', path: '/admission', Icon: SchoolOutlinedIcon },
+    { id: 'academics', path: '/academics', Icon: MenuBookOutlinedIcon },
+    { id: 'studentsLife', path: '/students-life', Icon: GroupsOutlinedIcon },
+    { id: 'gallery', path: '/gallery', Icon: PhotoLibraryOutlinedIcon },
+    { id: 'moreInfo', path: '/more-info', Icon: HelpOutlineOutlinedIcon },
+    { id: 'vacancies', path: '/vacancies', Icon: WorkOutlineIcon },
+    { id: 'admin', path: '/admin-login', Icon: AdminPanelSettingsOutlinedIcon },
+    { id: 'website', path: '/home', Icon: LanguageOutlinedIcon },
 ]
 
 
-const ACTION_GLYPHS = {
-    calendars: 'M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z',
-    booking: 'M12 3 3 8l9 5 9-5-9-5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5',
-    admission: 'M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM14 3v5h5M9 13h6M9 17h6',
-    academics: 'M4 6h7v13H4zM13 6h7v13h-7zM11 6c0-1.1.9-2 2-2M7 10h1M16 10h1',
-    openDay: 'M4 20v-9l8-6 8 6v9a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z',
-    gallery: 'M4 5h16v14H4zM4 15l4.5-4.5 4 4 3-3L20 15M9 9.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z',
-    vacancies: 'M4 8h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8zM9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M4 13h16',
-    website: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z',
-}
+const CONNECT_LINKS = [
+    { id: 'whatsapp', url: 'https://wa.me/201118900165', Icon: WhatsAppIcon, needsNetwork: true },
+    { id: 'facebook', url: 'https://www.facebook.com/HarvestInternationalSchools/', Icon: FacebookOutlinedIcon, needsNetwork: true },
+    { id: 'directions', url: 'https://maps.app.goo.gl/8nqczZg9sFAdCesw7', Icon: PlaceOutlinedIcon, needsNetwork: true },
+    { id: 'call', url: 'tel:+201118900165', Icon: CallOutlinedIcon, needsNetwork: false },
+]
 
 
-const startOfDay = (date) => {
-    const copy = new Date(date)
-
-    copy.setHours(0, 0, 0, 0)
-
-    return copy
+const openConnectLink = (url) => {
+    if (url.startsWith('tel:')) {
+        window.open(url)
+    } else {
+        Browser.open({ url, presentationStyle: 'popover' }).catch((openError) => {
+            console.warn('Could not open the link', openError)
+        })
+    }
 }
 
 
 function AppHome() {
     const { t, i18n } = useTranslation(['events-pages'])
-
     const navigate = useNavigate()
-
     const { isOffline } = useOffline()
-
+    const toggleLanguage = useToggleLanguage({ ignoreDocUpdate: true })
     const language = i18n.language === 'ar' ? 'ar' : 'en'
-
     const copy = COPY[language]
-
     const [alumniHighlights, setAlumniHighlights] = useState([])
-
     const [alumniIsStale, setAlumniIsStale] = useState(false)
+    const [subscribedCalendarCount, setSubscribedCalendarCount] = useState(0)
+    const [offlineSavedAt, setOfflineSavedAt] = useState(null)
+    const [bundleVersion, setBundleVersion] = useState(null)
+    const [isSavingOfflineContent, setIsSavingOfflineContent] = useState(false)
 
     const greeting = useMemo(() => {
         const hour = new Date().getHours()
 
-        if (hour < 12) {
-            return copy.greetingMorning
+        let label = copy.greetingEvening
+
+        if (hour < MORNING_ENDS_AT_HOUR) {
+            label = copy.greetingMorning
+        } else if (hour < AFTERNOON_ENDS_AT_HOUR) {
+            label = copy.greetingAfternoon
         }
 
-        if (hour < 17) {
-            return copy.greetingAfternoon
-        }
-
-        return copy.greetingEvening
+        return label
     }, [copy])
 
-    const dateFormatter = useMemo(
-        () => new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
-            month: 'short',
-            day: 'numeric',
-            timeZone: 'Africa/Cairo',
-        }),
-        [language]
+    const locale = language === 'ar' ? 'ar-EG' : 'en-US'
+
+    const shortDateFormatter = useMemo(
+        () => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }),
+        [locale]
     )
 
-    const upcomingEvents = useMemo(() => {
-        const today = startOfDay(new Date())
+    const longDateFormatter = useMemo(
+        () => new Intl.DateTimeFormat(locale, { weekday: 'long', month: 'long', day: 'numeric' }),
+        [locale]
+    )
 
-        const collected = []
+    const upcomingEvents = useMemo(
+        () => getUpcomingEventsAcrossCalendars(t, MAX_UPCOMING_EVENTS),
+        [t]
+    )
 
-        for (const source of CALENDAR_SOURCES) {
-            const rows = t(source.key, { returnObjects: true })
+    const describeDistance = useCallback((startDate) => {
+        const days = Math.round((startDate - startOfToday()) / MILLISECONDS_PER_DAY)
 
-            if (!Array.isArray(rows)) {
-                continue
-            }
-
-            for (const row of rows) {
-                if (!row || typeof row !== 'object' || !row['start-date']) {
-                    continue
-                }
-
-                const startDate = new Date(row['start-date'])
-
-                if (Number.isNaN(startDate.getTime())) {
-                    continue
-                }
-
-                const endDate = row['end-date'] ? new Date(row['end-date']) : startDate
-
-                const reference = startOfDay(Number.isNaN(endDate.getTime()) ? startDate : endDate)
-
-                if (reference < today) {
-                    continue
-                }
-
-                collected.push({
-                    id: `${source.path}-${row['start-date']}-${row.title}`,
-                    title: String(row.title || '').trim(),
-                    startDate,
-                    path: source.path,
-                })
-            }
-        }
-
-        const seen = new Set()
-
-        return collected
-            .filter((entry) => {
-                const signature = `${entry.title}|${entry.startDate.toDateString()}`
-
-                if (!entry.title || seen.has(signature)) {
-                    return false
-                }
-
-                seen.add(signature)
-
-                return true
-            })
-            .sort((first, second) => first.startDate - second.startDate)
-            .slice(0, 4)
-    }, [t])
-
-    const describeDistance = (startDate) => {
-        const today = startOfDay(new Date())
-
-        const target = startOfDay(startDate)
-
-        const days = Math.round((target - today) / (24 * 60 * 60 * 1000))
+        let label = copy.inDays(days)
 
         if (days <= 0) {
-            return copy.today
+            label = copy.today
+        } else if (days === 1) {
+            label = copy.tomorrow
         }
 
-        if (days === 1) {
-            return copy.tomorrow
+        return label
+    }, [copy])
+
+    const describeDepartments = useCallback((event) => {
+        return event.isSharedByAllCalendars
+            ? copy.allDepartments
+            : event.calendarLabels.map((label) => label[language]).join(' · ')
+    }, [copy, language])
+
+    const describeReminders = () => {
+        let label = copy.remindersMany(subscribedCalendarCount)
+
+        if (subscribedCalendarCount === 0) {
+            label = copy.remindersNone
+        } else if (subscribedCalendarCount === 1) {
+            label = copy.remindersOne
         }
 
-        return copy.inDays(days)
+        return label
+    }
+
+    const loadDeviceState = useCallback(async () => {
+        const [calendarIds, prefetchStatus, currentBundleVersion] = await Promise.all([
+            getSubscribedCalendarIds(),
+            getPrefetchStatus(),
+            getCurrentBundleVersion(),
+        ])
+
+        setSubscribedCalendarCount(calendarIds.length)
+        setOfflineSavedAt(prefetchStatus.completedAt)
+        setBundleVersion(currentBundleVersion)
+    }, [])
+
+    const goTo = (path) => {
+        Haptics.impact({ style: ImpactStyle.Light }).catch(() => null)
+
+        navigate(path)
+    }
+
+    const handleSaveOfflineContent = async () => {
+        setIsSavingOfflineContent(true)
+
+        await runOfflinePrefetch({ force: true })
+
+        await loadDeviceState()
+
+        setIsSavingOfflineContent(false)
     }
 
     useEffect(() => {
@@ -229,27 +289,26 @@ function AppHome() {
         const loadAlumniHighlights = async () => {
             try {
                 const result = await cachedRequest(
-                    'alumni-posts:app-home:3',
-                    () => fetchApprovedAlumniPosts('home', 3)
+                    `alumni-posts:app-home:${MAX_ALUMNI_HIGHLIGHTS}`,
+                    () => fetchApprovedAlumniPosts('home', MAX_ALUMNI_HIGHLIGHTS)
                 )
 
-                if (!isActive) {
-                    return
+                if (isActive) {
+                    setAlumniHighlights(Array.isArray(result.data) ? result.data : [])
+                    setAlumniIsStale(Boolean(result.isStale))
                 }
-
-                setAlumniHighlights(Array.isArray(result.data) ? result.data : [])
-                setAlumniIsStale(Boolean(result.isStale))
             } catch (loadError) {
                 console.warn('Could not load the alumni highlights', loadError)
             }
         }
 
         loadAlumniHighlights()
+        loadDeviceState()
 
         return () => {
             isActive = false
         }
-    }, [isOffline])
+    }, [isOffline, loadDeviceState])
 
     return (
         <div className="app-home" dir={language === 'ar' ? 'rtl' : 'ltr'}>
@@ -258,80 +317,76 @@ function AppHome() {
                 <meta name="robots" content="noindex, nofollow" />
             </Helmet>
 
-            <header className="app-home__header">
-                <div className="app-home__header-text">
-                    <p className="app-home__greeting">{greeting}</p>
-
-                    <h1 className="app-home__school">{copy.school}</h1>
-                </div>
-
+            <header className="app-home-header">
                 <CachedImage
                     src={servePublicAsset('/images/HarvestLogos/HarvestLogoCropped.avif')}
                     alt=""
-                    className="app-home__logo"
-                    fallbackClassName="app-home__logo app-home__logo--placeholder"
+                    className="app-home-logo"
+                    fallbackClassName="app-home-logo"
                 />
+
+                <div className="app-home-header-text">
+                    <p className="app-home-greeting">{greeting}</p>
+
+                    <h2 className="app-home-school">{copy.school}</h2>
+
+                    <p className="app-home-today">
+                        {longDateFormatter.format(new Date())}
+
+                        {isOffline && <span className="app-home-chip">{copy.offlineHint}</span>}
+                    </p>
+                </div>
+
             </header>
 
-            <section className="app-home__section" aria-labelledby="app-home-actions">
-                <h2 className="app-home__section-title" id="app-home-actions">{copy.quickActions}</h2>
+            <section className="app-home-section" aria-labelledby="app-home-actions-title">
+                <h3 className="app-home-section-title" id="app-home-actions-title">{copy.quickActions}</h3>
 
-                <div className="app-home__actions">
+                <div className="app-home-tiles">
                     {QUICK_ACTIONS.map((action) => (
                         <button
                             key={action.id}
                             type="button"
-                            className={`app-home__action app-home__action--${action.tone}`}
-                            onClick={() => navigate(action.path)}
+                            className="app-home-tile"
+                            onClick={() => goTo(action.path)}
                         >
-                            <span className="app-home__action-icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" focusable="false">
-                                    <path
-                                        d={ACTION_GLYPHS[action.id]}
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="1.6"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
-                            </span>
+                            <action.Icon className="app-home-tile-icon" />
 
-                            <span className="app-home__action-label">{copy.actions[action.id]}</span>
+                            <span className="app-home-tile-label">{copy.actions[action.id]}</span>
                         </button>
                     ))}
                 </div>
             </section>
 
-            <section className="app-home__section" aria-labelledby="app-home-upcoming">
-                <div className="app-home__section-head">
-                    <h2 className="app-home__section-title" id="app-home-upcoming">{copy.upcoming}</h2>
+            <section className="app-home-section" aria-labelledby="app-home-upcoming-title">
+                <div className="app-home-section-head">
+                    <h3 className="app-home-section-title" id="app-home-upcoming-title">{copy.upcoming}</h3>
 
-                    <button type="button" className="app-home__link" onClick={() => navigate('/events')}>
+                    <button type="button" className="app-home-text-button" onClick={() => goTo('/events')}>
                         {copy.viewAll}
                     </button>
                 </div>
 
                 {upcomingEvents.length === 0 ? (
-                    <p className="app-home__empty">{copy.upcomingEmpty}</p>
+                    <p className="app-home-empty">{copy.upcomingEmpty}</p>
                 ) : (
-                    <ul className="app-home__events">
+                    <ul className="app-home-list">
                         {upcomingEvents.map((event) => (
                             <li key={event.id}>
                                 <button
                                     type="button"
-                                    className="app-home__event"
-                                    onClick={() => navigate(event.path)}
+                                    className="app-home-card app-home-event"
+                                    onClick={() => goTo(event.isSharedByAllCalendars ? '/events' : event.calendarPath)}
                                 >
-                                    <span className="app-home__event-date">
-                                        {dateFormatter.format(event.startDate)}
+                                    <span className="app-home-event-date">
+                                        {shortDateFormatter.format(event.startDate)}
                                     </span>
 
-                                    <span className="app-home__event-body">
-                                        <span className="app-home__event-title">{event.title}</span>
+                                    <span className="app-home-event-body">
+                                        <span className="app-home-event-title">{event.title}</span>
 
-                                        <span className="app-home__event-distance">
-                                            {describeDistance(event.startDate)}
+                                        <span className="app-home-event-meta">
+                                            {describeDistance(event.startDate)} · {describeDepartments(event)}
                                         </span>
                                     </span>
                                 </button>
@@ -341,41 +396,126 @@ function AppHome() {
                 )}
             </section>
 
-            <section className="app-home__section" aria-labelledby="app-home-alumni">
-                <div className="app-home__section-head">
-                    <h2 className="app-home__section-title" id="app-home-alumni">{copy.alumni}</h2>
+            <section className="app-home-section" aria-labelledby="app-home-alumni-title">
+                <div className="app-home-section-head">
+                    <h3 className="app-home-section-title" id="app-home-alumni-title">{copy.alumni}</h3>
 
                     {alumniIsStale && alumniHighlights.length > 0 ? (
-                        <span className="app-home__chip">{copy.savedCopy}</span>
-                    ) : null}
+                        <span className="app-home-chip">{copy.savedCopy}</span>
+                    ) : (
+                        <button
+                            type="button"
+                            className="app-home-text-button"
+                            onClick={() => goTo(alumniStudentsPageUrl)}
+                        >
+                            {copy.viewAll}
+                        </button>
+                    )}
                 </div>
 
                 {alumniHighlights.length === 0 ? (
-                    <p className="app-home__empty">{copy.alumniEmpty}</p>
+                    <p className="app-home-empty">{copy.alumniEmpty}</p>
                 ) : (
-                    <ul className="app-home__alumni">
+                    <div className="app-home-alumni-list">
                         {alumniHighlights.map((post, index) => (
-                            <li key={post.id || post.postId || index}>
-                                <button
-                                    type="button"
-                                    className="app-home__alumni-card"
-                                    onClick={() => navigate('/students-life/alumni-students')}
-                                >
-                                    <span className="app-home__alumni-name">
-                                        {post.name || post.fullName || post.author || ''}
-                                    </span>
-
-                                    <span className="app-home__alumni-excerpt">
-                                        {String(post.content || post.body || post.message || '')
-                                            .replace(/[#*_>`[\]()]/g, '')
-                                            .slice(0, 140)}
-                                    </span>
-                                </button>
-                            </li>
+                            <AlumniPostCard
+                                key={post.id || index}
+                                post={post}
+                                variant={'preview'}
+                                onReadMore={() => goTo(alumniStudentsPageUrl)}
+                                expandToFullOnReadMore={false}
+                            />
                         ))}
-                    </ul>
+                    </div>
                 )}
             </section>
+
+            <section className="app-home-section" aria-labelledby="app-home-device-title">
+                <h3 className="app-home-section-title" id="app-home-device-title">{copy.device}</h3>
+
+                <div className="app-home-list">
+                    <button
+                        type="button"
+                        className="app-home-card app-home-device-row"
+                        onClick={() => goTo('/events')}
+                    >
+                        <NotificationsActiveOutlinedIcon className="app-home-device-icon" />
+
+                        <span className="app-home-device-body">
+                            <span className="app-home-device-title">{copy.remindersTitle}</span>
+
+                            <span className="app-home-device-detail">{describeReminders()}</span>
+                        </span>
+
+                        <span className="app-home-device-action">{copy.remindersAction}</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className="app-home-card app-home-device-row"
+                        disabled={isOffline || isSavingOfflineContent}
+                        onClick={handleSaveOfflineContent}
+                    >
+                        <CloudDownloadOutlinedIcon className="app-home-device-icon" />
+
+                        <span className="app-home-device-body">
+                            <span className="app-home-device-title">{copy.offlineTitle}</span>
+
+                            <span className="app-home-device-detail">
+                                {offlineSavedAt
+                                    ? copy.offlineSavedOn(longDateFormatter.format(new Date(offlineSavedAt)))
+                                    : copy.offlineNever}
+                            </span>
+                        </span>
+
+                        <span className="app-home-device-action">
+                            {isSavingOfflineContent ? copy.offlineWorking : copy.offlineAction}
+                        </span>
+                    </button>
+                </div>
+
+                {bundleVersion && (
+                    <p className="app-home-version">{copy.version(bundleVersion)}</p>
+                )}
+            </section>
+
+            <section className="app-home-section" aria-labelledby="app-home-connect-title">
+                <h3 className="app-home-section-title" id="app-home-connect-title">{copy.connect}</h3>
+
+                <div className="app-home-links">
+                    {CONNECT_LINKS.map((link) => (
+                        <button
+                            key={link.id}
+                            type="button"
+                            className="app-home-card app-home-link"
+                            disabled={isOffline && link.needsNetwork}
+                            onClick={() => {
+                                Haptics.impact({ style: ImpactStyle.Light }).catch(() => null)
+                                openConnectLink(link.url)
+                            }}
+                        >
+                            <link.Icon className="app-home-link-icon" />
+
+                            <span className="app-home-link-label">{copy.links[link.id]}</span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            <button
+                type="button"
+                className="app-home-card app-home-language-button"
+                onClick={() => {
+                    Haptics.impact({ style: ImpactStyle.Light }).catch(() => null)
+                    toggleLanguage({})
+                }}
+            >
+                <TranslateIcon className="app-home-language-icon" />
+
+                <span className={`app-home-language-label ${language === 'ar' ? 'in-english' : 'in-arabic'}`}>
+                    {copy.switchLanguage}
+                </span>
+            </button>
         </div>
     )
 }

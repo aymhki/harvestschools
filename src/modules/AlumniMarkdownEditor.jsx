@@ -10,7 +10,9 @@ import TitleIcon from '@mui/icons-material/Title';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import PreviewIcon from '@mui/icons-material/Preview';
+import {capturePhotoAsFile, isCameraAvailable} from "../services/General/NativeCameraService.jsx";
 
 const IMAGE_ALIGNMENT_CHOICES = [
     {value: 'center', label: 'Centered'},
@@ -102,17 +104,12 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
         }
     };
 
-    const handleImageFileSelected = async (event) => {
-        const file = event.target.files && event.target.files[0];
-        event.target.value = '';
-
-        if (!file) { return; }
-
+    const uploadAndInsertImage = async (file, fallbackCaption) => {
         try {
             setIsUploadingImage(true);
             setEditorError('');
             const filePath = await onUploadImage(file);
-            const caption = file.name.replace(/\.[^/.]+$/, '').replace(/[|[\]()]/g, ' ').trim() || 'Image';
+            const caption = file.name.replace(/\.[^/.]+$/, '').replace(/[|[\]()]/g, ' ').trim() || fallbackCaption;
             const alignmentSuffix = imageAlignment === 'center' ? '' : `|${imageAlignment}`;
             insertBlock(`![${caption}${alignmentSuffix}](${filePath})`);
         } catch (error) {
@@ -120,6 +117,28 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
             setTimeout(() => setEditorError(''), msgTimeout);
         } finally {
             setIsUploadingImage(false);
+        }
+    };
+
+    const handleImageFileSelected = async (event) => {
+        const file = event.target.files && event.target.files[0];
+        event.target.value = '';
+
+        if (file) {
+            await uploadAndInsertImage(file, 'Image');
+        }
+    };
+
+    const handleTakePhotoClick = async () => {
+        try {
+            const capturedFile = await capturePhotoAsFile();
+
+            if (capturedFile) {
+                await uploadAndInsertImage(capturedFile, 'Photo');
+            }
+        } catch (error) {
+            setEditorError(error.message || 'The camera could not be opened.');
+            setTimeout(() => setEditorError(''), msgTimeout);
         }
     };
 
@@ -165,9 +184,15 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
                     ))}
                 </select>
 
-                <button type="button" disabled={disabled || isUploadingImage} onClick={handleImageButtonClick}>
+                <button type="button" disabled={disabled || isUploadingImage} title="Add a picture" onClick={handleImageButtonClick}>
                     <AddPhotoAlternateIcon/>
                 </button>
+
+                {isCameraAvailable() && (
+                    <button type="button" disabled={disabled || isUploadingImage} title="Take a photo" onClick={handleTakePhotoClick}>
+                        <PhotoCameraIcon/>
+                    </button>
+                )}
 
                 <input
                     ref={fileInputRef}

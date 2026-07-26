@@ -45,5 +45,9 @@ bot/whatsapp/review.md
 
 files_uploaded_from_harvestschools_webapp
 
-.env
+configs/.env.pass
 
+tmp
+
+.env.local
+.env.*.local

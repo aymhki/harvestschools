@@ -504,7 +504,6 @@ function Form({
         });
 
         return mergedFields;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dynamicFields, dynamicSectionInstances, normalizedDynamicSections, formIsReadOnly]);
 
     const getFieldSubmitValue = (field) => {
@@ -1466,7 +1465,8 @@ function Form({
         const isOpen = openSearchSelectId === field.id && !isFieldReadOnly;
 
         const filteredChoices = (field.choices || []).filter(choice =>
-            (!field.multiple || !selected.includes(choice)) && searchSelectMatches(choice, filterText)
+            (!field.multiple || !selected.includes(choice))
+            && (field.onSearchQueryChange !== undefined || searchSelectMatches(choice, filterText))
         );
 
         const clearQuery = () => setSearchSelectQueries(prev => {
@@ -1511,6 +1511,10 @@ function Form({
             setSearchSelectQueries(prev => ({ ...prev, [field.id]: e.target.value }));
             setSearchSelectHighlight(0);
             if (openSearchSelectId !== field.id) setOpenSearchSelectId(field.id);
+
+            if (field.onSearchQueryChange) {
+                field.onSearchQueryChange(e.target.value);
+            }
         };
 
         const handleKeyDown = (e) => {
@@ -2135,7 +2139,6 @@ function Form({
         setCacheHaveBeenLoaded(true);
 
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dynamicFields, noInputFieldsCache, cacheHaveBeenLoaded, fieldRefs, processFieldRules, refsHaveBeenSet, loadCachedValues, normalizedDynamicSections, dynamicSectionInstances]);
 
     useEffect(() => {
@@ -2745,6 +2748,7 @@ const fieldShape = {
     alwaysEnglish: PropTypes.bool,
     lang: PropTypes.string,
     autoSelect: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
+    onSearchQueryChange: PropTypes.func,
 };
 
 Form.propTypes = {

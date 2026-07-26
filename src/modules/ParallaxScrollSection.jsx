@@ -3,16 +3,15 @@ import {useNavigate} from "react-router-dom";
 import PropTypes from 'prop-types';
 import {Fragment} from "react";
 import {useEffect, useState} from "react";
-import {servePublicAsset} from "../services/General/GeneralServices.jsx";
+import CachedImage, {useCachedAsset} from "./CachedImage.jsx";
 
 function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonText, buttonLink, image, imageAlt, divElements, noParallax }) {
     const navigate = useNavigate();
     const [isSafari, setIsSafari] = useState(false);
-
-
+    const resolvedBackgroundImage = useCachedAsset(backgroundImage);
 
     const style = {
-        backgroundImage: `url(${backgroundImage})`
+        backgroundImage: resolvedBackgroundImage ? `url(${resolvedBackgroundImage})` : 'none'
     };
 
     useEffect(() => {
@@ -25,7 +24,7 @@ function ParallaxScrollSection({ title, text, backgroundImage, darken, buttonTex
              style={style}>
             {darken && <div className="darken"></div>}
             <div className="content">
-                {image && imageAlt && (<img src={image} alt={imageAlt} className="parallax-section-image"/>)}
+                {image && imageAlt && (<CachedImage src={image} alt={imageAlt} className="parallax-section-image" fallbackClassName="parallax-section-image"/>)}
                 {title && <h1>{title}</h1>}
 
                 {
