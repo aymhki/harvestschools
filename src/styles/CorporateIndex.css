@@ -172,8 +172,20 @@ body {
     overflow-X: hidden;
 }
 
+html.lock-scroll,
 body.lock-scroll {
     overflow: hidden;
+    overscroll-behavior: contain;
+}
+
+/* Freezing the body in place is the only reliable way to stop the page behind a
+ * modal from scrolling on iOS; ScrollLockService keeps the offset and restores
+ * the scroll position when the modal closes. */
+body.lock-scroll {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
 

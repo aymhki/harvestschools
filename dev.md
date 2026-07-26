@@ -91,6 +91,7 @@ tree --gitignore -I 'assets|.git' -a
   ```
 - [x] Download the official "Add to Apple Wallet" badge artwork and save the English and Arabic SVGs in `assets/images/Wallet/` next to the Google Wallet ones.
 - [ ] After the D-U-N-S number is issued and the Apple account becomes an organisation account: register a new pass type ID, export a new `Certificates.p12`, regenerate `configs/pass-certificate.pem` and `configs/pass-key.pem` from it, and update `apple_pass_type_id`, `apple_team_id` and `apple_p12_password` in `configs/walletPassConfig.php` on both the machine and the production server.
+- [ ] Authorise the Android app for the Google Wallet SDK, otherwise the in app save sheet stays unavailable and the app keeps falling back to the save link in the browser: in the Google Pay & Wallet Console under Google Wallet API > App Permissions, add the package name `com.harvestschools.app` together with the SHA-1 fingerprint of the release signing certificate (and the debug one while testing).
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.

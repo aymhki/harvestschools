@@ -5,6 +5,7 @@ import '../../src/styles/index.css'
 import { BrowserRouter } from 'react-router-dom'
 import '../../src/i18n/i18n-client.jsx'
 import ErrorBoundary from "../../src/modules/ErrorBoundary.jsx";
+import { startModalScrollLockWatcher } from '../../src/services/General/ScrollLockService.jsx'
 
 
 window.addEventListener('error', (event) => {
@@ -54,6 +55,8 @@ window.addEventListener('unhandledrejection', (event) => {
         }
     }
 });
+
+startModalScrollLockWatcher()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>

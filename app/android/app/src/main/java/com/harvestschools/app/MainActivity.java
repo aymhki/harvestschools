@@ -49,6 +49,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         SplashScreen.installSplashScreen(this);
+        registerPlugin(WalletPassPlugin.class);
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().getDecorView().post(this::setUpFloatingChrome);
