@@ -12,7 +12,6 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     const openLightBox = (index) => {
         setCurrentIndex(index);
         setIsOpen(true);
-        document.body.classList.toggle('lock-scroll', true);
     };
 
     const closeLightBox = () => {
@@ -23,7 +22,6 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         });
         
         setIsOpen(false);
-        document.body.classList.toggle('lock-scroll', false);
     };
 
     const changePhoto = (newIndex) => {

@@ -17,11 +17,14 @@ import PropTypes from 'prop-types'
 
 const SHOW_DOWNLOAD_PROGRESS_BAR = false
 
+const PROGRESS_BAR_HIDE_DELAY_MS = 1000
+
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
 
     const [isPreparing, setIsPreparing] = useState(Capacitor.isNativePlatform())
     const [progress, setProgress] = useState(0)
+    const [showProgressBar, setShowProgressBar] = useState(SHOW_DOWNLOAD_PROGRESS_BAR)
     const [isOffline, setIsOffline] = useState(false)
     const offlineListenerRef = useRef(null)
     const hasBootstrappedRef = useRef(false)
@@ -73,6 +76,7 @@ function AppUpdateGate({ children }) {
         if (!silent) {
             setIsPreparing(true)
             setProgress(0)
+            setShowProgressBar(SHOW_DOWNLOAD_PROGRESS_BAR)
         }
 
         try {
@@ -106,6 +110,18 @@ function AppUpdateGate({ children }) {
             setIsPreparing(false)
         }
     }, [restoreSavedPathIfNeeded, runPrefetch])
+
+    /* The bar only tracks the bundle download, so once it is full it steps aside
+     * and lets the splash carry the rest of the preparing work on its own. */
+    useEffect(() => {
+        if (!showProgressBar || progress < 100) {
+            return undefined
+        }
+
+        const hideTimer = setTimeout(() => setShowProgressBar(false), PROGRESS_BAR_HIDE_DELAY_MS)
+
+        return () => clearTimeout(hideTimer)
+    }, [showProgressBar, progress])
 
     useEffect(() => {
         if (hasBootstrappedRef.current) {
@@ -167,7 +183,7 @@ function AppUpdateGate({ children }) {
     }, [])
 
     if (isPreparing) {
-        return <AppSplash showProgress={SHOW_DOWNLOAD_PROGRESS_BAR} progress={progress} />
+        return <AppSplash showProgress={showProgressBar} progress={progress} />
     }
 
     return (

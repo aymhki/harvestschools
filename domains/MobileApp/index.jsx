@@ -8,6 +8,7 @@ import ErrorBoundary from '../../src/modules/ErrorBoundary.jsx'
 
 import '../../src/styles/index.css'
 import '../../src/i18n/i18n-client.jsx'
+import { startModalScrollLockWatcher } from '../../src/services/General/ScrollLockService.jsx'
 
 const handleDynamicImportError = (errorMsg, event) => {
     if (
@@ -39,6 +40,8 @@ window.addEventListener('error', (event) => {
 window.addEventListener('unhandledrejection', (event) => {
     handleDynamicImportError(event.reason?.message, event);
 });
+
+startModalScrollLockWatcher()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
