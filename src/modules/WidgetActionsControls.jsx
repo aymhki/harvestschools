@@ -14,7 +14,6 @@ import {
 import '../styles/WidgetActions.css'
 
 
-/* A tap that moved is a scroll, not a choice. */
 const CHOICE_TAP_TOLERANCE = 8
 
 
@@ -88,7 +87,7 @@ function WidgetActionsControls({ isOpen, catalogue, copy, language, onClose, onC
         let isActive = true
 
         const loadAndSync = async () => {
-            const actionIds = await getWidgetActionIds()
+            const actionIds = await getWidgetActionIds(catalogue)
 
             if (isActive) {
                 setChosenActionIds(actionIds)

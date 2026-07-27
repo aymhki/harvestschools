@@ -14,14 +14,13 @@ const WIDGET_SIZE_CAPACITIES = {
     large: 16,
 }
 
-const DEFAULT_WIDGET_ACTION_IDS = ['calendars', 'booking', 'admission', 'gallery']
-
 
 const isWidgetSupported = () => Capacitor.isNativePlatform()
 
 
-const getWidgetActionIds = async () => {
-    let actionIds = DEFAULT_WIDGET_ACTION_IDS
+
+const getWidgetActionIds = async (catalogue = []) => {
+    let actionIds = catalogue.map((action) => action.id)
 
     try {
         const { value } = await Preferences.get({ key: WIDGET_ACTION_IDS_KEY })
@@ -94,7 +93,6 @@ const syncWidgetQuickActions = async ({ actionIds, catalogue, title, language })
 
 
 export {
-    DEFAULT_WIDGET_ACTION_IDS,
     MINIMUM_WIDGET_ACTIONS,
     WIDGET_SIZE_CAPACITIES,
     getWidgetActionIds,

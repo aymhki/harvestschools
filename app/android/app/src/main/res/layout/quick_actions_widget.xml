@@ -17,7 +17,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_0_1"
@@ -25,7 +25,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_0_2"
@@ -33,7 +33,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_0_3"
@@ -41,7 +41,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
         </LinearLayout>
 
@@ -58,7 +58,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_1_1"
@@ -66,7 +66,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_1_2"
@@ -74,7 +74,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_1_3"
@@ -82,7 +82,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
         </LinearLayout>
 
@@ -99,7 +99,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_2_1"
@@ -107,7 +107,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_2_2"
@@ -115,7 +115,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_2_3"
@@ -123,7 +123,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
         </LinearLayout>
 
@@ -140,7 +140,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_3_1"
@@ -148,7 +148,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_3_2"
@@ -156,7 +156,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
             <ImageView
                 android:id="@+id/quick_action_3_3"
@@ -164,7 +164,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
 
         </LinearLayout>
 

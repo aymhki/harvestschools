@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
+import { App as CapacitorApp } from '@capacitor/app'
 import { Network } from '@capacitor/network'
 import {
     runMobileAppUpdateCheck,
@@ -8,9 +9,11 @@ import {
     attachPullToRefreshListener,
     getCurrentBundleVersion,
 } from '../services/General/AppUpdaterService.jsx'
-import { attachDeepLinkListener } from '../services/General/DeepLinkService.jsx'
+import { attachDeepLinkListener, readPathFromDeepLink } from '../services/General/DeepLinkService.jsx'
+import { setNavigationBarVisible } from '../services/General/AppChromeService.jsx'
 import { OfflineProvider } from '../services/General/OfflineContext.jsx'
 import { bootstrapOfflineAssets, runOfflinePrefetch } from '../services/General/OfflinePrefetchService.jsx'
+import { getCurrentWeather } from '../services/General/WeatherService.jsx'
 import AppSplash from './AppSplash.jsx'
 import OfflineBanner from './OfflineBanner.jsx'
 import '../styles/AppUpdateGate.css'
@@ -20,9 +23,17 @@ const SHOW_DOWNLOAD_PROGRESS_BAR = false
 
 const PROGRESS_BAR_HIDE_DELAY_MS = 1000
 
+const OFFLINE_CONTENT_SAVED_EVENT = 'harvestOfflineContentSaved'
+
+const LAUNCH_UNKNOWN = 'unknown'
+const LAUNCH_NORMAL = 'normal'
+const LAUNCH_FROM_LINK = 'link'
+
+
 function AppUpdateGate({ children }) {
     const navigate = useNavigate()
 
+    const [launchKind, setLaunchKind] = useState(Capacitor.isNativePlatform() ? LAUNCH_UNKNOWN : LAUNCH_NORMAL)
     const [isPreparing, setIsPreparing] = useState(Capacitor.isNativePlatform())
     const [progress, setProgress] = useState(0)
     const [showProgressBar, setShowProgressBar] = useState(SHOW_DOWNLOAD_PROGRESS_BAR)
@@ -46,8 +57,6 @@ function AppUpdateGate({ children }) {
 
         const here = window.location.pathname + window.location.search + window.location.hash
 
-        /* A widget or link that opened the app wins over the page the app was on
-         * before the last reload. */
         if (restorePath !== here && !hasOpenedDeepLinkRef.current) {
             navigateRef.current(restorePath, { replace: true })
         }
@@ -69,8 +78,18 @@ function AppUpdateGate({ children }) {
                     }
                 },
             })
+
+            window.dispatchEvent(new Event(OFFLINE_CONTENT_SAVED_EVENT))
         } catch (prefetchError) {
             console.warn('Offline prefetch failed', prefetchError)
+        }
+    }, [])
+
+    const refreshWeather = useCallback(async () => {
+        try {
+            await getCurrentWeather({ force: true })
+        } catch (weatherError) {
+            console.warn('The weather could not be refreshed', weatherError)
         }
     }, [])
 
@@ -94,7 +113,6 @@ function AppUpdateGate({ children }) {
 
             const status = result ? result.status : 'skipped'
 
-
             bundleIsAboutToReload = status === 'ok' && Boolean(result.updated)
 
             setIsOffline(status === 'offline')
@@ -103,7 +121,7 @@ function AppUpdateGate({ children }) {
                 await restoreSavedPathIfNeeded()
 
                 if (status !== 'offline') {
-                    await runPrefetch({ reportProgress: !silent })
+                    await Promise.all([runPrefetch({ reportProgress: !silent }), refreshWeather()])
                 }
             }
         } catch (prepareError) {
@@ -113,10 +131,9 @@ function AppUpdateGate({ children }) {
         if (!bundleIsAboutToReload) {
             setIsPreparing(false)
         }
-    }, [restoreSavedPathIfNeeded, runPrefetch])
+    }, [refreshWeather, restoreSavedPathIfNeeded, runPrefetch])
 
-    /* The bar only tracks the bundle download, so once it is full it steps aside
-     * and lets the splash carry the rest of the preparing work on its own. */
+
     useEffect(() => {
         if (!showProgressBar || progress < 100) {
             return undefined
@@ -139,21 +156,35 @@ function AppUpdateGate({ children }) {
     }, [])
 
     useEffect(() => {
-        if (hasRunCheckRef.current) {
+        if (launchKind !== LAUNCH_UNKNOWN) {
+            return
+        }
+
+        CapacitorApp.getLaunchUrl()
+            .then((launch) => {
+                const path = launch && launch.url ? readPathFromDeepLink(launch.url) : null
+
+                setLaunchKind(path ? LAUNCH_FROM_LINK : LAUNCH_NORMAL)
+            })
+            .catch(() => setLaunchKind(LAUNCH_NORMAL))
+    }, [launchKind])
+
+    useEffect(() => {
+        if (launchKind === LAUNCH_UNKNOWN || hasRunCheckRef.current) {
             return
         }
 
         hasRunCheckRef.current = true
 
-        prepareApp()
-    }, [prepareApp])
+        prepareApp({ silent: launchKind === LAUNCH_FROM_LINK })
+    }, [launchKind, prepareApp])
 
     useEffect(() => {
-        if (!isOffline) {
-            return undefined
-        }
+        setNavigationBarVisible(!isPreparing)
+    }, [isPreparing])
 
-        if (!Capacitor.isNativePlatform()) {
+    useEffect(() => {
+        if (!isOffline || !Capacitor.isNativePlatform()) {
             return undefined
         }
 
@@ -162,7 +193,8 @@ function AppUpdateGate({ children }) {
         Network.addListener('networkStatusChange', (status) => {
             if (status.connected) {
                 setIsOffline(false)
-                runPrefetch({ reportProgress: false })
+
+                prepareApp({ silent: true })
             }
         }).then((handle) => {
             if (isMounted) {
@@ -180,7 +212,7 @@ function AppUpdateGate({ children }) {
                 offlineListenerRef.current = null
             }
         }
-    }, [isOffline, runPrefetch])
+    }, [isOffline, prepareApp])
 
     useEffect(() => {
         return attachPullToRefreshListener()
@@ -193,6 +225,10 @@ function AppUpdateGate({ children }) {
             navigateRef.current(path)
         })
     }, [])
+
+    if (launchKind === LAUNCH_UNKNOWN) {
+        return null
+    }
 
     if (isPreparing) {
         return <AppSplash showProgress={showProgressBar} progress={progress} />
@@ -213,3 +249,5 @@ AppUpdateGate.propTypes = {
 
 
 export default AppUpdateGate
+
+export { OFFLINE_CONTENT_SAVED_EVENT }

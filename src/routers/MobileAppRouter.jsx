@@ -20,6 +20,7 @@ import {
 import { rememberRestorePath } from '../services/General/AppUpdaterService.jsx';
 import { mobileRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
+import PageTransition from '../modules/PageTransition.jsx';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
 
 const pages = makeLazyPages(
@@ -62,6 +63,22 @@ function MobileAppRouter() {
         localStorage.setItem('isSidebarPinned', isSidebarPinned);
     }, [isSidebarPinned]);
 
+    /* Pages that keep their own direction still rely on the document language for
+     * their typeface, so it follows every language change and not only the ones
+     * that travel through the address bar. */
+    useEffect(() => {
+        const applyDocumentLanguage = () => {
+            document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = i18n.language;
+        };
+
+        applyDocumentLanguage();
+
+        i18n.on('languageChanged', applyDocumentLanguage);
+
+        return () => i18n.off('languageChanged', applyDocumentLanguage);
+    }, [i18n]);
+
     useEffect(() => {
         if (!isAdminSection) {
             const searchParams = new URLSearchParams(location.search);
@@ -97,32 +114,8 @@ function MobileAppRouter() {
 
     }, [isAdminSection, isAdminLoginPath, navigate, adminLinks.length, refreshCurrentUserData, userDataWereNeverFetched]);
 
-    useEffect(() => {
-        const handleInAppRouting = (url) => {
-            if (!url) return;
-
-            try {
-                const urlObj = new URL(url);
-                const slug = urlObj.pathname + urlObj.search + urlObj.hash;
-
-                if (slug && slug !== '/') {
-                    navigate(slug);
-                }
-
-            } catch (error) {
-                console.error('Failed to parse incoming Universal Link:', error);
-            }
-
-        };
-
-        const listener = CapacitorApp.addListener('appUrlOpen', (event) => {
-            handleInAppRouting(event.url);
-        });
-
-        return () => {
-            listener.then(handle => handle.remove());
-        };
-    }, [navigate]);
+    /* Opened links are handled once, by the gate, so a widget tap does not race
+     * two navigations. */
 
     useEffect(() => {
         const detachNotificationHandlers = attachCalendarNotificationHandlers(navigate);
@@ -199,7 +192,9 @@ function MobileAppRouter() {
                         />
                     )}
                     <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
-                        <AppRoutes routes={mobileRoutes} pages={pages} ctx={ctx} />
+                        <PageTransition>
+                            <AppRoutes routes={mobileRoutes} pages={pages} ctx={ctx} />
+                        </PageTransition>
                     </Suspense>
                 </div>
                 {isAdminSection ? <AdminFooter /> : !isClientChromeExcluded && <Footer />}

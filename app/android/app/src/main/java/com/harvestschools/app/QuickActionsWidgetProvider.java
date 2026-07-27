@@ -18,13 +18,9 @@ import java.util.List;
 public class QuickActionsWidgetProvider extends AppWidgetProvider {
 
     private static final int MAXIMUM_COLUMNS = 4;
-
     private static final int MAXIMUM_ROWS = 4;
-
     private static final int CELL_SIZE_DP = 70;
-
     private static final int CELL_PADDING_DP = 30;
-
     private static final int[][] TILE_IDS = {
         { R.id.quick_action_0_0, R.id.quick_action_0_1, R.id.quick_action_0_2, R.id.quick_action_0_3 },
         { R.id.quick_action_1_0, R.id.quick_action_1_1, R.id.quick_action_1_2, R.id.quick_action_1_3 },
@@ -64,10 +60,23 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
         renderWidget(context, appWidgetManager, appWidgetId);
     }
 
-    private static int cellsFor(int availableDp, int maximum) {
-        int cells = (int) Math.floor((availableDp + CELL_PADDING_DP) / (double) CELL_SIZE_DP);
+    private static int columnsFor(int count, int availableWidthDp, int availableHeightDp, int maximumColumns) {
+        if (count <= 0 || availableWidthDp <= 0 || availableHeightDp <= 0) {
+            return 1;
+        }
 
-        return Math.max(1, Math.min(maximum, cells));
+        int ideal = (int) Math.round(Math.sqrt((double) count * availableWidthDp / availableHeightDp));
+        return Math.max(1, Math.min(Math.min(count, maximumColumns), ideal));
+    }
+
+    private static int capacityFor(int availableWidthDp, int availableHeightDp) {
+        int widthCells = Math.max(1, Math.min(MAXIMUM_COLUMNS,
+            (int) Math.floor((availableWidthDp + CELL_PADDING_DP) / (double) CELL_SIZE_DP)));
+
+        int heightCells = Math.max(1, Math.min(MAXIMUM_ROWS,
+            (int) Math.floor((availableHeightDp + CELL_PADDING_DP) / (double) CELL_SIZE_DP)));
+
+        return widthCells * heightCells;
     }
 
     private static PendingIntent destinationFor(Context context, HarvestWidgetStore.QuickAction action,
@@ -95,9 +104,11 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
 
         int availableHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, CELL_SIZE_DP);
 
-        int columns = cellsFor(availableWidthDp, MAXIMUM_COLUMNS);
-
-        int rows = cellsFor(availableHeightDp, MAXIMUM_ROWS);
+        HarvestWidgetStore.QuickActions stored = HarvestWidgetStore.readQuickActions(context);
+        List<HarvestWidgetStore.QuickAction> actions = stored.actions;
+        int visibleCount = Math.min(actions.size(), capacityFor(availableWidthDp, availableHeightDp));
+        int columns = columnsFor(visibleCount, availableWidthDp, availableHeightDp, MAXIMUM_COLUMNS);
+        int rows = Math.max(1, (int) Math.ceil(visibleCount / (double) columns));
 
         float density = context.getResources().getDisplayMetrics().density;
 
@@ -105,21 +116,17 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
 
         int tileHeight = (int) ((availableHeightDp * density) / rows);
 
-        HarvestWidgetStore.QuickActions stored = HarvestWidgetStore.readQuickActions(context);
-
-        List<HarvestWidgetStore.QuickAction> actions = stored.actions;
-
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.quick_actions_widget);
 
         int nextAction = 0;
 
         for (int row = 0; row < MAXIMUM_ROWS; row += 1) {
-            boolean rowIsUsed = row < rows && nextAction < actions.size();
+            boolean rowIsUsed = row < rows && nextAction < visibleCount;
 
             views.setViewVisibility(ROW_IDS[row], rowIsUsed ? View.VISIBLE : View.GONE);
 
             for (int column = 0; column < MAXIMUM_COLUMNS; column += 1) {
-                boolean slotIsUsed = rowIsUsed && column < columns && nextAction < actions.size();
+                boolean slotIsUsed = rowIsUsed && column < columns && nextAction < visibleCount;
 
                 views.setViewVisibility(TILE_IDS[row][column], slotIsUsed ? View.VISIBLE : View.GONE);
 

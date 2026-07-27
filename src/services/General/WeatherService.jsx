@@ -87,15 +87,11 @@ const fetchWeatherReading = async () => {
 }
 
 
-const getCurrentWeather = async ({ allowNetwork = true } = {}) => {
+const getCurrentWeather = async ({ allowNetwork = true, force = false } = {}) => {
     const cached = await readCachedWeather()
-
     const cachedAge = cached ? Date.now() - cached.readAt : Number.MAX_SAFE_INTEGER
-
-    const needsRefresh = allowNetwork && cachedAge > WEATHER_FRESH_FOR_MS
-
+    const needsRefresh = allowNetwork && (force || cachedAge > WEATHER_FRESH_FOR_MS)
     const reading = needsRefresh ? (await fetchWeatherReading()) || cached : cached
-
     let weather = null
 
     if (reading && (Date.now() - reading.readAt) < WEATHER_STALE_AFTER_MS) {

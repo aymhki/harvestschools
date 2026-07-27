@@ -33,6 +33,7 @@ import { fetchApprovedAlumniPosts } from '../services/Public/AlumniStudents/Alum
 import { getUpcomingEventsAcrossCalendars, startOfToday } from '../services/General/SchoolCalendarsService.jsx'
 import { getSubscribedCalendarIds } from '../services/General/CalendarSubscriptionService.jsx'
 import { getPrefetchStatus, runOfflinePrefetch } from '../services/General/OfflinePrefetchService.jsx'
+import { OFFLINE_CONTENT_SAVED_EVENT } from '../modules/AppUpdateGate.jsx'
 import { getCurrentBundleVersion } from '../services/General/AppUpdaterService.jsx'
 import { servePublicAsset } from '../services/General/GeneralServices.jsx'
 import { alumniStudentsPageUrl, useToggleLanguage } from '../services/General/GeneralUtils.jsx'
@@ -47,8 +48,7 @@ const MORNING_ENDS_AT_HOUR = 12
 const AFTERNOON_ENDS_AT_HOUR = 17
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 
-/* Place names that have no Arabic translation keep their Latin spelling and are
- * isolated so they read correctly inside a right to left line. */
+
 const isLatinText = (text) => /[A-Za-z]/.test(text)
 
 const COPY = {
@@ -108,6 +108,7 @@ const COPY = {
             call: 'Call us',
         },
         switchLanguage: 'العربية',
+        weatherLoading: 'Checking the weather…',
         today: 'Today',
         tomorrow: 'Tomorrow',
         inDays: (days) => `In ${days} days`,
@@ -168,12 +169,15 @@ const COPY = {
             call: 'اتصل بنا',
         },
         switchLanguage: 'English',
+        weatherLoading: 'جاري قراءة حالة الطقس…',
         today: 'اليوم',
         tomorrow: 'غدًا',
         inDays: (days) => `بعد ${days} يومًا`,
     },
 }
 
+
+const WIDGET_EXCLUDED_ACTION_IDS = ['website', 'moreInfo']
 
 const QUICK_ACTIONS = [
     { id: 'calendars', path: '/events', Icon: CalendarMonthOutlinedIcon },
@@ -222,6 +226,7 @@ function AppHome() {
     const [bundleVersion, setBundleVersion] = useState(null)
 
     const [weather, setWeather] = useState(null)
+    const [isWeatherLoading, setIsWeatherLoading] = useState(false)
     const [widgetActionCount, setWidgetActionCount] = useState(0)
     const [isWidgetModalOpen, setIsWidgetModalOpen] = useState(false)
     const [appVersion, setAppVersion] = useState(null)
@@ -261,12 +266,14 @@ function AppHome() {
     )
 
     const widgetCatalogue = useMemo(
-        () => QUICK_ACTIONS.map((action) => ({
-            id: action.id,
-            path: action.path,
-            label: copy.actions[action.id],
-            Icon: action.Icon,
-        })),
+        () => QUICK_ACTIONS
+            .filter((action) => !WIDGET_EXCLUDED_ACTION_IDS.includes(action.id))
+            .map((action) => ({
+                id: action.id,
+                path: action.path,
+                label: copy.actions[action.id],
+                Icon: action.Icon,
+            })),
         [copy]
     )
 
@@ -344,6 +351,14 @@ function AppHome() {
     }
 
     useEffect(() => {
+        const handleOfflineContentSaved = () => loadDeviceState()
+
+        window.addEventListener(OFFLINE_CONTENT_SAVED_EVENT, handleOfflineContentSaved)
+
+        return () => window.removeEventListener(OFFLINE_CONTENT_SAVED_EVENT, handleOfflineContentSaved)
+    }, [loadDeviceState])
+
+    useEffect(() => {
         let isActive = true
 
         const loadAlumniHighlights = async () => {
@@ -363,10 +378,19 @@ function AppHome() {
         }
 
         const loadWeather = async () => {
-            const reading = await getCurrentWeather({ allowNetwork: !isOffline })
+            if (isOffline) {
+                setWeather(null)
+
+                return
+            }
+
+            setIsWeatherLoading(true)
+
+            const reading = await getCurrentWeather({})
 
             if (isActive) {
                 setWeather(reading)
+                setIsWeatherLoading(false)
             }
         }
 
@@ -400,13 +424,18 @@ function AppHome() {
                     <p className="app-home-greeting">
                         {greeting}
 
+                        {(weather || isWeatherLoading) && !isOffline && (
+                            <span
+                                className="app-home-greeting-separator"
+                                aria-hidden="true"
+                            />
+                        )}
+
                         {weather && (
                             <span
                                 className="app-home-weather"
                                 title={describeWeatherCode(weather.weatherCode, language)}
                             >
-                                <span className="app-home-greeting-separator" aria-hidden="true">·</span>
-
                                 <WeatherIcon
                                     weatherCode={weather.weatherCode}
                                     isDay={weather.isDay}
@@ -423,6 +452,10 @@ function AppHome() {
                                     </span>
                                 )}
                             </span>
+                        )}
+
+                        {!weather && isWeatherLoading && !isOffline && (
+                            <span className="app-home-weather-city">{copy.weatherLoading}</span>
                         )}
                     </p>
 

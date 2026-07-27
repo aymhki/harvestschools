@@ -51,6 +51,7 @@ public class MainActivity extends BridgeActivity {
         SplashScreen.installSplashScreen(this);
         registerPlugin(WalletPassPlugin.class);
         registerPlugin(HomeWidgetPlugin.class);
+        registerPlugin(AppChromePlugin.class);
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().getDecorView().post(this::setUpFloatingChrome);
@@ -254,9 +255,17 @@ public class MainActivity extends BridgeActivity {
         lp.gravity = Gravity.BOTTOM | Gravity.START;
         lp.setMargins(dp(12), 0, 0, dp(6));
         card.setLayoutParams(lp);
+
+        card.setAlpha(0f);
+        card.setClickable(false);
+
         root.addView(card);
         floatingNavBarCard = card;
         updateNavButtonState(webView);
+    }
+
+    CardView getFloatingNavBar() {
+        return floatingNavBarCard;
     }
 
     private void startPollingLoop(WebView webView) {
