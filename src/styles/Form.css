@@ -1044,7 +1044,7 @@
     }
 
     .remove-section-button:hover {
-        background-color: var(--dark-accent-color);
+        background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
         filter: drop-shadow(0 0 1em var(--fb-white-color));
     }
