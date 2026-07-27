@@ -167,43 +167,29 @@ function wallet_booking_summary(mysqli $conn, $bookingId) {
         $stmt->close();
 
         if ($bookingRow) {
-            $students = [];
+            $parents = [];
 
-            $studentsSql = "SELECT s.name, s.grade, s.school_division
-                            FROM graduation_booking_students s
-                            JOIN graduation_booking_students_linker sl ON s.student_id = sl.student_id
-                            WHERE sl.booking_id = ?";
-
-            $stmt = $conn->prepare($studentsSql);
-
-            if ($stmt) {
-                $stmt->bind_param("i", $bookingId);
-                $stmt->execute();
-                $studentsResult = $stmt->get_result();
-
-                while ($student = $studentsResult->fetch_assoc()) {
-                    $students[] = $student;
-                }
-
-                $stmt->close();
-            }
-
-            $parentCount = 0;
-
-            $parentsSql = "SELECT COUNT(*) AS parent_count
-                           FROM graduation_booking_parents_linker
-                           WHERE booking_id = ?";
+            $parentsSql = "SELECT p.name
+                           FROM graduation_booking_parents p
+                           JOIN graduation_booking_parents_linker pl ON p.parent_id = pl.parent_id
+                           WHERE pl.booking_id = ?
+                           ORDER BY pl.is_primary DESC";
 
             $stmt = $conn->prepare($parentsSql);
 
             if ($stmt) {
                 $stmt->bind_param("i", $bookingId);
                 $stmt->execute();
-                $parentRow = $stmt->get_result()->fetch_assoc();
-                $stmt->close();
+                $parentsResult = $stmt->get_result();
 
-                $parentCount = $parentRow ? (int)$parentRow['parent_count'] : 0;
+                while ($parent = $parentsResult->fetch_assoc()) {
+                    $parents[] = $parent;
+                }
+
+                $stmt->close();
             }
+
+            $parentCount = count($parents);
 
             $extras = null;
 
@@ -225,7 +211,7 @@ function wallet_booking_summary(mysqli $conn, $bookingId) {
                 'status'       => (string)$bookingRow['status'],
                 'username'     => (string)$bookingRow['username'],
                 'auth_id'      => (string)$bookingRow['password_hash'],
-                'students'     => $students,
+                'parents'      => $parents,
                 'extras'       => $extras,
                 'seat_count'   => max($parentCount, 1) + ($extras ? (int)$extras['additional_attendees'] : 0),
             ];
@@ -236,8 +222,8 @@ function wallet_booking_summary(mysqli $conn, $bookingId) {
 }
 
 
-function wallet_student_names(array $summary) {
-    $names = array_map(static function ($student) { return trim((string)$student['name']); }, $summary['students']);
+function wallet_parent_names(array $summary) {
+    $names = array_map(static function ($parent) { return trim((string)$parent['name']); }, $summary['parents']);
 
     $names = array_values(array_filter($names, static function ($name) { return $name !== ''; }));
 
@@ -279,7 +265,7 @@ function wallet_wwdr_pem_path() {
 
 
 function wallet_pass_json(array $summary) {
-    $names = wallet_student_names($summary);
+    $names = wallet_parent_names($summary);
 
     $ceremony = $summary['ceremony'];
 
@@ -315,8 +301,8 @@ function wallet_pass_json(array $summary) {
                 'value' => (string)$summary['seat_count'],
             ]],
             'primaryFields'   => [[
-                'key'   => 'student',
-                'label' => count($names) > 1 ? 'STUDENTS' : 'STUDENT',
+                'key'   => 'parent',
+                'label' => count($names) > 1 ? 'PARENTS' : 'PARENT',
                 'value' => implode(', ', $names),
             ]],
             'secondaryFields' => [
@@ -521,7 +507,7 @@ function wallet_google_event_ticket_class(array $ceremony) {
 
 
 function wallet_google_event_ticket_object(array $summary) {
-    $names = wallet_student_names($summary);
+    $names = wallet_parent_names($summary);
 
     return [
         'id'            => wallet_google_object_id($summary),

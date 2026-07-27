@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -159,8 +160,17 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
 
     private static void renderWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-        int availableWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, CELL_SIZE_DP);
-        int availableHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, CELL_SIZE_DP);
+        boolean isPortrait = context.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE;
+
+        int availableWidthDp = options.getInt(
+            isPortrait ? AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH : AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+            CELL_SIZE_DP
+        );
+
+        int availableHeightDp = options.getInt(
+            isPortrait ? AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT : AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+            CELL_SIZE_DP
+        );
         HarvestWidgetStore.QuickActions stored = HarvestWidgetStore.readQuickActions(context);
         List<HarvestWidgetStore.QuickAction> actions = stored.actions;
         int visibleCount = Math.min(actions.size(), capacityFor(availableWidthDp, availableHeightDp));
