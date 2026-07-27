@@ -63,7 +63,7 @@ struct QuickActionsGridPlan {
 
     static let widestTileAspect: CGFloat = 1.5
 
-    static let tallestTileAspect: CGFloat = 0.75
+    static let tallestTileAspect: CGFloat = 0.9
 
     static let gapShare: CGFloat = 0.12
 

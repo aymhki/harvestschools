@@ -61,13 +61,10 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
         renderWidget(context, appWidgetManager, appWidgetId);
     }
 
-    /* One shared rule with the iOS widget: the grid is the arrangement that covers
-     * the most of the widget with evenly distributed tiles, and a tile never
-     * stretches past a sensible shape, so the room left over becomes space
-     * around it. */
+
     static final float WIDEST_TILE_ASPECT = 1.5f;
 
-    static final float TALLEST_TILE_ASPECT = 0.75f;
+    static final float TALLEST_TILE_ASPECT = 0.9f;
 
     static final float GAP_SHARE = 0.12f;
 
