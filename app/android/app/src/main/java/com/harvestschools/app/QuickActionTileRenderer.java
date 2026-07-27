@@ -33,6 +33,14 @@ public final class QuickActionTileRenderer {
     private static final float MAXIMUM_LABEL_DP = 20f;
     private static final float TILE_GLOW_RADIUS_DP = 5f;
     private static final int LABEL_MAXIMUM_LINES = 2;
+
+    private static final float ICON_LABEL_GAP_SHARE = 0.45f;
+
+    private static final float CONTENT_INSET_DP = 4f;
+
+    private static final float FIT_STEP = 0.88f;
+
+    private static final int MAXIMUM_FIT_ATTEMPTS = 6;
     private static final int GLOW_ALPHA = 90;
 
     private QuickActionTileRenderer() {
@@ -48,20 +56,31 @@ public final class QuickActionTileRenderer {
         float shortestSide = Math.min(width, height);
         float glowRadius = TILE_GLOW_RADIUS_DP * density;
         float cornerRadius = clamp(shortestSide * CORNER_RADIUS_SHARE, MINIMUM_CORNER_RADIUS_DP * density, MAXIMUM_CORNER_RADIUS_DP * density);
-        float iconSize = clamp(shortestSide * ICON_SHARE, MINIMUM_ICON_DP * density, MAXIMUM_ICON_DP * density);
-        float labelSize = clamp(shortestSide * LABEL_SHARE, MINIMUM_LABEL_DP * density, MAXIMUM_LABEL_DP * density);
         int surfaceColor = ContextCompat.getColor(context, R.color.harvest_widget_surface);
         int contentColor = ContextCompat.getColor(context, R.color.harvest_widget_text);
         drawCard(canvas, width, height, glowRadius, cornerRadius, surfaceColor, contentColor);
+        float iconSize = clamp(shortestSide * ICON_SHARE, MINIMUM_ICON_DP * density, MAXIMUM_ICON_DP * density);
+        float labelSize = clamp(shortestSide * LABEL_SHARE, MINIMUM_LABEL_DP * density, MAXIMUM_LABEL_DP * density);
+        float availableHeight = height - glowRadius * 2 - CONTENT_INSET_DP * density * 2;
+        float labelWidth = Math.max(1, width - glowRadius * 2 - CONTENT_INSET_DP * density * 2);
         TextPaint textPaint = labelPaint(context, isArabic, contentColor, labelSize);
-        float labelPadding = labelSize * 0.5f;
-        StaticLayout label = layoutLabel(action.label, textPaint, (int) Math.max(1, width - labelPadding * 2));
-        float contentHeight = iconSize + labelSize * 0.45f + label.getHeight();
-        float iconTop = Math.max(glowRadius, (height - contentHeight) / 2);
-        drawIcon(canvas, action.iconPath, iconViewport, contentColor, (width - iconSize) / 2, iconTop, iconSize);
+        StaticLayout label = layoutLabel(action.label, textPaint, (int) labelWidth);
+        int attempt = 0;
 
+        while (iconSize + labelSize * ICON_LABEL_GAP_SHARE + label.getHeight() > availableHeight
+            && attempt < MAXIMUM_FIT_ATTEMPTS) {
+            iconSize = Math.max(iconSize * FIT_STEP, MINIMUM_ICON_DP * density * 0.6f);
+            labelSize = Math.max(labelSize * FIT_STEP, MINIMUM_LABEL_DP * density * 0.75f);
+            textPaint = labelPaint(context, isArabic, contentColor, labelSize);
+            label = layoutLabel(action.label, textPaint, (int) labelWidth);
+            attempt += 1;
+        }
+
+        float contentHeight = iconSize + labelSize * ICON_LABEL_GAP_SHARE + label.getHeight();
+        float contentTop = Math.max(glowRadius, (height - contentHeight) / 2);
+        drawIcon(canvas, action.iconPath, iconViewport, contentColor, (width - iconSize) / 2, contentTop, iconSize);
         canvas.save();
-        canvas.translate(labelPadding, iconTop + iconSize + labelSize * 0.45f);
+        canvas.translate((width - labelWidth) / 2, contentTop + iconSize + labelSize * ICON_LABEL_GAP_SHARE);
         label.draw(canvas);
         canvas.restore();
 

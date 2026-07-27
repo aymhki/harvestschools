@@ -60,32 +60,65 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
         renderWidget(context, appWidgetManager, appWidgetId);
     }
 
-    private static final float WIDEST_TILE_ASPECT = 1.5f;
-    private static final float TALLEST_TILE_ASPECT = 0.75f;
-    private static final double EMPTY_SLOT_PENALTY = 0.6;
-    private static final double SHAPE_PENALTY = 4;
+    /* One shared rule with the iOS widget: the grid is the arrangement that covers
+     * the most of the widget with evenly distributed tiles, and a tile never
+     * stretches past a sensible shape, so the room left over becomes space
+     * around it. */
+    static final float WIDEST_TILE_ASPECT = 1.5f;
 
-    private static int[] planFor(int count, int availableWidthDp, int availableHeightDp, int maximumColumns, int maximumRows) {
+    static final float TALLEST_TILE_ASPECT = 0.75f;
+
+    static final float GAP_SHARE = 0.12f;
+
+    static final float SMALLEST_GAP_DP = 6f;
+
+    static final float LARGEST_GAP_DP = 26f;
+
+    private static final double EMPTY_SLOT_PENALTY = 0.035;
+
+    private static final double EXTRA_ROW_BONUS = 0.004;
+
+    static float[] tileSizeInCell(float cellWidth, float cellHeight, float density) {
+        float gap = Math.min(
+            Math.max(Math.min(cellWidth, cellHeight) * GAP_SHARE, SMALLEST_GAP_DP * density),
+            LARGEST_GAP_DP * density
+        );
+
+        float width = Math.max(cellWidth - gap, 1);
+
+        float height = Math.max(cellHeight - gap, 1);
+
+        width = Math.min(width, height * WIDEST_TILE_ASPECT);
+
+        height = Math.min(height, width / TALLEST_TILE_ASPECT);
+
+        return new float[] { width, height };
+    }
+
+    private static int[] planFor(int count, float width, float height, float density,
+                                 int maximumColumns, int maximumRows) {
         int bestColumns = Math.max(1, Math.min(count, maximumColumns));
+
         int bestRows = 1;
-        double bestScore = Double.MAX_VALUE;
 
-        for (int columns = 1; columns <= Math.min(count, maximumColumns); columns += 1) {
-            int rows = (int) Math.ceil(count / (double) columns);
+        double bestScore = -Double.MAX_VALUE;
 
-            if (rows > maximumRows) {
+        for (int rows = 1; rows <= Math.min(count, maximumRows); rows += 1) {
+            int columns = (int) Math.ceil(count / (double) rows);
+
+            if (columns > maximumColumns) {
                 continue;
             }
 
-            double aspect = (availableWidthDp / (double) columns) / (availableHeightDp / (double) rows);
+            float[] tileSize = tileSizeInCell(width / columns, height / rows, density);
 
-            boolean fitsShape = aspect <= WIDEST_TILE_ASPECT * 1.6 && aspect >= TALLEST_TILE_ASPECT * 0.6;
+            double coverage = (tileSize[0] * tileSize[1] * count) / (double) (width * height);
 
-            double score = Math.abs(Math.log(aspect))
-                + (columns * rows - count) * EMPTY_SLOT_PENALTY
-                + (fitsShape ? 0 : SHAPE_PENALTY);
+            double score = coverage
+                - (columns * rows - count) * EMPTY_SLOT_PENALTY
+                + rows * EXTRA_ROW_BONUS;
 
-            if (score < bestScore) {
+            if (score > bestScore) {
                 bestScore = score;
 
                 bestColumns = columns;
@@ -131,14 +164,15 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
         HarvestWidgetStore.QuickActions stored = HarvestWidgetStore.readQuickActions(context);
         List<HarvestWidgetStore.QuickAction> actions = stored.actions;
         int visibleCount = Math.min(actions.size(), capacityFor(availableWidthDp, availableHeightDp));
-        int[] plan = planFor(visibleCount, availableWidthDp, availableHeightDp, MAXIMUM_COLUMNS, MAXIMUM_ROWS);
+        float density = context.getResources().getDisplayMetrics().density;
+        float widthInPixels = availableWidthDp * density;
+        float heightInPixels = availableHeightDp * density;
+        int[] plan = planFor(visibleCount, widthInPixels, heightInPixels, density, MAXIMUM_COLUMNS, MAXIMUM_ROWS);
         int columns = plan[0];
         int rows = plan[1];
-        float density = context.getResources().getDisplayMetrics().density;
-        float cellWidth = (availableWidthDp * density) / columns;
-        float cellHeight = (availableHeightDp * density) / rows;
-        int tileWidth = (int) Math.max(1, Math.min(cellWidth, cellHeight * WIDEST_TILE_ASPECT));
-        int tileHeight = (int) Math.max(1, Math.min(cellHeight, cellWidth / TALLEST_TILE_ASPECT));
+        float[] tileSize = tileSizeInCell(widthInPixels / columns, heightInPixels / rows, density);
+        int tileWidth = (int) Math.max(1, tileSize[0]);
+        int tileHeight = (int) Math.max(1, tileSize[1]);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.quick_actions_widget);
 
         for (int row = 0; row < MAXIMUM_ROWS; row += 1) {
