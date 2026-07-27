@@ -65,7 +65,15 @@ struct QuickActionsGridPlan {
 
     static let tallestTileAspect: CGFloat = 0.75
 
-    static let emptySlotPenalty = 0.6
+    static let gapShare: CGFloat = 0.12
+
+    static let smallestGap: CGFloat = 6
+
+    static let largestGap: CGFloat = 26
+
+    static let emptySlotPenalty = 0.035
+
+    static let extraRowBonus = 0.004
 
     let columns: Int
 
@@ -79,28 +87,22 @@ struct QuickActionsGridPlan {
 
         var bestPlan = QuickActionsGridPlan(columns: min(count, maximumColumns), rows: 1)
 
-        var bestScore = Double.greatestFiniteMagnitude
+        var bestScore = -Double.greatestFiniteMagnitude
 
-        for columns in 1...min(count, maximumColumns) {
-            let rows = Int((Double(count) / Double(columns)).rounded(.up))
+        for rows in 1...min(count, maximumRows) {
+            let columns = Int((Double(count) / Double(rows)).rounded(.up))
 
-            guard rows <= maximumRows else {
+            guard columns <= maximumColumns else {
                 continue
             }
 
-            let cellWidth = width / CGFloat(columns)
+            let tile = tileSize(inCell: CGSize(width: width / CGFloat(columns), height: height / CGFloat(rows)))
+            let coverage = Double(tile.width * tile.height) * Double(count) / Double(width * height)
+            let score = coverage
+                - Double(columns * rows - count) * emptySlotPenalty
+                + Double(rows) * extraRowBonus
 
-            let cellHeight = height / CGFloat(rows)
-
-            let aspect = Double(cellWidth / cellHeight)
-
-            let fitsShape = aspect <= Double(widestTileAspect) * 1.6 && aspect >= Double(tallestTileAspect) * 0.6
-
-            let emptySlots = Double(columns * rows - count)
-
-            let score = abs(log(aspect)) + emptySlots * emptySlotPenalty + (fitsShape ? 0 : 4)
-
-            if score < bestScore {
+            if score > bestScore {
                 bestScore = score
 
                 bestPlan = QuickActionsGridPlan(columns: columns, rows: rows)
@@ -111,10 +113,12 @@ struct QuickActionsGridPlan {
     }
 
     static func tileSize(inCell cell: CGSize) -> CGSize {
-        CGSize(
-            width: max(min(cell.width, cell.height * widestTileAspect), 1),
-            height: max(min(cell.height, cell.width / tallestTileAspect), 1)
-        )
+        let gap = min(max(min(cell.width, cell.height) * gapShare, smallestGap), largestGap)
+        var width = max(cell.width - gap, 1)
+        var height = max(cell.height - gap, 1)
+        width = min(width, height * widestTileAspect)
+        height = min(height, width / tallestTileAspect)
+        return CGSize(width: width, height: height)
     }
 }
 

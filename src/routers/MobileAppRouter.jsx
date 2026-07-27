@@ -63,9 +63,6 @@ function MobileAppRouter() {
         localStorage.setItem('isSidebarPinned', isSidebarPinned);
     }, [isSidebarPinned]);
 
-    /* Pages that keep their own direction still rely on the document language for
-     * their typeface, so it follows every language change and not only the ones
-     * that travel through the address bar. */
     useEffect(() => {
         const applyDocumentLanguage = () => {
             document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
@@ -192,7 +189,7 @@ function MobileAppRouter() {
                         />
                     )}
                     <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
-                        <PageTransition>
+                        <PageTransition key={location.pathname}>
                             <AppRoutes routes={mobileRoutes} pages={pages} ctx={ctx} />
                         </PageTransition>
                     </Suspense>

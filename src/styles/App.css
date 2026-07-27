@@ -198,5 +198,4 @@
 
 .page-transition {
     width: 100%;
-    will-change: transform, opacity;
 }
