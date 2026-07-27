@@ -1,3 +1,5 @@
+import { setModalOpen } from './AppChromeService.jsx'
+
 const SCROLL_LOCK_CLASS = 'lock-scroll'
 
 const MINIMUM_VISIBLE_OPACITY = 0.01
@@ -32,9 +34,6 @@ let isLocked = false
 const isOverlayExempt = (element) => SCROLL_LOCK_EXEMPT_SELECTORS.some((selector) => element.closest(selector) !== null)
 
 
-/* Opacity, display and visibility all inherit their effect from the ancestors
- * without showing up in the computed style of the element itself, so the whole
- * chain up to the body has to be checked. */
 const isEffectivelyVisible = (element) => {
     let current = element
 
@@ -43,10 +42,7 @@ const isEffectivelyVisible = (element) => {
     while (current !== null && isVisible) {
         const styles = window.getComputedStyle(current)
 
-        isVisible = styles.display !== 'none'
-            && styles.visibility !== 'hidden'
-            && Number(styles.opacity) > MINIMUM_VISIBLE_OPACITY
-
+        isVisible = styles.display !== 'none' && styles.visibility !== 'hidden' && Number(styles.opacity) > MINIMUM_VISIBLE_OPACITY
         current = current.parentElement
     }
 
@@ -54,15 +50,11 @@ const isEffectivelyVisible = (element) => {
 }
 
 
-/* Most of the modals stay mounted and are animated in and out with react-spring
- * rather than being removed, so an overlay only counts as open once it is really
- * painted: laid out, not hidden and not faded out. */
 const isOverlayOpen = (element) => {
     let isOpen = false
 
     if (!isOverlayExempt(element) && isEffectivelyVisible(element)) {
         const box = element.getBoundingClientRect()
-
         isOpen = box.width > 0 && box.height > 0
     }
 
@@ -92,6 +84,8 @@ const lockPageScroll = () => {
         document.body.classList.add(SCROLL_LOCK_CLASS)
 
         isLocked = true
+
+        setModalOpen(true)
     }
 }
 
@@ -105,6 +99,8 @@ const unlockPageScroll = () => {
         window.scrollTo(0, lockedScrollOffset)
 
         isLocked = false
+
+        setModalOpen(false)
     }
 }
 

@@ -75,6 +75,14 @@
     transition: opacity 0.32s ease, transform 0.32s ease;
 }
 
+.app-splash__message.in-arabic {
+    font-family: var(--arabic-normal-font);
+}
+
+.app-splash__message.in-english {
+    font-family: var(--english-normal-font);
+}
+
 .app-splash__message.is-visible {
     opacity: 0.9;
     transform: translateY(0);

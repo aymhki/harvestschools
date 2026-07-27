@@ -177,7 +177,7 @@ const COPY = {
 }
 
 
-const WIDGET_EXCLUDED_ACTION_IDS = ['website', 'moreInfo']
+const WIDGET_EXCLUDED_ACTION_IDS = ['website', 'moreInfo', 'vacancies', 'admission']
 
 const QUICK_ACTIONS = [
     { id: 'calendars', path: '/events', Icon: CalendarMonthOutlinedIcon },
@@ -252,6 +252,11 @@ function AppHome() {
 
     const shortDateFormatter = useMemo(
         () => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }),
+        [locale]
+    )
+
+    const numberFormatter = useMemo(
+        () => new Intl.NumberFormat(locale),
         [locale]
     )
 
@@ -581,25 +586,25 @@ function AppHome() {
                     </button>
 
                     {isWidgetSupported() && (
-                        <div className="app-home-card app-home-device-row">
+                        <button
+                            type="button"
+                            className="app-home-card app-home-device-row"
+                            onClick={() => setIsWidgetModalOpen(true)}
+                        >
                             <WidgetsOutlinedIcon className="app-home-device-icon" />
 
                             <span className="app-home-device-body">
                                 <span className="app-home-device-title">{copy.widgetTitle}</span>
 
                                 <span className="app-home-device-detail">
-                                    {widgetActionCount === 1 ? copy.widgetOne : copy.widgetChosen(widgetActionCount)}
+                                    {widgetActionCount === 1
+                                        ? copy.widgetOne
+                                        : copy.widgetChosen(numberFormatter.format(widgetActionCount))}
                                 </span>
                             </span>
 
-                            <button
-                                type="button"
-                                className="app-home-device-action"
-                                onClick={() => setIsWidgetModalOpen(true)}
-                            >
-                                {copy.widgetAction}
-                            </button>
-                        </div>
+                            <span className="app-home-device-action">{copy.widgetAction}</span>
+                        </button>
                     )}
 
                     <button

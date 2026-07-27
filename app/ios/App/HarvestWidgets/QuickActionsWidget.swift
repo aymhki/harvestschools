@@ -17,7 +17,6 @@ private func harvestDynamicColor(light: UIColor, dark: UIColor) -> Color {
 }
 
 private let harvestSurfaceColor = harvestDynamicColor(light: .white, dark: harvestDarkSurfaceUIColor)
-
 private let harvestContentColor = harvestDynamicColor(light: harvestNavyUIColor, dark: .white)
 private let harvestGlowColor = harvestDynamicColor(light: harvestNavyUIColor, dark: .white)
 
@@ -62,21 +61,60 @@ struct QuickActionsProvider: TimelineProvider {
 
 struct QuickActionsGridPlan {
 
+    static let widestTileAspect: CGFloat = 1.5
+
+    static let tallestTileAspect: CGFloat = 0.75
+
+    static let emptySlotPenalty = 0.6
+
     let columns: Int
+
     let rows: Int
 
-    static func make(count: Int, width: CGFloat, height: CGFloat, maximumColumns: Int) -> QuickActionsGridPlan {
+    static func make(count: Int, width: CGFloat, height: CGFloat,
+                     maximumColumns: Int, maximumRows: Int) -> QuickActionsGridPlan {
         guard count > 0, width > 0, height > 0 else {
             return QuickActionsGridPlan(columns: 1, rows: 1)
         }
 
-        let idealColumns = (Double(count) * Double(width) / Double(height)).squareRoot().rounded()
+        var bestPlan = QuickActionsGridPlan(columns: min(count, maximumColumns), rows: 1)
 
-        let columns = min(max(Int(idealColumns), 1), min(count, maximumColumns))
+        var bestScore = Double.greatestFiniteMagnitude
 
-        let rows = Int((Double(count) / Double(columns)).rounded(.up))
+        for columns in 1...min(count, maximumColumns) {
+            let rows = Int((Double(count) / Double(columns)).rounded(.up))
 
-        return QuickActionsGridPlan(columns: columns, rows: max(rows, 1))
+            guard rows <= maximumRows else {
+                continue
+            }
+
+            let cellWidth = width / CGFloat(columns)
+
+            let cellHeight = height / CGFloat(rows)
+
+            let aspect = Double(cellWidth / cellHeight)
+
+            let fitsShape = aspect <= Double(widestTileAspect) * 1.6 && aspect >= Double(tallestTileAspect) * 0.6
+
+            let emptySlots = Double(columns * rows - count)
+
+            let score = abs(log(aspect)) + emptySlots * emptySlotPenalty + (fitsShape ? 0 : 4)
+
+            if score < bestScore {
+                bestScore = score
+
+                bestPlan = QuickActionsGridPlan(columns: columns, rows: rows)
+            }
+        }
+
+        return bestPlan
+    }
+
+    static func tileSize(inCell cell: CGSize) -> CGSize {
+        CGSize(
+            width: max(min(cell.width, cell.height * widestTileAspect), 1),
+            height: max(min(cell.height, cell.width / tallestTileAspect), 1)
+        )
     }
 }
 
@@ -92,15 +130,15 @@ private struct QuickActionTile: View {
     let tileSize: CGSize
 
     private var iconSize: CGFloat {
-        min(max(min(tileSize.width, tileSize.height) * 0.34, 18), 64)
+        min(max(min(tileSize.width, tileSize.height) * 0.36, 18), 72)
     }
 
     private var labelSize: CGFloat {
-        min(max(min(tileSize.width, tileSize.height) * 0.14, 9), 20)
+        min(max(min(tileSize.width, tileSize.height) * 0.15, 9), 22)
     }
 
     private var cornerRadius: CGFloat {
-        min(max(min(tileSize.width, tileSize.height) * 0.16, 12), 28)
+        min(max(min(tileSize.width, tileSize.height) * 0.16, 12), 30)
     }
 
     var body: some View {
@@ -132,31 +170,44 @@ private struct QuickActionsGrid: View {
 
     let maximumColumns: Int
 
+    let maximumRows: Int
+
     var body: some View {
         GeometryReader { proxy in
             let plan = QuickActionsGridPlan.make(
                 count: payload.actions.count,
                 width: proxy.size.width,
                 height: proxy.size.height,
-                maximumColumns: maximumColumns
+                maximumColumns: maximumColumns,
+                maximumRows: maximumRows
             )
 
-            let tileWidth = (proxy.size.width - tileSpacing * CGFloat(plan.columns - 1)) / CGFloat(plan.columns)
+            let cell = CGSize(
+                width: proxy.size.width / CGFloat(plan.columns),
+                height: proxy.size.height / CGFloat(plan.rows)
+            )
 
-            let tileHeight = (proxy.size.height - tileSpacing * CGFloat(plan.rows - 1)) / CGFloat(plan.rows)
+            let tileSize = QuickActionsGridPlan.tileSize(inCell: cell)
 
-            let tileSize = CGSize(width: max(tileWidth, 1), height: max(tileHeight, 1))
-
-            VStack(spacing: tileSpacing) {
+            VStack(spacing: 0) {
                 ForEach(0..<plan.rows, id: \.self) { row in
-                    HStack(spacing: tileSpacing) {
-                        ForEach(rowActions(for: row, columns: plan.columns)) { action in
-                            QuickActionTile(
-                                action: action,
-                                language: payload.language,
-                                iconViewport: payload.iconViewport,
-                                tileSize: tileSize
-                            )
+                    HStack(spacing: 0) {
+                        ForEach(0..<plan.columns, id: \.self) { column in
+                            let action = self.action(row: row, column: column, plan: plan)
+
+                            Group {
+                                if let action = action {
+                                    QuickActionTile(
+                                        action: action,
+                                        language: payload.language,
+                                        iconViewport: payload.iconViewport,
+                                        tileSize: tileSize
+                                    )
+                                } else {
+                                    Color.clear
+                                }
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
                     }
                 }
@@ -165,10 +216,23 @@ private struct QuickActionsGrid: View {
         }
     }
 
-    private func rowActions(for row: Int, columns: Int) -> [HarvestQuickAction] {
-        let start = row * columns
-        let end = min(start + columns, payload.actions.count)
-        return start < end ? Array(payload.actions[start..<end]) : []
+    private func action(row: Int, column: Int, plan: QuickActionsGridPlan) -> HarvestQuickAction? {
+        let rowStart = row * plan.columns
+        let remaining = payload.actions.count - rowStart
+        let inThisRow = min(remaining, plan.columns)
+
+        guard inThisRow > 0 else {
+            return nil
+        }
+
+        let leadingGap = (plan.columns - inThisRow) / 2
+        let indexInRow = column - leadingGap
+
+        guard indexInRow >= 0, indexInRow < inThisRow else {
+            return nil
+        }
+
+        return payload.actions[rowStart + indexInRow]
     }
 }
 
@@ -215,16 +279,16 @@ struct QuickActionsWidgetView: View {
 
     let entry: QuickActionsEntry
 
-    private var layout: (maximumColumns: Int, limit: Int) {
+    private var layout: (maximumColumns: Int, maximumRows: Int, limit: Int) {
         switch family {
         case .systemSmall:
-            return (2, 4)
+            return (2, 2, 4)
         case .systemMedium:
-            return (4, 8)
+            return (4, 2, 8)
         case .systemLarge:
-            return (4, 16)
+            return (4, 4, 16)
         default:
-            return (6, 24)
+            return (6, 4, 24)
         }
     }
 
@@ -247,7 +311,11 @@ struct QuickActionsWidgetView: View {
             if isAccessory {
                 QuickActionsAccessoryView(payload: entry.payload, family: family)
             } else {
-                QuickActionsGrid(payload: visiblePayload, maximumColumns: layout.maximumColumns)
+                QuickActionsGrid(
+                    payload: visiblePayload,
+                    maximumColumns: layout.maximumColumns,
+                    maximumRows: layout.maximumRows
+                )
             }
         }
         .padding(isAccessory ? 0 : widgetPadding)

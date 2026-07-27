@@ -5,7 +5,7 @@ import { useSpring, animated } from 'react-spring'
 import PropTypes from 'prop-types'
 
 
-const SLIDE_DISTANCE = '10%'
+const SLIDE_DISTANCE = '22%'
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 const SETTLED_STYLE = { opacity: 1 }
@@ -34,7 +34,7 @@ function PageTransition({ children }) {
         to: { opacity: 1, transform: 'translate3d(0%, 0, 0)' },
         reset: true,
         immediate: isReducedMotion,
-        config: { tension: 210, friction: 28 },
+        config: { duration: 520, easing: (progress) => 1 - Math.pow(1 - progress, 3) },
         onRest: () => setIsSettled(true),
     })
 
