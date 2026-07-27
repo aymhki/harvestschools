@@ -13,7 +13,7 @@ public class AppChromePlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "setNavigationBarVisible", returnType: CAPPluginReturnPromise)
     ]
 
-    weak var navigationBar: UIView?
+    weak var navigationBar: FloatingNavBar?
 
     @objc func setNavigationBarVisible(_ call: CAPPluginCall) {
         let isVisible = call.getBool("visible", true)
@@ -25,11 +25,7 @@ public class AppChromePlugin: CAPPlugin, CAPBridgedPlugin {
                 return
             }
 
-            UIView.animate(withDuration: 0.2) {
-                navigationBar.alpha = isVisible ? 1 : 0
-            }
-
-            navigationBar.isUserInteractionEnabled = isVisible
+            navigationBar.setSuppressed(!isVisible)
 
             call.resolve(["value": true])
         }

@@ -51,8 +51,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let navBar = FloatingNavBar(webView: webView, presenter: bridgeVC)
 
-        navBar.alpha = 0
-        navBar.isUserInteractionEnabled = false
+        navBar.setSuppressed(true)
 
         container.addSubview(navBar)
         appChromePlugin.navigationBar = navBar
