@@ -2,14 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Harvest International Schools</string>
+	<string>H. I. S.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,16 +22,18 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Secure Quick Login to User Dashboard</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Take a photo to add it to your alumni post.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Choose a picture from your photos to add it to your alumni post.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Secure Quick Login to User Dashboard</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save pictures from the app to your photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose a picture from your photos to add it to your alumni post.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
