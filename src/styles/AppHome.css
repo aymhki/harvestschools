@@ -9,6 +9,12 @@
     padding: calc(var(--app-home-gap) + env(safe-area-inset-top)) var(--app-home-page-side-padding) calc(3rem + env(safe-area-inset-bottom)) var(--app-home-page-side-padding);
     box-sizing: border-box;
     color: var(--primary-color);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.app-home::-webkit-scrollbar {
+    display: none;
 }
 
 .app-home-header {
