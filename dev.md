@@ -72,17 +72,13 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Graduation booking login and alumni students login should store, set, extend, get, and delete session using SecureStoragePlugin for capacitor on the app similar to the admin login.
 - [x] Passkey should not be shown as a step up option in the admin side if opened from the capacitor app.
 - [x] Alumni profile forgot password should also update biometric credentials in the capacitor app similar to the change password of the alumni profile.
-- [x] Set the real ceremony date, time and venue from the admin portal: Graduation Booking Management > "Update Venue". Until it is set the wallet pass, the PDF confirmation and the booking page all read "To be announced".
-- [x] Run `sql/graduationCeremonyDetails.sql` on the production database (creates graduation_ceremony_details and adds the time_zone column).
-- [x] Add a repository secret named `VITE_GOOGLE_MAPS_API_KEY` in GitHub (Settings > Secrets and variables > Actions) holding the Google Maps browser key. The deploy workflow already passes it to the build step.
 - [x] Keep the key's Google Cloud application restriction on "Websites" and make sure the referrer list covers every origin that runs the admin portal: `https://admin.harvestschools.com/*`, `capacitor://localhost/*`, `https://localhost/*` and the dev ports.
-- [x] Upload the wallet configs to the production configs folder: `walletPassConfig.php`, `pass-certificate.pem`, `pass-key.pem`, `Certificates.p12`, `wwdr.pem` and the Google service account json. Everything under `assets/` is deployed by the workflow, so the wallet badges and pass images go up on their own.
-- [ ] Fix the subscribe notifications UI on calendar pages in the capacitor app.
-- [ ] Main site link in admin sidebar footer of the capacitor app need to direct to the app home page.
+- [x] Fix the subscribe notifications UI on calendar pages in the capacitor app.
+- [x] Main site link in admin sidebar footer of the capacitor app need to direct to the app home page.
 - [x] Table filter modal overflow scroll in mobile view.
-- [ ] Review the seat count of the apple wallet pass in the backend of `getGraduationBookingWalletPass.php`
-- [ ] The app opens the browser to load the pass rather then display it directly in the review mode of apple wallet like other apps do.
-- [ ] Alumni posts camera hangs after use photo action in the capacitor app.
+- [x] Review the seat count of the apple wallet pass in the backend of `getGraduationBookingWalletPass.php`
+- [x] The app opens the browser to load the pass rather then display it directly in the review mode of apple wallet like other apps do.
+- [x] Alumni posts camera hangs after use photo action in the capacitor app.
 - [ ] Regenerating the Apple signing pair from a new Certificates.p12 (OpenSSL 3 cannot read Apple's legacy .p12 directly, so the PHP reads these PEMs):
   ```bash
   cd configs
@@ -91,11 +87,6 @@ tree --gitignore -I 'assets|.git' -a
   ```
 - [x] Download the official "Add to Apple Wallet" badge artwork and save the English and Arabic SVGs in `assets/images/Wallet/` next to the Google Wallet ones.
 - [ ] After the D-U-N-S number is issued and the Apple account becomes an organisation account: register a new pass type ID, export a new `Certificates.p12`, regenerate `configs/pass-certificate.pem` and `configs/pass-key.pem` from it, and update `apple_pass_type_id`, `apple_team_id` and `apple_p12_password` in `configs/walletPassConfig.php` on both the machine and the production server.
-- [ ] Test the widgets on real devices once the App Group is enabled: add the small, medium and large sizes plus a lock screen accessory, switch the phone between light and dark and between English and Arabic, and confirm a tile opens the right page both when the app is closed and when it is already running.
-- [ ] Enable the App Group `group.com.harvestschools.app` for both App IDs in the Apple Developer portal (`com.harvestschools.app` and `com.harvestschools.app.HarvestWidgets`) and let Xcode regenerate the provisioning profiles, otherwise the widget cannot read the quick actions the app writes.
-- [ ] Deploy the site so the new `domains/Main/.htaccess` goes up: the enforced site wide `frame-ancestors 'none'` is what turned the YouTube previews into white boxes, and the new `<Files "embed.html">` block is what allows the site and the app to frame it again.
-- [ ] Deploy `src/scripts/Public/General/getCurrentWeather.php` (it goes up with the rest of `src/scripts/`); until it is live the app home simply shows no temperature.
-- [ ] Authorise the Android app for the Google Wallet SDK, otherwise the in app save sheet stays unavailable and the app keeps falling back to the save link in the browser: in the Google Pay & Wallet Console under Google Wallet API > App Permissions, add the package name `com.harvestschools.app` together with the SHA-1 fingerprint of the release signing certificate (and the debug one while testing).
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add iOS app id when published to the index.html of the main domain and the admin domain.

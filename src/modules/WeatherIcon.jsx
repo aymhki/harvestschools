@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined'
 import NightlightOutlinedIcon from '@mui/icons-material/NightlightOutlined'
-import CloudQueueOutlinedIcon from '@mui/icons-material/CloudQueueOutlined'
+import WbCloudyOutlinedIcon from '@mui/icons-material/WbCloudyOutlined'
+import NightsStayOutlinedIcon from '@mui/icons-material/NightsStayOutlined'
 import CloudOutlinedIcon from '@mui/icons-material/CloudOutlined'
-import FilterDramaOutlinedIcon from '@mui/icons-material/FilterDramaOutlined'
+import AirOutlinedIcon from '@mui/icons-material/AirOutlined'
 import GrainOutlinedIcon from '@mui/icons-material/GrainOutlined'
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
 import UmbrellaOutlinedIcon from '@mui/icons-material/UmbrellaOutlined'
@@ -13,15 +14,149 @@ import ThermostatOutlinedIcon from '@mui/icons-material/ThermostatOutlined'
 
 
 const WEATHER_CONDITIONS = [
-    { codes: [0], DayIcon: WbSunnyOutlinedIcon, NightIcon: NightlightOutlinedIcon, en: 'Clear sky', ar: 'صافية' },
-    { codes: [1, 2], DayIcon: CloudQueueOutlinedIcon, NightIcon: CloudQueueOutlinedIcon, en: 'Partly cloudy', ar: 'غائمة جزئيًا' },
-    { codes: [3], DayIcon: CloudOutlinedIcon, NightIcon: CloudOutlinedIcon, en: 'Overcast', ar: 'غائمة' },
-    { codes: [45, 48], DayIcon: FilterDramaOutlinedIcon, NightIcon: FilterDramaOutlinedIcon, en: 'Fog', ar: 'ضباب' },
-    { codes: [51, 53, 55, 56, 57], DayIcon: GrainOutlinedIcon, NightIcon: GrainOutlinedIcon, en: 'Drizzle', ar: 'رذاذ' },
-    { codes: [61, 63, 65, 66, 67], DayIcon: WaterDropOutlinedIcon, NightIcon: WaterDropOutlinedIcon, en: 'Rain', ar: 'أمطار' },
-    { codes: [80, 81, 82], DayIcon: UmbrellaOutlinedIcon, NightIcon: UmbrellaOutlinedIcon, en: 'Rain showers', ar: 'زخات مطر' },
-    { codes: [71, 73, 75, 77, 85, 86], DayIcon: AcUnitOutlinedIcon, NightIcon: AcUnitOutlinedIcon, en: 'Snow', ar: 'ثلوج' },
-    { codes: [95, 96, 99], DayIcon: ThunderstormOutlinedIcon, NightIcon: ThunderstormOutlinedIcon, en: 'Thunderstorm', ar: 'عواصف رعدية' },
+    {
+        types: ['CLEAR'],
+        DayIcon: WbSunnyOutlinedIcon,
+        NightIcon: NightlightOutlinedIcon,
+        en: 'Clear sky',
+        ar: 'صافية',
+    },
+    {
+        types: ['MOSTLY_CLEAR'],
+        DayIcon: WbSunnyOutlinedIcon,
+        NightIcon: NightlightOutlinedIcon,
+        en: 'Mainly clear',
+        ar: 'صافية غالبًا',
+    },
+    {
+        types: ['PARTLY_CLOUDY'],
+        DayIcon: WbCloudyOutlinedIcon,
+        NightIcon: NightsStayOutlinedIcon,
+        en: 'Partly cloudy',
+        ar: 'غائمة جزئيًا',
+    },
+    {
+        types: ['MOSTLY_CLOUDY'],
+        DayIcon: CloudOutlinedIcon,
+        NightIcon: CloudOutlinedIcon,
+        en: 'Mostly cloudy',
+        ar: 'غائمة في الغالب',
+    },
+    {
+        types: ['CLOUDY'],
+        DayIcon: CloudOutlinedIcon,
+        NightIcon: CloudOutlinedIcon,
+        en: 'Cloudy',
+        ar: 'غائمة',
+    },
+    {
+        types: ['WINDY'],
+        DayIcon: AirOutlinedIcon,
+        NightIcon: AirOutlinedIcon,
+        en: 'Windy',
+        ar: 'رياح',
+    },
+    {
+        types: ['WIND_AND_RAIN'],
+        DayIcon: AirOutlinedIcon,
+        NightIcon: AirOutlinedIcon,
+        en: 'Wind and rain',
+        ar: 'رياح وأمطار',
+    },
+    {
+        types: ['LIGHT_RAIN_SHOWERS', 'CHANCE_OF_SHOWERS', 'SCATTERED_SHOWERS'],
+        DayIcon: GrainOutlinedIcon,
+        NightIcon: GrainOutlinedIcon,
+        en: 'Light showers',
+        ar: 'زخات خفيفة',
+    },
+    {
+        types: ['RAIN_SHOWERS', 'HEAVY_RAIN_SHOWERS'],
+        DayIcon: UmbrellaOutlinedIcon,
+        NightIcon: UmbrellaOutlinedIcon,
+        en: 'Rain showers',
+        ar: 'زخات مطر',
+    },
+    {
+        types: ['LIGHT_RAIN'],
+        DayIcon: GrainOutlinedIcon,
+        NightIcon: GrainOutlinedIcon,
+        en: 'Light rain',
+        ar: 'أمطار خفيفة',
+    },
+    {
+        types: ['RAIN', 'LIGHT_TO_MODERATE_RAIN', 'MODERATE_TO_HEAVY_RAIN'],
+        DayIcon: WaterDropOutlinedIcon,
+        NightIcon: WaterDropOutlinedIcon,
+        en: 'Rain',
+        ar: 'أمطار',
+    },
+    {
+        types: ['HEAVY_RAIN', 'RAIN_PERIODICALLY_HEAVY'],
+        DayIcon: WaterDropOutlinedIcon,
+        NightIcon: WaterDropOutlinedIcon,
+        en: 'Heavy rain',
+        ar: 'أمطار غزيرة',
+    },
+    {
+        types: [
+            'LIGHT_SNOW',
+            'LIGHT_SNOW_SHOWERS',
+            'CHANCE_OF_SNOW_SHOWERS',
+            'SCATTERED_SNOW_SHOWERS',
+        ],
+        DayIcon: AcUnitOutlinedIcon,
+        NightIcon: AcUnitOutlinedIcon,
+        en: 'Light snow',
+        ar: 'ثلوج خفيفة',
+    },
+    {
+        types: [
+            'SNOW',
+            'SNOW_SHOWERS',
+            'LIGHT_TO_MODERATE_SNOW',
+            'MODERATE_TO_HEAVY_SNOW',
+            'RAIN_AND_SNOW',
+        ],
+        DayIcon: AcUnitOutlinedIcon,
+        NightIcon: AcUnitOutlinedIcon,
+        en: 'Snow',
+        ar: 'ثلوج',
+    },
+    {
+        types: ['HEAVY_SNOW', 'HEAVY_SNOW_SHOWERS', 'SNOW_PERIODICALLY_HEAVY', 'BLOWING_SNOW'],
+        DayIcon: AcUnitOutlinedIcon,
+        NightIcon: AcUnitOutlinedIcon,
+        en: 'Heavy snow',
+        ar: 'ثلوج كثيفة',
+    },
+    {
+        types: ['SNOWSTORM', 'HEAVY_SNOW_STORM'],
+        DayIcon: AcUnitOutlinedIcon,
+        NightIcon: AcUnitOutlinedIcon,
+        en: 'Snowstorm',
+        ar: 'عاصفة ثلجية',
+    },
+    {
+        types: ['HAIL', 'HAIL_SHOWERS'],
+        DayIcon: GrainOutlinedIcon,
+        NightIcon: GrainOutlinedIcon,
+        en: 'Hail',
+        ar: 'بَرَد',
+    },
+    {
+        types: [
+            'THUNDERSTORM',
+            'THUNDERSHOWER',
+            'LIGHT_THUNDERSTORM_RAIN',
+            'SCATTERED_THUNDERSTORMS',
+            'HEAVY_THUNDERSTORM',
+        ],
+        DayIcon: ThunderstormOutlinedIcon,
+        NightIcon: ThunderstormOutlinedIcon,
+        en: 'Thunderstorm',
+        ar: 'عواصف رعدية',
+    },
 ]
 
 const FALLBACK_CONDITION = {
@@ -32,29 +167,29 @@ const FALLBACK_CONDITION = {
 }
 
 
-const getWeatherCondition = (weatherCode) => (
-    WEATHER_CONDITIONS.find((condition) => condition.codes.includes(weatherCode)) || FALLBACK_CONDITION
+const getWeatherCondition = (condition) => (
+    WEATHER_CONDITIONS.find((entry) => entry.types.includes(condition)) || FALLBACK_CONDITION
 )
 
 
-const describeWeatherCode = (weatherCode, language) => {
-    const condition = getWeatherCondition(weatherCode)
+const describeWeatherCondition = (condition, language) => {
+    const matched = getWeatherCondition(condition)
 
-    return language === 'ar' ? condition.ar : condition.en
+    return language === 'ar' ? matched.ar : matched.en
 }
 
 
-function WeatherIcon({ weatherCode, isDay, className }) {
-    const condition = getWeatherCondition(weatherCode)
+function WeatherIcon({ condition, isDay, className }) {
+    const matched = getWeatherCondition(condition)
 
-    const Icon = isDay ? condition.DayIcon : condition.NightIcon
+    const Icon = isDay ? matched.DayIcon : matched.NightIcon
 
     return <Icon className={className} />
 }
 
 
 WeatherIcon.propTypes = {
-    weatherCode: PropTypes.number.isRequired,
+    condition: PropTypes.string,
     isDay: PropTypes.bool,
     className: PropTypes.string,
 }
@@ -62,4 +197,4 @@ WeatherIcon.propTypes = {
 
 export default WeatherIcon
 
-export { describeWeatherCode }
+export { describeWeatherCondition }

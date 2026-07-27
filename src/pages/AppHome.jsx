@@ -25,7 +25,7 @@ import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined'
 import AlumniPostCard from '../modules/AlumniPostCard.jsx'
 import WidgetActionsControls from '../modules/WidgetActionsControls.jsx'
-import WeatherIcon, { describeWeatherCode } from '../modules/WeatherIcon.jsx'
+import WeatherIcon, { describeWeatherCondition } from '../modules/WeatherIcon.jsx'
 import CachedImage from '../modules/CachedImage.jsx'
 import { useOffline } from '../services/General/OfflineContext.jsx'
 import { cachedRequest } from '../services/General/OfflineApiCacheService.jsx'
@@ -439,10 +439,10 @@ function AppHome() {
                         {weather && (
                             <span
                                 className="app-home-weather"
-                                title={describeWeatherCode(weather.weatherCode, language)}
+                                title={describeWeatherCondition(weather.condition, language)}
                             >
                                 <WeatherIcon
-                                    weatherCode={weather.weatherCode}
+                                    condition={weather.condition}
                                     isDay={weather.isDay}
                                     className="app-home-weather-icon"
                                 />
