@@ -16,6 +16,11 @@
 		00AB000000000000000000B4 /* HarvestWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A6 /* HarvestWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		00AB000000000000000000B5 /* HomeWidgetPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A7 /* HomeWidgetPlugin.swift */; };
 		00AB000000000000000000B6 /* HarvestWidgetsShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AB000000000000000000A3 /* HarvestWidgetsShared.swift */; };
+		00AC000000000000000000B1 /* HarvestIconPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A1 /* HarvestIconPath.swift */; };
+		00AC000000000000000000B2 /* FuturaLT-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A2 /* FuturaLT-Regular.ttf */; };
+		00AC000000000000000000B3 /* FuturaLT-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A3 /* FuturaLT-Bold.ttf */; };
+		00AC000000000000000000B4 /* ArianLT-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A4 /* ArianLT-Regular.ttf */; };
+		00AC000000000000000000B5 /* ArianLT-Demi.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A5 /* ArianLT-Demi.ttf */; };
 		00B7B20F2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */; };
 		00C1A5012FFF10A10001AA01 /* WalletPassPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */; };
 		00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */; };
@@ -28,11 +33,6 @@
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
-		00AC000000000000000000B1 /* HarvestIconPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A1 /* HarvestIconPath.swift */; };
-		00AC000000000000000000B2 /* FuturaLT-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A2 /* FuturaLT-Regular.ttf */; };
-		00AC000000000000000000B3 /* FuturaLT-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A3 /* FuturaLT-Bold.ttf */; };
-		00AC000000000000000000B4 /* ArianLT-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A4 /* ArianLT-Regular.ttf */; };
-		00AC000000000000000000B5 /* ArianLT-Demi.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A5 /* ArianLT-Demi.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +70,11 @@
 		00AB000000000000000000A5 /* HarvestWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HarvestWidgets.entitlements; sourceTree = "<group>"; };
 		00AB000000000000000000A6 /* HarvestWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HarvestWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		00AB000000000000000000A7 /* HomeWidgetPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeWidgetPlugin.swift; sourceTree = "<group>"; };
+		00AC000000000000000000A1 /* HarvestIconPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestIconPath.swift; sourceTree = "<group>"; };
+		00AC000000000000000000A2 /* FuturaLT-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "FuturaLT-Regular.ttf"; path = "Fonts/FuturaLT-Regular.ttf"; sourceTree = "<group>"; };
+		00AC000000000000000000A3 /* FuturaLT-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "FuturaLT-Bold.ttf"; path = "Fonts/FuturaLT-Bold.ttf"; sourceTree = "<group>"; };
+		00AC000000000000000000A4 /* ArianLT-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ArianLT-Regular.ttf"; path = "Fonts/ArianLT-Regular.ttf"; sourceTree = "<group>"; };
+		00AC000000000000000000A5 /* ArianLT-Demi.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ArianLT-Demi.ttf"; path = "Fonts/ArianLT-Demi.ttf"; sourceTree = "<group>"; };
 		00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPassPlugin.swift; sourceTree = "<group>"; };
 		00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProcessRecovery.swift; sourceTree = "<group>"; };
@@ -85,11 +90,6 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
-		00AC000000000000000000A1 /* HarvestIconPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestIconPath.swift; sourceTree = "<group>"; };
-		00AC000000000000000000A2 /* FuturaLT-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FuturaLT-Regular.ttf; path = Fonts/FuturaLT-Regular.ttf; sourceTree = "<group>"; };
-		00AC000000000000000000A3 /* FuturaLT-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FuturaLT-Bold.ttf; path = Fonts/FuturaLT-Bold.ttf; sourceTree = "<group>"; };
-		00AC000000000000000000A4 /* ArianLT-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ArianLT-Regular.ttf; path = Fonts/ArianLT-Regular.ttf; sourceTree = "<group>"; };
-		00AC000000000000000000A5 /* ArianLT-Demi.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ArianLT-Demi.ttf; path = Fonts/ArianLT-Demi.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -346,7 +346,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HarvestWidgets/HarvestWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HarvestWidgets/Info.plist;
@@ -373,7 +373,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HarvestWidgets/HarvestWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HarvestWidgets/Info.plist;
@@ -511,7 +511,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "H. I. S.";
@@ -537,7 +537,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "H. I. S.";
