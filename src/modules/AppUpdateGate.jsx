@@ -10,7 +10,7 @@ import {
     getCurrentBundleVersion,
 } from '../services/General/AppUpdaterService.jsx'
 import { attachDeepLinkListener, readPathFromDeepLink } from '../services/General/DeepLinkService.jsx'
-import { setNavigationBarVisible } from '../services/General/AppChromeService.jsx'
+import { setAppReady } from '../services/General/AppChromeService.jsx'
 import { OfflineProvider } from '../services/General/OfflineContext.jsx'
 import { bootstrapOfflineAssets, runOfflinePrefetch } from '../services/General/OfflinePrefetchService.jsx'
 import { getCurrentWeather } from '../services/General/WeatherService.jsx'
@@ -180,7 +180,7 @@ function AppUpdateGate({ children }) {
     }, [launchKind, prepareApp])
 
     useEffect(() => {
-        setNavigationBarVisible(!isPreparing)
+        setAppReady(!isPreparing)
     }, [isPreparing])
 
     useEffect(() => {

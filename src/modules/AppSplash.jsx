@@ -132,7 +132,7 @@ function AppSplash({ showProgress = false, progress = 0 }) {
             )}
 
             <p
-                className={`app-splash__message ${isMessageVisible ? 'is-visible' : ''}`}
+                className={`app-splash__message ${language === 'ar' ? 'in-arabic' : 'in-english'} ${isMessageVisible ? 'is-visible' : ''}`}
                 role="status"
                 aria-live="polite"
             >

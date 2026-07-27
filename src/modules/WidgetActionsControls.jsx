@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useSpring, animated } from 'react-spring'
@@ -21,6 +21,11 @@ function WidgetActionsControls({ isOpen, catalogue, copy, language, onClose, onC
     const [chosenActionIds, setChosenActionIds] = useState([])
 
     const pointerStartRef = useRef(null)
+
+    const numberFormatter = useMemo(
+        () => new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US'),
+        [language]
+    )
 
     const animateModal = useSpring({
         opacity: isOpen ? 1 : 0,
@@ -116,14 +121,17 @@ function WidgetActionsControls({ isOpen, catalogue, copy, language, onClose, onC
 
                     <p className={'widget-actions-note'}>
                         {copy.widgetSizes(
-                            Math.min(WIDGET_SIZE_CAPACITIES.small, catalogue.length),
-                            Math.min(WIDGET_SIZE_CAPACITIES.medium, catalogue.length),
-                            Math.min(WIDGET_SIZE_CAPACITIES.large, catalogue.length)
+                            numberFormatter.format(Math.min(WIDGET_SIZE_CAPACITIES.small, catalogue.length)),
+                            numberFormatter.format(Math.min(WIDGET_SIZE_CAPACITIES.medium, catalogue.length)),
+                            numberFormatter.format(Math.min(WIDGET_SIZE_CAPACITIES.large, catalogue.length))
                         )}
                     </p>
 
                     <p className={'widget-actions-counter'}>
-                        {copy.widgetCounter(chosenActionIds.length, catalogue.length)}
+                        {copy.widgetCounter(
+                            numberFormatter.format(chosenActionIds.length),
+                            numberFormatter.format(catalogue.length)
+                        )}
                     </p>
                 </div>
 

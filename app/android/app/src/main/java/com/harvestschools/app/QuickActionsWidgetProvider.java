@@ -60,13 +60,40 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
         renderWidget(context, appWidgetManager, appWidgetId);
     }
 
-    private static int columnsFor(int count, int availableWidthDp, int availableHeightDp, int maximumColumns) {
-        if (count <= 0 || availableWidthDp <= 0 || availableHeightDp <= 0) {
-            return 1;
+    private static final float WIDEST_TILE_ASPECT = 1.5f;
+    private static final float TALLEST_TILE_ASPECT = 0.75f;
+    private static final double EMPTY_SLOT_PENALTY = 0.6;
+    private static final double SHAPE_PENALTY = 4;
+
+    private static int[] planFor(int count, int availableWidthDp, int availableHeightDp, int maximumColumns, int maximumRows) {
+        int bestColumns = Math.max(1, Math.min(count, maximumColumns));
+        int bestRows = 1;
+        double bestScore = Double.MAX_VALUE;
+
+        for (int columns = 1; columns <= Math.min(count, maximumColumns); columns += 1) {
+            int rows = (int) Math.ceil(count / (double) columns);
+
+            if (rows > maximumRows) {
+                continue;
+            }
+
+            double aspect = (availableWidthDp / (double) columns) / (availableHeightDp / (double) rows);
+
+            boolean fitsShape = aspect <= WIDEST_TILE_ASPECT * 1.6 && aspect >= TALLEST_TILE_ASPECT * 0.6;
+
+            double score = Math.abs(Math.log(aspect))
+                + (columns * rows - count) * EMPTY_SLOT_PENALTY
+                + (fitsShape ? 0 : SHAPE_PENALTY);
+
+            if (score < bestScore) {
+                bestScore = score;
+
+                bestColumns = columns;
+                bestRows = rows;
+            }
         }
 
-        int ideal = (int) Math.round(Math.sqrt((double) count * availableWidthDp / availableHeightDp));
-        return Math.max(1, Math.min(Math.min(count, maximumColumns), ideal));
+        return new int[] { bestColumns, bestRows };
     }
 
     private static int capacityFor(int availableWidthDp, int availableHeightDp) {
@@ -99,39 +126,41 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
 
     private static void renderWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-
         int availableWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, CELL_SIZE_DP);
-
         int availableHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, CELL_SIZE_DP);
-
         HarvestWidgetStore.QuickActions stored = HarvestWidgetStore.readQuickActions(context);
         List<HarvestWidgetStore.QuickAction> actions = stored.actions;
         int visibleCount = Math.min(actions.size(), capacityFor(availableWidthDp, availableHeightDp));
-        int columns = columnsFor(visibleCount, availableWidthDp, availableHeightDp, MAXIMUM_COLUMNS);
-        int rows = Math.max(1, (int) Math.ceil(visibleCount / (double) columns));
-
+        int[] plan = planFor(visibleCount, availableWidthDp, availableHeightDp, MAXIMUM_COLUMNS, MAXIMUM_ROWS);
+        int columns = plan[0];
+        int rows = plan[1];
         float density = context.getResources().getDisplayMetrics().density;
-
-        int tileWidth = (int) ((availableWidthDp * density) / columns);
-
-        int tileHeight = (int) ((availableHeightDp * density) / rows);
-
+        float cellWidth = (availableWidthDp * density) / columns;
+        float cellHeight = (availableHeightDp * density) / rows;
+        int tileWidth = (int) Math.max(1, Math.min(cellWidth, cellHeight * WIDEST_TILE_ASPECT));
+        int tileHeight = (int) Math.max(1, Math.min(cellHeight, cellWidth / TALLEST_TILE_ASPECT));
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.quick_actions_widget);
 
-        int nextAction = 0;
-
         for (int row = 0; row < MAXIMUM_ROWS; row += 1) {
-            boolean rowIsUsed = row < rows && nextAction < visibleCount;
+            int rowStart = row * columns;
 
-            views.setViewVisibility(ROW_IDS[row], rowIsUsed ? View.VISIBLE : View.GONE);
+            int inThisRow = Math.max(0, Math.min(visibleCount - rowStart, columns));
+
+            views.setViewVisibility(ROW_IDS[row], row < rows && inThisRow > 0 ? View.VISIBLE : View.GONE);
+            int leadingGap = (columns - inThisRow) / 2;
 
             for (int column = 0; column < MAXIMUM_COLUMNS; column += 1) {
-                boolean slotIsUsed = rowIsUsed && column < columns && nextAction < visibleCount;
+                int indexInRow = column - leadingGap;
 
-                views.setViewVisibility(TILE_IDS[row][column], slotIsUsed ? View.VISIBLE : View.GONE);
+                boolean slotIsUsed = column < columns && indexInRow >= 0 && indexInRow < inThisRow;
+
+                views.setViewVisibility(
+                    TILE_IDS[row][column],
+                    column < columns ? View.VISIBLE : View.GONE
+                );
 
                 if (slotIsUsed) {
-                    HarvestWidgetStore.QuickAction action = actions.get(nextAction);
+                    HarvestWidgetStore.QuickAction action = actions.get(rowStart + indexInRow);
 
                     Bitmap tile = QuickActionTileRenderer.render(
                         context,
@@ -144,9 +173,10 @@ public class QuickActionsWidgetProvider extends AppWidgetProvider {
 
                     views.setImageViewBitmap(TILE_IDS[row][column], tile);
                     views.setContentDescription(TILE_IDS[row][column], action.label);
-                    views.setOnClickPendingIntent(TILE_IDS[row][column], destinationFor(context, action, nextAction));
-
-                    nextAction += 1;
+                    views.setOnClickPendingIntent(TILE_IDS[row][column], destinationFor(context, action, rowStart + indexInRow));
+                } else if (column < columns) {
+                    views.setImageViewBitmap(TILE_IDS[row][column], null);
+                    views.setOnClickPendingIntent(TILE_IDS[row][column], null);
                 }
             }
         }
