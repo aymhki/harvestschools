@@ -194,3 +194,9 @@
         color: var(--fb-white-color);
     }
 }
+
+
+.page-transition {
+    width: 100%;
+    will-change: transform, opacity;
+}

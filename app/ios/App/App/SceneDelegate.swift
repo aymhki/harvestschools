@@ -6,6 +6,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var floatingNavBar: FloatingNavBar?
     private var pullToRefreshController: PullToRefreshController?
     private var webViewProcessRecovery: WebViewProcessRecovery?
+    private let appChromePlugin = AppChromePlugin()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -41,6 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         bridgeVC.bridge?.registerPluginInstance(WalletPassPlugin())
         bridgeVC.bridge?.registerPluginInstance(HomeWidgetPlugin())
+        bridgeVC.bridge?.registerPluginInstance(appChromePlugin)
         webView.allowsBackForwardNavigationGestures = true
 
         webViewProcessRecovery = WebViewProcessRecovery(webView: webView)
@@ -48,7 +50,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         pullToRefreshController = PullToRefreshController(webView: webView, containerView: container)
 
         let navBar = FloatingNavBar(webView: webView, presenter: bridgeVC)
+
+        navBar.alpha = 0
+        navBar.isUserInteractionEnabled = false
+
         container.addSubview(navBar)
+        appChromePlugin.navigationBar = navBar
 
         NSLayoutConstraint.activate([
             navBar.leadingAnchor.constraint(equalTo: container.safeAreaLayoutGuide.leadingAnchor, constant: 12),

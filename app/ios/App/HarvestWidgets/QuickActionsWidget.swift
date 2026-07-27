@@ -4,13 +4,10 @@ import UIKit
 
 
 private let tileCornerRadius: CGFloat = 16
-
-private let tileSpacing: CGFloat = 8
-
+private let tileSpacing: CGFloat = 6
+private let widgetPadding: CGFloat = 8
 private let tileGlowRadius: CGFloat = 4
-
 private let harvestNavyUIColor = UIColor(red: 0x1F / 255.0, green: 0x21 / 255.0, blue: 0x52 / 255.0, alpha: 1)
-
 private let harvestDarkSurfaceUIColor = UIColor(red: 0x24 / 255.0, green: 0x24 / 255.0, blue: 0x25 / 255.0, alpha: 1)
 
 private func harvestDynamicColor(light: UIColor, dark: UIColor) -> Color {
@@ -63,6 +60,27 @@ struct QuickActionsProvider: TimelineProvider {
 }
 
 
+struct QuickActionsGridPlan {
+
+    let columns: Int
+    let rows: Int
+
+    static func make(count: Int, width: CGFloat, height: CGFloat, maximumColumns: Int) -> QuickActionsGridPlan {
+        guard count > 0, width > 0, height > 0 else {
+            return QuickActionsGridPlan(columns: 1, rows: 1)
+        }
+
+        let idealColumns = (Double(count) * Double(width) / Double(height)).squareRoot().rounded()
+
+        let columns = min(max(Int(idealColumns), 1), min(count, maximumColumns))
+
+        let rows = Int((Double(count) / Double(columns)).rounded(.up))
+
+        return QuickActionsGridPlan(columns: columns, rows: max(rows, 1))
+    }
+}
+
+
 private struct QuickActionTile: View {
 
     let action: HarvestQuickAction
@@ -71,13 +89,23 @@ private struct QuickActionTile: View {
 
     let iconViewport: Double
 
-    let iconSize: CGFloat
+    let tileSize: CGSize
 
-    let labelSize: CGFloat
+    private var iconSize: CGFloat {
+        min(max(min(tileSize.width, tileSize.height) * 0.34, 18), 64)
+    }
+
+    private var labelSize: CGFloat {
+        min(max(min(tileSize.width, tileSize.height) * 0.14, 9), 20)
+    }
+
+    private var cornerRadius: CGFloat {
+        min(max(min(tileSize.width, tileSize.height) * 0.16, 12), 28)
+    }
 
     var body: some View {
         Link(destination: action.destinationURL) {
-            VStack(spacing: 5) {
+            VStack(spacing: labelSize * 0.45) {
                 HarvestIconShape(pathData: action.iconPath, viewport: iconViewport)
                     .fill(harvestContentColor)
                     .frame(width: iconSize, height: iconSize)
@@ -89,9 +117,9 @@ private struct QuickActionTile: View {
                     .minimumScaleFactor(0.6)
                     .lineLimit(2)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(5)
-            .background(harvestSurfaceColor, in: RoundedRectangle(cornerRadius: tileCornerRadius, style: .continuous))
+            .padding(labelSize * 0.5)
+            .frame(width: tileSize.width, height: tileSize.height)
+            .background(harvestSurfaceColor, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .shadow(color: harvestGlowColor.opacity(0.45), radius: tileGlowRadius)
         }
     }
@@ -102,27 +130,45 @@ private struct QuickActionsGrid: View {
 
     let payload: HarvestQuickActionsPayload
 
-    let columns: Int
-
-    let iconSize: CGFloat
-
-    let labelSize: CGFloat
+    let maximumColumns: Int
 
     var body: some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(.flexible(), spacing: tileSpacing), count: columns),
-            spacing: tileSpacing
-        ) {
-            ForEach(payload.actions) { action in
-                QuickActionTile(
-                    action: action,
-                    language: payload.language,
-                    iconViewport: payload.iconViewport,
-                    iconSize: iconSize,
-                    labelSize: labelSize
-                )
+        GeometryReader { proxy in
+            let plan = QuickActionsGridPlan.make(
+                count: payload.actions.count,
+                width: proxy.size.width,
+                height: proxy.size.height,
+                maximumColumns: maximumColumns
+            )
+
+            let tileWidth = (proxy.size.width - tileSpacing * CGFloat(plan.columns - 1)) / CGFloat(plan.columns)
+
+            let tileHeight = (proxy.size.height - tileSpacing * CGFloat(plan.rows - 1)) / CGFloat(plan.rows)
+
+            let tileSize = CGSize(width: max(tileWidth, 1), height: max(tileHeight, 1))
+
+            VStack(spacing: tileSpacing) {
+                ForEach(0..<plan.rows, id: \.self) { row in
+                    HStack(spacing: tileSpacing) {
+                        ForEach(rowActions(for: row, columns: plan.columns)) { action in
+                            QuickActionTile(
+                                action: action,
+                                language: payload.language,
+                                iconViewport: payload.iconViewport,
+                                tileSize: tileSize
+                            )
+                        }
+                    }
+                }
             }
+            .frame(width: proxy.size.width, height: proxy.size.height)
         }
+    }
+
+    private func rowActions(for row: Int, columns: Int) -> [HarvestQuickAction] {
+        let start = row * columns
+        let end = min(start + columns, payload.actions.count)
+        return start < end ? Array(payload.actions[start..<end]) : []
     }
 }
 
@@ -169,16 +215,16 @@ struct QuickActionsWidgetView: View {
 
     let entry: QuickActionsEntry
 
-    private var layout: (columns: Int, limit: Int, iconSize: CGFloat, labelSize: CGFloat) {
+    private var layout: (maximumColumns: Int, limit: Int) {
         switch family {
         case .systemSmall:
-            return (2, 4, 22, 9)
+            return (2, 4)
         case .systemMedium:
-            return (4, 8, 24, 9)
+            return (4, 8)
         case .systemLarge:
-            return (4, 16, 28, 11)
+            return (4, 16)
         default:
-            return (6, 24, 28, 11)
+            return (6, 24)
         }
     }
 
@@ -201,14 +247,10 @@ struct QuickActionsWidgetView: View {
             if isAccessory {
                 QuickActionsAccessoryView(payload: entry.payload, family: family)
             } else {
-                QuickActionsGrid(
-                    payload: visiblePayload,
-                    columns: layout.columns,
-                    iconSize: layout.iconSize,
-                    labelSize: layout.labelSize
-                )
+                QuickActionsGrid(payload: visiblePayload, maximumColumns: layout.maximumColumns)
             }
         }
+        .padding(isAccessory ? 0 : widgetPadding)
         .environment(\.layoutDirection, entry.payload.isRightToLeft ? .rightToLeft : .leftToRight)
         .containerBackground(for: .widget) {
             isAccessory ? Color.clear : harvestSurfaceColor
@@ -225,6 +267,7 @@ struct QuickActionsWidget: Widget {
         StaticConfiguration(kind: kind, provider: QuickActionsProvider()) { entry in
             QuickActionsWidgetView(entry: entry)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName("Quick actions")
         .description("Jump straight to the parts of the school app you use the most.")
         .supportedFamilies([

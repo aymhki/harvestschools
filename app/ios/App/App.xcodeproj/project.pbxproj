@@ -21,6 +21,7 @@
 		00AC000000000000000000B3 /* FuturaLT-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A3 /* FuturaLT-Bold.ttf */; };
 		00AC000000000000000000B4 /* ArianLT-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A4 /* ArianLT-Regular.ttf */; };
 		00AC000000000000000000B5 /* ArianLT-Demi.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A5 /* ArianLT-Demi.ttf */; };
+		00AC000000000000000000B6 /* AppChromePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A6 /* AppChromePlugin.swift */; };
 		00B7B20F2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */; };
 		00C1A5012FFF10A10001AA01 /* WalletPassPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */; };
 		00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */; };
@@ -75,6 +76,7 @@
 		00AC000000000000000000A3 /* FuturaLT-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "FuturaLT-Bold.ttf"; path = "Fonts/FuturaLT-Bold.ttf"; sourceTree = "<group>"; };
 		00AC000000000000000000A4 /* ArianLT-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ArianLT-Regular.ttf"; path = "Fonts/ArianLT-Regular.ttf"; sourceTree = "<group>"; };
 		00AC000000000000000000A5 /* ArianLT-Demi.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ArianLT-Demi.ttf"; path = "Fonts/ArianLT-Demi.ttf"; sourceTree = "<group>"; };
+		00AC000000000000000000A6 /* AppChromePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppChromePlugin.swift; sourceTree = "<group>"; };
 		00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPassPlugin.swift; sourceTree = "<group>"; };
 		00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProcessRecovery.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */,
 				00C1A5042FFF10A10001AA01 /* HarvestBridgeViewController.swift */,
 				00AB000000000000000000A7 /* HomeWidgetPlugin.swift */,
+				00AC000000000000000000A6 /* AppChromePlugin.swift */,
 				004E49E22FFBDDA3001494AA /* LaunchScreen.storyboard */,
 				00DE439D2FF9F53B002827AF /* App.entitlements */,
 				00DE439B2FF9F506002827AF /* SceneDelegate.swift */,
@@ -307,6 +310,7 @@
 				00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */,
 				00C1A5052FFF10A10001AA01 /* HarvestBridgeViewController.swift in Sources */,
 				00AB000000000000000000B5 /* HomeWidgetPlugin.swift in Sources */,
+				00AC000000000000000000B6 /* AppChromePlugin.swift in Sources */,
 				00AB000000000000000000B6 /* HarvestWidgetsShared.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -346,7 +350,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HarvestWidgets/HarvestWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HarvestWidgets/Info.plist;
@@ -373,7 +377,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HarvestWidgets/HarvestWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HarvestWidgets/Info.plist;
@@ -511,7 +515,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "H. I. S.";
@@ -537,7 +541,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = Q4RWJ7728F;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "H. I. S.";
