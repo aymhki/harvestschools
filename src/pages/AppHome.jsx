@@ -153,7 +153,7 @@ const COPY = {
         actions: {
             calendars: 'التقويمات',
             booking: 'حجز الحفل',
-            admission: 'القبول',
+            admission: 'التسجيل',
             academics: 'الأقسام',
             studentsLife: 'حياة الطلاب',
             gallery: 'معرض الصور',
