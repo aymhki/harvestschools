@@ -21,7 +21,9 @@ if (typeof window !== 'undefined') {
                 return langParam;
             }
 
-            return localStorage.getItem('i18nextLng') || 'en';
+            const fallback = Capacitor.isNativePlatform() ? undefined : 'en';
+
+            return localStorage.getItem('i18nextLng') || fallback;
         },
         cacheUserLanguage(lng) {
             localStorage.setItem('i18nextLng', lng);

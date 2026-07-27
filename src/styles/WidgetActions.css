@@ -21,6 +21,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    box-sizing: border-box;
     max-width: var(--calendar-actions-modal-max-width);
     max-height: 85dvh;
     overflow: hidden;
@@ -31,7 +32,12 @@
 }
 
 .widget-actions-modal-header {
-    padding: var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding) 0 var(--calendar-actions-modal-padding);
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: var(--calendar-actions-modal-padding);
+    border-bottom: 0.05rem solid var(--read-only-field-grey-color);
 }
 
 .widget-actions-modal-header h3 {
@@ -42,19 +48,30 @@
 }
 
 .widget-actions-note {
-    margin: 0.5rem 0 0 0;
+    margin: 0;
     font-size: 0.9rem;
     line-height: 1.6;
     letter-spacing: 0;
     opacity: 0.75;
 }
 
+.widget-actions-counter {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 0.02rem;
+}
+
 .widget-actions-modal-content {
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
     padding: var(--calendar-actions-modal-padding);
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .widget-actions-choice {
@@ -79,10 +96,11 @@
     filter: drop-shadow(0 0 0.35rem var(--primary-color));
 }
 
-.widget-actions-choice-icon {
+.widget-actions-choice .widget-actions-choice-icon {
     flex: 0 0 auto;
-    font-size: 1.35rem;
-    line-height: 1;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.5rem;
 }
 
 .widget-actions-choice-label {
@@ -92,19 +110,26 @@
     letter-spacing: 0;
 }
 
-.widget-actions-choice-state {
+.widget-actions-choice .widget-actions-choice-state {
     flex: 0 0 auto;
-    font-size: 1rem;
-    font-weight: bold;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.25rem;
+}
+
+.widget-actions-choice:disabled {
+    cursor: not-allowed;
 }
 
 .widget-actions-modal-footer {
+    flex: 0 0 auto;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--calendar-actions-gap);
-    padding: 0 var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding) var(--calendar-actions-modal-padding);
+    padding: var(--calendar-actions-modal-padding);
+    border-top: 0.05rem solid var(--read-only-field-grey-color);
 }
 
 .widget-actions-modal-footer button {
@@ -122,6 +147,11 @@
 }
 
 @media (prefers-color-scheme: dark) {
+    .widget-actions-modal-header,
+    .widget-actions-modal-footer {
+        border-color: var(--dark-accent-color);
+    }
+
     .widget-actions-modal-container {
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);

@@ -8,31 +8,19 @@ const WEATHER_FRESH_FOR_MS = 15 * 60 * 1000
 const WEATHER_STALE_AFTER_MS = 6 * 60 * 60 * 1000
 const WEATHER_REQUEST_TIMEOUT_MS = 6000
 
-const WEATHER_CONDITIONS = [
-    { codes: [0], dayIcon: '☀️', nightIcon: '🌙', en: 'Clear sky', ar: 'صافية' },
-    { codes: [1, 2], dayIcon: '🌤️', nightIcon: '🌙', en: 'Partly cloudy', ar: 'غائمة جزئيًا' },
-    { codes: [3], dayIcon: '☁️', nightIcon: '☁️', en: 'Overcast', ar: 'غائمة' },
-    { codes: [45, 48], dayIcon: '🌫️', nightIcon: '🌫️', en: 'Fog', ar: 'ضباب' },
-    { codes: [51, 53, 55, 56, 57], dayIcon: '🌦️', nightIcon: '🌦️', en: 'Drizzle', ar: 'رشات خفيفة' },
-    { codes: [61, 63, 65, 66, 67], dayIcon: '🌧️', nightIcon: '🌧️', en: 'Rain', ar: 'أمطار' },
-    { codes: [71, 73, 75, 77], dayIcon: '🌨️', nightIcon: '🌨️', en: 'Snow', ar: 'ثلوج' },
-    { codes: [80, 81, 82], dayIcon: '🌦️', nightIcon: '🌦️', en: 'Rain showers', ar: 'زخات مطر' },
-    { codes: [85, 86], dayIcon: '🌨️', nightIcon: '🌨️', en: 'Snow showers', ar: 'زخات ثلج' },
-    { codes: [95, 96, 99], dayIcon: '⛈️', nightIcon: '⛈️', en: 'Thunderstorm', ar: 'عواصف رعدية' },
-]
-
-const FALLBACK_CONDITION = { dayIcon: '🌡️', nightIcon: '🌡️', en: 'Current weather', ar: 'حالة الطقس' }
 
 
-const describeWeatherCode = (weatherCode, isDay, language) => {
-    const condition = WEATHER_CONDITIONS.find((entry) => entry.codes.includes(weatherCode)) || FALLBACK_CONDITION
+const getDeviceTimeZone = () => {
+    let timeZone = ''
 
-    return {
-        icon: isDay ? condition.dayIcon : condition.nightIcon,
-        label: language === 'ar' ? condition.ar : condition.en,
+    try {
+        timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+    } catch (timeZoneError) {
+        console.warn('[weather] Could not read the device time zone', timeZoneError)
     }
-}
 
+    return timeZone
+}
 
 const readCachedWeather = async () => {
     let cached = null
@@ -70,7 +58,9 @@ const fetchWeatherReading = async () => {
     let reading = null
 
     try {
-        const response = await fetch(endpoints.getCurrentWeather, { signal: controller.signal })
+        const url = `${endpoints.getCurrentWeather}?timeZone=${encodeURIComponent(getDeviceTimeZone())}`
+
+        const response = await fetch(url, { signal: controller.signal })
 
         const result = response.ok ? await response.json() : null
 
@@ -81,6 +71,7 @@ const fetchWeatherReading = async () => {
                 isDay: Boolean(result.isDay),
                 isNearby: Boolean(result.isNearby),
                 city: result.city || '',
+                cityArabic: result.cityArabic || result.city || '',
                 readAt: Date.now(),
             }
 
@@ -96,7 +87,7 @@ const fetchWeatherReading = async () => {
 }
 
 
-const getCurrentWeather = async ({ language, allowNetwork = true } = {}) => {
+const getCurrentWeather = async ({ allowNetwork = true } = {}) => {
     const cached = await readCachedWeather()
 
     const cachedAge = cached ? Date.now() - cached.readAt : Number.MAX_SAFE_INTEGER
@@ -108,10 +99,7 @@ const getCurrentWeather = async ({ language, allowNetwork = true } = {}) => {
     let weather = null
 
     if (reading && (Date.now() - reading.readAt) < WEATHER_STALE_AFTER_MS) {
-        weather = {
-            ...reading,
-            ...describeWeatherCode(reading.weatherCode, reading.isDay, language),
-        }
+        weather = reading
     }
 
     return weather
@@ -120,5 +108,4 @@ const getCurrentWeather = async ({ language, allowNetwork = true } = {}) => {
 
 export {
     getCurrentWeather,
-    describeWeatherCode,
 }

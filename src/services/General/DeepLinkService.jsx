@@ -1,9 +1,12 @@
 import { Capacitor } from '@capacitor/core'
 import { App as CapacitorApp } from '@capacitor/app'
 
-const DEEP_LINK_SCHEME = 'harvestapp:'
-
-const DEEP_LINK_PATH_PARAMETER = 'path'
+const DEEP_LINK_HOSTS = [
+    'harvestschools.com',
+    'www.harvestschools.com',
+    'admin.harvestschools.com',
+    'www.admin.harvestschools.com',
+]
 
 
 const readPathFromDeepLink = (url) => {
@@ -12,10 +15,8 @@ const readPathFromDeepLink = (url) => {
     try {
         const parsed = new URL(url)
 
-        if (parsed.protocol === DEEP_LINK_SCHEME) {
-            const requestedPath = parsed.searchParams.get(DEEP_LINK_PATH_PARAMETER)
-
-            path = requestedPath && requestedPath.startsWith('/') ? requestedPath : '/'
+        if (DEEP_LINK_HOSTS.includes(parsed.hostname)) {
+            path = `${parsed.pathname}${parsed.search}${parsed.hash}`
         }
     } catch (parseError) {
         console.warn('[deep-link] Could not read the opened link', parseError)
@@ -31,7 +32,9 @@ const attachDeepLinkListener = (navigateTo) => {
     const openIfNeeded = (url) => {
         const path = url ? readPathFromDeepLink(url) : null
 
-        if (path) {
+        const here = window.location.pathname + window.location.search + window.location.hash
+
+        if (path && path !== here) {
             navigateTo(path)
         }
     }

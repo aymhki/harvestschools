@@ -28,6 +28,11 @@
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		00AC000000000000000000B1 /* HarvestIconPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A1 /* HarvestIconPath.swift */; };
+		00AC000000000000000000B2 /* FuturaLT-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A2 /* FuturaLT-Regular.ttf */; };
+		00AC000000000000000000B3 /* FuturaLT-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A3 /* FuturaLT-Bold.ttf */; };
+		00AC000000000000000000B4 /* ArianLT-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A4 /* ArianLT-Regular.ttf */; };
+		00AC000000000000000000B5 /* ArianLT-Demi.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00AC000000000000000000A5 /* ArianLT-Demi.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +85,11 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		00AC000000000000000000A1 /* HarvestIconPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestIconPath.swift; sourceTree = "<group>"; };
+		00AC000000000000000000A2 /* FuturaLT-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FuturaLT-Regular.ttf; path = Fonts/FuturaLT-Regular.ttf; sourceTree = "<group>"; };
+		00AC000000000000000000A3 /* FuturaLT-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FuturaLT-Bold.ttf; path = Fonts/FuturaLT-Bold.ttf; sourceTree = "<group>"; };
+		00AC000000000000000000A4 /* ArianLT-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ArianLT-Regular.ttf; path = Fonts/ArianLT-Regular.ttf; sourceTree = "<group>"; };
+		00AC000000000000000000A5 /* ArianLT-Demi.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ArianLT-Demi.ttf; path = Fonts/ArianLT-Demi.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +117,11 @@
 				00AB000000000000000000A1 /* HarvestWidgetsBundle.swift */,
 				00AB000000000000000000A2 /* QuickActionsWidget.swift */,
 				00AB000000000000000000A3 /* HarvestWidgetsShared.swift */,
+				00AC000000000000000000A1 /* HarvestIconPath.swift */,
+				00AC000000000000000000A2 /* FuturaLT-Regular.ttf */,
+				00AC000000000000000000A3 /* FuturaLT-Bold.ttf */,
+				00AC000000000000000000A4 /* ArianLT-Regular.ttf */,
+				00AC000000000000000000A5 /* ArianLT-Demi.ttf */,
 				00AB000000000000000000A4 /* Info.plist */,
 				00AB000000000000000000A5 /* HarvestWidgets.entitlements */,
 			);
@@ -245,6 +260,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00AC000000000000000000B2 /* FuturaLT-Regular.ttf in Resources */,
+				00AC000000000000000000B3 /* FuturaLT-Bold.ttf in Resources */,
+				00AC000000000000000000B4 /* ArianLT-Regular.ttf in Resources */,
+				00AC000000000000000000B5 /* ArianLT-Demi.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,6 +291,7 @@
 				00AB000000000000000000B2 /* QuickActionsWidget.swift in Sources */,
 				00AB000000000000000000B1 /* HarvestWidgetsBundle.swift in Sources */,
 				00AB000000000000000000B3 /* HarvestWidgetsShared.swift in Sources */,
+				00AC000000000000000000B1 /* HarvestIconPath.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
