@@ -38,6 +38,7 @@ public class MainActivity extends BridgeActivity {
     private final android.os.Handler revealHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable revealRunnable;
     private boolean isNavBarHidden = false;
+    private boolean isNavBarSuppressed = false;
     private static final long NAV_BAR_REVEAL_DELAY_MS = 1200L;
     private static final int NAV_BAR_SCROLL_TOLERANCE_PX = 12;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -198,6 +199,20 @@ public class MainActivity extends BridgeActivity {
         });
     }
 
+    void setNavigationBarSuppressed(boolean suppressed) {
+        isNavBarSuppressed = suppressed;
+
+        if (revealRunnable != null) {
+            revealHandler.removeCallbacks(revealRunnable);
+        }
+
+        if (floatingNavBarCard != null) {
+            floatingNavBarCard.setClickable(!suppressed);
+        }
+
+        setNavBarHidden(suppressed);
+    }
+
     private void scheduleNavBarReveal() {
         if (revealRunnable != null) {
             revealHandler.removeCallbacks(revealRunnable);
@@ -209,7 +224,7 @@ public class MainActivity extends BridgeActivity {
     }
 
     private void setNavBarHidden(boolean hidden) {
-        if (floatingNavBarCard == null || hidden == isNavBarHidden) {
+        if (floatingNavBarCard == null || (isNavBarSuppressed && !hidden) || hidden == isNavBarHidden) {
             return;
         }
 

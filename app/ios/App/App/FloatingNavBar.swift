@@ -12,6 +12,7 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
 
     private var revealWorkItem: DispatchWorkItem?
     private var isBarHidden = false
+    private var isSuppressed = false
     private let revealDelay: TimeInterval = 1.2
     private let scrollTolerance: CGFloat = 6
 
@@ -44,9 +45,6 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
     }
 
 
-    /* The bar gets out of the way while the page is being scrolled and comes
-     * back a moment after the scrolling settles, so it never sits on top of
-     * something the reader is looking at. */
     private func observeScrolling(on webView: WKWebView) {
         var lastOffset = webView.scrollView.contentOffset.y
 
@@ -64,6 +62,16 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
         }
     }
 
+    func setSuppressed(_ suppressed: Bool) {
+        isSuppressed = suppressed
+
+        revealWorkItem?.cancel()
+
+        isUserInteractionEnabled = !suppressed
+
+        setBarHidden(suppressed)
+    }
+
     private func scheduleReveal() {
         revealWorkItem?.cancel()
 
@@ -77,6 +85,8 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
     }
 
     private func setBarHidden(_ hidden: Bool) {
+        guard !isSuppressed || hidden else { return }
+
         guard hidden != isBarHidden else { return }
 
         isBarHidden = hidden
