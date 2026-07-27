@@ -227,8 +227,6 @@ function wallet_booking_summary(mysqli $conn, $bookingId) {
                 'auth_id'      => (string)$bookingRow['password_hash'],
                 'students'     => $students,
                 'extras'       => $extras,
-                /* One seat per parent on the booking plus any extra attendees they
-                 * paid for: the students are on stage, not in the audience. */
                 'seat_count'   => max($parentCount, 1) + ($extras ? (int)$extras['additional_attendees'] : 0),
             ];
         }
