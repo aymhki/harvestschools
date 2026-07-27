@@ -25,6 +25,7 @@ import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined'
 import AlumniPostCard from '../modules/AlumniPostCard.jsx'
 import WidgetActionsControls from '../modules/WidgetActionsControls.jsx'
+import WeatherIcon, { describeWeatherCode } from '../modules/WeatherIcon.jsx'
 import CachedImage from '../modules/CachedImage.jsx'
 import { useOffline } from '../services/General/OfflineContext.jsx'
 import { cachedRequest } from '../services/General/OfflineApiCacheService.jsx'
@@ -45,6 +46,10 @@ const MAX_ALUMNI_HIGHLIGHTS = 3
 const MORNING_ENDS_AT_HOUR = 12
 const AFTERNOON_ENDS_AT_HOUR = 17
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
+
+/* Place names that have no Arabic translation keep their Latin spelling and are
+ * isolated so they read correctly inside a right to left line. */
+const isLatinText = (text) => /[A-Za-z]/.test(text)
 
 const COPY = {
     en: {
@@ -77,6 +82,8 @@ const COPY = {
         appVersionLabel: 'App version',
         widgetTitle: 'Quick actions widget',
         widgetHint: 'Pick the actions to show on the home screen and lock screen widgets.',
+        widgetSizes: (small, medium, large) => `A small widget shows the first ${small}, a medium one ${medium} and a large one up to ${large}.`,
+        widgetCounter: (chosen, total) => `${chosen} of ${total} chosen`,
         widgetAction: 'Choose',
         widgetChosen: (count) => `${count} actions shown`,
         widgetOne: '1 action shown',
@@ -101,7 +108,6 @@ const COPY = {
             call: 'Call us',
         },
         switchLanguage: 'العربية',
-        weatherAtSchool: 'Temperature at Harvest International School',
         today: 'Today',
         tomorrow: 'Tomorrow',
         inDays: (days) => `In ${days} days`,
@@ -136,6 +142,8 @@ const COPY = {
         appVersionLabel: 'إصدار التطبيق',
         widgetTitle: 'أداة الإجراءات السريعة',
         widgetHint: 'اختر الإجراءات التي تظهر في أدوات الشاشة الرئيسية وشاشة القفل.',
+        widgetSizes: (small, medium, large) => `الأداة الصغيرة تعرض أول ${small} إجراءات، والمتوسطة ${medium}، والكبيرة حتى ${large}.`,
+        widgetCounter: (chosen, total) => `تم اختيار ${chosen} من ${total}`,
         widgetAction: 'اختيار',
         widgetChosen: (count) => `يتم عرض ${count} إجراءات`,
         widgetOne: 'يتم عرض إجراء واحد',
@@ -160,7 +168,6 @@ const COPY = {
             call: 'اتصل بنا',
         },
         switchLanguage: 'English',
-        weatherAtSchool: 'درجة الحرارة في مدارس هارڤست الدولية',
         today: 'اليوم',
         tomorrow: 'غدًا',
         inDays: (days) => `بعد ${days} يومًا`,
@@ -216,6 +223,7 @@ function AppHome() {
 
     const [weather, setWeather] = useState(null)
     const [widgetActionCount, setWidgetActionCount] = useState(0)
+    const [isWidgetModalOpen, setIsWidgetModalOpen] = useState(false)
     const [appVersion, setAppVersion] = useState(null)
     const [isSavingOfflineContent, setIsSavingOfflineContent] = useState(false)
 
@@ -232,6 +240,8 @@ function AppHome() {
 
         return label
     }, [copy])
+
+    const weatherCity = weather ? (language === 'ar' ? weather.cityArabic || weather.city : weather.city) : ''
 
     const locale = language === 'ar' ? 'ar-EG' : 'en-US'
 
@@ -255,6 +265,7 @@ function AppHome() {
             id: action.id,
             path: action.path,
             label: copy.actions[action.id],
+            Icon: action.Icon,
         })),
         [copy]
     )
@@ -352,7 +363,7 @@ function AppHome() {
         }
 
         const loadWeather = async () => {
-            const reading = await getCurrentWeather({ language, allowNetwork: !isOffline })
+            const reading = await getCurrentWeather({ allowNetwork: !isOffline })
 
             if (isActive) {
                 setWeather(reading)
@@ -384,21 +395,36 @@ function AppHome() {
                 />
 
                 <div className="app-home-header-text">
+                    <h2 className="app-home-school">{copy.school}</h2>
+
                     <p className="app-home-greeting">
                         {greeting}
 
                         {weather && (
-                            <span className="app-home-weather" title={weather.label}>
-                                <span className="app-home-weather-icon" aria-hidden="true">{weather.icon}</span>
+                            <span
+                                className="app-home-weather"
+                                title={describeWeatherCode(weather.weatherCode, language)}
+                            >
+                                <span className="app-home-greeting-separator" aria-hidden="true">·</span>
+
+                                <WeatherIcon
+                                    weatherCode={weather.weatherCode}
+                                    isDay={weather.isDay}
+                                    className="app-home-weather-icon"
+                                />
 
                                 <span className="app-home-weather-value">
                                     {`${temperatureFormatter.format(weather.temperature)}°`}
                                 </span>
+
+                                {weatherCity && (
+                                    <span className={`app-home-weather-city ${isLatinText(weatherCity) ? 'in-latin' : ''}`}>
+                                        {weatherCity}
+                                    </span>
+                                )}
                             </span>
                         )}
                     </p>
-
-                    <h2 className="app-home-school">{copy.school}</h2>
 
                     <p className="app-home-today">
                         {longDateFormatter.format(new Date())}
@@ -406,9 +432,6 @@ function AppHome() {
                         {isOffline && <span className="app-home-chip">{copy.offlineHint}</span>}
                     </p>
 
-                    {weather && !weather.isNearby && (
-                        <p className="app-home-weather-note">{copy.weatherAtSchool}</p>
-                    )}
                 </div>
 
             </header>
@@ -536,12 +559,13 @@ function AppHome() {
                                 </span>
                             </span>
 
-                            <WidgetActionsControls
-                                catalogue={widgetCatalogue}
-                                copy={copy}
-                                isRightToLeft={language === 'ar'}
-                                onChosenCountChange={setWidgetActionCount}
-                            />
+                            <button
+                                type="button"
+                                className="app-home-device-action"
+                                onClick={() => setIsWidgetModalOpen(true)}
+                            >
+                                {copy.widgetAction}
+                            </button>
                         </div>
                     )}
 
@@ -625,6 +649,17 @@ function AppHome() {
                     {copy.switchLanguage}
                 </span>
             </button>
+
+            {isWidgetSupported() && (
+                <WidgetActionsControls
+                    isOpen={isWidgetModalOpen}
+                    catalogue={widgetCatalogue}
+                    copy={copy}
+                    language={language}
+                    onClose={() => setIsWidgetModalOpen(false)}
+                    onChosenCountChange={setWidgetActionCount}
+                />
+            )}
         </div>
     )
 }

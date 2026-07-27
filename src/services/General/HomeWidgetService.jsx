@@ -1,30 +1,23 @@
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
+import { getQuickActionIconPath, QUICK_ACTION_ICON_VIEWPORT } from './QuickActionIconPaths.jsx'
 
 const HomeWidget = registerPlugin('HomeWidget')
-const WIDGET_ACTION_IDS_KEY = 'harvest_schools_widget_actions'
-const MAXIMUM_WIDGET_ACTIONS = 12
 
-const WIDGET_ACTION_ICONS = {
-    calendars: '🗓️',
-    booking: '🎓',
-    admission: '📝',
-    academics: '📚',
-    studentsLife: '🧑‍🎓',
-    gallery: '🖼️',
-    moreInfo: 'ℹ️',
-    vacancies: '💼',
-    admin: '🔐',
-    website: '🌐',
+const WIDGET_ACTION_IDS_KEY = 'harvest_schools_widget_actions'
+
+const MINIMUM_WIDGET_ACTIONS = 1
+
+const WIDGET_SIZE_CAPACITIES = {
+    small: 4,
+    medium: 8,
+    large: 16,
 }
 
 const DEFAULT_WIDGET_ACTION_IDS = ['calendars', 'booking', 'admission', 'gallery']
 
 
 const isWidgetSupported = () => Capacitor.isNativePlatform()
-
-
-const getWidgetActionIcon = (actionId) => WIDGET_ACTION_ICONS[actionId] || '🏫'
 
 
 const getWidgetActionIds = async () => {
@@ -36,7 +29,7 @@ const getWidgetActionIds = async () => {
         const parsed = value ? JSON.parse(value) : null
 
         if (Array.isArray(parsed) && parsed.length > 0) {
-            actionIds = parsed.slice(0, MAXIMUM_WIDGET_ACTIONS)
+            actionIds = parsed
         }
     } catch (readError) {
         console.warn('[widget] Could not read the chosen actions', readError)
@@ -47,19 +40,17 @@ const getWidgetActionIds = async () => {
 
 
 const setWidgetActionIds = async (actionIds) => {
-    const chosen = actionIds.slice(0, MAXIMUM_WIDGET_ACTIONS)
-
     try {
-        await Preferences.set({ key: WIDGET_ACTION_IDS_KEY, value: JSON.stringify(chosen) })
+        await Preferences.set({ key: WIDGET_ACTION_IDS_KEY, value: JSON.stringify(actionIds) })
     } catch (writeError) {
         console.warn('[widget] Could not save the chosen actions', writeError)
     }
 
-    return chosen
+    return actionIds
 }
 
 
-const buildWidgetPayload = ({ actionIds, catalogue, title, isRightToLeft }) => {
+const buildWidgetPayload = ({ actionIds, catalogue, title, language }) => {
     const actionsById = new Map(catalogue.map((action) => [action.id, action]))
 
     const actions = actionIds
@@ -68,19 +59,26 @@ const buildWidgetPayload = ({ actionIds, catalogue, title, isRightToLeft }) => {
         .map((action) => ({
             id: action.id,
             label: action.label,
-            icon: getWidgetActionIcon(action.id),
             path: action.path,
+            iconPath: getQuickActionIconPath(action.id),
         }))
 
-    return { title, isRightToLeft, actions, updatedAt: Date.now() }
+    return {
+        title,
+        language,
+        isRightToLeft: language === 'ar',
+        iconViewport: QUICK_ACTION_ICON_VIEWPORT,
+        actions,
+        updatedAt: Date.now(),
+    }
 }
 
 
-const syncWidgetQuickActions = async ({ actionIds, catalogue, title, isRightToLeft }) => {
+const syncWidgetQuickActions = async ({ actionIds, catalogue, title, language }) => {
     let isSynced = false
 
     if (isWidgetSupported()) {
-        const payload = buildWidgetPayload({ actionIds, catalogue, title, isRightToLeft })
+        const payload = buildWidgetPayload({ actionIds, catalogue, title, language })
 
         try {
             await HomeWidget.setQuickActions({ payload: JSON.stringify(payload) })
@@ -97,8 +95,8 @@ const syncWidgetQuickActions = async ({ actionIds, catalogue, title, isRightToLe
 
 export {
     DEFAULT_WIDGET_ACTION_IDS,
-    MAXIMUM_WIDGET_ACTIONS,
-    getWidgetActionIcon,
+    MINIMUM_WIDGET_ACTIONS,
+    WIDGET_SIZE_CAPACITIES,
     getWidgetActionIds,
     isWidgetSupported,
     setWidgetActionIds,
