@@ -42,8 +42,7 @@ function gb_config($key = null) {
     return $config[$key] ?? null;
 }
 
-/** Localized email copy for the reset-code message, folded into a $ctx for
- *  the shared password-reset core. $lang is 'ar' or 'en'. */
+
 function gb_reset_context($lang = 'en') {
     $ar = ($lang === 'ar');
 
@@ -69,7 +68,6 @@ function gb_reset_context($lang = 'en') {
     ];
 }
 
-/** All non-empty parent emails linked to a booking auth_id. */
 function gb_parent_emails_for_auth($conn, $authId) {
     $sql = "SELECT DISTINCT p.email
             FROM graduation_booking_parents p
@@ -90,7 +88,6 @@ function gb_parent_emails_for_auth($conn, $authId) {
     return array_values(array_unique($emails));
 }
 
-/** All parent emails linked to a booking_id (used by username recovery). */
 function gb_parent_emails_for_booking($conn, $bookingId) {
     $sql = "SELECT DISTINCT p.email
             FROM graduation_booking_parents p
@@ -126,7 +123,6 @@ function gb_send_plain_email($to, $subject, $bodyText) {
     return @mail($to, $subject, $bodyText . "\r\n", $headers, "-f {$from}");
 }
 
-/** Email the username to a parent mailbox during username recovery. */
 function gb_send_username_email($to, $username, $lang = 'en') {
     $ar = ($lang === 'ar');
     $subject = $ar ? 'اسم المستخدم الخاص بحجز التخرج' : 'Your graduation booking username';
@@ -137,15 +133,13 @@ function gb_send_username_email($to, $username, $lang = 'en') {
     return gb_send_plain_email($to, $subject, $body);
 }
 
-/** Fallback: notify a site admin that a parent needs manual help (no email
- *  on file to deliver a code/username to). $reason is a short machine tag. */
+
 function gb_send_admin_notice($conn, $authId, $username, $reason) {
     $adminEmail = (string)gb_config('admin_notification_email');
     if ($adminEmail === '' || !filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) { return false; }
 
     $safeUsername = preg_replace('/[\r\n]+/', ' ', (string)$username);
 
-    // Gather booking context for the admin.
     $bookingLines = '(none)';
     if ($authId !== null) {
         $stmt = $conn->prepare(
@@ -175,7 +169,6 @@ function gb_send_admin_notice($conn, $authId, $username, $reason) {
     return gb_send_plain_email($adminEmail, $subject, $body);
 }
 
-/** Per-username throttle for starting a reset (mirrors admin reset_request). */
 function gb_request_throttle($conn, $ownerKey) {
     $window = (int)gb_config('request_window_seconds');
     $max    = (int)gb_config('request_max_per_window');
@@ -192,7 +185,6 @@ function gb_request_throttle($conn, $ownerKey) {
     return $count < $max;
 }
 
-/** Abuse throttle for unauthenticated recovery/search, keyed by client. */
 function gb_client_key() {
     $fp = isset($_SERVER['HTTP_X_CLIENT_FINGERPRINT']) ? substr((string)$_SERVER['HTTP_X_CLIENT_FINGERPRINT'], 0, 128) : '';
     $ip = (string)($_SERVER['REMOTE_ADDR'] ?? '');
@@ -222,13 +214,11 @@ function gb_recovery_throttle($conn, $action) {
     $stmt->execute();
     $stmt->close();
 
-    // opportunistic cleanup
     $conn->query("DELETE FROM graduation_booking_recovery_throttle WHERE created_at < (NOW() - INTERVAL 1 DAY)");
 
     return true;
 }
 
-/** Ensure the search index row for a student is fresh; returns the index row. */
 function gb_upsert_student_search_index($conn, $studentId, $name, $grade, $division) {
     $nameNorm = tm_normalize($name);
     $nameLatin = tm_latin_key($name);

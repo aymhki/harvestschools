@@ -88,7 +88,6 @@ try {
         }
         $target = tm_normalize($value); // lowercased/trimmed, arabic-digit folded
 
-        // Prefilter by local part, then confirm with normalized equality.
         $localLike = '%' . tm_normalize(explode('@', $value)[0]) . '%';
         $stmt = $conn->prepare(
             "SELECT pl.booking_id, p.email
@@ -112,7 +111,6 @@ try {
             exit;
         }
 
-        // Phone formats vary wildly; scan candidates and match on NSN/tail.
         $stmt = $conn->prepare(
             "SELECT pl.booking_id, p.phone_number
              FROM graduation_booking_parents p
