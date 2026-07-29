@@ -2718,6 +2718,7 @@ const fieldShape = {
     id: PropTypes.number.isRequired,
     httpName: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
     displayLabel: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     required: PropTypes.bool.isRequired,
