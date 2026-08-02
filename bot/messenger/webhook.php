@@ -7,7 +7,7 @@ try {
     require_once __DIR__ . '/../shared/db.php';
     require_once __DIR__ . '/messenger_api.php';
 
-    file_put_contents(__DIR__ . '/webhook.log', date('Y-m-d H:i:s') . ' ' . file_get_contents('php://input') . PHP_EOL, FILE_APPEND);
+    file_put_contents(__DIR__ . '/webhook.log', 'Received: ' . date('Y-m-d H:i:s') . ' ' . file_get_contents('php://input') . PHP_EOL, FILE_APPEND);
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $mode      = $_GET['hub_mode']         ?? '';
