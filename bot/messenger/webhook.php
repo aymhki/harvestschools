@@ -7,20 +7,31 @@ try {
     require_once __DIR__ . '/../shared/db.php';
     require_once __DIR__ . '/messenger_api.php';
 
-    file_put_contents(__DIR__ . '/webhook.log', 'Received: ' . date('Y-m-d H:i:s') . ' ' . file_get_contents('php://input') . PHP_EOL, FILE_APPEND);
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $mode      = $_GET['hub_mode']         ?? '';
         $token     = $_GET['hub_verify_token'] ?? '';
         $challenge = $_GET['hub_challenge']    ?? '';
 
-        if ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN) {
+        $ok = ($mode === 'subscribe' && $token === MESSENGER_VERIFY_TOKEN);
+
+        file_put_contents(__DIR__ . '/webhook.log', 'Webhook verification: ' . date('Y-m-d H:i:s') . ' ' . json_encode([
+                'hub_mode'   => $mode,
+                'token_match' => $ok,
+                'challenge'  => $challenge,
+                'result'     => $ok ? 'SUCCESS 200' : 'FAILED 403'
+        ]) . PHP_EOL, FILE_APPEND);
+
+        if ($ok) {
             echo $challenge;
             exit;
         }
 
         http_response_code(403);
         exit;
+
+    } else {
+        file_put_contents(__DIR__ . '/webhook.log', 'Received: ' . date('Y-m-d H:i:s') . ' ' . file_get_contents('php://input') . PHP_EOL, FILE_APPEND);
     }
 
     $rawBody = file_get_contents('php://input');
