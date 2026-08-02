@@ -4,7 +4,7 @@ require_once dirname($doc_root) . '/configs/botConfig.php';
 require_once __DIR__ . '/../shared/text_utils.php';
 
 function msgr_request($payload) {
-    $url = "https://graph.facebook.com/v25.0/me/messages?access_token=" . urlencode(MESSENGER_PAGE_ACCESS_TOKEN);
+    $url = "https://graph.facebook.com/v26.0/me/messages?access_token=" . urlencode(MESSENGER_PAGE_ACCESS_TOKEN);
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
