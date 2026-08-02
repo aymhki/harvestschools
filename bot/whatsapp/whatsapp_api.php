@@ -8,7 +8,7 @@ const WA_LIST_TITLE_LIMIT = 24;
 const WA_LIST_DESC_LIMIT  = 72;
 
 function wa_request($payload) {
-    $url = "https://graph.facebook.com/v25.0/" . WHATSAPP_PHONE_ID . "/messages";
+    $url = "https://graph.facebook.com/v26.0/" . WHATSAPP_PHONE_ID . "/messages";
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
