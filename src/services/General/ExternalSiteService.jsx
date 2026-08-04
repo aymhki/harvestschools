@@ -31,10 +31,11 @@ const getSchoolEverywhereUrl = (target) => SCHOOL_EVERYWHERE_TARGETS[readTarget(
 const buildWebViewOptions = ({ url, title }) => ({
     url,
     title,
-    toolbarType: ToolBarType.COMPACT,
+    toolbarType: ToolBarType.NAVIGATION,
     showURL: true,
     visibleTitle: false,
-    showReloadButton: false,
+    showReloadButton: true,
+    urlBarHidingEnabled: true,
     preventDeeplink: true,
     activeNativeNavigationForWebview: true,
     backgroundColor: BackgroundColor.WHITE,

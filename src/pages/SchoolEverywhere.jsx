@@ -184,7 +184,7 @@ function SchoolEverywhere() {
             password,
             onStage: (stage) => {
                 if (isMountedRef.current) {
-                    setStageLabel(stage === 'signing-in' ? t('schooleverywhere.signing-in') : t('schooleverywhere.opening'))
+                    setStageLabel(stage === 'checking' ? t('schooleverywhere.signing-in') : t('schooleverywhere.opening'))
                 }
             },
         })
