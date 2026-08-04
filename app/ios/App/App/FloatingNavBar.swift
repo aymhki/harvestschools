@@ -23,6 +23,7 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
     private let backButton = UIButton(type: .system)
     private let forwardButton = UIButton(type: .system)
     private let shareButton = UIButton(type: .system)
+    private let homeButton = UIButton(type: .system)
 
 
     private var currentShareURL = URL(string: "https://harvestschools.com")!
@@ -128,13 +129,15 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
         backButton.setImage(UIImage(systemName: "chevron.left", withConfiguration: config), for: .normal)
         forwardButton.setImage(UIImage(systemName: "chevron.right", withConfiguration: config), for: .normal)
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: config), for: .normal)
-        [backButton, forwardButton, shareButton].forEach { $0.tintColor = .label }
+        homeButton.setImage(UIImage(systemName: "house", withConfiguration: config), for: .normal)
+        [backButton, forwardButton, shareButton, homeButton].forEach { $0.tintColor = .label }
 
         backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
         forwardButton.addTarget(self, action: #selector(handleForward), for: .touchUpInside)
         shareButton.addTarget(self, action: #selector(handleShare), for: .touchUpInside)
+        homeButton.addTarget(self, action: #selector(handleHome), for: .touchUpInside)
 
-        let stack = UIStackView(arrangedSubviews: [backButton, forwardButton, shareButton])
+        let stack = UIStackView(arrangedSubviews: [backButton, forwardButton, shareButton, homeButton])
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -145,7 +148,7 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
             stack.bottomAnchor.constraint(equalTo: effectView.contentView.bottomAnchor),
             stack.leadingAnchor.constraint(equalTo: effectView.contentView.leadingAnchor, constant: 6),
             stack.trailingAnchor.constraint(equalTo: effectView.contentView.trailingAnchor, constant: -6),
-            widthAnchor.constraint(equalToConstant: 156),
+            widthAnchor.constraint(equalToConstant: 204),
             heightAnchor.constraint(equalToConstant: 52)
         ])
 
@@ -182,6 +185,10 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
 
     @objc private func handleBack() { webView?.goBack() }
     @objc private func handleForward() { webView?.goForward() }
+
+    @objc private func handleHome() {
+        webView?.evaluateJavaScript("window.dispatchEvent(new Event('harvestNavigateHome'))")
+    }
 
     @objc private func handleShare() {
         let activityVC = UIActivityViewController(activityItems: [currentShareURL], applicationActivities: nil)

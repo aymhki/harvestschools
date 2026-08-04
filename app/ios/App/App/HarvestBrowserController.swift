@@ -29,6 +29,7 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
 
     private(set) var webView: WKWebView!
 
+    private let navBar = UIVisualEffectView(effect: nil)
     private let actionBar = UIVisualEffectView(effect: nil)
     private let urlChip = UIVisualEffectView(effect: nil)
     private let urlLabel = UILabel()
@@ -45,8 +46,6 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
     private var scrollObservation: NSKeyValueObservation?
     private var webViewConstraints: [NSLayoutConstraint] = []
 
-    private var urlChipTopConstraint: NSLayoutConstraint?
-    private var isUrlChipCollapsed = false
     private var isShowingFullUrl = false
     private var lastScrollOffset: CGFloat = 0
     private let scrollTolerance: CGFloat = 12
@@ -81,9 +80,50 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         buildUrlChip()
         observeWebViewState()
 
+        installSessionCookiesThenLoad()
+    }
+
+    private func installSessionCookiesThenLoad() {
         var request = URLRequest(url: startUrl)
-        startHeaders.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        webView.load(request)
+
+        startHeaders.forEach { key, value in
+            if key.lowercased() != "cookie" { request.setValue(value, forHTTPHeaderField: key) }
+        }
+
+        let cookieHeader = startHeaders.first { $0.key.lowercased() == "cookie" }?.value
+
+        guard let cookieHeader = cookieHeader, let host = startUrl.host else {
+            webView.load(request)
+
+            return
+        }
+
+        let store = webView.configuration.websiteDataStore.httpCookieStore
+        let group = DispatchGroup()
+
+        cookieHeader.split(separator: ";").forEach { pair in
+            let parts = pair.split(separator: "=", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
+
+            guard parts.count == 2, !parts[0].isEmpty else { return }
+
+            let properties: [HTTPCookiePropertyKey: Any] = [
+                .name: parts[0],
+                .value: parts[1],
+                .domain: host,
+                .path: "/",
+                .secure: startUrl.scheme == "https"
+            ]
+
+            guard let cookie = HTTPCookie(properties: properties) else { return }
+
+            group.enter()
+
+            store.setCookie(cookie) { group.leave() }
+        }
+
+        group.notify(queue: .main) { [weak self] in
+            self?.webView.load(request)
+        }
     }
 
     private func buildWebView() {
@@ -113,7 +153,7 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
 
             self.lastScrollOffset = offset
 
-            self.setUrlChipCollapsed(isScrollingDown && offset > 0)
+            self.collapseUrlToHost()
         }
     }
 
@@ -189,23 +229,13 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         return button
     }
 
-    private func buildActionBar() {
-        var buttons: [UIButton] = []
+    private func makePill(_ effectView: UIVisualEffectView, buttons: [UIButton]) -> UIVisualEffectView? {
+        guard !buttons.isEmpty else { return nil }
 
-        if chrome.showBack { buttons.append(styledButton(backButton, systemName: "chevron.left", action: #selector(handleBack))) }
-        if chrome.showForward { buttons.append(styledButton(forwardButton, systemName: "chevron.right", action: #selector(handleForward))) }
-        if chrome.showReload { buttons.append(styledButton(reloadButton, systemName: "arrow.clockwise", action: #selector(handleReload))) }
-        if chrome.showShare { buttons.append(styledButton(shareButton, systemName: "square.and.arrow.up", action: #selector(handleShare))) }
-        if chrome.showClose { buttons.append(styledButton(closeButton, systemName: "xmark", action: #selector(handleClose))) }
-
-        guard !buttons.isEmpty else { return }
-
-        actionBar.effect = Self.makeGlass(interactive: true)
-        actionBar.translatesAutoresizingMaskIntoConstraints = false
-        actionBar.layer.cornerRadius = 26
-        actionBar.clipsToBounds = true
-
-        view.addSubview(actionBar)
+        effectView.effect = Self.makeGlass(interactive: true)
+        effectView.translatesAutoresizingMaskIntoConstraints = false
+        effectView.layer.cornerRadius = 26
+        effectView.clipsToBounds = true
 
         let stack = UIStackView(arrangedSubviews: buttons)
         stack.axis = .horizontal
@@ -213,23 +243,55 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         stack.spacing = 2
         stack.translatesAutoresizingMaskIntoConstraints = false
 
-        actionBar.contentView.addSubview(stack)
+        effectView.contentView.addSubview(stack)
 
         NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: actionBar.contentView.topAnchor),
-            stack.bottomAnchor.constraint(equalTo: actionBar.contentView.bottomAnchor),
-            stack.leadingAnchor.constraint(equalTo: actionBar.contentView.leadingAnchor, constant: 6),
-            stack.trailingAnchor.constraint(equalTo: actionBar.contentView.trailingAnchor, constant: -6),
-            actionBar.heightAnchor.constraint(equalToConstant: 52),
-            actionBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
-            actionBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -4)
+            stack.topAnchor.constraint(equalTo: effectView.contentView.topAnchor),
+            stack.bottomAnchor.constraint(equalTo: effectView.contentView.bottomAnchor),
+            stack.leadingAnchor.constraint(equalTo: effectView.contentView.leadingAnchor, constant: 6),
+            stack.trailingAnchor.constraint(equalTo: effectView.contentView.trailingAnchor, constant: -6),
+            effectView.heightAnchor.constraint(equalToConstant: 52)
         ])
+
+        return effectView
+    }
+
+    private func buildActionBar() {
+        var navButtons: [UIButton] = []
+        var actionButtons: [UIButton] = []
+
+        if chrome.showBack { navButtons.append(styledButton(backButton, systemName: "chevron.left", action: #selector(handleBack))) }
+        if chrome.showForward { navButtons.append(styledButton(forwardButton, systemName: "chevron.right", action: #selector(handleForward))) }
+
+        if chrome.showReload { actionButtons.append(styledButton(reloadButton, systemName: "arrow.clockwise", action: #selector(handleReload))) }
+        if chrome.showShare { actionButtons.append(styledButton(shareButton, systemName: "square.and.arrow.up", action: #selector(handleShare))) }
+        if chrome.showClose { actionButtons.append(styledButton(closeButton, systemName: "xmark", action: #selector(handleClose))) }
+
+        let bottom = view.safeAreaLayoutGuide.bottomAnchor
+
+        if let pill = makePill(navBar, buttons: navButtons) {
+            view.addSubview(pill)
+
+            NSLayoutConstraint.activate([
+                pill.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
+                pill.bottomAnchor.constraint(equalTo: bottom, constant: -4)
+            ])
+        }
+
+        if let pill = makePill(actionBar, buttons: actionButtons) {
+            view.addSubview(pill)
+
+            NSLayoutConstraint.activate([
+                pill.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -12),
+                pill.bottomAnchor.constraint(equalTo: bottom, constant: -4)
+            ])
+        }
     }
 
     private func buildUrlChip() {
         guard chrome.showUrlBar else { return }
 
-        urlChip.effect = Self.makeGlass(interactive: false)
+        urlChip.effect = Self.makeGlass(interactive: true)
         urlChip.translatesAutoresizingMaskIntoConstraints = false
         urlChip.layer.cornerRadius = 18
         urlChip.clipsToBounds = true
@@ -243,14 +305,19 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         urlChip.contentView.addSubview(urlLabel)
         view.addSubview(urlChip)
 
-        let topConstraint = urlChip.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8)
-        urlChipTopConstraint = topConstraint
+        let leadingLimit = urlChip.leadingAnchor.constraint(greaterThanOrEqualTo: navBar.trailingAnchor, constant: 8)
+        let trailingLimit = urlChip.trailingAnchor.constraint(lessThanOrEqualTo: actionBar.leadingAnchor, constant: -8)
+
+        leadingLimit.priority = .defaultHigh
+        trailingLimit.priority = .defaultHigh
 
         NSLayoutConstraint.activate([
-            topConstraint,
             urlChip.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            urlChip.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -17),
             urlChip.heightAnchor.constraint(equalToConstant: 36),
             urlChip.widthAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
+            leadingLimit,
+            trailingLimit,
             urlLabel.topAnchor.constraint(equalTo: urlChip.contentView.topAnchor),
             urlLabel.bottomAnchor.constraint(equalTo: urlChip.contentView.bottomAnchor),
             urlLabel.leadingAnchor.constraint(equalTo: urlChip.contentView.leadingAnchor, constant: 14),
@@ -269,18 +336,13 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         urlLabel.text = isShowingFullUrl ? current.absoluteString : (current.host ?? current.absoluteString)
     }
 
-    private func setUrlChipCollapsed(_ collapsed: Bool) {
-        guard chrome.showUrlBar, collapsed != isUrlChipCollapsed else { return }
+    private func collapseUrlToHost() {
+        guard chrome.showUrlBar, isShowingFullUrl else { return }
 
-        isUrlChipCollapsed = collapsed
+        isShowingFullUrl = false
 
-        if collapsed { isShowingFullUrl = false; renderUrl() }
-
-        urlChipTopConstraint?.constant = collapsed ? -48 : 8
-
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.beginFromCurrentState, .curveEaseOut]) {
-            self.urlChip.alpha = collapsed ? 0 : 1
-            self.view.layoutIfNeeded()
+        UIView.transition(with: urlLabel, duration: 0.2, options: [.transitionCrossDissolve]) {
+            self.renderUrl()
         }
     }
 
@@ -342,9 +404,9 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
     @objc private func handleUrlChipTap() {
         isShowingFullUrl.toggle()
 
-        renderUrl()
-
-        if isUrlChipCollapsed { setUrlChipCollapsed(false) }
+        UIView.transition(with: urlLabel, duration: 0.2, options: [.transitionCrossDissolve]) {
+            self.renderUrl()
+        }
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {

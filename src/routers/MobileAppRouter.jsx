@@ -144,6 +144,14 @@ function MobileAppRouter() {
     }, [location]);
 
     useEffect(() => {
+        const goToAppHome = () => navigate('/app-home');
+
+        window.addEventListener('harvestNavigateHome', goToAppHome);
+
+        return () => window.removeEventListener('harvestNavigateHome', goToAppHome);
+    }, [navigate]);
+
+    useEffect(() => {
         const host = isAdminSection ? SHARE_HOSTS.admin : SHARE_HOSTS.client;
         const shareUrl = `https://${host}${location.pathname}${location.search}${location.hash}`;
 

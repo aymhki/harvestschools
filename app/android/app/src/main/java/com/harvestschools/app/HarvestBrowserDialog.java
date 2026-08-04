@@ -59,13 +59,13 @@ public class HarvestBrowserDialog extends Dialog {
 
     private WebView webView;
     private FrameLayout root;
+    private CardView navBar;
     private CardView actionBar;
     private CardView urlChip;
     private TextView urlLabel;
     private ImageButton backButton;
     private ImageButton forwardButton;
 
-    private boolean isUrlChipHidden = false;
     private boolean isShowingFullUrl = false;
     private static final int SCROLL_TOLERANCE_PX = 12;
 
@@ -98,8 +98,31 @@ public class HarvestBrowserDialog extends Dialog {
 
         setContentView(root);
 
+        installSessionCookies();
+
         webView.loadUrl(startUrl, startHeaders);
     }
+
+    private void installSessionCookies() {
+        String cookieHeader = null;
+
+        for (Map.Entry<String, String> entry : startHeaders.entrySet()) {
+            if ("cookie".equalsIgnoreCase(entry.getKey())) { cookieHeader = entry.getValue(); }
+        }
+
+        if (cookieHeader == null) { return; }
+
+        CookieManager manager = CookieManager.getInstance();
+
+        for (String pair : cookieHeader.split(";")) {
+            String trimmed = pair.trim();
+
+            if (!trimmed.isEmpty()) { manager.setCookie(startUrl, trimmed + "; Path=/"); }
+        }
+
+        manager.flush();
+    }
+
 
     private void buildWebView() {
         webView = new WebView(getContext());
@@ -174,7 +197,7 @@ public class HarvestBrowserDialog extends Dialog {
             webView.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (Math.abs(scrollY - oldScrollY) <= SCROLL_TOLERANCE_PX) { return; }
 
-                setUrlChipHidden(scrollY > oldScrollY && scrollY > 0);
+                collapseUrlToHost();
             });
         }
     }
@@ -225,56 +248,55 @@ public class HarvestBrowserDialog extends Dialog {
         return card;
     }
 
-    private void buildActionBar() {
+    private CardView makePill(java.util.List<ImageButton> buttons, int gravity) {
+        if (buttons.isEmpty()) { return null; }
+
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         int outerPad = dp(10);
         row.setPadding(outerPad, outerPad, outerPad, outerPad);
 
-        boolean hasAny = false;
+        for (ImageButton button : buttons) { row.addView(button); }
 
-        if (chrome.showBack) {
-            backButton = makeIconButton(R.drawable.ic_nav_back, view -> { if (webView.canGoBack()) { webView.goBack(); } });
-            row.addView(backButton);
-            hasAny = true;
-        }
-
-        if (chrome.showForward) {
-            forwardButton = makeIconButton(R.drawable.ic_nav_forward, view -> { if (webView.canGoForward()) { webView.goForward(); } });
-            row.addView(forwardButton);
-            hasAny = true;
-        }
-
-        if (chrome.showReload) {
-            row.addView(makeIconButton(R.drawable.ic_nav_reload, view -> webView.reload()));
-            hasAny = true;
-        }
-
-        if (chrome.showShare) {
-            row.addView(makeIconButton(R.drawable.ic_nav_share, view -> shareCurrentUrl()));
-            hasAny = true;
-        }
-
-        if (chrome.showClose) {
-            row.addView(makeIconButton(R.drawable.ic_nav_close, view -> closeFromChrome()));
-            hasAny = true;
-        }
-
-        if (!hasAny) { return; }
-
-        actionBar = makeGlassSurface(26);
-        actionBar.addView(row);
+        CardView card = makeGlassSurface(26);
+        card.addView(row);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        params.gravity = Gravity.BOTTOM | Gravity.START;
-        params.setMargins(dp(12), 0, 0, dp(18));
+        params.gravity = Gravity.BOTTOM | gravity;
+        params.setMargins(dp(12), 0, dp(12), dp(18));
 
-        actionBar.setLayoutParams(params);
+        card.setLayoutParams(params);
 
-        root.addView(actionBar);
+        root.addView(card);
+
+        return card;
+    }
+
+    private void buildActionBar() {
+        java.util.List<ImageButton> navButtons = new java.util.ArrayList<>();
+        java.util.List<ImageButton> actionButtons = new java.util.ArrayList<>();
+
+        if (chrome.showBack) {
+            backButton = makeIconButton(R.drawable.ic_nav_back, view -> { if (webView.canGoBack()) { webView.goBack(); } });
+            navButtons.add(backButton);
+        }
+
+        if (chrome.showForward) {
+            forwardButton = makeIconButton(R.drawable.ic_nav_forward, view -> { if (webView.canGoForward()) { webView.goForward(); } });
+            navButtons.add(forwardButton);
+        }
+
+        if (chrome.showReload) { actionButtons.add(makeIconButton(R.drawable.ic_nav_reload, view -> webView.reload())); }
+
+        if (chrome.showShare) { actionButtons.add(makeIconButton(R.drawable.ic_nav_share, view -> shareCurrentUrl())); }
+
+        if (chrome.showClose) { actionButtons.add(makeIconButton(R.drawable.ic_nav_close, view -> closeFromChrome())); }
+
+        navBar = makePill(navButtons, Gravity.START);
+        actionBar = makePill(actionButtons, Gravity.END);
 
         updateNavButtons();
     }
@@ -288,6 +310,7 @@ public class HarvestBrowserDialog extends Dialog {
         urlLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         urlLabel.setTextColor(Color.DKGRAY);
         urlLabel.setSingleLine(true);
+        urlLabel.setEllipsize(android.text.TextUtils.TruncateAt.END);
         urlLabel.setPadding(dp(14), dp(8), dp(14), dp(8));
 
         urlChip.addView(urlLabel);
@@ -295,16 +318,14 @@ public class HarvestBrowserDialog extends Dialog {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-        params.setMargins(dp(16), dp(52), dp(16), 0);
+        params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        params.setMargins(dp(84), 0, dp(84), dp(31));
 
         urlChip.setLayoutParams(params);
         urlChip.setOnClickListener(view -> {
             isShowingFullUrl = !isShowingFullUrl;
 
             renderUrl();
-
-            if (isUrlChipHidden) { setUrlChipHidden(false); }
         });
 
         root.addView(urlChip);
@@ -325,21 +346,12 @@ public class HarvestBrowserDialog extends Dialog {
         }
     }
 
-    private void setUrlChipHidden(boolean hidden) {
-        if (urlChip == null || hidden == isUrlChipHidden) { return; }
+    private void collapseUrlToHost() {
+        if (urlChip == null || !isShowingFullUrl) { return; }
 
-        isUrlChipHidden = hidden;
+        isShowingFullUrl = false;
 
-        if (hidden) {
-            isShowingFullUrl = false;
-            renderUrl();
-        }
-
-        urlChip.animate()
-                .alpha(hidden ? 0f : 1f)
-                .translationY(hidden ? -dp(72) : 0f)
-                .setDuration(250)
-                .start();
+        renderUrl();
     }
 
     private void updateNavButtons() {
