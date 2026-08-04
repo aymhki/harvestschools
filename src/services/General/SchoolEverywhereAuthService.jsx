@@ -16,7 +16,9 @@ import {
     SCHOOL_EVERYWHERE_ORIGIN,
     getSchoolEverywhereUrl,
     attachExternalSiteListeners,
-    openExternalSite,
+    openHiddenExternalSite,
+    revealExternalSite,
+    closeExternalSite,
     runScriptInExternalSite,
     clearExternalSiteCookies,
     getExternalSiteCookies,
@@ -44,6 +46,8 @@ const LOGIN_OUTCOME = {
 
 
 const LOGIN_TIMEOUT_MS = 90000
+
+const RESUME_TIMEOUT_MS = 15000
 
 const USER_TYPES = [
     { value: 'management', slug: 'management' },
@@ -253,25 +257,45 @@ const buildVerdictScript = () => `(() => {
         try { window.mobileApp.postMessage({ detail: Object.assign({ channel: '${MESSAGE_CHANNEL}' }, payload) }); } catch (ignored) {}
     };
 
-    try {
-        if (location.protocol !== 'https:' || document.readyState === 'loading') { return; }
+    const report = () => {
+        try {
+            if (document.forms['login-form']) {
+                send({ verdict: 'login-page', url: location.href });
 
-        if (document.forms['login-form']) {
-            send({ verdict: 'login-page', url: location.href });
+                return;
+            }
 
-            return;
+            if (document.querySelector('meta[http-equiv="refresh" i]')) {
+                send({ verdict: 'redirecting', url: location.href });
+
+                return;
+            }
+
+            send({ verdict: 'landed', url: location.href });
+        } catch (reportError) {
+            send({ verdict: 'unreadable', message: String(reportError && reportError.message) });
         }
+    };
 
-        if (document.querySelector('meta[http-equiv="refresh" i]')) {
-            send({ verdict: 'redirecting', url: location.href });
+    if (location.protocol !== 'https:') { return; }
 
-            return;
-        }
+    /* Reporting before load would reveal a half painted page, which is what the
+     * blank few seconds were. */
+    if (document.readyState === 'complete') {
+        report();
 
-        send({ verdict: 'landed', url: location.href });
-    } catch (verdictError) {
-        send({ verdict: 'unreadable', message: String(verdictError && verdictError.message) });
+        return;
     }
+
+    if (window.__harvestPortalAwaitingLoad) { return; }
+
+    window.__harvestPortalAwaitingLoad = true;
+
+    window.addEventListener('load', () => {
+        window.__harvestPortalAwaitingLoad = false;
+
+        report();
+    }, { once: true });
 })();`
 
 
@@ -306,8 +330,6 @@ const signInToPortal = async ({ credential, password, onStage }) => {
 
     const cookieHeader = auth.cookie || (await readPortalCookieHeader(credential.id))
 
-    /* A home recorded by an earlier build may be about:blank, so it is re-checked
-     * rather than trusted. */
     const storedHome = credential.landingUrl
         && isPortalUrl(credential.landingUrl)
         && !isLoginUrl(credential.landingUrl)
@@ -372,7 +394,7 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     timeoutId = setTimeout(() => settle(LOGIN_OUTCOME.TIMED_OUT), LOGIN_TIMEOUT_MS)
 
     try {
-        await openExternalSite({
+        await openHiddenExternalSite({
             url: startUrl,
             title: 'SchoolEverywhere',
             headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
@@ -389,6 +411,12 @@ const signInToPortal = async ({ credential, password, onStage }) => {
         await rememberLandingUrl(credential.id, result.landingUrl)
 
         await savePortalCookies(credential.id)
+
+        await revealExternalSite()
+    } else if (result.outcome !== LOGIN_OUTCOME.DISMISSED) {
+        markExternalSiteClosed()
+
+        await closeExternalSite()
     }
 
     return result
@@ -432,6 +460,86 @@ const buildFollowThroughScript = (credential, password) => {
         form.querySelector('input[type=submit][name=submit]').click();
     } catch (ignored) {}
 })();`
+}
+
+
+const resumePortalSession = async ({ credential }) => {
+    if (!credential || !credential.id) { return false }
+
+    const cookieHeader = await readPortalCookieHeader(credential.id)
+    const home = credential.landingUrl
+
+    if (!cookieHeader || !home || !isPortalUrl(home) || isLoginUrl(home)) { return false }
+
+    let detachListeners = () => {}
+    let timeoutId = null
+    let isSettled = false
+    let resolveResumed = null
+
+    const resumedPromise = new Promise((resolve) => {
+        resolveResumed = resolve
+    })
+
+    const settle = (didResume) => {
+        if (isSettled) { return }
+
+        isSettled = true
+
+        if (timeoutId) { clearTimeout(timeoutId) }
+
+        detachListeners()
+
+        resolveResumed(didResume)
+    }
+
+    detachListeners = attachExternalSiteListeners({
+        onClose: () => {
+            markExternalSiteClosed()
+
+            settle(false)
+        },
+        onPageLoaded: () => {
+            if (!isSettled) { runScriptInExternalSite(buildVerdictScript()) }
+        },
+        onUrlChange: () => {
+            if (!isSettled) { runScriptInExternalSite(buildVerdictScript()) }
+        },
+        onMessage: (detail) => {
+            if (!detail || detail.channel !== MESSAGE_CHANNEL || isSettled) { return }
+
+            if (detail.verdict === 'landed' && isPortalUrl(detail.url) && !isLoginUrl(detail.url)) {
+                settle(true)
+            } else if (detail.verdict === 'login-page') {
+                settle(false)
+            }
+        },
+    })
+
+    timeoutId = setTimeout(() => settle(false), RESUME_TIMEOUT_MS)
+
+    try {
+        await openHiddenExternalSite({
+            url: home,
+            title: 'SchoolEverywhere',
+            headers: { Cookie: cookieHeader },
+        })
+    } catch (openError) {
+        settle(false)
+    }
+
+    const didResume = await resumedPromise
+
+    if (didResume) {
+        await revealExternalSite()
+    } else {
+        markExternalSiteClosed()
+
+        await closeExternalSite()
+
+        await forgetPortalCookies(credential.id)
+    }
+
+    return didResume
 }
 
 
@@ -537,6 +645,7 @@ export {
     isPortalUrl,
     buildLoginInjectionScript,
     signInToPortal,
+    resumePortalSession,
     endPortalSession,
     listPortalCredentials,
     getPreferredCredentialId,
