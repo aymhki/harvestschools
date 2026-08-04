@@ -1,5 +1,6 @@
 package com.harvestschools.app;
 
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 
 import com.getcapacitor.JSObject;
@@ -85,14 +86,28 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
         if (dialog == null || dialog.getWindow() == null) { return; }
 
         android.view.Window window = dialog.getWindow();
+        android.view.View decorView = window.getDecorView();
 
-        window.getDecorView().setAlpha(visible ? 1f : 0f);
+        int hiddenFlags = android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                | android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
 
         if (visible) {
-            window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            window.clearFlags(hiddenFlags);
+            window.setBackgroundDrawableResource(android.R.color.white);
+
+            decorView.setAlpha(1f);
+            decorView.setVisibility(android.view.View.VISIBLE);
         } else {
-            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            window.addFlags(hiddenFlags);
+
+            decorView.setAlpha(0f);
+            decorView.setVisibility(android.view.View.INVISIBLE);
         }
+
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         isVisible = visible;
     }

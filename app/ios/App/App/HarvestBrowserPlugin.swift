@@ -23,6 +23,57 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
     private var controller: HarvestBrowserController?
     private var isPresented = false
     private var isVisible = false
+    private var hiddenContainer: UIView?
+
+    private func activeWindow() -> UIWindow? {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }?
+            .windows
+            .first { $0.isKeyWindow }
+    }
+
+    private func attachWebViewToWindow(_ webView: WKWebView) -> Bool {
+        guard let window = activeWindow() else { return false }
+
+        let frame = CGRect(
+            x: window.bounds.maxX + 2048,
+            y: 0,
+            width: max(window.bounds.width, 1),
+            height: max(window.bounds.height, 1)
+        )
+
+        let container = hiddenContainer ?? UIView(frame: frame)
+
+        container.frame = frame
+        container.backgroundColor = .clear
+        container.isOpaque = false
+        container.isUserInteractionEnabled = false
+        container.clipsToBounds = true
+        container.accessibilityElementsHidden = true
+
+        if container.superview !== window {
+            container.removeFromSuperview()
+            window.addSubview(container)
+        }
+
+        hiddenContainer = container
+
+        webView.removeFromSuperview()
+        webView.translatesAutoresizingMaskIntoConstraints = true
+        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        webView.frame = container.bounds
+        webView.isUserInteractionEnabled = false
+
+        container.addSubview(webView)
+
+        return true
+    }
+
+    private func releaseHiddenContainer() {
+        hiddenContainer?.removeFromSuperview()
+        hiddenContainer = nil
+    }
 
     private func readChrome(from call: CAPPluginCall) -> HarvestBrowserChrome {
         var chrome = HarvestBrowserChrome()
@@ -57,31 +108,52 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            self.dismissIfNeeded()
+            self.dismissIfNeeded {
+                let created = HarvestBrowserController(url: url, headers: headers, chrome: chrome)
+                created.delegate = self
 
-            let created = HarvestBrowserController(url: url, headers: headers, chrome: chrome)
-            created.delegate = self
+                self.controller = created
 
-            self.presentController(created, invisible: startHidden) { call.resolve() }
+                created.loadViewIfNeeded()
+
+                if startHidden {
+                    self.isPresented = false
+                    self.isVisible = false
+
+                    if self.attachWebViewToWindow(created.webView) {
+                        call.resolve()
+                    } else {
+                        call.reject("No active window to load in")
+                    }
+
+                    return
+                }
+
+                self.presentController(created) { call.resolve() }
+            }
         }
     }
 
-    private func presentController(_ created: HarvestBrowserController, invisible: Bool = false, completion: @escaping () -> Void) {
+    private func presentController(_ created: HarvestBrowserController, completion: @escaping () -> Void) {
         guard let presenter = bridge?.viewController else {
             completion()
 
             return
         }
 
-        isPresented = true
-        isVisible = !invisible
-
-        created.modalPresentationStyle = .overFullScreen
         created.loadViewIfNeeded()
-        created.view.alpha = invisible ? 0 : 1
-        created.view.isUserInteractionEnabled = !invisible
 
-        presenter.present(created, animated: !invisible) { completion() }
+        releaseHiddenContainer()
+        created.reattachWebView()
+
+        isPresented = true
+        isVisible = true
+
+        created.modalPresentationStyle = .fullScreen
+        created.view.alpha = 1
+        created.view.isUserInteractionEnabled = true
+
+        presenter.present(created, animated: true) { completion() }
     }
 
     private func dismissIfNeeded(completion: (() -> Void)? = nil) {
@@ -91,6 +163,8 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
         isPresented = false
         isVisible = false
         controller = nil
+
+        releaseHiddenContainer()
 
         guard wasPresented, let existing = existing else {
             completion?()
@@ -119,23 +193,21 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
                 return
             }
 
-            if !self.isPresented {
-                self.presentController(created) { call.resolve() }
+            if self.isPresented {
+                self.isVisible = true
+
+                call.resolve()
 
                 return
             }
 
-            self.isVisible = true
-
-            created.view.isUserInteractionEnabled = true
-
-            UIView.animate(withDuration: 0.25, animations: { created.view.alpha = 1 }) { _ in call.resolve() }
+            self.presentController(created) { call.resolve() }
         }
     }
 
     @objc func hide(_ call: CAPPluginCall) {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let created = self.controller, self.isPresented else {
+            guard let self = self, let created = self.controller else {
                 call.resolve()
 
                 return
@@ -143,10 +215,19 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
 
             self.isVisible = false
 
-            created.view.alpha = 0
-            created.view.isUserInteractionEnabled = false
+            let park = {
+                _ = self.attachWebViewToWindow(created.webView)
 
-            call.resolve()
+                call.resolve()
+            }
+
+            if self.isPresented {
+                self.isPresented = false
+
+                created.dismiss(animated: false) { park() }
+            } else {
+                park()
+            }
         }
     }
 
@@ -237,6 +318,9 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
     func harvestBrowserDidClose() {
         isPresented = false
         isVisible = false
+
+        releaseHiddenContainer()
+
         controller = nil
 
         notifyListeners("browserClosed", data: [:])
