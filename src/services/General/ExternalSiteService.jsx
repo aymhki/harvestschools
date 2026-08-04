@@ -64,12 +64,13 @@ const openExternalSite = async ({ url, title }) => {
 }
 
 
-const openHiddenExternalSite = async ({ url, title }) => {
+const openHiddenExternalSite = async ({ url, title, headers }) => {
     setExternalSiteOpen(true)
 
     try {
         await InAppBrowser.openWebView({
             ...buildWebViewOptions({ url, title }),
+            ...(headers ? { headers } : {}),
             hidden: true,
             invisibilityMode: InvisibilityMode.FAKE_VISIBLE,
         })
@@ -186,6 +187,21 @@ const attachExternalSiteListeners = ({ onClose, onUrlChange, onMessage, onPageLo
 }
 
 
+const getExternalSiteCookies = async (url) => {
+    if (!Capacitor.isNativePlatform()) {
+        return {}
+    }
+
+    try {
+        return await InAppBrowser.getCookies({ url })
+    } catch (readError) {
+        console.warn('[external-site] Could not read the session', readError)
+
+        return {}
+    }
+}
+
+
 const clearExternalSiteCookies = async (url) => {
     if (!Capacitor.isNativePlatform()) {
         return
@@ -229,6 +245,7 @@ export {
     navigateExternalSite,
     closeExternalSite,
     clearExternalSiteCookies,
+    getExternalSiteCookies,
     markExternalSiteClosed,
     attachExternalSiteListeners,
     openInOwningApp,
