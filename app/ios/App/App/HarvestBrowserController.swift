@@ -109,6 +109,27 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         webView.scrollView.addObserver(self, forKeyPath: "contentOffset", options: [.new], context: nil)
     }
 
+    func reattachWebView() {
+        guard webView.superview !== view else { return }
+
+        webView.removeFromSuperview()
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.isUserInteractionEnabled = true
+
+        view.insertSubview(webView, at: 0)
+
+        let topAnchorToUse = chrome.keepTopInset ? view.safeAreaLayoutGuide.topAnchor : view.topAnchor
+
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: topAnchorToUse),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+
+        view.setNeedsLayout()
+    }
+
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         guard keyPath == "contentOffset", chrome.showUrlBar, chrome.collapseUrlBarOnScroll else { return }
 
