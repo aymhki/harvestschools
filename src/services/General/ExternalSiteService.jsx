@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core'
-import { InAppBrowser, BackgroundColor } from '@capgo/capacitor-inappbrowser'
+import { InAppBrowser, BackgroundColor, ToolBarType } from '@capgo/capacitor-inappbrowser'
 import { AppLauncher } from '@capacitor/app-launcher'
 import { setExternalSiteOpen } from './AppChromeService.jsx'
 
@@ -28,23 +28,21 @@ const readTarget = (target) => (isKnownTarget(target) ? target : DEFAULT_TARGET)
 const getSchoolEverywhereUrl = (target) => SCHOOL_EVERYWHERE_TARGETS[readTarget(target)]
 
 
-const buildHomeButton = () => ({
-    ios: {
-        iconType: 'sf-symbol',
-        icon: 'house',
-    },
-    android: {
-        iconType: 'vector',
-        icon: 'ic_nav_home',
-        width: 24,
-        height: 24,
-    },
+const buildWebViewOptions = ({ url, title, isHidden }) => ({
+    url,
+    title,
+    toolbarType: ToolBarType.COMPACT,
+    showURL: true,
+    visibleTitle: false,
+    showReloadButton: false,
+    preventDeeplink: true,
+    activeNativeNavigationForWebview: true,
+    backgroundColor: BackgroundColor.WHITE,
+    isPresentAfterPageLoad: isHidden === true,
 })
 
 
-const openSchoolEverywhere = async ({ target, title }) => {
-    const url = getSchoolEverywhereUrl(target)
-
+const openExternalSite = async ({ url, title }) => {
     if (!Capacitor.isNativePlatform()) {
         window.open(url, '_blank')
 
@@ -54,16 +52,7 @@ const openSchoolEverywhere = async ({ target, title }) => {
     setExternalSiteOpen(true)
 
     try {
-        await InAppBrowser.openWebView({
-            url,
-            title,
-            preventDeeplink: true,
-            activeNativeNavigationForWebview: true,
-            showReloadButton: true,
-            buttonNearDone: buildHomeButton(),
-            backgroundColor: BackgroundColor.WHITE,
-            isPresentAfterPageLoad: false,
-        })
+        await InAppBrowser.openWebView(buildWebViewOptions({ url, title, isHidden: false }))
 
         return true
     } catch (openError) {
@@ -76,6 +65,65 @@ const openSchoolEverywhere = async ({ target, title }) => {
 }
 
 
+const openHiddenExternalSite = async ({ url, title }) => {
+    setExternalSiteOpen(true)
+
+    try {
+        await InAppBrowser.openWebView(buildWebViewOptions({ url, title, isHidden: true }))
+
+        await InAppBrowser.hide()
+
+        return true
+    } catch (openError) {
+        setExternalSiteOpen(false)
+
+        throw openError
+    }
+}
+
+
+const revealExternalSite = async () => {
+    try {
+        await InAppBrowser.show()
+
+        return true
+    } catch (showError) {
+        console.warn('[external-site] Could not reveal the web view', showError)
+
+        return false
+    }
+}
+
+
+const runScriptInExternalSite = async (code) => {
+    try {
+        await InAppBrowser.executeScript({ code })
+
+        return true
+    } catch (scriptError) {
+        console.warn('[external-site] Could not run the script', scriptError)
+
+        return false
+    }
+}
+
+
+const navigateExternalSite = async (url) => {
+    try {
+        await InAppBrowser.setUrl({ url })
+
+        return true
+    } catch (navigateError) {
+        console.warn('[external-site] Could not move the web view', navigateError)
+
+        return false
+    }
+}
+
+
+const openSchoolEverywhere = ({ target, title }) => openExternalSite({ url: getSchoolEverywhereUrl(target), title })
+
+
 const closeExternalSite = async () => {
     if (!Capacitor.isNativePlatform()) {
         return
@@ -84,7 +132,6 @@ const closeExternalSite = async () => {
     try {
         await InAppBrowser.close()
     } catch (closeError) {
-        /* Already gone when the user dismissed it themselves, which is not a fault. */
         console.debug('[external-site] The web view was already closed', closeError)
     }
 }
@@ -93,7 +140,7 @@ const closeExternalSite = async () => {
 const markExternalSiteClosed = () => setExternalSiteOpen(false)
 
 
-const attachExternalSiteListeners = ({ onClose, onHome }) => {
+const attachExternalSiteListeners = ({ onClose, onUrlChange, onMessage, onPageLoaded }) => {
     const handles = []
 
     let isDetached = false
@@ -111,8 +158,21 @@ const attachExternalSiteListeners = ({ onClose, onHome }) => {
     }
 
     if (Capacitor.isNativePlatform()) {
-        keep(InAppBrowser.addListener('closeEvent', () => onClose()))
-        keep(InAppBrowser.addListener('buttonNearDoneClick', () => onHome()))
+        if (onClose) {
+            keep(InAppBrowser.addListener('closeEvent', () => onClose()))
+        }
+
+        if (onUrlChange) {
+            keep(InAppBrowser.addListener('urlChangeEvent', (event) => onUrlChange(event && event.url ? event.url : '')))
+        }
+
+        if (onPageLoaded) {
+            keep(InAppBrowser.addListener('browserPageLoaded', () => onPageLoaded()))
+        }
+
+        if (onMessage) {
+            keep(InAppBrowser.addListener('messageFromWebview', (event) => onMessage((event && event.detail) || {})))
+        }
     }
 
     return () => {
@@ -148,6 +208,11 @@ export {
     readTarget,
     getSchoolEverywhereUrl,
     openSchoolEverywhere,
+    openExternalSite,
+    openHiddenExternalSite,
+    revealExternalSite,
+    runScriptInExternalSite,
+    navigateExternalSite,
     closeExternalSite,
     markExternalSiteClosed,
     attachExternalSiteListeners,
