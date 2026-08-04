@@ -4,6 +4,7 @@
   "dependencies": {
     "@capacitor/android": "^8.4.1",
     "@capacitor/app": "^8.1.0",
+    "@capacitor/app-launcher": "^8.0.1",
     "@capacitor/browser": "^8.0.3",
     "@capacitor/camera": "^8.2.1",
     "@capacitor/core": "^8.4.1",
@@ -14,6 +15,7 @@
     "@capacitor/network": "^8.0.1",
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/share": "^8.0.1",
+    "@capgo/capacitor-inappbrowser": "^8.13.2",
     "@capgo/capacitor-native-biometric": "^8.6.0",
     "@capgo/capacitor-updater": "^8.50.2",
     "capacitor-secure-storage-plugin": "^0.13.0"

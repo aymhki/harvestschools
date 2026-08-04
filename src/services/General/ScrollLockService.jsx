@@ -30,6 +30,8 @@ let lockedScrollOffset = 0
 
 let isLocked = false
 
+let lockGeneration = 0
+
 
 const isOverlayExempt = (element) => SCROLL_LOCK_EXEMPT_SELECTORS.some((selector) => element.closest(selector) !== null)
 
@@ -85,6 +87,8 @@ const lockPageScroll = () => {
 
         isLocked = true
 
+        lockGeneration += 1
+
         setModalOpen(true)
     }
 }
@@ -100,7 +104,15 @@ const unlockPageScroll = () => {
 
         isLocked = false
 
-        setModalOpen(false)
+        lockGeneration += 1
+
+        const unlockGeneration = lockGeneration
+
+        window.requestAnimationFrame(() => {
+            if (unlockGeneration === lockGeneration) {
+                setModalOpen(false)
+            }
+        })
     }
 }
 

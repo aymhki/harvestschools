@@ -1,0 +1,68 @@
+.school-everywhere {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 60vh;
+    padding: calc(2rem + env(safe-area-inset-top)) 1.25rem calc(2rem + env(safe-area-inset-bottom)) 1.25rem;
+    box-sizing: border-box;
+    color: var(--primary-color);
+}
+
+.school-everywhere-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 26rem;
+    text-align: center;
+}
+
+.school-everywhere-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--primary-color);
+    opacity: 0.55;
+}
+
+.school-everywhere-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-family: var(--english-title-font);
+}
+
+.school-everywhere-message {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.8;
+}
+
+.school-everywhere-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 0.35rem;
+}
+
+.school-everywhere-button {
+    padding: 0.7rem 1.35rem;
+    border: 0.0625rem solid var(--primary-color);
+    border-radius: 1.5rem;
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.school-everywhere-button.is-quiet {
+    background-color: transparent;
+    color: var(--primary-color);
+}
+
+[dir="rtl"] .school-everywhere-title,
+[dir="rtl"] .school-everywhere-message {
+    font-family: var(--arabic-normal-font);
+}

@@ -13,6 +13,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.4.1"),
         .package(name: "CapacitorApp", path: "../../../../node_modules/@capacitor/app"),
+        .package(name: "CapacitorAppLauncher", path: "../../../../node_modules/@capacitor/app-launcher"),
         .package(name: "CapacitorBrowser", path: "../../../../node_modules/@capacitor/browser"),
         .package(name: "CapacitorCamera", path: "../../../../node_modules/@capacitor/camera"),
         .package(name: "CapacitorFilesystem", path: "../../../../node_modules/@capacitor/filesystem"),
@@ -21,6 +22,7 @@ let package = Package(
         .package(name: "CapacitorNetwork", path: "../../../../node_modules/@capacitor/network"),
         .package(name: "CapacitorPreferences", path: "../../../../node_modules/@capacitor/preferences"),
         .package(name: "CapacitorShare", path: "../../../../node_modules/@capacitor/share"),
+        .package(name: "CapgoCapacitorInappbrowser", path: "../../../../node_modules/@capgo/capacitor-inappbrowser"),
         .package(name: "CapgoCapacitorNativeBiometric", path: "../../../../node_modules/@capgo/capacitor-native-biometric"),
         .package(name: "CapgoCapacitorUpdater", path: "../../../../node_modules/@capgo/capacitor-updater"),
         .package(name: "CapacitorSecureStoragePlugin", path: "../../../../node_modules/capacitor-secure-storage-plugin")
@@ -32,6 +34,7 @@ let package = Package(
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
                 .product(name: "CapacitorApp", package: "CapacitorApp"),
+                .product(name: "CapacitorAppLauncher", package: "CapacitorAppLauncher"),
                 .product(name: "CapacitorBrowser", package: "CapacitorBrowser"),
                 .product(name: "CapacitorCamera", package: "CapacitorCamera"),
                 .product(name: "CapacitorFilesystem", package: "CapacitorFilesystem"),
@@ -40,6 +43,7 @@ let package = Package(
                 .product(name: "CapacitorNetwork", package: "CapacitorNetwork"),
                 .product(name: "CapacitorPreferences", package: "CapacitorPreferences"),
                 .product(name: "CapacitorShare", package: "CapacitorShare"),
+                .product(name: "CapgoCapacitorInappbrowser", package: "CapgoCapacitorInappbrowser"),
                 .product(name: "CapgoCapacitorNativeBiometric", package: "CapgoCapacitorNativeBiometric"),
                 .product(name: "CapgoCapacitorUpdater", package: "CapgoCapacitorUpdater"),
                 .product(name: "CapacitorSecureStoragePlugin", package: "CapacitorSecureStoragePlugin")

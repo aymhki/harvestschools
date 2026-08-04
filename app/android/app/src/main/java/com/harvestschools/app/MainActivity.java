@@ -41,6 +41,8 @@ public class MainActivity extends BridgeActivity {
     private boolean isNavBarSuppressed = false;
     private static final long NAV_BAR_REVEAL_DELAY_MS = 1200L;
     private static final int NAV_BAR_SCROLL_TOLERANCE_PX = 12;
+    private static final long NAV_BAR_SCROLL_SETTLE_MS = 400L;
+    private long ignoreScrollUntilMs = 0L;
     private SwipeRefreshLayout swipeRefreshLayout;
     private CoordinatorLayout rootLayout;
     private volatile String currentShareUrl = "https://harvestschools.com";
@@ -194,6 +196,10 @@ public class MainActivity extends BridgeActivity {
                 return;
             }
 
+            if (System.currentTimeMillis() < ignoreScrollUntilMs) {
+                return;
+            }
+
             setNavBarHidden(true);
             scheduleNavBarReveal();
         });
@@ -208,6 +214,10 @@ public class MainActivity extends BridgeActivity {
 
         if (floatingNavBarCard != null) {
             floatingNavBarCard.setClickable(!suppressed);
+        }
+
+        if (!suppressed) {
+            ignoreScrollUntilMs = System.currentTimeMillis() + NAV_BAR_SCROLL_SETTLE_MS;
         }
 
         setNavBarHidden(suppressed);

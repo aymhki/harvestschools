@@ -14,6 +14,7 @@ const pages = makeEagerPages(
             '../pages/**/*.jsx',
             '!../pages/Admin/**',
             '!../pages/CorporateHome.jsx',
+            '!../pages/SchoolEverywhere.jsx',
         ],
         { eager: true }
     )
