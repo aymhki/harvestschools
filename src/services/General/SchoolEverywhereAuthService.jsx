@@ -254,6 +254,8 @@ const buildVerdictScript = () => `(() => {
     };
 
     try {
+        if (location.protocol !== 'https:' || document.readyState === 'loading') { return; }
+
         if (document.forms['login-form']) {
             send({ verdict: 'login-page', url: location.href });
 
@@ -303,7 +305,16 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     if (onStage) { onStage('opening') }
 
     const cookieHeader = auth.cookie || (await readPortalCookieHeader(credential.id))
-    const startUrl = credential.landingUrl || PORTAL_LOGIN_PAGE
+
+    /* A home recorded by an earlier build may be about:blank, so it is re-checked
+     * rather than trusted. */
+    const storedHome = credential.landingUrl
+        && isPortalUrl(credential.landingUrl)
+        && !isLoginUrl(credential.landingUrl)
+        ? credential.landingUrl
+        : null
+
+    const startUrl = storedHome || PORTAL_LOGIN_PAGE
 
     let detachListeners = () => {}
     let timeoutId = null
@@ -335,6 +346,8 @@ const signInToPortal = async ({ credential, password, onStage }) => {
         if (isSettled) { return }
 
         if (report.verdict === 'landed') {
+            if (!isPortalUrl(report.url) || isLoginUrl(report.url)) { return }
+
             settle(LOGIN_OUTCOME.LANDED, { landingUrl: report.url })
         } else if (report.verdict === 'login-page' && !hasFollowedThrough) {
             hasFollowedThrough = true
@@ -364,8 +377,6 @@ const signInToPortal = async ({ credential, password, onStage }) => {
             title: 'SchoolEverywhere',
             headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
         })
-
-        readPage()
     } catch (openError) {
         console.warn('[schooleverywhere] Could not open the portal', openError)
 
@@ -466,7 +477,7 @@ const savePortalCredential = async ({ id, username, password, typeofuser, iden, 
 }
 
 const rememberLandingUrl = async (credentialId, landingUrl) => {
-    if (!credentialId || !landingUrl) { return }
+    if (!credentialId || !landingUrl || !isPortalUrl(landingUrl) || isLoginUrl(landingUrl)) { return }
 
     await saveSecureCredentialRecord(SCHOOL_EVERYWHERE_NAMESPACE, {
         id: credentialId,
@@ -476,7 +487,15 @@ const rememberLandingUrl = async (credentialId, landingUrl) => {
 }
 
 
-const forgetLandingUrl = (credentialId) => rememberLandingUrl(credentialId, PORTAL_LOGIN_URL)
+const forgetLandingUrl = async (credentialId) => {
+    if (!credentialId) { return }
+
+    await saveSecureCredentialRecord(SCHOOL_EVERYWHERE_NAMESPACE, {
+        id: credentialId,
+        landingUrl: PORTAL_LOGIN_URL,
+        lastUsedAt: Date.now(),
+    })
+}
 
 
 const removePortalCredential = (credentialId) => removeSecureCredentialRecord(SCHOOL_EVERYWHERE_NAMESPACE, credentialId)

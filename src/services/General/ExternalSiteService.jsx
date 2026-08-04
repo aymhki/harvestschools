@@ -42,7 +42,7 @@ const buildWebViewOptions = ({ url, title }) => ({
 })
 
 
-const openExternalSite = async ({ url, title }) => {
+const openExternalSite = async ({ url, title, headers }) => {
     if (!Capacitor.isNativePlatform()) {
         window.open(url, '_blank')
 
@@ -52,7 +52,10 @@ const openExternalSite = async ({ url, title }) => {
     setExternalSiteOpen(true)
 
     try {
-        await InAppBrowser.openWebView(buildWebViewOptions({ url, title }))
+        await InAppBrowser.openWebView({
+            ...buildWebViewOptions({ url, title }),
+            ...(headers ? { headers } : {}),
+        })
 
         return true
     } catch (openError) {
