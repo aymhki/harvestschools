@@ -90,6 +90,25 @@ function SchoolEverywhere() {
 
     const goHome = useCallback(() => navigate(HOME_PATH, { replace: true }), [navigate])
 
+    const holdRevealedWebView = useCallback((credential, shouldEndSession = true) => {
+        revealedRef.current = true
+
+        watchForCloseRef.current = attachExternalSiteListeners({
+            onClose: async () => {
+                if (watchForCloseRef.current) {
+                    watchForCloseRef.current()
+                    watchForCloseRef.current = null
+                }
+
+                revealedRef.current = false
+
+                markExternalSiteClosed()
+
+                if (shouldEndSession) { await endPortalSession(credential && credential.id) }
+            },
+        })
+    }, [])
+
     useEffect(() => {
         if (target === 'portal' || hasHandledDirectTargetRef.current || isOffline) {
             return
@@ -98,9 +117,9 @@ function SchoolEverywhere() {
         hasHandledDirectTargetRef.current = true
 
         openExternalSite({ url: getSchoolEverywhereUrl(target), title: t('schooleverywhere.title') })
-            .catch(() => null)
-            .finally(() => goHome())
-    }, [goHome, isOffline, t, target])
+            .then(() => holdRevealedWebView(null, false))
+            .catch(() => goHome())
+    }, [goHome, holdRevealedWebView, isOffline, t, target])
 
     const refreshCredentials = useCallback(async () => {
         const saved = await listPortalCredentials()
@@ -125,27 +144,6 @@ function SchoolEverywhere() {
 
         return saved
     }, [])
-
-    const holdRevealedWebView = useCallback((credential) => {
-        revealedRef.current = true
-
-        watchForCloseRef.current = attachExternalSiteListeners({
-            onClose: async () => {
-                if (watchForCloseRef.current) {
-                    watchForCloseRef.current()
-                    watchForCloseRef.current = null
-                }
-
-                revealedRef.current = false
-
-                markExternalSiteClosed()
-
-                await endPortalSession(credential && credential.id)
-
-                goHome()
-            },
-        })
-    }, [goHome])
 
     useEffect(() => {
         if (target !== 'portal' || isOffline || hasAttemptedResumeRef.current) { return }
@@ -416,7 +414,7 @@ function SchoolEverywhere() {
             <div className="school-everywhere-login-page" dir={pageDirection}>
                 <div className="school-everywhere-login-page-form-controller">
                     <div className="school-everywhere-login-form-wrapper">
-                        <h2 className="always-english-font">{t('schooleverywhere.title')}</h2>
+                        <h2 className="always-english-title-font">{t('schooleverywhere.title')}</h2>
 
                         {stageLabel && <p className="school-everywhere-stage">{stageLabel}</p>}
 
