@@ -14,6 +14,7 @@ const pages = makeLazyPages(
         '../pages/**/*.jsx',
         '!../pages/Admin/**',
         '!../pages/CorporateHome.jsx',
+        '!../pages/SchoolEverywhere.jsx',
     ])
 );
 

@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { App as CapacitorApp } from '@capacitor/app'
-import { Browser } from '@capacitor/browser'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined'
 import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined'
@@ -14,6 +13,7 @@ import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined'
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined'
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline'
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
+import CastForEducationOutlinedIcon from '@mui/icons-material/CastForEducationOutlined'
 import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined'
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined'
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined'
@@ -37,6 +37,7 @@ import { OFFLINE_CONTENT_SAVED_EVENT } from '../modules/AppUpdateGate.jsx'
 import { getCurrentBundleVersion } from '../services/General/AppUpdaterService.jsx'
 import { servePublicAsset } from '../services/General/GeneralServices.jsx'
 import { alumniStudentsPageUrl, useToggleLanguage } from '../services/General/GeneralUtils.jsx'
+import { openInOwningApp } from '../services/General/ExternalSiteService.jsx'
 import { getCurrentWeather } from '../services/General/WeatherService.jsx'
 import { isWidgetSupported } from '../services/General/HomeWidgetService.jsx'
 import '../styles/AppHome.css'
@@ -93,6 +94,7 @@ const COPY = {
             calendars: 'Calendars',
             booking: 'Graduation booking',
             admission: 'Admission',
+            schooleverywhere: 'SchoolEverywhere',
             academics: 'Academics',
             studentsLife: 'Students life',
             gallery: 'Gallery',
@@ -154,6 +156,7 @@ const COPY = {
             calendars: 'التقويمات',
             booking: 'حجز الحفل',
             admission: 'التسجيل',
+            schooleverywhere: 'SchoolEverywhere',
             academics: 'الأقسام',
             studentsLife: 'حياة الطلاب',
             gallery: 'معرض الصور',
@@ -183,6 +186,7 @@ const QUICK_ACTIONS = [
     { id: 'calendars', path: '/events', Icon: CalendarMonthOutlinedIcon },
     { id: 'booking', path: '/events/graduation-booking', Icon: HowToRegOutlinedIcon },
     { id: 'admission', path: '/admission', Icon: SchoolOutlinedIcon },
+    { id: 'schooleverywhere', path: '/schooleverywhere', Icon: CastForEducationOutlinedIcon },
     { id: 'academics', path: '/academics', Icon: MenuBookOutlinedIcon },
     { id: 'studentsLife', path: '/students-life', Icon: GroupsOutlinedIcon },
     { id: 'gallery', path: '/gallery', Icon: PhotoLibraryOutlinedIcon },
@@ -202,13 +206,7 @@ const CONNECT_LINKS = [
 
 
 const openConnectLink = (url) => {
-    if (url.startsWith('tel:')) {
-        window.open(url)
-    } else {
-        Browser.open({ url, presentationStyle: 'popover' }).catch((openError) => {
-            console.warn('Could not open the link', openError)
-        })
-    }
+    openInOwningApp(url)
 }
 
 

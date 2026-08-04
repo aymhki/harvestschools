@@ -12,7 +12,7 @@ import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 import CachedImage from "./CachedImage.jsx";
 import {isDevelopment} from "../services/General/GeneralUtils.jsx"
-import { Browser } from '@capacitor/browser';
+import { getSchoolEverywhereUrl } from "../services/General/ExternalSiteService.jsx";
 
 function NavigationBar({compactOrAdmin, isMobileApp}){
     const [isMobile, setIsMobile] = useState(true);
@@ -57,6 +57,18 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
 
     const toggleDropdown = (dropdown, setDropdown) => {
         setDropdown(!dropdown);
+    }
+
+    const openSchoolEverywhereTarget = (target) => {
+        if (isMobile) {
+            closeMenu();
+        }
+
+        if (isMobileApp) {
+            navigate(`/schooleverywhere?target=${target}`);
+        } else {
+            window.open(getSchoolEverywhereUrl(target), '_blank');
+        }
     }
 
     const handleDropdownClick = (e, mainLink) => {
@@ -127,15 +139,15 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
 
                 {!compactOrAdmin && (
                 <div className="navbar-quick-action-buttons-container">
-                    <button className="navbar-quick-action-button" onClick={() => isMobileApp ? Browser.open({url : 'https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission.php', presentationStyle: 'popover'}) : window.open('https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission.php', '_blank')} >
+                    <button className="navbar-quick-action-button" onClick={() => openSchoolEverywhereTarget('apply')} >
                         {t("nav.apply-now")}
                     </button>
 
-                    <button className="navbar-quick-action-button" onClick={() => isMobileApp ? Browser.open({url: 'https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmissionlogin.php', presentationStyle: 'popover'}) : window.open('https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmissionlogin.php', '_blank')} >
+                    <button className="navbar-quick-action-button" onClick={() => openSchoolEverywhereTarget('status')} >
                         {t("nav.check-status")}
                     </button>
 
-                    <button className={"navbar-quick-action-button always-english-btn"} onClick={() => isMobileApp ? Browser.open({url: 'https://schooleverywhere-harvest.com/schooleverywhere/', presentationStyle: 'popover' }) : window.open('https://schooleverywhere-harvest.com/schooleverywhere/', '_blank') } >
+                    <button className={"navbar-quick-action-button always-english-btn"} onClick={() => openSchoolEverywhereTarget('portal')} >
                         {t("nav.schooleverywhere")}
                     </button>
                 </div>

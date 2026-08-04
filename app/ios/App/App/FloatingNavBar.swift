@@ -16,6 +16,10 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
     private let revealDelay: TimeInterval = 1.2
     private let scrollTolerance: CGFloat = 6
 
+    private var lastScrollOffset: CGFloat = 0
+    private var ignoreScrollUntil: Date = .distantPast
+    private let scrollSettleWindow: TimeInterval = 0.4
+
     private let backButton = UIButton(type: .system)
     private let forwardButton = UIButton(type: .system)
     private let shareButton = UIButton(type: .system)
@@ -46,15 +50,21 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
 
 
     private func observeScrolling(on webView: WKWebView) {
-        var lastOffset = webView.scrollView.contentOffset.y
+        lastScrollOffset = webView.scrollView.contentOffset.y
 
         scrollObservation = webView.scrollView.observe(\.contentOffset, options: [.new]) { [weak self] scrollView, _ in
             guard let self = self else { return }
 
             let offset = scrollView.contentOffset.y
 
-            if abs(offset - lastOffset) > self.scrollTolerance {
-                lastOffset = offset
+            guard Date() >= self.ignoreScrollUntil else {
+                self.lastScrollOffset = offset
+
+                return
+            }
+
+            if abs(offset - self.lastScrollOffset) > self.scrollTolerance {
+                self.lastScrollOffset = offset
 
                 self.setBarHidden(true)
                 self.scheduleReveal()
@@ -68,6 +78,12 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
         revealWorkItem?.cancel()
 
         isUserInteractionEnabled = !suppressed
+
+        if !suppressed {
+            ignoreScrollUntil = Date().addingTimeInterval(scrollSettleWindow)
+
+            lastScrollOffset = webView?.scrollView.contentOffset.y ?? lastScrollOffset
+        }
 
         setBarHidden(suppressed)
     }

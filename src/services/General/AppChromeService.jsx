@@ -6,6 +6,7 @@ const AppChrome = registerPlugin('AppChrome')
 
 let isAppReady = false
 let isModalOpen = false
+let isExternalSiteOpen = false
 
 
 const applyNavigationBarVisibility = async () => {
@@ -14,7 +15,7 @@ const applyNavigationBarVisibility = async () => {
     }
 
     try {
-        await AppChrome.setNavigationBarVisible({ visible: isAppReady && !isModalOpen })
+        await AppChrome.setNavigationBarVisible({ visible: isAppReady && !isModalOpen && !isExternalSiteOpen })
     } catch (chromeError) {
         console.warn('[chrome] Could not change the navigation bar visibility', chromeError)
     }
@@ -37,7 +38,17 @@ const setModalOpen = (isOpen) => {
 }
 
 
+const setExternalSiteOpen = (isOpen) => {
+    if (isExternalSiteOpen !== isOpen) {
+        isExternalSiteOpen = isOpen
+
+        applyNavigationBarVisibility()
+    }
+}
+
+
 export {
     setAppReady,
     setModalOpen,
+    setExternalSiteOpen,
 }
