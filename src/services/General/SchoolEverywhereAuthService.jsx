@@ -338,6 +338,8 @@ const signInToPortal = async ({ credential, password, onStage }) => {
 
     const startUrl = storedHome || PORTAL_LOGIN_PAGE
 
+    const canReachHomeWithoutPassword = Boolean(storedHome)
+
     let detachListeners = () => {}
     let timeoutId = null
     let isSettled = false
@@ -373,6 +375,12 @@ const signInToPortal = async ({ credential, password, onStage }) => {
             settle(LOGIN_OUTCOME.LANDED, { landingUrl: report.url })
         } else if (report.verdict === 'login-page' && !hasFollowedThrough) {
             hasFollowedThrough = true
+
+            if (canReachHomeWithoutPassword) {
+                settle(LOGIN_OUTCOME.REJECTED)
+
+                return
+            }
 
             runScriptInExternalSite(buildFollowThroughScript(credential, password))
         }
