@@ -1,6 +1,8 @@
 import { Preferences } from '@capacitor/preferences'
 import { isNativeRuntime, isOnline } from './OfflineStorageService.jsx'
 import { prefetchAllLocales } from './OfflineLocalesService.jsx'
+
+const LOCALES_UPDATED_EVENT = 'harvestLocalesUpdated'
 import { applyCachedFonts, prefetchAllFonts } from './OfflineFontsService.jsx'
 import { prefetchCriticalAssets } from './OfflineImageCacheService.jsx'
 import { servePublicAsset } from './GeneralServices.jsx'
@@ -170,6 +172,12 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 onProgress: (percent) => report('locales', percent),
             })
 
+            if (localeResult && localeResult.updated > 0 && typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent(LOCALES_UPDATED_EVENT, {
+                    detail: { updated: localeResult.updated },
+                }))
+            }
+
             report('fonts', 0)
 
             const fontResult = await prefetchAllFonts({
@@ -204,6 +212,7 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
 
 
 export {
+    LOCALES_UPDATED_EVENT,
     BRANDING_ASSET_PATHS,
     HOME_ASSET_PATHS,
     OPTIONS_GRID_ASSET_PATHS,

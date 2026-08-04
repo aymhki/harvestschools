@@ -35,6 +35,7 @@ public class MainActivity extends BridgeActivity {
     private ImageButton backButton;
     private ImageButton forwardButton;
     private CardView floatingNavBarCard;
+    private CardView floatingActionBarCard;
     private final android.os.Handler revealHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable revealRunnable;
     private boolean isNavBarHidden = false;
@@ -213,9 +214,9 @@ public class MainActivity extends BridgeActivity {
             revealHandler.removeCallbacks(revealRunnable);
         }
 
-        if (floatingNavBarCard != null) {
-            floatingNavBarCard.setClickable(!suppressed);
-        }
+        if (floatingNavBarCard != null) { floatingNavBarCard.setClickable(!suppressed); }
+
+        if (floatingActionBarCard != null) { floatingActionBarCard.setClickable(!suppressed); }
 
         if (!suppressed) {
             ignoreScrollUntilMs = System.currentTimeMillis() + NAV_BAR_SCROLL_SETTLE_MS;
@@ -241,14 +242,18 @@ public class MainActivity extends BridgeActivity {
 
         isNavBarHidden = hidden;
 
-        floatingNavBarCard.animate()
-                .alpha(hidden ? 0f : 1f)
-                .translationY(hidden ? dp(24) : 0f)
-                .setDuration(220)
-                .start();
+        for (CardView card : new CardView[] { floatingNavBarCard, floatingActionBarCard }) {
+            if (card == null) { continue; }
+
+            card.animate()
+                    .alpha(hidden ? 0f : 1f)
+                    .translationY(hidden ? dp(24) : 0f)
+                    .setDuration(220)
+                    .start();
+        }
     }
 
-    private void addFloatingNavBar(CoordinatorLayout root, WebView webView) {
+    private CardView buildNavPill(java.util.List<ImageButton> buttons, int horizontalGravity) {
         int outerPad = dp(10);
 
         CardView card = new CardView(this);
@@ -261,37 +266,44 @@ public class MainActivity extends BridgeActivity {
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setPadding(outerPad, outerPad, outerPad, outerPad);
 
+        for (ImageButton button : buttons) { row.addView(button); }
+
+        card.addView(row);
+
+        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        lp.gravity = Gravity.BOTTOM | horizontalGravity;
+        lp.setMargins(dp(12), 0, dp(12), dp(6));
+
+        card.setLayoutParams(lp);
+        card.setAlpha(0f);
+        card.setClickable(false);
+
+        return card;
+    }
+
+    private void addFloatingNavBar(CoordinatorLayout root, WebView webView) {
         backButton = makeIconButton(R.drawable.ic_nav_back);
         forwardButton = makeIconButton(R.drawable.ic_nav_forward);
-        ImageButton shareButton = makeIconButton(R.drawable.ic_nav_share);
+
         ImageButton homeButton = makeIconButton(R.drawable.ic_nav_home);
+        ImageButton shareButton = makeIconButton(R.drawable.ic_nav_share);
 
         backButton.setOnClickListener(v -> { if (webView.canGoBack()) webView.goBack(); });
         forwardButton.setOnClickListener(v -> { if (webView.canGoForward()) webView.goForward(); });
-        shareButton.setOnClickListener(v -> shareCurrentUrl());
 
         homeButton.setOnClickListener(v ->
                 webView.evaluateJavascript("window.dispatchEvent(new Event('harvestNavigateHome'))", null));
 
-        row.addView(backButton);
-        row.addView(forwardButton);
-        row.addView(shareButton);
-        row.addView(homeButton);
-        card.addView(row);
+        shareButton.setOnClickListener(v -> shareCurrentUrl());
 
-        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        );
+        floatingNavBarCard = buildNavPill(java.util.Arrays.asList(backButton, forwardButton), Gravity.START);
+        floatingActionBarCard = buildNavPill(java.util.Arrays.asList(homeButton, shareButton), Gravity.END);
 
-        lp.gravity = Gravity.BOTTOM | Gravity.START;
-        lp.setMargins(dp(12), 0, 0, dp(6));
-        card.setLayoutParams(lp);
+        root.addView(floatingNavBarCard);
+        root.addView(floatingActionBarCard);
 
-        card.setAlpha(0f);
-        card.setClickable(false);
-
-        root.addView(card);
-        floatingNavBarCard = card;
         updateNavButtonState(webView);
     }
 

@@ -114,46 +114,71 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
         }
     }
 
-    private func buildUI() {
-        let effectView = Self.makeGlassBackground()
-        effectView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(effectView)
-        NSLayoutConstraint.activate([
-            effectView.topAnchor.constraint(equalTo: topAnchor),
-            effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            effectView.trailingAnchor.constraint(equalTo: trailingAnchor)
-        ])
 
+    private func buildUI() {
         let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+
         backButton.setImage(UIImage(systemName: "chevron.left", withConfiguration: config), for: .normal)
         forwardButton.setImage(UIImage(systemName: "chevron.right", withConfiguration: config), for: .normal)
-        shareButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: config), for: .normal)
         homeButton.setImage(UIImage(systemName: "house", withConfiguration: config), for: .normal)
-        [backButton, forwardButton, shareButton, homeButton].forEach { $0.tintColor = .label }
+        shareButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: config), for: .normal)
+
+        [backButton, forwardButton, homeButton, shareButton].forEach { $0.tintColor = .label }
 
         backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
         forwardButton.addTarget(self, action: #selector(handleForward), for: .touchUpInside)
-        shareButton.addTarget(self, action: #selector(handleShare), for: .touchUpInside)
         homeButton.addTarget(self, action: #selector(handleHome), for: .touchUpInside)
+        shareButton.addTarget(self, action: #selector(handleShare), for: .touchUpInside)
 
-        let stack = UIStackView(arrangedSubviews: [backButton, forwardButton, shareButton, homeButton])
+        let navigationPill = makePill(with: [backButton, forwardButton])
+        let actionPill = makePill(with: [homeButton, shareButton])
+
+        addSubview(navigationPill)
+        addSubview(actionPill)
+
+        NSLayoutConstraint.activate([
+            navigationPill.leadingAnchor.constraint(equalTo: leadingAnchor),
+            navigationPill.topAnchor.constraint(equalTo: topAnchor),
+            navigationPill.bottomAnchor.constraint(equalTo: bottomAnchor),
+            navigationPill.widthAnchor.constraint(equalToConstant: 104),
+
+            actionPill.trailingAnchor.constraint(equalTo: trailingAnchor),
+            actionPill.topAnchor.constraint(equalTo: topAnchor),
+            actionPill.bottomAnchor.constraint(equalTo: bottomAnchor),
+            actionPill.widthAnchor.constraint(equalToConstant: 104),
+
+            heightAnchor.constraint(equalToConstant: 52)
+        ])
+    }
+
+    private func makePill(with buttons: [UIButton]) -> UIVisualEffectView {
+        let effectView = Self.makeGlassBackground()
+
+        effectView.translatesAutoresizingMaskIntoConstraints = false
+        effectView.layer.cornerRadius = 26
+        effectView.clipsToBounds = true
+
+        let stack = UIStackView(arrangedSubviews: buttons)
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         stack.translatesAutoresizingMaskIntoConstraints = false
+
         effectView.contentView.addSubview(stack)
 
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: effectView.contentView.topAnchor),
             stack.bottomAnchor.constraint(equalTo: effectView.contentView.bottomAnchor),
             stack.leadingAnchor.constraint(equalTo: effectView.contentView.leadingAnchor, constant: 6),
-            stack.trailingAnchor.constraint(equalTo: effectView.contentView.trailingAnchor, constant: -6),
-            widthAnchor.constraint(equalToConstant: 204),
-            heightAnchor.constraint(equalToConstant: 52)
+            stack.trailingAnchor.constraint(equalTo: effectView.contentView.trailingAnchor, constant: -6)
         ])
 
-        layer.cornerRadius = 26
-        clipsToBounds = true
+        return effectView
+    }
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hit = super.hitTest(point, with: event)
+
+        return hit === self ? nil : hit
     }
 
     private static func makeGlassBackground() -> UIVisualEffectView {

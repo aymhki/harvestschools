@@ -5,10 +5,10 @@ const HarvestBrowser = registerPlugin('HarvestBrowser')
 
 
 const CHROME_DEFAULTS = {
-    showUrlBar: true,
+    showUrlBar: false,
     collapseUrlBarOnScroll: true,
     showBack: true,
-    showForward: false,
+    showForward: true,
     showReload: true,
     showShare: false,
     showClose: true,
