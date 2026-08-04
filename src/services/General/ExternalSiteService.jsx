@@ -2,6 +2,21 @@ import { Capacitor } from '@capacitor/core'
 import { InAppBrowser, BackgroundColor, ToolBarType, InvisibilityMode } from '@capgo/capacitor-inappbrowser'
 import { AppLauncher } from '@capacitor/app-launcher'
 import { setExternalSiteOpen } from './AppChromeService.jsx'
+import {
+    isAvailable as isHarvestBrowserAvailable,
+    openHarvestBrowser,
+    closeHarvestBrowser,
+    showHarvestBrowser,
+    runScriptInHarvestBrowser,
+    getHarvestBrowserCookies,
+    clearHarvestBrowserCookies,
+    attachHarvestBrowserListeners,
+} from './HarvestBrowserService.jsx'
+
+
+const PREFER_HARVEST_BROWSER = true
+
+const shouldUseHarvestBrowser = () => PREFER_HARVEST_BROWSER && isHarvestBrowserAvailable()
 
 
 const SCHOOL_EVERYWHERE_ORIGIN = 'https://schooleverywhere-harvest.com'
@@ -52,10 +67,14 @@ const openExternalSite = async ({ url, title, headers }) => {
     setExternalSiteOpen(true)
 
     try {
-        await InAppBrowser.openWebView({
-            ...buildWebViewOptions({ url, title }),
-            ...(headers ? { headers } : {}),
-        })
+        if (shouldUseHarvestBrowser()) {
+            await openHarvestBrowser({ url, headers })
+        } else {
+            await InAppBrowser.openWebView({
+                ...buildWebViewOptions({ url, title }),
+                ...(headers ? { headers } : {}),
+            })
+        }
 
         return true
     } catch (openError) {
@@ -72,12 +91,16 @@ const openHiddenExternalSite = async ({ url, title, headers }) => {
     setExternalSiteOpen(true)
 
     try {
-        await InAppBrowser.openWebView({
-            ...buildWebViewOptions({ url, title }),
-            ...(headers ? { headers } : {}),
-            hidden: true,
-            invisibilityMode: InvisibilityMode.FAKE_VISIBLE,
-        })
+        if (shouldUseHarvestBrowser()) {
+            await openHarvestBrowser({ url, headers, hidden: true })
+        } else {
+            await InAppBrowser.openWebView({
+                ...buildWebViewOptions({ url, title }),
+                ...(headers ? { headers } : {}),
+                hidden: true,
+                invisibilityMode: InvisibilityMode.FAKE_VISIBLE,
+            })
+        }
 
         return true
     } catch (openError) {
@@ -90,6 +113,12 @@ const openHiddenExternalSite = async ({ url, title, headers }) => {
 
 const revealExternalSite = async () => {
     try {
+        if (shouldUseHarvestBrowser()) {
+            await showHarvestBrowser()
+
+            return true
+        }
+
         await InAppBrowser.show()
 
         return true
@@ -103,6 +132,12 @@ const revealExternalSite = async () => {
 
 const runScriptInExternalSite = async (code) => {
     try {
+        if (shouldUseHarvestBrowser()) {
+            await runScriptInHarvestBrowser(code)
+
+            return true
+        }
+
         await InAppBrowser.executeScript({ code })
 
         return true
@@ -136,6 +171,12 @@ const closeExternalSite = async () => {
     }
 
     try {
+        if (shouldUseHarvestBrowser()) {
+            await closeHarvestBrowser()
+
+            return
+        }
+
         await InAppBrowser.close()
     } catch (closeError) {
         console.debug('[external-site] The web view was already closed', closeError)
@@ -161,6 +202,10 @@ const attachExternalSiteListeners = ({ onClose, onUrlChange, onMessage, onPageLo
                 }
             })
             .catch((listenError) => console.warn('[external-site] Could not listen for the web view', listenError))
+    }
+
+    if (shouldUseHarvestBrowser()) {
+        return attachHarvestBrowserListeners({ onClose, onPageLoaded, onUrlChange, onMessage })
     }
 
     if (Capacitor.isNativePlatform()) {
@@ -197,6 +242,8 @@ const getExternalSiteCookies = async (url) => {
     }
 
     try {
+        if (shouldUseHarvestBrowser()) { return await getHarvestBrowserCookies(url) }
+
         return await InAppBrowser.getCookies({ url })
     } catch (readError) {
         console.warn('[external-site] Could not read the session', readError)
@@ -212,6 +259,12 @@ const clearExternalSiteCookies = async (url) => {
     }
 
     try {
+        if (shouldUseHarvestBrowser()) {
+            await clearHarvestBrowserCookies(url)
+
+            return
+        }
+
         await InAppBrowser.clearCookies({ url })
     } catch (clearError) {
         console.warn('[external-site] Could not clear the stored session', clearError)

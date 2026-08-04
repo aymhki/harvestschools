@@ -389,15 +389,30 @@ public class HarvestBrowserDialog extends Dialog {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getContext().getResources().getDisplayMetrics());
     }
 
+    private boolean isTrustedCaller() {
+        String current = webView != null ? webView.getUrl() : null;
+
+        if (current == null) { return false; }
+
+        String host = Uri.parse(current).getHost();
+        String expected = Uri.parse(startUrl).getHost();
+
+        return host != null && host.equals(expected);
+    }
+
     private class Bridge {
         @JavascriptInterface
         public void postMessage(String rawJson) {
-            if (listener != null) { listener.onMessage(rawJson); }
+            webView.post(() -> {
+                if (isTrustedCaller() && listener != null) { listener.onMessage(rawJson); }
+            });
         }
 
         @JavascriptInterface
         public void closeBrowser() {
-            webView.post(() -> closeFromChrome());
+            webView.post(() -> {
+                if (isTrustedCaller()) { closeFromChrome(); }
+            });
         }
     }
 }
