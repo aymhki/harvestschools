@@ -86,6 +86,7 @@ jobs:
       - name: Build main + admin + mobile-app + corporate
         env:
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          VITE_TURNSTILE_SITE_KEY: ${{secrets.VITE_TURNSTILE_SITE_KEY}}
         run: |
           npm run build:main
           npm run build:admin
