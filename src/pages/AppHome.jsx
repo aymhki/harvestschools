@@ -180,7 +180,7 @@ const COPY = {
 }
 
 
-const WIDGET_EXCLUDED_ACTION_IDS = ['website', 'moreInfo', 'vacancies', 'admission']
+const WIDGET_EXCLUDED_ACTION_IDS = ['website', 'moreInfo', 'vacancies', 'admission', 'academics']
 
 const QUICK_ACTIONS = [
     { id: 'calendars', path: '/events', Icon: CalendarMonthOutlinedIcon },
