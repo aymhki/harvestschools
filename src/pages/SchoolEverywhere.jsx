@@ -124,6 +124,27 @@ function SchoolEverywhere() {
         return saved
     }, [])
 
+    const holdRevealedWebView = useCallback((credential) => {
+        revealedRef.current = true
+
+        watchForCloseRef.current = attachExternalSiteListeners({
+            onClose: async () => {
+                if (watchForCloseRef.current) {
+                    watchForCloseRef.current()
+                    watchForCloseRef.current = null
+                }
+
+                revealedRef.current = false
+
+                markExternalSiteClosed()
+
+                await endPortalSession(credential && credential.id)
+
+                goHome()
+            },
+        })
+    }, [goHome])
+
     useEffect(() => {
         if (target !== 'portal' || isOffline) { return }
 
@@ -158,27 +179,6 @@ function SchoolEverywhere() {
             isActive = false
         }
     }, [holdRevealedWebView, isOffline, refreshCredentials, t, target])
-
-    const holdRevealedWebView = useCallback((credential) => {
-        revealedRef.current = true
-
-        watchForCloseRef.current = attachExternalSiteListeners({
-            onClose: async () => {
-                if (watchForCloseRef.current) {
-                    watchForCloseRef.current()
-                    watchForCloseRef.current = null
-                }
-
-                revealedRef.current = false
-
-                markExternalSiteClosed()
-
-                await endPortalSession(credential && credential.id)
-
-                goHome()
-            },
-        })
-    }, [goHome])
 
     const applyOutcome = useCallback(async (result, credential) => {
         if (!isMountedRef.current) { return }
