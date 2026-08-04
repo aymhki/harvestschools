@@ -150,7 +150,7 @@ const confirmedStatus = 'Confirmed';
 const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
-const turnstileSiteKey = '0x4AAAAAAD4kVa77MhwoWgme';
+const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const TURNSTILE_SCRIPT_TIMEOUT_MS = 8000;
 

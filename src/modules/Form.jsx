@@ -2330,7 +2330,9 @@ function Form({
         ctx.fillStyle = textColor;
 
         const captchaCharacters = captchaValue.split('');
-        const characterWidths = captchaCharacters.map(character => ctx.measureText(character).width);
+        const measureCtx = document.createElement('canvas').getContext('2d');
+        measureCtx.font = ctx.font;
+        const characterWidths = captchaCharacters.map(character => measureCtx.measureText(character).width);
         const totalTextWidth = characterWidths.reduce((sum, width) => sum + width, 0) + (letterSpacing * Math.max(0, captchaCharacters.length - 1));
         const centerY = contentHeight / 2;
         let currentX = (contentWidth - totalTextWidth) / 2;
