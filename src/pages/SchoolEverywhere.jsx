@@ -27,6 +27,7 @@ import {
     userTypeFromLabel,
 } from '../services/General/SchoolEverywhereAuthService.jsx'
 import {
+    attachExternalSiteListeners,
     closeExternalSite,
     getSchoolEverywhereUrl,
     markExternalSiteClosed,
@@ -71,6 +72,8 @@ function SchoolEverywhere() {
 
     const isMountedRef = useRef(true)
     const hasHandledDirectTargetRef = useRef(false)
+    const revealedRef = useRef(false)
+    const watchForCloseRef = useRef(null)
 
     const selectedCredential = credentials.find((candidate) => candidate.id === selectedCredentialId) || null
 
@@ -130,7 +133,24 @@ function SchoolEverywhere() {
         if (!isMountedRef.current) { return }
 
         if (result.outcome === LOGIN_OUTCOME.LANDED) {
-            goHome()
+            revealedRef.current = true
+
+            watchForCloseRef.current = attachExternalSiteListeners({
+                onClose: async () => {
+                    if (watchForCloseRef.current) {
+                        watchForCloseRef.current()
+                        watchForCloseRef.current = null
+                    }
+
+                    revealedRef.current = false
+
+                    markExternalSiteClosed()
+
+                    await endPortalSession(credential && credential.id)
+
+                    goHome()
+                },
+            })
 
             return
         }
@@ -277,7 +297,9 @@ function SchoolEverywhere() {
                     rememberWithBiometrics: biometricsAvailable,
                 })
 
-                goHome()
+                await refreshCredentials()
+
+                await applyOutcome(result, candidate)
 
                 return false
             }
@@ -294,7 +316,7 @@ function SchoolEverywhere() {
         }
 
         return false
-    }, [applyOutcome, editingCredential, goHome, runSignIn, submittingLocal, t])
+    }, [applyOutcome, editingCredential, refreshCredentials, runSignIn, submittingLocal, t])
 
     const handleRemoveCredential = useCallback(async () => {
         if (!selectedCredential || !window.confirm(t('schooleverywhere.remove-confirm'))) { return }
@@ -313,11 +335,16 @@ function SchoolEverywhere() {
 
     useEffect(() => {
         return () => {
-            markExternalSiteClosed()
+            if (watchForCloseRef.current) {
+                watchForCloseRef.current()
+                watchForCloseRef.current = null
+            }
 
-            closeExternalSite()
+            if (!revealedRef.current) {
+                markExternalSiteClosed()
 
-            endPortalSession()
+                closeExternalSite()
+            }
         }
     }, [])
 

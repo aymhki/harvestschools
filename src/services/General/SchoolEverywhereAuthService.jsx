@@ -21,8 +21,11 @@ import {
     runScriptInExternalSite,
     closeExternalSite,
     clearExternalSiteCookies,
+    getExternalSiteCookies,
+    navigateExternalSite,
     markExternalSiteClosed,
 } from './ExternalSiteService.jsx'
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin'
 
 
 const SCHOOL_EVERYWHERE_NAMESPACE = 'schooleverywhere'
@@ -30,8 +33,6 @@ const SCHOOL_EVERYWHERE_NAMESPACE = 'schooleverywhere'
 const PORTAL_LOGIN_URL = getSchoolEverywhereUrl('portal')
 
 const LOGIN_PATHS = ['/schooleverywhere/', '/schooleverywhere/index.php']
-
-const EXPECTED_FIELD_NAMES = ['iden', 'password', 'typeofuser', 'username']
 
 const MESSAGE_CHANNEL = 'harvest-schooleverywhere'
 
@@ -43,8 +44,7 @@ const LOGIN_OUTCOME = {
     DISMISSED: 'dismissed',
 }
 
-/* Only a safety net for a connection that never answers. Every real outcome is
- * decided by reading the page, so a slow connection simply reports later. */
+
 const LOGIN_TIMEOUT_MS = 90000
 
 const USER_TYPES = [
@@ -116,80 +116,122 @@ const isPortalUrl = (url) => {
 
 const buildLoginInjectionScript = (credential, password) => {
     const payload = JSON.stringify({
-        username: credential.username,
+        uname: credential.username,
         password,
         typeofuser: credential.typeofuser,
         iden: credential.iden,
         channel: MESSAGE_CHANNEL,
-        expected: EXPECTED_FIELD_NAMES,
     })
 
     return `(async () => {
     const input = ${payload};
-    const send = (status, value) => {
-        try { window.mobileApp.postMessage({ detail: { channel: input.channel, status: status, value: value || '' } }); } catch (ignored) {}
+    const send = (payload) => {
+        try { window.mobileApp.postMessage({ detail: Object.assign({ channel: input.channel }, payload) }); } catch (ignored) {}
     };
-    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     try {
-        const form = document.forms['login-form'];
+        const inline = Array.prototype.map.call(document.scripts, (node) => node.src ? '' : node.textContent).join('\\n');
+        const dataLine = (inline.match(/var\\s+dataString\\s*=\\s*[^;]+;/) || [])[0] || '';
+        const endpoint = (inline.match(/["']([\\w./-]*processed\\.php)["']/) || [])[1];
+        const mydb = (dataLine.match(/mydb=([^&"'+]*)/) || [])[1];
+        const mip = (dataLine.match(/mip=([^&"'+]*)/) || [])[1];
 
-        if (!form) { send('form-changed', 'no-form'); return; }
+        if (!endpoint || mydb === undefined || mip === undefined) {
+            send({ verdict: 'form-changed', message: 'sign-in endpoint not found' });
 
-        const usernameField = form.querySelector('#username');
-        const passwordField = form.querySelector('#password');
-        const typeField = form.querySelector('#typeofuser');
-        const submitButton = form.querySelector('input[type=submit][name=submit]');
-
-        if (!usernameField || !passwordField || !typeField || !submitButton) { send('form-changed', 'missing-core-field'); return; }
-
-        const hasType = Array.prototype.some.call(typeField.options, (option) => option.value === input.typeofuser);
-
-        if (!hasType) { send('form-changed', 'unknown-user-type'); return; }
-
-        typeField.value = input.typeofuser;
-        typeField.dispatchEvent(new Event('change', { bubbles: true }));
-
-        let identifierField = null;
-
-        for (let attempt = 0; attempt < 60 && !identifierField; attempt++) {
-            await wait(100);
-            identifierField = form.querySelector('#iden');
+            return;
         }
 
-        if (!identifierField) { send('form-changed', 'no-identifier-field'); return; }
-
-        const presentNames = Array.prototype.filter.call(form.elements, (element) => element.name && element.type !== 'submit')
-            .map((element) => element.name)
-            .sort();
-
-        if (presentNames.join(',') !== input.expected.join(',')) { send('form-changed', presentNames.join(',')); return; }
-
-        usernameField.value = input.username;
-        passwordField.value = input.password;
-        identifierField.value = input.iden;
-
-        [usernameField, passwordField, identifierField].forEach((field) => {
-            field.dispatchEvent(new Event('input', { bubbles: true }));
-            field.dispatchEvent(new Event('change', { bubbles: true }));
+        const body = new URLSearchParams({
+            uname: input.uname,
+            password: input.password,
+            typeofuser: input.typeofuser,
+            iden: input.iden,
+            remember: '',
+            mydb: mydb,
+            mip: mip,
         });
 
-        send('submitting');
+        send({ verdict: 'submitting' });
 
-        submitButton.click();
+        const response = await fetch(new URL(endpoint, location.href).href, {
+            method: 'POST',
+            body: body,
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
+
+        const answer = (await response.text()).trim();
+
+        if (!response.ok) {
+            send({ verdict: 'unreadable', message: 'HTTP ' + response.status });
+
+            return;
+        }
+
+        if (/^correct/i.test(answer)) {
+            send({ verdict: 'authenticated', token: answer });
+
+            return;
+        }
+
+        send({ verdict: 'rejected', message: answer.replace(/<[^>]*>/g, ' ').trim() });
     } catch (injectionError) {
-        send('form-changed', String(injectionError && injectionError.message));
+        send({ verdict: 'unreadable', message: String(injectionError && injectionError.message) });
     }
 })();`
 }
 
 
+const portalCookieKey = (credentialId) => `${SCHOOL_EVERYWHERE_NAMESPACE}_cookies_${credentialId}`
 
-const CLEAR_PORTAL_SESSION_ON_CLOSE = false
+
+const savePortalCookies = async (credentialId) => {
+    if (!credentialId) { return }
+
+    try {
+        const jar = await getExternalSiteCookies(PORTAL_LOGIN_URL)
+
+        if (jar && Object.keys(jar).length > 0) {
+            await SecureStoragePlugin.set({ key: portalCookieKey(credentialId), value: JSON.stringify(jar) })
+        }
+    } catch (saveError) {
+        console.warn('[schooleverywhere] Could not store the session', saveError)
+    }
+}
 
 
-const endPortalSession = async () => {
-    if (!CLEAR_PORTAL_SESSION_ON_CLOSE) { return }
+const readPortalCookieHeader = async (credentialId) => {
+    if (!credentialId) { return null }
+
+    try {
+        const stored = await SecureStoragePlugin.get({ key: portalCookieKey(credentialId) })
+        const jar = stored && stored.value ? JSON.parse(stored.value) : null
+
+        if (!jar) { return null }
+
+        const pairs = Object.keys(jar).map((name) => `${name}=${jar[name]}`)
+
+        return pairs.length > 0 ? pairs.join('; ') : null
+    } catch (readError) {
+        return null
+    }
+}
+
+
+const forgetPortalCookies = async (credentialId) => {
+    if (!credentialId) { return }
+
+    try {
+        await SecureStoragePlugin.remove({ key: portalCookieKey(credentialId) })
+    } catch (removeError) {
+        console.log(removeError)
+    }
+}
+
+
+const endPortalSession = async (credentialId) => {
+    await forgetPortalCookies(credentialId)
 
     await clearExternalSiteCookies(PORTAL_LOGIN_URL)
 }
@@ -201,13 +243,8 @@ const buildVerdictScript = () => `(() => {
     };
 
     try {
-        const form = document.forms['login-form'];
-
-        if (form) {
-            const errorNode = document.getElementById('errorMessage');
-            const message = errorNode ? errorNode.textContent.trim() : '';
-
-            send({ verdict: message ? 'rejected' : 'login-page', message: message, url: location.href });
+        if (document.forms['login-form']) {
+            send({ verdict: 'login-page', url: location.href });
 
             return;
         }
@@ -226,13 +263,15 @@ const buildVerdictScript = () => `(() => {
 
 
 const signInToPortal = async ({ credential, password, onStage }) => {
-    const startUrl = credential.landingUrl || PORTAL_LOGIN_URL
+    const storedCookieHeader = await readPortalCookieHeader(credential.id)
+    const startUrl = storedCookieHeader && credential.landingUrl ? credential.landingUrl : PORTAL_LOGIN_URL
 
     let detachListeners = () => {}
     let timeoutId = null
     let isSettled = false
     let resolveOutcome = null
     let hasInjected = false
+    let isAuthenticated = false
 
     const outcomePromise = new Promise((resolve) => {
         resolveOutcome = resolve
@@ -257,11 +296,25 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     const handleVerdict = (report) => {
         if (isSettled) { return }
 
-        if (report.verdict === 'landed') {
-            settle(LOGIN_OUTCOME.LANDED, { landingUrl: report.url })
+        if (report.verdict === 'submitting') {
+            if (onStage) { onStage('submitting') }
+        } else if (report.verdict === 'authenticated') {
+            isAuthenticated = true
+
+            if (credential.landingUrl) {
+                navigateExternalSite(credential.landingUrl)
+            } else {
+                runScriptInExternalSite(buildFollowThroughScript())
+            }
         } else if (report.verdict === 'rejected') {
             settle(LOGIN_OUTCOME.REJECTED, { message: report.message })
+        } else if (report.verdict === 'form-changed') {
+            settle(LOGIN_OUTCOME.FORM_CHANGED, { message: report.message })
+        } else if (report.verdict === 'landed') {
+            settle(LOGIN_OUTCOME.LANDED, { landingUrl: report.url })
         } else if (report.verdict === 'login-page') {
+            if (isAuthenticated) { return }
+
             if (hasInjected) {
                 settle(LOGIN_OUTCOME.REJECTED)
 
@@ -285,22 +338,18 @@ const signInToPortal = async ({ credential, password, onStage }) => {
         onPageLoaded: () => readPage(),
         onUrlChange: () => readPage(),
         onMessage: (detail) => {
-            if (!detail || detail.channel !== MESSAGE_CHANNEL) { return }
-
-            if (detail.verdict) {
-                handleVerdict(detail)
-            } else if (detail.status === 'form-changed') {
-                settle(LOGIN_OUTCOME.FORM_CHANGED, { message: detail.value })
-            } else if (detail.status === 'submitting' && onStage) {
-                onStage('submitting')
-            }
+            if (detail && detail.channel === MESSAGE_CHANNEL) { handleVerdict(detail) }
         },
     })
 
     timeoutId = setTimeout(() => settle(LOGIN_OUTCOME.TIMED_OUT), LOGIN_TIMEOUT_MS)
 
     try {
-        await openHiddenExternalSite({ url: startUrl, title: 'SchoolEverywhere' })
+        await openHiddenExternalSite({
+            url: startUrl,
+            title: 'SchoolEverywhere',
+            headers: storedCookieHeader ? { Cookie: storedCookieHeader } : undefined,
+        })
 
         readPage()
     } catch (openError) {
@@ -314,10 +363,14 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     if (result.outcome === LOGIN_OUTCOME.LANDED) {
         await rememberLandingUrl(credential.id, result.landingUrl)
 
+        await savePortalCookies(credential.id)
+
         await revealExternalSite()
     } else if (result.outcome !== LOGIN_OUTCOME.DISMISSED) {
         if (credential.id && credential.landingUrl && result.outcome === LOGIN_OUTCOME.REJECTED) {
             await forgetLandingUrl(credential.id)
+
+            await forgetPortalCookies(credential.id)
         }
 
         markExternalSiteClosed()
@@ -328,6 +381,14 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     return result
 }
 
+
+const buildFollowThroughScript = () => `(() => {
+    try {
+        const button = document.querySelector('input[type=submit][name=submit]');
+
+        if (button) { button.click(); }
+    } catch (ignored) {}
+})();`
 
 
 const listPortalCredentials = () => listSecureCredentials(SCHOOL_EVERYWHERE_NAMESPACE)
