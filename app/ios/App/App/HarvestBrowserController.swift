@@ -240,7 +240,7 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         let stack = UIStackView(arrangedSubviews: buttons)
         stack.axis = .horizontal
         stack.distribution = .fillEqually
-        stack.spacing = 2
+        stack.spacing = 14
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         effectView.contentView.addSubview(stack)

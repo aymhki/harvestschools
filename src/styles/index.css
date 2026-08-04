@@ -16,6 +16,12 @@
     font-family: var(--english-normal-font) !important;
 }
 
+.always-english-title-font,
+.always-english-title-font:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-title-font) !important;
+}
+
 @font-face {
     font-family: 'Futura';
     src: url('/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),

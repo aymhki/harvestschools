@@ -257,7 +257,17 @@ public class HarvestBrowserDialog extends Dialog {
         int outerPad = dp(10);
         row.setPadding(outerPad, outerPad, outerPad, outerPad);
 
-        for (ImageButton button : buttons) { row.addView(button); }
+        for (int index = 0; index < buttons.size(); index++) {
+            ImageButton button = buttons.get(index);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(44), dp(44));
+
+            if (index > 0) { lp.setMarginStart(dp(14)); }
+
+            button.setLayoutParams(lp);
+
+            row.addView(button);
+        }
 
         CardView card = makeGlassSurface(26);
         card.addView(row);
