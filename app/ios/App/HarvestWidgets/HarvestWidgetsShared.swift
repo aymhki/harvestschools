@@ -9,6 +9,10 @@ let harvestQuickActionsKey = "harvest_quick_actions"
 let harvestUniversalLinkHost = "https://harvestschools.com"
 
 
+enum HarvestUntranslatedActions {
+    static let identifiers: Set<String> = ["schooleverywhere"]
+}
+
 struct HarvestQuickAction: Codable, Identifiable, Hashable {
 
     let id: String

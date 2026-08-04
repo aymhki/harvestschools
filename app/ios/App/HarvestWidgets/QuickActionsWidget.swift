@@ -145,6 +145,10 @@ private struct QuickActionTile: View {
         min(max(min(tileSize.width, tileSize.height) * 0.16, 12), 30)
     }
 
+    private var labelLanguage: String {
+        HarvestUntranslatedActions.identifiers.contains(action.id) ? "en" : language
+    }
+
     var body: some View {
         Link(destination: action.destinationURL) {
             VStack(spacing: labelSize * 0.45) {
@@ -153,7 +157,7 @@ private struct QuickActionTile: View {
                     .frame(width: iconSize, height: iconSize)
 
                 Text(action.label)
-                    .font(HarvestFont.label(for: language, size: labelSize))
+                    .font(HarvestFont.label(for: labelLanguage, size: labelSize))
                     .foregroundStyle(harvestContentColor)
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.6)

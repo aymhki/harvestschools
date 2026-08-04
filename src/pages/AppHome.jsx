@@ -485,7 +485,9 @@ function AppHome() {
                         >
                             <action.Icon className="app-home-tile-icon" />
 
-                            <span className="app-home-tile-label">{copy.actions[action.id]}</span>
+                            <span className={`app-home-tile-label ${action.id === 'schooleverywhere' ? 'always-english-font' : ''}`}>
+                                {copy.actions[action.id]}
+                            </span>
                         </button>
                     ))}
                 </div>

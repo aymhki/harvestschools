@@ -153,7 +153,9 @@ function WidgetActionsControls({ isOpen, catalogue, copy, language, onClose, onC
                             >
                                 <action.Icon className={'widget-actions-choice-icon'}/>
 
-                                <span className={'widget-actions-choice-label'}>{action.label}</span>
+                                <span className={`widget-actions-choice-label ${action.id === 'schooleverywhere' ? 'always-english-font' : ''}`}>
+                                    {action.label}
+                                </span>
 
                                 {isChosen && <CheckOutlinedIcon className={'widget-actions-choice-state'}/>}
                             </button>

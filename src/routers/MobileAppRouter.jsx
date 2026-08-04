@@ -5,7 +5,6 @@ import Spinner from '../modules/Spinner.jsx';
 import AdminSidebar from '../modules/AdminSidebar.jsx';
 import AdminFooter from '../modules/AdminFooter.jsx';
 import NavigationBar from '../modules/NavigationBar.jsx';
-import Footer from '../modules/Footer.jsx';
 import '../styles/App.css';
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from '../services/Admin/Session/AdminNavigationServices.jsx';
 import { App as CapacitorApp } from '@capacitor/app';
@@ -211,7 +210,7 @@ function MobileAppRouter() {
                         </PageTransition>
                     </Suspense>
                 </div>
-                {isAdminSection ? <AdminFooter /> : !isClientChromeExcluded && <Footer />}
+                {isAdminSection && <AdminFooter />}
             </div>
         </>
     );

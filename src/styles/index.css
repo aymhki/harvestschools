@@ -10,6 +10,12 @@
     /*letter-spacing: 0 !important;*/
 }
 
+.always-english-font,
+.always-english-font:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font) !important;
+}
+
 @font-face {
     font-family: 'Futura';
     src: url('/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),
