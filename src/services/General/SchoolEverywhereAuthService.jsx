@@ -43,13 +43,9 @@ const LOGIN_OUTCOME = {
     DISMISSED: 'dismissed',
 }
 
-const LOGIN_TIMEOUT_MS = 45000
-
-const SUBMIT_SETTLE_MS = 8000
-
-const PROBE_ATTEMPTS = 40
-
-const PROBE_INTERVAL_MS = 750
+/* Only a safety net for a connection that never answers. Every real outcome is
+ * decided by reading the page, so a slow connection simply reports later. */
+const LOGIN_TIMEOUT_MS = 90000
 
 const USER_TYPES = [
     { value: 'management', slug: 'management' },
@@ -130,8 +126,8 @@ const buildLoginInjectionScript = (credential, password) => {
 
     return `(async () => {
     const input = ${payload};
-    const send = (status, detail) => {
-        try { window.mobileApp.postMessage({ channel: input.channel, status: status, detail: detail || '' }); } catch (ignored) {}
+    const send = (status, value) => {
+        try { window.mobileApp.postMessage({ detail: { channel: input.channel, status: status, value: value || '' } }); } catch (ignored) {}
     };
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -199,8 +195,33 @@ const endPortalSession = async () => {
 }
 
 
-const buildLocationProbeScript = () => `(() => {
-    try { window.mobileApp.postMessage({ channel: '${MESSAGE_CHANNEL}', status: 'location', detail: location.href }); } catch (ignored) {}
+const buildVerdictScript = () => `(() => {
+    const send = (payload) => {
+        try { window.mobileApp.postMessage({ detail: Object.assign({ channel: '${MESSAGE_CHANNEL}' }, payload) }); } catch (ignored) {}
+    };
+
+    try {
+        const form = document.forms['login-form'];
+
+        if (form) {
+            const errorNode = document.getElementById('errorMessage');
+            const message = errorNode ? errorNode.textContent.trim() : '';
+
+            send({ verdict: message ? 'rejected' : 'login-page', message: message, url: location.href });
+
+            return;
+        }
+
+        if (document.querySelector('meta[http-equiv="refresh" i]')) {
+            send({ verdict: 'redirecting', url: location.href });
+
+            return;
+        }
+
+        send({ verdict: 'landed', url: location.href });
+    } catch (verdictError) {
+        send({ verdict: 'unreadable', message: String(verdictError && verdictError.message) });
+    }
 })();`
 
 
@@ -212,14 +233,12 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     let isSettled = false
     let resolveOutcome = null
     let hasInjected = false
-    let submittedAt = 0
-    let hasReloadedSinceSubmit = false
 
     const outcomePromise = new Promise((resolve) => {
         resolveOutcome = resolve
     })
 
-    const settle = (outcome, landingUrl) => {
+    const settle = (outcome, extra) => {
         if (isSettled) { return }
 
         isSettled = true
@@ -228,34 +247,32 @@ const signInToPortal = async ({ credential, password, onStage }) => {
 
         detachListeners()
 
-        resolveOutcome({ outcome, landingUrl: landingUrl || null })
+        resolveOutcome({ outcome, landingUrl: null, message: '', ...(extra || {}) })
     }
 
-    const considerUrl = (url) => {
-        if (!url || !isPortalUrl(url) || isSettled) { return }
+    const readPage = () => {
+        if (!isSettled) { runScriptInExternalSite(buildVerdictScript()) }
+    }
 
-        if (!isLoginUrl(url)) {
-            settle(LOGIN_OUTCOME.LANDED, url)
+    const handleVerdict = (report) => {
+        if (isSettled) { return }
 
-            return
-        }
+        if (report.verdict === 'landed') {
+            settle(LOGIN_OUTCOME.LANDED, { landingUrl: report.url })
+        } else if (report.verdict === 'rejected') {
+            settle(LOGIN_OUTCOME.REJECTED, { message: report.message })
+        } else if (report.verdict === 'login-page') {
+            if (hasInjected) {
+                settle(LOGIN_OUTCOME.REJECTED)
 
-        if (!hasInjected) {
+                return
+            }
+
             hasInjected = true
 
             if (onStage) { onStage('signing-in') }
 
             runScriptInExternalSite(buildLoginInjectionScript(credential, password))
-
-            return
-        }
-
-        if (submittedAt === 0) { return }
-
-        const submitHasHadLongEnough = Date.now() - submittedAt > SUBMIT_SETTLE_MS
-
-        if (hasReloadedSinceSubmit || submitHasHadLongEnough) {
-            settle(LOGIN_OUTCOME.REJECTED)
         }
     }
 
@@ -265,23 +282,17 @@ const signInToPortal = async ({ credential, password, onStage }) => {
 
             settle(LOGIN_OUTCOME.DISMISSED)
         },
-        onPageLoaded: () => {
-            if (submittedAt !== 0) { hasReloadedSinceSubmit = true }
-
-            runScriptInExternalSite(buildLocationProbeScript())
-        },
-        onUrlChange: (url) => considerUrl(url),
+        onPageLoaded: () => readPage(),
+        onUrlChange: () => readPage(),
         onMessage: (detail) => {
             if (!detail || detail.channel !== MESSAGE_CHANNEL) { return }
 
-            if (detail.status === 'location') {
-                considerUrl(detail.detail)
+            if (detail.verdict) {
+                handleVerdict(detail)
             } else if (detail.status === 'form-changed') {
-                settle(LOGIN_OUTCOME.FORM_CHANGED)
-            } else if (detail.status === 'submitting') {
-                submittedAt = Date.now()
-
-                if (onStage) { onStage('submitting') }
+                settle(LOGIN_OUTCOME.FORM_CHANGED, { message: detail.value })
+            } else if (detail.status === 'submitting' && onStage) {
+                onStage('submitting')
             }
         },
     })
@@ -291,13 +302,7 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     try {
         await openHiddenExternalSite({ url: startUrl, title: 'SchoolEverywhere' })
 
-        for (let attempt = 0; attempt < PROBE_ATTEMPTS && !isSettled; attempt++) {
-            await runScriptInExternalSite(buildLocationProbeScript())
-
-            if (isSettled) { break }
-
-            await new Promise((resolve) => setTimeout(resolve, PROBE_INTERVAL_MS))
-        }
+        readPage()
     } catch (openError) {
         console.warn('[schooleverywhere] Could not start the sign in', openError)
 
@@ -322,6 +327,7 @@ const signInToPortal = async ({ credential, password, onStage }) => {
 
     return result
 }
+
 
 
 const listPortalCredentials = () => listSecureCredentials(SCHOOL_EVERYWHERE_NAMESPACE)
