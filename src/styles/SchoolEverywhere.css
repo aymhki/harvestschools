@@ -89,8 +89,16 @@
     cursor: pointer;
     font-size: 0.9rem;
     font-family: inherit;
+    font-weight: normal;
+    letter-spacing: normal;
+    line-height: 1.5;
     box-shadow: none;
     filter: none;
+}
+
+.school-everywhere-link-btn:lang(ar) {
+    font-family: inherit;
+    letter-spacing: normal;
 }
 
 .school-everywhere-link-btn:hover,
@@ -98,12 +106,18 @@
     background: none;
     color: inherit;
     opacity: 1;
+    filter: none;
+    box-shadow: none;
 }
 
 .school-everywhere-link-btn:disabled {
     cursor: not-allowed;
     opacity: 0.4;
     text-decoration: none;
+}
+
+.school-everywhere-login-form-wrapper > .school-everywhere-link-btn {
+    margin-top: 1.5rem;
 }
 
 .school-everywhere {

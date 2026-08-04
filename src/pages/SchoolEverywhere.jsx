@@ -22,6 +22,7 @@ import {
     readBiometricPassword,
     removePortalCredential,
     savePortalCredential,
+    resumePortalSession,
     endPortalSession,
     signInToPortal,
     userTypeFromLabel,
@@ -124,33 +125,66 @@ function SchoolEverywhere() {
     }, [])
 
     useEffect(() => {
-        if (target !== 'portal') { return }
+        if (target !== 'portal' || isOffline) { return }
 
-        refreshCredentials()
-    }, [refreshCredentials, target])
+        let isActive = true
+
+        const openSavedSessionOrAsk = async () => {
+            const saved = await refreshCredentials()
+
+            if (!isActive || saved.length === 0) { return }
+
+            const preferredId = await getPreferredCredentialId(saved)
+            const preferred = saved.find((candidate) => candidate.id === preferredId)
+
+            if (!isActive || !preferred) { return }
+
+            setStageLabel(t('schooleverywhere.opening'))
+            setSubmittingLocal(true)
+
+            const resumed = await resumePortalSession({ credential: preferred })
+
+            if (!isActive) { return }
+
+            setStageLabel('')
+            setSubmittingLocal(false)
+
+            if (resumed) { holdRevealedWebView(preferred) }
+        }
+
+        openSavedSessionOrAsk()
+
+        return () => {
+            isActive = false
+        }
+    }, [holdRevealedWebView, isOffline, refreshCredentials, t, target])
+
+    const holdRevealedWebView = useCallback((credential) => {
+        revealedRef.current = true
+
+        watchForCloseRef.current = attachExternalSiteListeners({
+            onClose: async () => {
+                if (watchForCloseRef.current) {
+                    watchForCloseRef.current()
+                    watchForCloseRef.current = null
+                }
+
+                revealedRef.current = false
+
+                markExternalSiteClosed()
+
+                await endPortalSession(credential && credential.id)
+
+                goHome()
+            },
+        })
+    }, [goHome])
 
     const applyOutcome = useCallback(async (result, credential) => {
         if (!isMountedRef.current) { return }
 
         if (result.outcome === LOGIN_OUTCOME.LANDED) {
-            revealedRef.current = true
-
-            watchForCloseRef.current = attachExternalSiteListeners({
-                onClose: async () => {
-                    if (watchForCloseRef.current) {
-                        watchForCloseRef.current()
-                        watchForCloseRef.current = null
-                    }
-
-                    revealedRef.current = false
-
-                    markExternalSiteClosed()
-
-                    await endPortalSession(credential && credential.id)
-
-                    goHome()
-                },
-            })
+            holdRevealedWebView(credential)
 
             return
         }
@@ -174,7 +208,7 @@ function SchoolEverywhere() {
         if (result.outcome === LOGIN_OUTCOME.TIMED_OUT) {
             setNotice(t('schooleverywhere.timed-out'))
         }
-    }, [goHome, t])
+    }, [holdRevealedWebView, t])
 
     const runSignIn = useCallback(async (credential, password) => {
         setStageLabel(t('schooleverywhere.opening'))
