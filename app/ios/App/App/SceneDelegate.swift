@@ -7,6 +7,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var pullToRefreshController: PullToRefreshController?
     private var webViewProcessRecovery: WebViewProcessRecovery?
     private let appChromePlugin = AppChromePlugin()
+    private let harvestBrowserPlugin = HarvestBrowserPlugin()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -43,6 +44,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         bridgeVC.bridge?.registerPluginInstance(WalletPassPlugin())
         bridgeVC.bridge?.registerPluginInstance(HomeWidgetPlugin())
         bridgeVC.bridge?.registerPluginInstance(appChromePlugin)
+        bridgeVC.bridge?.registerPluginInstance(harvestBrowserPlugin)
         webView.allowsBackForwardNavigationGestures = true
 
         webViewProcessRecovery = WebViewProcessRecovery(webView: webView)
