@@ -42,6 +42,8 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
     private var backObservation: NSKeyValueObservation?
     private var forwardObservation: NSKeyValueObservation?
     private var urlObservation: NSKeyValueObservation?
+    private var scrollObservation: NSKeyValueObservation?
+    private var webViewConstraints: [NSLayoutConstraint] = []
 
     private var urlChipTopConstraint: NSLayoutConstraint?
     private var isUrlChipCollapsed = false
@@ -65,6 +67,7 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         backObservation?.invalidate()
         forwardObservation?.invalidate()
         urlObservation?.invalidate()
+        scrollObservation?.invalidate()
         webView?.configuration.userContentController.removeScriptMessageHandler(forName: messageHandlerName)
     }
 
@@ -97,20 +100,46 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
 
         view.addSubview(webView)
 
+        activateWebViewConstraints()
+
+        scrollObservation = webView.scrollView.observe(\.contentOffset, options: [.new]) { [weak self] scrollView, _ in
+            guard let self = self, self.chrome.showUrlBar, self.chrome.collapseUrlBarOnScroll else { return }
+
+            let offset = scrollView.contentOffset.y
+
+            guard abs(offset - self.lastScrollOffset) > self.scrollTolerance else { return }
+
+            let isScrollingDown = offset > self.lastScrollOffset
+
+            self.lastScrollOffset = offset
+
+            self.setUrlChipCollapsed(isScrollingDown && offset > 0)
+        }
+    }
+
+    private func activateWebViewConstraints() {
         let topAnchorToUse = chrome.keepTopInset ? view.safeAreaLayoutGuide.topAnchor : view.topAnchor
 
-        NSLayoutConstraint.activate([
+        webViewConstraints = [
             webView.topAnchor.constraint(equalTo: topAnchorToUse),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+        ]
 
-        webView.scrollView.addObserver(self, forKeyPath: "contentOffset", options: [.new], context: nil)
+        NSLayoutConstraint.activate(webViewConstraints)
+    }
+
+    func detachWebViewForParking() {
+        NSLayoutConstraint.deactivate(webViewConstraints)
+
+        webViewConstraints = []
     }
 
     func reattachWebView() {
         guard webView.superview !== view else { return }
+
+        NSLayoutConstraint.deactivate(webViewConstraints)
 
         webView.removeFromSuperview()
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -118,31 +147,11 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
 
         view.insertSubview(webView, at: 0)
 
-        let topAnchorToUse = chrome.keepTopInset ? view.safeAreaLayoutGuide.topAnchor : view.topAnchor
-
-        NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: topAnchorToUse),
-            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+        activateWebViewConstraints()
 
         view.setNeedsLayout()
     }
 
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard keyPath == "contentOffset", chrome.showUrlBar, chrome.collapseUrlBarOnScroll else { return }
-
-        let offset = webView.scrollView.contentOffset.y
-
-        guard abs(offset - lastScrollOffset) > scrollTolerance else { return }
-
-        let isScrollingDown = offset > lastScrollOffset
-
-        lastScrollOffset = offset
-
-        setUrlChipCollapsed(isScrollingDown && offset > 0)
-    }
 
     private static func makeGlass(interactive: Bool) -> UIVisualEffect {
         if #available(iOS 26.0, *) {

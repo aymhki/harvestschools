@@ -36,6 +36,8 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
     private func attachWebViewToWindow(_ webView: WKWebView) -> Bool {
         guard let window = activeWindow() else { return false }
 
+        controller?.detachWebViewForParking()
+
         let frame = CGRect(
             x: window.bounds.maxX + 2048,
             y: 0,
@@ -334,7 +336,9 @@ public class HarvestBrowserPlugin: CAPPlugin, CAPBridgedPlugin, HarvestBrowserCo
         notifyListeners("urlChange", data: ["url": url])
     }
 
-    func harvestBrowserDidReceiveMessage(_ detail: [String: Any]) {
-        notifyListeners("messageFromWebview", data: ["detail": detail])
+    func harvestBrowserDidReceiveMessage(_ payload: [String: Any]) {
+        let inner = payload["detail"] as? [String: Any] ?? payload
+
+        notifyListeners("messageFromWebview", data: ["detail": inner])
     }
 }
