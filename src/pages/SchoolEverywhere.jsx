@@ -22,6 +22,7 @@ import {
     readBiometricPassword,
     removePortalCredential,
     savePortalCredential,
+    endPortalSession,
     signInToPortal,
     userTypeFromLabel,
 } from '../services/General/SchoolEverywhereAuthService.jsx'
@@ -49,74 +50,15 @@ const MODE = {
     MANUAL: 'manual',
 }
 
-const COPY = {
-    en: {
-        title: 'SchoolEverywhere',
-        checking: 'Checking this device…',
-        opening: 'Opening the portal…',
-        signingIn: 'Signing you in…',
-        signInWith: 'Sign in',
-        signingInButton: 'Signing in…',
-        accountLabel: 'Account',
-        usernameLabel: 'Username',
-        passwordLabel: 'Password',
-        userTypeLabel: 'User type',
-        identifierLabel: 'Identifier',
-        identifierHint: 'The identifier your school gave you for the portal.',
-        addAnother: 'Add another account',
-        editSaved: 'Change saved details',
-        removeSaved: 'Remove this account',
-        backToSaved: 'Use a saved account',
-        home: 'Back to home',
-        offlineTitle: 'You are offline',
-        offlineBody: 'SchoolEverywhere needs a connection. Reconnect and try again.',
-        rejected: 'That did not work. Your username, password or identifier may have changed on the portal — check them below.',
-        formChanged: 'SchoolEverywhere changed its sign-in page, so we opened it directly for you.',
-        timedOut: 'The portal took too long to answer. Please try again.',
-        sessionEnded: 'Your portal session ended. Sign in again to carry on.',
-        biometricFailed: 'Biometric sign-in was not completed. Please try again or enter your details.',
-        noSavedPassword: 'No saved password was found on this device. Please enter your details again.',
-        removeConfirm: 'Remove this saved account from this device?',
-    },
-    ar: {
-        title: 'SchoolEverywhere',
-        checking: '…جاري التحقق من هذا الجهاز',
-        opening: '…جاري فتح البوابة',
-        signingIn: '…جاري تسجيل الدخول',
-        signInWith: 'تسجيل الدخول',
-        signingInButton: '…جاري تسجيل الدخول',
-        accountLabel: 'الحساب',
-        usernameLabel: 'اسم المستخدم',
-        passwordLabel: 'كلمة المرور',
-        userTypeLabel: 'نوع المستخدم',
-        identifierLabel: 'المعرّف',
-        identifierHint: 'المعرّف الذي منحته لك المدرسة للبوابة.',
-        addAnother: 'إضافة حساب آخر',
-        editSaved: 'تغيير البيانات المحفوظة',
-        removeSaved: 'إزالة هذا الحساب',
-        backToSaved: 'استخدام حساب محفوظ',
-        home: 'العودة للرئيسية',
-        offlineTitle: 'أنت غير متصل بالإنترنت',
-        offlineBody: 'يحتاج SchoolEverywhere إلى اتصال بالإنترنت. أعد الاتصال وحاول مرة أخرى.',
-        rejected: 'لم تنجح المحاولة. ربما تغيّر اسم المستخدم أو كلمة المرور أو المعرّف على البوابة — راجعها بالأسفل.',
-        formChanged: 'غيّرت SchoolEverywhere صفحة تسجيل الدخول، لذلك فتحناها لك مباشرة.',
-        timedOut: 'استغرقت البوابة وقتًا طويلاً للرد. برجاء المحاولة مرة أخرى.',
-        sessionEnded: 'انتهت جلستك على البوابة. سجّل الدخول مرة أخرى للمتابعة.',
-        biometricFailed: 'لم يكتمل الدخول بالبصمة. حاول مرة أخرى أو أدخل بياناتك.',
-        noSavedPassword: 'لا توجد كلمة مرور محفوظة على هذا الجهاز. برجاء إدخال بياناتك مرة أخرى.',
-        removeConfirm: 'إزالة هذا الحساب المحفوظ من هذا الجهاز؟',
-    },
-}
 
 
 function SchoolEverywhere() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
-    const { i18n } = useTranslation()
+    const { t, i18n } = useTranslation(['schooleverywhere'])
     const { isOffline } = useOffline()
 
-    const language = i18n.language === 'ar' ? 'ar' : 'en'
-    const copy = COPY[language]
+    const pageDirection = i18n.language === 'ar' ? 'rtl' : 'ltr'
     const target = readTarget(searchParams.get('target'))
 
     const [mode, setMode] = useState(MODE.CHECKING)
@@ -149,10 +91,10 @@ function SchoolEverywhere() {
 
         hasHandledDirectTargetRef.current = true
 
-        openExternalSite({ url: getSchoolEverywhereUrl(target), title: COPY[language].title })
+        openExternalSite({ url: getSchoolEverywhereUrl(target), title: t('schooleverywhere.title') })
             .catch(() => null)
             .finally(() => goHome())
-    }, [goHome, isOffline, language, target])
+    }, [goHome, isOffline, t, target])
 
     const refreshCredentials = useCallback(async () => {
         const saved = await listPortalCredentials()
@@ -194,15 +136,15 @@ function SchoolEverywhere() {
         }
 
         if (result.outcome === LOGIN_OUTCOME.FORM_CHANGED) {
-            setNotice(copy.formChanged)
+            setNotice(t('schooleverywhere.form-changed'))
 
-            await openExternalSite({ url: PORTAL_LOGIN_URL, title: copy.title }).catch(() => null)
+            await openExternalSite({ url: PORTAL_LOGIN_URL, title: t('schooleverywhere.title') }).catch(() => null)
 
             return
         }
 
         if (result.outcome === LOGIN_OUTCOME.REJECTED) {
-            setNotice(copy.rejected)
+            setNotice(t('schooleverywhere.rejected'))
             setEditingCredential(credential)
             setMode(MODE.MANUAL)
 
@@ -210,19 +152,19 @@ function SchoolEverywhere() {
         }
 
         if (result.outcome === LOGIN_OUTCOME.TIMED_OUT) {
-            setNotice(copy.timedOut)
+            setNotice(t('schooleverywhere.timed-out'))
         }
-    }, [copy, goHome])
+    }, [goHome, t])
 
     const runSignIn = useCallback(async (credential, password) => {
-        setStageLabel(copy.opening)
+        setStageLabel(t('schooleverywhere.opening'))
 
         const result = await signInToPortal({
             credential,
             password,
             onStage: (stage) => {
                 if (isMountedRef.current) {
-                    setStageLabel(stage === 'signing-in' ? copy.signingIn : copy.opening)
+                    setStageLabel(stage === 'signing-in' ? t('schooleverywhere.signing-in') : t('schooleverywhere.opening'))
                 }
             },
         })
@@ -232,13 +174,13 @@ function SchoolEverywhere() {
         }
 
         return result
-    }, [copy])
+    }, [t])
 
     const handleBiometricSubmit = useCallback(async (formData) => {
         if (submittingLocal) { return false }
 
         const chosenLabel = String(formData.get(`field_${CREDENTIAL_FIELD_ID}`) || '')
-        const chosen = credentials.find((candidate) => describeCredential(candidate, language) === chosenLabel)
+        const chosen = credentials.find((candidate) => describeCredential(candidate, t) === chosenLabel)
             || selectedCredential
 
         if (!chosen) { return false }
@@ -252,7 +194,7 @@ function SchoolEverywhere() {
             if (!hasBiometrics) {
                 setEditingCredential(chosen)
                 setMode(MODE.MANUAL)
-                setNotice(copy.noSavedPassword)
+                setNotice(t('schooleverywhere.no-saved-password'))
 
                 return false
             }
@@ -260,13 +202,13 @@ function SchoolEverywhere() {
             const verified = await verifyBiometricIdentity({
                 reason: 'Sign in to SchoolEverywhere',
                 title: 'SchoolEverywhere',
-                subtitle: describeCredential(chosen, language),
+                subtitle: describeCredential(chosen, t),
                 description: 'Confirm your identity to continue',
                 fallbackTitle: 'Sign in to SchoolEverywhere',
             })
 
             if (!verified) {
-                setNotice(copy.biometricFailed)
+                setNotice(t('schooleverywhere.biometric-failed'))
 
                 return false
             }
@@ -276,7 +218,7 @@ function SchoolEverywhere() {
             if (!password) {
                 setEditingCredential(chosen)
                 setMode(MODE.MANUAL)
-                setNotice(copy.noSavedPassword)
+                setNotice(t('schooleverywhere.no-saved-password'))
 
                 return false
             }
@@ -286,7 +228,7 @@ function SchoolEverywhere() {
             await applyOutcome(result, chosen)
         } catch (signInError) {
             if (isMountedRef.current) {
-                setNotice(signInError.message || copy.timedOut)
+                setNotice(signInError.message || t('schooleverywhere.timed-out'))
             }
         } finally {
             if (isMountedRef.current) {
@@ -295,7 +237,7 @@ function SchoolEverywhere() {
         }
 
         return false
-    }, [applyOutcome, copy, credentials, language, runSignIn, selectedCredential, submittingLocal])
+    }, [applyOutcome, credentials, runSignIn, selectedCredential, submittingLocal, t])
 
     const handleManualSubmit = useCallback(async (formData) => {
         if (submittingLocal) { return false }
@@ -304,7 +246,7 @@ function SchoolEverywhere() {
         const password = String(formData.get(`field_${PASSWORD_FIELD_ID}`) || '')
         const typeLabel = String(formData.get(`field_${USER_TYPE_FIELD_ID}`) || '')
         const iden = String(formData.get(`field_${IDENTIFIER_FIELD_ID}`) || '').trim()
-        const typeofuser = userTypeFromLabel(typeLabel, language)
+        const typeofuser = userTypeFromLabel(typeLabel, t)
 
         if (!typeofuser) { return false }
 
@@ -343,7 +285,7 @@ function SchoolEverywhere() {
             await applyOutcome(result, { ...candidate, id: candidate.id })
         } catch (signInError) {
             if (isMountedRef.current) {
-                setNotice(signInError.message || copy.timedOut)
+                setNotice(signInError.message || t('schooleverywhere.timed-out'))
             }
         } finally {
             if (isMountedRef.current) {
@@ -352,10 +294,10 @@ function SchoolEverywhere() {
         }
 
         return false
-    }, [applyOutcome, copy, editingCredential, goHome, language, runSignIn, submittingLocal])
+    }, [applyOutcome, editingCredential, goHome, runSignIn, submittingLocal, t])
 
     const handleRemoveCredential = useCallback(async () => {
-        if (!selectedCredential || !window.confirm(copy.removeConfirm)) { return }
+        if (!selectedCredential || !window.confirm(t('schooleverywhere.remove-confirm'))) { return }
 
         setSubmittingLocal(true)
 
@@ -367,30 +309,32 @@ function SchoolEverywhere() {
             setNotice(null)
             setSubmittingLocal(false)
         }
-    }, [copy, refreshCredentials, selectedCredential])
+    }, [t, refreshCredentials, selectedCredential])
 
     useEffect(() => {
         return () => {
             markExternalSiteClosed()
 
             closeExternalSite()
+
+            endPortalSession()
         }
     }, [])
 
     if (target !== 'portal') {
         return (
-            <div className="school-everywhere">
+            <div className="school-everywhere" dir={pageDirection}>
                 <div className="school-everywhere-state">
                     <Spinner />
 
-                    <p className="school-everywhere-message">{copy.opening}</p>
+                    <p className="school-everywhere-message">{t('schooleverywhere.opening')}</p>
                 </div>
             </div>
         )
     }
 
-    const credentialChoices = credentials.map((candidate) => describeCredential(candidate, language))
-    const userTypeChoices = USER_TYPES.map((type) => type[language])
+    const credentialChoices = credentials.map((candidate) => describeCredential(candidate, t))
+    const userTypeChoices = USER_TYPES.map((type) => t(`schooleverywhere.user-types.${type.slug}`))
 
     return (
         <>
@@ -401,10 +345,10 @@ function SchoolEverywhere() {
                 <meta name="robots" content="noindex, nofollow" />
             </Helmet>
 
-            <div className="school-everywhere-login-page">
+            <div className="school-everywhere-login-page" dir={pageDirection}>
                 <div className="school-everywhere-login-page-form-controller">
                     <div className="school-everywhere-login-form-wrapper">
-                        <h2>{copy.title}</h2>
+                        <h2>{t('schooleverywhere.title')}</h2>
 
                         {stageLabel && <p className="school-everywhere-stage">{stageLabel}</p>}
 
@@ -412,14 +356,14 @@ function SchoolEverywhere() {
 
                         {isOffline && (
                             <>
-                                <p className="school-everywhere-login-notice">{copy.offlineTitle}</p>
+                                <p className="school-everywhere-login-notice">{t('schooleverywhere.offline-title')}</p>
 
-                                <p className="school-everywhere-message">{copy.offlineBody}</p>
+                                <p className="school-everywhere-message">{t('schooleverywhere.offline-body')}</p>
                             </>
                         )}
 
                         {!isOffline && mode === MODE.CHECKING && (
-                            <p className="school-everywhere-message">{copy.checking}</p>
+                            <p className="school-everywhere-message">{t('schooleverywhere.checking')}</p>
                         )}
 
                         {!isOffline && mode === MODE.BIOMETRIC && (
@@ -428,7 +372,7 @@ function SchoolEverywhere() {
                                     key={`school-everywhere-saved-${credentials.length}-${selectedCredentialId || 'none'}`}
                                     mailTo={''}
                                     sendPdf={false}
-                                    formTitle={copy.title}
+                                    formTitle={t('schooleverywhere.title')}
                                     lang={'en'}
                                     captchaLength={1}
                                     noInputFieldsCache={true}
@@ -443,7 +387,7 @@ function SchoolEverywhere() {
                                     hasDifferentOnSubmitBehaviour={true}
                                     differentOnSubmitBehaviour={handleBiometricSubmit}
                                     hasDifferentSubmitButtonText={true}
-                                    differentSubmitButtonText={[copy.signInWith, copy.signingInButton]}
+                                    differentSubmitButtonText={[t('schooleverywhere.sign-in-button'), t('schooleverywhere.signing-in-button')]}
                                     fields={[
                                         {
                                             id: CREDENTIAL_FIELD_ID,
@@ -452,12 +396,12 @@ function SchoolEverywhere() {
                                             httpName: 'credential',
                                             required: true,
                                             label: 'Account',
-                                            displayLabel: copy.accountLabel,
-                                            placeholder: copy.accountLabel,
-                                            errorMsg: copy.accountLabel,
+                                            displayLabel: t('schooleverywhere.account-label'),
+                                            placeholder: t('schooleverywhere.account-label'),
+                                            errorMsg: t('schooleverywhere.account-label'),
                                             choices: credentialChoices,
                                             defaultValue: selectedCredential
-                                                ? describeCredential(selectedCredential, language)
+                                                ? describeCredential(selectedCredential, t)
                                                 : '',
                                             value: '',
                                             setValue: null,
@@ -479,7 +423,7 @@ function SchoolEverywhere() {
                                             setMode(MODE.MANUAL)
                                         }}
                                     >
-                                        {copy.editSaved}
+                                        {t('schooleverywhere.edit-saved')}
                                     </button>
 
                                     <button
@@ -492,7 +436,7 @@ function SchoolEverywhere() {
                                             setMode(MODE.MANUAL)
                                         }}
                                     >
-                                        {copy.addAnother}
+                                        {t('schooleverywhere.add-another')}
                                     </button>
 
                                     <button
@@ -501,7 +445,7 @@ function SchoolEverywhere() {
                                         disabled={submittingLocal || !selectedCredential}
                                         onClick={handleRemoveCredential}
                                     >
-                                        {copy.removeSaved}
+                                        {t('schooleverywhere.remove-saved')}
                                     </button>
                                 </div>
                             </>
@@ -513,7 +457,7 @@ function SchoolEverywhere() {
                                     key={`school-everywhere-manual-${editingCredential ? editingCredential.id : 'new'}`}
                                     mailTo={''}
                                     sendPdf={false}
-                                    formTitle={copy.title}
+                                    formTitle={t('schooleverywhere.title')}
                                     lang={'en'}
                                     captchaLength={1}
                                     noInputFieldsCache={true}
@@ -528,7 +472,7 @@ function SchoolEverywhere() {
                                     hasDifferentOnSubmitBehaviour={true}
                                     differentOnSubmitBehaviour={handleManualSubmit}
                                     hasDifferentSubmitButtonText={true}
-                                    differentSubmitButtonText={[copy.signInWith, copy.signingInButton]}
+                                    differentSubmitButtonText={[t('schooleverywhere.sign-in-button'), t('schooleverywhere.signing-in-button')]}
                                     fields={[
                                         {
                                             id: USERNAME_FIELD_ID,
@@ -537,9 +481,9 @@ function SchoolEverywhere() {
                                             httpName: 'username',
                                             required: true,
                                             label: 'Username',
-                                            displayLabel: copy.usernameLabel,
-                                            placeholder: copy.usernameLabel,
-                                            errorMsg: copy.usernameLabel,
+                                            displayLabel: t('schooleverywhere.username-label'),
+                                            placeholder: t('schooleverywhere.username-label'),
+                                            errorMsg: t('schooleverywhere.username-label'),
                                             defaultValue: editingCredential ? editingCredential.username : '',
                                             value: '',
                                             setValue: null,
@@ -555,9 +499,9 @@ function SchoolEverywhere() {
                                             httpName: 'password',
                                             required: true,
                                             label: 'Password',
-                                            displayLabel: copy.passwordLabel,
-                                            placeholder: copy.passwordLabel,
-                                            errorMsg: copy.passwordLabel,
+                                            displayLabel: t('schooleverywhere.password-label'),
+                                            placeholder: t('schooleverywhere.password-label'),
+                                            errorMsg: t('schooleverywhere.password-label'),
                                             value: '',
                                             setValue: null,
                                             widthOfField: 1,
@@ -573,12 +517,12 @@ function SchoolEverywhere() {
                                             httpName: 'typeofuser',
                                             required: true,
                                             label: 'User type',
-                                            displayLabel: copy.userTypeLabel,
-                                            placeholder: copy.userTypeLabel,
-                                            errorMsg: copy.userTypeLabel,
+                                            displayLabel: t('schooleverywhere.user-type-label'),
+                                            placeholder: t('schooleverywhere.user-type-label'),
+                                            errorMsg: t('schooleverywhere.user-type-label'),
                                             choices: userTypeChoices,
                                             defaultValue: editingCredential
-                                                ? describeUserType(editingCredential.typeofuser, language)
+                                                ? describeUserType(editingCredential.typeofuser, t)
                                                 : '',
                                             value: '',
                                             setValue: null,
@@ -593,9 +537,9 @@ function SchoolEverywhere() {
                                             httpName: 'iden',
                                             required: true,
                                             label: 'Identifier',
-                                            displayLabel: copy.identifierLabel,
-                                            placeholder: copy.identifierHint,
-                                            errorMsg: copy.identifierLabel,
+                                            displayLabel: t('schooleverywhere.identifier-label'),
+                                            placeholder: t('schooleverywhere.identifier-hint'),
+                                            errorMsg: t('schooleverywhere.identifier-label'),
                                             defaultValue: editingCredential ? editingCredential.iden : '',
                                             value: '',
                                             setValue: null,
@@ -619,7 +563,7 @@ function SchoolEverywhere() {
                                                 setMode(MODE.BIOMETRIC)
                                             }}
                                         >
-                                            {copy.backToSaved}
+                                            {t('schooleverywhere.back-to-saved')}
                                         </button>
                                     </div>
                                 )}
@@ -632,7 +576,7 @@ function SchoolEverywhere() {
                             disabled={submittingLocal}
                             onClick={goHome}
                         >
-                            {copy.home}
+                            {t('schooleverywhere.home')}
                         </button>
                     </div>
                 </div>
