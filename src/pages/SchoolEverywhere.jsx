@@ -144,7 +144,7 @@ function SchoolEverywhere() {
         }
 
         if (result.outcome === LOGIN_OUTCOME.REJECTED) {
-            setNotice(t('schooleverywhere.rejected'))
+            setNotice(result.message ? `${result.message} — ${t('schooleverywhere.rejected')}` : t('schooleverywhere.rejected'))
             setEditingCredential(credential)
             setMode(MODE.MANUAL)
 
@@ -508,7 +508,6 @@ function SchoolEverywhere() {
                                             labelOutside: true,
                                             labelOnTop: true,
                                             alwaysEnglish: true,
-                                            dontLetTheBrowserSaveField: true,
                                         },
                                         {
                                             id: USER_TYPE_FIELD_ID,
