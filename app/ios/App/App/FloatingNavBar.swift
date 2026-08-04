@@ -140,12 +140,12 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
             navigationPill.leadingAnchor.constraint(equalTo: leadingAnchor),
             navigationPill.topAnchor.constraint(equalTo: topAnchor),
             navigationPill.bottomAnchor.constraint(equalTo: bottomAnchor),
-            navigationPill.widthAnchor.constraint(equalToConstant: 104),
+            navigationPill.widthAnchor.constraint(equalToConstant: 126),
 
             actionPill.trailingAnchor.constraint(equalTo: trailingAnchor),
             actionPill.topAnchor.constraint(equalTo: topAnchor),
             actionPill.bottomAnchor.constraint(equalTo: bottomAnchor),
-            actionPill.widthAnchor.constraint(equalToConstant: 104),
+            actionPill.widthAnchor.constraint(equalToConstant: 126),
 
             heightAnchor.constraint(equalToConstant: 52)
         ])
@@ -161,6 +161,7 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
         let stack = UIStackView(arrangedSubviews: buttons)
         stack.axis = .horizontal
         stack.distribution = .fillEqually
+        stack.spacing = 14
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         effectView.contentView.addSubview(stack)

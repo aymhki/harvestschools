@@ -97,7 +97,7 @@
 }
 
 .school-everywhere-link-btn:lang(ar) {
-    font-family: inherit;
+    font-family: var(--arabic-normal-font);
     letter-spacing: normal;
 }
 

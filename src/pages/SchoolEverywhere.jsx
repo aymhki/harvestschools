@@ -416,7 +416,7 @@ function SchoolEverywhere() {
             <div className="school-everywhere-login-page" dir={pageDirection}>
                 <div className="school-everywhere-login-page-form-controller">
                     <div className="school-everywhere-login-form-wrapper">
-                        <h2>{t('schooleverywhere.title')}</h2>
+                        <h2 className="always-english-font">{t('schooleverywhere.title')}</h2>
 
                         {stageLabel && <p className="school-everywhere-stage">{stageLabel}</p>}
 
@@ -455,7 +455,7 @@ function SchoolEverywhere() {
                                     hasDifferentOnSubmitBehaviour={true}
                                     differentOnSubmitBehaviour={handleBiometricSubmit}
                                     hasDifferentSubmitButtonText={true}
-                                    differentSubmitButtonText={[t('schooleverywhere.sign-in-button'), t('schooleverywhere.signing-in-button')]}
+                                    differentSubmitButtonText={[t('schooleverywhere.sign-in-biometrics-button'), t('schooleverywhere.signing-in-button')]}
                                     fields={[
                                         {
                                             id: CREDENTIAL_FIELD_ID,
@@ -514,6 +514,15 @@ function SchoolEverywhere() {
                                         onClick={handleRemoveCredential}
                                     >
                                         {t('schooleverywhere.remove-saved')}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="school-everywhere-link-btn"
+                                        disabled={submittingLocal}
+                                        onClick={goHome}
+                                    >
+                                        {t('schooleverywhere.home')}
                                     </button>
                                 </div>
                             </>
@@ -618,8 +627,8 @@ function SchoolEverywhere() {
                                     ]}
                                 />
 
-                                {credentials.length > 0 && (
-                                    <div className="school-everywhere-login-links">
+                                <div className="school-everywhere-login-links">
+                                    {credentials.length > 0 && (
                                         <button
                                             type="button"
                                             className="school-everywhere-link-btn"
@@ -632,19 +641,20 @@ function SchoolEverywhere() {
                                         >
                                             {t('schooleverywhere.back-to-saved')}
                                         </button>
-                                    </div>
-                                )}
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        className="school-everywhere-link-btn"
+                                        disabled={submittingLocal}
+                                        onClick={goHome}
+                                    >
+                                        {t('schooleverywhere.home')}
+                                    </button>
+                                </div>
                             </>
                         )}
 
-                        <button
-                            type="button"
-                            className="school-everywhere-link-btn"
-                            disabled={submittingLocal}
-                            onClick={goHome}
-                        >
-                            {t('schooleverywhere.home')}
-                        </button>
                     </div>
                 </div>
             </div>

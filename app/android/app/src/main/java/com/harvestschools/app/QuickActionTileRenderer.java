@@ -63,7 +63,8 @@ public final class QuickActionTileRenderer {
         float labelSize = clamp(shortestSide * LABEL_SHARE, MINIMUM_LABEL_DP * density, MAXIMUM_LABEL_DP * density);
         float availableHeight = height - glowRadius * 2 - CONTENT_INSET_DP * density * 2;
         float labelWidth = Math.max(1, width - glowRadius * 2 - CONTENT_INSET_DP * density * 2);
-        TextPaint textPaint = labelPaint(context, isArabic, contentColor, labelSize);
+        boolean useArabicFace = isArabic && !UNTRANSLATED_ACTION_IDS.contains(action.id);
+        TextPaint textPaint = labelPaint(context, useArabicFace, contentColor, labelSize);
         StaticLayout label = layoutLabel(action.label, textPaint, (int) labelWidth);
         int attempt = 0;
 
@@ -71,7 +72,7 @@ public final class QuickActionTileRenderer {
             && attempt < MAXIMUM_FIT_ATTEMPTS) {
             iconSize = Math.max(iconSize * FIT_STEP, MINIMUM_ICON_DP * density * 0.6f);
             labelSize = Math.max(labelSize * FIT_STEP, MINIMUM_LABEL_DP * density * 0.75f);
-            textPaint = labelPaint(context, isArabic, contentColor, labelSize);
+            textPaint = labelPaint(context, useArabicFace, contentColor, labelSize);
             label = layoutLabel(action.label, textPaint, (int) labelWidth);
             attempt += 1;
         }
@@ -130,6 +131,8 @@ public final class QuickActionTileRenderer {
 
         canvas.drawPath(path, paint);
     }
+
+    private static final java.util.Set<String> UNTRANSLATED_ACTION_IDS = java.util.Collections.singleton("schooleverywhere");
 
     private static TextPaint labelPaint(Context context, boolean isArabic, int color, float labelSize) {
         Typeface typeface = ResourcesCompat.getFont(context, isArabic ? R.font.arian_lt : R.font.futura_lt);
