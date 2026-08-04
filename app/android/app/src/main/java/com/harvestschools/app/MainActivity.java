@@ -264,14 +264,19 @@ public class MainActivity extends BridgeActivity {
         backButton = makeIconButton(R.drawable.ic_nav_back);
         forwardButton = makeIconButton(R.drawable.ic_nav_forward);
         ImageButton shareButton = makeIconButton(R.drawable.ic_nav_share);
+        ImageButton homeButton = makeIconButton(R.drawable.ic_nav_home);
 
         backButton.setOnClickListener(v -> { if (webView.canGoBack()) webView.goBack(); });
         forwardButton.setOnClickListener(v -> { if (webView.canGoForward()) webView.goForward(); });
         shareButton.setOnClickListener(v -> shareCurrentUrl());
 
+        homeButton.setOnClickListener(v ->
+                webView.evaluateJavascript("window.dispatchEvent(new Event('harvestNavigateHome'))", null));
+
         row.addView(backButton);
         row.addView(forwardButton);
         row.addView(shareButton);
+        row.addView(homeButton);
         card.addView(row);
 
         CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
