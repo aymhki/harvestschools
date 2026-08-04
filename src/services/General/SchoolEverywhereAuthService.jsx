@@ -20,6 +20,7 @@ import {
     revealExternalSite,
     runScriptInExternalSite,
     closeExternalSite,
+    clearExternalSiteCookies,
     markExternalSiteClosed,
 } from './ExternalSiteService.jsx'
 
@@ -44,33 +45,46 @@ const LOGIN_OUTCOME = {
 
 const LOGIN_TIMEOUT_MS = 45000
 
+const SUBMIT_SETTLE_MS = 8000
+
+const PROBE_ATTEMPTS = 40
+
+const PROBE_INTERVAL_MS = 750
+
 const USER_TYPES = [
-    { value: 'management', en: 'Management', ar: 'الإدارة' },
-    { value: 'student', en: 'Student', ar: 'طالب' },
-    { value: 'staff', en: 'Staff', ar: 'هيئة التدريس' },
-    { value: 'parent', en: 'Parent', ar: 'ولي أمر' },
-    { value: 'library', en: 'Library', ar: 'المكتبة' },
-    { value: 'canteen', en: 'Canteen', ar: 'المقصف' },
-    { value: 'Bus Attendance', en: 'Bus Attendance', ar: 'المشرف' },
+    { value: 'management', slug: 'management' },
+    { value: 'student', slug: 'student' },
+    { value: 'staff', slug: 'staff' },
+    { value: 'parent', slug: 'parent' },
+    { value: 'library', slug: 'library' },
+    { value: 'canteen', slug: 'canteen' },
+    { value: 'Bus Attendance', slug: 'bus-attendance' },
 ]
 
 
-const describeUserType = (typeValue, language) => {
+const getUserTypeSlug = (typeValue) => {
     const match = USER_TYPES.find((candidate) => candidate.value === typeValue)
 
-    return match ? match[language === 'ar' ? 'ar' : 'en'] : typeValue
+    return match ? match.slug : null
 }
 
 
-const userTypeFromLabel = (label, language) => {
-    const match = USER_TYPES.find((candidate) => candidate[language === 'ar' ? 'ar' : 'en'] === label)
+const describeUserType = (typeValue, translate) => {
+    const slug = getUserTypeSlug(typeValue)
+
+    return slug ? translate(`schooleverywhere.user-types.${slug}`) : typeValue
+}
+
+
+const userTypeFromLabel = (label, translate) => {
+    const match = USER_TYPES.find((candidate) => translate(`schooleverywhere.user-types.${candidate.slug}`) === label)
 
     return match ? match.value : null
 }
 
 
-const describeCredential = (credential, language) => {
-    const typeLabel = describeUserType(credential.typeofuser, language)
+const describeCredential = (credential, translate) => {
+    const typeLabel = describeUserType(credential.typeofuser, translate)
 
     return credential.username ? `${typeLabel} — ${credential.username}` : typeLabel
 }
@@ -174,6 +188,17 @@ const buildLoginInjectionScript = (credential, password) => {
 }
 
 
+
+const CLEAR_PORTAL_SESSION_ON_CLOSE = false
+
+
+const endPortalSession = async () => {
+    if (!CLEAR_PORTAL_SESSION_ON_CLOSE) { return }
+
+    await clearExternalSiteCookies(PORTAL_LOGIN_URL)
+}
+
+
 const buildLocationProbeScript = () => `(() => {
     try { window.mobileApp.postMessage({ channel: '${MESSAGE_CHANNEL}', status: 'location', detail: location.href }); } catch (ignored) {}
 })();`
@@ -187,6 +212,8 @@ const signInToPortal = async ({ credential, password, onStage }) => {
     let isSettled = false
     let resolveOutcome = null
     let hasInjected = false
+    let submittedAt = 0
+    let hasReloadedSinceSubmit = false
 
     const outcomePromise = new Promise((resolve) => {
         resolveOutcome = resolve
@@ -213,17 +240,23 @@ const signInToPortal = async ({ credential, password, onStage }) => {
             return
         }
 
-        if (hasInjected) {
-            settle(LOGIN_OUTCOME.REJECTED)
+        if (!hasInjected) {
+            hasInjected = true
+
+            if (onStage) { onStage('signing-in') }
+
+            runScriptInExternalSite(buildLoginInjectionScript(credential, password))
 
             return
         }
 
-        hasInjected = true
+        if (submittedAt === 0) { return }
 
-        if (onStage) { onStage('signing-in') }
+        const submitHasHadLongEnough = Date.now() - submittedAt > SUBMIT_SETTLE_MS
 
-        runScriptInExternalSite(buildLoginInjectionScript(credential, password))
+        if (hasReloadedSinceSubmit || submitHasHadLongEnough) {
+            settle(LOGIN_OUTCOME.REJECTED)
+        }
     }
 
     detachListeners = attachExternalSiteListeners({
@@ -232,7 +265,11 @@ const signInToPortal = async ({ credential, password, onStage }) => {
 
             settle(LOGIN_OUTCOME.DISMISSED)
         },
-        onPageLoaded: () => runScriptInExternalSite(buildLocationProbeScript()),
+        onPageLoaded: () => {
+            if (submittedAt !== 0) { hasReloadedSinceSubmit = true }
+
+            runScriptInExternalSite(buildLocationProbeScript())
+        },
         onUrlChange: (url) => considerUrl(url),
         onMessage: (detail) => {
             if (!detail || detail.channel !== MESSAGE_CHANNEL) { return }
@@ -241,8 +278,10 @@ const signInToPortal = async ({ credential, password, onStage }) => {
                 considerUrl(detail.detail)
             } else if (detail.status === 'form-changed') {
                 settle(LOGIN_OUTCOME.FORM_CHANGED)
-            } else if (detail.status === 'submitting' && onStage) {
-                onStage('submitting')
+            } else if (detail.status === 'submitting') {
+                submittedAt = Date.now()
+
+                if (onStage) { onStage('submitting') }
             }
         },
     })
@@ -251,6 +290,14 @@ const signInToPortal = async ({ credential, password, onStage }) => {
 
     try {
         await openHiddenExternalSite({ url: startUrl, title: 'SchoolEverywhere' })
+
+        for (let attempt = 0; attempt < PROBE_ATTEMPTS && !isSettled; attempt++) {
+            await runScriptInExternalSite(buildLocationProbeScript())
+
+            if (isSettled) { break }
+
+            await new Promise((resolve) => setTimeout(resolve, PROBE_INTERVAL_MS))
+        }
     } catch (openError) {
         console.warn('[schooleverywhere] Could not start the sign in', openError)
 
@@ -363,6 +410,7 @@ export {
     LOGIN_OUTCOME,
     LOGIN_TIMEOUT_MS,
     USER_TYPES,
+    getUserTypeSlug,
     describeUserType,
     userTypeFromLabel,
     describeCredential,
@@ -370,6 +418,7 @@ export {
     isPortalUrl,
     buildLoginInjectionScript,
     signInToPortal,
+    endPortalSession,
     listPortalCredentials,
     getPreferredCredentialId,
     savePortalCredential,

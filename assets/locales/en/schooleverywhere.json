@@ -1,0 +1,38 @@
+{
+  "schooleverywhere": {
+    "title": "SchoolEverywhere",
+    "checking": "Checking this device…",
+    "opening": "Opening the portal…",
+    "signing-in": "Signing you in…",
+    "sign-in-button": "Sign in",
+    "signing-in-button": "Signing in…",
+    "account-label": "Account",
+    "username-label": "Username",
+    "password-label": "Password",
+    "user-type-label": "User type",
+    "identifier-label": "Identifier",
+    "identifier-hint": "The identifier your school gave you for the portal.",
+    "add-another": "Add another account",
+    "edit-saved": "Change saved details",
+    "remove-saved": "Remove this account",
+    "back-to-saved": "Use a saved account",
+    "home": "Back to home",
+    "offline-title": "You are offline",
+    "offline-body": "SchoolEverywhere needs a connection. Reconnect and try again.",
+    "rejected": "That did not work. Your username, password or identifier may have changed on the portal — check them below.",
+    "form-changed": "SchoolEverywhere changed its sign-in page, so we opened it directly for you.",
+    "timed-out": "The portal took too long to answer. Please try again.",
+    "biometric-failed": "Biometric sign-in was not completed. Please try again or enter your details.",
+    "no-saved-password": "No saved password was found on this device. Please enter your details again.",
+    "remove-confirm": "Remove this saved account from this device?",
+    "user-types": {
+      "management": "Management",
+      "student": "Student",
+      "staff": "Staff",
+      "parent": "Parent",
+      "library": "Library",
+      "canteen": "Canteen",
+      "bus-attendance": "Bus Attendance"
+    }
+  }
+}

@@ -18,6 +18,7 @@ export const i18nConfig = {
         'gallery-pages',
         'home',
         'nav',
+        'schooleverywhere',
         'students-life-pages',
         'vacancies-page',
         'corporate-home',

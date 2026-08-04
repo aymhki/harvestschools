@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core'
-import { InAppBrowser, BackgroundColor, ToolBarType } from '@capgo/capacitor-inappbrowser'
+import { InAppBrowser, BackgroundColor, ToolBarType, InvisibilityMode } from '@capgo/capacitor-inappbrowser'
 import { AppLauncher } from '@capacitor/app-launcher'
 import { setExternalSiteOpen } from './AppChromeService.jsx'
 
@@ -28,7 +28,7 @@ const readTarget = (target) => (isKnownTarget(target) ? target : DEFAULT_TARGET)
 const getSchoolEverywhereUrl = (target) => SCHOOL_EVERYWHERE_TARGETS[readTarget(target)]
 
 
-const buildWebViewOptions = ({ url, title, isHidden }) => ({
+const buildWebViewOptions = ({ url, title }) => ({
     url,
     title,
     toolbarType: ToolBarType.COMPACT,
@@ -38,7 +38,6 @@ const buildWebViewOptions = ({ url, title, isHidden }) => ({
     preventDeeplink: true,
     activeNativeNavigationForWebview: true,
     backgroundColor: BackgroundColor.WHITE,
-    isPresentAfterPageLoad: isHidden === true,
 })
 
 
@@ -52,7 +51,7 @@ const openExternalSite = async ({ url, title }) => {
     setExternalSiteOpen(true)
 
     try {
-        await InAppBrowser.openWebView(buildWebViewOptions({ url, title, isHidden: false }))
+        await InAppBrowser.openWebView(buildWebViewOptions({ url, title }))
 
         return true
     } catch (openError) {
@@ -69,9 +68,11 @@ const openHiddenExternalSite = async ({ url, title }) => {
     setExternalSiteOpen(true)
 
     try {
-        await InAppBrowser.openWebView(buildWebViewOptions({ url, title, isHidden: true }))
-
-        await InAppBrowser.hide()
+        await InAppBrowser.openWebView({
+            ...buildWebViewOptions({ url, title }),
+            hidden: true,
+            invisibilityMode: InvisibilityMode.FAKE_VISIBLE,
+        })
 
         return true
     } catch (openError) {
@@ -185,6 +186,19 @@ const attachExternalSiteListeners = ({ onClose, onUrlChange, onMessage, onPageLo
 }
 
 
+const clearExternalSiteCookies = async (url) => {
+    if (!Capacitor.isNativePlatform()) {
+        return
+    }
+
+    try {
+        await InAppBrowser.clearCookies({ url })
+    } catch (clearError) {
+        console.warn('[external-site] Could not clear the stored session', clearError)
+    }
+}
+
+
 const openInOwningApp = async (url) => {
     if (!Capacitor.isNativePlatform()) {
         window.open(url, url.startsWith('tel:') ? '_self' : '_blank')
@@ -214,6 +228,7 @@ export {
     runScriptInExternalSite,
     navigateExternalSite,
     closeExternalSite,
+    clearExternalSiteCookies,
     markExternalSiteClosed,
     attachExternalSiteListeners,
     openInOwningApp,
