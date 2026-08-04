@@ -305,19 +305,11 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         urlChip.contentView.addSubview(urlLabel)
         view.addSubview(urlChip)
 
-        let leadingLimit = urlChip.leadingAnchor.constraint(greaterThanOrEqualTo: navBar.trailingAnchor, constant: 8)
-        let trailingLimit = urlChip.trailingAnchor.constraint(lessThanOrEqualTo: actionBar.leadingAnchor, constant: -8)
-
-        leadingLimit.priority = .defaultHigh
-        trailingLimit.priority = .defaultHigh
-
         NSLayoutConstraint.activate([
             urlChip.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            urlChip.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -17),
+            urlChip.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -64),
             urlChip.heightAnchor.constraint(equalToConstant: 36),
             urlChip.widthAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
-            leadingLimit,
-            trailingLimit,
             urlLabel.topAnchor.constraint(equalTo: urlChip.contentView.topAnchor),
             urlLabel.bottomAnchor.constraint(equalTo: urlChip.contentView.bottomAnchor),
             urlLabel.leadingAnchor.constraint(equalTo: urlChip.contentView.leadingAnchor, constant: 14),

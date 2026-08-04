@@ -319,7 +319,7 @@ public class HarvestBrowserDialog extends Dialog {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        params.setMargins(dp(84), 0, dp(84), dp(31));
+        params.setMargins(dp(16), 0, dp(16), dp(84));
 
         urlChip.setLayoutParams(params);
         urlChip.setOnClickListener(view -> {

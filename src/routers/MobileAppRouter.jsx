@@ -18,6 +18,7 @@ import {
     rescheduleAllSubscriptions,
 } from '../services/General/CalendarSubscriptionService.jsx';
 import { rememberRestorePath } from '../services/General/AppUpdaterService.jsx';
+import { LOCALES_UPDATED_EVENT } from '../services/General/OfflinePrefetchService.jsx';
 import { mobileRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
 import PageTransition from '../modules/PageTransition.jsx';
@@ -111,9 +112,6 @@ function MobileAppRouter() {
 
     }, [isAdminSection, isAdminLoginPath, navigate, adminLinks.length, refreshCurrentUserData, userDataWereNeverFetched]);
 
-    /* Opened links are handled once, by the gate, so a widget tap does not race
-     * two navigations. */
-
     useEffect(() => {
         const detachNotificationHandlers = attachCalendarNotificationHandlers(navigate);
 
@@ -128,12 +126,23 @@ function MobileAppRouter() {
 
         const resumeListener = CapacitorApp.addListener('resume', topUpScheduledReminders);
 
+        const rebuildRemindersFromNewLocales = () => {
+            i18n.reloadResources()
+                .then(topUpScheduledReminders)
+                .catch((reloadError) => {
+                    console.warn('Could not reload the updated locales', reloadError);
+                });
+        };
+
+        window.addEventListener(LOCALES_UPDATED_EVENT, rebuildRemindersFromNewLocales);
+
         i18n.on('languageChanged', topUpScheduledReminders);
 
         topUpScheduledReminders();
 
         return () => {
             detachNotificationHandlers();
+            window.removeEventListener(LOCALES_UPDATED_EVENT, rebuildRemindersFromNewLocales);
             i18n.off('languageChanged', topUpScheduledReminders);
             resumeListener.then(handle => handle.remove());
         };
