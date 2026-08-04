@@ -19,6 +19,7 @@ import {
     getPreferredCredentialId,
     hasBiometricsForCredential,
     listPortalCredentials,
+    newCredentialId,
     readBiometricPassword,
     removePortalCredential,
     savePortalCredential,
@@ -74,6 +75,7 @@ function SchoolEverywhere() {
     const isMountedRef = useRef(true)
     const hasHandledDirectTargetRef = useRef(false)
     const revealedRef = useRef(false)
+    const hasAttemptedResumeRef = useRef(false)
     const watchForCloseRef = useRef(null)
 
     const selectedCredential = credentials.find((candidate) => candidate.id === selectedCredentialId) || null
@@ -146,7 +148,9 @@ function SchoolEverywhere() {
     }, [goHome])
 
     useEffect(() => {
-        if (target !== 'portal' || isOffline) { return }
+        if (target !== 'portal' || isOffline || hasAttemptedResumeRef.current) { return }
+
+        hasAttemptedResumeRef.current = true
 
         let isActive = true
 
@@ -309,7 +313,7 @@ function SchoolEverywhere() {
 
         try {
             const candidate = {
-                id: editingCredential ? editingCredential.id : null,
+                id: editingCredential ? editingCredential.id : newCredentialId(),
                 username,
                 typeofuser,
                 iden,

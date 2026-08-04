@@ -543,6 +543,9 @@ const resumePortalSession = async ({ credential }) => {
 }
 
 
+const newCredentialId = () => generateSecureSessionId()
+
+
 const listPortalCredentials = () => listSecureCredentials(SCHOOL_EVERYWHERE_NAMESPACE)
 
 
@@ -638,6 +641,7 @@ export {
     LOGIN_TIMEOUT_MS,
     USER_TYPES,
     getUserTypeSlug,
+    newCredentialId,
     describeUserType,
     userTypeFromLabel,
     describeCredential,

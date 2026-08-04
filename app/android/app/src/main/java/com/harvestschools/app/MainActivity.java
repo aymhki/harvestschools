@@ -55,6 +55,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(WalletPassPlugin.class);
         registerPlugin(HomeWidgetPlugin.class);
         registerPlugin(AppChromePlugin.class);
+        registerPlugin(HarvestBrowserPlugin.class);
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().getDecorView().post(this::setUpFloatingChrome);
