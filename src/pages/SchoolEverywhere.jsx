@@ -105,9 +105,11 @@ function SchoolEverywhere() {
                 markExternalSiteClosed()
 
                 if (shouldEndSession) { await endPortalSession(credential && credential.id) }
+
+                goHome()
             },
         })
-    }, [])
+    }, [goHome])
 
     useEffect(() => {
         if (target === 'portal' || hasHandledDirectTargetRef.current || isOffline) {
@@ -391,9 +393,7 @@ function SchoolEverywhere() {
         return (
             <div className="school-everywhere" dir={pageDirection}>
                 <div className="school-everywhere-state">
-                    <Spinner />
 
-                    <p className="school-everywhere-message">{t('schooleverywhere.opening')}</p>
                 </div>
             </div>
         )
