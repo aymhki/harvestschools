@@ -271,7 +271,10 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
         JSObject payload = new JSObject();
 
         try {
-            payload.put("detail", JSObject.fromJSONObject(new JSONObject(rawJson)));
+            JSONObject parsed = new JSONObject(rawJson);
+            JSONObject inner = parsed.optJSONObject("detail");
+
+            payload.put("detail", JSObject.fromJSONObject(inner != null ? inner : parsed));
         } catch (Exception parseError) {
             payload.put("detail", new JSObject());
             payload.put("rawMessage", rawJson);
