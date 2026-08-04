@@ -25,7 +25,11 @@ enum HarvestSpotlightIndex {
         "مدارس",
         "مدرسة هارفست",
         "مدارس هارفست",
-        "مدارس هارفست الدولية"
+        "مدارس هارفست الدولية",
+        "SchoolEverywhere",
+        "School Every Where",
+        "سكول ايفري وير",
+        "سكول ايڤري وير"
     ]
 
     static func register() {
