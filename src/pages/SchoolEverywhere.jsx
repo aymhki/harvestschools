@@ -152,36 +152,39 @@ function SchoolEverywhere() {
 
         hasAttemptedResumeRef.current = true
 
-        let isActive = true
-
         const openSavedSessionOrAsk = async () => {
-            const saved = await refreshCredentials()
+            let hasStartedResume = false
 
-            if (!isActive || saved.length === 0) { return }
+            try {
+                const saved = await refreshCredentials()
 
-            const preferredId = await getPreferredCredentialId(saved)
-            const preferred = saved.find((candidate) => candidate.id === preferredId)
+                if (!isMountedRef.current || saved.length === 0) { return }
 
-            if (!isActive || !preferred) { return }
+                const preferredId = await getPreferredCredentialId(saved)
+                const preferred = saved.find((candidate) => candidate.id === preferredId)
 
-            setStageLabel(t('schooleverywhere.opening'))
-            setSubmittingLocal(true)
+                if (!isMountedRef.current || !preferred) { return }
 
-            const resumed = await resumePortalSession({ credential: preferred })
+                hasStartedResume = true
 
-            if (!isActive) { return }
+                setStageLabel(t('schooleverywhere.opening'))
+                setSubmittingLocal(true)
 
-            setStageLabel('')
-            setSubmittingLocal(false)
+                const resumed = await resumePortalSession({ credential: preferred })
 
-            if (resumed) { holdRevealedWebView(preferred) }
+                if (isMountedRef.current && resumed) { holdRevealedWebView(preferred) }
+            } catch (resumeError) {
+                console.warn('[schooleverywhere] Could not resume the saved session', resumeError)
+            } finally {
+
+                if (hasStartedResume && isMountedRef.current) {
+                    setStageLabel('')
+                    setSubmittingLocal(false)
+                }
+            }
         }
 
         openSavedSessionOrAsk()
-
-        return () => {
-            isActive = false
-        }
     }, [holdRevealedWebView, isOffline, refreshCredentials, t, target])
 
     const applyOutcome = useCallback(async (result, credential) => {

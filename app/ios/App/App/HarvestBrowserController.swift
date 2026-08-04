@@ -144,7 +144,7 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
         };
         """
 
-        return WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+        return WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true)
     }
 
     private func styledButton(_ button: UIButton, systemName: String, action: Selector) -> UIButton {
@@ -334,7 +334,9 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == messageHandlerName else { return }
+        guard message.name == messageHandlerName, message.frameInfo.isMainFrame else { return }
+
+        guard message.frameInfo.securityOrigin.host == startUrl.host else { return }
 
         if let payload = message.body as? [String: Any] {
             if payload["__harvestClose"] as? Bool == true {
