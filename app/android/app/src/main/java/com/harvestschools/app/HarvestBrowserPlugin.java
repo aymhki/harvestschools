@@ -19,6 +19,7 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
 
     private HarvestBrowserDialog dialog;
     private boolean isPresented = false;
+    private boolean isVisible = false;
 
     private HarvestBrowserDialog.Chrome readChrome(PluginCall call) {
         HarvestBrowserDialog.Chrome chrome = new HarvestBrowserDialog.Chrome();
@@ -71,18 +72,31 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
             dismissIfNeeded();
 
             dialog = new HarvestBrowserDialog(getActivity(), url, headers, chrome, this);
+            dialog.show();
+            isPresented = true;
 
-            if (startHidden) {
-                dialog.create();
-                isPresented = false;
-            } else {
-                dialog.show();
-                isPresented = true;
-            }
+            setDialogVisible(!startHidden);
 
             call.resolve();
         });
     }
+
+    private void setDialogVisible(boolean visible) {
+        if (dialog == null || dialog.getWindow() == null) { return; }
+
+        android.view.Window window = dialog.getWindow();
+
+        window.getDecorView().setAlpha(visible ? 1f : 0f);
+
+        if (visible) {
+            window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
+
+        isVisible = visible;
+    }
+
 
     private void dismissIfNeeded() {
         if (dialog != null) {
@@ -95,6 +109,7 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
 
         dialog = null;
         isPresented = false;
+        isVisible = false;
     }
 
     @PluginMethod
@@ -111,9 +126,13 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
     @PluginMethod
     public void show(PluginCall call) {
         getActivity().runOnUiThread(() -> {
-            if (dialog != null && !isPresented) {
-                dialog.show();
-                isPresented = true;
+            if (dialog != null) {
+                if (!isPresented) {
+                    dialog.show();
+                    isPresented = true;
+                }
+
+                setDialogVisible(true);
             }
 
             call.resolve();
@@ -123,10 +142,7 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
     @PluginMethod
     public void hide(PluginCall call) {
         getActivity().runOnUiThread(() -> {
-            if (dialog != null && isPresented) {
-                dialog.hide();
-                isPresented = false;
-            }
+            if (dialog != null && isPresented) { setDialogVisible(false); }
 
             call.resolve();
         });
@@ -213,6 +229,7 @@ public class HarvestBrowserPlugin extends Plugin implements HarvestBrowserDialog
     @Override
     public void onBrowserClosed() {
         isPresented = false;
+        isVisible = false;
         dialog = null;
 
         notifyListeners("browserClosed", new JSObject());
