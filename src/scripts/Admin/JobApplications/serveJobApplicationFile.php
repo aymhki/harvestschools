@@ -37,7 +37,7 @@ try {
         exit;
     }
 
-    $privateUploadsBasePath = '../../../../files_uploaded_from_harvestschools_webapp/job_applications/';
+    $privateUploadsBasePath =  dirname($doc_root) . '/files_uploaded_from_harvestschools_webapp/job_applications/';
     $sessionDurationInHours = 12;
 
     $file_path_from_get = isset($_GET['file']) ? $_GET['file'] : null;

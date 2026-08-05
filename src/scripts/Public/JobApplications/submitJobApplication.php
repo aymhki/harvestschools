@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $subFolder = 'others/'; break;
                     }
 
-                    $baseDir = "../../../../files_uploaded_from_harvestschools_webapp/job_applications/";
+                    $baseDir = dirname($doc_root) . '/files_uploaded_from_harvestschools_webapp/job_applications/';
                     $targetDir = $baseDir . $subFolder;
 
                     if (!file_exists($targetDir)) {
