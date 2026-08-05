@@ -1,14 +1,15 @@
 import {useTranslation} from "react-i18next";
+import '../styles/NotFound.css'
 
 function NotFound() {
 
     const {t} = useTranslation('common');
 
   return (
-    <div>
-      <h1>
+    <div className="not-found-page">
+      <h2>
         {t("common.not-found-message")}
-      </h1>
+      </h2>
     </div>
   );
 }
