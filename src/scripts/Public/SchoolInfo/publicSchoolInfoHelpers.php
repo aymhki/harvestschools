@@ -84,6 +84,12 @@ function public_info_locale_lookup($language, $keyPath) {
     return $nested !== null ? $nested : public_info_traverse_locale($data, array_slice($segments, 1));
 }
 
+function public_info_is_placeholder($text) {
+    $value = strtolower(trim((string)$text));
+
+    return $value === '' || strpos($value, 'this-page-is-under-construction') !== false || strpos($value, 'under-construction') !== false;
+}
+
 function public_info_strip_inline_links($text) {
     $withoutLinks = preg_replace('/\{\{([^|}]+)\|[^}]*\}\}/u', '$1', (string)$text);
 
@@ -323,6 +329,137 @@ function public_profile_keywords($profileKey) {
     return $entry === null ? [str_replace('_', ' ', $profileKey)] : $entry['keywords'];
 }
 
+const PUBLIC_NARRATIVE_FACTS = [
+    [
+        'key'      => 'home.harvest-schools-vision',
+        'category' => 'about',
+        'topicEn'  => 'Vision',
+        'topicAr'  => 'الرؤية',
+        'keywords' => ['vision', 'الرؤية'],
+    ],
+    [
+        'key'      => 'home.harvest-schools-mission',
+        'category' => 'about',
+        'topicEn'  => 'Mission',
+        'topicAr'  => 'الرسالة',
+        'keywords' => ['mission', 'الرسالة'],
+    ],
+    [
+        'key'      => 'home.harvest-schools-about-us',
+        'category' => 'about',
+        'topicEn'  => 'About Harvest Schools',
+        'topicAr'  => 'عن مدارس هارڤست',
+        'keywords' => ['about', 'history', 'founder', 'founded', 'who founded', 'story', 'عن المدرسة', 'المؤسس', 'تأسست', 'تاريخ'],
+    ],
+    [
+        'key'      => 'home.harvest-schools-elearning-and-academics',
+        'category' => 'academics',
+        'topicEn'  => 'E-learning and academics',
+        'topicAr'  => 'التعلم الإلكتروني والأكاديميات',
+        'keywords' => ['elearning', 'e-learning', 'online learning', 'التعلم الإلكتروني'],
+    ],
+    [
+        'key'      => 'corporate-home.harvest-schools-about-us',
+        'category' => 'about',
+        'topicEn'  => 'Al-Fajr Al-Basem, the founding company',
+        'topicAr'  => 'الفجر الباسم، الشركة المؤسِّسة',
+        'keywords' => [
+            'founding company', 'parent company', 'al-fajr', 'al fajr al basem', 'alfajr', 'company',
+            'founder', 'founded', 'history', 'الشركة', 'الفجر الباسم', 'المؤسس', 'تأسست',
+        ],
+    ],
+];
+
+
+const PUBLIC_PARTNERS = [
+    [
+        'key'            => 'schooleverywhere',
+        'titleKey'       => 'academics-pages.partners.schooleverywhere-title',
+        'descriptionKey' => 'academics-pages.partners.schooleverywhere-description',
+        'keywords'       => ['partner', 'partners', 'schooleverywhere', 'school everywhere', 'portal', 'شريك', 'شركاء', 'الشركاء', 'بوابة'],
+    ],
+    [
+        'key'            => 'ucmas',
+        'titleKey'       => 'academics-pages.partners.ucmas-title',
+        'descriptionKey' => 'academics-pages.partners.ucmas-description',
+        'keywords'       => ['partner', 'partners', 'ucmas', 'mental arithmetic', 'abacus', 'شريك', 'شركاء', 'الشركاء', 'الحساب الذهني'],
+    ],
+];
+
+const PUBLIC_FACILITY_LIST_KEYS = [
+    'academics-pages.facilities.imageAlts',
+    'academics-pages.facilities.sports.outdoorCourtsList',
+];
+
+const PUBLIC_FACILITY_TITLE_KEYS = [
+    'academics-pages.facilities.computerLab.title',
+    'academics-pages.facilities.library.title',
+    'academics-pages.facilities.canteen.title',
+    'academics-pages.facilities.smartClasses.title',
+    'academics-pages.facilities.sports.gymnasiumsTitle',
+    'academics-pages.facilities.sports.swimmingPoolTitle',
+];
+
+
+function public_facility_label($value) {
+    $label = trim((string)$value);
+    $label = rtrim($label, ": \u{060C}");
+    $label = preg_replace('/\s*Policy$/iu', '', $label);
+    $label = preg_replace('/^\x{0633}\x{064A}\x{0627}\x{0633}\x{0629}\s+/u', '', $label);
+
+    return trim($label);
+}
+
+function public_school_facilities($language) {
+    $facilities = [];
+    $seen = [];
+
+    $append = function ($value) use (&$facilities, &$seen) {
+        $label = public_facility_label($value);
+
+        if ($label === '') {
+            return;
+        }
+
+        $fingerprint = mb_strtolower($label);
+
+        if (isset($seen[$fingerprint])) {
+            return;
+        }
+
+        $seen[$fingerprint] = true;
+        $facilities[] = $label;
+    };
+
+    foreach (PUBLIC_FACILITY_LIST_KEYS as $listKey) {
+        $entries = public_info_locale_lookup($language, $listKey);
+
+        if (is_array($entries)) {
+            foreach ($entries as $entry) {
+                if (is_string($entry)) {
+                    $append($entry);
+                }
+            }
+        }
+    }
+
+    foreach (PUBLIC_FACILITY_TITLE_KEYS as $titleKey) {
+        $title = public_info_locale_lookup($language, $titleKey);
+
+        if (is_string($title)) {
+            $append($title);
+        }
+    }
+
+    return $facilities;
+}
+
+function public_narrative_fact_id($category, $localeKey) {
+    $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $localeKey));
+
+    return 'fact.' . $category . '.' . trim($slug, '-');
+}
+
 function public_school_fact($id, $category, $topic, $answer, $keywords, $routePath, $source, $sourceKey) {
     return [
         'id'        => $id,
@@ -427,6 +564,66 @@ function public_school_facts($profile, $departments, $stages, $policies, $langua
                 'info_system_policy_items.' . $item['key']
             );
         }
+    }
+
+    foreach (PUBLIC_NARRATIVE_FACTS as $narrative) {
+        $prose = public_info_locale_lookup($language, $narrative['key']);
+
+        if (!is_string($prose) || trim($prose) === '' || public_info_is_placeholder($prose)) {
+            continue;
+        }
+
+        $facts[] = public_school_fact(
+            public_narrative_fact_id($narrative['category'], $narrative['key']),
+            $narrative['category'],
+            $language === 'ar' ? $narrative['topicAr'] : $narrative['topicEn'],
+            public_info_strip_inline_links($prose),
+            $narrative['keywords'],
+            '/home',
+            'locales',
+            $narrative['key']
+        );
+    }
+
+    foreach (PUBLIC_PARTNERS as $partner) {
+        $title = public_info_locale_lookup($language, $partner['titleKey']);
+        $description = public_info_locale_lookup($language, $partner['descriptionKey']);
+
+        if (!is_string($description) || public_info_is_placeholder($description)) {
+            continue;
+        }
+
+        $facts[] = public_school_fact(
+            'fact.partner.' . $partner['key'],
+            'academics',
+            is_string($title) && $title !== '' ? $title : $partner['key'],
+            public_info_strip_inline_links($description),
+            $partner['keywords'],
+            '/academics/partners',
+            'locales',
+            $partner['descriptionKey']
+        );
+    }
+
+    $facilities = public_school_facilities($language);
+
+    if ($facilities !== []) {
+        $facts[] = public_school_fact(
+            'fact.facilities.list',
+            'academics',
+            $language === 'ar' ? 'مرافق المدرسة' : 'School facilities',
+            ($language === 'ar'
+                ? 'تشمل مرافق المدرسة: '
+                : 'The school facilities include: ') . implode($language === 'ar' ? '، ' : ', ', $facilities) . '.',
+            array_merge(
+                ['facilities', 'facility', 'campus', 'sports', 'labs', 'pool', 'gym', 'library',
+                 'مرافق', 'المرافق', 'الحرم', 'ملاعب', 'معامل', 'حمام السباحة', 'المكتبة'],
+                $facilities
+            ),
+            '/academics/facilities',
+            'locales',
+            'academics-pages.facilities'
+        );
     }
 
     $faqs = public_info_locale_lookup($language, 'faqs-pages.faqs-page.q-and-a-list');

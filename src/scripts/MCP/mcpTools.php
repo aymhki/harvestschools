@@ -174,6 +174,72 @@ function mcp_encode(array $payload): string {
     return json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 }
 
+const MCP_STOPWORDS = [
+    'a', 'an', 'the', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'have', 'has', 'had',
+    'what', 'which', 'who', 'whom', 'whose', 'when', 'where', 'why', 'how', 'can', 'could',
+    'would', 'should', 'of', 'in', 'on', 'at', 'for', 'to', 'and', 'or', 'any', 'there',
+    'your', 'you', 'my', 'me', 'we', 'us', 'it', 'its', 'about', 'tell', 'please', 'school',
+    'schools', 'harvest', 'هل', 'ما', 'ماذا', 'من', 'في', 'على', 'عن', 'هي', 'هو', 'المدرسة',
+    'مدرسة', 'يوجد', 'لديكم', 'كم',
+];
+
+function mcp_search_terms(string $query): array {
+    $terms = array_filter(preg_split('/[\s,.\?!]+/u', mb_strtolower(trim($query))));
+    $meaningful = array_values(array_filter($terms, static fn($t) => mb_strlen($t) > 1 && !in_array($t, MCP_STOPWORDS, true)));
+
+    return $meaningful === [] ? array_values($terms) : $meaningful;
+}
+
+function mcp_tokenise(string $text): array {
+    $tokens = preg_split('/[^\p{L}\p{N}]+/u', mb_strtolower($text), -1, PREG_SPLIT_NO_EMPTY);
+
+    return $tokens === false ? [] : $tokens;
+}
+
+function mcp_term_matches(string $term, array $tokens): bool {
+    foreach ($tokens as $token) {
+        if ($token === $term) {
+            return true;
+        }
+
+        if (mb_strlen($term) >= 4 && mb_strlen($token) >= 4) {
+            $shorter = mb_strlen($term) < mb_strlen($token) ? $term : $token;
+            $longer = $shorter === $term ? $token : $term;
+
+            if (mb_strlen($longer) - mb_strlen($shorter) <= 2 && mb_strpos($longer, $shorter) === 0) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function mcp_score_fact(array $fact, array $terms): int {
+    static $cache = [];
+
+    $id = (string)($fact['id'] ?? '');
+
+    if (!isset($cache[$id])) {
+        $cache[$id] = [
+            'topic'    => mcp_tokenise((string)($fact['topic'] ?? '')),
+            'keywords' => mcp_tokenise(implode(' ', $fact['keywords'] ?? [])),
+            'answer'   => mcp_tokenise((string)($fact['answer'] ?? '')),
+        ];
+    }
+
+    $tokens = $cache[$id];
+    $score = 0;
+
+    foreach ($terms as $term) {
+        $score += mcp_term_matches($term, $tokens['topic']) ? 6 : 0;
+        $score += mcp_term_matches($term, $tokens['keywords']) ? 4 : 0;
+        $score += mcp_term_matches($term, $tokens['answer']) ? 1 : 0;
+    }
+
+    return $score;
+}
+
 function mcp_tool_invoke(string $name, array $arguments): string {
     $language = public_info_normalise_language($arguments['language'] ?? 'en');
     $knowledge = mcp_knowledge($language);
@@ -185,21 +251,11 @@ function mcp_tool_invoke(string $name, array $arguments): string {
     switch ($name) {
         case 'get_school_info':
             $query = trim((string)($arguments['query'] ?? ''));
-            $terms = array_filter(preg_split('/\s+/u', mb_strtolower($query)));
+            $terms = mcp_search_terms($query);
             $scored = [];
 
             foreach (($knowledge['facts'] ?? []) as $fact) {
-                $haystack = mb_strtolower(
-                    ($fact['topic'] ?? '') . ' ' . ($fact['answer'] ?? '') . ' ' . implode(' ', $fact['keywords'] ?? [])
-                );
-
-                $score = 0;
-
-                foreach ($terms as $term) {
-                    if (mb_strpos($haystack, $term) !== false) {
-                        $score++;
-                    }
-                }
+                $score = mcp_score_fact($fact, $terms);
 
                 if ($score > 0) {
                     $scored[] = ['score' => $score, 'fact' => [
