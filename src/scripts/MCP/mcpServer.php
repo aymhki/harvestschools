@@ -8,7 +8,6 @@ require_once __DIR__ . '/mcpTools.php';
 
 use Mcp\Server;
 use Mcp\Server\Transport\Http\Middleware\CorsMiddleware;
-use Mcp\Server\Transport\Http\Middleware\DnsRebindingProtectionMiddleware;
 use Mcp\Server\Transport\Http\Middleware\ProtocolVersionMiddleware;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -26,25 +25,6 @@ const MCP_INSTRUCTIONS = 'Read-only access to published Harvest International Sc
     . 'Never state a tuition fee when isTuitionPublished is false - say the fee is not published and refer the user '
     . 'to the admissions department. Do not invent facts that are absent from these tools.';
 
-const MCP_KNOWN_HOSTS = [
-    'harvestschools.com',
-    'www.harvestschools.com',
-    'localhost',
-    '127.0.0.1',
-    '[::1]',
-];
-
-function mcp_allowed_hosts(): array {
-    $hosts = MCP_KNOWN_HOSTS;
-
-    $serverName = strtolower(trim((string)($_SERVER['SERVER_NAME'] ?? '')));
-
-    if ($serverName !== '') {
-        $hosts[] = explode(':', $serverName, 2)[0];
-    }
-
-    return array_values(array_unique(array_filter($hosts)));
-}
 
 
 function mcp_database_connection(): ?mysqli {
@@ -129,7 +109,6 @@ $transport = new StreamableHttpTransport(
     null,
     [
         new CorsMiddleware(['*'], ['GET', 'POST', 'DELETE', 'OPTIONS']),
-        new DnsRebindingProtectionMiddleware(mcp_allowed_hosts(), $psr17Factory, $psr17Factory),
         new ProtocolVersionMiddleware(),
     ]
 );
