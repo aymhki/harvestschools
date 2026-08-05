@@ -481,8 +481,8 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
 
                 <li onClick={() => {
                     (isMobile ? toggleMenu() : null);
-                    navigate('/vacancies');
-                }}><Link to="/vacancies">
+                    navigate('/careers');
+                }}><Link to="/careers">
                     {t("nav.vacancies")}
                 </Link></li>
 

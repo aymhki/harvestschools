@@ -1,8 +1,9 @@
 {
   "vacancies-page": {
-    "title": "Vacancies",
+    "title": "Careers",
     "intro": "Join Our Team",
-    "intro-description": "Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill  the form below.",
+    "intro-description": "Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply fill the form below.",
+    "intro-description-button-variant": "Harvest Schools does not only hire experienced candidates or fresh graduates, at Harvest Schools, we believe in opportunities for creative, knowledgeable, and open mindsets. We are always hiring, to apply click the button below.",
     "submission-confirmation-notice": "Note: After submitting, a confirmation message should appear. Do not close your browser until you see this message otherwise we will not receive your form. If a field does not apply to your experience/education, please type \"N/A.\" If a field does not have a '*' next to it, it is not required. You do not need to upload any files to submit this form.",
     "application-form": {
       "first-name": "First Name",
@@ -38,6 +39,7 @@
       "attachment-3": "Other Documents: First",
       "attachment-4": "Other Documents: Second",
       "attachment-5": "Other Documents:Third"
-    }
+    },
+    "apply-now": "Apply Now"
   }
 }
