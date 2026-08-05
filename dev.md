@@ -10,8 +10,8 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [x] Add Turnstile keys to env values.
-- [ ] Look into making the schooleverywhere web app available work fully through this app by setting any of its route patterns in router/routes as a component that just works with those apps right away.
+- [x] Look into making the schooleverywhere web app available work fully through this app by setting any of its route patterns in router/routes as a component that just works with those apps right away.
 - [ ] turnstile on cloud flare needs site verify, explore seo impact first.
-- [ ] Quick links in app home page should open their apps directly.
-- [ ] schooleverywhere needs its own widget quick action.
+- [x] Quick links in app home page should open their apps directly.
+- [x] schooleverywhere needs its own widget quick action.
 - [ ] New gallery videos need to be added.

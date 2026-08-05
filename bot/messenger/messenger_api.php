@@ -13,8 +13,6 @@ function msgr_request($payload) {
         CURLOPT_POSTFIELDS => json_encode($payload)
     ]);
 
-    file_put_contents(__DIR__ . '/webhook.log', 'Sent: ' . date('Y-m-d H:i:s') . ' ' . json_encode($payload, true) . PHP_EOL, FILE_APPEND);
-
     $resp = curl_exec($ch);
     return $resp;
 }
