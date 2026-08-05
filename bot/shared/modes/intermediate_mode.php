@@ -150,7 +150,7 @@ function handleIntermediateMode($from, $message) {
             }
 
             if ($replyId === 'menu_careers') {
-                $link = "https://harvestschools.com/vacancies";
+                $link = "https://harvestschools.com/careers";
                 $msg = $config['static_content']['menu_careers'][$lang];
                 $urlBtnTitle = ($lang === 'en') ? 'Apply' : 'تقدم';
 

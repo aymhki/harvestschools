@@ -12,7 +12,7 @@ import {useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 import CachedImage from "./CachedImage.jsx";
 import {isDevelopment} from "../services/General/GeneralUtils.jsx"
-import { getSchoolEverywhereUrl } from "../services/General/ExternalSiteService.jsx";
+import { openSchoolEverywhereTarget as openSchoolEverywhereTargetInApp } from "../services/General/ExternalSiteService.jsx";
 
 function NavigationBar({compactOrAdmin, isMobileApp}){
     const [isMobile, setIsMobile] = useState(true);
@@ -64,11 +64,7 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
             closeMenu();
         }
 
-        if (isMobileApp) {
-            navigate(`/schooleverywhere?target=${target}`);
-        } else {
-            window.open(getSchoolEverywhereUrl(target), '_blank');
-        }
+        openSchoolEverywhereTargetInApp({ target, isMobileApp, navigate });
     }
 
     const handleDropdownClick = (e, mainLink) => {

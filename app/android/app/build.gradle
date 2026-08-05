@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'com.google.devtools.ksp'
 
 android {
     namespace = "com.harvestschools.app"
@@ -22,6 +24,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    kotlin {
+        jvmToolchain(21)
+    }
+}
+
+ksp {
+    arg("appfunctions:aggregateAppFunctions", "true")
 }
 
 repositories {
@@ -33,6 +42,7 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.core:core:$androidxCoreVersion"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
@@ -43,6 +53,9 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0"
     implementation "com.google.android.gms:play-services-pay:$playServicesPayVersion"
+    implementation "androidx.appfunctions:appfunctions:$appFunctionsVersion"
+    implementation "androidx.appfunctions:appfunctions-service:$appFunctionsServiceVersion"
+    ksp "androidx.appfunctions:appfunctions-compiler:$appFunctionsVersion"
 }
 
 apply from: 'capacitor.build.gradle'

@@ -15,33 +15,26 @@ import {
 
 
 const PREFER_HARVEST_BROWSER = true
-
 const shouldUseHarvestBrowser = () => PREFER_HARVEST_BROWSER && isHarvestBrowserAvailable()
-
-
 const SCHOOL_EVERYWHERE_ORIGIN = 'https://schooleverywhere-harvest.com'
-
 const SCHOOL_EVERYWHERE_ROOT = `${SCHOOL_EVERYWHERE_ORIGIN}/schooleverywhere/`
-
 const ONLINE_ADMISSION_ROOT = `${SCHOOL_EVERYWHERE_ROOT}management/onlineadmission/applyonline/`
+const STAFF_ROOT = `${SCHOOL_EVERYWHERE_ROOT}management/staff/`
 
 const SCHOOL_EVERYWHERE_TARGETS = {
     portal: SCHOOL_EVERYWHERE_ROOT,
     apply: `${ONLINE_ADMISSION_ROOT}onlineadmission.php`,
     status: `${ONLINE_ADMISSION_ROOT}onlineadmissionlogin.php`,
+    careers: `${STAFF_ROOT}addonlineprofile.php`,
 }
 
 const DEFAULT_TARGET = 'portal'
 
-
 const isKnownTarget = (target) => Object.prototype.hasOwnProperty.call(SCHOOL_EVERYWHERE_TARGETS, target)
-
 
 const readTarget = (target) => (isKnownTarget(target) ? target : DEFAULT_TARGET)
 
-
 const getSchoolEverywhereUrl = (target) => SCHOOL_EVERYWHERE_TARGETS[readTarget(target)]
-
 
 const buildWebViewOptions = ({ url, title }) => ({
     url,
@@ -55,7 +48,6 @@ const buildWebViewOptions = ({ url, title }) => ({
     activeNativeNavigationForWebview: true,
     backgroundColor: BackgroundColor.WHITE,
 })
-
 
 const openExternalSite = async ({ url, title, headers }) => {
     if (!Capacitor.isNativePlatform()) {
@@ -163,6 +155,22 @@ const navigateExternalSite = async (url) => {
 
 
 const openSchoolEverywhere = ({ target, title }) => openExternalSite({ url: getSchoolEverywhereUrl(target), title })
+
+
+const buildSchoolEverywhereRoute = (target) => `/schooleverywhere?target=${readTarget(target)}`
+
+
+const openSchoolEverywhereTarget = ({ target, isMobileApp, navigate }) => {
+    if (isMobileApp && typeof navigate === 'function') {
+        navigate(buildSchoolEverywhereRoute(target))
+
+        return true
+    }
+
+    window.open(getSchoolEverywhereUrl(target), '_blank')
+
+    return false
+}
 
 
 const closeExternalSite = async () => {
@@ -293,8 +301,10 @@ export {
     DEFAULT_TARGET,
     isKnownTarget,
     readTarget,
+    buildSchoolEverywhereRoute,
     getSchoolEverywhereUrl,
     openSchoolEverywhere,
+    openSchoolEverywhereTarget,
     openExternalSite,
     openHiddenExternalSite,
     revealExternalSite,

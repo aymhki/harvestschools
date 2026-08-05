@@ -5,12 +5,16 @@ import {submitJobApplicationRequest} from "../services/Public/JobApplications/Jo
 import Spinner from "../modules/Spinner";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
+import {useNavigate} from "react-router-dom";
+import PropTypes from "prop-types";
+import {openSchoolEverywhereTarget} from "../services/General/ExternalSiteService.jsx";
 
 const PREFER_HARVEST_JOB_APPLICATION = false;
 
-function Careers() {
+function Careers({isMobileApp = false}) {
     const [submittingLocal, setSubmittingLocal] = useState(false);
     const {t} = useTranslation(['vacancies-page']);
+    const navigate = useNavigate();
 
     const handleSubmitJobApplication = async (formData) => {
         try {
@@ -65,7 +69,7 @@ function Careers() {
 
             {!PREFER_HARVEST_JOB_APPLICATION && (
                 <div className="careers-apply-now-button-wrapper">
-                    <button onClick={() => window.open('https://schooleverywhere-harvest.com/schooleverywhere/management/staff/addonlineprofile.php', '_blank')}>
+                    <button onClick={() => openSchoolEverywhereTarget({target: 'careers', isMobileApp, navigate})}>
                         {t("vacancies-page.apply-now")}
                     </button>
                 </div>
@@ -605,5 +609,9 @@ function Careers() {
       </>
   );
 }
+
+Careers.propTypes = {
+    isMobileApp: PropTypes.bool,
+};
 
 export default Careers;

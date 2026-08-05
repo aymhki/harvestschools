@@ -46,6 +46,32 @@ function set_cors_headers($customOptions = []) {
     }
 }
 
+function set_public_cors_headers($customOptions = []) {
+    $defaults = [
+        'content_type'    => 'application/json; charset=utf-8',
+        'allowed_methods' => 'GET, OPTIONS',
+        'cache_control'   => 'public, max-age=300, stale-while-revalidate=3600'
+    ];
+
+    $config = array_merge($defaults, $customOptions);
+
+    header('Content-Type: ' . $config['content_type']);
+
+    send_security_headers();
+
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Credentials: false');
+    header('Access-Control-Allow-Methods: ' . $config['allowed_methods']);
+    header('Access-Control-Allow-Headers: Content-Type, If-None-Match');
+    header('Access-Control-Expose-Headers: ETag');
+    header('Cache-Control: ' . $config['cache_control']);
+    header('Vary: Accept-Encoding');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        exit(0);
+    }
+}
+
 function get_bearer_token() {
     $headers = null;
 

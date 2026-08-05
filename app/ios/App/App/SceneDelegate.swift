@@ -45,6 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         bridgeVC.bridge?.registerPluginInstance(WalletPassPlugin())
         bridgeVC.bridge?.registerPluginInstance(HomeWidgetPlugin())
+        bridgeVC.bridge?.registerPluginInstance(AssistantBridgePlugin())
         bridgeVC.bridge?.registerPluginInstance(appChromePlugin)
         bridgeVC.bridge?.registerPluginInstance(harvestBrowserPlugin)
         webView.allowsBackForwardNavigationGestures = true
@@ -69,6 +70,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         floatingNavBar = navBar
     }
 
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        deliverPendingAssistantAction()
+    }
+
+    private func deliverPendingAssistantAction() {
+        guard let pending = HarvestAssistantPendingAction.consume() else { return }
+
+        if pending.type == "url" {
+            guard let url = URL(string: pending.value) else { return }
+
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+
+            return
+        }
+
+        let path = pending.value.hasPrefix("/") ? pending.value : "/" + pending.value
+
+        guard let deepLink = URL(string: harvestUniversalLinkHost + path) else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, open: deepLink, options: [:])
+        }
+    }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }

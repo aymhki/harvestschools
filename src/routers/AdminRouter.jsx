@@ -10,6 +10,7 @@ import { serveAlumniFile } from '../services/Admin/AlumniStudents/AdminAlumniStu
 import { serveJobApplicationFile } from '../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx';
 import { adminRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
+import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
 
 const pages = makeLazyPages(
@@ -83,7 +84,7 @@ function AdminRouter() {
                 )}
 
                 <Suspense fallback={<div style={{ minHeight: '100vh' }}><Spinner /></div>}>
-                    <AppRoutes routes={adminRoutes} pages={pages} ctx={ctx} />
+                    <AppRoutes routes={adminRoutes} pages={pages} ctx={ctx} router={ROUTER_IDS.admin} />
                 </Suspense>
             </div>
             <AdminFooter />

@@ -6,4 +6,20 @@
     <string name="custom_url_scheme">com.harvestschools.app</string>
     <string name="quick_actions_widget_label">Quick actions</string>
     <string name="quick_actions_widget_description">Jump straight to the parts of the school app you use the most.</string>
+    <string name="shortcut_admission_short">Admission</string>
+    <string name="shortcut_admission_long">Open admission information</string>
+    <string name="shortcut_fees_short">Tuition fees</string>
+    <string name="shortcut_fees_long">Open tuition fees</string>
+    <string name="shortcut_age_short">Registration age</string>
+    <string name="shortcut_age_long">Open minimum registration age</string>
+    <string name="shortcut_academics_short">Academics</string>
+    <string name="shortcut_academics_long">Open academics</string>
+    <string name="shortcut_events_short">Events</string>
+    <string name="shortcut_events_long">Open school events and calendars</string>
+    <string name="shortcut_faqs_short">FAQs</string>
+    <string name="shortcut_faqs_long">Open frequently asked questions</string>
+    <string name="shortcut_gallery_short">Gallery</string>
+    <string name="shortcut_gallery_long">Open the school gallery</string>
+    <string name="shortcut_vacancies_short">Careers</string>
+    <string name="shortcut_vacancies_long">Open careers and job vacancies</string>
 </resources>

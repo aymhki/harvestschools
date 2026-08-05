@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="shortcut_admission_synonyms">
+        <item>admission</item>
+        <item>admissions</item>
+        <item>apply</item>
+        <item>enrolment</item>
+        <item>registration</item>
+        <item>التقديم</item>
+        <item>القبول</item>
+    </string-array>
+
+    <string-array name="shortcut_fees_synonyms">
+        <item>fees</item>
+        <item>tuition</item>
+        <item>tuition fees</item>
+        <item>prices</item>
+        <item>cost</item>
+        <item>المصروفات</item>
+        <item>الرسوم</item>
+    </string-array>
+
+    <string-array name="shortcut_age_synonyms">
+        <item>minimum age</item>
+        <item>registration age</item>
+        <item>admission age</item>
+        <item>age requirements</item>
+        <item>سن القبول</item>
+        <item>الحد الأدنى للسن</item>
+    </string-array>
+
+    <string-array name="shortcut_academics_synonyms">
+        <item>academics</item>
+        <item>curriculum</item>
+        <item>departments</item>
+        <item>programmes</item>
+        <item>الأكاديميات</item>
+        <item>المناهج</item>
+    </string-array>
+
+    <string-array name="shortcut_events_synonyms">
+        <item>events</item>
+        <item>calendar</item>
+        <item>school calendar</item>
+        <item>academic calendar</item>
+        <item>الفعاليات</item>
+        <item>التقويم</item>
+    </string-array>
+
+    <string-array name="shortcut_faqs_synonyms">
+        <item>faqs</item>
+        <item>questions</item>
+        <item>frequently asked questions</item>
+        <item>help</item>
+        <item>الأسئلة الشائعة</item>
+    </string-array>
+
+    <string-array name="shortcut_gallery_synonyms">
+        <item>gallery</item>
+        <item>photos</item>
+        <item>videos</item>
+        <item>tour</item>
+        <item>المعرض</item>
+        <item>الصور</item>
+    </string-array>
+
+    <string-array name="shortcut_vacancies_synonyms">
+        <item>vacancies</item>
+        <item>jobs</item>
+        <item>careers</item>
+        <item>hiring</item>
+        <item>الوظائف</item>
+    </string-array>
+
+</resources>

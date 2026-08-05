@@ -25,6 +25,12 @@
 		00AC0000000000000000D1 /* HarvestBrowserPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AC0000000000000000C1 /* HarvestBrowserPlugin.swift */; };
 		00AC0000000000000000D2 /* HarvestBrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AC0000000000000000C2 /* HarvestBrowserController.swift */; };
 		00AC0000000000000000D3 /* HarvestSpotlightIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AC0000000000000000C3 /* HarvestSpotlightIndex.swift */; };
+		00AD000000000000000000B2 /* HarvestAssistantStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AD000000000000000000A2 /* HarvestAssistantStore.swift */; };
+		00AD000000000000000000B3 /* AssistantBridgePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AD000000000000000000A3 /* AssistantBridgePlugin.swift */; };
+		00AD000000000000000000B4 /* HarvestAssistantEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AD000000000000000000A4 /* HarvestAssistantEntities.swift */; };
+		00AD000000000000000000B5 /* HarvestAssistantIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AD000000000000000000A5 /* HarvestAssistantIndexer.swift */; };
+		00AD000000000000000000B6 /* HarvestAssistantIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AD000000000000000000A6 /* HarvestAssistantIntents.swift */; };
+		00AD000000000000000000B7 /* HarvestAssistantShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AD000000000000000000A7 /* HarvestAssistantShortcuts.swift */; };
 		00B7B20F2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */; };
 		00C1A5012FFF10A10001AA01 /* WalletPassPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */; };
 		00C1A5032FFF10A10001AA01 /* WebViewProcessRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */; };
@@ -83,6 +89,12 @@
 		00AC0000000000000000C1 /* HarvestBrowserPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestBrowserPlugin.swift; sourceTree = "<group>"; };
 		00AC0000000000000000C2 /* HarvestBrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestBrowserController.swift; sourceTree = "<group>"; };
 		00AC0000000000000000C3 /* HarvestSpotlightIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestSpotlightIndex.swift; sourceTree = "<group>"; };
+		00AD000000000000000000A2 /* HarvestAssistantStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestAssistantStore.swift; sourceTree = "<group>"; };
+		00AD000000000000000000A3 /* AssistantBridgePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantBridgePlugin.swift; sourceTree = "<group>"; };
+		00AD000000000000000000A4 /* HarvestAssistantEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestAssistantEntities.swift; sourceTree = "<group>"; };
+		00AD000000000000000000A5 /* HarvestAssistantIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestAssistantIndexer.swift; sourceTree = "<group>"; };
+		00AD000000000000000000A6 /* HarvestAssistantIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestAssistantIntents.swift; sourceTree = "<group>"; };
+		00AD000000000000000000A7 /* HarvestAssistantShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarvestAssistantShortcuts.swift; sourceTree = "<group>"; };
 		00B7B20E2FFEA4DB004C2436 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPassPlugin.swift; sourceTree = "<group>"; };
 		00C1A5022FFF10A10001AA01 /* WebViewProcessRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProcessRecovery.swift; sourceTree = "<group>"; };
@@ -155,9 +167,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00AD000000000000000000A1 /* Assistant */ = {
+			isa = PBXGroup;
+			children = (
+				00AD000000000000000000A2 /* HarvestAssistantStore.swift */,
+				00AD000000000000000000A3 /* AssistantBridgePlugin.swift */,
+				00AD000000000000000000A4 /* HarvestAssistantEntities.swift */,
+				00AD000000000000000000A5 /* HarvestAssistantIndexer.swift */,
+				00AD000000000000000000A6 /* HarvestAssistantIntents.swift */,
+				00AD000000000000000000A7 /* HarvestAssistantShortcuts.swift */,
+			);
+			path = Assistant;
+			sourceTree = "<group>";
+		};
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
+				00AD000000000000000000A1 /* Assistant */,
 				004BE4032FFC3F9E0006DEFD /* PullToRefreshController.swift */,
 				004BE3FE2FFC3F5C0006DEFD /* FloatingNavBar.swift */,
 				00C1A5002FFF10A10001AA01 /* WalletPassPlugin.swift */,
@@ -324,6 +350,12 @@
 				00AC0000000000000000D2 /* HarvestBrowserController.swift in Sources */,
 				00AC0000000000000000D1 /* HarvestBrowserPlugin.swift in Sources */,
 				00AB000000000000000000B6 /* HarvestWidgetsShared.swift in Sources */,
+				00AD000000000000000000B2 /* HarvestAssistantStore.swift in Sources */,
+				00AD000000000000000000B3 /* AssistantBridgePlugin.swift in Sources */,
+				00AD000000000000000000B4 /* HarvestAssistantEntities.swift in Sources */,
+				00AD000000000000000000B5 /* HarvestAssistantIndexer.swift in Sources */,
+				00AD000000000000000000B6 /* HarvestAssistantIntents.swift in Sources */,
+				00AD000000000000000000B7 /* HarvestAssistantShortcuts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

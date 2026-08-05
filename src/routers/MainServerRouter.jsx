@@ -6,6 +6,7 @@ import Footer from '../modules/Footer.jsx';
 import ErrorBoundary from '../modules/ErrorBoundary.jsx';
 import { mainRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
+import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeEagerPages, useLangSync, findRoute } from '../routes/shared.js';
 
 const pages = makeEagerPages(
@@ -31,7 +32,7 @@ function MainServerRouter() {
             {!shouldExclude && <NavigationBar compactOrAdmin={false} isMobileApp={false}/>}
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
-                    <AppRoutes routes={mainRoutes} pages={pages} ctx={{ isMobileApp: false }} />
+                    <AppRoutes routes={mainRoutes} pages={pages} ctx={{ isMobileApp: false }} router={ROUTER_IDS.main} />
                 </ErrorBoundary>
             </div>
             {!shouldExclude && <Footer />}

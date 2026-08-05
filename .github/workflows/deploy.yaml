@@ -106,6 +106,17 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update -qq && sudo apt-get install -y lftp
 
+      - name: Detect MCP library changes
+        id: check_mcp_lib_changes
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -qE "^src/scripts/MCP/lib/" || [[ "$COMMIT_MSG" == *"[force-mcp-sync]"* ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy apps in lftp
         env:
           FTP_USER: ${{ secrets.FTP_USERNAME }}
@@ -130,7 +141,7 @@ jobs:
             dist/static/ public_html/
           
           put -O public_html/ domains/Main/.htaccess
-          mirror -R --verbose --parallel=5 -x ^Admin/ src/scripts/ public_html/scripts/
+          mirror -R --verbose --parallel=5 -x ^Admin/ -x ^MCP/lib/ src/scripts/ public_html/scripts/
           mirror -R --verbose --parallel=5 bot/ public_html/bot/
           mirror -R --verbose --parallel=5 public/.well-known/ public_html/.well-known/
           put -O public_html/ public/embed.html
@@ -138,7 +149,7 @@ jobs:
           mirror -R --verbose --parallel=5 public/.well-known/ admin.harvestschools.com/.well-known/
           mirror -R --verbose --parallel=5 --exclude-glob .git* dist/admin/ admin.harvestschools.com/
           put -O admin.harvestschools.com/ domains/Admin/.htaccess
-          mirror -R --verbose --parallel=5 src/scripts/ admin.harvestschools.com/scripts/
+          mirror -R --verbose --parallel=5 -x ^MCP/ src/scripts/ admin.harvestschools.com/scripts/
           
           set cmd:fail-exit no
           mv app.harvestschools.com/latest.zip app.harvestschools.com/stable.zip
@@ -160,6 +171,23 @@ jobs:
             dist/corporate/static/ alfajralbasem.com/
           
           put -O alfajralbasem.com/ domains/Corporate/.htaccess
-          mirror -R --verbose --parallel=5 -x ^Admin/ src/scripts/ alfajralbasem.com/scripts/          
+          mirror -R --verbose --parallel=5 -x ^Admin/ -x ^MCP/ src/scripts/ alfajralbasem.com/scripts/
+          bye
+          LFTP
+
+      - name: Sync MCP library
+        if: steps.check_mcp_lib_changes.outputs.changed == 'true'
+        env:
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+        run: |
+          lftp << LFTP
+          set ssl:verify-certificate yes
+          set ftp:passive-mode yes
+          set net:max-retries 3
+          set net:reconnect-interval-base 5
+          open -u "$FTP_USER","$FTP_PASS" "$FTP_HOST"
+          mirror -R --verbose --delete --parallel=5 src/scripts/MCP/lib/ public_html/scripts/MCP/lib/
           bye
           LFTP

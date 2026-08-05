@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <capability android:name="actions.intent.OPEN_APP_FEATURE">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity">
+
+            <url-template android:value="https://harvestschools.com{/feature}" />
+
+            <parameter
+                android:name="feature"
+                android:key="feature" />
+
+        </intent>
+
+    </capability>
+
+    <shortcut
+        android:shortcutId="admission"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_admission_short"
+        android:shortcutLongLabel="@string/shortcut_admission_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/admission" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_admission_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="admission-fees"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_fees_short"
+        android:shortcutLongLabel="@string/shortcut_fees_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/admission/admission-fees" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_fees_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="minimum-stage-age"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_age_short"
+        android:shortcutLongLabel="@string/shortcut_age_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/minimum-stage-age" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_age_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="academics"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_academics_short"
+        android:shortcutLongLabel="@string/shortcut_academics_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/academics" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_academics_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="events"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_events_short"
+        android:shortcutLongLabel="@string/shortcut_events_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/events" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_events_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="faqs"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_faqs_short"
+        android:shortcutLongLabel="@string/shortcut_faqs_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/faqs" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_faqs_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="gallery"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_gallery_short"
+        android:shortcutLongLabel="@string/shortcut_gallery_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/gallery" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_gallery_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="vacancies"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_vacancies_short"
+        android:shortcutLongLabel="@string/shortcut_vacancies_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/careers" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_vacancies_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+</shortcuts>

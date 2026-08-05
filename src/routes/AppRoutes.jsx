@@ -1,7 +1,12 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import RouteRedirect from './RouteRedirect.jsx';
+import { ROUTER_IDS, redirectsForRouter } from './redirects.js';
 
-function AppRoutes({ routes, pages, ctx = {} }) {
+function AppRoutes({ routes, pages, ctx = {}, router = null }) {
+    const declaredRedirects = redirectsForRouter(router);
+    const routePaths = new Set(routes.map((route) => route.path));
+
     return (
         <Routes>
             {routes.map((route) => {
@@ -30,6 +35,24 @@ function AppRoutes({ routes, pages, ctx = {} }) {
                     <Route key={route.path} path={route.path} element={<Component {...props} />} />
                 );
             })}
+
+            {declaredRedirects.map((redirect) => {
+                if (routePaths.has(redirect.from)) {
+                    if (import.meta.env?.DEV) {
+                        console.warn(`AppRoutes: redirect "${redirect.from}" collides with a real route in this router and was skipped.`);
+                    }
+
+                    return null;
+                }
+
+                return (
+                    <Route
+                        key={`redirect:${redirect.from}`}
+                        path={redirect.from}
+                        element={<RouteRedirect redirect={redirect} />}
+                    />
+                );
+            })}
         </Routes>
     );
 }
@@ -49,6 +72,7 @@ AppRoutes.propTypes = {
     routes: PropTypes.arrayOf(routeShape).isRequired,
     pages: PropTypes.objectOf(PropTypes.elementType).isRequired,
     ctx: PropTypes.object,
+    router: PropTypes.oneOf(Object.values(ROUTER_IDS)),
 };
 
 export default AppRoutes;
