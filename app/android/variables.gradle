@@ -1,6 +1,6 @@
 ext {
     minSdkVersion = 26
-    compileSdkVersion = 36
+    compileSdkVersion = 37
     targetSdkVersion = 37
     androidxActivityVersion = '1.11.0'
     androidxAppCompatVersion = '1.7.1'
@@ -14,4 +14,8 @@ ext {
     androidxEspressoCoreVersion = '3.7.0'
     cordovaAndroidVersion = '14.0.1'
     playServicesPayVersion = '16.5.0'
+    kotlinVersion = '2.2.21'
+    kspVersion = '2.2.21-2.0.5'
+    appFunctionsVersion = '1.0.0-alpha10'
+    appFunctionsServiceVersion = '1.0.0-alpha09'
 }

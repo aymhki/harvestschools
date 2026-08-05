@@ -17,6 +17,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+
+import com.harvestschools.app.assistant.AssistantBridgePlugin;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -57,6 +59,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(HomeWidgetPlugin.class);
         registerPlugin(AppChromePlugin.class);
         registerPlugin(HarvestBrowserPlugin.class);
+        registerPlugin(AssistantBridgePlugin.class);
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().getDecorView().post(this::setUpFloatingChrome);

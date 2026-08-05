@@ -16,6 +16,8 @@ function InfoSystemManagement() {
     const [globalSettingsData, setGlobalSettingsData] = useState(null);
     const [departmentsData, setDepartmentsData] = useState(null);
     const [stagesData, setStagesData] = useState(null);
+    const [profileData, setProfileData] = useState(null);
+    const [policiesData, setPoliciesData] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [resetEditModal, setResetEditModal] = useState(false);
     const [editFormFields, setEditFormFields] = useState(null);
@@ -31,7 +33,7 @@ function InfoSystemManagement() {
 
     const reloadData = async () => {
         setIsLoading(true);
-        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData);
+        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData);
         setIsLoading(false);
     };
 
@@ -68,6 +70,23 @@ function InfoSystemManagement() {
     const stageIsOfferedColIndex = 8;
     const stageTuitionFeesColIndex = 11;
 
+    const profileSortOrderColIndex = 0;
+    const profileKeyColIndex = 1;
+    const profileCategoryColIndex = 2;
+    const profileValueEnColIndex = 3;
+    const profileValueArColIndex = 4;
+    const profileNoteEnColIndex = 5;
+    const profileNoteArColIndex = 6;
+    const profileValueSourceColIndex = 7;
+
+    const policySortOrderColIndex = 0;
+    const policyKeyColIndex = 1;
+    const policyGroupKeyColIndex = 2;
+    const policyTitleEnColIndex = 3;
+    const policyTitleArColIndex = 4;
+    const policyDetailEnColIndex = 5;
+    const policyDetailArColIndex = 6;
+
     const settingKeysWithLimitedValues = {
         'BOT_MODE': ['simple', 'intermediate', 'advanced'],
         'USE_HISTORY_ACROSS_SESSIONS': ['Yes', 'No'],
@@ -100,6 +119,23 @@ function InfoSystemManagement() {
     const stageAgeArFormFieldId = 10;
     const stageIsOfferedFormFieldId = 8;
     const stageTuitionFeesFormFieldId = 11;
+
+    const profileKeyFormFieldId = 1;
+    const profileCategoryFormFieldId = 2;
+    const profileValueEnFormFieldId = 3;
+    const profileValueArFormFieldId = 4;
+    const profileNoteEnFormFieldId = 5;
+    const profileNoteArFormFieldId = 6;
+
+    const policyKeyFormFieldId = 1;
+    const policyGroupKeyFormFieldId = 2;
+    const policyTitleEnFormFieldId = 3;
+    const policyTitleArFormFieldId = 4;
+    const policyDetailEnFormFieldId = 5;
+    const policyDetailArFormFieldId = 6;
+
+    const profileCategories = ['identity', 'location', 'contact', 'social', 'hours', 'fees', 'admission', 'general'];
+    const policyGroupKeys = ['discounts', 'accreditations', 'fee_exclusions'];
 
     const handleEditInitialization = (type, rowIndex) => {
         let rowData;
@@ -148,6 +184,26 @@ function InfoSystemManagement() {
                 { id: stageAgeArFormFieldId, type: 'text', name: 'age_ar', label: 'Age (AR)', required: true, value: rowData[stageAgeArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Age (AR)', lang: 'ar', httpName: 'stage-age-ar' },
                 { id: stageIsOfferedFormFieldId, type: 'select', name: 'is_offered', label: 'Is Offered', required: true, choices: ['Yes', 'No'], defaultValue: rowData[stageIsOfferedColIndex], value: rowData[stageIsOfferedColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Is Offered', httpName: 'stage-is-offered' },
                 { id: stageTuitionFeesFormFieldId, type: 'number', name: 'tuition_fees', label: 'Tuition Fees', required: true, value: rowData[stageTuitionFeesColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Tuition Fees', minimumValue: 1, maximumValue: 1000000000, httpName: 'stage-tuition-fees' },
+            ];
+        } else if (type === 'profile') {
+            rowData = profileData[rowIndex];
+            formFieldsConfig = [
+                { id: profileKeyFormFieldId, type: 'text', name: 'profile_key', label: 'Profile Key', required: true, value: rowData[profileKeyColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Profile Key', readOnlyField: true, httpName: 'profile-key' },
+                { id: profileCategoryFormFieldId, type: 'select', name: 'category', label: 'Category', required: true, choices: profileCategories, defaultValue: rowData[profileCategoryColIndex], value: rowData[profileCategoryColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Category', httpName: 'profile-category' },
+                { id: profileValueEnFormFieldId, type: 'textarea', name: 'value_en', label: 'Value (EN)', required: false, value: rowData[profileValueEnColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Value (EN)', httpName: 'profile-value-en' },
+                { id: profileValueArFormFieldId, type: 'textarea', name: 'value_ar', label: 'Value (AR)', required: false, value: rowData[profileValueArColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Value (AR)', lang: 'ar', httpName: 'profile-value-ar' },
+                { id: profileNoteEnFormFieldId, type: 'textarea', name: 'note_en', label: 'Note (EN)', required: false, value: rowData[profileNoteEnColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Note (EN)', httpName: 'profile-note-en' },
+                { id: profileNoteArFormFieldId, type: 'textarea', name: 'note_ar', label: 'Note (AR)', required: false, value: rowData[profileNoteArColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Note (AR)', lang: 'ar', httpName: 'profile-note-ar' },
+            ];
+        } else if (type === 'policies') {
+            rowData = policiesData[rowIndex];
+            formFieldsConfig = [
+                { id: policyKeyFormFieldId, type: 'text', name: 'item_key', label: 'Item Key', required: true, value: rowData[policyKeyColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Item Key', readOnlyField: true, httpName: 'policy-item-key' },
+                { id: policyGroupKeyFormFieldId, type: 'select', name: 'group_key', label: 'Group Key', required: true, choices: policyGroupKeys, defaultValue: rowData[policyGroupKeyColIndex], value: rowData[policyGroupKeyColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Group Key', httpName: 'policy-group-key' },
+                { id: policyTitleEnFormFieldId, type: 'text', name: 'title_en', label: 'Title (EN)', required: true, value: rowData[policyTitleEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'policy-title-en' },
+                { id: policyTitleArFormFieldId, type: 'text', name: 'title_ar', label: 'Title (AR)', required: true, value: rowData[policyTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'policy-title-ar' },
+                { id: policyDetailEnFormFieldId, type: 'textarea', name: 'detail_en', label: 'Detail (EN)', required: false, value: rowData[policyDetailEnColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (EN)', httpName: 'policy-detail-en' },
+                { id: policyDetailArFormFieldId, type: 'textarea', name: 'detail_ar', label: 'Detail (AR)', required: false, value: rowData[policyDetailArColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (AR)', lang: 'ar', httpName: 'policy-detail-ar' },
             ];
         }
 
@@ -225,6 +281,31 @@ function InfoSystemManagement() {
                         age_ar: formDataJson[`field_${stageAgeArFormFieldId}`],
                         tuition_fees: Number(formDataJson[`field_${stageTuitionFeesFormFieldId}`]),
                         sort_order: Number(stagesData[indexOfRowToEdit][stageSortOrderColIndex])
+                    }]
+                };
+            } else if (currentEditType === 'profile') {
+                payload = {
+                    profile: [{
+                        profile_key: profileData[indexOfRowToEdit][profileKeyColIndex],
+                        category: formDataJson[`field_${profileCategoryFormFieldId}`],
+                        value_en: formDataJson[`field_${profileValueEnFormFieldId}`] || '',
+                        value_ar: formDataJson[`field_${profileValueArFormFieldId}`] || '',
+                        note_en: formDataJson[`field_${profileNoteEnFormFieldId}`] || '',
+                        note_ar: formDataJson[`field_${profileNoteArFormFieldId}`] || '',
+                        value_source: profileData[indexOfRowToEdit][profileValueSourceColIndex],
+                        sort_order: Number(profileData[indexOfRowToEdit][profileSortOrderColIndex])
+                    }]
+                };
+            } else if (currentEditType === 'policies') {
+                payload = {
+                    policies: [{
+                        item_key: policiesData[indexOfRowToEdit][policyKeyColIndex],
+                        group_key: formDataJson[`field_${policyGroupKeyFormFieldId}`],
+                        title_en: formDataJson[`field_${policyTitleEnFormFieldId}`],
+                        title_ar: formDataJson[`field_${policyTitleArFormFieldId}`],
+                        detail_en: formDataJson[`field_${policyDetailEnFormFieldId}`] || '',
+                        detail_ar: formDataJson[`field_${policyDetailArFormFieldId}`] || '',
+                        sort_order: Number(policiesData[indexOfRowToEdit][policySortOrderColIndex])
                     }]
                 };
             }
@@ -341,6 +422,50 @@ function InfoSystemManagement() {
         </div>
     );
 
+    const SchoolProfile = () => (
+        <div className="admin-page-tab-content">
+            <Table tableData={profileData}
+                   scrollable={true}
+                   compact={true}
+                   allowHideColumns={true}
+                   allowSticky={true}
+                   forceEnglishTable={true}
+                   allowEditEntryOption={true}
+                   onEditEntryOption={(rowIndex) => handleEditInitialization('profile', rowIndex)}
+                   isLoading={isLoading}
+                   headerModuleElements={getTableModuleHeaderElements}
+                   sortConfigParam={{column: 0, direction: 'ascending'}}
+                   filterableColumns={[
+                       'Category'
+                   ]}
+                   allowBreakWordColumns={{ "Value (EN)": '14rem', "Value (AR)": '14rem', "Source": '12rem' }}
+                   truncateValuesColumns={{'Value (EN)': 120, 'Value (AR)': 120, 'Source': 60}}
+            />
+        </div>
+    );
+
+    const PolicyItems = () => (
+        <div className="admin-page-tab-content">
+            <Table tableData={policiesData}
+                   scrollable={true}
+                   compact={true}
+                   allowHideColumns={true}
+                   allowSticky={true}
+                   forceEnglishTable={true}
+                   allowEditEntryOption={true}
+                   onEditEntryOption={(rowIndex) => handleEditInitialization('policies', rowIndex)}
+                   isLoading={isLoading}
+                   headerModuleElements={getTableModuleHeaderElements}
+                   sortConfigParam={{column: 2, direction: 'ascending'}}
+                   filterableColumns={[
+                       'Group Key'
+                   ]}
+                   allowBreakWordColumns={{ "Detail (EN)": '14rem', "Detail (AR)": '14rem' }}
+                   truncateValuesColumns={{'Detail (EN)': 120, 'Detail (AR)': 120}}
+            />
+        </div>
+    );
+
     const tabData = [
         {
             id: 0,
@@ -356,6 +481,16 @@ function InfoSystemManagement() {
             id: 2,
             label: 'Stages',
             component: Stages
+        },
+        {
+            id: 3,
+            label: 'School Profile',
+            component: SchoolProfile
+        },
+        {
+            id: 4,
+            label: 'Policy Items',
+            component: PolicyItems
         },
     ];
 
@@ -381,15 +516,24 @@ function InfoSystemManagement() {
 
                     <div className={"general-large-admin-action-modal-content"}>
 
-                        { (currentEditType === 'settings' ) ? (
+                        { (currentEditType === 'settings') && (
                             <p className={"general-large-admin-action-modal-content-note"}>
                                 Note: Do not edit the info system settings data values unless you know what you are doing.
                             </p>
-                        ) : (
+                        )}
+
+                        { (currentEditType === 'departments' || currentEditType === 'stages') && (
                             <p className={"general-large-admin-action-modal-content-note"}>
                                 Note: Titles & names should preferably be under 20 characters (Spaces are characters).
                             </p>
                         )}
+
+                        { (currentEditType === 'profile' || currentEditType === 'policies') && (
+                            <p className={"general-large-admin-action-modal-content-note"}>
+                                Note: These values are read by Siri, Gemini and the chat bot.
+                            </p>
+                        )}
+
 
                         {currentEditType === 'stages' && (
                             <p className={"general-large-admin-action-modal-content-note"}>

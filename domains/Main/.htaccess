@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteRule ^embed\.html$ - [L]
+
+  RewriteRule ^mcp/?$ /scripts/MCP/mcpServer.php [L,QSA]
+
   RewriteCond %{REQUEST_URI} !^/scripts/Public/General/servePublicAssetFile\.php
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^assets/(.+)$ /scripts/Public/General/servePublicAssetFile.php?path=$1 [B,QSA,L]

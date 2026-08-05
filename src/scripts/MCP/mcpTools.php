@@ -1,0 +1,327 @@
+<?php
+
+
+const MCP_CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'british-kg', 'american-kg'];
+const MCP_DEPARTMENT_KEYS = ['reception', 'student_affairs', 'accounting', 'admissions', 'early', 'national', 'british', 'american'];
+const MCP_PAGE_SECTIONS = ['general', 'admission', 'academics', 'students-life', 'events', 'gallery'];
+
+function mcp_language_property(): array {
+    return ['type' => 'string', 'enum' => ['en', 'ar'], 'default' => 'en', 'description' => 'Response language.'];
+}
+
+function mcp_department_property(): array {
+    return ['type' => 'string', 'enum' => MCP_DEPARTMENT_KEYS, 'description' => 'Optional department filter.'];
+}
+
+function mcp_tool_schemas(): array {
+    return [
+        'get_school_info' => [
+            'title' => 'Get school information',
+            'description' => 'Answers a general question about Harvest International Schools from its published facts - '
+                . 'address, opening hours, admission requirements, discounts, accreditations, transport and similar. '
+                . 'An empty result means the school has not published an answer; say so rather than guessing.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'query'    => ['type' => 'string', 'description' => "The question in the user's own words."],
+                    'language' => mcp_language_property(),
+                ],
+                'required' => ['query'],
+            ],
+        ],
+        'get_tuition_fees' => [
+            'title' => 'Get tuition fees',
+            'description' => 'Returns published annual tuition fees in Egyptian Pounds (EGP). When isTuitionPublished '
+                . 'is false the fee is NOT available - never present null as a price; refer the user to the admissions '
+                . 'department instead.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'department' => mcp_department_property(),
+                    'stage'      => ['type' => 'string', 'description' => 'Optional stage name filter, for example "Grade 5".'],
+                    'language'   => mcp_language_property(),
+                ],
+            ],
+        ],
+        'get_stages_offered' => [
+            'title' => 'Get stages offered',
+            'description' => 'Lists the stages the school currently offers with their minimum registration ages. '
+                . 'Students must meet the minimum age by October 1st.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'department' => mcp_department_property(),
+                    'language'   => mcp_language_property(),
+                ],
+            ],
+        ],
+        'get_school_contacts' => [
+            'title' => 'Get school contacts',
+            'description' => 'Returns the school profile and department contact directory. Send fee questions to '
+                . '"accounting" and application questions to "admissions".',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'department' => mcp_department_property(),
+                    'language'   => mcp_language_property(),
+                ],
+            ],
+        ],
+        'find_academic_events' => [
+            'title' => 'Find academic events',
+            'description' => 'Searches the six school academic calendars. Dates in the result are epoch milliseconds in '
+                . 'UTC. An empty result means nothing matched - do not invent dates.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'query'    => ['type' => 'string', 'description' => 'Optional text matched against event titles.'],
+                    'division' => ['type' => 'string', 'enum' => MCP_CALENDAR_IDS, 'description' => 'Optional calendar filter.'],
+                    'fromDate' => ['type' => 'string', 'description' => 'Optional lower bound as an ISO-8601 date, for example "2026-09-01".'],
+                    'toDate'   => ['type' => 'string', 'description' => 'Optional upper bound as an ISO-8601 date.'],
+                    'language' => mcp_language_property(),
+                ],
+            ],
+        ],
+        'get_next_event' => [
+            'title' => 'Get the next school event',
+            'description' => 'Returns the soonest upcoming event, optionally restricted to one calendar. Null when '
+                . 'nothing is upcoming.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'division' => ['type' => 'string', 'enum' => MCP_CALENDAR_IDS, 'description' => 'Optional calendar filter.'],
+                    'language' => mcp_language_property(),
+                ],
+            ],
+        ],
+        'list_pages' => [
+            'title' => 'List school pages',
+            'description' => 'Lists public pages of the Harvest Schools website and app, with their route paths. '
+                . 'Administrative, alumni and booking areas are deliberately absent.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'section'  => ['type' => 'string', 'enum' => MCP_PAGE_SECTIONS, 'description' => 'Optional section filter.'],
+                    'language' => mcp_language_property(),
+                ],
+            ],
+        ],
+    ];
+}
+
+function mcp_knowledge(string $language): ?array {
+    static $documents = [];
+
+    $language = public_info_normalise_language($language);
+
+    if (array_key_exists($language, $documents)) {
+        return $documents[$language];
+    }
+
+    $connection = mcp_database_connection();
+    $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
+
+    list($document) = public_school_load_document($docRoot, $language, $connection);
+
+    $documents[$language] = $document;
+
+    return $document;
+}
+
+function mcp_stage_view(array $stage, string $currency): array {
+    $fees = $stage['tuitionFees'] ?? null;
+
+    return [
+        'key'                => $stage['key'] ?? '',
+        'name'               => $stage['name'] ?? '',
+        'departmentKey'      => $stage['departmentKey'] ?? '',
+        'departmentName'     => $stage['departmentName'] ?? '',
+        'sectionTitle'       => $stage['sectionTitle'] ?? '',
+        'isOffered'          => (bool)($stage['isOffered'] ?? true),
+        'minimumAge'         => $stage['minimumAge'] ?? null,
+        'tuitionFees'        => $fees,
+        'tuitionCurrency'    => $fees === null ? null : $currency,
+        'isTuitionPublished' => $fees !== null,
+        'routePath'          => $stage['routePath'] ?? null,
+    ];
+}
+
+function mcp_select_stages(array $knowledge, string $department, string $stage, bool $offeredOnly): array {
+    $currency = $knowledge['school']['currency'] ?? 'EGP';
+    $needle = mb_strtolower(trim($stage));
+    $selected = [];
+
+    foreach (($knowledge['stages'] ?? []) as $entry) {
+        if ($offeredOnly && !($entry['isOffered'] ?? true)) {
+            continue;
+        }
+
+        if ($department !== '' && ($entry['departmentKey'] ?? '') !== $department) {
+            continue;
+        }
+
+        if ($needle !== '' && mb_strpos(mb_strtolower((string)($entry['name'] ?? '')), $needle) === false) {
+            continue;
+        }
+
+        $selected[] = mcp_stage_view($entry, $currency);
+    }
+
+    return ['tuitionCurrency' => $currency, 'stages' => $selected];
+}
+
+function mcp_encode(array $payload): string {
+    return json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+}
+
+function mcp_tool_invoke(string $name, array $arguments): string {
+    $language = public_info_normalise_language($arguments['language'] ?? 'en');
+    $knowledge = mcp_knowledge($language);
+
+    if ($knowledge === null) {
+        return mcp_encode(['error' => 'School information is temporarily unavailable.']);
+    }
+
+    switch ($name) {
+        case 'get_school_info':
+            $query = trim((string)($arguments['query'] ?? ''));
+            $terms = array_filter(preg_split('/\s+/u', mb_strtolower($query)));
+            $scored = [];
+
+            foreach (($knowledge['facts'] ?? []) as $fact) {
+                $haystack = mb_strtolower(
+                    ($fact['topic'] ?? '') . ' ' . ($fact['answer'] ?? '') . ' ' . implode(' ', $fact['keywords'] ?? [])
+                );
+
+                $score = 0;
+
+                foreach ($terms as $term) {
+                    if (mb_strpos($haystack, $term) !== false) {
+                        $score++;
+                    }
+                }
+
+                if ($score > 0) {
+                    $scored[] = ['score' => $score, 'fact' => [
+                        'id'        => $fact['id'] ?? '',
+                        'category'  => $fact['category'] ?? '',
+                        'topic'     => $fact['topic'] ?? '',
+                        'answer'    => $fact['answer'] ?? '',
+                        'routePath' => $fact['routePath'] ?? null,
+                        'source'    => $fact['source'] ?? '',
+                        'sourceKey' => $fact['sourceKey'] ?? '',
+                    ]];
+                }
+            }
+
+            usort($scored, fn($first, $second) => $second['score'] <=> $first['score']);
+
+            return mcp_encode([
+                'query'    => $query,
+                'language' => $language,
+                'matches'  => array_column(array_slice($scored, 0, 5), 'fact'),
+            ]);
+
+        case 'get_tuition_fees':
+            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), (string)($arguments['stage'] ?? ''), false);
+
+            return mcp_encode([
+                'language'        => $language,
+                'tuitionCurrency' => $result['tuitionCurrency'],
+                'stages'          => $result['stages'],
+            ]);
+
+        case 'get_stages_offered':
+            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), '', true);
+
+            return mcp_encode(['language' => $language, 'stages' => $result['stages']]);
+
+        case 'get_school_contacts':
+            $department = (string)($arguments['department'] ?? '');
+            $departments = [];
+
+            foreach (($knowledge['departments'] ?? []) as $entry) {
+                if ($department !== '' && ($entry['key'] ?? '') !== $department) {
+                    continue;
+                }
+
+                $departments[] = $entry;
+            }
+
+            return mcp_encode([
+                'language'    => $language,
+                'school'      => $knowledge['school'] ?? null,
+                'departments' => $departments,
+            ]);
+
+        case 'find_academic_events':
+            $needle = mb_strtolower(trim((string)($arguments['query'] ?? '')));
+            $division = (string)($arguments['division'] ?? '');
+            $fromRaw = (string)($arguments['fromDate'] ?? '');
+            $toRaw = (string)($arguments['toDate'] ?? '');
+            $from = $fromRaw === '' ? null : strtotime($fromRaw . ' 00:00:00 UTC');
+            $to = $toRaw === '' ? null : strtotime($toRaw . ' 23:59:59 UTC');
+            $events = [];
+
+            foreach (($knowledge['events'] ?? []) as $event) {
+                if ($division !== '' && ($event['calendarId'] ?? '') !== $division) {
+                    continue;
+                }
+
+                if ($needle !== '' && mb_strpos(mb_strtolower((string)($event['title'] ?? '')), $needle) === false) {
+                    continue;
+                }
+
+                $start = (int)($event['startDate'] ?? 0);
+                $end = (int)($event['endDate'] ?? $start);
+
+                if ($from !== null && $from !== false && $end < $from * 1000) {
+                    continue;
+                }
+
+                if ($to !== null && $to !== false && $start > $to * 1000) {
+                    continue;
+                }
+
+                $events[] = $event;
+
+                if (count($events) >= 25) {
+                    break;
+                }
+            }
+
+            return mcp_encode(['language' => $language, 'count' => count($events), 'events' => $events]);
+
+        case 'get_next_event':
+            $division = (string)($arguments['division'] ?? '');
+            $now = (int)(microtime(true) * 1000);
+
+            foreach (($knowledge['events'] ?? []) as $event) {
+                if ($division !== '' && ($event['calendarId'] ?? '') !== $division) {
+                    continue;
+                }
+
+                if ((int)($event['startDate'] ?? 0) >= $now) {
+                    return mcp_encode(['language' => $language, 'event' => $event]);
+                }
+            }
+
+            return mcp_encode(['language' => $language, 'event' => null]);
+
+        case 'list_pages':
+            $section = (string)($arguments['section'] ?? '');
+            $pages = [];
+
+            foreach (($knowledge['pages'] ?? []) as $page) {
+                if ($section !== '' && ($page['section'] ?? '') !== $section) {
+                    continue;
+                }
+
+                $pages[] = $page;
+            }
+
+            return mcp_encode(['language' => $language, 'pages' => $pages]);
+    }
+
+    return mcp_encode(['error' => 'Unknown tool: ' . $name]);
+}

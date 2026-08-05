@@ -6,6 +6,7 @@ import Footer from '../modules/CorporateFooter.jsx';
 import ErrorBoundary from '../modules/ErrorBoundary.jsx';
 import { corporateRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
+import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeLazyPages, useLangSync } from '../routes/shared.js';
 
 const pages = makeLazyPages(
@@ -21,7 +22,7 @@ function CorporateClientRouter() {
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
                     <Suspense fallback={<div style={{minHeight: '100vh'}}></div>}>
-                        <AppRoutes routes={corporateRoutes} pages={pages} />
+                        <AppRoutes routes={corporateRoutes} pages={pages} router={ROUTER_IDS.corporate} />
                     </Suspense>
                 </ErrorBoundary>
             </div>

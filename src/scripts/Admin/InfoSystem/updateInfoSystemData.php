@@ -2,6 +2,7 @@
 require_once '../../headers.php';
 require_once '../authHelpers.php';
 require_once '../../permissionLevels.php';
+require_once '/../../Public/SchoolInfo/publicSchoolInfoHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
@@ -128,6 +129,28 @@ try {
             }
             $syncStmt->close();
         }
+    }
+
+    if (!$updateStaticOnly && isset($postData['profile'])) {
+        $stmt = $conn->prepare("INSERT INTO info_system_school_profile (profile_key, category, value_en, value_ar, note_en, note_ar, value_source, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE category=VALUES(category), value_en=VALUES(value_en), value_ar=VALUES(value_ar), note_en=VALUES(note_en), note_ar=VALUES(note_ar), value_source=VALUES(value_source), sort_order=VALUES(sort_order)");
+
+        foreach ($postData['profile'] as $p) {
+            $stmt->bind_param("sssssssi", $p['profile_key'], $p['category'], $p['value_en'], $p['value_ar'], $p['note_en'], $p['note_ar'], $p['value_source'], $p['sort_order']);
+            $stmt->execute();
+        }
+
+        $stmt->close();
+    }
+
+    if (!$updateStaticOnly && isset($postData['policies'])) {
+        $stmt = $conn->prepare("INSERT INTO info_system_policy_items (item_key, group_key, title_en, title_ar, detail_en, detail_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE group_key=VALUES(group_key), title_en=VALUES(title_en), title_ar=VALUES(title_ar), detail_en=VALUES(detail_en), detail_ar=VALUES(detail_ar), sort_order=VALUES(sort_order)");
+
+        foreach ($postData['policies'] as $pi) {
+            $stmt->bind_param("ssssssi", $pi['item_key'], $pi['group_key'], $pi['title_en'], $pi['title_ar'], $pi['detail_en'], $pi['detail_ar'], $pi['sort_order']);
+            $stmt->execute();
+        }
+
+        $stmt->close();
     }
 
     $conn->commit();
@@ -365,7 +388,7 @@ WEBSITE LINK DIRECTORY
 Harvest Schools Home: https://www.harvestschools.com/
 FAQs: https://www.harvestschools.com/faqs
 Minimum Stage Age: https://www.harvestschools.com/minimum-stage-age
-Vacancies: https://www.harvestschools.com/vacancies
+Vacancies: https://www.harvestschools.com/careers
 Admission Process: https://www.harvestschools.com/admission/admission-process
 Admission Requirements: https://www.harvestschools.com/admission/admission-requirements
 Inside Egypt Requirements: https://www.harvestschools.com/admission/inside-egypt-requirements
@@ -399,7 +422,7 @@ RESPONSE PATTERNS — USE THESE EXAMPLES
 ============================================================
 
 - "Are you hiring?" →
-  "We're always open to talented educators joining the Harvest family. You can submit your application here: https://harvestschools.com/vacancies"
+  "We're always open to talented educators joining the Harvest family. You can submit your application here: https://harvestschools.com/careers"
   
 - "How do I apply for my kid?" →
   "You can start your application online here: https://schooleverywhere-harvest.com/schooleverywhere/management/onlineadmission/applyonline/onlineadmission1.php"
@@ -635,7 +658,37 @@ PHP_CODE;
         throw new Exception("Failed to write to $configPath", 500);
     }
 
-    echo json_encode(["success" => true, "message" => "Database updated and botConfig.php generated successfully.", "code" => 200]);
+    $knowledgeDirectory = $ASSETS_BASE;
+    $knowledgeSuffix = $postData['is_development'] ? '-tmp' : '';
+    $knowledgeHashes = [];
+
+    foreach (PUBLIC_INFO_SUPPORTED_LANGUAGES as $knowledgeLanguage) {
+        $knowledgeDocument = public_school_document($conn, $knowledgeLanguage);
+        $encodedKnowledge = json_encode($knowledgeDocument, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        if ($encodedKnowledge === false) {
+            throw new Exception("Failed to encode the public school knowledge artifact for $knowledgeLanguage", 500);
+        }
+
+        $knowledgePath = rtrim($knowledgeDirectory, '/\\') . DIRECTORY_SEPARATOR . 'school-knowledge-' . $knowledgeLanguage . $knowledgeSuffix . '.json';
+        $knowledgeTempPath = $knowledgePath . '.' . uniqid('tmp', true);
+
+        if (file_put_contents($knowledgeTempPath, $encodedKnowledge) === false || !rename($knowledgeTempPath, $knowledgePath)) {
+            @unlink($knowledgeTempPath);
+            throw new Exception("Failed to write $knowledgePath", 500);
+        }
+
+        @chmod($knowledgePath, 0644);
+
+        $knowledgeHashes[$knowledgeLanguage] = $knowledgeDocument['contentHash'];
+    }
+
+    echo json_encode([
+        "success" => true,
+        "message" => "Database updated, botConfig.php and the public school knowledge artifacts generated successfully.",
+        "code" => 200,
+        "knowledgeArtifacts" => $knowledgeHashes
+    ]);
 
 } catch (Exception $e) {
     if (isset($conn)) {

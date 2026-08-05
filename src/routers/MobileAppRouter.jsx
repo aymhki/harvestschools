@@ -18,8 +18,10 @@ import {
 } from '../services/General/CalendarSubscriptionService.jsx';
 import { rememberRestorePath } from '../services/General/AppUpdaterService.jsx';
 import { LOCALES_UPDATED_EVENT } from '../services/General/OfflinePrefetchService.jsx';
+import { attachAssistantSyncTriggers } from '../services/Assistant/AssistantSyncService.jsx';
 import { mobileRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
+import { ROUTER_IDS } from '../routes/redirects.js';
 import PageTransition from '../modules/PageTransition.jsx';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
 
@@ -148,6 +150,10 @@ function MobileAppRouter() {
     }, [navigate, i18n]);
 
     useEffect(() => {
+        return attachAssistantSyncTriggers({ i18n });
+    }, [i18n]);
+
+    useEffect(() => {
         rememberRestorePath(location.pathname + location.search + location.hash);
     }, [location]);
 
@@ -206,7 +212,7 @@ function MobileAppRouter() {
                     )}
                     <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
                         <PageTransition key={location.pathname}>
-                            <AppRoutes routes={mobileRoutes} pages={pages} ctx={ctx} />
+                            <AppRoutes routes={mobileRoutes} pages={pages} ctx={ctx} router={ROUTER_IDS.mobile} />
                         </PageTransition>
                     </Suspense>
                 </div>

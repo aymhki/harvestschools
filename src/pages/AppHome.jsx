@@ -99,7 +99,7 @@ const COPY = {
             studentsLife: 'Students life',
             gallery: 'Gallery',
             moreInfo: 'More info',
-            vacancies: 'Vacancies',
+            vacancies: 'Careers',
             admin: 'Staff portal',
             website: 'Full site',
         },
@@ -191,7 +191,7 @@ const QUICK_ACTIONS = [
     { id: 'studentsLife', path: '/students-life', Icon: GroupsOutlinedIcon },
     { id: 'gallery', path: '/gallery', Icon: PhotoLibraryOutlinedIcon },
     { id: 'moreInfo', path: '/more-info', Icon: HelpOutlineOutlinedIcon },
-    { id: 'vacancies', path: '/vacancies', Icon: WorkOutlineIcon },
+    { id: 'vacancies', path: '/careers', Icon: WorkOutlineIcon },
     { id: 'admin', path: '/admin-login', Icon: AdminPanelSettingsOutlinedIcon },
     { id: 'website', path: '/home', Icon: LanguageOutlinedIcon },
 ]

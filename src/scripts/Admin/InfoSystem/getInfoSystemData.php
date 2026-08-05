@@ -81,6 +81,22 @@ try {
     }
     $stageData = moveColumnFirst(array_merge([$stageHeaders], $stageRows), "ID");
 
+    $profileHeaders = ["Profile Key", "Category", "Value (EN)", "Value (AR)", "Note (EN)", "Note (AR)", "Source", "ID"];
+    $profileRows = [];
+    $res = $conn->query("SELECT profile_key, category, value_en, value_ar, note_en, note_ar, value_source, sort_order FROM info_system_school_profile ORDER BY sort_order ASC");
+    while ($row = $res->fetch_assoc()) {
+        $profileRows[] = array_map('strval', array_values($row));
+    }
+    $profileData = moveColumnFirst(array_merge([$profileHeaders], $profileRows), "ID");
+
+    $policyHeaders = ["Item Key", "Group Key", "Title (EN)", "Title (AR)", "Detail (EN)", "Detail (AR)", "ID"];
+    $policyRows = [];
+    $res = $conn->query("SELECT item_key, group_key, title_en, title_ar, detail_en, detail_ar, sort_order FROM info_system_policy_items ORDER BY group_key, sort_order ASC");
+    while ($row = $res->fetch_assoc()) {
+        $policyRows[] = array_map('strval', array_values($row));
+    }
+    $policyData = moveColumnFirst(array_merge([$policyHeaders], $policyRows), "ID");
+
     echo json_encode([
         "success" => true,
         "message" => "Data retrieved successfully",
@@ -88,7 +104,9 @@ try {
         "data" => [
             "settings" => $settingsData,
             "departments" => $deptData,
-            "stages" => $stageData
+            "stages" => $stageData,
+            "profile" => $profileData,
+            "policies" => $policyData
         ]
     ]);
 } catch (Exception $e) {

@@ -5,6 +5,7 @@ import Footer from '../modules/CorporateFooter.jsx';
 import ErrorBoundary from '../modules/ErrorBoundary.jsx';
 import { corporateRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
+import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeEagerPages, useLangSync } from '../routes/shared.js';
 
 const pages = makeEagerPages(
@@ -19,7 +20,7 @@ function CorporateServerRouter() {
             <NavigationBar compactOrAdmin={false} isMobileApp={false}/>
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
-                    <AppRoutes routes={corporateRoutes} pages={pages} />
+                    <AppRoutes routes={corporateRoutes} pages={pages} router={ROUTER_IDS.corporate} />
                 </ErrorBoundary>
             </div>
             <Footer />
