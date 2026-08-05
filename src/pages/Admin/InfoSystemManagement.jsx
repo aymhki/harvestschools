@@ -77,7 +77,6 @@ function InfoSystemManagement() {
     const profileValueArColIndex = 4;
     const profileNoteEnColIndex = 5;
     const profileNoteArColIndex = 6;
-    const profileValueSourceColIndex = 7;
 
     const policySortOrderColIndex = 0;
     const policyKeyColIndex = 1;
@@ -292,7 +291,6 @@ function InfoSystemManagement() {
                         value_ar: formDataJson[`field_${profileValueArFormFieldId}`] || '',
                         note_en: formDataJson[`field_${profileNoteEnFormFieldId}`] || '',
                         note_ar: formDataJson[`field_${profileNoteArFormFieldId}`] || '',
-                        value_source: profileData[indexOfRowToEdit][profileValueSourceColIndex],
                         sort_order: Number(profileData[indexOfRowToEdit][profileSortOrderColIndex])
                     }]
                 };
@@ -438,8 +436,6 @@ function InfoSystemManagement() {
                    filterableColumns={[
                        'Category'
                    ]}
-                   allowBreakWordColumns={{ "Value (EN)": '14rem', "Value (AR)": '14rem', "Source": '12rem' }}
-                   truncateValuesColumns={{'Value (EN)': 120, 'Value (AR)': 120, 'Source': 60}}
             />
         </div>
     );
@@ -460,8 +456,6 @@ function InfoSystemManagement() {
                    filterableColumns={[
                        'Group Key'
                    ]}
-                   allowBreakWordColumns={{ "Detail (EN)": '14rem', "Detail (AR)": '14rem' }}
-                   truncateValuesColumns={{'Detail (EN)': 120, 'Detail (AR)': 120}}
             />
         </div>
     );

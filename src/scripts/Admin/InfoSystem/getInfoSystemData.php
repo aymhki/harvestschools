@@ -81,9 +81,9 @@ try {
     }
     $stageData = moveColumnFirst(array_merge([$stageHeaders], $stageRows), "ID");
 
-    $profileHeaders = ["Profile Key", "Category", "Value (EN)", "Value (AR)", "Note (EN)", "Note (AR)", "Source", "ID"];
+    $profileHeaders = ["Profile Key", "Category", "Value (EN)", "Value (AR)", "Note (EN)", "Note (AR)", "ID"];
     $profileRows = [];
-    $res = $conn->query("SELECT profile_key, category, value_en, value_ar, note_en, note_ar, value_source, sort_order FROM info_system_school_profile ORDER BY sort_order ASC");
+    $res = $conn->query("SELECT profile_key, category, value_en, value_ar, note_en, note_ar, sort_order FROM info_system_school_profile ORDER BY sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $profileRows[] = array_map('strval', array_values($row));
     }

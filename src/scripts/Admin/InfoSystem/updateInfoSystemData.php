@@ -132,10 +132,10 @@ try {
     }
 
     if (!$updateStaticOnly && isset($postData['profile'])) {
-        $stmt = $conn->prepare("INSERT INTO info_system_school_profile (profile_key, category, value_en, value_ar, note_en, note_ar, value_source, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE category=VALUES(category), value_en=VALUES(value_en), value_ar=VALUES(value_ar), note_en=VALUES(note_en), note_ar=VALUES(note_ar), value_source=VALUES(value_source), sort_order=VALUES(sort_order)");
+        $stmt = $conn->prepare("INSERT INTO info_system_school_profile (profile_key, category, value_en, value_ar, note_en, note_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE category=VALUES(category), value_en=VALUES(value_en), value_ar=VALUES(value_ar), note_en=VALUES(note_en), note_ar=VALUES(note_ar), sort_order=VALUES(sort_order)");
 
         foreach ($postData['profile'] as $p) {
-            $stmt->bind_param("sssssssi", $p['profile_key'], $p['category'], $p['value_en'], $p['value_ar'], $p['note_en'], $p['note_ar'], $p['value_source'], $p['sort_order']);
+            $stmt->bind_param("ssssssi", $p['profile_key'], $p['category'], $p['value_en'], $p['value_ar'], $p['note_en'], $p['note_ar'], $p['sort_order']);
             $stmt->execute();
         }
 
