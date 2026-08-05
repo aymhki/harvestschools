@@ -2,7 +2,7 @@
 require_once '../../headers.php';
 require_once '../authHelpers.php';
 require_once '../../permissionLevels.php';
-require_once '/../../Public/SchoolInfo/publicSchoolInfoHelpers.php';
+require_once __DIR__ . '/../../Public/SchoolInfo/publicSchoolInfoHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
@@ -690,7 +690,7 @@ PHP_CODE;
         "knowledgeArtifacts" => $knowledgeHashes
     ]);
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     if (isset($conn)) {
         $conn->rollback();
     }
