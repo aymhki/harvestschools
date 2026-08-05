@@ -3,6 +3,7 @@
   RewriteRule ^embed\.html$ - [L]
 
   RewriteRule ^mcp/?$ /scripts/MCP/mcpServer.php [L,QSA]
+  RewriteRule ^\.well-known/oauth-(authorization-server|protected-resource)(/.*)?$ - [R=404,L]
 
   RewriteCond %{REQUEST_URI} !^/scripts/Public/General/servePublicAssetFile\.php
   RewriteCond %{REQUEST_FILENAME} !-f
