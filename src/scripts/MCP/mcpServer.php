@@ -7,6 +7,9 @@ require_once __DIR__ . '/HarvestDatabaseSessionStore.php';
 require_once __DIR__ . '/mcpTools.php';
 
 use Mcp\Server;
+use Mcp\Server\Transport\Http\Middleware\CorsMiddleware;
+use Mcp\Server\Transport\Http\Middleware\DnsRebindingProtectionMiddleware;
+use Mcp\Server\Transport\Http\Middleware\ProtocolVersionMiddleware;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
@@ -23,9 +26,15 @@ const MCP_INSTRUCTIONS = 'Read-only access to published Harvest International Sc
     . 'Never state a tuition fee when isTuitionPublished is false - say the fee is not published and refer the user '
     . 'to the admissions department. Do not invent facts that are absent from these tools.';
 
-/**
- * Shared connection for both the session store and the knowledge loader's live fallback.
- */
+const MCP_ALLOWED_HOSTS = [
+    'harvestschools.com',
+    'www.harvestschools.com',
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+];
+
+
 function mcp_database_connection(): ?mysqli {
     static $connection = null;
 
@@ -101,7 +110,18 @@ $mcpServer = $mcpBuilder->build();
 $psr17Factory = new Psr17Factory();
 $requestCreator = new ServerRequestCreator($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
 
-$transport = new StreamableHttpTransport($requestCreator->fromGlobals(), $psr17Factory, $psr17Factory);
+$transport = new StreamableHttpTransport(
+    $requestCreator->fromGlobals(),
+    $psr17Factory,
+    $psr17Factory,
+    null,
+    [
+        new CorsMiddleware(['*'], ['GET', 'POST', 'DELETE', 'OPTIONS']),
+        new DnsRebindingProtectionMiddleware(MCP_ALLOWED_HOSTS, $psr17Factory, $psr17Factory),
+        new ProtocolVersionMiddleware(),
+    ]
+);
+
 $response = $mcpServer->run($transport);
 
 if (!headers_sent()) {
