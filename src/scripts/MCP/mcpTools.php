@@ -4,6 +4,7 @@
 const MCP_CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'british-kg', 'american-kg'];
 const MCP_DEPARTMENT_KEYS = ['reception', 'student_affairs', 'accounting', 'admissions', 'early', 'national', 'british', 'american'];
 const MCP_PAGE_SECTIONS = ['general', 'admission', 'academics', 'students-life', 'events', 'gallery'];
+const MCP_STAFF_DEPARTMENT_KEYS = ['national', 'british', 'american', 'kindergarten'];
 
 function mcp_language_property(): array {
     return ['type' => 'string', 'enum' => ['en', 'ar'], 'default' => 'en', 'description' => 'Response language.'];
@@ -90,6 +91,25 @@ function mcp_tool_schemas(): array {
                 'type' => 'object',
                 'properties' => [
                     'division' => ['type' => 'string', 'enum' => MCP_CALENDAR_IDS, 'description' => 'Optional calendar filter.'],
+                    'language' => mcp_language_property(),
+                ],
+            ],
+        ],
+        'get_school_staff' => [
+            'title' => 'Get school staff',
+            'description' => 'Lists the teachers, coordinators and heads the school publishes for one of its four '
+                . 'staff pages. Names come with the subject they teach where there is one. People who serve the whole '
+                . 'school appear under every department. Only published staff are here, so an empty result means the '
+                . 'school has not published that list - never guess a name.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'department' => [
+                        'type' => 'string',
+                        'enum' => MCP_STAFF_DEPARTMENT_KEYS,
+                        'description' => 'Which staff page to read. Empty returns every department.',
+                    ],
+                    'query'    => ['type' => 'string', 'description' => 'Optional text matched against names, positions and subjects.'],
                     'language' => mcp_language_property(),
                 ],
             ],
@@ -363,6 +383,46 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             }
 
             return mcp_encode(['language' => $language, 'event' => null]);
+
+        case 'get_school_staff':
+            $department = strtolower(trim((string)($arguments['department'] ?? '')));
+            $needle = mb_strtolower(trim((string)($arguments['query'] ?? '')));
+            $staff = [];
+
+            foreach (($knowledge['staff'] ?? []) as $entry) {
+                if ($department !== '' && ($entry['departmentKey'] ?? '') !== $department) {
+                    continue;
+                }
+
+                if ($needle === '') {
+                    $staff[] = $entry;
+                    continue;
+                }
+
+                $matches = static function (array $person) use ($needle) {
+                    foreach (['name', 'position', 'subject'] as $field) {
+                        if (mb_strpos(mb_strtolower((string)($person[$field] ?? '')), $needle) !== false) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                };
+
+                $highlights = array_values(array_filter($entry['highlights'] ?? [], $matches));
+                $members = array_values(array_filter($entry['members'] ?? [], $matches));
+
+                if ($highlights === [] && $members === []) {
+                    continue;
+                }
+
+                $entry['highlights'] = $highlights;
+                $entry['members'] = $members;
+                $entry['memberCount'] = count($highlights) + count($members);
+                $staff[] = $entry;
+            }
+
+            return mcp_encode(['language' => $language, 'staff' => $staff]);
 
         case 'list_pages':
             $section = (string)($arguments['section'] ?? '');

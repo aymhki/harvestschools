@@ -320,6 +320,76 @@ struct SchoolDepartmentQuery: EntityStringQuery, EnumerableEntityQuery {
     }
 }
 
+struct SchoolStaffEntity: AppEntity, Identifiable {
+
+    static var typeDisplayRepresentation: TypeDisplayRepresentation { "School Staff Member" }
+
+    static var defaultQuery: SchoolStaffQuery { SchoolStaffQuery() }
+
+    var id: String
+    var name: String
+    var position: String
+    var subject: String
+    var departmentName: String
+    var routePath: String?
+
+    var displayRepresentation: DisplayRepresentation {
+        let detail = subject.isEmpty ? position : "\(position) - \(subject)"
+
+        return DisplayRepresentation(title: "\(name)", subtitle: "\(detail), \(departmentName)")
+    }
+
+    init(member: HarvestStaffMember, department: HarvestStaffDepartment, index: Int) {
+        self.id = "staff.\(department.departmentKey).\(index)"
+        self.name = member.name ?? ""
+        self.position = member.position ?? ""
+        self.subject = member.subject ?? ""
+        self.departmentName = department.departmentName ?? ""
+        self.routePath = department.routePath
+    }
+}
+
+struct SchoolStaffQuery: EntityStringQuery {
+
+    func allEntities() async throws -> [SchoolStaffEntity] {
+        guard let knowledge = await HarvestAssistantContext.knowledge() else {
+            return []
+        }
+
+        var entities: [SchoolStaffEntity] = []
+
+        for department in knowledge.staff ?? [] {
+            var index = 0
+
+            for member in department.highlights ?? [] {
+                entities.append(SchoolStaffEntity(member: member, department: department, index: index))
+                index += 1
+            }
+
+            for member in department.members ?? [] {
+                entities.append(SchoolStaffEntity(member: member, department: department, index: index))
+                index += 1
+            }
+        }
+
+        return entities
+    }
+
+    func entities(for identifiers: [String]) async throws -> [SchoolStaffEntity] {
+        let wanted = Set(identifiers)
+
+        return try await allEntities().filter { wanted.contains($0.id) }
+    }
+
+    func entities(matching string: String) async throws -> [SchoolStaffEntity] {
+        let terms = string.split(separator: " ").map(String.init).filter { !$0.isEmpty }
+
+        return try await allEntities().filter {
+            HarvestAssistantContext.matches([$0.name, $0.position, $0.subject, $0.departmentName], terms: terms)
+        }
+    }
+}
+
 struct SchoolCalendarEntity: AppEntity, Identifiable {
 
     static let allCalendars: [SchoolCalendarEntity] = [

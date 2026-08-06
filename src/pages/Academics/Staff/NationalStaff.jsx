@@ -1,32 +1,13 @@
 import '../../../styles/Academics.css';
-import Table from "../../../modules/Table.jsx";
+import StaffList from "../../../modules/StaffList.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function NationalStaff() {
-    const { t, i18n } = useTranslation(['academics-pages']);
-
-    const staffList = t('academics-pages.staff.national-staff-list', { returnObjects: true }) || [];
-
-    const tableHeaders = [
-        t('academics-pages.staff.name-column-header'),
-        t('academics-pages.staff.subject-column-header'),
-        t('academics-pages.staff.title-column-header')
-    ];
-
-    const tableRows = Array.isArray(staffList) ? staffList.slice(2).map(member => [member.name, member.subject, member.title]) : [];
-    const tableData = [tableHeaders, ...tableRows];
-
-    const lastUpdatedDate = new Date('2021-06-20');
-    const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: 'Africa/Cairo'
-    }).format(lastUpdatedDate);
+    const { t } = useTranslation(['academics-pages']);
 
     return (
-        <div className={"academics-national-staff-page"}>
+        <>
             <Helmet>
                 <title>{t('academics-pages.national-section')} | {t('nav.staff', {ns: 'nav'})}</title>
                 <meta name="description"
@@ -38,26 +19,11 @@ function NationalStaff() {
                 <meta name="googlebot" content="index, follow"/>
             </Helmet>
 
-            <div className={"extreme-padding-container"}>
-                <h1>{t('academics-pages.staff.national-staff-title')}</h1>
-                <p>
-                    {t('academics-pages.staff.head-of-department')}: {Array.isArray(staffList) && staffList.length > 0 ? staffList[0].name : ''}
-                </p>
-
-                <p>
-                    {t('academics-pages.staff.vice-feminine')}: {Array.isArray(staffList) && staffList.length > 1 ? staffList[1].name : ''}
-                </p>
-
-                <Table tableData={tableData} numCols={3}
-                       sortConfigParam={{column: 1, direction: 'ascending'}}
-                       ignoreSideMarginsOnFixed={true}
-                />
-
-                <p>
-                    {t('common.last-updated', {ns: 'common'})} {formattedDate}
-                </p>
-            </div>
-        </div>
+            <StaffList departmentKey={"national"}
+                       title={t('academics-pages.staff.national-staff-title')}
+                       className={"academics-national-staff-page"}
+            />
+        </>
     );
 }
 

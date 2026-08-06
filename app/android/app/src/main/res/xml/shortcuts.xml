@@ -111,6 +111,29 @@
     </shortcut>
 
     <shortcut
+        android:shortcutId="staff"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_staff_short"
+        android:shortcutLongLabel="@string/shortcut_staff_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/academics/staff" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_staff_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
         android:shortcutId="events"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"

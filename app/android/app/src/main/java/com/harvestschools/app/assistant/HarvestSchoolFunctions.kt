@@ -201,6 +201,79 @@ class HarvestSchoolFunctions {
     }
 
     /**
+     * Looks up the teachers, coordinators and heads the school publishes.
+     *
+     * Use this for questions like "who teaches maths in the British department" or "who is the head
+     * of the American department". Staff who serve the whole school, such as reception or
+     * accounting, appear under every department.
+     *
+     * @param appFunctionContext Provided by the system.
+     * @param department Optional department filter. Allowed values: "national", "british",
+     *   "american", "kindergarten". Empty string searches every department.
+     * @param query Optional text matched against names, positions and subjects. Empty string
+     *   returns everyone in the chosen department.
+     * @return Matching staff, heads and vices first. An EMPTY list means the school has not
+     *   published that list - say so rather than naming anyone.
+     */
+    @AppFunction(isDescribedByKDoc = true)
+    suspend fun getSchoolStaff(
+        appFunctionContext: AppFunctionContext,
+        department: String,
+        query: String,
+    ): List<SchoolStaffResult> = withContext(Dispatchers.IO) {
+        val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
+        val staff = knowledge.optJSONArray("staff") ?: return@withContext emptyList()
+        val needle = query.trim().lowercase(Locale.ROOT)
+        val results = mutableListOf<SchoolStaffResult>()
+
+        for (index in 0 until staff.length()) {
+            val entry = staff.optJSONObject(index) ?: continue
+
+            if (department.isNotBlank() && !department.equals(entry.optString("departmentKey"), ignoreCase = true)) {
+                continue
+            }
+
+            val departmentName = entry.optString("departmentName")
+            val routePath = entry.optString("routePath")
+
+            for ((people, isLead) in listOf(
+                entry.optJSONArray("highlights") to true,
+                entry.optJSONArray("members") to false,
+            )) {
+                val list = people ?: continue
+
+                for (personIndex in 0 until list.length()) {
+                    val person = list.optJSONObject(personIndex) ?: continue
+                    val name = person.optString("name")
+                    val position = person.optString("position")
+                    val subject = person.optString("subject")
+
+                    if (needle.isNotEmpty()) {
+                        val haystack = "$name $position $subject $departmentName".lowercase(Locale.ROOT)
+
+                        if (!haystack.contains(needle)) {
+                            continue
+                        }
+                    }
+
+                    results.add(
+                        SchoolStaffResult(
+                            name = name,
+                            position = position,
+                            subject = subject,
+                            departmentName = departmentName,
+                            isDepartmentLead = isLead,
+                            routePath = routePath,
+                        )
+                    )
+                }
+            }
+        }
+
+        results
+    }
+
+    /**
      * Lists the pages the Harvest Schools app can open.
      *
      * @param appFunctionContext Provided by the system.

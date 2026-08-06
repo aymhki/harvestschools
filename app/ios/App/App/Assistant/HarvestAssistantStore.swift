@@ -82,6 +82,22 @@ struct HarvestAppPage: Codable {
     let section: String?
 }
 
+struct HarvestStaffMember: Codable {
+    let name: String?
+    let position: String?
+    let subject: String?
+}
+
+struct HarvestStaffDepartment: Codable {
+    let departmentKey: String
+    let departmentName: String?
+    let routePath: String?
+    let highlights: [HarvestStaffMember]?
+    let members: [HarvestStaffMember]?
+    let memberCount: Int?
+    let lastUpdated: Double?
+}
+
 struct HarvestSchoolKnowledge: Codable {
     let schemaVersion: Int
     let generatedAt: String?
@@ -93,6 +109,7 @@ struct HarvestSchoolKnowledge: Codable {
     let facts: [HarvestSchoolFact]?
     let events: [HarvestAcademicEvent]?
     let pages: [HarvestAppPage]?
+    let staff: [HarvestStaffDepartment]?
 }
 
 enum HarvestAssistantStore {

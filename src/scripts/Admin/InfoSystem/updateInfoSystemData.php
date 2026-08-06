@@ -658,30 +658,7 @@ PHP_CODE;
         throw new Exception("Failed to write to $configPath", 500);
     }
 
-    $knowledgeDirectory = $ASSETS_BASE;
-    $knowledgeSuffix = $postData['is_development'] ? '-tmp' : '';
-    $knowledgeHashes = [];
-
-    foreach (PUBLIC_INFO_SUPPORTED_LANGUAGES as $knowledgeLanguage) {
-        $knowledgeDocument = public_school_document($conn, $knowledgeLanguage);
-        $encodedKnowledge = json_encode($knowledgeDocument, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        if ($encodedKnowledge === false) {
-            throw new Exception("Failed to encode the public school knowledge artifact for $knowledgeLanguage", 500);
-        }
-
-        $knowledgePath = rtrim($knowledgeDirectory, '/\\') . DIRECTORY_SEPARATOR . 'school-knowledge-' . $knowledgeLanguage . $knowledgeSuffix . '.json';
-        $knowledgeTempPath = $knowledgePath . '.' . uniqid('tmp', true);
-
-        if (file_put_contents($knowledgeTempPath, $encodedKnowledge) === false || !rename($knowledgeTempPath, $knowledgePath)) {
-            @unlink($knowledgeTempPath);
-            throw new Exception("Failed to write $knowledgePath", 500);
-        }
-
-        @chmod($knowledgePath, 0644);
-
-        $knowledgeHashes[$knowledgeLanguage] = $knowledgeDocument['contentHash'];
-    }
+    $knowledgeHashes = public_school_write_artifacts($conn, $doc_root, $postData['is_development'] ? '-tmp' : '');
 
     echo json_encode([
         "success" => true,

@@ -81,6 +81,7 @@ export const adminRoutes = [
     { path: '/open-day-signups-management', page: 'Admin/OpenDaySignupsManagement.jsx', section: 'admin' },
     { path: '/borrowing-system-management', page: 'Admin/BorrowingSystemManagement.jsx', section: 'admin' },
     { path: '/info-system-management', page: 'Admin/InfoSystemManagement.jsx', section: 'admin' },
+    { path: '/staff-directory-management', page: 'Admin/StaffDirectoryManagement.jsx', section: 'admin' },
     { path: '/view-job-application-file', page: 'Admin/FileViewer.jsx', section: 'admin',
         props: (ctx) => ({ fetchFileService: ctx.services.serveJobApplicationFile }) },
     { path: '/view-alumni-file', page: 'Admin/FileViewer.jsx', section: 'admin',

@@ -6,6 +6,7 @@ const LOCALES_UPDATED_EVENT = 'harvestLocalesUpdated'
 import { applyCachedFonts, prefetchAllFonts } from './OfflineFontsService.jsx'
 import { prefetchCriticalAssets } from './OfflineImageCacheService.jsx'
 import { servePublicAsset } from './GeneralServices.jsx'
+import { prefetchPublicStaff } from '../Public/Staff/PublicStaffServices.jsx'
 
 
 const PREFETCH_STAMP_KEY = 'harvest_offline_prefetch_stamp'
@@ -192,12 +193,20 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 { onProgress: (percent) => report('assets', percent) }
             )
 
+            report('staff', 0)
+
+            // The staff pages read the database rather than the locales, so they
+            // need their own warm-up to survive with no connection.
+            const staffResult = await prefetchPublicStaff({
+                onProgress: (percent) => report('staff', percent),
+            })
+
             await writeStamp({
                 bundleVersion: bundleVersion || (stamp ? stamp.bundleVersion : null),
                 completedAt: Date.now(),
             })
 
-            return { skipped: false, locales: localeResult, fonts: fontResult, assets: assetResult }
+            return { skipped: false, locales: localeResult, fonts: fontResult, assets: assetResult, staff: staffResult }
         } catch (prefetchError) {
             console.warn('[offline-prefetch] Prefetch run failed', prefetchError)
 

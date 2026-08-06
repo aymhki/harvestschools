@@ -62,6 +62,17 @@ struct HarvestAppShortcuts: AppShortcutsProvider {
         )
 
         AppShortcut(
+            intent: GetSchoolStaffIntent(),
+            phrases: [
+                "Get staff in \(.applicationName)",
+                "Who teaches at \(.applicationName)",
+                "كوادر \(.applicationName)"
+            ],
+            shortTitle: "School staff",
+            systemImageName: "person.2"
+        )
+
+        AppShortcut(
             intent: CallSchoolDepartmentIntent(),
             phrases: [
                 "Call a department in \(.applicationName)",

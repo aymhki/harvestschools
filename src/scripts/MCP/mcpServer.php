@@ -14,11 +14,8 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 
 const MCP_SERVER_NAME = 'harvest-school-info';
-
 const MCP_SERVER_VERSION = '1.0.0';
-
 const MCP_SESSION_TTL_SECONDS = 3600;
-
 const MCP_RATE_LIMIT_MAX_REQUESTS = 120;
 
 const MCP_INSTRUCTIONS = 'Read-only access to published Harvest International Schools information. '

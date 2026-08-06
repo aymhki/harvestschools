@@ -78,6 +78,7 @@ const createEmptyAssistantKnowledge = (language) => ({
     departments: [],
     stages: [],
     policies: {},
+    staff: [],
     facts: [],
     events: [],
     pages: [],

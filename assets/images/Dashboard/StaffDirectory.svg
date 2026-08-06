@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Staff directory">
+    <title>Staff Directory</title>
+
+    <path d="M212 34h88a10 10 0 0 1 10 10v22a10 10 0 0 1-10 10h-88a10 10 0 0 1-10-10V44a10 10 0 0 1 10-10z" fill="#8A94A6"/>
+    <path d="M236 46h40a8 8 0 0 1 8 8v6a8 8 0 0 1-8 8h-40a8 8 0 0 1-8-8v-6a8 8 0 0 1 8-8z" fill="#E8EAF3"/>
+
+    <rect x="66" y="70" width="380" height="412" rx="42" fill="#FDD055"/>
+    <path d="M256 70h148a42 42 0 0 1 42 42v328a42 42 0 0 1-42 42H256z" fill="#FCC24C"/>
+
+    <rect x="102" y="106" width="308" height="340" rx="26" fill="#FFFFFF"/>
+    <path d="M256 106h128a26 26 0 0 1 26 26v288a26 26 0 0 1-26 26H256z" fill="#F4F6FB"/>
+
+    <circle cx="256" cy="206" r="60" fill="#F3D6B5"/>
+    <path d="M256 146c33 0 60 27 60 60 0 6-1 12-3 18-14-4-24-15-28-29-13 17-33 27-55 27-11 0-22-3-32-8 6-39 40-68 58-68z" fill="#55606E"/>
+    <path d="M256 146c33 0 60 27 60 60 0 6-1 12-3 18-14-4-24-15-28-29-6 8-14 14-23 19v-68z" fill="#485261"/>
+
+    <path d="M256 274c48 0 88 39 88 88v22a12 12 0 0 1-12 12H180a12 12 0 0 1-12-12v-22c0-49 40-88 88-88z" fill="#E8EAF3"/>
+    <path d="M256 274c48 0 88 39 88 88v22a12 12 0 0 1-12 12h-76z" fill="#D5DAE7"/>
+    <path d="M256 274l22 14-14 22 14 62h-44l14-62-14-22z" fill="#F05A5A"/>
+
+    <rect x="152" y="422" width="208" height="16" rx="8" fill="#E8EAF3"/>
+    <rect x="256" y="422" width="104" height="16" rx="8" fill="#D5DAE7"/>
+</svg>

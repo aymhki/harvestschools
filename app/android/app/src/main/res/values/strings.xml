@@ -14,6 +14,8 @@
     <string name="shortcut_age_long">Open minimum registration age</string>
     <string name="shortcut_academics_short">Academics</string>
     <string name="shortcut_academics_long">Open academics</string>
+    <string name="shortcut_staff_short">Staff</string>
+    <string name="shortcut_staff_long">Open the school staff lists</string>
     <string name="shortcut_events_short">Events</string>
     <string name="shortcut_events_long">Open school events and calendars</string>
     <string name="shortcut_faqs_short">FAQs</string>
