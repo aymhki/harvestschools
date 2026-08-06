@@ -75,6 +75,7 @@ try {
     global $BORROWING_SYSTEM_MANAGEMENT;
     global $INFO_SYSTEM_MANAGEMENT;
     global $ALUMNI_STUDENTS_MANAGEMENT;
+    global $STAFF_DIRECTORY_MANAGEMENT;
     global $JACK_OF_ALL_TRADES;
 
     $dashboardOptions = [];
@@ -153,6 +154,17 @@ try {
                 "link" => "/alumni-students-management",
                 "buttonText" => "View Students",
                 "titleInArabic" => false
+            ]
+        ],
+        $STAFF_DIRECTORY_MANAGEMENT => [
+            [
+                "title" => "Staff Directory",
+                "image" => "/images/Dashboard/StaffDirectory.svg",
+                "description" => "View & manage employees and the public staff pages",
+                "link" => "/staff-directory-management",
+                "buttonText" => "View Employees",
+                "titleInArabic" => false,
+                "descriptionInArabic" => false
             ]
         ]
     ];

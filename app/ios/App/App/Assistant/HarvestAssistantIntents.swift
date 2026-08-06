@@ -207,6 +207,56 @@ struct GetStagesOfferedIntent: AppIntent {
     }
 }
 
+struct GetSchoolStaffIntent: AppIntent {
+
+    static var title: LocalizedStringResource { "Get Harvest School Staff" }
+
+    static var description: IntentDescription {
+        return IntentDescription("Looks up the teachers, coordinators and heads Harvest International Schools publishes for each department.")
+    }
+
+    static var openAppWhenRun: Bool { false }
+
+    @Parameter(title: "Name, subject or department")
+    var query: String?
+
+    func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
+        guard let knowledge = await HarvestAssistantContext.knowledge() else {
+            let message = HarvestAssistantPhrasing.unavailableKnowledge()
+
+            return .result(value: message, dialog: IntentDialog(stringLiteral: message))
+        }
+
+        var staff = try await SchoolStaffQuery().allEntities()
+
+        if let query = query, !query.trimmingCharacters(in: .whitespaces).isEmpty {
+            let terms = query.split(separator: " ").map(String.init).filter { !$0.isEmpty }
+
+            staff = staff.filter {
+                HarvestAssistantContext.matches([$0.name, $0.position, $0.subject, $0.departmentName], terms: terms)
+            }
+        }
+
+        guard !staff.isEmpty else {
+            let message = HarvestAssistantPhrasing.noMatch()
+
+            return .result(value: message, dialog: IntentDialog(stringLiteral: message))
+        }
+
+        let lines = staff.prefix(20).map { member -> String in
+            let role = member.subject.isEmpty ? member.position : "\(member.position), \(member.subject)"
+
+            return HarvestAssistantPhrasing.isArabic
+                ? "\(member.name) — \(role) (\(member.departmentName))"
+                : "\(member.name) — \(role) (\(member.departmentName))"
+        }
+
+        let joined = lines.joined(separator: "\n")
+
+        return .result(value: joined, dialog: IntentDialog(stringLiteral: joined))
+    }
+}
+
 struct FindAcademicEventsIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Find Harvest Academic Events" }

@@ -172,6 +172,7 @@ const openDaySignupManagementPermissionLevel = "2";
 const BorrowingSystemManagementPermissionLevel = "3";
 const infoSystemManagementPermissionLevel = "7";
 const alumniStudentsManagementPermissionLevel = "13";
+const staffDirectoryManagementPermissionLevel = "14";
 const jackOfAllTradesPermissionLevel = "7246262252458111903";
 
 
@@ -257,6 +258,11 @@ const ENDPOINTS = {
     deleteAdminUser: '/scripts/Admin/AdminUsers/deleteAdminUser.php',
     getInfoSystem: '/scripts/Admin/InfoSystem/getInfoSystemData.php',
     updateInfoSystem: '/scripts/Admin/InfoSystem/updateInfoSystemData.php',
+    getStaffDirectory: '/scripts/Admin/StaffDirectory/getStaffDirectory.php',
+    addEmployee: '/scripts/Admin/StaffDirectory/addEmployee.php',
+    editEmployee: '/scripts/Admin/StaffDirectory/editEmployee.php',
+    deleteEmployee: '/scripts/Admin/StaffDirectory/deleteEmployee.php',
+    getPublicStaff: '/scripts/Public/Staff/getPublicStaff.php',
     verifyMfa: '/scripts/Admin/Session/verifyMfa.php',
     requestMfaEmailCode: '/scripts/Admin/Session/requestMfaEmailCode.php',
     getMyAccount: '/scripts/Admin/Session/getMyAccount.php',
@@ -477,6 +483,7 @@ export {
     jobApplicationManagementPermissionLevel,
     infoSystemManagementPermissionLevel,
     alumniStudentsManagementPermissionLevel,
+    staffDirectoryManagementPermissionLevel,
     BorrowingSystemManagementPermissionLevel,
     jackOfAllTradesPermissionLevel,
     getBaseUrl,

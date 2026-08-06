@@ -121,3 +121,23 @@ data class SchoolProfileResult(
     val mapsUrl: String,
     val tuitionCurrency: String,
 )
+
+/**
+ * A published member of the school's staff.
+ *
+ * @property name The person's name in the requested language.
+ * @property position What they do, for example "Teacher" or "Head of Department". Someone with more than one job has them comma separated.
+ * @property subject What they teach, for example "Mathematics". Empty for staff who do not teach a subject.
+ * @property departmentName The staff page they appear on: National, British, American or Kindergarten.
+ * @property isDepartmentLead True for heads and vices, who the school lists above the staff table rather than in it.
+ * @property routePath In-app path to the staff page, for example "/academics/staff/british-staff".
+ */
+@AppFunctionSerializable(isDescribedByKDoc = true)
+data class SchoolStaffResult(
+    val name: String,
+    val position: String,
+    val subject: String,
+    val departmentName: String,
+    val isDepartmentLead: Boolean,
+    val routePath: String,
+)

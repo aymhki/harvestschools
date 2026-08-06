@@ -247,6 +247,7 @@ const buildAssistantKnowledge = ({ document, lookup, language, renderablePaths =
         upstream: document.contentHash,
         facts: mergedFacts.length,
         pages: pages.map((page) => page.routePath),
+        staff: (document.staff || []).map((department) => `${department.departmentKey}:${department.lastUpdated}`),
         language: normalisedLanguage,
     })
 

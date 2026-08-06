@@ -51,3 +51,6 @@ tmp
 
 .env.local
 .env.*.local
+
+docs
+

@@ -30,6 +30,17 @@
         <item>الحد الأدنى للسن</item>
     </string-array>
 
+    <string-array name="shortcut_staff_synonyms">
+        <item>staff</item>
+        <item>teachers</item>
+        <item>faculty</item>
+        <item>staff list</item>
+        <item>who teaches</item>
+        <item>الكوادر</item>
+        <item>المعلمين</item>
+        <item>المدرسين</item>
+    </string-array>
+
     <string-array name="shortcut_academics_synonyms">
         <item>academics</item>
         <item>curriculum</item>

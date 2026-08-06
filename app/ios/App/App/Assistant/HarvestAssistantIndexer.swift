@@ -59,12 +59,23 @@ extension AppPageEntity: IndexedEntity {
     }
 }
 
+extension SchoolStaffEntity: IndexedEntity {
+
+    var attributeSet: CSSearchableItemAttributeSet {
+        let attributes = defaultAttributeSet
+
+        attributes.title = name
+        attributes.contentDescription = subject.isEmpty ? position : "\(position) - \(subject)"
+        attributes.keywords = [position, subject, departmentName].filter { !$0.isEmpty }
+
+        return attributes
+    }
+}
+
 enum HarvestAssistantIndexer {
 
     static let indexedIdentifiersKey = "harvest_assistant_indexed_identifiers"
 
-    /// Registered once from AppDelegate.didFinishLaunching, which still runs in a scene based app
-    /// and runs exactly once. Registering per scene connection would risk observing twice.
     static func start() {
         NotificationCenter.default.addObserver(
             forName: .harvestAssistantKnowledgeUpdated,
@@ -76,8 +87,6 @@ enum HarvestAssistantIndexer {
             }
         }
 
-        /// The donated entities are indexed in the device language. A language change leaves the
-        /// index describing the previous one, and no knowledge notification fires for it.
         NotificationCenter.default.addObserver(
             forName: NSLocale.currentLocaleDidChangeNotification,
             object: nil,
@@ -109,12 +118,14 @@ enum HarvestAssistantIndexer {
         let stages = (knowledge.stages ?? []).map { SchoolStageEntity(stage: $0) }
         let events = (knowledge.events ?? []).map { AcademicEventEntity(event: $0) }
         let pages = (knowledge.pages ?? []).map { AppPageEntity(page: $0) }
+        let staff = (try? await SchoolStaffQuery().allEntities()) ?? []
 
         let currentIdentifiers: [String: [String]] = [
             "facts": facts.map { $0.id },
             "stages": stages.map { $0.id },
             "events": events.map { $0.id },
             "pages": pages.map { $0.id },
+            "staff": staff.map { $0.id },
         ]
 
         let previousIdentifiers = storedIdentifiers()
@@ -123,11 +134,13 @@ enum HarvestAssistantIndexer {
         await deleteRemoved(index: index, kind: "stages", previous: previousIdentifiers, current: currentIdentifiers, type: SchoolStageEntity.self)
         await deleteRemoved(index: index, kind: "events", previous: previousIdentifiers, current: currentIdentifiers, type: AcademicEventEntity.self)
         await deleteRemoved(index: index, kind: "pages", previous: previousIdentifiers, current: currentIdentifiers, type: AppPageEntity.self)
+        await deleteRemoved(index: index, kind: "staff", previous: previousIdentifiers, current: currentIdentifiers, type: SchoolStaffEntity.self)
 
         try? await index.indexAppEntities(facts)
         try? await index.indexAppEntities(stages)
         try? await index.indexAppEntities(events)
         try? await index.indexAppEntities(pages)
+        try? await index.indexAppEntities(staff)
 
         storeIdentifiers(currentIdentifiers)
     }

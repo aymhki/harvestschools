@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/publicInfoAllowlist.php';
 require_once __DIR__ . '/publicPageInventory.php';
+require_once __DIR__ . '/../Staff/publicStaffHelpers.php';
 
 const PUBLIC_SCHOOL_CALENDARS = [
     ['id' => 'national', 'labelEn' => 'National', 'labelAr' => 'ناشونال', 'eventsKey' => 'events-pages.national-calendar-page.calendar', 'path' => '/events/national-calendar'],
@@ -657,6 +658,41 @@ function public_school_facts($profile, $departments, $stages, $policies, $langua
     return $facts;
 }
 
+
+function public_school_staff_facts($staff, $language) {
+    $facts = [];
+    $isArabic = $language === 'ar';
+
+    foreach ($staff as $department) {
+        $sentences = [];
+
+        foreach ($department['highlights'] as $highlight) {
+            $sentences[] = $highlight['position'] . ': ' . $highlight['name'];
+        }
+
+        $sentences[] = $isArabic
+            ? 'عدد أعضاء هيئة التدريس المنشورين: ' . $department['memberCount']
+            : $department['memberCount'] . ' published staff members.';
+
+        $facts[] = public_school_fact(
+            'fact.staff.' . $department['departmentKey'],
+            'academics',
+            $isArabic
+                ? 'كوادر ' . $department['departmentName']
+                : $department['departmentName'] . ' staff',
+            implode(' ', $sentences),
+            $isArabic
+                ? ['كوادر', 'موظفين', 'معلمين', 'مدرسين', 'رئيس القسم', $department['departmentName']]
+                : ['staff', 'teachers', 'faculty', 'head of department', 'coordinator', $department['departmentName']],
+            $department['routePath'],
+            'infosystem',
+            'staff_employees.' . $department['departmentKey']
+        );
+    }
+
+    return $facts;
+}
+
 function public_school_document($conn, $language) {
     $rules = public_info_read_rule_settings($conn);
     $includeUnoffered = ($rules['SHOW_UNOFFERED_STAGES'] ?? '1') === '1';
@@ -665,6 +701,7 @@ function public_school_document($conn, $language) {
     $departments = public_school_departments($conn, $language);
     $stages = public_school_stages($conn, $language, $includeUnoffered);
     $policies = public_school_policies($conn, $language);
+    $staff = public_staff_directory($conn, $language);
 
     $document = [
         'schemaVersion' => PUBLIC_INFO_SCHEMA_VERSION,
@@ -694,7 +731,11 @@ function public_school_document($conn, $language) {
         'departments' => $departments,
         'stages'      => $stages,
         'policies'    => $policies,
-        'facts'       => public_school_facts($profile, $departments, $stages, $policies, $language),
+        'staff'       => $staff,
+        'facts'       => array_merge(
+            public_school_facts($profile, $departments, $stages, $policies, $language),
+            public_school_staff_facts($staff, $language)
+        ),
         'events'      => public_school_events($language),
         'pages'       => public_school_pages($language),
     ];
@@ -704,6 +745,34 @@ function public_school_document($conn, $language) {
     return $document;
 }
 
+
+function public_school_write_artifacts($conn, $docRoot, $suffix = '') {
+    $hashes = [];
+
+    foreach (PUBLIC_INFO_SUPPORTED_LANGUAGES as $language) {
+        $document = public_school_document($conn, $language);
+        $encoded = json_encode($document, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        if ($encoded === false) {
+            throw new Exception("Failed to encode the public school knowledge artifact for $language", 500);
+        }
+
+        $path = dirname(rtrim($docRoot, '/\\')) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR
+            . 'school-knowledge-' . $language . $suffix . '.json';
+        $tempPath = $path . '.' . uniqid('tmp', true);
+
+        if (file_put_contents($tempPath, $encoded) === false || !rename($tempPath, $path)) {
+            @unlink($tempPath);
+            throw new Exception("Failed to write $path", 500);
+        }
+
+        @chmod($path, 0644);
+
+        $hashes[$language] = $document['contentHash'];
+    }
+
+    return $hashes;
+}
 
 function public_school_artifact_path($docRoot, $language) {
     return dirname(rtrim($docRoot, '/\\')) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR
