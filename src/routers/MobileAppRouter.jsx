@@ -20,6 +20,7 @@ import { rememberRestorePath } from '../services/General/AppUpdaterService.jsx';
 import { LOCALES_UPDATED_EVENT } from '../services/General/OfflinePrefetchService.jsx';
 import { attachAssistantSyncTriggers } from '../services/Assistant/AssistantSyncService.jsx';
 import { mobileRoutes } from '../routes/routes.js';
+import { setAdminSection } from '../services/General/AppChromeService.jsx';
 import AppRoutes from '../routes/AppRoutes.jsx';
 import { ROUTER_IDS } from '../routes/redirects.js';
 import PageTransition from '../modules/PageTransition.jsx';
@@ -64,6 +65,10 @@ function MobileAppRouter() {
     useEffect(() => {
         localStorage.setItem('isSidebarPinned', isSidebarPinned);
     }, [isSidebarPinned]);
+
+    useEffect(() => {
+        setAdminSection(isAdminSection);
+    }, [isAdminSection]);
 
     useEffect(() => {
         const applyDocumentLanguage = () => {
@@ -118,7 +123,6 @@ function MobileAppRouter() {
 
         const topUpScheduledReminders = () => {
             rescheduleAllSubscriptions({
-                translate: i18n.getFixedT(i18n.language, 'events-pages'),
                 language: i18n.language === 'ar' ? 'ar' : 'en',
             }).catch((rescheduleError) => {
                 console.warn('Could not refresh the scheduled calendar reminders', rescheduleError);
@@ -127,7 +131,7 @@ function MobileAppRouter() {
 
         const resumeListener = CapacitorApp.addListener('resume', topUpScheduledReminders);
 
-        const rebuildRemindersFromNewLocales = () => {
+        const rebuildRemindersAfterContentUpdate = () => {
             i18n.reloadResources()
                 .then(topUpScheduledReminders)
                 .catch((reloadError) => {
@@ -135,7 +139,7 @@ function MobileAppRouter() {
                 });
         };
 
-        window.addEventListener(LOCALES_UPDATED_EVENT, rebuildRemindersFromNewLocales);
+        window.addEventListener(LOCALES_UPDATED_EVENT, rebuildRemindersAfterContentUpdate);
 
         i18n.on('languageChanged', topUpScheduledReminders);
 
@@ -143,7 +147,7 @@ function MobileAppRouter() {
 
         return () => {
             detachNotificationHandlers();
-            window.removeEventListener(LOCALES_UPDATED_EVENT, rebuildRemindersFromNewLocales);
+            window.removeEventListener(LOCALES_UPDATED_EVENT, rebuildRemindersAfterContentUpdate);
             i18n.off('languageChanged', topUpScheduledReminders);
             resumeListener.then(handle => handle.remove());
         };

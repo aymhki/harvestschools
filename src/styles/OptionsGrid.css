@@ -23,6 +23,10 @@
     color: var(--primary-color);
 }
 
+.dynamic-compact-grid {
+    min-height: unset;
+}
+
 .options-grid-container-compact h2 {
     margin-bottom: 3rem;
     line-height: 1.5;

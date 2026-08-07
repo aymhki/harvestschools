@@ -59,6 +59,7 @@ extension AppPageEntity: IndexedEntity {
     }
 }
 
+@available(iOS 18.0, *)
 extension SchoolStaffEntity: IndexedEntity {
 
     var attributeSet: CSSearchableItemAttributeSet {
@@ -66,7 +67,23 @@ extension SchoolStaffEntity: IndexedEntity {
 
         attributes.title = name
         attributes.contentDescription = subject.isEmpty ? position : "\(position) - \(subject)"
-        attributes.keywords = [position, subject, departmentName].filter { !$0.isEmpty }
+        attributes.keywords = [position, subject, degree, departmentName].filter { !$0.isEmpty }
+
+        return attributes
+    }
+}
+
+@available(iOS 18.0, *)
+extension LibraryBookEntity: IndexedEntity {
+
+    var attributeSet: CSSearchableItemAttributeSet {
+        let attributes = defaultAttributeSet
+
+        attributes.title = title
+        attributes.contentDescription = series.isEmpty
+            ? "\(collectionName) - \(categoryName)"
+            : "\(series) · \(collectionName) - \(categoryName)"
+        attributes.keywords = [series, categoryName, collectionName].filter { !$0.isEmpty }
 
         return attributes
     }
@@ -119,6 +136,7 @@ enum HarvestAssistantIndexer {
         let events = (knowledge.events ?? []).map { AcademicEventEntity(event: $0) }
         let pages = (knowledge.pages ?? []).map { AppPageEntity(page: $0) }
         let staff = (try? await SchoolStaffQuery().allEntities()) ?? []
+        let books = (try? await LibraryBookQuery().allEntities()) ?? []
 
         let currentIdentifiers: [String: [String]] = [
             "facts": facts.map { $0.id },
@@ -126,6 +144,7 @@ enum HarvestAssistantIndexer {
             "events": events.map { $0.id },
             "pages": pages.map { $0.id },
             "staff": staff.map { $0.id },
+            "library": books.map { $0.id },
         ]
 
         let previousIdentifiers = storedIdentifiers()
@@ -135,12 +154,14 @@ enum HarvestAssistantIndexer {
         await deleteRemoved(index: index, kind: "events", previous: previousIdentifiers, current: currentIdentifiers, type: AcademicEventEntity.self)
         await deleteRemoved(index: index, kind: "pages", previous: previousIdentifiers, current: currentIdentifiers, type: AppPageEntity.self)
         await deleteRemoved(index: index, kind: "staff", previous: previousIdentifiers, current: currentIdentifiers, type: SchoolStaffEntity.self)
+        await deleteRemoved(index: index, kind: "library", previous: previousIdentifiers, current: currentIdentifiers, type: LibraryBookEntity.self)
 
         try? await index.indexAppEntities(facts)
         try? await index.indexAppEntities(stages)
         try? await index.indexAppEntities(events)
         try? await index.indexAppEntities(pages)
         try? await index.indexAppEntities(staff)
+        try? await index.indexAppEntities(books)
 
         storeIdentifiers(currentIdentifiers)
     }

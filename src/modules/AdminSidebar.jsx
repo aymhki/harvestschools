@@ -17,6 +17,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import BadgeIcon from '@mui/icons-material/Badge';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ViewSidebarIcon from '@mui/icons-material/ViewSidebar';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PropTypes from "prop-types";
@@ -41,6 +43,8 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
             case '/info-system-management': return <InfoIcon />;
             case '/alumni-students-management' : return <SchoolIcon />;
             case '/staff-directory-management' : return <BadgeIcon />;
+            case '/academic-calendars-management' : return <CalendarMonthIcon />;
+            case '/library-management' : return <MenuBookIcon />;
             case '/admin-users-management' : return <ManageAccountsIcon />;
             case  '/view-job-application-file' : return <WorkIcon />;
             default: return <DashboardIcon />;

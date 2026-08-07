@@ -10,7 +10,7 @@ function public_staff_members($conn, $departmentKey, $language) {
 
     $stmt = $conn->prepare(
         "SELECT name_en, name_ar, position_en, position_ar, subject_en, subject_ar,
-                display_style, sort_order,
+                degree_en, degree_ar, display_style, sort_order,
                 UNIX_TIMESTAMP(updated_at) AS updated_at
          FROM staff_employees
          WHERE is_public = 1
@@ -34,10 +34,15 @@ function public_staff_members($conn, $departmentKey, $language) {
             'name'     => (string)($isArabic ? $row['name_ar'] : $row['name_en']),
             'position' => (string)($isArabic ? $row['position_ar'] : $row['position_en']),
             'subject'  => (string)($isArabic ? $row['subject_ar'] : $row['subject_en']),
+            'degree'   => (string)($isArabic ? $row['degree_ar'] : $row['degree_en']),
         ];
 
         if ($row['display_style'] === 'highlight') {
-            $highlights[] = ['position' => $entry['position'], 'name' => $entry['name']];
+            $highlights[] = [
+                'position' => $entry['position'],
+                'name'     => $entry['name'],
+                'degree'   => $entry['degree'],
+            ];
             continue;
         }
 
@@ -48,8 +53,18 @@ function public_staff_members($conn, $departmentKey, $language) {
 }
 
 
+function public_staff_strip_degrees($people) {
+    return array_map(static function ($person) {
+        unset($person['degree']);
+
+        return $person;
+    }, $people);
+}
+
 function public_staff_document($conn, $departmentKey, $language) {
     $staff = public_staff_members($conn, $departmentKey, $language);
+    $staff['highlights'] = public_staff_strip_degrees($staff['highlights']);
+    $staff['members'] = public_staff_strip_degrees($staff['members']);
 
     $document = [
         'schemaVersion' => PUBLIC_STAFF_SCHEMA_VERSION,

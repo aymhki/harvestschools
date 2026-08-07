@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Academic calendars">
+    <title>Academic Calendars</title>
+
+    <rect x="128" y="46" width="34" height="72" rx="17" fill="#8A94A6"/>
+    <rect x="350" y="46" width="34" height="72" rx="17" fill="#8A94A6"/>
+
+    <rect x="52" y="80" width="408" height="386" rx="42" fill="#FDD055"/>
+    <path d="M256 80h162a42 42 0 0 1 42 42v302a42 42 0 0 1-42 42H256z" fill="#FCC24C"/>
+
+    <rect x="52" y="80" width="408" height="86" rx="42" fill="#55606E"/>
+    <path d="M256 80h162a42 42 0 0 1 42 42v44H256z" fill="#485261"/>
+
+    <rect x="128" y="46" width="34" height="72" rx="17" fill="#E8EAF3"/>
+    <rect x="350" y="46" width="34" height="72" rx="17" fill="#E8EAF3"/>
+
+    <rect x="88" y="198" width="336" height="234" rx="22" fill="#FFFFFF"/>
+    <path d="M256 198h146a22 22 0 0 1 22 22v190a22 22 0 0 1-22 22H256z" fill="#F4F6FB"/>
+
+    <rect x="120" y="230" width="56" height="44" rx="10" fill="#E8EAF3"/>
+    <rect x="196" y="230" width="56" height="44" rx="10" fill="#E8EAF3"/>
+    <rect x="272" y="230" width="56" height="44" rx="10" fill="#D5DAE7"/>
+    <rect x="348" y="230" width="44" height="44" rx="10" fill="#D5DAE7"/>
+
+    <rect x="120" y="294" width="56" height="44" rx="10" fill="#E8EAF3"/>
+    <rect x="196" y="294" width="56" height="44" rx="10" fill="#F05A5A"/>
+    <rect x="272" y="294" width="56" height="44" rx="10" fill="#D5DAE7"/>
+    <rect x="348" y="294" width="44" height="44" rx="10" fill="#D5DAE7"/>
+
+    <rect x="120" y="358" width="56" height="44" rx="10" fill="#E8EAF3"/>
+    <rect x="196" y="358" width="56" height="44" rx="10" fill="#E8EAF3"/>
+    <rect x="272" y="358" width="56" height="44" rx="10" fill="#D5DAE7"/>
+    <rect x="348" y="358" width="44" height="44" rx="10" fill="#D5DAE7"/>
+</svg>

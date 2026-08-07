@@ -65,6 +65,6 @@ function public_rate_limit_reject() {
         "success" => false,
         "message" => "Too many requests. Please retry shortly.",
         "code"    => 429
-    ], JSON_UNESCAPED_UNICODE);
+    ]);
     exit;
 }

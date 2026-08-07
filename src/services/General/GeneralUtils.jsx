@@ -173,6 +173,21 @@ const BorrowingSystemManagementPermissionLevel = "3";
 const infoSystemManagementPermissionLevel = "7";
 const alumniStudentsManagementPermissionLevel = "13";
 const staffDirectoryManagementPermissionLevel = "14";
+const libraryManagementPermissionLevel = "22";
+const academicCalendarsMasterPermissionLevel = "15";
+const academicCalendarPermissionLevels = {
+    'national': "16",
+    'british': "17",
+    'american': "18",
+    'national-kg': "19",
+    'british-kg': "20",
+    'american-kg': "21",
+};
+const anyAcademicCalendarPermissionLevels = [
+    libraryManagementPermissionLevel,
+    academicCalendarsMasterPermissionLevel,
+    ...Object.values(academicCalendarPermissionLevels),
+];
 const jackOfAllTradesPermissionLevel = "7246262252458111903";
 
 
@@ -252,6 +267,7 @@ const ENDPOINTS = {
     getPublicSchoolInfo: '/scripts/Public/SchoolInfo/getPublicSchoolInfo.php',
     getPublicSchoolStages: '/scripts/Public/SchoolInfo/getPublicSchoolStages.php',
     getPublicSchoolContacts: '/scripts/Public/SchoolInfo/getPublicSchoolContacts.php',
+    getPublicStages: '/scripts/Public/SchoolInfo/getPublicStages.php',
     getAllAdminUsers: '/scripts/Admin/AdminUsers/getAllAdminUsers.php',
     addAdminUser: '/scripts/Admin/AdminUsers/addAdminUser.php',
     editAdminUser: '/scripts/Admin/AdminUsers/editAdminUser.php',
@@ -263,6 +279,19 @@ const ENDPOINTS = {
     editEmployee: '/scripts/Admin/StaffDirectory/editEmployee.php',
     deleteEmployee: '/scripts/Admin/StaffDirectory/deleteEmployee.php',
     getPublicStaff: '/scripts/Public/Staff/getPublicStaff.php',
+    getPublicCalendar: '/scripts/Public/Calendars/getPublicCalendar.php',
+    getPublicLibrary: '/scripts/Public/Library/getPublicLibrary.php',
+    getLibraryBooks: '/scripts/Admin/Library/getLibraryBooks.php',
+    addLibraryBook: '/scripts/Admin/Library/addLibraryBook.php',
+    editLibraryBook: '/scripts/Admin/Library/editLibraryBook.php',
+    deleteLibraryBook: '/scripts/Admin/Library/deleteLibraryBook.php',
+    getAcademicCalendars: '/scripts/Admin/AcademicCalendars/getAcademicCalendars.php',
+    addAcademicCalendarYear: '/scripts/Admin/AcademicCalendars/addAcademicCalendarYear.php',
+    updateCalendarMetaData: '/scripts/Admin/AcademicCalendars/updateCalendarMetaData.php',
+    uploadCalendarPdf: '/scripts/Admin/AcademicCalendars/uploadCalendarPdf.php',
+    addCalendarEvent: '/scripts/Admin/AcademicCalendars/addCalendarEvent.php',
+    editCalendarEvent: '/scripts/Admin/AcademicCalendars/editCalendarEvent.php',
+    deleteCalendarEvent: '/scripts/Admin/AcademicCalendars/deleteCalendarEvent.php',
     verifyMfa: '/scripts/Admin/Session/verifyMfa.php',
     requestMfaEmailCode: '/scripts/Admin/Session/requestMfaEmailCode.php',
     getMyAccount: '/scripts/Admin/Session/getMyAccount.php',
@@ -484,6 +513,10 @@ export {
     infoSystemManagementPermissionLevel,
     alumniStudentsManagementPermissionLevel,
     staffDirectoryManagementPermissionLevel,
+    libraryManagementPermissionLevel,
+    academicCalendarsMasterPermissionLevel,
+    academicCalendarPermissionLevels,
+    anyAcademicCalendarPermissionLevels,
     BorrowingSystemManagementPermissionLevel,
     jackOfAllTradesPermissionLevel,
     getBaseUrl,

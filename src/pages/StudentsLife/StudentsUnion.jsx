@@ -2,6 +2,8 @@ import '../../styles/StudentsLife.css'
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
+const showStudentsUnion = false;
+
 function StudentsUnion() {
     const {t, i18n} = useTranslation(['students-life-pages']);
 
@@ -30,9 +32,12 @@ function StudentsUnion() {
                     {t("students-life-pages.students-union-page.students-union-title")}
                 </h1>
 
-            <h2>
-                {t("students-life-pages.students-union-page.how-can-i-join-the-students-union-question")}
-            </h2>
+                {showStudentsUnion ? (
+                <>
+                <h2>
+                    {t("students-life-pages.students-union-page.how-can-i-join-the-students-union-question")}
+                </h2>
+
                 <p>
                     {t("students-life-pages.students-union-page.how-can-i-join-the-students-union-answer")}
                 </p>
@@ -90,6 +95,11 @@ function StudentsUnion() {
                 <p>
                     {t('common.last-updated', {ns: 'common'})} {formattedDate}
                 </p>
+                </>) : (
+                    <p>
+                        {t('common.this-page-is-under-construction', {ns: 'common'})}
+                    </p>
+                )}
             </div>
         </div>
     )

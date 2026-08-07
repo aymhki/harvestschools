@@ -82,6 +82,31 @@
     min-height: 100vh;
 }
 
+.library-management-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.academic-calendars-management-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.academic-calendars-year-label {
+    margin: 0.5rem;
+    align-self: center;
+    font-size: medium;
+    letter-spacing: 0.05rem;
+}
+
 .admin-page-tab-content {
 
 }

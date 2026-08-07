@@ -1,53 +1,19 @@
+import { endpoints, getCurrentLangCode } from './GeneralUtils.jsx'
+import { cachedRequest } from './OfflineApiCacheService.jsx'
+
+
+const PUBLIC_CALENDAR_SCHEMA_VERSION = 1
+
 const SCHOOL_CALENDARS = [
-    {
-        id: 'national',
-        label: { en: 'National', ar: 'ناشونال' },
-        titleKey: 'events-pages.national-calendar-page.title',
-        eventsKey: 'events-pages.national-calendar-page.calendar',
-        path: '/events/national-calendar',
-        pdfPath: '/documents/Calendars/national_calendar_2026.pdf',
-    },
-    {
-        id: 'british',
-        label: { en: 'British', ar: 'بريطاني' },
-        titleKey: 'events-pages.british-calendar-page.title',
-        eventsKey: 'events-pages.british-calendar-page.calendar',
-        path: '/events/british-calendar',
-        pdfPath: '/documents/Calendars/british_calendar_2026.pdf',
-    },
-    {
-        id: 'american',
-        label: { en: 'American', ar: 'أمريكي' },
-        titleKey: 'events-pages.american-calendar-page.title',
-        eventsKey: 'events-pages.american-calendar-page.calendar',
-        path: '/events/american-calendar',
-        pdfPath: '/documents/Calendars/american_calendar_2026.pdf',
-    },
-    {
-        id: 'national-kg',
-        label: { en: 'National KG', ar: 'روضة ناشونال' },
-        titleKey: 'events-pages.kg-calendars-pages.national-kg-calendar.title',
-        eventsKey: 'events-pages.kg-calendars-pages.national-kg-calendar.calendar',
-        path: '/events/national-kg-calendar',
-        pdfPath: '/documents/Calendars/national_kg_calendar_2026.pdf',
-    },
-    {
-        id: 'british-kg',
-        label: { en: 'British KG', ar: 'روضة بريطاني' },
-        titleKey: 'events-pages.kg-calendars-pages.british-kg-calendar.title',
-        eventsKey: 'events-pages.kg-calendars-pages.british-kg-calendar.calendar',
-        path: '/events/british-kg-calendar',
-        pdfPath: '/documents/Calendars/british_kg_calendar_2026.pdf',
-    },
-    {
-        id: 'american-kg',
-        label: { en: 'American KG', ar: 'روضة أمريكي' },
-        titleKey: 'events-pages.kg-calendars-pages.american-kg-calendar.title',
-        eventsKey: 'events-pages.kg-calendars-pages.american-kg-calendar.calendar',
-        path: '/events/american-kg-calendar',
-        pdfPath: '/documents/Calendars/american_kg_calendar_2026.pdf',
-    },
+    { id: 'national', label: { en: 'National', ar: 'ناشونال' }, titleKey: 'events-pages.national-calendar-page.title', path: '/events/national-calendar' },
+    { id: 'british', label: { en: 'British', ar: 'بريطاني' }, titleKey: 'events-pages.british-calendar-page.title', path: '/events/british-calendar' },
+    { id: 'american', label: { en: 'American', ar: 'أمريكي' }, titleKey: 'events-pages.american-calendar-page.title', path: '/events/american-calendar' },
+    { id: 'national-kg', label: { en: 'National KG', ar: 'روضة ناشونال' }, titleKey: 'events-pages.kg-calendars-pages.national-kg-calendar.title', path: '/events/national-kg-calendar' },
+    { id: 'british-kg', label: { en: 'British KG', ar: 'روضة بريطاني' }, titleKey: 'events-pages.kg-calendars-pages.british-kg-calendar.title', path: '/events/british-kg-calendar' },
+    { id: 'american-kg', label: { en: 'American KG', ar: 'روضة أمريكي' }, titleKey: 'events-pages.kg-calendars-pages.american-kg-calendar.title', path: '/events/american-kg-calendar' },
 ]
+
+const CALENDAR_LANGUAGES = ['en', 'ar']
 
 const CALENDAR_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
 
@@ -79,54 +45,114 @@ const parseCalendarDate = (value, hour = 0) => {
 }
 
 
-const toCalendarEvent = (row, calendar, index) => {
-    const startDate = row && typeof row === 'object' ? parseCalendarDate(row['start-date']) : null
+const calendarCacheKey = (calendarId, language) => `public-calendar:${calendarId}:${language}`
 
-    const title = row && typeof row === 'object' ? String(row.title || '').trim() : ''
 
-    let event = null
+const isCalendarDocumentUsable = (document) => Boolean(
+    document
+    && Number(document.schemaVersion) === PUBLIC_CALENDAR_SCHEMA_VERSION
+    && Array.isArray(document.events)
+)
 
-    if (startDate && title !== '') {
-        event = {
-            id: `${calendar.id}:${index}`,
-            calendarId: calendar.id,
-            calendarPath: calendar.path,
-            calendarTitleKey: calendar.titleKey,
-            calendarLabel: calendar.label,
-            index,
-            title,
-            startDate,
-            endDate: parseCalendarDate(row['end-date']) || startDate,
-        }
+
+const requestCalendar = async (calendarId, language) => {
+    const params = new URLSearchParams()
+    params.set('calendar', calendarId)
+    params.set('lang', language)
+
+    const response = await fetch(`${endpoints.getPublicCalendar}?${params.toString()}`, { method: 'GET' })
+    const body = await response.json()
+
+    if (!body || body.success !== true || !isCalendarDocumentUsable(body.data)) {
+        throw new Error(body && body.message ? body.message : 'The calendar response was not usable')
     }
 
-    return event
+    return body.data
 }
 
 
-const getCalendarEvents = (translate, calendar) => {
-    const rows = translate(calendar.eventsKey, { returnObjects: true })
+const toCalendarEvent = (row, calendar) => {
+    const startDate = parseCalendarDate(row.startDate)
 
-    return Array.isArray(rows)
-        ? rows.map((row, index) => toCalendarEvent(row, calendar, index)).filter((event) => event !== null)
-        : []
+    const title = String(row.title || '').trim()
+
+    if (!startDate || title === '') {
+        return null
+    }
+
+    return {
+        id: `${calendar.id}:${row.id}`,
+        calendarId: calendar.id,
+        calendarPath: calendar.path,
+        calendarTitleKey: calendar.titleKey,
+        calendarLabel: calendar.label,
+        index: Number(row.sortOrder) || 0,
+        title,
+        startDate,
+        endDate: parseCalendarDate(row.endDate) || startDate,
+    }
 }
 
 
-const getUpcomingCalendarEvents = (translate, calendar) => {
+const loadCalendar = async (calendarId, language) => {
+    const calendar = getCalendarById(calendarId)
+
+    if (!calendar) {
+        return null
+    }
+
+    const normalisedLanguage = language || getCurrentLangCode()
+
+    try {
+        const { data } = await cachedRequest(
+            calendarCacheKey(calendarId, normalisedLanguage),
+            () => requestCalendar(calendarId, normalisedLanguage)
+        )
+
+        if (!isCalendarDocumentUsable(data)) {
+            return null
+        }
+
+        return {
+            calendarId,
+            academicYear: data.academicYear,
+            note: data.note || '',
+            pdfPath: data.pdfPath || '',
+            lastUpdated: Number(data.lastUpdated) || 0,
+            events: data.events
+                .map((row) => toCalendarEvent(row, calendar))
+                .filter((event) => event !== null),
+        }
+    } catch (error) {
+        console.log(error.message)
+
+        return null
+    }
+}
+
+
+const loadAllCalendars = async (language) => {
+    const loaded = await Promise.all(SCHOOL_CALENDARS.map((calendar) => loadCalendar(calendar.id, language)))
+
+    return loaded.filter((calendar) => calendar !== null)
+}
+
+
+const getUpcomingEvents = (events) => {
     const today = startOfToday()
 
-    return getCalendarEvents(translate, calendar)
+    return (events || [])
         .filter((event) => event.endDate >= today)
         .sort((first, second) => first.startDate - second.startDate)
 }
 
 
-const getUpcomingEventsAcrossCalendars = (translate, limit) => {
-    const grouped = new Map()
+const getUpcomingEventsAcrossCalendars = (loadedCalendars, limit) => {
+    const grouped = new Map();
+    const finalLoadedCalendars = loadedCalendars || [];
 
-    SCHOOL_CALENDARS
-        .flatMap((calendar) => getUpcomingCalendarEvents(translate, calendar))
+    finalLoadedCalendars
+        .flatMap((calendar) => getUpcomingEvents(calendar.events))
         .sort((first, second) => first.startDate - second.startDate)
         .forEach((event) => {
             const signature = `${event.title}|${event.startDate.toDateString()}`
@@ -155,12 +181,40 @@ const getUpcomingEventsAcrossCalendars = (translate, limit) => {
 }
 
 
+
+const prefetchCalendars = async ({ onProgress } = {}) => {
+    const total = SCHOOL_CALENDARS.length * CALENDAR_LANGUAGES.length
+
+    let completed = 0
+    let updated = 0
+
+    for (const calendar of SCHOOL_CALENDARS) {
+        for (const language of CALENDAR_LANGUAGES) {
+            if (await loadCalendar(calendar.id, language)) {
+                updated += 1
+            }
+
+            completed += 1
+
+            if (onProgress) {
+                onProgress(Math.round((completed / total) * 100))
+            }
+        }
+    }
+
+    return { updated, total }
+}
+
+
 export {
     SCHOOL_CALENDARS,
+    CALENDAR_LANGUAGES,
     getCalendarById,
-    getCalendarEvents,
-    getUpcomingCalendarEvents,
+    getUpcomingEvents,
     getUpcomingEventsAcrossCalendars,
+    loadAllCalendars,
+    loadCalendar,
     parseCalendarDate,
+    prefetchCalendars,
     startOfToday,
 }

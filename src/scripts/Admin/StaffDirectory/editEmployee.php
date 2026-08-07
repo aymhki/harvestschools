@@ -55,12 +55,13 @@ try {
         "UPDATE staff_employees
          SET sort_order = ?, name_en = ?, name_ar = ?, position_en = ?, position_ar = ?,
              subject_en = ?, subject_ar = ?, departments = ?, display_style = ?, is_public = ?,
-             email = ?, phone = ?, hire_date = ?, notes = ?
+             email = ?, phone = ?, hire_date = ?, notes = ?, degree_en = ?, degree_ar = ?, fingerprint_code = ?, classification = ?,
+             graduation_year = ?, national_id = ?, insurance_number = ?, birth_date = ?, address = ?
          WHERE employee_code = ?"
     );
 
     $stmt->bind_param(
-        "issssssssisssss",
+        "issssssssissss" . "sssssssss" . "s",
         $employee['sort_order'],
         $employee['name_en'],
         $employee['name_ar'],
@@ -75,6 +76,15 @@ try {
         $employee['phone'],
         $employee['hire_date'],
         $employee['notes'],
+        $employee['degree_en'],
+        $employee['degree_ar'],
+        $employee['fingerprint_code'],
+        $employee['classification'],
+        $employee['graduation_year'],
+        $employee['national_id'],
+        $employee['insurance_number'],
+        $employee['birth_date'],
+        $employee['address'],
         $employee['employee_code']
     );
 
@@ -87,7 +97,7 @@ try {
         "success" => true,
         "message" => "Employee updated successfully." . ($warning ?? ''),
         "code"    => 200
-    ], JSON_UNESCAPED_UNICODE);
+    ]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {

@@ -1,14 +1,11 @@
 import '../../../styles/StudentsLife.css'
-import Table from "../../../modules/Table.jsx";
+import LibraryBooksTable from "../../../modules/LibraryBooksTable.jsx";
 import Form from "../../../modules/Form.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function EnglishFairyTales() {
     const {t} = useTranslation(['students-life-pages']);
-    const booksTable = t('students-life-pages.library-pages.english-fairy-tales-page.books', { returnObjects: true }) || [];
-    const tableRows = Array.isArray(booksTable) ? booksTable.map(member => [member.title, member.series]) : [];
-    const finalTableData = [...tableRows];
 
   return (
       <div className={'students-life-library-books-page'}>
@@ -26,7 +23,7 @@ function EnglishFairyTales() {
                   {t("students-life-pages.library-pages.english-fairy-tales-page.title")}
               </h1>
 
-              <Table tableData={finalTableData} numCols={2} ortConfigParam={{column: 1, direction: 'ascending'}} ignoreSideMarginsOnFixed={true}/>
+              <LibraryBooksTable categoryKey={"english-fairy-tales"}/>
 
               <h2>
                     {t("students-life-pages.library-pages.suggest-book-form.recommend-a-book-for-the-library-to-add-to-its-collection")}

@@ -533,7 +533,7 @@ function AlumniProfile() {
 
                                     {posts.length === 0 && (
                                         <p className={"alumni-profile-empty-hint"}>
-                                            You have not written any posts yet. Share your story with the Harvest community — every post is reviewed by the school before it appears publicly.
+                                            You have not written any posts yet. Share your story with the Harvest community. Every post is reviewed by the school before it appears publicly.
                                         </p>
                                     )}
 

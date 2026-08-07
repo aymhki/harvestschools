@@ -205,7 +205,7 @@ function SchoolEverywhere() {
         }
 
         if (result.outcome === LOGIN_OUTCOME.REJECTED) {
-            setNotice(result.message ? `${result.message} — ${t('schooleverywhere.rejected')}` : t('schooleverywhere.rejected'))
+            setNotice(result.message ? `${result.message} ${t('schooleverywhere.rejected')}` : t('schooleverywhere.rejected'))
             setEditingCredential(credential)
             setMode(MODE.MANUAL)
 

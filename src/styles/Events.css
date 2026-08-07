@@ -60,17 +60,7 @@
     width: 100%;
 }
 
-.download-calendar-button-wrapper {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
 
-.download-calendar-button {
-
-}
 
 .booking-login-page {
     display: flex;
@@ -368,7 +358,6 @@
     color: var(--secondary-color);
 }
 
-/* Method selector (By child / email / phone) — admin mfa-picker look */
 .booking-login-method-switch {
     display: flex;
     flex-flow: row wrap;
@@ -420,7 +409,6 @@
     box-shadow: inset 0 0 0 0.15rem var(--fb-white-color), inset 0 0 0 1rem currentColor;
 }
 
-/* Optional grade / department filters for the child search */
 .booking-login-filter-row {
     display: flex;
     flex-flow: row wrap;
@@ -450,7 +438,6 @@
     cursor: pointer;
 }
 
-/* Resend / back actions */
 .booking-login-recovery-actions,
 .booking-login-recovery-links {
     display: flex;

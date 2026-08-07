@@ -44,15 +44,18 @@ try {
 
     $headers = [
         "Employee ID", "Name (EN)", "Name (AR)", "Position (EN)", "Position (AR)",
-        "Subject (EN)", "Subject (AR)", "Departments", "Display", "Public",
-        "Email", "Phone", "Hire Date", "Notes", "Last Updated", "ID"
+        "Subject (EN)", "Subject (AR)", "Degree (EN)", "Degree (AR)", "Departments",
+        "Display", "Public", "Classification", "Fingerprint Code", "Email", "Phone",
+        "Address", "Birth Date", "Hire Date", "Graduation Year", "National ID",
+        "Insurance Number", "Notes", "Last Updated", "ID"
     ];
     $rows = [];
 
     $result = $conn->query(
         "SELECT employee_code, sort_order, name_en, name_ar, position_en, position_ar,
-                subject_en, subject_ar, departments, display_style, is_public,
-                email, phone, hire_date, notes,
+                subject_en, subject_ar, degree_en, degree_ar, departments, display_style,
+                is_public, classification, fingerprint_code, email, phone, address,
+                birth_date, hire_date, graduation_year, national_id, insurance_number, notes,
                 DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i') AS updated_label
          FROM staff_employees
          ORDER BY sort_order ASC"
@@ -67,12 +70,21 @@ try {
             (string)$row['position_ar'],
             (string)$row['subject_en'],
             (string)$row['subject_ar'],
+            (string)$row['degree_en'],
+            (string)$row['degree_ar'],
             staff_departments_label($row['departments']),
             staff_display_style_label($row['display_style']),
             staff_int_to_yes_no($row['is_public']),
+            (string)$row['classification'],
+            (string)$row['fingerprint_code'],
             (string)$row['email'],
             (string)$row['phone'],
+            (string)$row['address'],
+            (string)($row['birth_date'] ?? ''),
             (string)($row['hire_date'] ?? ''),
+            (string)$row['graduation_year'],
+            (string)$row['national_id'],
+            (string)$row['insurance_number'],
             (string)($row['notes'] ?? ''),
             (string)$row['updated_label'],
             (string)$row['sort_order'],
@@ -96,7 +108,7 @@ try {
             "departments"   => $departments,
             "displayStyles" => array_values(STAFF_DISPLAY_STYLE_LABELS),
         ]
-    ], JSON_UNESCAPED_UNICODE);
+    ]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {

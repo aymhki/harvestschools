@@ -1,25 +1,10 @@
 import '../../styles/MoreInfo.css'
-import Table from "../../modules/Table.jsx";
+import MinimumStageAgeTables from "../../modules/MinimumStageAgeTables.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function MinimumStageAge() {
-    const { t, i18n } = useTranslation(['faqs-pages']);
-    const lastUpdatedDate = new Date('2023-01-02');
-    const formattedDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: 'Africa/Cairo'
-    }).format(lastUpdatedDate);
-
-    const nationalDivisionMinimumStageAgeTableData = t("faqs-pages.minimum-stage-age-page.national-division-table-data", { returnObjects: true }) || [];
-    const nationalTableRows = Array.isArray(nationalDivisionMinimumStageAgeTableData) ? nationalDivisionMinimumStageAgeTableData.map(member => [member.stage, member['minimum-registration-age'] ]) : [];
-    const finalNationalTableData = [...nationalTableRows];
-
-    const internationalDivisionMinimumStageAgeTableData = t("faqs-pages.minimum-stage-age-page.international-division-table-data", { returnObjects: true }) || [];
-    const internationalTableRows = Array.isArray(internationalDivisionMinimumStageAgeTableData) ? internationalDivisionMinimumStageAgeTableData.map(member => [member.stage, member['minimum-registration-age'] ]) : [];
-    const finalInternationalTableData = [...internationalTableRows];
+    const { t } = useTranslation(['faqs-pages']);
 
   return (
     <div className={"minimum-stage-age-page"}>
@@ -36,23 +21,8 @@ function MinimumStageAge() {
             <h1>
                 {t("faqs-pages.minimum-stage-age-page.title")}
             </h1>
-            <p>
-                {t("faqs-pages.minimum-stage-age-page.age-requirements-effective-date-notice")}
-            </p>
 
-            <Table tableHeader={
-                t("faqs-pages.minimum-stage-age-page.national-division-table-header")
-            } numCols={2} tableData={finalNationalTableData} ignoreSideMarginsOnFixed={true}
-            />
-
-            <Table tableHeader={
-                t("faqs-pages.minimum-stage-age-page.international-division-table-header")
-            } numCols={2} tableData={finalInternationalTableData} ignoreSideMarginsOnFixed={true}
-            />
-
-            <p>
-                {t('common.last-updated', {ns: 'common'})} {formattedDate}
-            </p>
+            <MinimumStageAgeTables/>
         </div>
     </div>
   );

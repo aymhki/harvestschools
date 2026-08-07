@@ -91,7 +91,6 @@ function CalendarReminderControls({ calendarId }) {
         const result = await subscribeToCalendar({
             calendarId,
             offsetDays: requestedOffsetDays,
-            translate: t,
             language,
         })
 

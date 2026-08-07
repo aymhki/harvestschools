@@ -4,7 +4,8 @@ import { isNativeRuntime } from './OfflineStorageService.jsx'
 import {
     SCHOOL_CALENDARS,
     getCalendarById,
-    getUpcomingCalendarEvents,
+    getUpcomingEvents,
+    loadCalendar,
 } from './SchoolCalendarsService.jsx'
 
 
@@ -164,12 +165,12 @@ const buildReminderDate = (startDate, offsetDays) => {
 }
 
 
-const buildNotifications = (calendar, events, offsetDays, limit, translate, language) => {
+const buildNotifications = (calendar, events, offsetDays, limit, language) => {
     const now = Date.now()
 
     const idBase = getNotificationIdBase(calendar.id)
 
-    const calendarTitle = translate(calendar.titleKey)
+    const calendarTitle = calendar.label[language === 'ar' ? 'ar' : 'en']
 
     const dateFormatter = new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
         weekday: 'long',
@@ -192,10 +193,16 @@ const buildNotifications = (calendar, events, offsetDays, limit, translate, lang
 }
 
 
-const scheduleCalendarReminders = async (calendar, offsetDays, limit, translate, language) => {
-    const events = getUpcomingCalendarEvents(translate, calendar)
+const scheduleCalendarReminders = async (calendar, offsetDays, limit, language) => {
+    const loaded = await loadCalendar(calendar.id, language)
 
-    const notifications = buildNotifications(calendar, events, offsetDays, limit, translate, language)
+    if (!loaded) {
+        return 0
+    }
+
+    const events = getUpcomingEvents(loaded.events)
+
+    const notifications = buildNotifications(calendar, events, offsetDays, limit, language)
 
     await cancelCalendarNotifications(calendar.id)
 
@@ -223,7 +230,7 @@ const getSubscribedCalendarIds = async () => {
 }
 
 
-const subscribeToCalendar = async ({ calendarId, offsetDays = DEFAULT_REMINDER_OFFSET_DAYS, translate, language }) => {
+const subscribeToCalendar = async ({ calendarId, offsetDays = DEFAULT_REMINDER_OFFSET_DAYS, language }) => {
     const calendar = getCalendarById(calendarId)
 
     let result = { status: 'unavailable', scheduledCount: 0 }
@@ -240,7 +247,7 @@ const subscribeToCalendar = async ({ calendarId, offsetDays = DEFAULT_REMINDER_O
 
             const limit = Math.floor(MAX_PENDING_NOTIFICATIONS / Object.keys(subscriptions).length)
 
-            const scheduledCount = await scheduleCalendarReminders(calendar, offsetDays, limit, translate, language)
+            const scheduledCount = await scheduleCalendarReminders(calendar, offsetDays, limit, language)
 
             result = { status: 'granted', scheduledCount }
         } else {
@@ -265,7 +272,7 @@ const unsubscribeFromCalendar = async (calendarId) => {
 }
 
 
-const rescheduleAllSubscriptions = async ({ translate, language }) => {
+const rescheduleAllSubscriptions = async ({ language }) => {
     let rescheduled = 0
 
     if (isNativeRuntime()) {
@@ -284,7 +291,7 @@ const rescheduleAllSubscriptions = async ({ translate, language }) => {
                 if (calendar) {
                     const offsetDays = subscriptions[calendarId].offsetDays ?? DEFAULT_REMINDER_OFFSET_DAYS
 
-                    rescheduled += await scheduleCalendarReminders(calendar, offsetDays, limit, translate, language)
+                    rescheduled += await scheduleCalendarReminders(calendar, offsetDays, limit, language)
                 }
             }
         }

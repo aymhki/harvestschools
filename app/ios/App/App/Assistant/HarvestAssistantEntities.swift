@@ -92,9 +92,9 @@ struct SchoolStageEntity: AppEntity, Identifiable {
     var name: String
     var departmentName: String
     var sectionTitle: String
+    var isOffered: Bool
     var minimumAge: String?
     var tuitionFees: Int?
-    var isOffered: Bool
     var routePath: String?
 
     var displayRepresentation: DisplayRepresentation {
@@ -106,9 +106,9 @@ struct SchoolStageEntity: AppEntity, Identifiable {
         self.name = stage.name ?? ""
         self.departmentName = stage.departmentName ?? ""
         self.sectionTitle = stage.sectionTitle ?? ""
+        self.isOffered = stage.isOffered ?? true
         self.minimumAge = stage.minimumAge
         self.tuitionFees = stage.tuitionFees
-        self.isOffered = stage.isOffered ?? true
         self.routePath = stage.routePath
     }
 }
@@ -164,7 +164,7 @@ struct AcademicEventEntity: AppEntity, Identifiable {
 
         let formatted = DateFormatter.harvestEventFormatter.string(from: startDate)
 
-        return DisplayRepresentation(title: "\(title)", subtitle: "\(formatted) — \(calendarLabel)")
+        return DisplayRepresentation(title: "\(title)", subtitle: "\(formatted), \(calendarLabel)")
     }
 
     init(event: HarvestAcademicEvent) {
@@ -330,6 +330,7 @@ struct SchoolStaffEntity: AppEntity, Identifiable {
     var name: String
     var position: String
     var subject: String
+    var degree: String
     var departmentName: String
     var routePath: String?
 
@@ -344,6 +345,7 @@ struct SchoolStaffEntity: AppEntity, Identifiable {
         self.name = member.name ?? ""
         self.position = member.position ?? ""
         self.subject = member.subject ?? ""
+        self.degree = member.degree ?? ""
         self.departmentName = department.departmentName ?? ""
         self.routePath = department.routePath
     }
@@ -385,8 +387,131 @@ struct SchoolStaffQuery: EntityStringQuery {
         let terms = string.split(separator: " ").map(String.init).filter { !$0.isEmpty }
 
         return try await allEntities().filter {
-            HarvestAssistantContext.matches([$0.name, $0.position, $0.subject, $0.departmentName], terms: terms)
+            HarvestAssistantContext.matches([$0.name, $0.position, $0.subject, $0.degree, $0.departmentName], terms: terms)
         }
+    }
+
+    func suggestedEntities() async throws -> [SchoolStaffEntity] {
+        return try await Array(allEntities().prefix(10))
+    }
+}
+
+struct LibraryCategoryEntity: AppEntity, Identifiable {
+    static let allCategories: [LibraryCategoryEntity] = [
+        LibraryCategoryEntity(id: "english-fairy-tales", label: "English Library - Fairy Tales"),
+        LibraryCategoryEntity(id: "english-drama", label: "English Library - Drama"),
+        LibraryCategoryEntity(id: "english-levels", label: "English Library - Levels"),
+        LibraryCategoryEntity(id: "english-general", label: "English Library - General"),
+        LibraryCategoryEntity(id: "arabic-information", label: "Arabic Library - Educational"),
+        LibraryCategoryEntity(id: "arabic-general", label: "Arabic Library - General"),
+        LibraryCategoryEntity(id: "arabic-religion", label: "Arabic Library - Religious"),
+        LibraryCategoryEntity(id: "arabic-stories", label: "Arabic Library - Stories"),
+    ]
+
+    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Library Category" }
+
+    static var defaultQuery: LibraryCategoryQuery { LibraryCategoryQuery() }
+
+    var id: String
+
+    var label: String
+
+    var displayRepresentation: DisplayRepresentation {
+        return DisplayRepresentation(title: "\(label)")
+    }
+}
+
+struct LibraryCategoryQuery: EntityStringQuery, EnumerableEntityQuery {
+
+    func allEntities() async throws -> [LibraryCategoryEntity] {
+        return LibraryCategoryEntity.allCategories
+    }
+
+    func entities(for identifiers: [String]) async throws -> [LibraryCategoryEntity] {
+        let wanted = Set(identifiers)
+
+        return LibraryCategoryEntity.allCategories.filter { wanted.contains($0.id) }
+    }
+
+    func entities(matching string: String) async throws -> [LibraryCategoryEntity] {
+        return LibraryCategoryEntity.allCategories.filter { HarvestAssistantContext.matches([$0.label, $0.id], terms: [string]) }
+    }
+}
+
+struct LibraryBookEntity: AppEntity, Identifiable {
+
+    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Library Book" }
+
+    static var defaultQuery: LibraryBookQuery { LibraryBookQuery() }
+
+    var id: String
+    var title: String
+    var series: String
+    var categoryKey: String
+    var categoryName: String
+    var collectionName: String
+    var routePath: String?
+
+    var displayRepresentation: DisplayRepresentation {
+        let shelf = "\(collectionName) - \(categoryName)"
+        let detail = series.isEmpty ? shelf : "\(series), \(shelf)"
+
+        return DisplayRepresentation(title: "\(title)", subtitle: "\(detail)")
+    }
+
+    init(book: HarvestLibraryBook, category: HarvestLibraryCategory, index: Int) {
+        self.id = "library.\(category.categoryKey).\(index)"
+        self.title = book.title ?? ""
+        self.series = book.series ?? ""
+        self.categoryKey = category.categoryKey
+        self.categoryName = category.categoryName ?? ""
+        self.collectionName = category.collectionName ?? ""
+        self.routePath = category.routePath
+    }
+}
+
+struct LibraryBookQuery: EntityStringQuery {
+
+    func allEntities() async throws -> [LibraryBookEntity] {
+        guard let knowledge = await HarvestAssistantContext.knowledge() else {
+            return []
+        }
+
+        var entities: [LibraryBookEntity] = []
+
+        for category in knowledge.library ?? [] {
+            for (index, book) in (category.books ?? []).enumerated() {
+                entities.append(LibraryBookEntity(book: book, category: category, index: index))
+            }
+        }
+
+        return entities
+    }
+
+    func entities(for identifiers: [String]) async throws -> [LibraryBookEntity] {
+        let wanted = Set(identifiers)
+
+        return try await allEntities().filter { wanted.contains($0.id) }
+    }
+
+    func entities(matching string: String) async throws -> [LibraryBookEntity] {
+        let terms = string.split(separator: " ").map(String.init).filter { !$0.isEmpty }
+
+        return try await allEntities().filter {
+            HarvestAssistantContext.matches([$0.title, $0.series, $0.categoryName, $0.collectionName], terms: terms)
+        }
+    }
+
+    func suggestedEntities() async throws -> [LibraryBookEntity] {
+        var seenCategories: Set<String> = []
+        var suggestions: [LibraryBookEntity] = []
+
+        for book in try await allEntities() where !seenCategories.contains(book.categoryKey) {
+            seenCategories.insert(book.categoryKey)
+            suggestions.append(book)
+        }
+
+        return suggestions
     }
 }
 

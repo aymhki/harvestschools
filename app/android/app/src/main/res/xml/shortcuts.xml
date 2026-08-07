@@ -134,6 +134,29 @@
     </shortcut>
 
     <shortcut
+        android:shortcutId="library"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_library_short"
+        android:shortcutLongLabel="@string/shortcut_library_long">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.harvestschools.app"
+            android:targetClass="com.harvestschools.app.MainActivity"
+            android:data="https://harvestschools.com/students-life/library" />
+
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/shortcut_library_synonyms" />
+
+        </capability-binding>
+
+    </shortcut>
+
+    <shortcut
         android:shortcutId="events"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"

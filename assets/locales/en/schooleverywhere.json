@@ -20,7 +20,7 @@
     "home": "Back to home",
     "offline-title": "You are offline",
     "offline-body": "SchoolEverywhere needs a connection. Reconnect and try again.",
-    "rejected": "That did not work. Your username, password or identifier may have changed on the portal — check them below.",
+    "rejected": "That did not work. Your username, password or identifier may have changed on the portal. Check them below.",
     "form-changed": "SchoolEverywhere changed its sign-in page, so we opened it directly for you.",
     "timed-out": "The portal took too long to answer. Please try again.",
     "biometric-failed": "Biometric sign-in was not completed. Please try again or enter your details.",

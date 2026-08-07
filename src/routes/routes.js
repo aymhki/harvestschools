@@ -82,6 +82,8 @@ export const adminRoutes = [
     { path: '/borrowing-system-management', page: 'Admin/BorrowingSystemManagement.jsx', section: 'admin' },
     { path: '/info-system-management', page: 'Admin/InfoSystemManagement.jsx', section: 'admin' },
     { path: '/staff-directory-management', page: 'Admin/StaffDirectoryManagement.jsx', section: 'admin' },
+    { path: '/academic-calendars-management', page: 'Admin/AcademicCalendarsManagement.jsx', section: 'admin' },
+    { path: '/library-management', page: 'Admin/LibraryManagement.jsx', section: 'admin' },
     { path: '/view-job-application-file', page: 'Admin/FileViewer.jsx', section: 'admin',
         props: (ctx) => ({ fetchFileService: ctx.services.serveJobApplicationFile }) },
     { path: '/view-alumni-file', page: 'Admin/FileViewer.jsx', section: 'admin',

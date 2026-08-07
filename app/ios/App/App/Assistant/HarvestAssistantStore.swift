@@ -44,8 +44,8 @@ struct HarvestSchoolStage: Codable {
     let departmentName: String?
     let sectionKey: String?
     let sectionTitle: String?
-    let name: String?
     let isOffered: Bool?
+    let name: String?
     let minimumAge: String?
     let tuitionFees: Int?
     let routePath: String?
@@ -86,6 +86,7 @@ struct HarvestStaffMember: Codable {
     let name: String?
     let position: String?
     let subject: String?
+    let degree: String?
 }
 
 struct HarvestStaffDepartment: Codable {
@@ -95,6 +96,22 @@ struct HarvestStaffDepartment: Codable {
     let highlights: [HarvestStaffMember]?
     let members: [HarvestStaffMember]?
     let memberCount: Int?
+    let lastUpdated: Double?
+}
+
+struct HarvestLibraryBook: Codable {
+    let title: String?
+    let series: String?
+}
+
+struct HarvestLibraryCategory: Codable {
+    let categoryKey: String
+    let categoryName: String?
+    let collection: String?
+    let collectionName: String?
+    let routePath: String?
+    let bookCount: Int?
+    let books: [HarvestLibraryBook]?
     let lastUpdated: Double?
 }
 
@@ -110,6 +127,7 @@ struct HarvestSchoolKnowledge: Codable {
     let events: [HarvestAcademicEvent]?
     let pages: [HarvestAppPage]?
     let staff: [HarvestStaffDepartment]?
+    let library: [HarvestLibraryCategory]?
 }
 
 enum HarvestAssistantStore {

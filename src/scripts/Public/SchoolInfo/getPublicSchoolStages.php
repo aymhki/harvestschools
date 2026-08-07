@@ -8,7 +8,7 @@ set_public_cors_headers();
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     http_response_code(405);
     header('Allow: GET, OPTIONS');
-    echo json_encode(["success" => false, "message" => "Method not allowed", "code" => 405], JSON_UNESCAPED_UNICODE);
+    echo json_encode(["success" => false, "message" => "Method not allowed", "code" => 405]);
     exit;
 }
 
@@ -29,7 +29,7 @@ try {
 
     if ($conn->connect_error) {
         http_response_code(503);
-        echo json_encode(["success" => false, "message" => "School information is temporarily unavailable", "code" => 503], JSON_UNESCAPED_UNICODE);
+        echo json_encode(["success" => false, "message" => "School information is temporarily unavailable", "code" => 503]);
         exit;
     }
 
@@ -57,11 +57,11 @@ try {
         "message" => "Stages retrieved successfully",
         "code"    => 200,
         "data"    => $payload
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    ]);
 
 } catch (Throwable $e) {
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "School information is temporarily unavailable", "code" => 500], JSON_UNESCAPED_UNICODE);
+    echo json_encode(["success" => false, "message" => "School information is temporarily unavailable", "code" => 500]);
 } finally {
     if (isset($conn) && $conn instanceof mysqli) {
         $conn->close();

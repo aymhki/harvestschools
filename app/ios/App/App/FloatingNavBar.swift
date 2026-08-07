@@ -28,6 +28,16 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
 
     private var currentShareURL = URL(string: "https://harvestschools.com")!
 
+    private var isMerged = false
+
+    private var navigationStack: UIStackView?
+    private var actionStack: UIStackView?
+    private var actionPill: UIVisualEffectView?
+    private var navigationPillWidth: NSLayoutConstraint?
+
+    private let pillWidth: CGFloat = 126
+    private let mergedPillWidth: CGFloat = 236
+
     init(webView: WKWebView, presenter: UIViewController) {
         self.webView = webView
         self.presenter = presenter
@@ -133,22 +143,60 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
         let navigationPill = makePill(with: [backButton, forwardButton])
         let actionPill = makePill(with: [homeButton, shareButton])
 
+        navigationStack = navigationPill.contentView.subviews.first as? UIStackView
+        actionStack = actionPill.contentView.subviews.first as? UIStackView
+        self.actionPill = actionPill
+
         addSubview(navigationPill)
         addSubview(actionPill)
+
+        let navigationWidth = navigationPill.widthAnchor.constraint(equalToConstant: pillWidth)
+        navigationPillWidth = navigationWidth
 
         NSLayoutConstraint.activate([
             navigationPill.leadingAnchor.constraint(equalTo: leadingAnchor),
             navigationPill.topAnchor.constraint(equalTo: topAnchor),
             navigationPill.bottomAnchor.constraint(equalTo: bottomAnchor),
-            navigationPill.widthAnchor.constraint(equalToConstant: 126),
+            navigationWidth,
 
             actionPill.trailingAnchor.constraint(equalTo: trailingAnchor),
             actionPill.topAnchor.constraint(equalTo: topAnchor),
             actionPill.bottomAnchor.constraint(equalTo: bottomAnchor),
-            actionPill.widthAnchor.constraint(equalToConstant: 126),
+            actionPill.widthAnchor.constraint(equalToConstant: pillWidth),
 
             heightAnchor.constraint(equalToConstant: 52)
         ])
+    }
+
+    func setMerged(_ merged: Bool) {
+        guard merged != isMerged else { return }
+
+        isMerged = merged
+
+        guard let navigationStack, let actionStack, let actionPill else { return }
+
+        let moving = [homeButton, shareButton]
+        let source = merged ? actionStack : navigationStack
+        let destination = merged ? navigationStack : actionStack
+
+        moving.forEach { button in
+            source.removeArrangedSubview(button)
+            button.removeFromSuperview()
+            destination.addArrangedSubview(button)
+        }
+
+        navigationPillWidth?.constant = merged ? mergedPillWidth : pillWidth
+
+        UIView.animate(withDuration: 0.22, delay: 0, options: [.beginFromCurrentState, .curveEaseOut]) {
+            actionPill.alpha = merged ? 0 : 1
+            self.layoutIfNeeded()
+        } completion: { _ in
+            actionPill.isHidden = merged
+        }
+
+        if !merged {
+            actionPill.isHidden = false
+        }
     }
 
     private func makePill(with buttons: [UIButton]) -> UIVisualEffectView {

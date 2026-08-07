@@ -15,16 +15,9 @@ const NARRATIVE_LOCALE_KEYS = [
     { key: 'home.harvest-schools-elearning-and-academics', category: 'academics', topicEn: 'E-learning and academics', topicAr: 'التعلم الإلكتروني والأكاديميات' },
 ]
 
-const LOCALE_AGE_TABLE_KEYS = [
-    'faqs-pages.minimum-stage-age-page.international-division-table-data',
-    'faqs-pages.minimum-stage-age-page.national-division-table-data',
-]
-
 const FOOTER_CONTACT_NUMBER = '+201028329668'
 
 const LOCALE_ADDRESS_KEY = 'home.harvest-schools-address'
-
-const ARABIC_INDIC_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']
 
 
 const isPlaceholderText = (value) => {
@@ -38,98 +31,6 @@ const stripInlineLinks = (value) => String(value || '')
     .replace(/\{\{([^|}]+)\|[^}]*\}\}/g, '$1')
     .replace(/\s+/g, ' ')
     .trim()
-
-
-const toWesternDigits = (value) => {
-    let text = String(value || '')
-
-    ARABIC_INDIC_DIGITS.forEach((digit, index) => {
-        text = text.split(digit).join(String(index))
-    })
-
-    return text
-}
-
-
-const leadingNumber = (value) => {
-    const match = toWesternDigits(value).match(/\d+/)
-
-    return match ? Number(match[0]) : null
-}
-
-
-const normaliseStageToken = (value) => {
-    const text = String(value || '')
-        .trim()
-        .toLowerCase()
-        .replace(/[.\-_]/g, ' ')
-        .replace(/\s+/g, ' ')
-
-    const patterns = [
-        [/^(?:grade|g)\s*(\d+)$/, 'g'],
-        [/^(?:year|y)\s*(\d+)$/, 'y'],
-        [/^(?:junior|jr|j)\s*(\d+)$/, 'j'],
-        [/^(?:senior|sr|s)\s*(\d+)$/, 's'],
-        [/^(?:middle|prep|preparatory|m)\s*(\d+)$/, 'm'],
-        [/^(?:kg|kindergarten)\s*(\d+)$/, 'kg'],
-        [/^(?:fs)\s*(\d+)$/, 'fs'],
-    ]
-
-    for (const [pattern, prefix] of patterns) {
-        const match = text.match(pattern)
-
-        if (match) {
-            return `${prefix}${match[1]}`
-        }
-    }
-
-    if (/^pre\s*k$/.test(text) || text === 'prek') {
-        return 'prek'
-    }
-
-    if (text === 'k' || text === 'kindergarten') {
-        return 'kg'
-    }
-
-    return text.replace(/\s+/g, '')
-}
-
-
-const buildLocaleAgeIndex = (lookup) => {
-    const index = new Map()
-
-    LOCALE_AGE_TABLE_KEYS.forEach((tableKey) => {
-        const rows = lookup(tableKey, { returnObjects: true })
-
-        if (!Array.isArray(rows)) {
-            return
-        }
-
-        rows.forEach((row, rowIndex) => {
-            if (rowIndex === 0 || !row || typeof row !== 'object') {
-                return
-            }
-
-            const age = leadingNumber(row['minimum-registration-age'])
-
-            if (age === null) {
-                return
-            }
-
-            String(row.stage || '')
-                .split(',')
-                .map((token) => normaliseStageToken(token))
-                .filter((token) => token !== '')
-                .forEach((token) => {
-                    if (!index.has(token)) {
-                        index.set(token, { age, tableKey, rowIndex, rawStage: row.stage })
-                    }
-                })
-        })
-    })
-
-    return index
-}
 
 
 const detectConflicts = ({ document, lookup }) => {
@@ -160,29 +61,6 @@ const detectConflicts = ({ document, lookup }) => {
             resolution: 'infosystem',
         })
     }
-
-    const localeAges = buildLocaleAgeIndex(lookup)
-
-    ;(document.stages || []).forEach((stage) => {
-        const token = normaliseStageToken(stage.name)
-        const localeEntry = localeAges.get(token)
-
-        if (!localeEntry) {
-            return
-        }
-
-        const infoSystemAge = leadingNumber(stage.minimumAge)
-
-        if (infoSystemAge !== null && infoSystemAge !== localeEntry.age) {
-            conflicts.push({
-                field: `stage.${stage.key}.minimumAge`,
-                infoSystemValue: stage.minimumAge,
-                otherValue: localeEntry.rawStage + ' = ' + localeEntry.age,
-                otherSource: `${localeEntry.tableKey}[${localeEntry.rowIndex}]`,
-                resolution: 'infosystem',
-            })
-        }
-    })
 
     return conflicts
 }
@@ -272,11 +150,8 @@ const logAssistantConflicts = (conflicts, language) => {
 
 export {
     buildAssistantKnowledge,
-    buildLocaleAgeIndex,
     detectConflicts,
     isPlaceholderText,
-    leadingNumber,
     logAssistantConflicts,
-    normaliseStageToken,
     stripInlineLinks,
 }

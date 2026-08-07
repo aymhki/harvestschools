@@ -97,8 +97,6 @@ const getGoogleWalletToken = (url) => {
 }
 
 
-/* Android has the same kind of in place sheet through the Google Wallet SDK, so
- * the signed token that the save link carries is handed to the native layer. */
 const addPassToGoogleWallet = async (url) => {
     const token = getGoogleWalletToken(url)
 
@@ -118,8 +116,6 @@ const addPassToGoogleWallet = async (url) => {
         }
     }
 
-    /* Devices without the Google Wallet app still get the save link, which is
-     * the only way left to add the pass there. */
     if (!isPresentedNatively) {
         await Browser.open({ url, presentationStyle: 'popover' })
     }

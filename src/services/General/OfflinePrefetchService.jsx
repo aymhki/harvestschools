@@ -7,6 +7,9 @@ import { applyCachedFonts, prefetchAllFonts } from './OfflineFontsService.jsx'
 import { prefetchCriticalAssets } from './OfflineImageCacheService.jsx'
 import { servePublicAsset } from './GeneralServices.jsx'
 import { prefetchPublicStaff } from '../Public/Staff/PublicStaffServices.jsx'
+import { prefetchCalendars } from './SchoolCalendarsService.jsx'
+import { prefetchStages } from '../Public/SchoolInfo/PublicStagesServices.jsx'
+import { prefetchLibrary } from '../Public/Library/PublicLibraryServices.jsx'
 
 
 const PREFETCH_STAMP_KEY = 'harvest_offline_prefetch_stamp'
@@ -195,10 +198,27 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
 
             report('staff', 0)
 
-            // The staff pages read the database rather than the locales, so they
-            // need their own warm-up to survive with no connection.
             const staffResult = await prefetchPublicStaff({
                 onProgress: (percent) => report('staff', percent),
+            })
+
+            report('calendars', 0)
+
+            const calendarResult = await prefetchCalendars({
+                onProgress: (percent) => report('calendars', percent),
+            })
+
+            report('stages', 0)
+
+            const stageResult = await prefetchStages({
+                onProgress: (percent) => report('stages', percent),
+            })
+
+            report('library', 0)
+
+
+            const libraryResult = await prefetchLibrary({
+                onProgress: (percent) => report('library', percent),
             })
 
             await writeStamp({
@@ -206,7 +226,16 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 completedAt: Date.now(),
             })
 
-            return { skipped: false, locales: localeResult, fonts: fontResult, assets: assetResult, staff: staffResult }
+            return {
+                skipped: false,
+                locales: localeResult,
+                fonts: fontResult,
+                assets: assetResult,
+                staff: staffResult,
+                calendars: calendarResult,
+                stages: stageResult,
+                library: libraryResult,
+            }
         } catch (prefetchError) {
             console.warn('[offline-prefetch] Prefetch run failed', prefetchError)
 

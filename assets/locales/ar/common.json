@@ -20,6 +20,9 @@
     "minute": "دقيقة",
     "minutes": "دقائق",
     "second": "ثانية",
-    "seconds": "ثوان"
+    "seconds": "ثوان",
+    "list-separator": "، ",
+    "next": "التالي",
+    "previous": "السابق"
   }
 }

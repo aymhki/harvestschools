@@ -77,30 +77,24 @@ function StaffList({departmentKey, title, className}) {
             <div className={"extreme-padding-container"}>
                 <h1>{title}</h1>
 
-                {(!isLoading && hasFailed) && (
-                    <p>{t('academics-pages.staff.unavailable')}</p>
-                )}
+                {hasFailed && <p>{t('academics-pages.staff.unavailable')}</p>}
 
-                {(!isLoading && !hasFailed) && (
-                    <>
-                        {(staff?.highlights || []).map((highlight, index) => (
-                            <p key={`${highlight.position}-${index}`}>
-                                {highlight.position}: {highlight.name}
-                            </p>
-                        ))}
+                {(staff?.highlights || []).map((highlight, index) => (
+                    <p key={`${highlight.position}-${index}`}>
+                        {highlight.position}: {highlight.name}
+                    </p>
+                ))}
 
-                        <Table tableData={tableData} numCols={3}
-                               sortConfigParam={{column: 1, direction: 'ascending'}}
-                               ignoreSideMarginsOnFixed={true}
-                               isLoading={isLoading}
-                        />
+                <Table tableData={tableData} numCols={3}
+                       sortConfigParam={{column: 1, direction: 'ascending'}}
+                       ignoreSideMarginsOnFixed={true}
+                       isLoading={isLoading}
+                />
 
-                        {formattedLastUpdated && (
-                            <p>
-                                {t('common.last-updated', {ns: 'common'})} {formattedLastUpdated}
-                            </p>
-                        )}
-                    </>
+                {formattedLastUpdated && (
+                    <p>
+                        {t('common.last-updated', {ns: 'common'})} {formattedLastUpdated}
+                    </p>
                 )}
             </div>
         </div>

@@ -20,6 +20,9 @@
     "minute": "minute",
     "minutes": "minutes",
     "second": "second",
-    "seconds": "seconds"
+    "seconds": "seconds",
+    "list-separator": ", ",
+    "next": "Next",
+    "previous": "Previous"
   }
 }

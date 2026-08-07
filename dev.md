@@ -15,3 +15,6 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Quick links in app home page should open their apps directly.
 - [x] schooleverywhere needs its own widget quick action.
 - [ ] New gallery videos need to be added.
+- [ ] /vacancies does not correctly redirect in the main domain and somehow shows an outdated version of /vacancies.
+- [ ] Alumni students should have public profile pages.
+- [ ] Admin side bar should stick the selected page once it exists the height of the portal scroll
