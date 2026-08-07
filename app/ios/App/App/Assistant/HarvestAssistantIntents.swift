@@ -52,6 +52,19 @@ enum HarvestAssistantPhrasing {
             : "I could not find information about that. You can contact the admissions department for help."
     }
 
+    static func libraryLine(for book: LibraryBookEntity) -> String {
+        let shelf = "\(book.collectionName) - \(book.categoryName)"
+        let series = book.series.isEmpty ? "" : ", \(book.series)"
+
+        return "\(book.title)\(series) (\(shelf))"
+    }
+
+    static func libraryMoreBooks(remaining: Int) -> String {
+        return isArabic
+            ? "و\(remaining) كتاباً آخر في المكتبة."
+            : "And \(remaining) more books in the library."
+    }
+
     static func feesUnpublished(for stageName: String) -> String {
         return isArabic
             ? "المصروفات الدراسية الخاصة بـ \(stageName) غير منشورة. يرجى التواصل مع قسم التقديمات."
@@ -166,7 +179,7 @@ struct GetStagesOfferedIntent: AppIntent {
     static var title: LocalizedStringResource { "Get Harvest Stages Offered" }
 
     static var description: IntentDescription {
-        return IntentDescription("Lists the stages Harvest International Schools currently offers, with their minimum registration ages.")
+        return IntentDescription("Lists the stages Harvest International Schools publishes, with their minimum registration ages, marking any that are not running this year.")
     }
 
     static var openAppWhenRun: Bool { false }
@@ -181,7 +194,7 @@ struct GetStagesOfferedIntent: AppIntent {
             return .result(value: message, dialog: IntentDialog(stringLiteral: message))
         }
 
-        var stages = (knowledge.stages ?? []).map { SchoolStageEntity(stage: $0) }.filter { $0.isOffered }
+        var stages = (knowledge.stages ?? []).map { SchoolStageEntity(stage: $0) }
 
         if let department = department {
             stages = stages.filter { $0.departmentName == department.name }
@@ -198,7 +211,9 @@ struct GetStagesOfferedIntent: AppIntent {
                 return stage.name
             }
 
-            return HarvestAssistantPhrasing.isArabic ? "\(stage.name) — الحد الأدنى للسن \(age)" : "\(stage.name) — minimum age \(age)"
+            return HarvestAssistantPhrasing.isArabic
+                ? "\(stage.name): الحد الأدنى للسن \(age)"
+                : "\(stage.name): minimum age \(age)"
         }
 
         let joined = lines.joined(separator: "\n")
@@ -233,7 +248,7 @@ struct GetSchoolStaffIntent: AppIntent {
             let terms = query.split(separator: " ").map(String.init).filter { !$0.isEmpty }
 
             staff = staff.filter {
-                HarvestAssistantContext.matches([$0.name, $0.position, $0.subject, $0.departmentName], terms: terms)
+                HarvestAssistantContext.matches([$0.name, $0.position, $0.subject, $0.degree, $0.departmentName], terms: terms)
             }
         }
 
@@ -245,10 +260,74 @@ struct GetSchoolStaffIntent: AppIntent {
 
         let lines = staff.prefix(20).map { member -> String in
             let role = member.subject.isEmpty ? member.position : "\(member.position), \(member.subject)"
+            let qualification = member.degree.isEmpty ? "" : ", \(member.degree)"
 
-            return HarvestAssistantPhrasing.isArabic
-                ? "\(member.name) — \(role) (\(member.departmentName))"
-                : "\(member.name) — \(role) (\(member.departmentName))"
+            return "\(member.name): \(role)\(qualification) (\(member.departmentName))"
+        }
+
+        let joined = lines.joined(separator: "\n")
+
+        return .result(value: joined, dialog: IntentDialog(stringLiteral: joined))
+    }
+}
+
+struct GetLibraryBooksIntent: AppIntent {
+
+    static var title: LocalizedStringResource { "Get Harvest Library Books" }
+
+    static var description: IntentDescription {
+        return IntentDescription("Searches the books the Harvest International Schools library lends to students.")
+    }
+
+    static var openAppWhenRun: Bool { false }
+
+    @Parameter(title: "Book")
+    var book: LibraryBookEntity?
+
+    @Parameter(title: "Category")
+    var category: LibraryCategoryEntity?
+
+    @Parameter(title: "Title or series")
+    var query: String?
+
+    func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
+        if let book = book {
+            let line = HarvestAssistantPhrasing.libraryLine(for: book)
+
+            return .result(value: line, dialog: IntentDialog(stringLiteral: line))
+        }
+
+        guard await HarvestAssistantContext.knowledge() != nil else {
+            let message = HarvestAssistantPhrasing.unavailableKnowledge()
+
+            return .result(value: message, dialog: IntentDialog(stringLiteral: message))
+        }
+
+        var books = try await LibraryBookQuery().allEntities()
+
+        if let category = category {
+            books = books.filter { $0.categoryKey == category.id }
+        }
+
+        if let query = query, !query.trimmingCharacters(in: .whitespaces).isEmpty {
+            let terms = query.split(separator: " ").map(String.init).filter { !$0.isEmpty }
+
+            books = books.filter {
+                HarvestAssistantContext.matches([$0.title, $0.series, $0.categoryName, $0.collectionName], terms: terms)
+            }
+        }
+
+        guard !books.isEmpty else {
+            let message = HarvestAssistantPhrasing.noMatch()
+
+            return .result(value: message, dialog: IntentDialog(stringLiteral: message))
+        }
+
+        let shown = books.prefix(20)
+        var lines = shown.map { HarvestAssistantPhrasing.libraryLine(for: $0) }
+
+        if books.count > shown.count {
+            lines.append(HarvestAssistantPhrasing.libraryMoreBooks(remaining: books.count - shown.count))
         }
 
         let joined = lines.joined(separator: "\n")

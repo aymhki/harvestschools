@@ -3,15 +3,9 @@
 require_once __DIR__ . '/publicInfoAllowlist.php';
 require_once __DIR__ . '/publicPageInventory.php';
 require_once __DIR__ . '/../Staff/publicStaffHelpers.php';
+require_once __DIR__ . '/../Calendars/publicCalendarHelpers.php';
+require_once __DIR__ . '/../Library/publicLibraryHelpers.php';
 
-const PUBLIC_SCHOOL_CALENDARS = [
-    ['id' => 'national', 'labelEn' => 'National', 'labelAr' => 'ناشونال', 'eventsKey' => 'events-pages.national-calendar-page.calendar', 'path' => '/events/national-calendar'],
-    ['id' => 'british', 'labelEn' => 'British', 'labelAr' => 'بريطاني', 'eventsKey' => 'events-pages.british-calendar-page.calendar', 'path' => '/events/british-calendar'],
-    ['id' => 'american', 'labelEn' => 'American', 'labelAr' => 'أمريكي', 'eventsKey' => 'events-pages.american-calendar-page.calendar', 'path' => '/events/american-calendar'],
-    ['id' => 'national-kg', 'labelEn' => 'National KG', 'labelAr' => 'روضة ناشونال', 'eventsKey' => 'events-pages.kg-calendars-pages.national-kg-calendar.calendar', 'path' => '/events/national-kg-calendar'],
-    ['id' => 'british-kg', 'labelEn' => 'British KG', 'labelAr' => 'روضة بريطاني', 'eventsKey' => 'events-pages.kg-calendars-pages.british-kg-calendar.calendar', 'path' => '/events/british-kg-calendar'],
-    ['id' => 'american-kg', 'labelEn' => 'American KG', 'labelAr' => 'روضة أمريكي', 'eventsKey' => 'events-pages.kg-calendars-pages.american-kg-calendar.calendar', 'path' => '/events/american-kg-calendar'],
-];
 
 function public_info_locale_directory() {
     $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
@@ -146,6 +140,16 @@ function public_school_departments($conn, $language) {
     return $departments;
 }
 
+/**
+ * The published stages.
+ *
+ * SHOW_UNOFFERED_STAGES decides membership and nothing else: when it is off the
+ * unoffered stages are not here at all, and when it is on they are published on
+ * the same footing as every other stage. Either way everything this returns is
+ * a stage the school publishes, which is why no is_offered flag comes out of
+ * here - a consumer that saw one would start hedging about a stage the school
+ * chose to show.
+ */
 function public_school_stages($conn, $language, $includeUnoffered, $departmentKey = null) {
     $stages = [];
 
@@ -193,7 +197,11 @@ function public_school_stages($conn, $language, $includeUnoffered, $departmentKe
             'sectionKey'     => $row['section_key'],
             'sectionTitle'   => public_info_localised($row, 'section_title', $language),
             'name'           => public_info_localised($row, 'name', $language),
-            'isOffered'      => (int)$row['is_offered'] === 1,
+            // SHOW_UNOFFERED_STAGES decides membership: with it off the
+            // unoffered stages never leave the query, and with it on the school
+            // has chosen to present them as available. Either way a stage that
+            // reaches a reader is one they can act on, so the flag says so.
+            'isOffered'      => $includeUnoffered ? true : ((int)$row['is_offered'] === 1),
             'minimumAge'     => public_info_localised($row, 'age', $language),
             'tuitionFees'    => $normalisedFees,
             'sortOrder'      => (int)$row['sort_order'],
@@ -221,57 +229,8 @@ function public_school_policies($conn, $language) {
     return $groups;
 }
 
-function public_school_events($language) {
-    $events = [];
-
-    foreach (PUBLIC_SCHOOL_CALENDARS as $calendar) {
-        $rows = public_info_locale_lookup($language, $calendar['eventsKey']);
-
-        if (!is_array($rows)) {
-            continue;
-        }
-
-        foreach ($rows as $index => $row) {
-            if ($index === 0 || !is_array($row)) {
-                continue;
-            }
-
-            $title = trim((string)($row['title'] ?? ''));
-            $startRaw = trim((string)($row['start-date'] ?? ''));
-
-            if ($title === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $startRaw)) {
-                continue;
-            }
-
-            $endRaw = trim((string)($row['end-date'] ?? ''));
-
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $endRaw)) {
-                $endRaw = $startRaw;
-            }
-
-            $startTimestamp = strtotime($startRaw . ' 00:00:00 UTC');
-            $endTimestamp = strtotime($endRaw . ' 00:00:00 UTC');
-
-            $events[] = [
-                'id'            => 'event.' . $calendar['id'] . '.' . $startRaw . '.' . substr(hash('sha256', $title), 0, 10),
-                'title'         => $title,
-                'startDate'     => $startTimestamp === false ? null : $startTimestamp * 1000,
-                'rawStartDate'  => $startRaw,
-                'endDate'       => $endTimestamp === false ? null : $endTimestamp * 1000,
-                'rawEndDate'    => $endRaw,
-                'calendarId'    => $calendar['id'],
-                'calendarLabel' => $language === 'ar' ? $calendar['labelAr'] : $calendar['labelEn'],
-                'routePath'     => $calendar['path'],
-                'isMultiDay'    => $endRaw !== $startRaw,
-            ];
-        }
-    }
-
-    usort($events, function ($first, $second) {
-        return ($first['startDate'] ?? 0) <=> ($second['startDate'] ?? 0);
-    });
-
-    return $events;
+function public_school_events($conn, $language) {
+    return public_calendar_all_events($conn, $language);
 }
 
 function public_school_pages($language) {
@@ -539,9 +498,9 @@ function public_school_facts($profile, $departments, $stages, $policies, $langua
                 'fact.age.' . $stage['key'],
                 'stages',
                 $topic,
-                $language === 'ar'
+                ($language === 'ar'
                     ? 'الحد الأدنى لسن التسجيل: ' . $stage['minimumAge']
-                    : 'Minimum registration age: ' . $stage['minimumAge'],
+                    : 'Minimum registration age: ' . $stage['minimumAge']),
                 [$stage['name'], $stage['departmentName'], 'age', 'minimum age', 'سن'],
                 $stage['routePath'],
                 'infosystem',
@@ -693,6 +652,30 @@ function public_school_staff_facts($staff, $language) {
     return $facts;
 }
 
+function public_school_library_facts($library, $language) {
+    $facts = [];
+    $isArabic = $language === 'ar';
+
+    foreach ($library as $category) {
+        $facts[] = public_school_fact(
+            'fact.library.' . $category['categoryKey'],
+            'general',
+            $category['collectionName'] . ' - ' . $category['categoryName'],
+            $isArabic
+                ? 'عدد الكتب المتاحة: ' . $category['bookCount']
+                : $category['bookCount'] . ' books available to borrow.',
+            $isArabic
+                ? ['مكتبة', 'كتب', 'استعارة', $category['categoryName'], $category['collectionName']]
+                : ['library', 'books', 'borrow', 'reading', $category['categoryName'], $category['collectionName']],
+            $category['routePath'],
+            'infosystem',
+            'library_books.' . $category['categoryKey']
+        );
+    }
+
+    return $facts;
+}
+
 function public_school_document($conn, $language) {
     $rules = public_info_read_rule_settings($conn);
     $includeUnoffered = ($rules['SHOW_UNOFFERED_STAGES'] ?? '1') === '1';
@@ -702,6 +685,7 @@ function public_school_document($conn, $language) {
     $stages = public_school_stages($conn, $language, $includeUnoffered);
     $policies = public_school_policies($conn, $language);
     $staff = public_staff_directory($conn, $language);
+    $library = public_library_catalogue($conn, $language);
 
     $document = [
         'schemaVersion' => PUBLIC_INFO_SCHEMA_VERSION,
@@ -732,11 +716,13 @@ function public_school_document($conn, $language) {
         'stages'      => $stages,
         'policies'    => $policies,
         'staff'       => $staff,
+        'library'     => $library,
         'facts'       => array_merge(
             public_school_facts($profile, $departments, $stages, $policies, $language),
-            public_school_staff_facts($staff, $language)
+            public_school_staff_facts($staff, $language),
+            public_school_library_facts($library, $language)
         ),
-        'events'      => public_school_events($language),
+        'events'      => public_school_events($conn, $language),
         'pages'       => public_school_pages($language),
     ];
 

@@ -76,7 +76,28 @@ try {
     global $INFO_SYSTEM_MANAGEMENT;
     global $ALUMNI_STUDENTS_MANAGEMENT;
     global $STAFF_DIRECTORY_MANAGEMENT;
+    global $ACADEMIC_CALENDARS_MANAGEMENT;
+    global $NATIONAL_CALENDAR_MANAGEMENT;
+    global $BRITISH_CALENDAR_MANAGEMENT;
+    global $AMERICAN_CALENDAR_MANAGEMENT;
+    global $NATIONAL_KG_CALENDAR_MANAGEMENT;
+    global $BRITISH_KG_CALENDAR_MANAGEMENT;
+    global $AMERICAN_KG_CALENDAR_MANAGEMENT;
+    global $LIBRARY_MANAGEMENT;
     global $JACK_OF_ALL_TRADES;
+
+
+    $academicCalendarsTile = [
+        [
+            "title" => "Academic Calendars",
+            "image" => "/images/Dashboard/AcademicCalendars.svg",
+            "description" => "View & manage the department academic calendars",
+            "link" => "/academic-calendars-management",
+            "buttonText" => "View Calendars",
+            "titleInArabic" => false,
+            "descriptionInArabic" => false
+        ]
+    ];
 
     $dashboardOptions = [];
     $allDashboardOptions = [
@@ -166,6 +187,24 @@ try {
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
             ]
+        ],
+        $ACADEMIC_CALENDARS_MANAGEMENT    => $academicCalendarsTile,
+        $NATIONAL_CALENDAR_MANAGEMENT     => $academicCalendarsTile,
+        $BRITISH_CALENDAR_MANAGEMENT      => $academicCalendarsTile,
+        $AMERICAN_CALENDAR_MANAGEMENT     => $academicCalendarsTile,
+        $NATIONAL_KG_CALENDAR_MANAGEMENT  => $academicCalendarsTile,
+        $BRITISH_KG_CALENDAR_MANAGEMENT   => $academicCalendarsTile,
+        $AMERICAN_KG_CALENDAR_MANAGEMENT  => $academicCalendarsTile,
+        $LIBRARY_MANAGEMENT => [
+            [
+                "title" => "Library",
+                "image" => "/images/Dashboard/Library.svg",
+                "description" => "View & manage the books on the library pages",
+                "link" => "/library-management",
+                "buttonText" => "View Books",
+                "titleInArabic" => false,
+                "descriptionInArabic" => false
+            ]
         ]
     ];
 
@@ -178,6 +217,18 @@ try {
     } else {
         $dashboardOptions = array_merge([], ...array_values($allDashboardOptions));
     }
+
+
+    $seenLinks = [];
+    $dashboardOptions = array_values(array_filter($dashboardOptions, function ($option) use (&$seenLinks) {
+        if (in_array($option['link'], $seenLinks, true)) {
+            return false;
+        }
+
+        $seenLinks[] = $option['link'];
+
+        return true;
+    }));
 
     echo json_encode([
         "success" => true,

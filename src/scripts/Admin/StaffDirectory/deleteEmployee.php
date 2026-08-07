@@ -54,7 +54,7 @@ try {
         "success" => true,
         "message" => "Employee deleted successfully." . ($warning ?? ''),
         "code"    => 200
-    ], JSON_UNESCAPED_UNICODE);
+    ]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {

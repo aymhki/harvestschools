@@ -1,11 +1,14 @@
 import PropTypes from "prop-types";
-import {Fragment, useEffect, useState} from "react";
+import {Fragment, useEffect, useRef, useState} from "react";
 import '../styles/TabsPage.css';
 
-function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = false, elementsAcrossTabsAtTheTop, title }) {
+function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDesktop = false, pinnedInMobile = true, stickUnderParentBarInMobile = false, stickUnderParentBarOnDesktop = false, elementsAcrossTabsAtTheTop, title, controlledTab, onTabChange }) {
     const storageKey = title ? `activeTab_${title}` : null;
 
-    const [activeTab, setActiveTab] = useState(() => {
+
+    const isControlled = controlledTab !== undefined && controlledTab !== null;
+
+    const [internalTab, setInternalTab] = useState(() => {
         if (storageKey) {
             const saved = Number(localStorage.getItem(storageKey));
             if (saved && tabData.some((t) => t.id === saved)) return saved;
@@ -13,6 +16,18 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
 
         return initialTab || tabData[0].id;
     });
+
+    const activeTab = isControlled ? controlledTab : internalTab;
+
+    const setActiveTab = (nextTab) => {
+        if (!isControlled) {
+            setInternalTab(nextTab);
+        }
+
+        if (onTabChange) {
+            onTabChange(nextTab);
+        }
+    };
 
     const currentIndex = tabData.findIndex((tab) => tab.id === activeTab);
 
@@ -27,13 +42,112 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
     };
 
     useEffect(() => {
-        if (storageKey) {
+        if (storageKey && !isControlled) {
             localStorage.setItem(storageKey, activeTab);
         }
-    }, [activeTab, storageKey]);
+    }, [activeTab, storageKey, isControlled]);
+
+
+    const mobilePosition = pinnedInMobile ? (barOnTopInMobile ? 'bar-position-top' : 'bar-position-bottom') : 'bar-position-inline';
+    const nestedStickyInMobile = (stickUnderParentBarInMobile && !pinnedInMobile) ? 'stick-under-parent-mobile' : '';
+    const nestedStickyOnDesktop = stickUnderParentBarOnDesktop ? 'stick-under-parent-desktop' : '';
+
+    const containerRef = useRef(null);
+    const tabBarRef = useRef(null);
+    const tabsBarRef = useRef(null);
+    const [overflow, setOverflow] = useState({ left: false, right: false });
+
+    useEffect(() => {
+        const bar = tabsBarRef.current;
+
+        if (!bar) {
+            return;
+        }
+
+        const measure = () => {
+            const travel = bar.scrollWidth - bar.clientWidth;
+
+            if (travel <= 1) {
+                setOverflow({ left: false, right: false });
+
+                return;
+            }
+
+            const isRightToLeft = window.getComputedStyle(bar).direction === 'rtl';
+            const lowest = isRightToLeft ? -travel : 0;
+            const highest = isRightToLeft ? 0 : travel;
+
+            setOverflow({
+                left: bar.scrollLeft > lowest + 1,
+                right: bar.scrollLeft < highest - 1,
+            });
+        };
+
+        measure();
+
+        bar.addEventListener('scroll', measure, { passive: true });
+
+        if (typeof ResizeObserver === 'undefined') {
+            window.addEventListener('resize', measure);
+
+            return () => {
+                bar.removeEventListener('scroll', measure);
+                window.removeEventListener('resize', measure);
+            };
+        }
+
+        const observer = new ResizeObserver(measure);
+        observer.observe(bar);
+
+        return () => {
+            bar.removeEventListener('scroll', measure);
+            observer.disconnect();
+        };
+    }, [tabData]);
+
+    const scrollTabsBy = (towards) => {
+        const bar = tabsBarRef.current;
+
+        if (bar) {
+            bar.scrollBy({ left: towards * bar.clientWidth, behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        if (!tabBarRef.current || !containerRef.current) {
+            return;
+        }
+
+        const bar = tabBarRef.current;
+        const container = containerRef.current;
+
+        const publishHeight = () => {
+            const height = `${bar.getBoundingClientRect().height}px`;
+
+            container.style.setProperty('--tabs-own-bar-height', height);
+
+            if (pinnedInMobile) {
+                container.style.setProperty('--tabs-parent-bar-height', height);
+            }
+        };
+
+        publishHeight();
+
+        if (typeof ResizeObserver === 'undefined') {
+            window.addEventListener('resize', publishHeight);
+
+            return () => window.removeEventListener('resize', publishHeight);
+        }
+
+        const observer = new ResizeObserver(publishHeight);
+        observer.observe(bar);
+
+        return () => observer.disconnect();
+    }, [pinnedInMobile]);
 
     const tabBar = (
-        <div className={`tabs-bar-wrapper ${barOnTopInMobile ? 'bar-position-top' : 'bar-position-bottom'} ${stickyOnDesktop ? 'sticky-desktop' : ''}`}>
+        <div ref={tabBarRef}
+             className={`tabs-bar-wrapper ${mobilePosition} ${nestedStickyInMobile} ${nestedStickyOnDesktop} ${stickyOnDesktop ? 'sticky-desktop' : ''}`}>
             <button
                 className="mobile-nav-tabs-bar-arrow left-arrow"
                 onClick={handlePrevTab}
@@ -41,7 +155,17 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
             >
                 &#10094;
             </button>
-            <div className="tabs-bar" role="tablist">
+            {overflow.left && (
+                <button
+                    className="tabs-bar-scroll-arrow scroll-left"
+                    onClick={() => scrollTabsBy(-1)}
+                    aria-label="Scroll tabs left"
+                    type="button"
+                >
+                    &#10094;
+                </button>
+            )}
+            <div className="tabs-bar" role="tablist" ref={tabsBarRef}>
                 {tabData.map((tab) => (
                     <button
                         key={tab.id}
@@ -54,6 +178,16 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
                     </button>
                 ))}
             </div>
+            {overflow.right && (
+                <button
+                    className="tabs-bar-scroll-arrow scroll-right"
+                    onClick={() => scrollTabsBy(1)}
+                    aria-label="Scroll tabs right"
+                    type="button"
+                >
+                    &#10095;
+                </button>
+            )}
             <button
                 className="mobile-nav-tabs-bar-arrow right-arrow"
                 onClick={handleNextTab}
@@ -65,7 +199,7 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
     );
 
     const tabPanel = (
-        <div className={`tab-panel ${barOnTopInMobile ? 'tab-panel-top-bar' : 'tab-panel-bottom-bar'} ${stickyOnDesktop ? 'tab-panel-sticky-desktop' : ''}`} role="tabpanel">
+        <div className={`tab-panel ${pinnedInMobile ? (barOnTopInMobile ? 'tab-panel-top-bar' : 'tab-panel-bottom-bar') : 'tab-panel-inline-bar'} ${nestedStickyInMobile ? 'tab-panel-stick-under-parent-mobile' : ''} ${stickyOnDesktop ? 'tab-panel-sticky-desktop' : ''}`} role="tabpanel">
             {tabData.map((tab) => (
                 <div
                     key={tab.id}
@@ -84,7 +218,7 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
     );
 
     return (
-        <div className="tabs-container">
+        <div className="tabs-container" ref={containerRef}>
             {tabBar}
             {tabPanel}
         </div>
@@ -101,8 +235,13 @@ TabsPage.propTypes = {
         })
     ).isRequired,
     initialTab: PropTypes.number,
+    controlledTab: PropTypes.number,
+    onTabChange: PropTypes.func,
     barOnTopInMobile: PropTypes.bool,
     stickyOnDesktop: PropTypes.bool,
+    pinnedInMobile: PropTypes.bool,
+    stickUnderParentBarInMobile: PropTypes.bool,
+    stickUnderParentBarOnDesktop: PropTypes.bool,
     elementsAcrossTabsAtTheTop: PropTypes.array,
     title: PropTypes.string,
 }

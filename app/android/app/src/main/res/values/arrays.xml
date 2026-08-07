@@ -67,6 +67,17 @@
         <item>الأسئلة الشائعة</item>
     </string-array>
 
+    <string-array name="shortcut_library_synonyms">
+        <item>library</item>
+        <item>books</item>
+        <item>book list</item>
+        <item>reading</item>
+        <item>borrow a book</item>
+        <item>المكتبة</item>
+        <item>الكتب</item>
+        <item>القراءة</item>
+    </string-array>
+
     <string-array name="shortcut_gallery_synonyms">
         <item>gallery</item>
         <item>photos</item>

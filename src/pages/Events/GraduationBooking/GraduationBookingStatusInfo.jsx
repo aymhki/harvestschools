@@ -408,7 +408,7 @@ function GraduationBookingStatusInfo() {
             {
                 name: 'ceremony-location',
                 displayLabel: t("events-pages.graduation-booking-pages.booking-status-info-page.ceremony-location"),
-                value: [ceremony.locationName, ceremony.locationAddress].filter(Boolean).join(' — ') || notAnnouncedYet,
+                value: [ceremony.locationName, ceremony.locationAddress].filter(Boolean).join(', ') || notAnnouncedYet,
                 widthOfField: 1,
             },
         ];

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.RenderProcessGoneDetail;
@@ -36,8 +37,11 @@ public class MainActivity extends BridgeActivity {
 
     private ImageButton backButton;
     private ImageButton forwardButton;
+    private ImageButton homeButton;
+    private ImageButton shareButton;
     private CardView floatingNavBarCard;
     private CardView floatingActionBarCard;
+    private boolean isNavBarMerged = false;
     private final android.os.Handler revealHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable revealRunnable;
     private boolean isNavBarHidden = false;
@@ -300,8 +304,8 @@ public class MainActivity extends BridgeActivity {
         backButton = makeIconButton(R.drawable.ic_nav_back);
         forwardButton = makeIconButton(R.drawable.ic_nav_forward);
 
-        ImageButton homeButton = makeIconButton(R.drawable.ic_nav_home);
-        ImageButton shareButton = makeIconButton(R.drawable.ic_nav_share);
+        homeButton = makeIconButton(R.drawable.ic_nav_home);
+        shareButton = makeIconButton(R.drawable.ic_nav_share);
 
         backButton.setOnClickListener(v -> { if (webView.canGoBack()) webView.goBack(); });
         forwardButton.setOnClickListener(v -> { if (webView.canGoForward()) webView.goForward(); });
@@ -322,6 +326,40 @@ public class MainActivity extends BridgeActivity {
 
     CardView getFloatingNavBar() {
         return floatingNavBarCard;
+    }
+
+    void setNavigationBarMerged(boolean merged) {
+        if (floatingNavBarCard == null || floatingActionBarCard == null || merged == isNavBarMerged) {
+            return;
+        }
+
+        isNavBarMerged = merged;
+
+        LinearLayout navigationRow = (LinearLayout) floatingNavBarCard.getChildAt(0);
+        LinearLayout actionRow = (LinearLayout) floatingActionBarCard.getChildAt(0);
+
+        LinearLayout source = merged ? actionRow : navigationRow;
+        LinearLayout destination = merged ? navigationRow : actionRow;
+
+        for (ImageButton button : new ImageButton[] { homeButton, shareButton }) {
+            source.removeView(button);
+            destination.addView(button);
+        }
+
+        applyPillSpacing(navigationRow);
+        applyPillSpacing(actionRow);
+
+        floatingActionBarCard.setVisibility(merged ? View.GONE : View.VISIBLE);
+    }
+
+    private void applyPillSpacing(LinearLayout row) {
+        for (int index = 0; index < row.getChildCount(); index++) {
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(44), dp(44));
+
+            if (index > 0) { lp.setMarginStart(dp(14)); }
+
+            row.getChildAt(index).setLayoutParams(lp);
+        }
     }
 
     private void startPollingLoop(WebView webView) {

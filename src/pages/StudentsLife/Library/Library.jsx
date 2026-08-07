@@ -97,9 +97,9 @@ function Library() {
                   <meta name="googlebot" content="index, follow"/>
               </Helmet>
 
-              <OptionsGrid options={englishLibraryOptions} title={t("students-life-pages.library-pages.main-library-page.english-books-title")} thisOptionsGridIsNotAloneInThePage={true} />
+              <OptionsGrid options={englishLibraryOptions} title={t("students-life-pages.library-pages.main-library-page.english-books-title")} thisOptionsGridIsNotAloneInThePage={true} compact={true}/>
 
-              <OptionsGrid options={arabicLibraryOptions} title={t("students-life-pages.library-pages.main-library-page.arabic-books-title")} thisOptionsGridIsNotAloneInThePage={true} />
+              <OptionsGrid options={arabicLibraryOptions} title={t("students-life-pages.library-pages.main-library-page.arabic-books-title")} thisOptionsGridIsNotAloneInThePage={true} compact={true}/>
           </div>
       </>
   );

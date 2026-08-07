@@ -157,6 +157,34 @@ function staff_validate_employee($conn, $data, $isNew) {
         }
     }
 
+    $birthDate = staff_trim($data['birth_date'] ?? '', 10);
+
+    if ($birthDate !== '') {
+        $parsed = DateTime::createFromFormat('Y-m-d', $birthDate);
+
+        if (!$parsed || $parsed->format('Y-m-d') !== $birthDate) {
+            return staff_error("Please enter the date of birth as YYYY-MM-DD, or leave it blank.");
+        }
+    }
+
+    $nationalId = staff_trim($data['national_id'] ?? '', 20);
+
+    if ($nationalId !== '' && !preg_match('/^[0-9]{10,20}$/', $nationalId)) {
+        return staff_error("The national ID must be 10 to 20 digits, or left blank.");
+    }
+
+    $fingerprintCode = staff_trim($data['fingerprint_code'] ?? '', 16);
+
+    if ($fingerprintCode !== '' && !preg_match('/^[A-Za-z0-9_-]{1,16}$/', $fingerprintCode)) {
+        return staff_error("The fingerprint code may only contain letters, numbers, dashes and underscores.");
+    }
+
+    $graduationYear = staff_trim($data['graduation_year'] ?? '', 4);
+
+    if ($graduationYear !== '' && !preg_match('/^[0-9]{4}$/', $graduationYear)) {
+        return staff_error("The graduation year must be four digits, or left blank.");
+    }
+
     $sortOrder = array_key_exists('sort_order', $data) && $data['sort_order'] !== ''
         ? (int)$data['sort_order']
         : ($isNew ? staff_next_sort_order($conn) : 0);
@@ -183,6 +211,15 @@ function staff_validate_employee($conn, $data, $isNew) {
             'phone'         => $phone,
             'hire_date'     => $hireDate === '' ? null : $hireDate,
             'notes'         => staff_trim($data['notes'] ?? '', STAFF_MAX_NOTE_LENGTH),
+            'degree_en'     => staff_trim($data['degree_en'] ?? '', 150),
+            'degree_ar'     => staff_trim($data['degree_ar'] ?? '', 150),
+            'fingerprint_code' => $fingerprintCode,
+            'classification'   => staff_trim($data['classification'] ?? '', 50),
+            'graduation_year'  => $graduationYear,
+            'national_id'      => $nationalId,
+            'insurance_number' => staff_trim($data['insurance_number'] ?? '', 32),
+            'birth_date'       => $birthDate === '' ? null : $birthDate,
+            'address'          => staff_trim($data['address'] ?? '', 255),
         ]
     ];
 }

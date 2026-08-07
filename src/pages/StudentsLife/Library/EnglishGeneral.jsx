@@ -1,15 +1,11 @@
 import '../../../styles/StudentsLife.css'
-import Table from "../../../modules/Table.jsx";
+import LibraryBooksTable from "../../../modules/LibraryBooksTable.jsx";
 import Form from "../../../modules/Form.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function EnglishGeneral() {
     const {t} = useTranslation(['students-life-pages']);
-
-    const booksTable = t('students-life-pages.library-pages.english-general-page.books', { returnObjects: true }) || [];
-    const tableRows = Array.isArray(booksTable) ? booksTable.map(member => [member.title]) : [];
-    const finalTableData = [...tableRows];
 
     return (
       <div className={'students-life-library-books-page'}>
@@ -27,7 +23,7 @@ function EnglishGeneral() {
                   {t("students-life-pages.library-pages.english-general-page.title")}
               </h1>
 
-              <Table tableData={finalTableData} numCols={1} sortConfigParam={{column: 0, direction: 'ascending'}} ignoreSideMarginsOnFixed={true}/>
+              <LibraryBooksTable categoryKey={"english-general"}/>
 
 
               <h2>

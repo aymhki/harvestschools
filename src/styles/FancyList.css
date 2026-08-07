@@ -1,0 +1,209 @@
+.fancy-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--fancy-list-gap);
+    width: 100%;
+    max-width: var(--fancy-list-max-width);
+    margin: 0 auto;
+    padding: var(--fancy-list-gap) var(--fancy-list-side-padding);
+    box-sizing: border-box;
+    color: var(--primary-color);
+}
+
+.fancy-list-title {
+    margin: 0;
+    text-align: center;
+    letter-spacing: 0.05rem;
+}
+
+.fancy-list-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fancy-list-gap);
+    width: 100%;
+}
+
+.fancy-list-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: calc(var(--fancy-list-gap) * 2) var(--fancy-list-gap);
+    border: 0.125rem dashed var(--read-only-field-grey-color);
+    border-radius: var(--fancy-list-item-radius);
+    box-sizing: border-box;
+}
+
+.fancy-list-empty h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.fancy-list-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fancy-list-gap);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fancy-list-item-wrapper {
+    width: 100%;
+}
+
+.fancy-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--fancy-list-gap);
+    width: 100%;
+    min-height: var(--fancy-list-item-min-height);
+    margin: 0;
+    padding: var(--fancy-list-item-padding);
+    box-sizing: border-box;
+    border: none;
+    border-radius: var(--fancy-list-item-radius);
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    font-family: inherit;
+    font-size: 1rem;
+    text-align: start;
+    cursor: pointer;
+    will-change: filter;
+    transition: filter 0.25s;
+    filter: drop-shadow(0 0 0.1rem var(--primary-color) );
+
+}
+
+
+.fancy-list-item:hover,
+.fancy-list-item:focus-visible {
+    filter: drop-shadow(0 0 1rem var(--primary-color) );
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    outline: none;
+}
+
+.fancy-list-item.selected {
+    box-shadow: 0 0.35rem 0.9rem var(--primary-color);
+}
+
+.fancy-list-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.fancy-list-item-title {
+    font-family: var(--english-title-font);
+    font-size: 1.25rem;
+    letter-spacing: 0.05rem;
+    overflow-wrap: anywhere;
+}
+
+html[lang="ar"] .fancy-list-item-title {
+    font-family: var(--arabic-title-font);
+}
+
+.fancy-list-item-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.85;
+    overflow-wrap: anywhere;
+}
+
+.fancy-list-item-side {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.fancy-list-item-badge {
+    padding: 0.25rem 0.7rem;
+    border-radius: 999rem;
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    font-size: 0.8rem;
+    letter-spacing: 0.03rem;
+    white-space: nowrap;
+}
+
+.fancy-list-item-meta {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.fancy-list-item-chevron {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+html[dir="rtl"] .fancy-list-item-chevron {
+    transform: scaleX(-1);
+}
+
+@media (max-width: 768px) {
+    .fancy-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .fancy-list-item-side {
+        align-self: flex-end;
+    }
+
+    .fancy-list-item-title {
+        font-size: 1.1rem;
+    }
+
+    .fancy-list-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fancy-list-item {
+        transition: none;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .fancy-list {
+        color: var(--fb-white-color);
+    }
+
+    .fancy-list-empty {
+        border-color: var(--dark-accent-color);
+    }
+
+    .fancy-list-item {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+        box-shadow: none;
+        filter: drop-shadow(0 0 0.1rem var(--fb-white-color) );
+    }
+
+    .fancy-list-item:hover,
+    .fancy-list-item:focus-visible,
+    .fancy-list-item.selected {
+        filter: drop-shadow(0 0 1rem var(--fb-white-color) );
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+
+    .fancy-list-item-badge {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+}

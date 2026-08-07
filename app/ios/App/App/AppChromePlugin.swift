@@ -10,7 +10,8 @@ public class AppChromePlugin: CAPPlugin, CAPBridgedPlugin {
     public let jsName = "AppChrome"
 
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "setNavigationBarVisible", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "setNavigationBarVisible", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNavigationBarMerged", returnType: CAPPluginReturnPromise)
     ]
 
     weak var navigationBar: FloatingNavBar?
@@ -26,6 +27,22 @@ public class AppChromePlugin: CAPPlugin, CAPBridgedPlugin {
             }
 
             navigationBar.setSuppressed(!isVisible)
+
+            call.resolve(["value": true])
+        }
+    }
+
+    @objc func setNavigationBarMerged(_ call: CAPPluginCall) {
+        let isMerged = call.getBool("merged", false)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let navigationBar = self?.navigationBar else {
+                call.resolve(["value": false])
+
+                return
+            }
+
+            navigationBar.setMerged(isMerged)
 
             call.resolve(["value": true])
         }

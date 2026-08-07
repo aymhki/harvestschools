@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Library">
+    <title>Library</title>
+    <path d="M52 108h176a28 28 0 0 1 28 28v272a28 28 0 0 0-28-28H52z" fill="#FDD055"/>
+    <path d="M460 108H284a28 28 0 0 0-28 28v272a28 28 0 0 1 28-28h176z" fill="#FCC24C"/>
+    <path d="M52 108h176a28 28 0 0 1 28 28v20H52z" fill="#55606E"/>
+    <path d="M460 108H284a28 28 0 0 0-28 28v20h204z" fill="#485261"/>
+    <rect x="88" y="196" width="132" height="16" rx="8" fill="#FFFFFF"/>
+    <rect x="88" y="240" width="108" height="16" rx="8" fill="#FFFFFF"/>
+    <rect x="88" y="284" width="132" height="16" rx="8" fill="#FFFFFF"/>
+    <rect x="88" y="328" width="88" height="16" rx="8" fill="#F05A5A"/>
+    <rect x="292" y="196" width="132" height="16" rx="8" fill="#F4F6FB"/>
+    <rect x="292" y="240" width="108" height="16" rx="8" fill="#F4F6FB"/>
+    <rect x="292" y="284" width="132" height="16" rx="8" fill="#F4F6FB"/>
+    <rect x="292" y="328" width="88" height="16" rx="8" fill="#E8EAF3"/>
+    <path d="M244 96h24a12 12 0 0 1 12 12v300a12 12 0 0 1-12 12h-24a12 12 0 0 1-12-12V108a12 12 0 0 1 12-12z" fill="#8A94A6"/>
+</svg>

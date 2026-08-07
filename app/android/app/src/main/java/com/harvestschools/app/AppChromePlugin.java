@@ -29,4 +29,25 @@ public class AppChromePlugin extends Plugin {
             call.resolve(result);
         }
     }
+
+    @PluginMethod
+    public void setNavigationBarMerged(PluginCall call) {
+        boolean isMerged = Boolean.TRUE.equals(call.getBoolean("merged", false));
+
+        MainActivity activity = getActivity() instanceof MainActivity ? (MainActivity) getActivity() : null;
+
+        JSObject result = new JSObject();
+
+        if (activity == null) {
+            result.put("value", false);
+
+            call.resolve(result);
+        } else {
+            activity.runOnUiThread(() -> activity.setNavigationBarMerged(isMerged));
+
+            result.put("value", true);
+
+            call.resolve(result);
+        }
+    }
 }

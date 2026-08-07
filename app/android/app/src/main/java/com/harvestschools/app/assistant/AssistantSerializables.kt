@@ -27,7 +27,7 @@ data class SchoolFactResult(
  * @property name Stage name in the requested language, for example "Grade 5".
  * @property departmentName Owning department, for example "American Department".
  * @property sectionTitle Stage group, for example "Elementary".
- * @property isOffered True when the school currently accepts students into this stage.
+ * @property isOffered True for every stage the school publishes, which is every stage you receive here.
  * @property minimumAge Minimum registration age as published text, for example "9 years and 6 months". Empty when unpublished.
  * @property tuitionFees Annual tuition in Egyptian Pounds (EGP). Zero means the fee is NOT published - never present zero as a price.
  * @property isTuitionPublished False when the school has not published a fee for this stage. When false, tell the user the fee is unpublished and refer them to admissions.
@@ -128,6 +128,7 @@ data class SchoolProfileResult(
  * @property name The person's name in the requested language.
  * @property position What they do, for example "Teacher" or "Head of Department". Someone with more than one job has them comma separated.
  * @property subject What they teach, for example "Mathematics". Empty for staff who do not teach a subject.
+ * @property degree Their academic qualification, for example "Bachelor of Education". Empty when the school has not published one - do not guess.
  * @property departmentName The staff page they appear on: National, British, American or Kindergarten.
  * @property isDepartmentLead True for heads and vices, who the school lists above the staff table rather than in it.
  * @property routePath In-app path to the staff page, for example "/academics/staff/british-staff".
@@ -137,7 +138,26 @@ data class SchoolStaffResult(
     val name: String,
     val position: String,
     val subject: String,
+    val degree: String,
     val departmentName: String,
     val isDepartmentLead: Boolean,
+    val routePath: String,
+)
+
+/**
+ * A book the school library lends to students.
+ *
+ * @property title The book's title in the requested language. The school lists every book in both English and Arabic, so an Arabic title and an English title can be the same book.
+ * @property series The series, reader level or publisher the book belongs to, for example "Puffin classics". Empty when the school has not recorded one - do not guess.
+ * @property categoryName The shelf it sits on, for example "Fairy Tales" or "Religious".
+ * @property collectionName Which of the two libraries holds it: the English Library or the Arabic Library.
+ * @property routePath In-app path to that library page, for example "/students-life/library/english-drama".
+ */
+@AppFunctionSerializable(isDescribedByKDoc = true)
+data class LibraryBookResult(
+    val title: String,
+    val series: String,
+    val categoryName: String,
+    val collectionName: String,
     val routePath: String,
 )

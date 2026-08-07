@@ -8,7 +8,7 @@ import {
     getSessionsFromLocalStorage,
     endpoints,
     isMobileApp,
-    getClientFingerprint, buildLoginHeaders} from "../../General/GeneralUtils.jsx";
+    getClientFingerprint, buildLoginHeaders, jackOfAllTradesPermissionLevel} from "../../General/GeneralUtils.jsx";
 import {
     getMobileSession,
     setMobileSession,
@@ -63,7 +63,12 @@ const checkAdminSession = async (navigate, allowedPermission) => {
         const userPermissionsResult = await userPermissionsResponse.json();
 
         if (userPermissionsResult && userPermissionsResult.success && userPermissionsResult.cleanPermissionLevels) {
-            if (!userPermissionsResult.cleanPermissionLevels.includes(allowedPermission)) {
+            const held = userPermissionsResult.cleanPermissionLevels;
+            const accepted = Array.isArray(allowedPermission) ? allowedPermission : [allowedPermission];
+
+            const isAllowed = held.includes(jackOfAllTradesPermissionLevel) || accepted.some((permission) => held.includes(permission));
+
+            if (!isAllowed) {
                 navigate(adminLoginPageUrl, { replace: true });
             }
 

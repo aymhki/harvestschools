@@ -49,10 +49,52 @@
     color: var(--primary-color);
 }
 
-.tab-btn {
-    flex: 1;
+.tabs-bar-scroll-arrow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    padding: 0;
     margin: 0;
-    flex-shrink: 0;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    filter: none;
+    transition: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    background-color: var(--fb-white-color);
+    z-index: var(--mobile-nav-arrow-in-tabs-bar-z-index);
+    font-family: var(--english-normal-font);
+}
+
+.tabs-bar-scroll-arrow.scroll-left {
+    left: 0;
+    box-shadow: 0.35rem 0 0.6rem -0.2rem var(--read-only-field-grey-color);
+}
+
+.tabs-bar-scroll-arrow.scroll-right {
+    right: 0;
+    box-shadow: -0.35rem 0 0.6rem -0.2rem var(--read-only-field-grey-color);
+}
+
+.tabs-bar-scroll-arrow:hover,
+.tabs-bar-scroll-arrow:focus-visible {
+    background-color: var(--fb-white-color);
+    color: var(--primary-color);
+    filter: none;
+    outline: none;
+}
+
+.tab-btn {
+    flex: 1 0 auto;
+    min-width: var(--tab-min-width);
+    margin: 0;
     white-space: nowrap;
     box-shadow: none;
     filter: none;
@@ -74,7 +116,7 @@
 
 .tab-panel {
     min-height: 100vh;
-    overflow: hidden;
+    overflow: clip;
 }
 
 .tab-content {
@@ -106,6 +148,12 @@
 
     .tabs-bar {
         overflow: hidden;
+    }
+
+    /* The mobile bar shows one tab at a time with its own prev and next arrows,
+       so it never scrolls and never needs these. */
+    .tabs-bar-scroll-arrow {
+        display: none;
     }
 
     .tab-btn {
@@ -163,6 +211,28 @@
     .tab-panel.tab-panel-bottom-bar {
         padding-bottom: 3.5rem;
     }
+
+    .tabs-bar-wrapper.bar-position-inline {
+        position: relative;
+        background-color: var(--fb-white-color);
+    }
+
+    .tab-panel.tab-panel-inline-bar {
+        padding-top: 0;
+    }
+
+    .tabs-bar-wrapper.bar-position-inline.stick-under-parent-mobile {
+        position: fixed;
+        top: var(--tabs-parent-bar-height, var(--tabs-bar-height));
+        left: 0;
+        right: 0;
+        z-index: calc(var(--tabs-bar-z-index) - 1);
+        background-color: var(--fb-white-color);
+    }
+
+    .tab-panel.tab-panel-inline-bar.tab-panel-stick-under-parent-mobile {
+        padding-top: var(--tabs-own-bar-height, var(--tabs-bar-height));
+    }
 }
 
 @media (min-width: 769px) {
@@ -170,6 +240,13 @@
         position: sticky;
         top: 0;
         z-index: var(--tabs-bar-z-index);
+        background-color: var(--fb-white-color);
+    }
+
+    .tabs-bar-wrapper.stick-under-parent-desktop {
+        position: sticky;
+        top: var(--tabs-parent-bar-height, var(--tabs-bar-height));
+        z-index: calc(var(--tabs-bar-z-index) - 1);
         background-color: var(--fb-white-color);
     }
 
@@ -201,8 +278,26 @@
         color: var(--fb-white-color);
     }
 
+    .tabs-bar-scroll-arrow,
+    .tabs-bar-scroll-arrow:hover,
+    .tabs-bar-scroll-arrow:focus-visible {
+        background-color: var(--light-dark-accent-color);
+        color: var(--fb-white-color);
+    }
+
+    .tabs-bar-scroll-arrow.scroll-left {
+        box-shadow: 0.35rem 0 0.6rem -0.2rem var(--dark-accent-color);
+    }
+
+    .tabs-bar-scroll-arrow.scroll-right {
+        box-shadow: -0.35rem 0 0.6rem -0.2rem var(--dark-accent-color);
+    }
+
     .tabs-bar-wrapper.bar-position-top,
-    .tabs-bar-wrapper.bar-position-bottom {
+    .tabs-bar-wrapper.bar-position-bottom,
+    .tabs-bar-wrapper.bar-position-inline,
+    .tabs-bar-wrapper.stick-under-parent-mobile,
+    .tabs-bar-wrapper.stick-under-parent-desktop {
         background-color: var(--light-dark-accent-color);
         border-color: transparent;
     }

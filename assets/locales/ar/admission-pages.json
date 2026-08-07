@@ -1,6 +1,6 @@
 {
   "admission-pages": {
-    "options-page" : {
+    "options-page": {
       "admission-title": "التسجيل",
       "admission-process-option": "خطواط التسجيل",
       "admission-process-option-description": "كيفية التسسجيل؟ اين يتم التسجيل؟",
@@ -152,7 +152,10 @@
       }
     },
     "admission-fees-page": {
-
+      "stage-column-header": "المرحلة",
+      "fees-column-header": "المصروفات السنوية",
+      "fees-do-not-include": "المصروفات الدراسية لا تشمل:",
+      "unavailable": "المصروفات غير متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً."
     }
   }
 }

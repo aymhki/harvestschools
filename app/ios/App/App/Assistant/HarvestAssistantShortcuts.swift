@@ -73,6 +73,17 @@ struct HarvestAppShortcuts: AppShortcutsProvider {
         )
 
         AppShortcut(
+            intent: GetLibraryBooksIntent(),
+            phrases: [
+                "Find a book in \(.applicationName)",
+                "Search the \(.applicationName) library",
+                "ابحث في مكتبة \(.applicationName)"
+            ],
+            shortTitle: "Library books",
+            systemImageName: "books.vertical"
+        )
+
+        AppShortcut(
             intent: CallSchoolDepartmentIntent(),
             phrases: [
                 "Call a department in \(.applicationName)",

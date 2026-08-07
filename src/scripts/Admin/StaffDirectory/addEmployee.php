@@ -50,12 +50,13 @@ try {
             "INSERT INTO staff_employees
                 (employee_code, sort_order, name_en, name_ar, position_en, position_ar,
                  subject_en, subject_ar, departments, display_style, is_public,
-                 email, phone, hire_date, notes)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                 email, phone, hire_date, notes, degree_en, degree_ar, fingerprint_code, classification, graduation_year,
+                 national_id, insurance_number, birth_date, address)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->bind_param(
-            "sisssssssssssss",
+            "sisssssssssssss" . "sssssssss",
             $employee['employee_code'],
             $employee['sort_order'],
             $employee['name_en'],
@@ -70,7 +71,16 @@ try {
             $employee['email'],
             $employee['phone'],
             $employee['hire_date'],
-            $employee['notes']
+            $employee['notes'],
+            $employee['degree_en'],
+            $employee['degree_ar'],
+            $employee['fingerprint_code'],
+            $employee['classification'],
+            $employee['graduation_year'],
+            $employee['national_id'],
+            $employee['insurance_number'],
+            $employee['birth_date'],
+            $employee['address']
         );
 
         try {
@@ -104,7 +114,7 @@ try {
         "message"      => "Employee added successfully." . ($warning ?? ''),
         "code"         => 200,
         "employeeCode" => $employeeCode
-    ], JSON_UNESCAPED_UNICODE);
+    ]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {

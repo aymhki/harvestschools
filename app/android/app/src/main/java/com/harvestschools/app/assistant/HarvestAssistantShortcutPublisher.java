@@ -29,6 +29,7 @@ public final class HarvestAssistantShortcutPublisher {
         "page.minimum-stage-age",
         "page.events",
         "page.academics",
+        "page.academics-staff",
         "page.faqs",
     };
 

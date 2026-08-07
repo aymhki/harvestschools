@@ -1,12 +1,12 @@
 {
   "admission-pages": {
-    "options-page" : {
+    "options-page": {
       "admission-title": "Admission",
       "admission-process-option": "Admission Process",
       "admission-process-option-description": "How to apply? Where to apply? What should you do before and after you apply?",
       "admission-requirements-option": "Admission Requirements",
       "admission-requirements-option-description": "What are the required documents? What are the age requirements?",
-      "admission-fees-option": "Admission Fees",
+      "admission-fees-option": "Tuition Fees",
       "admission-fees-option-description": "How much are the tuition fees for each grade? What are the payment methods? Are there any discounts?"
     },
     "admission-process-page": {
@@ -17,7 +17,7 @@
       "follow-up": "Follow Up",
       "follow-up-description": "After the interview, the students affairs department will get in touch with the accepted applicants to start the registration process, which include providing the required documents and paying the tuition fees.",
       "required-documents-btn": "Required Documents",
-      "admission-fees-btn": "Admission Fees"
+      "admission-fees-btn": "Tuition Fees"
     },
     "admission-requirements-page": {
       "options-page": {
@@ -151,6 +151,11 @@
         }
       }
     },
-    "admission-fees-page": {}
+    "admission-fees-page": {
+      "stage-column-header": "Stage",
+      "fees-column-header": "Annual Tuition",
+      "fees-do-not-include": "Tuition fees do not include:",
+      "unavailable": "The tuition fees are not available right now. Please try again later."
+    }
   }
 }

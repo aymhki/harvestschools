@@ -30,7 +30,7 @@ import CachedImage from '../modules/CachedImage.jsx'
 import { useOffline } from '../services/General/OfflineContext.jsx'
 import { cachedRequest } from '../services/General/OfflineApiCacheService.jsx'
 import { fetchApprovedAlumniPosts } from '../services/Public/AlumniStudents/AlumniStudentsPublicServices.jsx'
-import { getUpcomingEventsAcrossCalendars, startOfToday } from '../services/General/SchoolCalendarsService.jsx'
+import { getUpcomingEventsAcrossCalendars, loadAllCalendars, startOfToday } from '../services/General/SchoolCalendarsService.jsx'
 import { getSubscribedCalendarIds } from '../services/General/CalendarSubscriptionService.jsx'
 import { getPrefetchStatus, runOfflinePrefetch } from '../services/General/OfflinePrefetchService.jsx'
 import { OFFLINE_CONTENT_SAVED_EVENT } from '../modules/AppUpdateGate.jsx'
@@ -211,7 +211,7 @@ const openConnectLink = (url) => {
 
 
 function AppHome() {
-    const { t, i18n } = useTranslation(['events-pages'])
+    const { i18n } = useTranslation(['events-pages'])
     const navigate = useNavigate()
     const { isOffline } = useOffline()
     const toggleLanguage = useToggleLanguage({ ignoreDocUpdate: true })
@@ -280,9 +280,27 @@ function AppHome() {
         [copy]
     )
 
+    const [loadedCalendars, setLoadedCalendars] = useState([])
+
+    useEffect(() => {
+        let isActive = true
+
+        loadAllCalendars(i18n.language === 'ar' ? 'ar' : 'en')
+            .then((calendars) => {
+                if (isActive) {
+                    setLoadedCalendars(calendars)
+                }
+            })
+            .catch(() => null)
+
+        return () => {
+            isActive = false
+        }
+    }, [i18n.language])
+
     const upcomingEvents = useMemo(
-        () => getUpcomingEventsAcrossCalendars(t, MAX_UPCOMING_EVENTS),
-        [t]
+        () => getUpcomingEventsAcrossCalendars(loadedCalendars, MAX_UPCOMING_EVENTS),
+        [loadedCalendars]
     )
 
     const describeDistance = useCallback((startDate) => {

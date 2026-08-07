@@ -59,7 +59,7 @@ function Table({
     });
     const [finalTableData, setFinalTableData] = useState(tableData);
     const [rowMapping, setRowMapping] = useState([]);
-    const {t} = useTranslation('common', forceEnglishTable ? {lng: 'en'} : {});
+    const {t, i18n} = useTranslation('common', forceEnglishTable ? {lng: 'en'} : {});
     const showPaginationOnMobile = true
     const maxItemsBeforePagination = 100;
     const mobilePageSize = 40;
@@ -99,6 +99,7 @@ function Table({
     const verticalScrollIntervalRef = useRef(null);
     const hasRestoredScrollRef = useRef(false);
     const saveScrollTimeoutRef = useRef(null);
+    const numberFormatter = new Intl.NumberFormat((i18n.language ==='ar' && !forceEnglishTable) ? 'ar-EG' : 'en-US');
 
     const scrollStorageKey = useMemo(() => {
         if (typeof window === 'undefined') return null;
@@ -128,7 +129,7 @@ function Table({
     }, [finalTableData, headerRowCount]);
 
     const [isPaginated, setIsPaginated] = useState(
-        (tablePages === true) || (tablePages === undefined && (isMobile && showPaginationOnMobile && scrollable)) || (dataRows && dataRows.length > maxItemsBeforePagination)
+        (tablePages === true || tablePages === undefined) && ( (isMobile && showPaginationOnMobile && scrollable) || (dataRows && dataRows.length > maxItemsBeforePagination) )
     )
     const [totalPages, setTotalPage] = useState(Math.ceil(dataRows.length / pageSize));
 
@@ -1141,16 +1142,16 @@ function Table({
 
         return (
             <div className="table-pagination-controls">
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
-                        className="pagination-btn">
-                    Previous
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="pagination-btn">
+                    {t("common.previous")}
                 </button>
 
                 {startPage > 1 && (
                     <>
-                        <button onClick={() => handlePageChange(1)}
-                                className={`pagination-btn ${1 === currentPage ? 'active' : ''}`}>1
+                        <button onClick={() => handlePageChange(1)} className={`pagination-btn ${1 === currentPage ? 'active' : ''}`}>
+                            {numberFormatter.format(1)}
                         </button>
+
                         {startPage > 2 && <span className="pagination-ellipsis">...</span>}
                     </>
                 )}
@@ -1161,21 +1162,22 @@ function Table({
                         onClick={() => handlePageChange(page)}
                         className={`pagination-btn ${page === currentPage ? 'active' : ''}`}
                     >
-                        {page}
+                        {numberFormatter.format(page)}
                     </button>
                 ))}
 
                 {endPage < totalPages && (
                     <>
                         {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
-                        <button onClick={() => handlePageChange(totalPages)}
-                                className={`pagination-btn ${totalPages === currentPage ? 'active' : ''}`}>{totalPages}</button>
+                        <button onClick={() => handlePageChange(totalPages)} className={`pagination-btn ${totalPages === currentPage ? 'active' : ''}`}>
+                            {numberFormatter.format(totalPages)}
+                        </button>
                     </>
                 )}
 
                 <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}
                         className="pagination-btn">
-                    Next
+                    {t("common.next")}
                 </button>
             </div>
         );
@@ -1304,10 +1306,12 @@ function Table({
     }, [totalPages, currentPage]);
 
     useEffect(() => {
-        if ((dataRows && dataRows.length > maxItemsBeforePagination) || isMobile) {
-            setIsPaginated(true);
-        } else {
-            setIsPaginated(false);
+        if (tablePages || tablePages === undefined) {
+            if ((dataRows && dataRows.length > maxItemsBeforePagination) || isMobile) {
+                setIsPaginated(true);
+            } else {
+                setIsPaginated(false);
+            }
         }
     }, [tableData, isMobile, dataRows])
 

@@ -1,15 +1,11 @@
 import '../../../styles/StudentsLife.css'
-import Table from "../../../modules/Table.jsx";
+import LibraryBooksTable from "../../../modules/LibraryBooksTable.jsx";
 import Form from "../../../modules/Form.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function EnglishLevels() {
     const {t} = useTranslation(['students-life-pages']);
-
-    const booksTable = t('students-life-pages.library-pages.english-levels-page.books', { returnObjects: true }) || [];
-    const tableRows = Array.isArray(booksTable) ? booksTable.map(member => [member.title, member.series]) : [];
-    const finalTableData = [...tableRows];
 
   return (
       <div className={'students-life-library-books-page'}>
@@ -27,7 +23,7 @@ function EnglishLevels() {
                   {t("students-life-pages.library-pages.english-levels-page.title")}
               </h1>
 
-              <Table tableData={finalTableData} numCols={2} sortConfigParam={{column: 1, direction: 'ascending'}} ignoreSideMarginsOnFixed={true}/>
+              <LibraryBooksTable categoryKey={"english-levels"}/>
 
               <h2>
                     {t("students-life-pages.library-pages.suggest-book-form.recommend-a-book-for-the-library-to-add-to-its-collection")}

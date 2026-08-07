@@ -726,6 +726,10 @@ td button {
     box-sizing: border-box;
 }
 
+.pagination-btn:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
 @media (max-width: 1600px) {
     .table-module-header-buttons-wrapper {
         flex-wrap: wrap;

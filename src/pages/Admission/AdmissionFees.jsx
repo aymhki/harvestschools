@@ -1,12 +1,16 @@
+import '../../styles/Admission.css'
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+import TuitionFeesTables from "../../modules/TuitionFeesTables.jsx";
+
+const showTuitionFees = true;
 
 function AdmissionFees() {
 
-    const { t } = useTranslation(['admission-pages']);
+    const { t } = useTranslation(['admission-pages', 'common']);
 
   return (
-    <div style={{textAlign: "center"}}>
+    <div className={"admission-fees-page"}>
 
         <Helmet>
             <title>Harvest International School | Admission Fees</title>
@@ -17,13 +21,19 @@ function AdmissionFees() {
             <meta name="googlebot" content="index, follow"/>
         </Helmet>
 
-      <h1>
-          {t("admission-pages.options-page.admission-fees-option")}
-      </h1>
+        <div className={"extreme-padding-container"}>
+            <h1>
+                {t("admission-pages.options-page.admission-fees-option")}
+            </h1>
 
-        <p>
-            {t("common.this-page-is-under-construction", {ns: 'common'})}
-        </p>
+            {showTuitionFees ? (
+                <TuitionFeesTables/>
+            ) : (
+                <p>
+                    {t('common.this-page-is-under-construction', {ns: 'common'})}
+                </p>
+            )}
+        </div>
     </div>
   );
 }

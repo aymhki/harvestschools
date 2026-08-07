@@ -142,6 +142,13 @@
     --offline-banner-padding: 1rem 1.1rem;
     --offline-banner-button-min-height: 2.75rem;
 
+    --fancy-list-gap: 1rem;
+    --fancy-list-side-padding: 1.25rem;
+    --fancy-list-max-width: 48rem;
+    --fancy-list-item-radius: 1rem;
+    --fancy-list-item-padding: 1.1rem 1.35rem;
+    --fancy-list-item-min-height: 4.5rem;
+
     --calendar-actions-gap: 1rem;
     --calendar-actions-modal-padding: 1.5rem;
     --calendar-actions-modal-radius: 1rem;
@@ -187,6 +194,8 @@
 
     --mobile-nav-arrow-in-tabs-bar-z-index: 10;
     --tabs-bar-z-index: 100;
+    --tabs-bar-height: 3.5rem;
+    --tab-min-width: 11rem;
 
     font-family: var(--english-normal-font);
 }
@@ -491,6 +500,7 @@ label:lang(ar) {
     button {
         background-color: var(--fb-white-color);
         color: var(--primary-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
     button:hover {

@@ -5,6 +5,11 @@ const MCP_CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'bri
 const MCP_DEPARTMENT_KEYS = ['reception', 'student_affairs', 'accounting', 'admissions', 'early', 'national', 'british', 'american'];
 const MCP_PAGE_SECTIONS = ['general', 'admission', 'academics', 'students-life', 'events', 'gallery'];
 const MCP_STAFF_DEPARTMENT_KEYS = ['national', 'british', 'american', 'kindergarten'];
+const MCP_LIBRARY_COLLECTIONS = ['english', 'arabic'];
+const MCP_LIBRARY_CATEGORY_KEYS = [
+    'english-fairy-tales', 'english-drama', 'english-levels', 'english-general',
+    'arabic-information', 'arabic-general', 'arabic-religion', 'arabic-stories',
+];
 
 function mcp_language_property(): array {
     return ['type' => 'string', 'enum' => ['en', 'ar'], 'default' => 'en', 'description' => 'Response language.'];
@@ -46,8 +51,10 @@ function mcp_tool_schemas(): array {
         ],
         'get_stages_offered' => [
             'title' => 'Get stages offered',
-            'description' => 'Lists the stages the school currently offers with their minimum registration ages. '
-                . 'Students must meet the minimum age by October 1st.',
+            'description' => 'Lists the school\'s stages with their minimum registration ages. Students must meet the '
+                . 'minimum age by October 1st. Every stage listed here carries isOffered: true, meaning the school '
+                . 'publishes it and accepts students into it. A stage missing from this list is one the school does '
+                . 'not publish, so say it is not available rather than guessing at its age or its fee.',
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
@@ -98,9 +105,10 @@ function mcp_tool_schemas(): array {
         'get_school_staff' => [
             'title' => 'Get school staff',
             'description' => 'Lists the teachers, coordinators and heads the school publishes for one of its four '
-                . 'staff pages. Names come with the subject they teach where there is one. People who serve the whole '
-                . 'school appear under every department. Only published staff are here, so an empty result means the '
-                . 'school has not published that list - never guess a name.',
+                . 'staff pages. Each person carries the subject they teach where there is one, and their academic '
+                . 'degree where the school has published it. People who serve the whole school appear under every '
+                . 'department. Only published staff are here, so an empty result means the school has not published '
+                . 'that list - never guess a name or a qualification.',
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
@@ -109,8 +117,35 @@ function mcp_tool_schemas(): array {
                         'enum' => MCP_STAFF_DEPARTMENT_KEYS,
                         'description' => 'Which staff page to read. Empty returns every department.',
                     ],
-                    'query'    => ['type' => 'string', 'description' => 'Optional text matched against names, positions and subjects.'],
+                    'query'    => ['type' => 'string', 'description' => 'Optional text matched against names, positions, subjects and degrees.'],
                     'language' => mcp_language_property(),
+                ],
+            ],
+        ],
+        'get_library_books' => [
+            'title' => 'Get school library books',
+            'description' => 'Searches the books the school library lends to students. The school keeps an English '
+                . 'library and an Arabic library, each split into categories. Every book is listed in both languages, '
+                . 'so an Arabic title and an English title can be the same book. Leaving every filter empty returns '
+                . 'the whole catalogue, which is long - prefer a query or a category. An empty result means the '
+                . 'library does not lend that book; never invent a title, an author or a series.',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'query'      => ['type' => 'string', 'description' => 'Optional text matched against book titles and their series or publisher.'],
+                    'category'   => [
+                        'type' => 'string',
+                        'enum' => MCP_LIBRARY_CATEGORY_KEYS,
+                        'description' => 'Optional category filter, e.g. arabic-stories for the Arabic story shelf.',
+                    ],
+                    'collection' => [
+                        'type' => 'string',
+                        'enum' => MCP_LIBRARY_COLLECTIONS,
+                        'description' => 'Optional filter for which of the two libraries the book physically sits in.',
+                    ],
+                    'limit'      => ['type' => 'integer', 'minimum' => 1, 'maximum' => 200, 'default' => 50,
+                        'description' => 'How many books to return per category.'],
+                    'language'   => mcp_language_property(),
                 ],
             ],
         ],
@@ -166,16 +201,12 @@ function mcp_stage_view(array $stage, string $currency): array {
     ];
 }
 
-function mcp_select_stages(array $knowledge, string $department, string $stage, bool $offeredOnly): array {
+function mcp_select_stages(array $knowledge, string $department, string $stage): array {
     $currency = $knowledge['school']['currency'] ?? 'EGP';
     $needle = mb_strtolower(trim($stage));
     $selected = [];
 
     foreach (($knowledge['stages'] ?? []) as $entry) {
-        if ($offeredOnly && !($entry['isOffered'] ?? true)) {
-            continue;
-        }
-
         if ($department !== '' && ($entry['departmentKey'] ?? '') !== $department) {
             continue;
         }
@@ -299,7 +330,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             ]);
 
         case 'get_tuition_fees':
-            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), (string)($arguments['stage'] ?? ''), false);
+            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), (string)($arguments['stage'] ?? ''));
 
             return mcp_encode([
                 'language'        => $language,
@@ -308,7 +339,11 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             ]);
 
         case 'get_stages_offered':
-            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), '', true);
+            // Whether unoffered stages are published is decided once, by the
+            // SHOW_UNOFFERED_STAGES setting, when the document is built. Every
+            // stage that reaches here is one the school publishes, so there is
+            // nothing left to filter and nothing to hedge about.
+            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), '');
 
             return mcp_encode(['language' => $language, 'stages' => $result['stages']]);
 
@@ -400,7 +435,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
                 }
 
                 $matches = static function (array $person) use ($needle) {
-                    foreach (['name', 'position', 'subject'] as $field) {
+                    foreach (['name', 'position', 'subject', 'degree'] as $field) {
                         if (mb_strpos(mb_strtolower((string)($person[$field] ?? '')), $needle) !== false) {
                             return true;
                         }
@@ -423,6 +458,51 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             }
 
             return mcp_encode(['language' => $language, 'staff' => $staff]);
+
+        case 'get_library_books':
+            $needle = mb_strtolower(trim((string)($arguments['query'] ?? '')));
+            $category = trim((string)($arguments['category'] ?? ''));
+            $collection = trim((string)($arguments['collection'] ?? ''));
+            $limit = (int)($arguments['limit'] ?? 50);
+            $limit = max(1, min(200, $limit ?: 50));
+            $library = [];
+
+            foreach (($knowledge['library'] ?? []) as $entry) {
+                if ($category !== '' && ($entry['categoryKey'] ?? '') !== $category) {
+                    continue;
+                }
+
+                if ($collection !== '' && ($entry['collection'] ?? '') !== $collection) {
+                    continue;
+                }
+
+                $books = $entry['books'] ?? [];
+
+                if ($needle !== '') {
+                    $books = array_values(array_filter($books, static function (array $book) use ($needle) {
+                        foreach (['title', 'series'] as $field) {
+                            if (mb_strpos(mb_strtolower((string)($book[$field] ?? '')), $needle) !== false) {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }));
+
+                    if ($books === []) {
+                        continue;
+                    }
+                }
+
+                // bookCount stays the true size of the shelf so the assistant can
+                // say "showing 50 of 177" rather than claiming the shelf is small.
+                $entry['bookCount'] = count($books);
+                $entry['books'] = array_slice($books, 0, $limit);
+                $entry['isTruncated'] = count($books) > $limit;
+                $library[] = $entry;
+            }
+
+            return mcp_encode(['language' => $language, 'library' => $library]);
 
         case 'list_pages':
             $section = (string)($arguments['section'] ?? '');

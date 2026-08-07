@@ -10,6 +10,10 @@ import java.util.Locale
 
 class HarvestSchoolFunctions {
 
+    private companion object {
+        const val MAX_BOOKS_PER_CATEGORY = 50
+    }
+
     /**
      * Answers a general question about Harvest International Schools from its published information.
      *
@@ -68,25 +72,26 @@ class HarvestSchoolFunctions {
         department: String,
         stage: String,
     ): List<SchoolStageResult> = withContext(Dispatchers.IO) {
-        selectStages(appFunctionContext, department, stage, offeredOnly = false)
+        selectStages(appFunctionContext, department, stage)
     }
 
     /**
-     * Lists the stages the school currently offers, with their minimum registration ages.
+     * Lists the school's stages with their minimum registration ages.
      *
      * @param appFunctionContext Provided by the system.
      * @param department Optional department filter. Allowed values: "national", "british",
      *   "american", "early". Pass an empty string for all departments.
-     * @return Stages where isOffered is true. Minimum ages are published text such as
-     *   "9 years and 6 months"; students must meet the minimum age by October 1st. An empty list
-     *   means no stage is currently offered for that filter.
+     * @return Every stage the school publishes, each with isOffered = true, meaning the school
+     *   accepts students into it. Minimum ages are published text such as "9 years and 6 months";
+     *   students must meet the minimum age by October 1st. An empty list means the school publishes
+     *   no stage for that filter, so say the stage is not available rather than guessing at its age.
      */
     @AppFunction(isDescribedByKDoc = true)
     suspend fun getStagesOffered(
         appFunctionContext: AppFunctionContext,
         department: String,
     ): List<SchoolStageResult> = withContext(Dispatchers.IO) {
-        selectStages(appFunctionContext, department, stage = "", offeredOnly = true)
+        selectStages(appFunctionContext, department, stage = "")
     }
 
     /**
@@ -210,8 +215,8 @@ class HarvestSchoolFunctions {
      * @param appFunctionContext Provided by the system.
      * @param department Optional department filter. Allowed values: "national", "british",
      *   "american", "kindergarten". Empty string searches every department.
-     * @param query Optional text matched against names, positions and subjects. Empty string
-     *   returns everyone in the chosen department.
+     * @param query Optional text matched against names, positions, subjects and academic degrees.
+     *   Empty string returns everyone in the chosen department.
      * @return Matching staff, heads and vices first. An EMPTY list means the school has not
      *   published that list - say so rather than naming anyone.
      */
@@ -247,9 +252,10 @@ class HarvestSchoolFunctions {
                     val name = person.optString("name")
                     val position = person.optString("position")
                     val subject = person.optString("subject")
+                    val degree = person.optString("degree")
 
                     if (needle.isNotEmpty()) {
-                        val haystack = "$name $position $subject $departmentName".lowercase(Locale.ROOT)
+                        val haystack = "$name $position $subject $degree $departmentName".lowercase(Locale.ROOT)
 
                         if (!haystack.contains(needle)) {
                             continue
@@ -261,12 +267,90 @@ class HarvestSchoolFunctions {
                             name = name,
                             position = position,
                             subject = subject,
+                            degree = degree,
                             departmentName = departmentName,
                             isDepartmentLead = isLead,
                             routePath = routePath,
                         )
                     )
                 }
+            }
+        }
+
+        results
+    }
+
+    /**
+     * Searches the books the school library lends to students.
+     *
+     * Use this for questions like "does the library have Alice in Wonderland" or "what Arabic
+     * stories can my child borrow". The school keeps an English library and an Arabic library,
+     * each split into categories, and lists every book in both languages.
+     *
+     * @param appFunctionContext Provided by the system.
+     * @param query Optional text matched against book titles and their series or publisher. Empty
+     *   string returns the whole shelf, so prefer a query when the user named a book.
+     * @param category Optional category filter. Allowed values: "english-fairy-tales",
+     *   "english-drama", "english-levels", "english-general", "arabic-information",
+     *   "arabic-general", "arabic-religion", "arabic-stories". Empty string searches every category.
+     * @param collection Optional filter for which library holds the book. Allowed values:
+     *   "english", "arabic". Empty string searches both.
+     * @return Matching books, at most 50 per category. An EMPTY list means the library does not
+     *   lend that book - say so rather than inventing a title or an author.
+     */
+    @AppFunction(isDescribedByKDoc = true)
+    suspend fun getLibraryBooks(
+        appFunctionContext: AppFunctionContext,
+        query: String,
+        category: String,
+        collection: String,
+    ): List<LibraryBookResult> = withContext(Dispatchers.IO) {
+        val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
+        val library = knowledge.optJSONArray("library") ?: return@withContext emptyList()
+        val needle = query.trim().lowercase(Locale.ROOT)
+        val results = mutableListOf<LibraryBookResult>()
+
+        for (index in 0 until library.length()) {
+            val entry = library.optJSONObject(index) ?: continue
+
+            if (category.isNotBlank() && !category.equals(entry.optString("categoryKey"), ignoreCase = true)) {
+                continue
+            }
+
+            if (collection.isNotBlank() && !collection.equals(entry.optString("collection"), ignoreCase = true)) {
+                continue
+            }
+
+            val books = entry.optJSONArray("books") ?: continue
+            val categoryName = entry.optString("categoryName")
+            val collectionName = entry.optString("collectionName")
+            val routePath = entry.optString("routePath")
+            var takenFromCategory = 0
+
+            for (bookIndex in 0 until books.length()) {
+                if (takenFromCategory >= MAX_BOOKS_PER_CATEGORY) {
+                    break
+                }
+
+                val book = books.optJSONObject(bookIndex) ?: continue
+                val title = book.optString("title")
+                val series = book.optString("series")
+
+                if (needle.isNotEmpty() && !"$title $series".lowercase(Locale.ROOT).contains(needle)) {
+                    continue
+                }
+
+                takenFromCategory += 1
+
+                results.add(
+                    LibraryBookResult(
+                        title = title,
+                        series = series,
+                        categoryName = categoryName,
+                        collectionName = collectionName,
+                        routePath = routePath,
+                    )
+                )
             }
         }
 
@@ -315,7 +399,6 @@ class HarvestSchoolFunctions {
         appFunctionContext: AppFunctionContext,
         department: String,
         stage: String,
-        offeredOnly: Boolean,
     ): List<SchoolStageResult> {
         val knowledge = loadKnowledge(appFunctionContext) ?: return emptyList()
         val stages = knowledge.optJSONArray("stages") ?: return emptyList()
@@ -324,10 +407,6 @@ class HarvestSchoolFunctions {
 
         for (index in 0 until stages.length()) {
             val entry = stages.optJSONObject(index) ?: continue
-
-            if (offeredOnly && !entry.optBoolean("isOffered", true)) {
-                continue
-            }
 
             if (department.isNotBlank() && !department.equals(entry.optString("departmentKey"), ignoreCase = true)) {
                 continue

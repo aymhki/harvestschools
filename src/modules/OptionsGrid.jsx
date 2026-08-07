@@ -12,7 +12,7 @@ function OptionsGrid({title, options, divElements, thisOptionsGridIsNotAloneInTh
 
     if (compact) {
         return (
-            <div className="options-grid-container-compact">
+            <div className={thisOptionsGridIsNotAloneInThePage ? "options-grid-container-compact dynamic-compact-grid" : "options-grid-container-compact" }>
                 <h2>{title}</h2>
 
                 {options.length > 0 ? (
