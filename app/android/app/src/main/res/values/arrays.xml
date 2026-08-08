@@ -15,12 +15,6 @@
         <item>التسجيل</item>
         <item>كيف أقدم</item>
         <item>الالتحاق</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest admission</item>
     </string-array>
 
     <string-array name="shortcut_fees_synonyms">
@@ -40,12 +34,6 @@
         <item>الأسعار</item>
         <item>كم المصاريف</item>
         <item>الرسوم</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest fees</item>
     </string-array>
 
     <string-array name="shortcut_age_synonyms">
@@ -61,12 +49,6 @@
         <item>سن القبول</item>
         <item>الحد الأدنى للسن</item>
         <item>كم عمر</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest age</item>
     </string-array>
 
     <string-array name="shortcut_staff_synonyms">
@@ -85,12 +67,6 @@
         <item>هيئة التدريس</item>
         <item>من يدرس</item>
         <item>رئيس القسم</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest staff</item>
     </string-array>
 
     <string-array name="shortcut_academics_synonyms">
@@ -108,12 +84,6 @@
         <item>الناشونال</item>
         <item>البريطاني</item>
         <item>الأمريكي</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest academics</item>
     </string-array>
 
     <string-array name="shortcut_events_synonyms">
@@ -132,12 +102,6 @@
         <item>الإجازات</item>
         <item>الامتحانات</item>
         <item>متى الإجازة</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest events</item>
     </string-array>
 
     <string-array name="shortcut_faqs_synonyms">
@@ -151,12 +115,6 @@
         <item>أسئلة شائعة</item>
         <item>مساعدة</item>
         <item>إجابات</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest faq</item>
     </string-array>
 
     <string-array name="shortcut_library_synonyms">
@@ -172,12 +130,6 @@
         <item>القراءة</item>
         <item>استعارة</item>
         <item>قائمة الكتب</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest library</item>
     </string-array>
 
     <string-array name="shortcut_gallery_synonyms">
@@ -191,12 +143,6 @@
         <item>الصور</item>
         <item>الفيديوهات</item>
         <item>جولة</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest gallery</item>
     </string-array>
 
     <string-array name="shortcut_vacancies_synonyms">
@@ -211,12 +157,6 @@
         <item>التوظيف</item>
         <item>فرص عمل</item>
         <item>التقديم لوظيفة</item>
-        <item>harvest</item>
-        <item>harvest schools</item>
-        <item>harvest international schools</item>
-        <item>هارفست</item>
-        <item>مدارس هارفست</item>
-        <item>harvest vacancies</item>
     </string-array>
 
 </resources>
