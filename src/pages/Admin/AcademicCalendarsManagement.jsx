@@ -142,9 +142,6 @@ function AcademicCalendarsManagement() {
 
     const openTabIndex = Math.max(0, calendars.findIndex((calendar) => calendar.key === openCalendarKey));
 
-    // Switching tab pushes rather than replaces. Replacing overwrote the entry
-    // that held the open year, so going back from another tab landed on the
-    // year list instead of the table view that was open.
     const handleTabChange = (tabIndex) => {
         const calendar = calendars[tabIndex];
 
@@ -378,7 +375,6 @@ function AcademicCalendarsManagement() {
                        (<button key={2} onClick={openPdfModal}>Update PDF</button>),
                        (<button key={3} onClick={() => openEventModal('add', null)}>Add Event</button>),
                        (<button key={4} onClick={openMetaDataModal}>Update Meta Data</button>),
-                       (<p key={5} className={"academic-calendars-year-label"}>{openAcademicYear}</p>),
                    ]}
                    footerModuleElements={[]}
             />

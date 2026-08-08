@@ -18,17 +18,18 @@ function AdminDashboard({ dashboardOptions, adminPermissions, isLoading, loggedI
             timeGreeting = "Afternoon";
         }
 
-        const finalLoggedInUsername = loggedInName ? loggedInName.split(' ')[0].slice(0, 24) : 'Admin'
-        const timeBasedGreeting = `${timeGreeting}, ${finalLoggedInUsername}`;
+        const finalLoggedInName = loggedInName ? loggedInName.split(' ')[0].slice(0, 24) : 'Admin'
+        const timeBasedGreeting = `${timeGreeting}, ${finalLoggedInName}`;
 
         const otherOptions = [
             `Back at it, Boss`,
-            `Welcome back, ${finalLoggedInUsername}`,
-            `Ready to roll, ${finalLoggedInUsername}?`,
-            `Let's get to work, ${finalLoggedInUsername}`
+            `Welcome back, ${finalLoggedInName}`,
+            `Ready to roll, ${finalLoggedInName}?`,
+            `Let's get to work, ${finalLoggedInName}`,
+            `${finalLoggedInName} Returns!`,
         ];
 
-        if (Math.random() < 0.33) {
+        if (Math.random() < 0.5) {
             return timeBasedGreeting;
         } else {
             const randomIndex = Math.floor(Math.random() * otherOptions.length);

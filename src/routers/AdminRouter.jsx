@@ -86,8 +86,10 @@ function AdminRouter() {
                 <Suspense fallback={<div style={{ minHeight: '100vh' }}><Spinner /></div>}>
                     <AppRoutes routes={adminRoutes} pages={pages} ctx={ctx} router={ROUTER_IDS.admin} />
                 </Suspense>
+
+                <AdminFooter />
             </div>
-            <AdminFooter />
+
         </div>
     );
 }

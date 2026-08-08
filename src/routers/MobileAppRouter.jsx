@@ -219,8 +219,10 @@ function MobileAppRouter() {
                             <AppRoutes routes={mobileRoutes} pages={pages} ctx={ctx} router={ROUTER_IDS.mobile} />
                         </PageTransition>
                     </Suspense>
+
+                    {isAdminSection && <AdminFooter />}
                 </div>
-                {isAdminSection && <AdminFooter />}
+
             </div>
         </>
     );
