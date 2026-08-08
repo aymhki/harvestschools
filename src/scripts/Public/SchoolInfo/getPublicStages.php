@@ -3,32 +3,8 @@ require_once '../../headers.php';
 require_once __DIR__ . '/publicSchoolInfoHelpers.php';
 require_once __DIR__ . '/publicRateLimit.php';
 
-/**
- * The stage tables the public site shows: annual tuition on the admission fees
- * page, and the minimum registration age on the FAQ page.
- *
- * WHAT THESE CONSTANTS DO AND DO NOT AFFECT
- *
- * They are read here and nowhere else. The knowledge artifact, the MCP tools,
- * the Siri entities and the Android app functions build their stage list from
- * public_school_document() instead, so a department hidden here is still
- * something the assistants can answer about. That is deliberate: this is page
- * dressing, not a privacy boundary.
- *
- * Each table has its own lists, so hiding a department from the fees table does
- * not also strip it out of the age table.
- */
-
-/**
- * Departments in the order they appear, per table. The academic departments are
- * 'early' (Playschool), 'national', 'british' and 'american'.
- *
- * Playschool is out of the fees table because the school is not accredited for
- * it yet and must not publish a price. It is out of the age table because that
- * page has never listed it.
- */
 const PUBLIC_STAGE_FEES_DEPARTMENTS = ['national', 'british', 'american'];
-const PUBLIC_STAGE_AGE_DEPARTMENTS = ['national', 'british', 'american'];
+const PUBLIC_STAGE_AGE_DEPARTMENTS = ['national', 'british', 'american', 'early'];
 
 const PUBLIC_STAGE_FEES_HIDDEN = [];
 const PUBLIC_STAGE_AGE_HIDDEN = [];
