@@ -61,9 +61,6 @@ function public_calendar_events($conn, $calendarId, $language) {
     return ['events' => $events, 'lastUpdated' => $lastUpdated];
 }
 
-/**
- * The shape the six public calendar pages consume.
- */
 function public_calendar_document($conn, $calendarKey, $language) {
     $calendar = public_calendar_current($conn, $calendarKey);
 
@@ -121,8 +118,7 @@ function public_calendar_all_events($conn, $language) {
             $endTimestamp = strtotime($event['endDate'] . ' 00:00:00 UTC');
 
             $events[] = [
-                'id'            => 'event.' . $calendarKey . '.' . $event['startDate'] . '.'
-                                   . substr(hash('sha256', $event['title']), 0, 10),
+                'id'            => 'event.' . $calendarKey . '.' . $event['id'],
                 'title'         => $event['title'],
                 'startDate'     => $startTimestamp === false ? null : $startTimestamp * 1000,
                 'rawStartDate'  => $event['startDate'],

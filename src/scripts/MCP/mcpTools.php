@@ -11,12 +11,6 @@ const MCP_LIBRARY_CATEGORY_KEYS = [
     'arabic-information', 'arabic-general', 'arabic-religion', 'arabic-stories',
 ];
 
-/**
- * Every property any tool advertises must be a parameter on the server's tool
- * handler, or the SDK drops it on the way in and the tool silently behaves as if
- * it were never passed. Adding a parameter to a schema without adding it there
- * is the mistake this catches.
- */
 function mcp_assert_handler_covers_schemas(array $handlerParameters): void {
     $advertised = [];
 
@@ -238,12 +232,17 @@ function mcp_select_stages(string $language, string $department, string $stage):
     $needle = mb_strtolower(trim($stage));
     $selected = [];
 
+    $otherStages = mcp_section_by_key(mcp_other_language($language), 'stages', 'key');
+
     foreach ((mcp_section($language, 'stages') ?? []) as $entry) {
         if ($department !== '' && ($entry['departmentKey'] ?? '') !== $department) {
             continue;
         }
 
-        if ($needle !== '' && mb_strpos(mb_strtolower((string)($entry['name'] ?? '')), $needle) === false) {
+        if (!mcp_contains($needle, [
+            $entry['name'] ?? '',
+            $otherStages[$entry['key'] ?? '']['name'] ?? '',
+        ])) {
             continue;
         }
 
@@ -251,6 +250,36 @@ function mcp_select_stages(string $language, string $department, string $stage):
     }
 
     return ['tuitionCurrency' => $currency, 'stages' => $selected];
+}
+
+function mcp_other_language(string $language): string {
+    return $language === 'ar' ? 'en' : 'ar';
+}
+
+function mcp_section_by_key(string $language, string $section, string $keyField): array {
+    $indexed = [];
+
+    foreach ((mcp_section($language, $section) ?? []) as $entry) {
+        if (isset($entry[$keyField])) {
+            $indexed[(string)$entry[$keyField]] = $entry;
+        }
+    }
+
+    return $indexed;
+}
+
+function mcp_contains(string $needle, array $haystacks): bool {
+    if ($needle === '') {
+        return true;
+    }
+
+    foreach ($haystacks as $value) {
+        if ($value !== null && $value !== '' && mb_strpos(mb_strtolower((string)$value), $needle) !== false) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function mcp_encode(array $payload): string {
@@ -336,8 +365,15 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $terms = mcp_search_terms($query);
             $scored = [];
 
+            $otherFacts = mcp_section_by_key(mcp_other_language($language), 'facts', 'id');
+
             foreach ((mcp_section($language, 'facts') ?? []) as $fact) {
                 $score = mcp_score_fact($fact, $terms);
+                $counterpart = $otherFacts[$fact['id'] ?? ''] ?? null;
+
+                if ($counterpart !== null) {
+                    $score = max($score, mcp_score_fact($counterpart, $terms));
+                }
 
                 if ($score > 0) {
                     $scored[] = ['score' => $score, 'fact' => [
@@ -401,12 +437,17 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $to = $toRaw === '' ? null : strtotime($toRaw . ' 23:59:59 UTC');
             $events = [];
 
+            $otherEvents = mcp_section_by_key(mcp_other_language($language), 'events', 'id');
+
             foreach ((mcp_section($language, 'events') ?? []) as $event) {
                 if ($division !== '' && ($event['calendarId'] ?? '') !== $division) {
                     continue;
                 }
 
-                if ($needle !== '' && mb_strpos(mb_strtolower((string)($event['title'] ?? '')), $needle) === false) {
+                if (!mcp_contains($needle, [
+                    $event['title'] ?? '',
+                    $otherEvents[$event['id'] ?? '']['title'] ?? '',
+                ])) {
                     continue;
                 }
 
@@ -449,6 +490,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
         case 'get_school_staff':
             $department = strtolower(trim((string)($arguments['department'] ?? '')));
             $needle = mb_strtolower(trim((string)($arguments['query'] ?? '')));
+            $otherStaff = mcp_section_by_key(mcp_other_language($language), 'staff', 'departmentKey');
             $staff = [];
 
             foreach ((mcp_section($language, 'staff') ?? []) as $entry) {
@@ -461,18 +503,33 @@ function mcp_tool_invoke(string $name, array $arguments): string {
                     continue;
                 }
 
-                $matches = static function (array $person) use ($needle) {
+                $counterpart = $otherStaff[$entry['departmentKey'] ?? ''] ?? [];
+
+                $matches = static function (array $person, array $twin = []) use ($needle) {
+                    $haystacks = [];
+
                     foreach (['name', 'position', 'subject', 'degree'] as $field) {
-                        if (mb_strpos(mb_strtolower((string)($person[$field] ?? '')), $needle) !== false) {
-                            return true;
+                        $haystacks[] = $person[$field] ?? '';
+                        $haystacks[] = $twin[$field] ?? '';
+                    }
+
+                    return mcp_contains($needle, $haystacks);
+                };
+
+                $pairWith = static function (array $people, array $twins) use ($matches) {
+                    $kept = [];
+
+                    foreach ($people as $index => $person) {
+                        if ($matches($person, $twins[$index] ?? [])) {
+                            $kept[] = $person;
                         }
                     }
 
-                    return false;
+                    return $kept;
                 };
 
-                $highlights = array_values(array_filter($entry['highlights'] ?? [], $matches));
-                $members = array_values(array_filter($entry['members'] ?? [], $matches));
+                $highlights = $pairWith($entry['highlights'] ?? [], $counterpart['highlights'] ?? []);
+                $members = $pairWith($entry['members'] ?? [], $counterpart['members'] ?? []);
 
                 if ($highlights === [] && $members === []) {
                     continue;
