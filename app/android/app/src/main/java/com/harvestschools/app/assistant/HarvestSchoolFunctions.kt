@@ -29,9 +29,8 @@ class HarvestSchoolFunctions {
     @AppFunction(isDescribedByKDoc = true)
     suspend fun getSchoolInfo(appFunctionContext: AppFunctionContext, query: String): List<SchoolFactResult> =
         withContext(Dispatchers.IO) {
-            val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
             val terms = query.lowercase(Locale.ROOT).split(" ").filter { it.isNotBlank() }
-            val facts = knowledge.optJSONArray("facts") ?: return@withContext emptyList()
+            val facts = loadSection(appFunctionContext, "facts") ?: return@withContext emptyList()
 
             val matches = mutableListOf<Pair<Int, SchoolFactResult>>()
 
@@ -116,8 +115,7 @@ class HarvestSchoolFunctions {
         fromDateMillis: Long,
         toDateMillis: Long,
     ): List<AcademicEventResult> = withContext(Dispatchers.IO) {
-        val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
-        val events = knowledge.optJSONArray("events") ?: return@withContext emptyList()
+        val events = loadSection(appFunctionContext, "events") ?: return@withContext emptyList()
         val needle = query.lowercase(Locale.ROOT)
         val results = mutableListOf<AcademicEventResult>()
 
@@ -181,8 +179,7 @@ class HarvestSchoolFunctions {
         appFunctionContext: AppFunctionContext,
         department: String,
     ): List<SchoolContactResult> = withContext(Dispatchers.IO) {
-        val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
-        val departments = knowledge.optJSONArray("departments") ?: return@withContext emptyList()
+        val departments = loadSection(appFunctionContext, "departments") ?: return@withContext emptyList()
         val results = mutableListOf<SchoolContactResult>()
 
         for (index in 0 until departments.length()) {
@@ -226,8 +223,7 @@ class HarvestSchoolFunctions {
         department: String,
         query: String,
     ): List<SchoolStaffResult> = withContext(Dispatchers.IO) {
-        val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
-        val staff = knowledge.optJSONArray("staff") ?: return@withContext emptyList()
+        val staff = loadSection(appFunctionContext, "staff") ?: return@withContext emptyList()
         val needle = query.trim().lowercase(Locale.ROOT)
         val results = mutableListOf<SchoolStaffResult>()
 
@@ -305,8 +301,7 @@ class HarvestSchoolFunctions {
         category: String,
         collection: String,
     ): List<LibraryBookResult> = withContext(Dispatchers.IO) {
-        val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
-        val library = knowledge.optJSONArray("library") ?: return@withContext emptyList()
+        val library = loadSection(appFunctionContext, "library") ?: return@withContext emptyList()
         val needle = query.trim().lowercase(Locale.ROOT)
         val results = mutableListOf<LibraryBookResult>()
 
@@ -371,8 +366,7 @@ class HarvestSchoolFunctions {
         appFunctionContext: AppFunctionContext,
         section: String,
     ): List<AppPageResult> = withContext(Dispatchers.IO) {
-        val knowledge = loadKnowledge(appFunctionContext) ?: return@withContext emptyList()
-        val pages = knowledge.optJSONArray("pages") ?: return@withContext emptyList()
+        val pages = loadSection(appFunctionContext, "pages") ?: return@withContext emptyList()
         val results = mutableListOf<AppPageResult>()
 
         for (index in 0 until pages.length()) {
@@ -400,8 +394,7 @@ class HarvestSchoolFunctions {
         department: String,
         stage: String,
     ): List<SchoolStageResult> {
-        val knowledge = loadKnowledge(appFunctionContext) ?: return emptyList()
-        val stages = knowledge.optJSONArray("stages") ?: return emptyList()
+        val stages = loadSection(appFunctionContext, "stages") ?: return emptyList()
         val needle = stage.lowercase(Locale.ROOT)
         val results = mutableListOf<SchoolStageResult>()
 
@@ -422,10 +415,10 @@ class HarvestSchoolFunctions {
         return results
     }
 
-    private fun loadKnowledge(appFunctionContext: AppFunctionContext): JSONObject? {
+    private fun loadSection(appFunctionContext: AppFunctionContext, section: String): JSONArray? {
         val language = if (Locale.getDefault().language.equals("ar", ignoreCase = true)) "ar" else "en"
 
-        return HarvestAssistantStore.knowledge(appFunctionContext.context, language)
+        return HarvestAssistantStore.sectionArray(appFunctionContext.context, section, language)
     }
 }
 

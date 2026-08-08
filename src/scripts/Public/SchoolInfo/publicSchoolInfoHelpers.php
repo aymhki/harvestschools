@@ -662,6 +662,85 @@ function public_school_library_facts($library, $language) {
     return $facts;
 }
 
+const PUBLIC_INFO_SECTIONS = ['school', 'departments', 'stages', 'policies', 'staff', 'library', 'events', 'pages', 'facts'];
+
+function public_school_section_exists($section) {
+    return in_array((string)$section, PUBLIC_INFO_SECTIONS, true);
+}
+
+function public_school_profile_summary($profile, $departments) {
+    return [
+        'name'         => $profile['school_name']['value'] ?? null,
+        'address'      => $profile['address']['value'] ?? null,
+        'phone'        => array_values(array_filter(array_merge(
+                            [$profile['general_phone']['value'] ?? null],
+                            array_map(function ($department) { return $department['contactNumber']; }, $departments)
+                          ))),
+        'email'        => $profile['email']['value'] ?? null,
+        'website'      => $profile['website']['value'] ?? null,
+        'socials'      => array_filter([
+            'facebook'  => $profile['facebook_url']['value'] ?? null,
+            'messenger' => $profile['messenger_url']['value'] ?? null,
+        ]),
+        'workingHours' => $profile['working_hours']['value'] ?? null,
+        'mapsUrl'      => $profile['maps_url']['value'] ?? null,
+        'coordinates'  => (isset($profile['latitude']['value']) && isset($profile['longitude']['value']))
+            ? ['latitude' => (float)$profile['latitude']['value'], 'longitude' => (float)$profile['longitude']['value']]
+            : null,
+        'currency'     => $profile['tuition_currency']['value'] ?? 'EGP',
+    ];
+}
+
+function public_school_section($conn, $language, $section) {
+    $language = public_info_normalise_language($language);
+
+    switch ($section) {
+        case 'pages':
+            return public_school_pages($language);
+
+        case 'departments':
+            return public_school_departments($conn, $language);
+
+        case 'policies':
+            return public_school_policies($conn, $language);
+
+        case 'staff':
+            return public_staff_directory($conn, $language);
+
+        case 'library':
+            return public_library_catalogue($conn, $language);
+
+        case 'events':
+            return public_school_events($conn, $language);
+
+        case 'school':
+            return public_school_profile_summary(
+                public_school_profile($conn, $language),
+                public_school_departments($conn, $language)
+            );
+
+        case 'stages':
+            $rules = public_info_read_rule_settings($conn);
+
+            return public_school_stages($conn, $language, ($rules['SHOW_UNOFFERED_STAGES'] ?? '1') === '1');
+
+        case 'facts':
+            $rules = public_info_read_rule_settings($conn);
+            $profile = public_school_profile($conn, $language);
+            $departments = public_school_departments($conn, $language);
+            $stages = public_school_stages($conn, $language, ($rules['SHOW_UNOFFERED_STAGES'] ?? '1') === '1');
+            $policies = public_school_policies($conn, $language);
+
+            return array_merge(
+                public_school_facts($profile, $departments, $stages, $policies, $language),
+                public_school_staff_facts(public_staff_directory($conn, $language), $language),
+                public_school_library_facts(public_library_catalogue($conn, $language), $language)
+            );
+    }
+
+    return null;
+}
+
 function public_school_document($conn, $language) {
     $rules = public_info_read_rule_settings($conn);
     $includeUnoffered = ($rules['SHOW_UNOFFERED_STAGES'] ?? '1') === '1';

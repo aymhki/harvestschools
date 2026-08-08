@@ -6,6 +6,8 @@ let harvestAssistantKnowledgeDirectoryName = "HarvestAssistant"
 
 let harvestAssistantSchemaVersion = 1
 
+let assistantNetworkTimeout: TimeInterval = 2
+
 extension Notification.Name {
 
     static let harvestAssistantKnowledgeUpdated = Notification.Name("HarvestAssistantKnowledgeUpdated")
@@ -234,6 +236,80 @@ enum HarvestAssistantStore {
         }
     }
 
+    enum Section: String {
+        case school, departments, stages, policies, staff, library, events, pages, facts
+    }
+
+    private struct SectionEnvelope<Value: Decodable>: Decodable {
+        let success: Bool
+        let data: Payload
+
+        struct Payload: Decodable {
+            let schemaVersion: Int
+            let section: String
+            let value: Value
+
+            private struct Key: CodingKey {
+                var stringValue: String
+                var intValue: Int? { nil }
+                init?(stringValue: String) { self.stringValue = stringValue }
+                init?(intValue: Int) { nil }
+            }
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: Key.self)
+
+                schemaVersion = try container.decode(Int.self, forKey: Key(stringValue: "schemaVersion")!)
+                section = try container.decode(String.self, forKey: Key(stringValue: "section")!)
+                value = try container.decode(Value.self, forKey: Key(stringValue: section)!)
+            }
+        }
+    }
+
+    static func sectionURL(_ section: Section, language: String) -> URL? {
+        var components = URLComponents(string: "\(harvestUniversalLinkHost)/scripts/Public/SchoolInfo/getPublicSchoolSection.php")
+
+        components?.queryItems = [
+            URLQueryItem(name: "section", value: section.rawValue),
+            URLQueryItem(name: "lang", value: normalisedLanguage(language)),
+        ]
+
+        return components?.url
+    }
+
+    private static func sectionFileURL(_ section: Section, language: String) -> URL? {
+        return knowledgeDirectory()?
+            .appendingPathComponent("section-\(section.rawValue)-\(normalisedLanguage(language)).json")
+    }
+
+    static func section<Value: Decodable>(_ section: Section, as type: Value.Type, language: String) async -> Value? {
+        if let url = sectionURL(section, language: language) {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = assistantNetworkTimeout
+            request.cachePolicy = .reloadRevalidatingCacheData
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+            if let (data, response) = try? await URLSession.shared.data(for: request),
+               let http = response as? HTTPURLResponse, http.statusCode == 200,
+               let envelope = try? JSONDecoder().decode(SectionEnvelope<Value>.self, from: data),
+               envelope.success, envelope.data.schemaVersion == harvestAssistantSchemaVersion {
+                if let fileURL = sectionFileURL(section, language: language) {
+                    try? data.write(to: fileURL, options: .atomic)
+                }
+
+                return envelope.data.value
+            }
+        }
+
+        guard let fileURL = sectionFileURL(section, language: language),
+              let cached = try? Data(contentsOf: fileURL),
+              let envelope = try? JSONDecoder().decode(SectionEnvelope<Value>.self, from: cached) else {
+            return nil
+        }
+
+        return envelope.data.value
+    }
+
     static func remoteKnowledgeURL(language: String) -> URL? {
         var components = URLComponents(string: "\(harvestUniversalLinkHost)/scripts/Public/SchoolInfo/getPublicSchoolInfo.php")
 
@@ -242,7 +318,7 @@ enum HarvestAssistantStore {
         return components?.url
     }
 
-    static func fetchRemoteKnowledge(language: String, timeout: TimeInterval = 6) async -> HarvestSchoolKnowledge? {
+    static func fetchRemoteKnowledge(language: String, timeout: TimeInterval = assistantNetworkTimeout) async -> HarvestSchoolKnowledge? {
         guard let url = remoteKnowledgeURL(language: language) else {
             return nil
         }

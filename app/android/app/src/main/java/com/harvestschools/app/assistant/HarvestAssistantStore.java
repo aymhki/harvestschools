@@ -22,6 +22,7 @@ public final class HarvestAssistantStore {
     public static final String META_KEY_PREFIX = "harvest_assistant_meta_";
     public static final String KNOWLEDGE_DIRECTORY = "assistant";
     public static final String PUBLIC_INFO_URL = "https://harvestschools.com/scripts/Public/SchoolInfo/getPublicSchoolInfo.php";
+    public static final String PUBLIC_SECTION_URL = "https://harvestschools.com/scripts/Public/SchoolInfo/getPublicSchoolSection.php";
     public static final int SCHEMA_VERSION = 1;
     public static final int NETWORK_TIMEOUT_MS = 6000;
 
@@ -131,9 +132,7 @@ public final class HarvestAssistantStore {
         preferences(context).edit().clear().apply();
     }
 
-    /**
-     * Fetches the public knowledge document. Blocking - call from a background thread only.
-     */
+
     public static JSONObject fetchRemoteKnowledge(Context context, String language) {
         String normalised = normalisedLanguage(language);
         HttpURLConnection connection = null;
@@ -176,6 +175,86 @@ public final class HarvestAssistantStore {
         }
     }
 
+
+    private static File sectionFile(Context context, String section, String language) {
+        File directory = new File(context.getFilesDir(), KNOWLEDGE_DIRECTORY);
+
+        if (!directory.exists() && !directory.mkdirs() && !directory.isDirectory()) {
+            return null;
+        }
+
+        return new File(directory, "section-" + section + "-" + normalisedLanguage(language) + ".json");
+    }
+
+    public static Object section(Context context, String section, String language) {
+        String normalised = normalisedLanguage(language);
+        HttpURLConnection connection = null;
+
+        try {
+            URL url = new URL(PUBLIC_SECTION_URL + "?section=" + section + "&lang=" + normalised);
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(NETWORK_TIMEOUT_MS);
+            connection.setReadTimeout(NETWORK_TIMEOUT_MS);
+            connection.setRequestProperty("Accept", "application/json");
+
+            if (connection.getResponseCode() == 200) {
+                String body;
+
+                try (InputStream stream = connection.getInputStream()) {
+                    body = readFully(stream);
+                }
+
+                JSONObject payload = new JSONObject(body).optJSONObject("data");
+
+                if (payload != null && payload.optInt("schemaVersion", 0) == SCHEMA_VERSION) {
+                    File target = sectionFile(context, section, normalised);
+
+                    if (target != null) {
+                        try (FileOutputStream out = new FileOutputStream(target)) {
+                            out.write(body.getBytes(StandardCharsets.UTF_8));
+                        } catch (IOException ignored) {
+                        }
+                    }
+
+                    return payload.opt(section);
+                }
+            }
+        } catch (IOException | JSONException fetchError) {
+
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        File cached = sectionFile(context, section, normalised);
+
+        if (cached == null || !cached.exists()) {
+            return null;
+        }
+
+        try (FileInputStream stream = new FileInputStream(cached)) {
+            JSONObject payload = new JSONObject(readFully(stream)).optJSONObject("data");
+
+            return payload == null ? null : payload.opt(section);
+        } catch (IOException | JSONException readError) {
+            return null;
+        }
+    }
+
+    public static org.json.JSONArray sectionArray(Context context, String section, String language) {
+        Object value = section(context, section, language);
+
+        return value instanceof org.json.JSONArray ? (org.json.JSONArray) value : null;
+    }
+
+    public static JSONObject sectionObject(Context context, String section, String language) {
+        Object value = section(context, section, language);
+
+        return value instanceof JSONObject ? (JSONObject) value : null;
+    }
 
     public static JSONObject knowledge(Context context, String language) {
         JSONObject fresh = fetchRemoteKnowledge(context, language);

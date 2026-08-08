@@ -4,8 +4,38 @@ import CoreSpotlight
 
 enum HarvestAssistantContext {
 
-    static func knowledge() async -> HarvestSchoolKnowledge? {
-        return await HarvestAssistantStore.knowledge(language: HarvestAssistantStore.preferredLanguage())
+    private static var language: String { HarvestAssistantStore.preferredLanguage() }
+
+    static func facts() async -> [HarvestSchoolFact] {
+        return await HarvestAssistantStore.section(.facts, as: [HarvestSchoolFact].self, language: language) ?? []
+    }
+
+    static func stages() async -> [HarvestSchoolStage] {
+        return await HarvestAssistantStore.section(.stages, as: [HarvestSchoolStage].self, language: language) ?? []
+    }
+
+    static func events() async -> [HarvestAcademicEvent] {
+        return await HarvestAssistantStore.section(.events, as: [HarvestAcademicEvent].self, language: language) ?? []
+    }
+
+    static func pages() async -> [HarvestAppPage] {
+        return await HarvestAssistantStore.section(.pages, as: [HarvestAppPage].self, language: language) ?? []
+    }
+
+    static func departments() async -> [HarvestSchoolDepartment] {
+        return await HarvestAssistantStore.section(.departments, as: [HarvestSchoolDepartment].self, language: language) ?? []
+    }
+
+    static func staff() async -> [HarvestStaffDepartment] {
+        return await HarvestAssistantStore.section(.staff, as: [HarvestStaffDepartment].self, language: language) ?? []
+    }
+
+    static func library() async -> [HarvestLibraryCategory] {
+        return await HarvestAssistantStore.section(.library, as: [HarvestLibraryCategory].self, language: language) ?? []
+    }
+
+    static func school() async -> HarvestSchoolProfile? {
+        return await HarvestAssistantStore.section(.school, as: HarvestSchoolProfile.self, language: language)
     }
 
     static func matches(_ haystack: [String], terms: [String]) -> Bool {
@@ -48,25 +78,17 @@ struct SchoolFactEntity: AppEntity, Identifiable {
 struct SchoolFactQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [SchoolFactEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         let wanted = Set(identifiers)
 
-        return (knowledge.facts ?? []).filter { wanted.contains($0.id) }.map { SchoolFactEntity(fact: $0) }
+        return (await HarvestAssistantContext.facts()).filter { wanted.contains($0.id) }.map { SchoolFactEntity(fact: $0) }
     }
 
     func entities(matching string: String) async throws -> [SchoolFactEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         let terms = string.split(separator: " ").map(String.init).filter { !$0.isEmpty }
 
         let searchTerms: [String] = terms.isEmpty ? [string] : terms
 
-        return (knowledge.facts ?? [])
+        return (await HarvestAssistantContext.facts())
             .filter { fact in
                 var haystack: [String] = [fact.topic ?? "", fact.answer ?? ""]
 
@@ -79,11 +101,7 @@ struct SchoolFactQuery: EntityStringQuery {
     }
 
     func suggestedEntities() async throws -> [SchoolFactEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
-        return (knowledge.facts ?? []).prefix(10).map { SchoolFactEntity(fact: $0) }
+        return (await HarvestAssistantContext.facts()).prefix(10).map { SchoolFactEntity(fact: $0) }
     }
 }
 
@@ -125,31 +143,19 @@ struct SchoolStageEntity: AppEntity, Identifiable {
 struct SchoolStageQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [SchoolStageEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         let wanted = Set(identifiers)
 
-        return (knowledge.stages ?? []).filter { wanted.contains($0.key) }.map { SchoolStageEntity(stage: $0) }
+        return (await HarvestAssistantContext.stages()).filter { wanted.contains($0.key) }.map { SchoolStageEntity(stage: $0) }
     }
 
     func entities(matching string: String) async throws -> [SchoolStageEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
-        return (knowledge.stages ?? [])
+        return (await HarvestAssistantContext.stages())
             .filter { HarvestAssistantContext.matches([$0.name ?? "", $0.departmentName ?? "", $0.sectionTitle ?? ""], terms: [string]) }
             .map { SchoolStageEntity(stage: $0) }
     }
 
     func suggestedEntities() async throws -> [SchoolStageEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
-        return (knowledge.stages ?? []).filter { $0.isOffered ?? true }.prefix(10).map { SchoolStageEntity(stage: $0) }
+        return (await HarvestAssistantContext.stages()).filter { $0.isOffered ?? true }.prefix(10).map { SchoolStageEntity(stage: $0) }
     }
 }
 
@@ -193,34 +199,22 @@ struct AcademicEventEntity: AppEntity, Identifiable {
 struct AcademicEventQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [AcademicEventEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         let wanted = Set(identifiers)
 
-        return (knowledge.events ?? []).filter { wanted.contains($0.id) }.map { AcademicEventEntity(event: $0) }
+        return (await HarvestAssistantContext.events()).filter { wanted.contains($0.id) }.map { AcademicEventEntity(event: $0) }
     }
 
     func entities(matching string: String) async throws -> [AcademicEventEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
-        return (knowledge.events ?? [])
+        return (await HarvestAssistantContext.events())
             .filter { HarvestAssistantContext.matches([$0.title ?? "", $0.calendarLabel ?? ""], terms: [string]) }
             .prefix(25)
             .map { AcademicEventEntity(event: $0) }
     }
 
     func suggestedEntities() async throws -> [AcademicEventEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         let now = Date().timeIntervalSince1970 * 1000
 
-        return (knowledge.events ?? [])
+        return (await HarvestAssistantContext.events())
             .filter { ($0.startDate ?? 0) >= now }
             .prefix(10)
             .map { AcademicEventEntity(event: $0) }
@@ -257,21 +251,13 @@ struct AppPageEntity: AppEntity, Identifiable {
 struct AppPageQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [AppPageEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         let wanted = Set(identifiers)
 
-        return (knowledge.pages ?? []).filter { wanted.contains($0.id) }.map { AppPageEntity(page: $0) }
+        return (await HarvestAssistantContext.pages()).filter { wanted.contains($0.id) }.map { AppPageEntity(page: $0) }
     }
 
     func entities(matching string: String) async throws -> [AppPageEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
-        return (knowledge.pages ?? [])
+        return (await HarvestAssistantContext.pages())
             .filter { page in
                 var haystack: [String] = [page.title ?? ""]
 
@@ -283,11 +269,7 @@ struct AppPageQuery: EntityStringQuery {
     }
 
     func suggestedEntities() async throws -> [AppPageEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
-        return (knowledge.pages ?? []).prefix(12).map { AppPageEntity(page: $0) }
+        return (await HarvestAssistantContext.pages()).prefix(12).map { AppPageEntity(page: $0) }
     }
 }
 
@@ -323,11 +305,7 @@ struct SchoolDepartmentEntity: AppEntity, Identifiable {
 struct SchoolDepartmentQuery: EntityStringQuery, EnumerableEntityQuery {
 
     func allEntities() async throws -> [SchoolDepartmentEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
-        return (knowledge.departments ?? []).map { SchoolDepartmentEntity(department: $0) }
+        return (await HarvestAssistantContext.departments()).map { SchoolDepartmentEntity(department: $0) }
     }
 
     func entities(for identifiers: [String]) async throws -> [SchoolDepartmentEntity] {
@@ -379,13 +357,9 @@ struct SchoolStaffEntity: AppEntity, Identifiable {
 struct SchoolStaffQuery: EntityStringQuery {
 
     func allEntities() async throws -> [SchoolStaffEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         var entities: [SchoolStaffEntity] = []
 
-        for department in knowledge.staff ?? [] {
+        for department in await HarvestAssistantContext.staff() {
             var index = 0
 
             for member in department.highlights ?? [] {
@@ -502,13 +476,9 @@ struct LibraryBookEntity: AppEntity, Identifiable {
 struct LibraryBookQuery: EntityStringQuery {
 
     func allEntities() async throws -> [LibraryBookEntity] {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return []
-        }
-
         var entities: [LibraryBookEntity] = []
 
-        for category in knowledge.library ?? [] {
+        for category in await HarvestAssistantContext.library() {
             for (index, book) in (category.books ?? []).enumerated() {
                 entities.append(LibraryBookEntity(book: book, category: category, index: index))
             }

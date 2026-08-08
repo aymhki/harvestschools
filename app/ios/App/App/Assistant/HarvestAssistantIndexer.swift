@@ -136,16 +136,12 @@ enum HarvestAssistantIndexer {
 
     @available(iOS 18.4, *)
     static func reindex() async {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return
-        }
-
         let index = CSSearchableIndex.default()
 
-        let facts = (knowledge.facts ?? []).map { SchoolFactEntity(fact: $0) }
-        let stages = (knowledge.stages ?? []).map { SchoolStageEntity(stage: $0) }
-        let events = (knowledge.events ?? []).map { AcademicEventEntity(event: $0) }
-        let pages = (knowledge.pages ?? []).map { AppPageEntity(page: $0) }
+        let facts = (await HarvestAssistantContext.facts()).map { SchoolFactEntity(fact: $0) }
+        let stages = (await HarvestAssistantContext.stages()).map { SchoolStageEntity(stage: $0) }
+        let events = (await HarvestAssistantContext.events()).map { AcademicEventEntity(event: $0) }
+        let pages = (await HarvestAssistantContext.pages()).map { AppPageEntity(page: $0) }
         let staff = (try? await SchoolStaffQuery().allEntities()) ?? []
         let books = (try? await LibraryBookQuery().allEntities()) ?? []
 

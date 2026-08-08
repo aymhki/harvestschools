@@ -164,23 +164,25 @@ function mcp_tool_schemas(): array {
     ];
 }
 
-function mcp_knowledge(string $language): ?array {
-    static $documents = [];
+function mcp_section(string $language, string $section) {
+    static $cache = [];
 
     $language = public_info_normalise_language($language);
+    $key = $language . ':' . $section;
 
-    if (array_key_exists($language, $documents)) {
-        return $documents[$language];
+    if (array_key_exists($key, $cache)) {
+        return $cache[$key];
     }
 
     $connection = mcp_database_connection();
-    $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
 
-    list($document) = public_school_load_document($docRoot, $language, $connection);
+    if (!($connection instanceof mysqli)) {
+        return null;
+    }
 
-    $documents[$language] = $document;
+    $cache[$key] = public_school_section($connection, $language, $section);
 
-    return $document;
+    return $cache[$key];
 }
 
 function mcp_stage_view(array $stage, string $currency): array {
@@ -201,12 +203,12 @@ function mcp_stage_view(array $stage, string $currency): array {
     ];
 }
 
-function mcp_select_stages(array $knowledge, string $department, string $stage): array {
-    $currency = $knowledge['school']['currency'] ?? 'EGP';
+function mcp_select_stages(string $language, string $department, string $stage): array {
+    $currency = (mcp_section($language, 'school')['currency'] ?? null) ?: 'EGP';
     $needle = mb_strtolower(trim($stage));
     $selected = [];
 
-    foreach (($knowledge['stages'] ?? []) as $entry) {
+    foreach ((mcp_section($language, 'stages') ?? []) as $entry) {
         if ($department !== '' && ($entry['departmentKey'] ?? '') !== $department) {
             continue;
         }
@@ -293,9 +295,8 @@ function mcp_score_fact(array $fact, array $terms): int {
 
 function mcp_tool_invoke(string $name, array $arguments): string {
     $language = public_info_normalise_language($arguments['language'] ?? 'en');
-    $knowledge = mcp_knowledge($language);
 
-    if ($knowledge === null) {
+    if (!(mcp_database_connection() instanceof mysqli)) {
         return mcp_encode(['error' => 'School information is temporarily unavailable.']);
     }
 
@@ -305,7 +306,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $terms = mcp_search_terms($query);
             $scored = [];
 
-            foreach (($knowledge['facts'] ?? []) as $fact) {
+            foreach ((mcp_section($language, 'facts') ?? []) as $fact) {
                 $score = mcp_score_fact($fact, $terms);
 
                 if ($score > 0) {
@@ -330,7 +331,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             ]);
 
         case 'get_tuition_fees':
-            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), (string)($arguments['stage'] ?? ''));
+            $result = mcp_select_stages($language, (string)($arguments['department'] ?? ''), (string)($arguments['stage'] ?? ''));
 
             return mcp_encode([
                 'language'        => $language,
@@ -339,11 +340,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             ]);
 
         case 'get_stages_offered':
-            // Whether unoffered stages are published is decided once, by the
-            // SHOW_UNOFFERED_STAGES setting, when the document is built. Every
-            // stage that reaches here is one the school publishes, so there is
-            // nothing left to filter and nothing to hedge about.
-            $result = mcp_select_stages($knowledge, (string)($arguments['department'] ?? ''), '');
+            $result = mcp_select_stages($language, (string)($arguments['department'] ?? ''), '');
 
             return mcp_encode(['language' => $language, 'stages' => $result['stages']]);
 
@@ -351,7 +348,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $department = (string)($arguments['department'] ?? '');
             $departments = [];
 
-            foreach (($knowledge['departments'] ?? []) as $entry) {
+            foreach ((mcp_section($language, 'departments') ?? []) as $entry) {
                 if ($department !== '' && ($entry['key'] ?? '') !== $department) {
                     continue;
                 }
@@ -361,7 +358,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
 
             return mcp_encode([
                 'language'    => $language,
-                'school'      => $knowledge['school'] ?? null,
+                'school'      => mcp_section($language, 'school'),
                 'departments' => $departments,
             ]);
 
@@ -374,7 +371,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $to = $toRaw === '' ? null : strtotime($toRaw . ' 23:59:59 UTC');
             $events = [];
 
-            foreach (($knowledge['events'] ?? []) as $event) {
+            foreach ((mcp_section($language, 'events') ?? []) as $event) {
                 if ($division !== '' && ($event['calendarId'] ?? '') !== $division) {
                     continue;
                 }
@@ -407,7 +404,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $division = (string)($arguments['division'] ?? '');
             $now = (int)(microtime(true) * 1000);
 
-            foreach (($knowledge['events'] ?? []) as $event) {
+            foreach ((mcp_section($language, 'events') ?? []) as $event) {
                 if ($division !== '' && ($event['calendarId'] ?? '') !== $division) {
                     continue;
                 }
@@ -424,7 +421,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $needle = mb_strtolower(trim((string)($arguments['query'] ?? '')));
             $staff = [];
 
-            foreach (($knowledge['staff'] ?? []) as $entry) {
+            foreach ((mcp_section($language, 'staff') ?? []) as $entry) {
                 if ($department !== '' && ($entry['departmentKey'] ?? '') !== $department) {
                     continue;
                 }
@@ -467,7 +464,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $limit = max(1, min(200, $limit ?: 50));
             $library = [];
 
-            foreach (($knowledge['library'] ?? []) as $entry) {
+            foreach ((mcp_section($language, 'library') ?? []) as $entry) {
                 if ($category !== '' && ($entry['categoryKey'] ?? '') !== $category) {
                     continue;
                 }
@@ -494,8 +491,6 @@ function mcp_tool_invoke(string $name, array $arguments): string {
                     }
                 }
 
-                // bookCount stays the true size of the shelf so the assistant can
-                // say "showing 50 of 177" rather than claiming the shelf is small.
                 $entry['bookCount'] = count($books);
                 $entry['books'] = array_slice($books, 0, $limit);
                 $entry['isTruncated'] = count($books) > $limit;
@@ -508,7 +503,7 @@ function mcp_tool_invoke(string $name, array $arguments): string {
             $section = (string)($arguments['section'] ?? '');
             $pages = [];
 
-            foreach (($knowledge['pages'] ?? []) as $page) {
+            foreach ((mcp_section($language, 'pages') ?? []) as $page) {
                 if ($section !== '' && ($page['section'] ?? '') !== $section) {
                     continue;
                 }

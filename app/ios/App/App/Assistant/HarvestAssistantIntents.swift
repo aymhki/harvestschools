@@ -131,14 +131,8 @@ struct GetTuitionFeesIntent: AppIntent {
     var stage: SchoolStageEntity?
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            let message = HarvestAssistantPhrasing.unavailableKnowledge()
-
-            return .result(value: message, dialog: IntentDialog(stringLiteral: message))
-        }
-
-        let currency = knowledge.school?.currency ?? "EGP"
-        var candidates = (knowledge.stages ?? []).map { SchoolStageEntity(stage: $0) }
+        let currency = (await HarvestAssistantContext.school())?.currency ?? "EGP"
+        var candidates = (await HarvestAssistantContext.stages()).map { SchoolStageEntity(stage: $0) }
 
         if let stage = stage {
             candidates = candidates.filter { $0.id == stage.id }
@@ -192,13 +186,7 @@ struct GetStagesOfferedIntent: AppIntent {
     var department: SchoolDepartmentEntity?
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            let message = HarvestAssistantPhrasing.unavailableKnowledge()
-
-            return .result(value: message, dialog: IntentDialog(stringLiteral: message))
-        }
-
-        var stages = (knowledge.stages ?? []).map { SchoolStageEntity(stage: $0) }
+        var stages = (await HarvestAssistantContext.stages()).map { SchoolStageEntity(stage: $0) }
 
         if let department = department {
             stages = stages.filter { $0.departmentName == department.name }
@@ -241,12 +229,6 @@ struct GetSchoolStaffIntent: AppIntent {
     var query: String?
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            let message = HarvestAssistantPhrasing.unavailableKnowledge()
-
-            return .result(value: message, dialog: IntentDialog(stringLiteral: message))
-        }
-
         var staff = try await SchoolStaffQuery().allEntities()
 
         if let query = query, !query.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -303,7 +285,7 @@ struct GetLibraryBooksIntent: AppIntent {
             return .result(value: line, dialog: IntentDialog(stringLiteral: line))
         }
 
-        guard await HarvestAssistantContext.knowledge() != nil else {
+        guard await HarvestAssistantContext.school() != nil else {
             let message = HarvestAssistantPhrasing.unavailableKnowledge()
 
             return .result(value: message, dialog: IntentDialog(stringLiteral: message))
@@ -366,19 +348,15 @@ struct FindAcademicEventsIntent: AppIntent {
     var toDate: Date?
 
     func perform() async throws -> some IntentResult & ReturnsValue<[AcademicEventEntity]> & ProvidesDialog {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return .result(value: [], dialog: IntentDialog(stringLiteral: HarvestAssistantPhrasing.unavailableKnowledge()))
-        }
-
-        var events = (knowledge.events ?? []).map { AcademicEventEntity(event: $0) }
+        var rawEvents = await HarvestAssistantContext.events()
 
         if let calendar = calendar {
             let calendarId = calendar.id
 
-            events = events.filter { event in
-                (knowledge.events ?? []).contains { $0.id == event.id && $0.calendarId == calendarId }
-            }
+            rawEvents = rawEvents.filter { $0.calendarId == calendarId }
         }
+
+        var events = rawEvents.map { AcademicEventEntity(event: $0) }
 
         if let query = query, !query.isEmpty {
             events = events.filter { HarvestAssistantContext.matches([$0.title, $0.calendarLabel], terms: [query]) }
@@ -421,12 +399,8 @@ struct NextSchoolEventIntent: AppIntent {
     var calendar: SchoolCalendarEntity?
 
     func perform() async throws -> some IntentResult & ReturnsValue<AcademicEventEntity?> & ProvidesDialog {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return .result(value: nil, dialog: IntentDialog(stringLiteral: HarvestAssistantPhrasing.unavailableKnowledge()))
-        }
-
         let now = Date().timeIntervalSince1970 * 1000
-        var upcoming = (knowledge.events ?? []).filter { ($0.startDate ?? 0) >= now }
+        var upcoming = (await HarvestAssistantContext.events()).filter { ($0.startDate ?? 0) >= now }
 
         if let calendar = calendar {
             upcoming = upcoming.filter { $0.calendarId == calendar.id }
@@ -510,17 +484,13 @@ struct OpenSchoolLocationIntent: AppIntent {
     static var openAppWhenRun: Bool { true }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        guard let knowledge = await HarvestAssistantContext.knowledge() else {
-            return .result(dialog: IntentDialog(stringLiteral: HarvestAssistantPhrasing.unavailableKnowledge()))
-        }
-
-        guard let mapsUrl = knowledge.school?.mapsUrl, !mapsUrl.isEmpty else {
+        guard let mapsUrl = await HarvestAssistantContext.school()?.mapsUrl, !mapsUrl.isEmpty else {
             return .result(dialog: IntentDialog(stringLiteral: HarvestAssistantPhrasing.noMatch()))
         }
 
         HarvestAssistantPendingAction.store(type: "url", value: mapsUrl)
 
-        let address = knowledge.school?.address ?? ""
+        let address = await HarvestAssistantContext.school()?.address ?? ""
 
         return .result(dialog: IntentDialog(stringLiteral: address.isEmpty ? mapsUrl : address))
     }

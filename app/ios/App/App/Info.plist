@@ -6,6 +6,27 @@
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>INAlternativeAppNames</key>
+	<array>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>Harvest Schools</string>
+			<key>INAlternativeAppNamePronounciation</key>
+			<string>harvist skoolz</string>
+		</dict>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>Harvest International Schools</string>
+			<key>INAlternativeAppNamePronounciation</key>
+			<string>harvist inter nash unal skoolz</string>
+		</dict>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>Harvest</string>
+			<key>INAlternativeAppNamePronounciation</key>
+			<string>harvist</string>
+		</dict>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>H. I. S.</string>
 	<key>CFBundleExecutable</key>
