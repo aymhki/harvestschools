@@ -15,6 +15,7 @@ enum HarvestAssistantContext {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolFactEntity: AppEntity, Identifiable {
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "School Fact" }
@@ -22,8 +23,11 @@ struct SchoolFactEntity: AppEntity, Identifiable {
     static var defaultQuery: SchoolFactQuery { SchoolFactQuery() }
 
     var id: String
+    @Property(title: "Topic", indexingKey: \.title)
     var topic: String
+    @Property(title: "Answer", indexingKey: \.contentDescription)
     var answer: String
+    @Property(title: "Keywords", indexingKey: \.keywords)
     var keywords: [String]
     var routePath: String?
 
@@ -40,6 +44,7 @@ struct SchoolFactEntity: AppEntity, Identifiable {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolFactQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [SchoolFactEntity] {
@@ -82,6 +87,7 @@ struct SchoolFactQuery: EntityStringQuery {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolStageEntity: AppEntity, Identifiable {
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "School Stage" }
@@ -89,7 +95,9 @@ struct SchoolStageEntity: AppEntity, Identifiable {
     static var defaultQuery: SchoolStageQuery { SchoolStageQuery() }
 
     var id: String
+    @Property(title: "Stage", indexingKey: \.title)
     var name: String
+    @Property(title: "Department", indexingKey: \.contentDescription)
     var departmentName: String
     var sectionTitle: String
     var isOffered: Bool
@@ -113,6 +121,7 @@ struct SchoolStageEntity: AppEntity, Identifiable {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolStageQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [SchoolStageEntity] {
@@ -144,6 +153,7 @@ struct SchoolStageQuery: EntityStringQuery {
     }
 }
 
+@available(iOS 18.4, *)
 struct AcademicEventEntity: AppEntity, Identifiable {
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "Academic Event" }
@@ -151,9 +161,11 @@ struct AcademicEventEntity: AppEntity, Identifiable {
     static var defaultQuery: AcademicEventQuery { AcademicEventQuery() }
 
     var id: String
+    @Property(title: "Event", indexingKey: \.title)
     var title: String
     var startDate: Date?
     var endDate: Date?
+    @Property(title: "Calendar", indexingKey: \.contentDescription)
     var calendarLabel: String
     var routePath: String?
 
@@ -177,6 +189,7 @@ struct AcademicEventEntity: AppEntity, Identifiable {
     }
 }
 
+@available(iOS 18.4, *)
 struct AcademicEventQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [AcademicEventEntity] {
@@ -214,6 +227,7 @@ struct AcademicEventQuery: EntityStringQuery {
     }
 }
 
+@available(iOS 18.4, *)
 struct AppPageEntity: AppEntity, Identifiable {
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "School Page" }
@@ -221,7 +235,9 @@ struct AppPageEntity: AppEntity, Identifiable {
     static var defaultQuery: AppPageQuery { AppPageQuery() }
 
     var id: String
+    @Property(title: "Page", indexingKey: \.title)
     var title: String
+    @Property(title: "Keywords", indexingKey: \.keywords)
     var keywords: [String]
     var routePath: String
 
@@ -237,6 +253,7 @@ struct AppPageEntity: AppEntity, Identifiable {
     }
 }
 
+@available(iOS 18.4, *)
 struct AppPageQuery: EntityStringQuery {
 
     func entities(for identifiers: [String]) async throws -> [AppPageEntity] {
@@ -274,6 +291,7 @@ struct AppPageQuery: EntityStringQuery {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolDepartmentEntity: AppEntity, Identifiable {
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "School Department" }
@@ -281,7 +299,9 @@ struct SchoolDepartmentEntity: AppEntity, Identifiable {
     static var defaultQuery: SchoolDepartmentQuery { SchoolDepartmentQuery() }
 
     var id: String
+    @Property(title: "Department", indexingKey: \.title)
     var name: String
+    @Property(title: "Contact Number", indexingKey: \.contentDescription)
     var contactNumber: String
     var isAcademic: Bool
     var routePath: String?
@@ -299,6 +319,7 @@ struct SchoolDepartmentEntity: AppEntity, Identifiable {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolDepartmentQuery: EntityStringQuery, EnumerableEntityQuery {
 
     func allEntities() async throws -> [SchoolDepartmentEntity] {
@@ -320,6 +341,7 @@ struct SchoolDepartmentQuery: EntityStringQuery, EnumerableEntityQuery {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolStaffEntity: AppEntity, Identifiable {
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "School Staff Member" }
@@ -327,7 +349,9 @@ struct SchoolStaffEntity: AppEntity, Identifiable {
     static var defaultQuery: SchoolStaffQuery { SchoolStaffQuery() }
 
     var id: String
+    @Property(title: "Name", indexingKey: \.title)
     var name: String
+    @Property(title: "Position", indexingKey: \.contentDescription)
     var position: String
     var subject: String
     var degree: String
@@ -351,6 +375,7 @@ struct SchoolStaffEntity: AppEntity, Identifiable {
     }
 }
 
+@available(iOS 18.4, *)
 struct SchoolStaffQuery: EntityStringQuery {
 
     func allEntities() async throws -> [SchoolStaffEntity] {
@@ -438,6 +463,7 @@ struct LibraryCategoryQuery: EntityStringQuery, EnumerableEntityQuery {
     }
 }
 
+@available(iOS 18.4, *)
 struct LibraryBookEntity: AppEntity, Identifiable {
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "Library Book" }
@@ -445,7 +471,9 @@ struct LibraryBookEntity: AppEntity, Identifiable {
     static var defaultQuery: LibraryBookQuery { LibraryBookQuery() }
 
     var id: String
+    @Property(title: "Title", indexingKey: \.title)
     var title: String
+    @Property(title: "Series", indexingKey: \.contentDescription)
     var series: String
     var categoryKey: String
     var categoryName: String
@@ -470,6 +498,7 @@ struct LibraryBookEntity: AppEntity, Identifiable {
     }
 }
 
+@available(iOS 18.4, *)
 struct LibraryBookQuery: EntityStringQuery {
 
     func allEntities() async throws -> [LibraryBookEntity] {

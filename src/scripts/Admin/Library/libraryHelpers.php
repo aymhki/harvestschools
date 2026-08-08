@@ -85,13 +85,3 @@ function library_validate_book($data) {
 }
 
 
-function library_refresh_assistant_knowledge($conn, $docRoot) {
-    try {
-        public_school_write_artifacts($conn, $docRoot);
-
-        return null;
-    } catch (Throwable $e) {
-        return ' The library pages are updated, but the Siri and Gemini knowledge files could not be '
-            . 'refreshed: ' . $e->getMessage();
-    }
-}

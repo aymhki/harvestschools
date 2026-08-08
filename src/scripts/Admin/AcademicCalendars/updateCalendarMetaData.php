@@ -68,11 +68,9 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    $warning = calendar_refresh_assistant_knowledge($conn, $doc_root);
-
     echo json_encode([
         "success" => true,
-        "message" => "Calendar details updated." . ($warning ?? ''),
+        "message" => "Calendar details updated.",
         "code"    => 200
     ]);
 } catch (Throwable $e) {

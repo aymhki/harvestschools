@@ -142,11 +142,9 @@ try {
 
     $conn->commit();
 
-    $warning = calendar_refresh_assistant_knowledge($conn, $doc_root);
-
     echo json_encode([
         "success"      => true,
-        "message"      => "Academic calendar created with " . count($events) . " events." . ($warning ?? ''),
+        "message"      => "Academic calendar created with " . count($events) . " events.",
         "code"         => 200,
         "calendarKey"  => $calendarKey,
         "academicYear" => $academicYear

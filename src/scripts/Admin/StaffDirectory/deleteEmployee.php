@@ -48,11 +48,9 @@ try {
         exit;
     }
 
-    $warning = staff_refresh_assistant_knowledge($conn, $doc_root);
-
     echo json_encode([
         "success" => true,
-        "message" => "Employee deleted successfully." . ($warning ?? ''),
+        "message" => "Employee deleted successfully.",
         "code"    => 200
     ]);
 } catch (Throwable $e) {
