@@ -1,4 +1,9 @@
-.corporate-footer {
+.admin-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     padding: 1rem;
     background-color: inherit;
     color: inherit;
@@ -7,7 +12,7 @@
     border-top: 0.1rem solid rgba(150, 150, 150, 0.2);
 }
 
-.corporate-copy-right-text {
+.admin-copy-right-text {
     font-size: 0.5rem;
     font-family: var(--english-normal-font);
     text-align: center;
@@ -15,14 +20,18 @@
 }
 
 
+.admin-copy-right-text:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
 @media (max-width: 768px) {
-    .corporate-copy-right-text {
-        font-size: 0.5rem;
+    .admin-copy-right-text {
+        font-size: 0.3rem;
     }
 }
 
 @media (prefers-color-scheme: dark) {
-    .corporate-copy-right-text {
+    .admin-copy-right-text {
         color: var(--fb-white-color);
     }
 }

@@ -1534,14 +1534,12 @@ function Table({
 
                     <div className={"table-module-header"}>
                     <div className={"table-module-header-buttons-wrapper"}>
-                        {headerModuleElements && headerModuleElements.map((element, index) => (
-                            <Fragment key={index}>{element}</Fragment>
-                        ))}
                         {finalTableData && allowHideColumns && (
                             <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
                                 {'Show/Hide Columns'}
                             </button>
                         )}
+
                         {finalTableData && allowExport && (
                             <button onClick={() => {
                                 if (!finalTableData) return;
@@ -1563,9 +1561,14 @@ function Table({
                                 Export to CSV
                             </button>
                         )}
+
                         {finalTableData && hasActiveFilters() && (
                             <button onClick={resetAllFilters}>Reset Filters</button>
                         )}
+
+                        {headerModuleElements && headerModuleElements.map((element, index) => (
+                            <Fragment key={index}>{element}</Fragment>
+                        ))}
                     </div>
 
                     {renderCustomScrollbar(true)}
