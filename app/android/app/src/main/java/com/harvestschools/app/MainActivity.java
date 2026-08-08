@@ -67,6 +67,23 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().getDecorView().post(this::setUpFloatingChrome);
+        getWindow().getDecorView().post(this::republishAssistantShortcuts);
+    }
+
+    private void republishAssistantShortcuts() {
+        try {
+            String language = java.util.Locale.getDefault().getLanguage();
+            String normalised = "ar".equalsIgnoreCase(language) ? "ar" : "en";
+
+            org.json.JSONObject knowledge =
+                    com.harvestschools.app.assistant.HarvestAssistantStore.readStoredKnowledge(this, normalised);
+
+            if (knowledge != null) {
+                com.harvestschools.app.assistant.HarvestAssistantShortcutPublisher.publish(this, knowledge);
+            }
+        } catch (Exception publishError) {
+            com.getcapacitor.Logger.warn("Could not republish the assistant shortcuts: " + publishError.getMessage());
+        }
     }
 
     @Override

@@ -94,6 +94,10 @@ enum HarvestAssistantIndexer {
     static let indexedIdentifiersKey = "harvest_assistant_indexed_identifiers"
 
     static func start() {
+        Task {
+            await reindexIfAvailable()
+        }
+
         NotificationCenter.default.addObserver(
             forName: .harvestAssistantKnowledgeUpdated,
             object: nil,
@@ -116,6 +120,8 @@ enum HarvestAssistantIndexer {
     }
 
     static func reindexIfAvailable() async {
+        HarvestAppShortcuts.updateAppShortcutParameters()
+
         guard #available(iOS 18.0, *) else {
             return
         }
