@@ -11,6 +11,36 @@ const MCP_LIBRARY_CATEGORY_KEYS = [
     'arabic-information', 'arabic-general', 'arabic-religion', 'arabic-stories',
 ];
 
+/**
+ * Every property any tool advertises must be a parameter on the server's tool
+ * handler, or the SDK drops it on the way in and the tool silently behaves as if
+ * it were never passed. Adding a parameter to a schema without adding it there
+ * is the mistake this catches.
+ */
+function mcp_assert_handler_covers_schemas(array $handlerParameters): void {
+    $advertised = [];
+
+    foreach (mcp_tool_schemas() as $tool => $schema) {
+        foreach (array_keys($schema['inputSchema']['properties'] ?? []) as $property) {
+            $advertised[$property][] = $tool;
+        }
+    }
+
+    $missing = array_diff(array_keys($advertised), $handlerParameters);
+
+    if ($missing !== []) {
+        $detail = [];
+
+        foreach ($missing as $property) {
+            $detail[] = $property . ' (' . implode(', ', $advertised[$property]) . ')';
+        }
+
+        throw new RuntimeException(
+            'MCP tool handler is missing parameters that tool schemas advertise: ' . implode('; ', $detail)
+        );
+    }
+}
+
 function mcp_language_property(): array {
     return ['type' => 'string', 'enum' => ['en', 'ar'], 'default' => 'en', 'description' => 'Response language.'];
 }

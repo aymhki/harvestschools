@@ -71,6 +71,11 @@ $mcpBuilder = Server::builder()
     ->setInstructions(MCP_INSTRUCTIONS)
     ->setSession(new HarvestDatabaseSessionStore($mcpConnection, MCP_SESSION_TTL_SECONDS));
 
+mcp_assert_handler_covers_schemas([
+    'query', 'language', 'department', 'stage', 'division', 'fromDate', 'toDate',
+    'section', 'category', 'collection', 'limit',
+]);
+
 foreach (mcp_tool_schemas() as $mcpToolName => $mcpToolSchema) {
     $mcpBuilder->addTool(
         handler: static function (
@@ -82,9 +87,13 @@ foreach (mcp_tool_schemas() as $mcpToolName => $mcpToolSchema) {
             string $fromDate = '',
             string $toDate = '',
             string $section = '',
+            string $category = '',
+            string $collection = '',
+            int $limit = 0,
         ) use ($mcpToolName): string {
             return mcp_tool_invoke($mcpToolName, compact(
-                'query', 'language', 'department', 'stage', 'division', 'fromDate', 'toDate', 'section'
+                'query', 'language', 'department', 'stage', 'division', 'fromDate', 'toDate',
+                'section', 'category', 'collection', 'limit'
             ));
         },
         name: $mcpToolName,
