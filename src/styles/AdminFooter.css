@@ -10,6 +10,7 @@
     text-align: center;
     font-size: 0.9rem;
     border-top: 0.1rem solid rgba(150, 150, 150, 0.2);
+    overflow: hidden;
 }
 
 .admin-copy-right-text {
