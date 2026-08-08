@@ -26,7 +26,7 @@
   "scripts": {
     "dev": "vite --port 5175",
     "android": "npx cap run android",
-    "ios": "npx cap run ios --target-name \"iPhone 17e\"",
+    "ios": "npx cap run ios --target-name \"iPhone Air\"",
     "build": "rm -rf ../../dist/mobile-app && vite build --outDir ../../dist/mobile-app && npx cap sync"
   }
 }

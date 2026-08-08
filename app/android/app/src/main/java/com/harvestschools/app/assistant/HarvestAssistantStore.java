@@ -178,9 +178,9 @@ public final class HarvestAssistantStore {
 
 
     public static JSONObject knowledge(Context context, String language) {
-        JSONObject stored = readStoredKnowledge(context, language);
+        JSONObject fresh = fetchRemoteKnowledge(context, language);
 
-        return stored != null ? stored : fetchRemoteKnowledge(context, language);
+        return fresh != null ? fresh : readStoredKnowledge(context, language);
     }
 
     private static String readFully(InputStream stream) throws IOException {
