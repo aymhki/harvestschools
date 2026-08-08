@@ -39,9 +39,7 @@ try {
 
     library_resequence($conn, $categoryKey);
 
-    $warning = library_refresh_assistant_knowledge($conn, $doc_root);
-
-    echo json_encode(["success" => true, "message" => "Book deleted." . ($warning ?? ""), "code" => 200]);
+    echo json_encode(["success" => true, "message" => "Book deleted.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);
 } finally {

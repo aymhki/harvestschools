@@ -17,17 +17,6 @@ function staff_error($message, $code = 400) {
 }
 
 
-function staff_refresh_assistant_knowledge($conn, $docRoot) {
-    try {
-        public_school_write_artifacts($conn, $docRoot);
-
-        return null;
-    } catch (Throwable $e) {
-        return ' The staff pages are updated, but the Siri and Gemini knowledge files could not be '
-            . 'refreshed: ' . $e->getMessage();
-    }
-}
-
 function staff_yes_no_to_int($value) {
     if (is_bool($value)) {
         return $value ? 1 : 0;

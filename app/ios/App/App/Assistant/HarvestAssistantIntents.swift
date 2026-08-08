@@ -52,6 +52,7 @@ enum HarvestAssistantPhrasing {
             : "I could not find information about that. You can contact the admissions department for help."
     }
 
+    @available(iOS 18.4, *)
     static func libraryLine(for book: LibraryBookEntity) -> String {
         let shelf = "\(book.collectionName) - \(book.categoryName)"
         let series = book.series.isEmpty ? "" : ", \(book.series)"
@@ -72,6 +73,7 @@ enum HarvestAssistantPhrasing {
     }
 }
 
+@available(iOS 18.4, *)
 struct GetSchoolInfoIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Get Harvest School Information" }
@@ -111,6 +113,7 @@ struct GetSchoolInfoIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct GetTuitionFeesIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Get Harvest Tuition Fees" }
@@ -174,6 +177,7 @@ struct GetTuitionFeesIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct GetStagesOfferedIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Get Harvest Stages Offered" }
@@ -222,6 +226,7 @@ struct GetStagesOfferedIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct GetSchoolStaffIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Get Harvest School Staff" }
@@ -271,6 +276,7 @@ struct GetSchoolStaffIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct GetLibraryBooksIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Get Harvest Library Books" }
@@ -336,6 +342,7 @@ struct GetLibraryBooksIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct FindAcademicEventsIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Find Harvest Academic Events" }
@@ -399,6 +406,7 @@ struct FindAcademicEventsIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct NextSchoolEventIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Next Harvest School Event" }
@@ -439,6 +447,7 @@ struct NextSchoolEventIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct OpenSchoolPageIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Open Harvest School Page" }
@@ -459,6 +468,7 @@ struct OpenSchoolPageIntent: AppIntent {
     }
 }
 
+@available(iOS 18.4, *)
 struct CallSchoolDepartmentIntent: AppIntent {
 
     static var title: LocalizedStringResource { "Call a Harvest School Department" }

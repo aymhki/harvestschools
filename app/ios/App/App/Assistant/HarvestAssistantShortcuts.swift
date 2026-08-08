@@ -1,6 +1,7 @@
 import Foundation
 import AppIntents
 
+@available(iOS 18.4, *)
 struct HarvestAppShortcuts: AppShortcutsProvider {
 
     static var shortcutTileColor: ShortcutTileColor { .navy }

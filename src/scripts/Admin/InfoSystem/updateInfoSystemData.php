@@ -658,13 +658,10 @@ PHP_CODE;
         throw new Exception("Failed to write to $configPath", 500);
     }
 
-    $knowledgeHashes = public_school_write_artifacts($conn, $doc_root, $postData['is_development'] ? '-tmp' : '');
-
     echo json_encode([
         "success" => true,
-        "message" => "Database updated, botConfig.php and the public school knowledge artifacts generated successfully.",
-        "code" => 200,
-        "knowledgeArtifacts" => $knowledgeHashes
+        "message" => "Database updated and botConfig.php generated successfully.",
+        "code" => 200
     ]);
 
 } catch (Throwable $e) {

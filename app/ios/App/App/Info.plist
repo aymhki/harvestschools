@@ -34,6 +34,8 @@
 	<string>Save pictures from the app to your photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose a picture from your photos to add it to your alumni post.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Ask siri questions about the latest school info.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

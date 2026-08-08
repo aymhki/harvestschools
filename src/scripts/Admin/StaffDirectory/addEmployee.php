@@ -107,11 +107,9 @@ try {
         exit;
     }
 
-    $warning = staff_refresh_assistant_knowledge($conn, $doc_root);
-
     echo json_encode([
         "success"      => true,
-        "message"      => "Employee added successfully." . ($warning ?? ''),
+        "message"      => "Employee added successfully.",
         "code"         => 200,
         "employeeCode" => $employeeCode
     ]);

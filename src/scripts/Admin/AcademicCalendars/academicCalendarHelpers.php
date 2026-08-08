@@ -217,13 +217,3 @@ function calendar_store_pdf($file, $docRoot, $calendarKey, $academicYear) {
     return ["success" => true, "path" => '/' . CALENDAR_PDF_DIRECTORY . '/' . $fileName];
 }
 
-function calendar_refresh_assistant_knowledge($conn, $docRoot) {
-    try {
-        public_school_write_artifacts($conn, $docRoot);
-
-        return null;
-    } catch (Throwable $e) {
-        return ' The calendar pages are updated, but the Siri and Gemini knowledge files could not be '
-            . 'refreshed: ' . $e->getMessage();
-    }
-}

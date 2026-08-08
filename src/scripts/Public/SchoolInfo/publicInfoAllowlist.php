@@ -5,9 +5,6 @@ const PUBLIC_INFO_SETTING_ALLOWLIST = [];
 const PUBLIC_INFO_RULE_SETTING_KEYS = ['SHOW_UNOFFERED_STAGES'];
 const PUBLIC_INFO_SCHEMA_VERSION = 1;
 
-const PUBLIC_INFO_REQUIRED_SECTIONS = [
-    'school', 'departments', 'stages', 'policies', 'facts', 'events', 'pages', 'staff', 'library',
-];
 const PUBLIC_INFO_SUPPORTED_LANGUAGES = ['en', 'ar'];
 
 function public_info_normalise_language($requested) {

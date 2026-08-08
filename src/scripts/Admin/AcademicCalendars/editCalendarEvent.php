@@ -72,11 +72,9 @@ try {
 
     calendar_resequence_events($conn, calendar_id_for_event($conn, $eventId));
 
-    $warning = calendar_refresh_assistant_knowledge($conn, $doc_root);
-
     echo json_encode([
         "success" => true,
-        "message" => "Event updated." . ($warning ?? ''),
+        "message" => "Event updated.",
         "code"    => 200
     ]);
 } catch (Throwable $e) {

@@ -91,11 +91,9 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    $warning = staff_refresh_assistant_knowledge($conn, $doc_root);
-
     echo json_encode([
         "success" => true,
-        "message" => "Employee updated successfully." . ($warning ?? ''),
+        "message" => "Employee updated successfully.",
         "code"    => 200
     ]);
 } catch (Throwable $e) {

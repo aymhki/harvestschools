@@ -2,7 +2,7 @@ import Foundation
 import AppIntents
 import CoreSpotlight
 
-@available(iOS 18.0, *)
+@available(iOS 18.4, *)
 extension SchoolFactEntity: IndexedEntity {
 
     var attributeSet: CSSearchableItemAttributeSet {
@@ -16,7 +16,7 @@ extension SchoolFactEntity: IndexedEntity {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.4, *)
 extension SchoolStageEntity: IndexedEntity {
 
     var attributeSet: CSSearchableItemAttributeSet {
@@ -30,7 +30,7 @@ extension SchoolStageEntity: IndexedEntity {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.4, *)
 extension AcademicEventEntity: IndexedEntity {
 
     var attributeSet: CSSearchableItemAttributeSet {
@@ -46,7 +46,7 @@ extension AcademicEventEntity: IndexedEntity {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.4, *)
 extension AppPageEntity: IndexedEntity {
 
     var attributeSet: CSSearchableItemAttributeSet {
@@ -59,7 +59,7 @@ extension AppPageEntity: IndexedEntity {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.4, *)
 extension SchoolStaffEntity: IndexedEntity {
 
     var attributeSet: CSSearchableItemAttributeSet {
@@ -73,7 +73,7 @@ extension SchoolStaffEntity: IndexedEntity {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.4, *)
 extension LibraryBookEntity: IndexedEntity {
 
     var attributeSet: CSSearchableItemAttributeSet {
@@ -120,16 +120,21 @@ enum HarvestAssistantIndexer {
     }
 
     static func reindexIfAvailable() async {
-        HarvestAppShortcuts.updateAppShortcutParameters()
-
-        guard #available(iOS 18.0, *) else {
+        guard #available(iOS 18.4, *) else {
             return
         }
+
+        await refresh()
+    }
+
+    @available(iOS 18.4, *)
+    private static func refresh() async {
+        HarvestAppShortcuts.updateAppShortcutParameters()
 
         await reindex()
     }
 
-    @available(iOS 18.0, *)
+    @available(iOS 18.4, *)
     static func reindex() async {
         guard let knowledge = await HarvestAssistantContext.knowledge() else {
             return
@@ -172,7 +177,7 @@ enum HarvestAssistantIndexer {
         storeIdentifiers(currentIdentifiers)
     }
 
-    @available(iOS 18.0, *)
+    @available(iOS 18.4, *)
     private static func deleteRemoved<Entity: IndexedEntity>(
         index: CSSearchableIndex,
         kind: String,

@@ -140,16 +140,6 @@ function public_school_departments($conn, $language) {
     return $departments;
 }
 
-/**
- * The published stages.
- *
- * SHOW_UNOFFERED_STAGES decides membership and nothing else: when it is off the
- * unoffered stages are not here at all, and when it is on they are published on
- * the same footing as every other stage. Either way everything this returns is
- * a stage the school publishes, which is why no is_offered flag comes out of
- * here - a consumer that saw one would start hedging about a stage the school
- * chose to show.
- */
 function public_school_stages($conn, $language, $includeUnoffered, $departmentKey = null) {
     $stages = [];
 
@@ -197,10 +187,6 @@ function public_school_stages($conn, $language, $includeUnoffered, $departmentKe
             'sectionKey'     => $row['section_key'],
             'sectionTitle'   => public_info_localised($row, 'section_title', $language),
             'name'           => public_info_localised($row, 'name', $language),
-            // SHOW_UNOFFERED_STAGES decides membership: with it off the
-            // unoffered stages never leave the query, and with it on the school
-            // has chosen to present them as available. Either way a stage that
-            // reaches a reader is one they can act on, so the flag says so.
             'isOffered'      => $includeUnoffered ? true : ((int)$row['is_offered'] === 1),
             'minimumAge'     => public_info_localised($row, 'age', $language),
             'tuitionFees'    => $normalisedFees,
@@ -732,65 +718,8 @@ function public_school_document($conn, $language) {
 }
 
 
-function public_school_write_artifacts($conn, $docRoot, $suffix = '') {
-    $hashes = [];
-
-    foreach (PUBLIC_INFO_SUPPORTED_LANGUAGES as $language) {
-        $document = public_school_document($conn, $language);
-        $encoded = json_encode($document, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        if ($encoded === false) {
-            throw new Exception("Failed to encode the public school knowledge artifact for $language", 500);
-        }
-
-        $path = dirname(rtrim($docRoot, '/\\')) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR
-            . 'school-knowledge-' . $language . $suffix . '.json';
-        $tempPath = $path . '.' . uniqid('tmp', true);
-
-        if (file_put_contents($tempPath, $encoded) === false || !rename($tempPath, $path)) {
-            @unlink($tempPath);
-            throw new Exception("Failed to write $path", 500);
-        }
-
-        @chmod($path, 0644);
-
-        $hashes[$language] = $document['contentHash'];
-    }
-
-    return $hashes;
-}
-
-function public_school_artifact_path($docRoot, $language) {
-    return dirname(rtrim($docRoot, '/\\')) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR
-        . 'school-knowledge-' . public_info_normalise_language($language) . '.json';
-}
-
-function public_school_artifact_is_current($decoded) {
-    if (!is_array($decoded) || (int)($decoded['schemaVersion'] ?? 0) !== PUBLIC_INFO_SCHEMA_VERSION) {
-        return false;
-    }
-
-    foreach (PUBLIC_INFO_REQUIRED_SECTIONS as $section) {
-        if (!array_key_exists($section, $decoded)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 function public_school_load_document($docRoot, $language, &$conn = null) {
     $language = public_info_normalise_language($language);
-    $artifactPath = public_school_artifact_path($docRoot, $language);
-
-    if (is_file($artifactPath)) {
-        $raw = @file_get_contents($artifactPath);
-        $decoded = $raw === false ? null : json_decode($raw, true);
-
-        if (public_school_artifact_is_current($decoded)) {
-            return [$decoded, 'artifact'];
-        }
-    }
 
     if (!($conn instanceof mysqli)) {
         $dbConfig = require dirname(rtrim($docRoot, '/\\')) . '/configs/dbConfig.php';
@@ -803,15 +732,7 @@ function public_school_load_document($docRoot, $language, &$conn = null) {
         $conn->set_charset("utf8mb4");
     }
 
-    $document = public_school_document($conn, $language);
-
-    try {
-        public_school_write_artifacts($conn, $docRoot);
-    } catch (Throwable $writeError) {
-        error_log('[public-school-info] Could not refresh the knowledge artifact: ' . $writeError->getMessage());
-    }
-
-    return [$document, 'live'];
+    return [public_school_document($conn, $language), 'live'];
 }
 
 function public_school_content_hash($document) {

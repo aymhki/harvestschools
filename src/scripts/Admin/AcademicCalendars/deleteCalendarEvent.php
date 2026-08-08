@@ -61,11 +61,9 @@ try {
 
     calendar_resequence_events($conn, $calendarId);
 
-    $warning = calendar_refresh_assistant_knowledge($conn, $doc_root);
-
     echo json_encode([
         "success" => true,
-        "message" => "Event deleted." . ($warning ?? ''),
+        "message" => "Event deleted.",
         "code"    => 200
     ]);
 } catch (Throwable $e) {
