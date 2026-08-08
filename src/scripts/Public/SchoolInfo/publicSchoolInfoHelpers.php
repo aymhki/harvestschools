@@ -765,6 +765,20 @@ function public_school_artifact_path($docRoot, $language) {
         . 'school-knowledge-' . public_info_normalise_language($language) . '.json';
 }
 
+function public_school_artifact_is_current($decoded) {
+    if (!is_array($decoded) || (int)($decoded['schemaVersion'] ?? 0) !== PUBLIC_INFO_SCHEMA_VERSION) {
+        return false;
+    }
+
+    foreach (PUBLIC_INFO_REQUIRED_SECTIONS as $section) {
+        if (!array_key_exists($section, $decoded)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function public_school_load_document($docRoot, $language, &$conn = null) {
     $language = public_info_normalise_language($language);
     $artifactPath = public_school_artifact_path($docRoot, $language);
@@ -773,7 +787,7 @@ function public_school_load_document($docRoot, $language, &$conn = null) {
         $raw = @file_get_contents($artifactPath);
         $decoded = $raw === false ? null : json_decode($raw, true);
 
-        if (is_array($decoded) && (int)($decoded['schemaVersion'] ?? 0) === PUBLIC_INFO_SCHEMA_VERSION) {
+        if (public_school_artifact_is_current($decoded)) {
             return [$decoded, 'artifact'];
         }
     }
@@ -789,7 +803,15 @@ function public_school_load_document($docRoot, $language, &$conn = null) {
         $conn->set_charset("utf8mb4");
     }
 
-    return [public_school_document($conn, $language), 'live'];
+    $document = public_school_document($conn, $language);
+
+    try {
+        public_school_write_artifacts($conn, $docRoot);
+    } catch (Throwable $writeError) {
+        error_log('[public-school-info] Could not refresh the knowledge artifact: ' . $writeError->getMessage());
+    }
+
+    return [$document, 'live'];
 }
 
 function public_school_content_hash($document) {

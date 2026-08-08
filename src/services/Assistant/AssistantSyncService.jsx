@@ -126,6 +126,19 @@ const buildKnowledgeForLanguage = async ({ language, i18n, forceRefresh }) => {
 }
 
 
+const readNativeContentHash = async (language) => {
+    try {
+        const info = await AssistantBridge.getKnowledgeInfo({ language })
+
+        return info && info.contentHash ? String(info.contentHash) : null
+    } catch (infoError) {
+        console.warn(`[assistant] Could not read the stored "${language}" knowledge info`, infoError)
+
+        return null
+    }
+}
+
+
 const syncAssistantKnowledge = async ({ i18n, forceRefresh = false } = {}) => {
     const summary = { synced: [], skipped: [], failed: [], conflicts: 0 }
 
@@ -150,7 +163,11 @@ const syncAssistantKnowledge = async ({ i18n, forceRefresh = false } = {}) => {
             summary.conflicts += built.conflicts.length
             hashes[language] = built.knowledge.contentHash
 
-            const unchanged = previous
+            const nativeHash = await readNativeContentHash(language)
+
+            const unchanged = nativeHash !== null
+                && nativeHash === built.knowledge.contentHash
+                && previous
                 && previous.hashes
                 && previous.hashes[language] === built.knowledge.contentHash
 
