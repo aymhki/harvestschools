@@ -279,11 +279,11 @@ enum HarvestAssistantStore {
     }
 
     static func knowledge(language: String) async -> HarvestSchoolKnowledge? {
-        if let stored = storedKnowledge(language: language) {
-            return stored
+        if let fresh = await fetchRemoteKnowledge(language: language) {
+            return fresh
         }
 
-        return await fetchRemoteKnowledge(language: language)
+        return storedKnowledge(language: language)
     }
 
     static func preferredLanguage() -> String {

@@ -37,10 +37,10 @@ struct SchoolFactEntity: AppEntity, Identifiable {
 
     init(fact: HarvestSchoolFact) {
         self.id = fact.id
+        self.routePath = fact.routePath
         self.topic = fact.topic ?? ""
         self.answer = fact.answer ?? ""
         self.keywords = fact.keywords ?? []
-        self.routePath = fact.routePath
     }
 }
 
@@ -111,13 +111,13 @@ struct SchoolStageEntity: AppEntity, Identifiable {
 
     init(stage: HarvestSchoolStage) {
         self.id = stage.key
-        self.name = stage.name ?? ""
-        self.departmentName = stage.departmentName ?? ""
         self.sectionTitle = stage.sectionTitle ?? ""
         self.isOffered = stage.isOffered ?? true
         self.minimumAge = stage.minimumAge
         self.tuitionFees = stage.tuitionFees
         self.routePath = stage.routePath
+        self.name = stage.name ?? ""
+        self.departmentName = stage.departmentName ?? ""
     }
 }
 
@@ -181,11 +181,11 @@ struct AcademicEventEntity: AppEntity, Identifiable {
 
     init(event: HarvestAcademicEvent) {
         self.id = event.id
-        self.title = event.title ?? ""
         self.startDate = event.startDate.map { Date(timeIntervalSince1970: $0 / 1000) }
         self.endDate = event.endDate.map { Date(timeIntervalSince1970: $0 / 1000) }
-        self.calendarLabel = event.calendarLabel ?? ""
         self.routePath = event.routePath
+        self.title = event.title ?? ""
+        self.calendarLabel = event.calendarLabel ?? ""
     }
 }
 
@@ -247,9 +247,9 @@ struct AppPageEntity: AppEntity, Identifiable {
 
     init(page: HarvestAppPage) {
         self.id = page.id
+        self.routePath = page.routePath ?? "/home"
         self.title = page.title ?? ""
         self.keywords = page.keywords ?? []
-        self.routePath = page.routePath ?? "/home"
     }
 }
 
@@ -312,10 +312,10 @@ struct SchoolDepartmentEntity: AppEntity, Identifiable {
 
     init(department: HarvestSchoolDepartment) {
         self.id = department.key
-        self.name = department.name ?? ""
-        self.contactNumber = department.contactNumber ?? ""
         self.isAcademic = department.isAcademic ?? false
         self.routePath = department.routePath
+        self.name = department.name ?? ""
+        self.contactNumber = department.contactNumber ?? ""
     }
 }
 
@@ -366,12 +366,12 @@ struct SchoolStaffEntity: AppEntity, Identifiable {
 
     init(member: HarvestStaffMember, department: HarvestStaffDepartment, index: Int) {
         self.id = "staff.\(department.departmentKey).\(index)"
-        self.name = member.name ?? ""
-        self.position = member.position ?? ""
         self.subject = member.subject ?? ""
         self.degree = member.degree ?? ""
         self.departmentName = department.departmentName ?? ""
         self.routePath = department.routePath
+        self.name = member.name ?? ""
+        self.position = member.position ?? ""
     }
 }
 
@@ -489,12 +489,12 @@ struct LibraryBookEntity: AppEntity, Identifiable {
 
     init(book: HarvestLibraryBook, category: HarvestLibraryCategory, index: Int) {
         self.id = "library.\(category.categoryKey).\(index)"
-        self.title = book.title ?? ""
-        self.series = book.series ?? ""
         self.categoryKey = category.categoryKey
         self.categoryName = category.categoryName ?? ""
         self.collectionName = category.collectionName ?? ""
         self.routePath = category.routePath
+        self.title = book.title ?? ""
+        self.series = book.series ?? ""
     }
 }
 
