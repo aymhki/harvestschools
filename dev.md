@@ -17,4 +17,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] New gallery videos need to be added.
 - [ ] /vacancies does not correctly redirect in the main domain and somehow shows an outdated version of /vacancies.
 - [ ] Alumni students should have public profile pages.
-- [ ] Admin side bar should stick the selected page once it exists the height of the portal scroll
+- [ ] Admin side bar should stick the selected page once it exists the height of the portal scroll.
+- [ ] Sign in with biometrics doesn't work on android.
+- [ ] Scrolling to the top inside a modal popup interferes with pull to refresh mechanism.
+

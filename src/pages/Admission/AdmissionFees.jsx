@@ -13,8 +13,8 @@ function AdmissionFees() {
     <div className={"admission-fees-page"}>
 
         <Helmet>
-            <title>Harvest International School | Admission Fees</title>
-            <meta name="description" content="Learn more about the breakdown of the admission fees for each grade at each division of Harvest International School in Borg El Arab, Egypt."/>
+            <title>Harvest International School | Tuition Fees</title>
+            <meta name="description" content="Learn more about the breakdown of the tuition fees for each grade at each division of Harvest International School in Borg El Arab, Egypt."/>
             <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Admission, Admission Process, Admission Requirements, Admissione Fees, مصاريف مدارس هارفست، متطلبات القبول، عملية القبول"/>
             <meta name="author" content="Harvest International School"/>
             <meta name="robots" content="index, follow"/>
