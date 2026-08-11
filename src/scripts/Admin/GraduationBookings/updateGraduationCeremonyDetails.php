@@ -92,8 +92,7 @@ try {
 
     $ceremonyTime = sprintf('%02d:%02d:00', $hourOfDay, (int)$minute);
 
-    /* The selected place details travel next to the label so the coordinates can
-     * be stored without a second lookup. */
+
     $placeDetails = json_decode($_POST['selectedPlace'] ?? '', true);
 
     $locationName = is_array($placeDetails) && !empty($placeDetails['name'])

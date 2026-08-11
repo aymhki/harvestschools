@@ -105,8 +105,7 @@
     font-size: 0.9rem;
 }
 
-/* A place with no Arabic name keeps its Latin spelling, isolated the same way
- * the version numbers are. */
+
 .app-home .app-home-weather-city.in-latin {
     font-family: var(--english-normal-font);
     direction: ltr;

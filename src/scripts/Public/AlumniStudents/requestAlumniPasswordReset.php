@@ -76,7 +76,6 @@ try {
         exit;
     }
 
-    // Fresh challenge for this account.
     $stmt = $conn->prepare(
         "DELETE FROM alumni_password_reset_challenges WHERE user_id = ? OR expires_at < NOW()"
     );

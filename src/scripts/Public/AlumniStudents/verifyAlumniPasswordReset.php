@@ -150,7 +150,6 @@ try {
         exit;
     }
 
-    // Success -> update password (bcrypt), clear challenge, sign out everywhere.
     $stmt = $conn->prepare("DELETE FROM alumni_password_reset_challenges WHERE id = ?");
     $stmt->bind_param("s", $resetHash);
     $stmt->execute();

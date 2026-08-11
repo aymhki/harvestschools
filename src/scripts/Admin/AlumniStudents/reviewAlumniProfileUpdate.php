@@ -76,8 +76,6 @@ try {
     $conn->begin_transaction();
 
     if ($decision === 'approved') {
-        // Re-validate uniqueness at approval time since other accounts may
-        // have taken the username or email while the update was pending.
         if ($updateRow['new_username'] !== null && alumni_username_taken($conn, $updateRow['new_username'], $alumniId)) {
             $conn->rollback();
             echo json_encode(["success" => false, "message" => "The requested username has been taken by another account since this update was submitted. Reject the update and ask the alumni student to pick another username.", "code" => 400]);

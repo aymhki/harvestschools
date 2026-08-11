@@ -75,8 +75,7 @@ const readBlobAsBase64 = (blob) => new Promise((resolve, reject) => {
 })
 
 
-/* iOS adds the pass in place through the PassKit review sheet, so the pass file
- * is downloaded here and handed to the native layer. */
+
 const addPassToAppleWallet = async (url) => {
     const response = await fetch(url)
 

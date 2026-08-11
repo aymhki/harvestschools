@@ -57,8 +57,6 @@ try {
     $postRow = $result->fetch_assoc();
 
     if ($postRow['status'] === 'pending' || $postRow['status'] === 'rejected') {
-        // The post has never been published: edit it in place. Editing a
-        // rejected post re-submits it for approval with the new content.
         $stmt = $conn->prepare(
             "UPDATE alumni_posts
              SET title = ?, content = ?, status = 'pending', admin_note = '', reviewed_at = NULL, reviewed_by = NULL

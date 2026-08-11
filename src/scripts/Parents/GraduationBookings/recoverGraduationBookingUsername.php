@@ -86,7 +86,7 @@ try {
             echo json_encode(["success" => false, "message" => "Please enter a valid email address.", "code" => 400]);
             exit;
         }
-        $target = tm_normalize($value); // lowercased/trimmed, arabic-digit folded
+        $target = tm_normalize($value);
 
         $localLike = '%' . tm_normalize(explode('@', $value)[0]) . '%';
         $stmt = $conn->prepare(

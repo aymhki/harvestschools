@@ -29,9 +29,7 @@ function OfflineBanner({ onRetry }) {
     const [isDismissed, setIsDismissed] = useState(false)
     const [isRetrying, setIsRetrying] = useState(false)
 
-    /* The copy stays in this file so the banner still reads correctly when the
-     * cached locale files are not available, but it follows the live language
-     * instead of a value read once at mount. */
+
     const copy = COPY[String(i18n.language || '').startsWith('ar') ? 'ar' : 'en']
 
     useEffect(() => {

@@ -324,11 +324,7 @@
     line-height: 1.6;
 }
 
-/* ------------------------------------------------------------------ */
-/* Graduation booking credential recovery (forgot password / username) */
-/* Mirrors the admin login recovery pattern; theme via shared vars so   */
-/* light + dark both work.                                              */
-/* ------------------------------------------------------------------ */
+
 .booking-login-form-wrapper h2 {
     text-align: center;
     margin: 0 0 1rem;

@@ -818,16 +818,11 @@
     z-index: var(--form-field-dropdown-z-index);
 }
 
-/* Fields near the bottom of the form open upwards instead. */
 .search-select-wrapper.opens-upwards .search-select-dropdown {
     top: auto;
     bottom: calc(100% + 0.25rem);
 }
 
-/* Where anchor positioning is available the list is a fixed element tied to the
- * field by name: the browser keeps it glued to the field as anything scrolls,
- * flips it above the field when there is no room below, and nothing clips it
- * because it is no longer inside the form's overflow. */
 @supports (anchor-name: --anchor) and (top: anchor(bottom)) {
     .search-select-dropdown {
         position: fixed;

@@ -279,8 +279,7 @@ const buildVerdictScript = () => `(() => {
 
     if (location.protocol !== 'https:') { return; }
 
-    /* Reporting before load would reveal a half painted page, which is what the
-     * blank few seconds were. */
+
     if (document.readyState === 'complete') {
         report();
 

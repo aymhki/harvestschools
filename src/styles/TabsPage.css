@@ -150,8 +150,6 @@
         overflow: hidden;
     }
 
-    /* The mobile bar shows one tab at a time with its own prev and next arrows,
-       so it never scrolls and never needs these. */
     .tabs-bar-scroll-arrow {
         display: none;
     }
