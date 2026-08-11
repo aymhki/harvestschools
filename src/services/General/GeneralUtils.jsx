@@ -265,6 +265,7 @@ const ENDPOINTS = {
     getOpenDaySignups: '/scripts/Admin/OpenDaySignups/getOpenDaySignups.php',
     servePublicAssetFile: '/scripts/Public/General/servePublicAssetFile.php',
     servePublicVideoThumbnail: '/scripts/Public/General/serveVideoThumbnail.php',
+    getPublicGallery: '/scripts/Public/Gallery/getPublicGallery.php',
     getPublicSchoolInfo: '/scripts/Public/SchoolInfo/getPublicSchoolInfo.php',
     getPublicSchoolStages: '/scripts/Public/SchoolInfo/getPublicSchoolStages.php',
     getPublicSchoolContacts: '/scripts/Public/SchoolInfo/getPublicSchoolContacts.php',

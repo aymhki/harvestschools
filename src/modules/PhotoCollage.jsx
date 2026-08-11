@@ -48,7 +48,8 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         Number.isFinite(item.thumbnailAt) ? item.thumbnailAt : DEFAULT_THUMBNAIL_SECONDS
     );
 
-    const thumbnailSource = (item) => servePublicAsset(item.src, { thumbnailAt: thumbnailSeconds(item) });
+    const mediaSource = (item, options = {}) => servePublicAsset(item.src, { ...options, root: item.root });
+    const thumbnailSource = (item) => mediaSource(item, { thumbnailAt: thumbnailSeconds(item) });
 
     const markThumbnailFailed = (source) => {
         setFailedThumbnails((current) => (current[source] ? current : { ...current, [source]: true }));
@@ -70,7 +71,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         >
             {failedThumbnails[item.src] ? (
                 <video
-                    src={`${servePublicAsset(item.src)}#t=${thumbnailSeconds(item)}`}
+                    src={`${mediaSource(item)}#t=${thumbnailSeconds(item)}`}
                     className={`${mediaClassName} video-preview-media`}
                     preload="metadata"
                     muted
@@ -104,7 +105,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                     (photos[maxIndex].isVideo) ? (
                         renderVideoPreview(photos[maxIndex], maxIndex, 'photo-slider-main-photo', 'video-preview-slider')
                     ) : (
-                        <img src={servePublicAsset(photos[maxIndex].src)} alt={photos[maxIndex].alt} className="photo-slider-main-photo" onClick={() => openLightBox(maxIndex)} />
+                        <img src={mediaSource(photos[maxIndex])} alt={photos[maxIndex].alt} className="photo-slider-main-photo" onClick={() => openLightBox(maxIndex)} />
                     )
                 )}
                 {title && <h2>{title}</h2>}
@@ -118,7 +119,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                 (collagePreview.isVideo) ? (
                     renderVideoPreview(collagePreview, 0, 'collage-preview-photo', 'video-preview-collage')
                     ) : (
-                    <img src={servePublicAsset(collagePreview.src)} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
+                    <img src={mediaSource(collagePreview)} alt={collagePreview.alt} className="collage-preview-photo" onClick={() => openLightBox(0)} />
                 )
             )}
         </div>
@@ -159,7 +160,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                         <video
                             key={photos[currentIndex].src}
                             ref={lightboxVideoRef}
-                            src={servePublicAsset(photos[currentIndex].src)}
+                            src={mediaSource(photos[currentIndex])}
                             poster={failedThumbnails[photos[currentIndex].src] ? undefined : thumbnailSource(photos[currentIndex])}
                             className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
                             preload="none"
@@ -169,7 +170,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                         ) : (
 
                         <img
-                            src={servePublicAsset(photos[currentIndex].src)}
+                            src={mediaSource(photos[currentIndex])}
                             alt={photos[currentIndex].alt}
                             className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
                             onLoad={handleImageLoad}
@@ -201,7 +202,8 @@ const mediaShape = PropTypes.shape({
     src: PropTypes.string.isRequired,
     alt: PropTypes.string.isRequired,
     isVideo: PropTypes.bool,
-    thumbnailAt: PropTypes.number
+    thumbnailAt: PropTypes.number,
+    root: PropTypes.string
 });
 
 PhotoCollage.propTypes = {

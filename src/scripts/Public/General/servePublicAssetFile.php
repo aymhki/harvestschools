@@ -1,15 +1,23 @@
 <?php
 
-$doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
-$ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
+require_once __DIR__ . '/publicMediaRoots.php';
 
-if (!is_dir($ASSETS_BASE)) {
+$requested_root = isset($_GET['root']) ? (string)$_GET['root'] : PUBLIC_MEDIA_DEFAULT_ROOT;
+
+if (!public_media_root_exists($requested_root)) {
+    http_response_code(400);
+    exit('Unknown media root');
+}
+
+$ASSETS_BASE = public_media_root($requested_root);
+
+if ($ASSETS_BASE === null) {
     http_response_code(500);
-    exit('CRITICAL ERROR: Forced root assets directory not found at: ' . $ASSETS_BASE);
+    exit('CRITICAL ERROR: Media root directory not found: ' . $requested_root);
 }
 
 
-$CACHE_BASE = dirname($ASSETS_BASE) . DIRECTORY_SEPARATOR . 'assets-cache' . DIRECTORY_SEPARATOR;
+$CACHE_BASE = public_media_cache_base();
 
 $ALLOWED_MIME = [
     'jpg'  => 'image/jpeg',  'jpeg' => 'image/jpeg',

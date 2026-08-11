@@ -10,29 +10,10 @@
       "360-tour-option-description": "Take a 360 Tour in the School"
     },
     "photo-gallery-page": {
-      "title": "Photos Gallery",
-      "about-that-team-work": "About that team work",
-      "harvest-academy-moments": "Harvest Academy Moments",
-      "best-fun-day-ever": "Best Fun Day Ever",
-      "first-day": "First Day",
-      "science-fair-and-art-gallery-2018": "Science Fair & Art Gallery 2018",
-      "harvest-schools-bazaar-2019": "Harvest Schools Bazaar 2019",
-      "trip-to-farag-allah-factory-2019": "Trip to Farag Allah Factory 2019",
-      "trip-to-al-bawadi-factory-2019": "Trip to Al Bawadi Factory 2019",
-      "trip-to-khan-khadija-resort-2019": "Trip to Khan Khadija Resort 2019",
-      "techno-kids-competition-2019": "Techno Kids Competition 2019",
-      "art-competition-2019": "Art Competition 2019",
-      "kindergarten-welcome-party-2019": "Kindergarten Welcome Party 2019"
+      "title": "Photos Gallery"
     },
     "video-gallery-page": {
-      "title": "Videos Gallery",
-      "harvest-schools-bazaar-2019": "Harvest Schools Bazaar 2019",
-      "stem-projects": "STEM Projects",
-      "graduation-party-2019": "Graduation Party 2019",
-      "no-bullying-interview": "No Bullying Interview",
-      "students-union-meet-up": "Students Union Meet Up",
-      "harvest-academy-moments": "Harvest Academy Moments",
-      "the-unhealthy-habits-taqadam-video": "The Unhealthy Habits Taqadam Video"
+      "title": "Videos Gallery"
     },
     "360-tour-page": {
       "title": "360 Tour",
@@ -47,6 +28,7 @@
       "next-btn": "Next",
       "previous-btn": "Previous",
       "of-separator": "of"
-    }
+    },
+    "unavailable": "The gallery is not available right now. Please try again later."
   }
 }

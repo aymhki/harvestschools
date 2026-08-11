@@ -1,17 +1,7 @@
 import '../../styles/Gallery.css'
-import PhotoCollage from "../../modules/PhotoCollage.jsx";
+import GalleryVideoCards from "../../modules/GalleryVideoCards.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
-
-const GALLERY_VIDEOS = [
-    { titleKey: 'harvest-schools-bazaar-2019', file: 'Harvest Schools Bazzar 2019.mp4', thumbnailAt: 40 },
-    { titleKey: 'stem-projects', file: 'STEM learning.mp4', thumbnailAt: 25 },
-    { titleKey: 'graduation-party-2019', file: 'Graduation Party 2019.mp4', thumbnailAt: 30 },
-    { titleKey: 'no-bullying-interview', file: 'No Bullying Interview.mp4', thumbnailAt: 120 },
-    { titleKey: 'students-union-meet-up', file: 'Students Union Meet Up Demo.mp4', thumbnailAt: 25 },
-    { titleKey: 'harvest-academy-moments', file: 'Harvest Academy Announcement.mp4', thumbnailAt: 120 },
-    { titleKey: 'the-unhealthy-habits-taqadam-video', file: 'Taqdam The Unhealthy Habits Video.mp4', thumbnailAt: 170 },
-];
 
 function Videos() {
     const {t} = useTranslation(['gallery-pages']);
@@ -32,27 +22,7 @@ function Videos() {
                 {t("gallery-pages.video-gallery-page.title")}
             </h1>
 
-            {GALLERY_VIDEOS.map((video) => {
-                const videoTitle = t(`gallery-pages.video-gallery-page.${video.titleKey}`);
-
-                return (
-                    <PhotoCollage
-                        key={video.titleKey}
-                        type={'slider'}
-                        title={videoTitle}
-                        photos={
-                            [
-                                {
-                                    src: `/videos/Gallery/${video.file}`,
-                                    alt: videoTitle,
-                                    isVideo: true,
-                                    thumbnailAt: video.thumbnailAt,
-                                }
-                            ]
-                        }
-                    />
-                );
-            })}
+            <GalleryVideoCards/>
 
         </div>
     </div>

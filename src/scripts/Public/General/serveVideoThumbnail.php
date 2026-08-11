@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/mediaToolchain.php';
+require_once __DIR__ . '/publicMediaRoots.php';
 require_once __DIR__ . '/../SchoolInfo/publicRateLimit.php';
 
 
@@ -31,11 +32,16 @@ function video_thumbnail_fail($status, $message) {
 }
 
 
-$documentRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
-$assetsBase = dirname($documentRoot) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
+$requestedRoot = isset($_GET['root']) ? (string)$_GET['root'] : PUBLIC_MEDIA_DEFAULT_ROOT;
 
-if (!is_dir($assetsBase)) {
-    video_thumbnail_fail(500, 'Assets directory not found.');
+if (!public_media_root_exists($requestedRoot)) {
+    video_thumbnail_fail(400, 'Unknown media root.');
+}
+
+$assetsBase = public_media_root($requestedRoot);
+
+if ($assetsBase === null) {
+    video_thumbnail_fail(500, 'Media root directory not found.');
 }
 
 $requested = isset($_GET['path']) ? trim($_GET['path'], '/') : '';

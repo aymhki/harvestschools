@@ -10,6 +10,7 @@ import { prefetchPublicStaff } from '../Public/Staff/PublicStaffServices.jsx'
 import { prefetchCalendars } from './SchoolCalendarsService.jsx'
 import { prefetchStages } from '../Public/SchoolInfo/PublicStagesServices.jsx'
 import { prefetchLibrary } from '../Public/Library/PublicLibraryServices.jsx'
+import { prefetchGallery } from '../Public/Gallery/PublicGalleryServices.jsx'
 
 
 const PREFETCH_STAMP_KEY = 'harvest_offline_prefetch_stamp'
@@ -221,6 +222,12 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 onProgress: (percent) => report('library', percent),
             })
 
+            report('gallery', 0)
+
+            const galleryResult = await prefetchGallery({
+                onProgress: (percent) => report('gallery', percent),
+            })
+
             await writeStamp({
                 bundleVersion: bundleVersion || (stamp ? stamp.bundleVersion : null),
                 completedAt: Date.now(),
@@ -235,6 +242,7 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 calendars: calendarResult,
                 stages: stageResult,
                 library: libraryResult,
+                gallery: galleryResult,
             }
         } catch (prefetchError) {
             console.warn('[offline-prefetch] Prefetch run failed', prefetchError)
