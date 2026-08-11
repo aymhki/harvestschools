@@ -20,4 +20,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Admin side bar should stick the selected page once it exists the height of the portal scroll.
 - [ ] Sign in with biometrics doesn't work on android.
 - [ ] Scrolling to the top inside a modal popup interferes with pull to refresh mechanism.
-
+- [ ] Test add academic calendar year locally.
+- [ ] Add admin mcp features.
