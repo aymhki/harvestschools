@@ -26,9 +26,28 @@ const submitFormRequest = async (formData) => {
 
 
 function servePublicAsset(path, options = {}) {
-    if (isDevelopment() && !Capacitor.isNativePlatform()) return `/assets/${path}`
+    const { w, h, format, quality, download, filename, thumbnailAt } = options
 
-    const { w, h, format, quality, download, filename } = options
+    const wantsThumbnail = thumbnailAt !== undefined && thumbnailAt !== null
+
+    if (isDevelopment() && !Capacitor.isNativePlatform()) {
+        if (!wantsThumbnail) return `/assets/${path}`
+
+        const devParams = new URLSearchParams({ thumbnail: String(thumbnailAt) })
+
+        if (w) devParams.set('w', w)
+
+        return `/assets/${path}?${devParams.toString()}`
+    }
+
+    if (wantsThumbnail) {
+        const thumbnailParams = new URLSearchParams({ path, t: String(thumbnailAt) })
+
+        if (w) thumbnailParams.set('w', w)
+
+        return `${endpoints.servePublicVideoThumbnail}?${thumbnailParams.toString()}`
+    }
+
     const params = new URLSearchParams({ path })
 
     if (w)        params.set('w', w)

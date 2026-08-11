@@ -1,6 +1,17 @@
 import '../../styles/Gallery.css'
+import PhotoCollage from "../../modules/PhotoCollage.jsx";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
+
+const GALLERY_VIDEOS = [
+    { titleKey: 'harvest-schools-bazaar-2019', file: 'Harvest Schools Bazzar 2019.mp4', thumbnailAt: 40 },
+    { titleKey: 'stem-projects', file: 'STEM learning.mp4', thumbnailAt: 25 },
+    { titleKey: 'graduation-party-2019', file: 'Graduation Party 2019.mp4', thumbnailAt: 30 },
+    { titleKey: 'no-bullying-interview', file: 'No Bullying Interview.mp4', thumbnailAt: 120 },
+    { titleKey: 'students-union-meet-up', file: 'Students Union Meet Up Demo.mp4', thumbnailAt: 25 },
+    { titleKey: 'harvest-academy-moments', file: 'Harvest Academy Announcement.mp4', thumbnailAt: 120 },
+    { titleKey: 'the-unhealthy-habits-taqadam-video', file: 'Taqdam The Unhealthy Habits Video.mp4', thumbnailAt: 170 },
+];
 
 function Videos() {
     const {t} = useTranslation(['gallery-pages']);
@@ -21,103 +32,27 @@ function Videos() {
                 {t("gallery-pages.video-gallery-page.title")}
             </h1>
 
-            <div className={"gallery-videos-page-video-and-title-container"}>
-                <iframe src="https://harvestschools.com/embed.html?v=oJFon8c_CHg&si=o2IdQQ8vsQoCmSi3"
-                        title="Harvest Schools Bazzar 2019"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        className={"gallery-videos-page-video-iframe"}
-                        referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/>
+            {GALLERY_VIDEOS.map((video) => {
+                const videoTitle = t(`gallery-pages.video-gallery-page.${video.titleKey}`);
 
-                <h2 className="gallery-videos-page-video-title">
-                    {t("gallery-pages.video-gallery-page.harvest-schools-bazaar-2019")}
-                </h2>
-            </div>
-
-            <div className={"gallery-videos-page-video-and-title-container"}>
-
-                <iframe
-                    src="https://harvestschools.com/embed.html?v=fYd0ehjZIN4&si=wl5PbnOxGDhT9aQ_"
-                    title="YouTube video player" frameBorder="0"
-                    className={"gallery-videos-page-video-iframe"}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-
-                <h2 className="gallery-videos-page-video-title">
-                    {t("gallery-pages.video-gallery-page.stem-projects")}
-                </h2>
-
-            </div>
-
-            <div className={"gallery-videos-page-video-and-title-container"}>
-
-                <iframe src="https://harvestschools.com/embed.html?v=bulPAc8toXQ&si=xgSNVSIr-G6r38jZ"
-                        title="YouTube video player" frameBorder="0"
-                        className={"gallery-videos-page-video-iframe"}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/>
-
-                <h2 className="gallery-videos-page-video-title">
-                    {t("gallery-pages.video-gallery-page.graduation-party-2019")}
-                </h2>
-
-            </div>
-
-            <div className={"gallery-videos-page-video-and-title-container"}>
-                <iframe
-                    src="https://harvestschools.com/embed.html?v=4dWifSjSH3o&si=Ho57jQ4QCC7tha7Z"
-                    title="YouTube video player" frameBorder="0"
-                    className={"gallery-videos-page-video-iframe"}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-
-                <h2 className="gallery-videos-page-video-title">
-                    {t("gallery-pages.video-gallery-page.no-bullying-interview")}
-                </h2>
-            </div>
-
-            <div className={"gallery-videos-page-video-and-title-container"}>
-
-                <iframe
-                    src="https://harvestschools.com/embed.html?v=97Wc5Aycfu8&si=a7aP0RbH0E-c3cBf"
-                    title="YouTube video player" frameBorder="0"
-                    className={"gallery-videos-page-video-iframe"}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-
-                <h2 className="gallery-videos-page-video-title">
-                    {t("gallery-pages.video-gallery-page.students-union-meet-up")}
-                </h2>
-            </div>
-
-            <div className={"gallery-videos-page-video-and-title-container"}>
-
-                <iframe
-                    src="https://harvestschools.com/embed.html?v=jLGsKYl7Eo8&si=rX5ZN-Fj4CbOT9ou"
-                    title="YouTube video player" frameBorder="0"
-                    className={"gallery-videos-page-video-iframe"}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-
-                <h2 className="gallery-videos-page-video-title">
-                    {t("gallery-pages.video-gallery-page.harvest-academy-moments")}
-                </h2>
-            </div>
-
-
-            <div className={"gallery-videos-page-video-and-title-container"}>
-
-                <iframe
-                        src="https://harvestschools.com/embed.html?v=1gAhyGvLhGg&si=EHNcKEcAdX5mmQy7"
-                        title="YouTube video player" frameBorder="0"
-                        className={"gallery-videos-page-video-iframe"}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-
-                <h2 className="gallery-videos-page-video-title">
-                    {t("gallery-pages.video-gallery-page.the-unhealthy-habits-taqadam-video")}
-                </h2>
-            </div>
+                return (
+                    <PhotoCollage
+                        key={video.titleKey}
+                        type={'slider'}
+                        title={videoTitle}
+                        photos={
+                            [
+                                {
+                                    src: `/videos/Gallery/${video.file}`,
+                                    alt: videoTitle,
+                                    isVideo: true,
+                                    thumbnailAt: video.thumbnailAt,
+                                }
+                            ]
+                        }
+                    />
+                );
+            })}
 
         </div>
     </div>

@@ -22,3 +22,4 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Scrolling to the top inside a modal popup interferes with pull to refresh mechanism.
 - [ ] Test add academic calendar year locally.
 - [ ] Add admin mcp features.
+- [ ] Move to react 19.
