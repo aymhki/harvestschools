@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import MobileAppRouter from '../../src/routers/MobileAppRouter.jsx'
 import AppUpdateGate from '../../src/modules/AppUpdateGate.jsx'
 import ErrorBoundary from '../../src/modules/ErrorBoundary.jsx'
@@ -46,18 +45,11 @@ startModalScrollLockWatcher()
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <ErrorBoundary ignoreLngUpdate={false}>
-            <HelmetProvider>
-                <BrowserRouter
-                    future={{
-                        v7_startTransition: true,
-                        v7_relativeSplatPath: true,
-                    }}
-                >
-                    <Routes>
-                        <Route path="/*" element={<AppUpdateGate><MobileAppRouter /></AppUpdateGate>} />
-                    </Routes>
-                </BrowserRouter>
-            </HelmetProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/*" element={<AppUpdateGate><MobileAppRouter /></AppUpdateGate>} />
+                </Routes>
+            </BrowserRouter>
         </ErrorBoundary>
     </React.StrictMode>
 )

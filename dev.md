@@ -22,8 +22,8 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Scrolling to the top inside a modal popup interferes with pull to refresh mechanism.
 - [X] Test add academic calendar year locally.
 - [ ] Add admin mcp features.
-- [ ] Move to react 19.
-- [ ] Update the main prerender system to fetch and populate public pages that rely on the db now.
+- [x] Move to react 19.
+- [x] Update the main prerender system to fetch and populate public pages that rely on the db now.
 - [ ] Low opacity on login options in graduation booking login and admin login should be removed and should be like alumni login.
 - [ ] Admin sidebar selected items should remain visible and highlighted when the user scrolls to far up or down via css stick or fixed.
 - [ ] Fix Form fields filter drop shadow flickers.

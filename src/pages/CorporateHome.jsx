@@ -1,7 +1,6 @@
 import PhotoSlider from "../modules/PhotoSlider.jsx";
 import '../styles/CorporateHome.css';
 import '../styles/Academics.css'
-import {Helmet} from "react-helmet-async";
 import Form from "../modules/Form.jsx";
 import { useTranslation } from 'react-i18next';
 import { servePublicAsset } from "../services/General/GeneralServices.jsx";
@@ -50,14 +49,12 @@ function CorporateHome() {
     return (
 
         <div className="corporate-home-page" >
-            <Helmet>
-                <title>Al-Fajr Al-Basem | Egypt</title>
-                <meta name="description" content="Undertaking construction works, outfitting educational institutions and schools, and all import and export activities."/>
-                <meta name="keywords" content="Al-Fajr Al-Basem, Al Fajr Al Basem, AlFajr AlBasem, Happy Dawn, الفجر الباسم" />
-                <meta name="author" content="Al-Fajr Al-Basem" />
-                <meta name="robots" content="index, follow"/>
-                <meta name="googlebot" content="index, follow"/>
-            </Helmet>
+            <title>Al-Fajr Al-Basem | Egypt</title>
+            <meta name="description" content="Undertaking construction works, outfitting educational institutions and schools, and all import and export activities."/>
+            <meta name="keywords" content="Al-Fajr Al-Basem, Al Fajr Al Basem, AlFajr AlBasem, Happy Dawn, الفجر الباسم" />
+            <meta name="author" content="Al-Fajr Al-Basem" />
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
 
             <div className="home-page-vision-and-mission-slider">
                 <PhotoSlider photos={homeSliderPhotos} darken={true} />

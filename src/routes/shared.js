@@ -1,5 +1,5 @@
 import { lazy, useEffect } from 'react';
-import { useLocation, matchPath } from 'react-router-dom';
+import { useLocation, matchPath } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 const stripPrefix = (key) => key.replace(/^.*\/pages\//, '');

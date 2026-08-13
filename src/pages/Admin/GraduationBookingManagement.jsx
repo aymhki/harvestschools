@@ -1,5 +1,5 @@
 import '../../styles/AdminDashboard.css';
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useEffect, useState, useRef, useMemo} from "react";
 import {msgTimeout, graduationBookingManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 import Spinner from "../../modules/Spinner.jsx";

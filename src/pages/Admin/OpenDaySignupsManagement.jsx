@@ -1,6 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";

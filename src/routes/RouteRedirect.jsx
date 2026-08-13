@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router';
 import PropTypes from 'prop-types';
 import { isExternalRedirect, resolveRedirectTarget } from './redirects.js';
 

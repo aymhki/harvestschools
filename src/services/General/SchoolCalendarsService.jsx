@@ -94,6 +94,26 @@ const toCalendarEvent = (row, calendar) => {
 }
 
 
+const buildCalendarFromDocument = (calendarId, data) => {
+    const calendar = getCalendarById(calendarId)
+
+    if (!calendar || !isCalendarDocumentUsable(data)) {
+        return null
+    }
+
+    return {
+        calendarId,
+        academicYear: data.academicYear,
+        note: data.note || '',
+        pdfPath: data.pdfPath || '',
+        lastUpdated: Number(data.lastUpdated) || 0,
+        events: data.events
+            .map((row) => toCalendarEvent(row, calendar))
+            .filter((event) => event !== null),
+    }
+}
+
+
 const loadCalendar = async (calendarId, language) => {
     const calendar = getCalendarById(calendarId)
 
@@ -109,20 +129,7 @@ const loadCalendar = async (calendarId, language) => {
             () => requestCalendar(calendarId, normalisedLanguage)
         )
 
-        if (!isCalendarDocumentUsable(data)) {
-            return null
-        }
-
-        return {
-            calendarId,
-            academicYear: data.academicYear,
-            note: data.note || '',
-            pdfPath: data.pdfPath || '',
-            lastUpdated: Number(data.lastUpdated) || 0,
-            events: data.events
-                .map((row) => toCalendarEvent(row, calendar))
-                .filter((event) => event !== null),
-        }
+        return buildCalendarFromDocument(calendarId, data)
     } catch (error) {
         console.log(error.message)
 
@@ -209,6 +216,7 @@ const prefetchCalendars = async ({ onProgress } = {}) => {
 export {
     SCHOOL_CALENDARS,
     CALENDAR_LANGUAGES,
+    buildCalendarFromDocument,
     getCalendarById,
     getUpcomingEvents,
     getUpcomingEventsAcrossCalendars,

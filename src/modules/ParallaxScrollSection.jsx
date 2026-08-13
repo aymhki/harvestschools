@@ -1,5 +1,5 @@
 import '../styles/ParallaxScrollSection.css';
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import PropTypes from 'prop-types';
 import {Fragment} from "react";
 import {useEffect, useState} from "react";

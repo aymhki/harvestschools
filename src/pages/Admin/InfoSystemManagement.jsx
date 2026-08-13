@@ -1,5 +1,5 @@
 import '../../styles/AdminDashboard.css';
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useEffect, useMemo, useRef, useState} from "react";
 import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";

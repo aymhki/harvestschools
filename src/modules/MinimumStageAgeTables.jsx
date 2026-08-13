@@ -3,21 +3,26 @@ import {useTranslation} from 'react-i18next'
 import Table from './Table.jsx'
 import Spinner from './Spinner.jsx'
 import {fetchStages} from '../services/Public/SchoolInfo/PublicStagesServices.jsx'
+import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
 
 
 function MinimumStageAgeTables() {
     const {t, i18n} = useTranslation(['faqs-pages', 'common'])
-    const [stages, setStages] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const [hasFailed, setHasFailed] = useState(false)
 
     const language = i18n.language === 'ar' ? 'ar' : 'en'
+    const preloaded = usePreloadedData(`stages:${language}`)
+
+    const [stages, setStages] = useState(preloaded)
+    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
         let isActive = true
 
-        setIsLoading(true)
-        setHasFailed(false)
+        if (!preloaded) {
+            setIsLoading(true)
+            setHasFailed(false)
+        }
 
         fetchStages(language)
             .then((data) => {
@@ -25,11 +30,16 @@ function MinimumStageAgeTables() {
                     return
                 }
 
-                setStages(data)
-                setHasFailed(data === null)
+                if (data) {
+                    setStages(data)
+                    setHasFailed(false)
+                } else if (!preloaded) {
+                    setStages(null)
+                    setHasFailed(true)
+                }
             })
             .catch(() => {
-                if (isActive) {
+                if (isActive && !preloaded) {
                     setStages(null)
                     setHasFailed(true)
                 }
@@ -43,7 +53,7 @@ function MinimumStageAgeTables() {
         return () => {
             isActive = false
         }
-    }, [language])
+    }, [language, preloaded])
 
     const tables = useMemo(() => {
         const headers = [

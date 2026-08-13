@@ -1,5 +1,4 @@
-import {Helmet} from "react-helmet-async";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 
@@ -324,7 +323,7 @@ function AlumniLogin() {
                     if (wantsToUpdateCredentials) {
                         if (isMountedRef.current) {
                             setPrefillUsername(credentials.username);
-                            setSignInMethod('password');
+                            setMode('sign-in');
                             setLoginMode('recovery');
                         }
                     } else {
@@ -602,14 +601,12 @@ function AlumniLogin() {
         <>
             {submittingLocal && <Spinner/>}
 
-            <Helmet>
-                <title>Harvest International School | Students Life | Alumni Sign In</title>
-                <meta name="description" content="Sign in or sign up to the Harvest International School alumni students platform to share your stories, updates, and achievements with the Harvest community."/>
-                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Alumni, Alumni Sign In, Alumni Sign Up, خريجين, تسجيل دخول الخريجين"/>
-                <meta name="author" content="Harvest International School"/>
-                <meta name="robots" content="index, follow"/>
-                <meta name="googlebot" content="index, follow"/>
-            </Helmet>
+            <title>Harvest International School | Students Life | Alumni Sign In</title>
+            <meta name="description" content="Sign in or sign up to the Harvest International School alumni students platform to share your stories, updates, and achievements with the Harvest community."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Alumni, Alumni Sign In, Alumni Sign Up, خريجين, تسجيل دخول الخريجين"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
 
             <div className={'alumni-login-page'}>
                 <div className={'alumni-login-page-form-controller'}>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import '../styles/CorporateNavigationBar.css';
 import { useSpring, animated } from 'react-spring';
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
@@ -11,12 +11,7 @@ function CorporateNavigationBar(){
     const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
     const navigate = useNavigate();
-    const [isClient, setIsClient] = useState(false);
-    const { t, i18n } = useTranslation(['corporate-nav']);
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    const { i18n } = useTranslation(['corporate-nav']);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -28,7 +23,6 @@ function CorporateNavigationBar(){
     }
 
     useEffect(() => {
-        let lastWidth = window.innerWidth;
         let lastIsMobile = window.innerWidth < 768;
 
         const checkWindowSize = () => {
@@ -37,7 +31,6 @@ function CorporateNavigationBar(){
 
             if (currentIsMobile !== lastIsMobile) {
                 lastIsMobile = currentIsMobile;
-                lastWidth = currentWidth;
                 toggleNavMenuMobile(currentWidth);
             }
         };

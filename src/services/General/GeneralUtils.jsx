@@ -1,6 +1,6 @@
 import {v6 as uuidv6} from "uuid";
 import i18n from '../../i18n/i18n-client.jsx';
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router";
 import {useEffect, useState} from "react";
 import { Capacitor } from '@capacitor/core';
 import {clearMobileSession, getMobileSession, getDeviceBindingSecret} from "./CapacitorSecureAuthUtils.jsx"

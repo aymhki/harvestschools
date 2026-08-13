@@ -1,6 +1,6 @@
 import '../../styles/AdminLogin.css'
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import Spinner from "../../modules/Spinner.jsx";
 import Form from '../../modules/Form.jsx'
 import {headToAdminDashboardOnValidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx"

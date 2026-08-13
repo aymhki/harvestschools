@@ -1,6 +1,5 @@
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
 import '../../styles/Gallery.css';
-import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function Gallery() {
@@ -33,14 +32,12 @@ function Gallery() {
 
     return (
         <div className={"gallery-page"}>
-            <Helmet>
-                <title>Harvest International School | Gallery</title>
-                <meta name="description" content="Take a look at memories, demos, tours, and more videos and photos of Harvest International School in Borg El Arab, Egypt."/>
-                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Gallery, Photos, Videos, 360 Tour, Memories, Demos, Tours, معرض, صور, فيديوهات, جولة 360, ذكريات, عروض, جولات"/>
-                <meta name="author" content="Harvest International School"/>
-                <meta name="robots" content="index, follow"/>
-                <meta name="googlebot" content="index, follow"/>
-            </Helmet>
+            <title>Harvest International School | Gallery</title>
+            <meta name="description" content="Take a look at memories, demos, tours, and more videos and photos of Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Gallery, Photos, Videos, 360 Tour, Memories, Demos, Tours, معرض, صور, فيديوهات, جولة 360, ذكريات, عروض, جولات"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
 
             <OptionsGrid title={t("gallery-pages.options-page.title")} titleInArabic={false} options={options}/>
         </div>

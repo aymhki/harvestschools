@@ -1,6 +1,6 @@
 import '../styles/OptionsGrid.css';
 import PropTypes from "prop-types";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {Fragment} from "react";
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 import CachedImage from "./CachedImage.jsx";

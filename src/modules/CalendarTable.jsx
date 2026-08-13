@@ -4,21 +4,30 @@ import { useTranslation } from 'react-i18next'
 import Table from './Table.jsx'
 import Spinner from './Spinner.jsx'
 import CalendarActions from './CalendarActions.jsx'
-import { loadCalendar } from '../services/General/SchoolCalendarsService.jsx'
+import { buildCalendarFromDocument, loadCalendar } from '../services/General/SchoolCalendarsService.jsx'
+import { usePreloadedData } from '../services/General/PrerenderDataContext.jsx'
 
 function CalendarTable({ calendarId, title, className }) {
     const { t, i18n } = useTranslation(['events-pages', 'common'])
-    const [calendar, setCalendar] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const [hasFailed, setHasFailed] = useState(false)
 
     const language = i18n.language === 'ar' ? 'ar' : 'en'
+    const preloadedDocument = usePreloadedData(`calendar:${calendarId}:${language}`)
+    const preloaded = useMemo(
+        () => (preloadedDocument ? buildCalendarFromDocument(calendarId, preloadedDocument) : null),
+        [calendarId, preloadedDocument]
+    )
+
+    const [calendar, setCalendar] = useState(preloaded)
+    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
         let isActive = true
 
-        setIsLoading(true)
-        setHasFailed(false)
+        if (!preloaded) {
+            setIsLoading(true)
+            setHasFailed(false)
+        }
 
         loadCalendar(calendarId, language)
             .then((data) => {
@@ -26,11 +35,16 @@ function CalendarTable({ calendarId, title, className }) {
                     return
                 }
 
-                setCalendar(data)
-                setHasFailed(data === null)
+                if (data) {
+                    setCalendar(data)
+                    setHasFailed(false)
+                } else if (!preloaded) {
+                    setCalendar(null)
+                    setHasFailed(true)
+                }
             })
             .catch(() => {
-                if (isActive) {
+                if (isActive && !preloaded) {
                     setCalendar(null)
                     setHasFailed(true)
                 }
@@ -44,7 +58,7 @@ function CalendarTable({ calendarId, title, className }) {
         return () => {
             isActive = false
         }
-    }, [calendarId, language])
+    }, [calendarId, language, preloaded])
 
     const dateFormatter = useMemo(() => new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
         year: 'numeric',

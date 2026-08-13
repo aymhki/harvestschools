@@ -1,5 +1,4 @@
-import {Helmet} from "react-helmet-async";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
 import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
@@ -61,7 +60,6 @@ function GraduationBookingLogin() {
     const [recoverError, setRecoverError] = useState(null);
     const studentFieldId = 21;
     const contactFieldId = 24;
-    const studentSubmitSeqRef = useRef(0);
 
 
     const curriculumGroup = ['international', 'american', 'british', 'national'];
@@ -361,7 +359,7 @@ function GraduationBookingLogin() {
         return revealUsernames(result);
     };
 
-    const useRecoveredUsername = (username) => {
+    const applyRecoveredUsername = (username) => {
         setPrefillUsername(username);
         goToLoginView(null);
     };
@@ -459,7 +457,7 @@ function GraduationBookingLogin() {
                     {recoveredUsernames.map((u) => (
                         <li key={u}>
                             <span className={'booking-login-username-value'}>{u}</span>
-                            <button type={'button'} className={'booking-login-link-btn'} onClick={() => useRecoveredUsername(u)}>
+                            <button type={'button'} className={'booking-login-link-btn'} onClick={() => applyRecoveredUsername(u)}>
                                 {t("events-pages.graduation-booking-pages.login-page.use-this-username")}
                             </button>
                         </li>
@@ -575,14 +573,12 @@ function GraduationBookingLogin() {
         <>
             {submittingLocal && <Spinner/>}
 
-            <Helmet>
-                <title>Harvest International School | Events | Booking</title>
-                <meta name="description" content="Access booking info, extras, and media."/>
-                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Events, Calendar, Academic Year, National, British, American, Kindergarten, Booking,  سنة أكاديمية, تقويم, وطني, بريطاني, أمريكي, روضة, الروضة, سنة دراسية, مواعيد, امتحنات, اجازات"/>
-                <meta name="author" content="Harvest International School"/>
-                <meta name="robots" content="index, follow"/>
-                <meta name="googlebot" content="index, follow"/>
-            </Helmet>
+            <title>Harvest International School | Events | Booking</title>
+            <meta name="description" content="Access booking info, extras, and media."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Events, Calendar, Academic Year, National, British, American, Kindergarten, Booking,  سنة أكاديمية, تقويم, وطني, بريطاني, أمريكي, روضة, الروضة, سنة دراسية, مواعيد, امتحنات, اجازات"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
 
             <div className={'booking-login-page'}>
                 <div className={'booking-login-page-form-controller'}>

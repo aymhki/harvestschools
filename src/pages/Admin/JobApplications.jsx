@@ -1,19 +1,17 @@
 import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {fetchJobApplicationsRequest} from "../../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx";
 import {jobApplicationManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx"
 import { Capacitor } from '@capacitor/core';
-import {Browser} from "@capacitor/browser";
 
 function JobApplications() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [jobApplications, setJobApplications] = useState(null);
-    const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
         headToAdminLoginOnInvalidSession(navigate, jobApplicationManagementPermissionLevel, setIsLoading);

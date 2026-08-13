@@ -1,6 +1,5 @@
 import '../../styles/Admission.css';
-import {useNavigate} from "react-router-dom";
-import {Helmet} from "react-helmet-async";
+import {useNavigate} from "react-router";
 import {useTranslation} from "react-i18next";
 import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
 import CachedImage from "../../modules/CachedImage.jsx";
@@ -12,14 +11,12 @@ function AdmissionProcess() {
 
   return (
     <div className="admission-process-page">
-        <Helmet>
-            <title>Harvest International School | Admission Process</title>
-            <meta name="description" content="Learn more about the admission process in terms of the application process, the interview, and the follow-up process for Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Admission, Admission Process, Admission Requirements, Admissione Fees, مصاريف مدارس هارفست، متطلبات القبول، عملية القبول"/>
-            <meta name="author" content="Harvest International School"/>
-            <meta name="robots" content="index, follow"/>
-            <meta name="googlebot" content="index, follow"/>
-        </Helmet>
+        <title>Harvest International School | Admission Process</title>
+        <meta name="description" content="Learn more about the admission process in terms of the application process, the interview, and the follow-up process for Harvest International School in Borg El Arab, Egypt."/>
+        <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Admission, Admission Process, Admission Requirements, Admissione Fees, مصاريف مدارس هارفست، متطلبات القبول، عملية القبول"/>
+        <meta name="author" content="Harvest International School"/>
+        <meta name="robots" content="index, follow"/>
+        <meta name="googlebot" content="index, follow"/>
 
         <div className="extreme-padding-container">
             <div className="admission-process-image-container">

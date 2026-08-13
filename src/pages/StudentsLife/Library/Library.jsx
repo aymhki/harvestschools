@@ -1,4 +1,3 @@
-import {Helmet} from "react-helmet-async";
 import OptionsGrid from "../../../modules/OptionsGrid.jsx";
 import '../../../styles/StudentsLife.css'
 import {useTranslation} from "react-i18next";
@@ -88,14 +87,12 @@ function Library() {
   return (
       <>
           <div className={"students-life-library-page"}>
-              <Helmet>
-                  <title>Harvest International School | Library</title>
-                  <meta name="description" content="Choose your preferred language to learn more about the libraries content at Harvest International School in Borg El Arab, Egypt."/>
-                  <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
-                  <meta name="author" content="Harvest International School"/>
-                  <meta name="robots" content="index, follow"/>
-                  <meta name="googlebot" content="index, follow"/>
-              </Helmet>
+              <title>Harvest International School | Library</title>
+              <meta name="description" content="Choose your preferred language to learn more about the libraries content at Harvest International School in Borg El Arab, Egypt."/>
+              <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+              <meta name="author" content="Harvest International School"/>
+              <meta name="robots" content="index, follow"/>
+              <meta name="googlebot" content="index, follow"/>
 
               <OptionsGrid options={englishLibraryOptions} title={t("students-life-pages.library-pages.main-library-page.english-books-title")} thisOptionsGridIsNotAloneInThePage={true} compact={true}/>
 

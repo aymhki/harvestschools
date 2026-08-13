@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Helmet } from 'react-helmet-async'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import Form from '../modules/Form.jsx'
 import Spinner from '../modules/Spinner.jsx'
@@ -406,10 +405,8 @@ function SchoolEverywhere() {
         <>
             {submittingLocal && <Spinner />}
 
-            <Helmet>
-                <title>SchoolEverywhere · Harvest International School</title>
-                <meta name="robots" content="noindex, nofollow" />
-            </Helmet>
+            <title>SchoolEverywhere · Harvest International School</title>
+            <meta name="robots" content="noindex, nofollow" />
 
             <div className="school-everywhere-login-page" dir={pageDirection}>
                 <div className="school-everywhere-login-page-form-controller">

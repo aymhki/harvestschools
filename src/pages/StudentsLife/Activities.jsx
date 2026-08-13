@@ -2,7 +2,6 @@ import '../../styles/StudentsLife.css'
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import Table from "../../modules/Table.jsx";
 import Form from "../../modules/Form.jsx";
-import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
 
@@ -15,14 +14,12 @@ function Activities() {
 
   return (
     <div className={'students-life-activities-page'}>
-        <Helmet>
-            <title>Harvest International School | Activities</title>
-            <meta name="description" content="Learn more about the Activities available for students and partents at Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
-            <meta name="author" content="Harvest International School"/>
-            <meta name="robots" content="index, follow"/>
-            <meta name="googlebot" content="index, follow"/>
-        </Helmet>
+        <title>Harvest International School | Activities</title>
+        <meta name="description" content="Learn more about the Activities available for students and partents at Harvest International School in Borg El Arab, Egypt."/>
+        <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Students Union, Students Life, Activies, Facilties, Student Clubs, اتحاد الطلاب, حياة الطلاب, أنشطة, مرافق, نوادي الطلاب"/>
+        <meta name="author" content="Harvest International School"/>
+        <meta name="robots" content="index, follow"/>
+        <meta name="googlebot" content="index, follow"/>
 
             <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={servePublicAsset('/images/Gallery/Photos/HarvestAcademy/HarvestAcademy5.jpg')} darken={true}
                                    divElements={[

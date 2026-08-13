@@ -24,7 +24,7 @@ function rewriteRootAssetUrls() {
 }
 
 export default defineConfig({
-    envDir: path.resolve(__dirname, '../..'),
+    envDir: path.resolve(import.meta.dirname, '../..'),
     base: '/',
     plugins: [react(), rewriteRootAssetUrls(), serveLocalAssets(path.resolve(process.cwd(), '../../assets'))],
     build: {

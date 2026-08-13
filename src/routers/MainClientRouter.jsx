@@ -1,6 +1,6 @@
 import '../styles/App.css';
 import { Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import NavigationBar from '../modules/NavigationBar.jsx';
 import Footer from '../modules/Footer.jsx';

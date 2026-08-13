@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useEffect, useState} from "react";
 import {Capacitor} from "@capacitor/core";
 import {fetchGraduationBookingInfoBySessionRequest} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";

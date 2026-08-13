@@ -1,7 +1,7 @@
 import '../styles/AdminDashboard.css';
 import '../styles/AdminSettings.css';
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router';
 import {useSpring, animated} from 'react-spring';
 import QRCode from 'qrcode';
 import PropTypes from 'prop-types';

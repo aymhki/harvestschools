@@ -4,14 +4,11 @@ import { serveLocalAssets } from '../../src/plugins/serve-local-assets.jsx'
 import path from 'path'
 
 export default defineConfig({
-    envDir: path.resolve(__dirname, '../..'),
+    envDir: path.resolve(import.meta.dirname, '../..'),
     plugins: [
         react(),
         serveLocalAssets(path.resolve(process.cwd(), '../../assets'))
     ],
-    ssr: {
-        noExternal: ['react-helmet-async'],
-    },
     build: {
         rollupOptions: {
             output: {

@@ -1,7 +1,7 @@
 import Spinner from "../../../modules/Spinner.jsx";
 import {useEffect, useState} from "react";
 import { fetchGraduationBookingInfoBySessionRequest } from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import ParallaxScrollSection from "../../../modules/ParallaxScrollSection.jsx";
 import Form from '../../../modules/Form.jsx';
 import '../../../styles/Events.css';

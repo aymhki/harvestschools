@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router';
 import PropTypes from 'prop-types';
 import RouteRedirect from './RouteRedirect.jsx';
 import { ROUTER_IDS, redirectsForRouter } from './redirects.js';

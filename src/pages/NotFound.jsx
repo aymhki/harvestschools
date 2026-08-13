@@ -7,6 +7,8 @@ function NotFound() {
 
   return (
     <div className="not-found-page">
+      <title>{t("common.not-found-message")}</title>
+      <meta name="robots" content="noindex, nofollow"/>
       <h2>
         {t("common.not-found-message")}
       </h2>

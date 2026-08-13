@@ -89,7 +89,7 @@ const describeCredential = (credential, translate) => {
 
 
 const isLoginUrl = (url) => {
-    let isLogin = false
+    let isLogin
 
     try {
         const parsed = new URL(url)
@@ -104,7 +104,7 @@ const isLoginUrl = (url) => {
 
 
 const isPortalUrl = (url) => {
-    let isPortal = false
+    let isPortal
 
     try {
         isPortal = new URL(url).origin === SCHOOL_EVERYWHERE_ORIGIN

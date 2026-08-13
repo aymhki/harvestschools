@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import Spinner from '../modules/Spinner.jsx';
 import AdminSidebar from '../modules/AdminSidebar.jsx';
 import AdminFooter from '../modules/AdminFooter.jsx';

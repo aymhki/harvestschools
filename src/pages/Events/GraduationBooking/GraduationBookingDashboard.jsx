@@ -1,7 +1,7 @@
 import OptionsGrid from "../../../modules/OptionsGrid.jsx";
 import '../../../styles/Events.css'
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import Spinner from "../../../modules/Spinner.jsx";
 import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";

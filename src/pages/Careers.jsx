@@ -1,11 +1,10 @@
-import {Helmet} from "react-helmet-async";
 import '../styles/Careers.css'
 import Form from "../modules/Form";
 import {submitJobApplicationRequest} from "../services/Public/JobApplications/JobApplicationsServices.jsx";
 import Spinner from "../modules/Spinner";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import PropTypes from "prop-types";
 import {openSchoolEverywhereTarget} from "../services/General/ExternalSiteService.jsx";
 
@@ -39,13 +38,11 @@ function Careers({isMobileApp = false}) {
           {submittingLocal && <Spinner/>}
 
       <div className={"vacancies-page"}>
-        <Helmet>
-            <title>Harvest International School | Vacancies</title>
-            <meta name="description" content="Learn more about the available vacancies, job openings, and career opportunities, and the job application process at Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, International School, Vacancies, Job Openings, Career Opportunities, Job Application, مدارس هارفست, برج العرب, مدرسة, فرص عمل, وظائف شاغرة, تقديم للوظائف"/>
-            <meta name="robots" content="index, follow"/>
-            <meta name="googlebot" content="index, follow"/>
-        </Helmet>
+        <title>Harvest International School | Vacancies</title>
+        <meta name="description" content="Learn more about the available vacancies, job openings, and career opportunities, and the job application process at Harvest International School in Borg El Arab, Egypt."/>
+        <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, International School, Vacancies, Job Openings, Career Opportunities, Job Application, مدارس هارفست, برج العرب, مدرسة, فرص عمل, وظائف شاغرة, تقديم للوظائف"/>
+        <meta name="robots" content="index, follow"/>
+        <meta name="googlebot" content="index, follow"/>
 
 
         <div className={"extreme-padding-container"}>

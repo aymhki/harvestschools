@@ -1,6 +1,5 @@
 import '../../styles/Academics.css';
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
-import {Helmet} from "react-helmet-async";
 import { useTranslation } from 'react-i18next';
 import {isDevelopment} from "../../services/General/GeneralUtils.jsx";
 import PropTypes from "prop-types";
@@ -8,7 +7,7 @@ import PropTypes from "prop-types";
 
 function Academics({isMobileApp}) {
 
-    const { t, i18n } = useTranslation(['academics-pages']);
+    const { t } = useTranslation(['academics-pages']);
 
     const options = [
         {
@@ -80,14 +79,12 @@ function Academics({isMobileApp}) {
 
   return (
     <div className="academics-page">
-        <Helmet>
-            <title>Harvest International School | Academics</title>
-            <meta name="description" content="Learn more about the American, National, and British academics, the curriculums, partners, staff, and facilities at Harvest International School in Borg El Arab, Egypt."/>
-            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Kindergarten, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق، رياض الأطفال، رياض الاطفال"/>
-            <meta name="author" content="Harvest International School"/>
-            <meta name="robots" content="index, follow"/>
-            <meta name="googlebot" content="index, follow"/>
-        </Helmet>
+        <title>Harvest International School | Academics</title>
+        <meta name="description" content="Learn more about the American, National, and British academics, the curriculums, partners, staff, and facilities at Harvest International School in Borg El Arab, Egypt."/>
+        <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Kindergarten, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق، رياض الأطفال، رياض الاطفال"/>
+        <meta name="author" content="Harvest International School"/>
+        <meta name="robots" content="index, follow"/>
+        <meta name="googlebot" content="index, follow"/>
 
         <OptionsGrid title={t("nav.academics", {ns: 'nav'})}  options={options} compact={true}/>
 

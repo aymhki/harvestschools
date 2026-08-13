@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import AdminRouter from '../../src/routers/AdminRouter.jsx'
 import '../../src/styles/index.css'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 import '../../src/i18n/i18n-client.jsx'
 import ErrorBoundary from "../../src/modules/ErrorBoundary.jsx";
 import { startModalScrollLockWatcher } from '../../src/services/General/ScrollLockService.jsx'
@@ -61,12 +61,7 @@ startModalScrollLockWatcher()
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <ErrorBoundary ignoreLngUpdate={true}>
-            <BrowserRouter
-                future={{
-                    v7_startTransition: true,
-                    v7_relativeSplatPath: true,
-                }}
-            >
+            <BrowserRouter>
                 <AdminRouter />
             </BrowserRouter>
         </ErrorBoundary>

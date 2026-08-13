@@ -1,6 +1,5 @@
 import '../../styles/Admission.css';
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
-import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 
 function Admission() {
@@ -39,14 +38,12 @@ function Admission() {
 
     return (
         <div className="admission-page">
-            <Helmet>
-                <title>Harvest International School | Admission</title>
-                <meta name="description" content="Learn more about the admission process, the admssion requirements, and the tuition fees for Harvest International School in Borg El Arab, Egypt."/>
-                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Admission, Admission Process, Admission Requirements, Admissione Fees, مصاريف مدارس هارفست، متطلبات القبول، عملية القبول"/>
-                <meta name="author" content="Harvest International School"/>
-                <meta name="robots" content="index, follow"/>
-                <meta name="googlebot" content="index, follow"/>
-            </Helmet>
+            <title>Harvest International School | Admission</title>
+            <meta name="description" content="Learn more about the admission process, the admssion requirements, and the tuition fees for Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Admission, Admission Process, Admission Requirements, Admissione Fees, مصاريف مدارس هارفست، متطلبات القبول، عملية القبول"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
 
             <OptionsGrid title={t("admission-pages.options-page.admission-title")} titleInArabic={false} options={options}/>
         </div>

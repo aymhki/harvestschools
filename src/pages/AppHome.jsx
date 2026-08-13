@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Helmet } from 'react-helmet-async'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { App as CapacitorApp } from '@capacitor/app'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -11,7 +10,7 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
 import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined'
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined'
-import WorkOutlineIcon from '@mui/icons-material/WorkOutline'
+import WorkOutlineIcon from '@mui/icons-material/WorkOutlined'
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
 import CastForEducationOutlinedIcon from '@mui/icons-material/CastForEducationOutlined'
 import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined'
@@ -426,10 +425,8 @@ function AppHome() {
 
     return (
         <div className="app-home" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-            <Helmet>
-                <title>Harvest International School</title>
-                <meta name="robots" content="noindex, nofollow" />
-            </Helmet>
+            <title>Harvest International School</title>
+            <meta name="robots" content="noindex, nofollow" />
 
             <header className="app-home-header">
                 <CachedImage

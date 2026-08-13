@@ -1,6 +1,5 @@
 import '../../styles/Academics.css'
 import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
-import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
 import CachedImage from "../../modules/CachedImage.jsx";
@@ -35,16 +34,14 @@ function Facilities() {
 
     return (
         <div className="academics-facilities-page">
-            <Helmet>
-                <title>{t('nav.facilities', {ns: 'nav'})} | {t('nav.home', {ns: 'nav'})}</title>
-                <meta name="description"
-                      content="Learn more about the classrooms, labs, libraries, canteens, sports facilities, and more at Harvest International School in Borg El Arab, Egypt."/>
-                <meta name="keywords"
-                      content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
-                <meta name="author" content="Harvest International School"/>
-                <meta name="robots" content="index, follow"/>
-                <meta name="googlebot" content="index, follow"/>
-            </Helmet>
+            <title>{`${t('nav.facilities', {ns: 'nav'})} | ${t('nav.home', {ns: 'nav'})}`}</title>
+            <meta name="description"
+                  content="Learn more about the classrooms, labs, libraries, canteens, sports facilities, and more at Harvest International School in Borg El Arab, Egypt."/>
+            <meta name="keywords"
+                  content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Academics, American, National, British, Partners, Staff, Facilities, مدارس هارفست، برج العرب، مدرسة، أكاديميات، أمريكي، وطني، بريطاني، شركاء، موظفين، مرافق"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
             <div className={"extreme-padding-container"}>
                 <h1>{t('academics-pages.facilities.pageTitle')}</h1>
 

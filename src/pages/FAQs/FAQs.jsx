@@ -1,7 +1,6 @@
 import '../../styles/MoreInfo.css'
 import '../../styles/index.css'
 import '../../styles/Home.css'
-import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
 function parseAnswer(text) {
@@ -47,14 +46,12 @@ function FAQs() {
 
     return (
         <div className={"faqs-page"}>
-            <Helmet>
-                <title>Harvest International School | FAQs</title>
-                <meta name="description" content="Learn more about the most frequently asked questions at Harvest International School in Borg El Arab, Egypt." />
-                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Frequently Asked Questions, Questions, FAQ, Answers, Policies, Age Requirements, Covid-19, سؤال وجواب, أسئلة, إجابات, سياسات, متطلبات العمر, كوفيد-19" />
-                <meta name="author" content="Harvest International School" />
-                <meta name="robots" content="index, follow" />
-                <meta name="googlebot" content="index, follow" />
-            </Helmet>
+            <title>Harvest International School | FAQs</title>
+            <meta name="description" content="Learn more about the most frequently asked questions at Harvest International School in Borg El Arab, Egypt." />
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Frequently Asked Questions, Questions, FAQ, Answers, Policies, Age Requirements, Covid-19, سؤال وجواب, أسئلة, إجابات, سياسات, متطلبات العمر, كوفيد-19" />
+            <meta name="author" content="Harvest International School" />
+            <meta name="robots" content="index, follow" />
+            <meta name="googlebot" content="index, follow" />
 
             <div className="extreme-padding-container">
                 <h1>{t("faqs-pages.faqs-page.title")}</h1>

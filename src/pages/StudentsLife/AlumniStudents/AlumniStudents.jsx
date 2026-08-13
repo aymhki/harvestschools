@@ -1,6 +1,5 @@
-import {Helmet} from "react-helmet-async";
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useTranslation} from "react-i18next";
 import Spinner from "../../../modules/Spinner.jsx";
 import AlumniPostCard from "../../../modules/AlumniPostCard.jsx";
@@ -29,14 +28,12 @@ function AlumniStudents() {
         <>
             {isLoading && <Spinner/>}
 
-            <Helmet>
-                <title>Harvest International School | Students Life | Alumni Students</title>
-                <meta name="description" content="Stories, updates, and achievements shared by the alumni students of Harvest International Schools in Borg El Arab, Egypt. Current and future alumni can sign up to share their own stories."/>
-                <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Alumni, Alumni Students, Graduates, Stories, خريجين, خريجي هارفست, قصص الخريجين"/>
-                <meta name="author" content="Harvest International School"/>
-                <meta name="robots" content="index, follow"/>
-                <meta name="googlebot" content="index, follow"/>
-            </Helmet>
+            <title>Harvest International School | Students Life | Alumni Students</title>
+            <meta name="description" content="Stories, updates, and achievements shared by the alumni students of Harvest International Schools in Borg El Arab, Egypt. Current and future alumni can sign up to share their own stories."/>
+            <meta name="keywords" content="Harvest International School, HIS, Borg El-Arab, Borg Al-Arab, Egypt, مدارس هارفست, برج العرب, مدرسة, هارفست, Alumni, Alumni Students, Graduates, Stories, خريجين, خريجي هارفست, قصص الخريجين"/>
+            <meta name="author" content="Harvest International School"/>
+            <meta name="robots" content="index, follow"/>
+            <meta name="googlebot" content="index, follow"/>
 
             <div className={"alumni-students-page"}>
                 <div className={"extreme-padding-container"}>

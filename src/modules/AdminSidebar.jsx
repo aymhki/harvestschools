@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Link, useLocation, useNavigate } from 'react-router';
 import '../styles/AdminSidebar.css';
 import {isDevelopment, logoutCurrentAdmin, jackOfAllTradesPermissionLevel} from "../services/General/GeneralUtils.jsx";
 import { Capacitor } from '@capacitor/core';
@@ -32,7 +31,6 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
     const [settingsNotice, setSettingsNotice] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
-    const {  i18n } = useTranslation();
 
     const getIconForLink = (linkPath) => {
         switch(linkPath) {

@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import "../styles/FullPageOptionsSelector.css";
 import PropTypes from "prop-types";
 

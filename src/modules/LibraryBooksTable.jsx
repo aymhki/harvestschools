@@ -4,20 +4,25 @@ import {useTranslation} from 'react-i18next'
 import Table from './Table.jsx'
 import Spinner from './Spinner.jsx'
 import {fetchLibraryCategory} from '../services/Public/Library/PublicLibraryServices.jsx'
+import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
 
 function LibraryBooksTable({categoryKey}) {
     const {t, i18n} = useTranslation(['students-life-pages', 'common'])
-    const [library, setLibrary] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const [hasFailed, setHasFailed] = useState(false)
 
     const language = i18n.language === 'ar' ? 'ar' : 'en'
+    const preloaded = usePreloadedData(`library:${categoryKey}:${language}`)
+
+    const [library, setLibrary] = useState(preloaded)
+    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
         let isActive = true
 
-        setIsLoading(true)
-        setHasFailed(false)
+        if (!preloaded) {
+            setIsLoading(true)
+            setHasFailed(false)
+        }
 
         fetchLibraryCategory(categoryKey, language)
             .then((data) => {
@@ -25,11 +30,16 @@ function LibraryBooksTable({categoryKey}) {
                     return
                 }
 
-                setLibrary(data)
-                setHasFailed(data === null)
+                if (data) {
+                    setLibrary(data)
+                    setHasFailed(false)
+                } else if (!preloaded) {
+                    setLibrary(null)
+                    setHasFailed(true)
+                }
             })
             .catch(() => {
-                if (isActive) {
+                if (isActive && !preloaded) {
                     setLibrary(null)
                     setHasFailed(true)
                 }
@@ -43,7 +53,7 @@ function LibraryBooksTable({categoryKey}) {
         return () => {
             isActive = false
         }
-    }, [categoryKey, language])
+    }, [categoryKey, language, preloaded])
 
 
     const showsSeries = useMemo(

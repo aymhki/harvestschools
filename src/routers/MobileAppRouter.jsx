@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import Spinner from '../modules/Spinner.jsx';
 import AdminSidebar from '../modules/AdminSidebar.jsx';

@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useEffect, useState} from "react";
 import Spinner from "../../../modules/Spinner.jsx";
 import PhotoCollage from "../../../modules/PhotoCollage.jsx";

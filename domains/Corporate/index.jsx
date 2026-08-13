@@ -2,8 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from '../../src/routers/CorporateClientRouter.jsx'
 import '../../src/styles/CorporateIndex.css'
-import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter } from 'react-router';
 import '../../src/i18n/i18n-client.jsx'
 import { startModalScrollLockWatcher } from '../../src/services/General/ScrollLockService.jsx'
 
@@ -60,15 +59,8 @@ startModalScrollLockWatcher()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <HelmetProvider>
-            <BrowserRouter
-                future={{
-                    v7_startTransition: true,
-                    v7_relativeSplatPath: true,
-                }}
-            >
-                <App />
-            </BrowserRouter>
-        </HelmetProvider>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
     </React.StrictMode>
 )

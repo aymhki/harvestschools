@@ -1,5 +1,4 @@
-import {Helmet} from "react-helmet-async";
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
 import {useSpring, animated} from "react-spring";
 import Spinner from "../../../modules/Spinner.jsx";
@@ -386,11 +385,9 @@ function AlumniProfile() {
         <>
             {isLoading && <Spinner/>}
 
-            <Helmet>
-                <title>Harvest International School | Students Life | Alumni Profile</title>
-                <meta name="description" content="Manage your Harvest International School alumni profile and share your stories with the Harvest community."/>
-                <meta name="robots" content="noindex, nofollow"/>
-            </Helmet>
+            <title>Harvest International School | Students Life | Alumni Profile</title>
+            <meta name="description" content="Manage your Harvest International School alumni profile and share your stories with the Harvest community."/>
+            <meta name="robots" content="noindex, nofollow"/>
 
             <div className={"alumni-profile-page"}>
                 <div className={"extreme-padding-container"}>

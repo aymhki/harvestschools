@@ -4,20 +4,25 @@ import {useTranslation} from "react-i18next";
 import Table from "./Table.jsx";
 import Spinner from "./Spinner.jsx";
 import {fetchPublicStaff} from "../services/Public/Staff/PublicStaffServices.jsx";
+import {usePreloadedData} from "../services/General/PrerenderDataContext.jsx";
 
 function StaffList({departmentKey, title, className}) {
     const {t, i18n} = useTranslation(['academics-pages', 'common']);
-    const [staff, setStaff] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [hasFailed, setHasFailed] = useState(false);
 
     const language = i18n.language === 'ar' ? 'ar' : 'en';
+    const preloaded = usePreloadedData(`staff:${departmentKey}:${language}`);
+
+    const [staff, setStaff] = useState(preloaded);
+    const [isLoading, setIsLoading] = useState(!preloaded);
+    const [hasFailed, setHasFailed] = useState(false);
 
     useEffect(() => {
         let isActive = true;
 
-        setIsLoading(true);
-        setHasFailed(false);
+        if (!preloaded) {
+            setIsLoading(true);
+            setHasFailed(false);
+        }
 
         fetchPublicStaff(departmentKey, language)
             .then((data) => {
@@ -25,11 +30,16 @@ function StaffList({departmentKey, title, className}) {
                     return;
                 }
 
-                setStaff(data);
-                setHasFailed(data === null);
+                if (data) {
+                    setStaff(data);
+                    setHasFailed(false);
+                } else if (!preloaded) {
+                    setStaff(null);
+                    setHasFailed(true);
+                }
             })
             .catch(() => {
-                if (isActive) {
+                if (isActive && !preloaded) {
                     setStaff(null);
                     setHasFailed(true);
                 }
@@ -43,7 +53,7 @@ function StaffList({departmentKey, title, className}) {
         return () => {
             isActive = false;
         };
-    }, [departmentKey, language]);
+    }, [departmentKey, language, preloaded]);
 
     const tableData = useMemo(() => {
         const headers = [

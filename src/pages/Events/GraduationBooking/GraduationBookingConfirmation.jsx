@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import Spinner from "../../../modules/Spinner.jsx";
 import '../../../styles/Events.css';
 import {fetchGraduationBookingConfirmationRequest} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";

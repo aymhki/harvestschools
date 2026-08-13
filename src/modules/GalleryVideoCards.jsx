@@ -3,20 +3,25 @@ import {useTranslation} from 'react-i18next'
 import PhotoCollage from './PhotoCollage.jsx'
 import Spinner from './Spinner.jsx'
 import {PUBLIC_GALLERY_MEDIA_ROOT, fetchGallerySection} from '../services/Public/Gallery/PublicGalleryServices.jsx'
+import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
 
 function GalleryVideoCards() {
     const {t, i18n} = useTranslation(['gallery-pages'])
-    const [gallery, setGallery] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const [hasFailed, setHasFailed] = useState(false)
 
     const language = i18n.language === 'ar' ? 'ar' : 'en'
+    const preloaded = usePreloadedData(`gallery:videos:${language}`)
+
+    const [gallery, setGallery] = useState(preloaded)
+    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
         let isActive = true
 
-        setIsLoading(true)
-        setHasFailed(false)
+        if (!preloaded) {
+            setIsLoading(true)
+            setHasFailed(false)
+        }
 
         fetchGallerySection('videos', language)
             .then((data) => {
@@ -24,11 +29,16 @@ function GalleryVideoCards() {
                     return
                 }
 
-                setGallery(data)
-                setHasFailed(data === null)
+                if (data) {
+                    setGallery(data)
+                    setHasFailed(false)
+                } else if (!preloaded) {
+                    setGallery(null)
+                    setHasFailed(true)
+                }
             })
             .catch(() => {
-                if (isActive) {
+                if (isActive && !preloaded) {
                     setGallery(null)
                     setHasFailed(true)
                 }
@@ -42,7 +52,7 @@ function GalleryVideoCards() {
         return () => {
             isActive = false
         }
-    }, [language])
+    }, [language, preloaded])
 
     return (
         <>
