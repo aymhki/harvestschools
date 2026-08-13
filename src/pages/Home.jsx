@@ -83,12 +83,12 @@ function Home() {
                     {/*        referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>*/}
 
                     <video
-                        src={`${servePublicAsset("/videos/HomePage/Intro.v2.mp4")}#t=0.001`}
+                        src={servePublicAsset("/videos/HomePage/Intro.v2.mp4")}
+                        poster={servePublicAsset("/videos/HomePage/Intro.v2.mp4", {thumbnailAt: 3})}
                         controls
-                        autoPlay
                         loop
-                        muted
                         playsInline
+                        preload="none"
                         className="home-page-about-us-video"
                     />
 
