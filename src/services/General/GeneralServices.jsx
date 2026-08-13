@@ -34,11 +34,8 @@ function servePublicAsset(path, options = {}) {
 
     if (isDevelopment() && !Capacitor.isNativePlatform() && isRepositoryAsset) {
         if (!wantsThumbnail) return `/assets/${path}`
-
         const devParams = new URLSearchParams({ thumbnail: String(thumbnailAt) })
-
         if (w) devParams.set('w', w)
-
         return `/assets/${path}?${devParams.toString()}`
     }
 

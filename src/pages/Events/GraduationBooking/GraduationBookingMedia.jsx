@@ -29,14 +29,14 @@ function GraduationBookingMedia() {
                     <PhotoCollage type={'slider'} photos={
                         [
                             {
-                                src: '/videos/EventsPages/BookingMedia1.mp4',
+                                src: '/videos/EventsPages/BookingMedia1.v2.mp4',
                                 alt: 'Booking Media 1',
                                 isVideo: true,
                             }
                         ]
                     } collagePreview={
                         {
-                            src: '/videos/EventsPages/BookingMedia1.mp4',
+                            src: '/videos/EventsPages/BookingMedia1.v2.mp4',
                             alt: 'Booking Media 1',
                             isVideo: true,
                         }
