@@ -131,6 +131,177 @@
     cursor: text;
 }
 
+.video-thumbnail-field-preview {
+    align-self: stretch;
+    width: 100%;
+    max-height: 18rem;
+    margin-top: 0.5rem;
+    border-radius: calc(var(--ff-radius) / 2);
+    background-color: rgb(0, 0, 0);
+    object-fit: contain;
+}
+
+.video-thumbnail-field-scrubber {
+    align-self: stretch;
+    width: 100%;
+    margin: 0.6rem 0 0;
+    accent-color: var(--ff-field-border);
+    cursor: pointer;
+}
+
+.video-thumbnail-field-readout {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+.file-form-field-preview {
+    align-self: stretch;
+    width: 100%;
+    max-height: 18rem;
+    border-radius: calc(var(--ff-radius) / 2);
+    background-color: rgb(0, 0, 0);
+    object-fit: contain;
+}
+
+.file-form-field-chosen-name {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: center;
+}
+
+.file-form-field-upload {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.file-form-field-upload-bar {
+    width: 100%;
+    height: 0.8rem;
+    border-radius: 0.4rem;
+    background-color: var(--ff-panel-bg);
+    box-shadow: inset 0 0 0 0.06rem var(--ff-field-border);
+    overflow: hidden;
+}
+
+.file-form-field-upload-bar-fill {
+    display: block;
+    height: 100%;
+    background-color: var(--ff-field-border);
+    transition: width 0.3s ease-out;
+}
+
+.file-form-field-upload-readout {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: center;
+}
+
+.file-form-field-upload-warning {
+    font-size: small;
+    text-align: center;
+    color: var(--secondary-color);
+}
+
+.file-form-field-styled .file-form-field-upload-cancel {
+    margin: 0;
+}
+
+.files-form-field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    align-self: stretch;
+    gap: 1.25rem;
+    width: 100%;
+    margin: 0.75rem 0;
+    padding: 1rem;
+    list-style: none;
+    max-height: 24rem;
+    overflow-y: auto;
+}
+
+.files-form-field-grid-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    border-radius: var(--ff-radius);
+    box-shadow: 0 0 0 0.06rem var(--ff-field-border);
+    text-align: center;
+}
+
+.files-form-field-grid-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: calc(var(--ff-radius) / 2);
+    background-color: rgb(0, 0, 0);
+    object-fit: cover;
+}
+
+.files-form-field-grid-preview-empty {
+    color: var(--fb-white-color);
+    font-size: small;
+    letter-spacing: 0.1rem;
+}
+
+.files-form-field-grid-name {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: small;
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+.files-form-field-grid .files-form-field-grid-remove {
+    position: absolute;
+    top: -0.6rem;
+    inset-inline-end: -0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    min-width: auto;
+    height: 1.6rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--ff-panel-bg);
+    box-shadow: 0 0 0 0.06rem var(--ff-field-border);
+    color: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.files-form-field-grid .files-form-field-grid-remove svg {
+    width: 62%;
+    height: 62%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+}
+
+.files-form-field-grid .files-form-field-grid-remove:hover {
+    filter: drop-shadow(0 0 0.3rem var(--ff-field-border));
+}
+
+.files-form-field-grid .files-form-field-grid-remove:disabled {
+    opacity: 0.5;
+    cursor: default;
+    filter: none;
+}
+
 .text-form-field:hover,
 .textarea-form-field:hover,
 .select-form-field:hover,
@@ -792,13 +963,6 @@
     background: transparent;
 }
 
-/* The list is anchored to its own field, never positioned from coordinates
- * measured in javascript, so it cannot drift while the page scrolls or the
- * keyboard opens, and being out of flow it never pushes the fields below.
- *
- * Fallback for browsers without anchor positioning: absolute inside the field
- * wrapper. The form is a scroll container, so it would clip the list, which is
- * why .form drops its clipping while a list is open (see .has-open-search-select). */
 .search-select-dropdown {
     position: absolute;
     top: calc(100% + 0.25rem);
@@ -1014,6 +1178,20 @@
 
     .search-select-dropdown {
         max-height: 10rem;
+    }
+
+    /* A phone has little height to spare, so the previews and the chosen file
+       grid give some of theirs back rather than pushing the rest of the form
+       off the bottom of the modal. */
+    .file-form-field-preview,
+    .video-thumbnail-field-preview {
+        max-height: 12rem;
+    }
+
+    .files-form-field-grid {
+        gap: 0.75rem;
+        padding: 0.75rem;
+        max-height: 18rem;
     }
 }
 

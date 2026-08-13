@@ -84,7 +84,6 @@
 }
 
 .video-preview-slider .video-preview-media {
-    aspect-ratio: 16 / 9;
     height: auto;
 }
 
@@ -93,8 +92,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: clamp(3rem, 11vw, 4.75rem);
-    height: clamp(3rem, 11vw, 4.75rem);
+    width: clamp(4.5rem, 14vw, 7rem);
+    height: clamp(4.5rem, 14vw, 7rem);
     border-radius: 50%;
     background-color: rgba(15, 15, 15, 0.45);
     box-shadow: 0 0 0 0.09rem rgba(255, 255, 255, 0.75), 0 0.4rem 1.4rem rgba(0, 0, 0, 0.35);
@@ -105,8 +104,8 @@
 }
 
 .video-preview-play svg {
-    width: 40%;
-    height: 40%;
+    width: 52%;
+    height: 52%;
     fill: var(--fb-white-color);
 }
 
@@ -175,11 +174,23 @@
     position: absolute;
     top: 15px;
     right: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(2.25rem, 6vw, 2.75rem);
+    height: clamp(2.25rem, 6vw, 2.75rem);
     color: var(--fb-white-color);
-    font-size: 40px;
-    font-weight: bold;
     transition: 0.3s;
     cursor: pointer;
+}
+
+.close-lightbox svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
 }
 
 .prev-photo {

@@ -146,9 +146,11 @@
         max-height: 15rem;
         max-width: 15rem;
     }
+}
 
+@media (max-width: 1400px) {
     .options-grid-container-compact .options-grid-quadruple {
-        gap: 1rem;
+        gap: 5rem;
         grid-template-columns: repeat(auto-fill, minmax(calc(22% - 1rem), 1fr));
     }
 }
@@ -165,11 +167,6 @@
     .options-grid-items-container img {
         max-height: 10rem;
         max-width: 10rem;
-    }
-
-    .options-grid-container-compact .options-grid-quadruple {
-        gap: 2rem;
-        grid-template-columns: repeat(auto-fill, minmax(calc(50% - 1rem), 1fr));
     }
 
 }
@@ -190,6 +187,11 @@
         max-width: 8rem;
     }
 
+    .options-grid-container-compact .options-grid-quadruple {
+        gap: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(calc(33% - 1rem), 1fr));
+    }
+
 
 }
 
@@ -203,10 +205,6 @@
         grid-template-columns: repeat(auto-fill, minmax(calc(100% - 1rem), 1fr));
     }
 
-    .options-grid-container-compact .options-grid-quadruple {
-        gap: 1rem;
-        grid-template-columns: repeat(auto-fill, minmax(calc(100% - 1rem), 1fr));
-    }
 
     .options-grid-compact-items-container  {
         min-height: 12rem;
@@ -224,6 +222,17 @@
 
     .options-grid-container {
         width: 90%;
+    }
+}
+
+@media (max-width: 580px) {
+    .options-grid-container-compact {
+        width: 80%;
+    }
+
+    .options-grid-container-compact .options-grid-quadruple {
+        gap: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(calc(80% - 1rem), 1fr));
     }
 }
 

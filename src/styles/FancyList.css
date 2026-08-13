@@ -11,6 +11,8 @@
     color: var(--primary-color);
 }
 
+
+
 .fancy-list-title {
     margin: 0;
     text-align: center;
@@ -46,11 +48,19 @@
 .fancy-list-items {
     display: flex;
     flex-direction: column;
-    gap: var(--fancy-list-gap);
+    gap: var(--fancy-list-items-gap);
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 1rem 1rem 1rem 1rem;
     list-style: none;
+    max-height: 75vh;
+    overflow-y:scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.fancy-list-items::-webkit-scrollbar {
+    display: none;
 }
 
 .fancy-list-item-wrapper {
@@ -84,7 +94,7 @@
 
 .fancy-list-item:hover,
 .fancy-list-item:focus-visible {
-    filter: drop-shadow(0 0 1rem var(--primary-color) );
+    filter: drop-shadow(0 0 0.3rem var(--primary-color) );
     background-color: var(--fb-white-color);
     color: var(--primary-color);
     outline: none;
@@ -113,7 +123,8 @@ html[lang="ar"] .fancy-list-item-title {
 }
 
 .fancy-list-item-subtitle {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
+    font-weight: normal;
     line-height: 1.5;
     opacity: 0.85;
     overflow-wrap: anywhere;
@@ -197,7 +208,7 @@ html[dir="rtl"] .fancy-list-item-chevron {
     .fancy-list-item:hover,
     .fancy-list-item:focus-visible,
     .fancy-list-item.selected {
-        filter: drop-shadow(0 0 1rem var(--fb-white-color) );
+        filter: drop-shadow(0 0 0.3rem var(--fb-white-color) );
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
     }
