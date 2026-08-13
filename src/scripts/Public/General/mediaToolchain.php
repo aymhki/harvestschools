@@ -275,6 +275,207 @@ function media_release_work_lock($handle) {
 }
 
 
+function media_spawn_detached(array $command, $logPath = null, $pidPath = null) {
+    if (!media_process_functions_available()) {
+        return false;
+    }
+
+    $quoted = array_map('escapeshellarg', $command);
+    $target = $logPath === null ? (DIRECTORY_SEPARATOR === '\\' ? 'NUL' : '/dev/null') : $logPath;
+
+    if (DIRECTORY_SEPARATOR === '\\') {
+        $line = 'start /B ' . implode(' ', $quoted) . ' > ' . escapeshellarg($target) . ' 2>&1';
+    } else {
+        $line = 'nohup ' . implode(' ', $quoted) . ' > ' . escapeshellarg($target) . ' 2>&1 &';
+
+        if ($pidPath !== null) {
+            $line .= ' echo $! > ' . escapeshellarg($pidPath);
+        }
+    }
+
+    $descriptors = [
+        0 => ['file', DIRECTORY_SEPARATOR === '\\' ? 'NUL' : '/dev/null', 'r'],
+        1 => ['file', $target, 'a'],
+        2 => ['file', $target, 'a'],
+    ];
+
+    $pipes = [];
+    $process = @proc_open($line, $descriptors, $pipes);
+
+    if (!is_resource($process)) {
+        return false;
+    }
+
+    proc_close($process);
+
+    return true;
+}
+
+
+function media_stop_detached($pidPath, $commandNeedle = '') {
+    if ($pidPath === null || !is_file($pidPath)) {
+        return false;
+    }
+
+    $pid = (int)trim((string)@file_get_contents($pidPath));
+
+    @unlink($pidPath);
+
+    if ($pid <= 1 || DIRECTORY_SEPARATOR === '\\' || !media_process_functions_available()) {
+        return false;
+    }
+
+    $inspected = media_run(['ps', '-o', 'args=', '-p', (string)$pid], 5);
+
+    if (!$inspected['ok'] || trim($inspected['output']) === '') {
+        return false;
+    }
+
+    if ($commandNeedle !== '' && !str_contains($inspected['output'], $commandNeedle)) {
+        return false;
+    }
+
+    media_run(['kill', '-TERM', (string)$pid], 5);
+
+    return true;
+}
+
+
+function media_mp4_is_faststart($path) {
+    $handle = @fopen($path, 'rb');
+
+    if ($handle === false) {
+        return false;
+    }
+
+    $isFaststart = false;
+    $position = 0;
+
+    while (true) {
+        if (fseek($handle, $position) !== 0) {
+            break;
+        }
+
+        $header = fread($handle, 8);
+
+        if ($header === false || strlen($header) < 8) {
+            break;
+        }
+
+        $size = unpack('N', substr($header, 0, 4))[1];
+        $type = substr($header, 4, 4);
+
+        if ($type === 'moov') {
+            $isFaststart = true;
+            break;
+        }
+
+        if ($type === 'mdat') {
+            break;
+        }
+
+        if ($size === 1) {
+            $extended = fread($handle, 8);
+            $parts = unpack('Nhigh/Nlow', (string)$extended);
+            $size = ($parts['high'] << 32) + $parts['low'];
+        }
+
+        if ($size < 8) {
+            break;
+        }
+
+        $position += $size;
+    }
+
+    fclose($handle);
+
+    return $isFaststart;
+}
+
+
+function media_probe_video($path) {
+    $probe = [
+        'duration'   => null,
+        'videoCodec' => '',
+        'audioCodec' => '',
+        'width'      => null,
+        'height'     => null,
+        'recordedAt' => null,
+        'faststart'  => media_mp4_is_faststart($path),
+    ];
+
+    $ffprobe = media_tool_path('ffprobe');
+
+    if ($ffprobe !== null) {
+        $run = media_run([
+            $ffprobe,
+            '-v', 'error',
+            '-show_entries', 'format=duration:format_tags=creation_time:stream=codec_type,codec_name,width,height',
+            '-of', 'json',
+            $path,
+        ], MEDIA_TOOL_PROBE_TIMEOUT_SECONDS);
+
+        $decoded = $run['ok'] ? json_decode($run['output'], true) : null;
+
+        if (is_array($decoded)) {
+            foreach ($decoded['streams'] ?? [] as $stream) {
+                $type = $stream['codec_type'] ?? '';
+
+                if ($type === 'video' && $probe['videoCodec'] === '') {
+                    $probe['videoCodec'] = (string)($stream['codec_name'] ?? '');
+                    $probe['width'] = isset($stream['width']) ? (int)$stream['width'] : null;
+                    $probe['height'] = isset($stream['height']) ? (int)$stream['height'] : null;
+                } elseif ($type === 'audio' && $probe['audioCodec'] === '') {
+                    $probe['audioCodec'] = (string)($stream['codec_name'] ?? '');
+                }
+            }
+
+            $duration = $decoded['format']['duration'] ?? '';
+
+            if ($duration !== '' && $duration !== 'N/A') {
+                $probe['duration'] = round((float)$duration, 3);
+            }
+
+            $recordedAt = (string)($decoded['format']['tags']['creation_time'] ?? '');
+            $recordedTimestamp = $recordedAt === '' ? false : strtotime($recordedAt);
+
+            if ($recordedTimestamp !== false) {
+                $probe['recordedAt'] = date('Y-m-d H:i:s', $recordedTimestamp);
+            }
+        }
+
+        return $probe;
+    }
+
+    $ffmpeg = media_tool_path('ffmpeg');
+
+    if ($ffmpeg === null) {
+        return $probe;
+    }
+
+    $run = media_run([$ffmpeg, '-hide_banner', '-i', $path], MEDIA_TOOL_PROBE_TIMEOUT_SECONDS);
+
+    if (preg_match('/Duration:\s*(\d+):(\d+):(\d+\.?\d*)/', $run['output'], $matches)) {
+        $probe['duration'] = round(((int)$matches[1] * 3600) + ((int)$matches[2] * 60) + (float)$matches[3], 3);
+    }
+
+    if (preg_match('/Stream #\d+:\d+.*?: Video: ([A-Za-z0-9_]+)/', $run['output'], $matches)) {
+        $probe['videoCodec'] = $matches[1];
+    }
+
+    if (preg_match('/Stream #\d+:\d+.*?: Video:.*?, (\d+)x(\d+)/', $run['output'], $matches)) {
+        $probe['width'] = (int)$matches[1];
+        $probe['height'] = (int)$matches[2];
+    }
+
+    if (preg_match('/Stream #\d+:\d+.*?: Audio: ([A-Za-z0-9_]+)/', $run['output'], $matches)) {
+        $probe['audioCodec'] = $matches[1];
+    }
+
+    return $probe;
+}
+
+
 function media_extract_video_frame($videoPath, $seconds, $destinationPath, $maxWidth = 1280, $quality = 4) {
     $ffmpeg = media_tool_path('ffmpeg');
 

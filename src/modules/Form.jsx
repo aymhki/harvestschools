@@ -144,6 +144,21 @@ const searchSelectMatches = (choice, query) => {
 };
 
 const OPTION_TAP_TOLERANCE = 8;
+const DEFAULT_MAX_FILE_BYTES = 2 * 1024 * 1024;
+
+const describeBytes = (bytes) => {
+    const size = Number(bytes) || 0;
+
+    if (size >= 1024 * 1024 * 1024) {
+        return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    }
+
+    if (size >= 1024 * 1024) {
+        return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    return `${Math.max(1, Math.round(size / 1024))} KB`;
+};
 
 
 function Form({
@@ -179,6 +194,7 @@ function Form({
                   formFooterButtonsAreOutside,
                   footerButtonsPortalTarget,
                   dynamicSections,
+                  fieldStateFromParent,
               }) {
 
     const [submitting, setSubmitting] = useState(false);
@@ -190,6 +206,9 @@ function Form({
     const captchaMaxLength = easySimpleCaptcha ? 4 : 6;
     const characters = 'ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghkmnopqrstuvwxyz0123456789@#$%&';
     const [fileInputs, setFileInputs] = useState({});
+    const [videoThumbnailUrls, setVideoThumbnailUrls] = useState({});
+    const [videoThumbnailDurations, setVideoThumbnailDurations] = useState({});
+    const [filePreviewUrls, setFilePreviewUrls] = useState({});
     const [showSelectDateModal, setShowSelectDateModal] = useState(false);
     const [selectedDateDay, setSelectedDateDay] = useState('');
     const [selectedDateMonth, setSelectedDateMonth] = useState('');
@@ -494,6 +513,53 @@ function Form({
         return mergedFields;
     }, [dynamicFields, dynamicSectionInstances, normalizedDynamicSections, formIsReadOnly]);
 
+    const resolveSourceFieldId = (field) => {
+        const dynamicSectionInfo = field.__dynamicSection;
+
+        return dynamicSectionInfo
+            ? getDynamicRuntimeFieldId(dynamicSectionInfo.sectionId, dynamicSectionInfo.uid, field.sourceFieldId)
+            : field.sourceFieldId;
+    };
+
+    useEffect(() => {
+        const videoUrls = {};
+        const previewUrls = {};
+
+        composedFields.forEach((field) => {
+            if (field.type === 'video-thumbnail') {
+                const source = fileInputs[resolveSourceFieldId(field)];
+
+                if (source instanceof File) {
+                    videoUrls[field.id] = URL.createObjectURL(source);
+                }
+            } else if (field.type === 'files') {
+                const chosen = Array.isArray(fileInputs[field.id]) ? fileInputs[field.id] : [];
+
+                previewUrls[field.id] = chosen.map((file) => (
+                    String(file.type).startsWith('image/') ? URL.createObjectURL(file) : ''
+                ));
+            } else if (field.type === 'file' && field.showPreview) {
+                const chosen = fileInputs[field.id];
+                const canPreview = chosen instanceof File
+                    && (String(chosen.type).startsWith('image/') || String(chosen.type).startsWith('video/'));
+
+                previewUrls[field.id] = canPreview ? [URL.createObjectURL(chosen)] : [];
+            }
+        });
+
+        setVideoThumbnailUrls(videoUrls);
+        setFilePreviewUrls(previewUrls);
+
+        return () => {
+            Object.values(videoUrls).forEach((objectUrl) => URL.revokeObjectURL(objectUrl));
+            Object.values(previewUrls).forEach((list) => list.forEach((objectUrl) => {
+                if (objectUrl !== '') {
+                    URL.revokeObjectURL(objectUrl);
+                }
+            }));
+        };
+    }, [fileInputs, composedFields]);
+
     const getFieldSubmitValue = (field) => {
         const ref = fieldRefs.current[field.id];
 
@@ -635,6 +701,7 @@ function Form({
         setSearchSelectSelections(pruneKeysWithPrefix);
         setSearchSelectQueries(pruneKeysWithPrefix);
         setFileInputs(pruneKeysWithPrefix);
+        setVideoThumbnailDurations(pruneKeysWithPrefix);
 
         if (openSearchSelectId !== null && String(openSearchSelectId).startsWith(refKeyPrefix)) {
             setOpenSearchSelectId(null);
@@ -1186,18 +1253,60 @@ function Form({
         });
     };
 
-    const renderFileInput = (field) => {
+    const getMaxFileBytes = (field) => field.maxFileSizeInBytes || DEFAULT_MAX_FILE_BYTES;
+
+    const describeFileSizeLimit = (field) => {
+        const megabytes = getMaxFileBytes(field) / (1024 * 1024);
+
+        return megabytes >= 1024 ? `${Math.round(megabytes / 1024)}GB` : `${Math.round(megabytes)}MB`;
+    };
+
+
+    const isFileTypeAllowed = (field, file) => {
+        if (!Array.isArray(field.allowedFileTypes) || field.allowedFileTypes.length === 0) {
+            return true;
+        }
+
+        const extension = `.${String(file.name.split('.').pop() || '').toLowerCase()}`;
+
+        return field.allowedFileTypes.some((allowed) => (
+            allowed.startsWith('.') ? allowed.toLowerCase() === extension : allowed === file.type
+        ));
+    };
+
+    const describeFileProblem = (field, file) => {
+        if (file.size > getMaxFileBytes(field)) {
+            return `File size must be less than ${describeFileSizeLimit(field)}`;
+        }
+
+        if (!isFileTypeAllowed(field, file)) {
+            return `File type must be one of the following: ${field.allowedFileTypes.join(', ')}`;
+        }
+
+        return '';
+    };
+
+    const getChosenFiles = (field) => (Array.isArray(fileInputs[field.id]) ? fileInputs[field.id] : []);
+
+    const renderFilesInput = (field) => {
         const widthClass = getWidthClass(field.widthOfField);
+        const chosen = getChosenFiles(field);
 
         if (!fieldRefs.current[field.id]) {
             fieldRefs.current[field.id] = createRef();
         }
 
+        const setChosen = (nextFiles) => {
+            field.files = nextFiles;
+            setFileInputs(prev => ({...prev, [field.id]: nextFiles}));
+        };
+
         return (
-            <div className={`file-form-field-styled ${widthClass}`} >
+            <div className={`file-form-field-styled files-form-field-styled ${widthClass}`}>
                 <label htmlFor={field.id}>
                     {getLabelText(field)}
                 </label>
+
                 <div className="file-form-field-styled-buttons-wrapper">
                     <button type="button" disabled={submitting}
                             onClick={() => {
@@ -1209,35 +1318,304 @@ function Form({
                     >
                         {t("all-forms.upload")}
                     </button>
-                    {fileInputs[field.id] && (
+
+                    {chosen.length > 0 && (
                         <button
                             className="remove-button"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                field.file = null;
-                                setFileInputs(prev => ({...prev, [field.id]: null}));
-
-                                const ref = fieldRefs.current[field.id];
-                                if (ref && ref.current) {
-                                    ref.current.value = '';
-                                }
-                            }}
                             type="button"
                             disabled={submitting}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setChosen([]);
+                            }}
                         >
                             {t("all-forms.remove")}
                         </button>
                     )}
                 </div>
+
+                {chosen.length === 0 ? (
+                    <label>No files selected</label>
+                ) : (
+                    <ul className="files-form-field-grid">
+                        {chosen.map((file, index) => (
+                            <li key={`${file.name}-${file.size}-${index}`} className="files-form-field-grid-item">
+                                {(filePreviewUrls[field.id] || [])[index] ? (
+                                    <img
+                                        className="files-form-field-grid-preview"
+                                        src={filePreviewUrls[field.id][index]}
+                                        alt={file.name}
+                                    />
+                                ) : (
+                                    <span className="files-form-field-grid-preview files-form-field-grid-preview-empty">
+                                        {String(file.name.split('.').pop() || '').toUpperCase()}
+                                    </span>
+                                )}
+
+                                <span className="files-form-field-grid-name" title={file.name}>{file.name}</span>
+
+                                <button
+                                    type="button"
+                                    className="files-form-field-grid-remove"
+                                    disabled={submitting}
+                                    aria-label={`Remove ${file.name}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setChosen(chosen.filter((chosenFile, position) => position !== index));
+                                    }}
+                                >
+                                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                        <path d="M6 6 L18 18 M18 6 L6 18" />
+                                    </svg>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                <input
+                    type="file"
+                    className="file-form-field"
+                    id={field.id}
+                    name={field.httpName}
+                    multiple
+                    accept={field.allowedFileTypes ? field.allowedFileTypes.join(',') : ''}
+                    disabled={submitting}
+                    onChange={(e) => onChange(e, field)}
+                    ref={fieldRefs.current[field.id]}
+                />
+
                 <label>
-                    {fileInputs[field.id]
-                        ? (fileInputs[field.id].name.length > 20
-                                ? fileInputs[field.id].name.substring(0, 20) + '...'
-                                : fileInputs[field.id].name
+                    {chosen.length > 0 ? `${chosen.length} selected. ` : ''}
+                    Maximum file size: {describeFileSizeLimit(field)}
+                    {field.maxFiles ? `, up to ${field.maxFiles} files` : ''}
+                </label>
+            </div>
+        );
+    };
+
+    const renderVideoThumbnailPicker = (field) => {
+        const widthClass = getWidthClass(field.widthOfField);
+        const objectUrl = videoThumbnailUrls[field.id] || field.videoUrl || '';
+        const duration = videoThumbnailDurations[field.id] || 0;
+
+        if (!fieldRefs.current[field.id]) {
+            fieldRefs.current[field.id] = createRef();
+        }
+
+        const videoRefKey = `${field.id}_video`;
+
+        if (!fieldRefs.current[videoRefKey]) {
+            fieldRefs.current[videoRefKey] = createRef();
+        }
+
+        const scrubberRefKey = `${field.id}_scrubber`;
+        const readoutRefKey = `${field.id}_readout`;
+
+        if (!fieldRefs.current[scrubberRefKey]) {
+            fieldRefs.current[scrubberRefKey] = createRef();
+        }
+
+        if (!fieldRefs.current[readoutRefKey]) {
+            fieldRefs.current[readoutRefKey] = createRef();
+        }
+
+        const describePoint = (seconds) => `Frame at ${(Number(seconds) || 0).toFixed(1)}s of ${duration.toFixed(1)}s`;
+
+        const seekTo = (seconds) => {
+            const input = fieldRefs.current[field.id];
+            const video = fieldRefs.current[videoRefKey];
+            const scrubber = fieldRefs.current[scrubberRefKey];
+            const readout = fieldRefs.current[readoutRefKey];
+
+            if (input && input.current) {
+                input.current.value = String(seconds);
+            }
+
+            if (video && video.current) {
+                video.current.currentTime = Number(seconds);
+            }
+
+            if (scrubber && scrubber.current) {
+                scrubber.current.value = String(seconds);
+            }
+
+            if (readout && readout.current) {
+                readout.current.textContent = describePoint(seconds);
+            }
+        };
+
+        return (
+            <div className={`file-form-field-styled video-thumbnail-field ${widthClass}`}>
+                <label htmlFor={field.id}>
+                    {getLabelText(field)}
+                </label>
+
+                {objectUrl === '' ? (
+                    <label>Choose a video first, then pick its cover frame here</label>
+                ) : (
+                    <>
+                        <video
+                            className="video-thumbnail-field-preview"
+                            src={objectUrl}
+                            ref={fieldRefs.current[videoRefKey]}
+                            preload="metadata"
+                            muted
+                            playsInline
+                            onLoadedMetadata={(e) => {
+                                const loaded = Number(e.target.duration) || 0;
+
+                                setVideoThumbnailDurations(prev => (
+                                    prev[field.id] === loaded ? prev : {...prev, [field.id]: loaded}
+                                ));
+
+                                const scrubber = fieldRefs.current[scrubberRefKey];
+
+                                if (scrubber && scrubber.current) {
+                                    scrubber.current.max = String(Math.max(loaded - 0.1, 0.1));
+                                }
+
+                                const startAt = Math.min(Math.max(Number(field.defaultValue) || 0, 0), Math.max(loaded - 0.1, 0));
+
+                                seekTo(Number(startAt.toFixed(1)));
+                            }}
+                        />
+
+                        <input
+                            type="range"
+                            className="video-thumbnail-field-scrubber"
+                            min={0}
+                            max={Math.max(duration - 0.1, 0.1)}
+                            step={0.1}
+                            disabled={submitting}
+                            onChange={(e) => seekTo(e.target.value)}
+                            aria-label={`${getLabelText(field)} position`}
+                            ref={fieldRefs.current[scrubberRefKey]}
+                        />
+
+                        <label className="video-thumbnail-field-readout" ref={fieldRefs.current[readoutRefKey]}>
+                            {describePoint(fieldRefs.current[field.id]?.current?.value)}
+                        </label>
+                    </>
+                )}
+
+                <input type="hidden" {...getCommonInputProps(field)} />
+            </div>
+        );
+    };
+
+    const renderUploadProgress = (field) => {
+        const upload = field.upload;
+        const percent = Math.min(100, Math.max(0, Number(upload.percent) || 0));
+        const isFinishing = upload.phase === 'finishing';
+
+        return (
+            <div className="file-form-field-upload">
+                <div className="file-form-field-upload-bar" role="progressbar"
+                     aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}
+                     aria-label={`${getLabelText(field)} upload progress`}>
+                    <span className="file-form-field-upload-bar-fill" style={{width: `${percent}%`}}/>
+                </div>
+
+                <label className="file-form-field-upload-readout">
+                    {isFinishing
+                        ? 'Upload complete, handing the file over to the server...'
+                        : `Uploading ${percent}% (${describeBytes(upload.sentBytes)} of ${describeBytes(upload.totalBytes)})`}
+                </label>
+
+                <label className="file-form-field-upload-warning">
+                    Please keep this tab open until the upload finishes. Closing it now loses the progress.
+                </label>
+
+                {typeof upload.onCancel === 'function' && (
+                    <button
+                        type="button"
+                        className="remove-button file-form-field-upload-cancel"
+                        disabled={!!upload.isCancelling}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            upload.onCancel();
+                        }}
+                    >
+                        {upload.isCancelling ? 'Cancelling...' : 'Cancel Upload'}
+                    </button>
+                )}
+            </div>
+        );
+    };
+
+    const renderFileInput = (field) => {
+        const widthClass = getWidthClass(field.widthOfField);
+        const isUploading = !!(field.upload && field.upload.phase);
+        const previewUrl = (filePreviewUrls[field.id] || [])[0] || '';
+        const chosenFile = fileInputs[field.id];
+
+        if (!fieldRefs.current[field.id]) {
+            fieldRefs.current[field.id] = createRef();
+        }
+
+        return (
+            <div className={`file-form-field-styled ${widthClass}`} >
+                <label htmlFor={field.id}>
+                    {getLabelText(field)}
+                </label>
+
+                {!isUploading && (
+                    <div className="file-form-field-styled-buttons-wrapper">
+                        <button type="button" disabled={submitting}
+                                onClick={() => {
+                                    const ref = fieldRefs.current[field.id];
+                                    if (ref && ref.current) {
+                                        ref.current.click();
+                                    }
+                                }}
+                        >
+                            {t("all-forms.upload")}
+                        </button>
+                        {chosenFile && (
+                            <button
+                                className="remove-button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    field.file = null;
+                                    setFileInputs(prev => ({...prev, [field.id]: null}));
+
+                                    const ref = fieldRefs.current[field.id];
+                                    if (ref && ref.current) {
+                                        ref.current.value = '';
+                                    }
+                                }}
+                                type="button"
+                                disabled={submitting}
+                            >
+                                {t("all-forms.remove")}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                <label className="file-form-field-chosen-name">
+                    {chosenFile
+                        ? (chosenFile.name.length > 20
+                                ? chosenFile.name.substring(0, 20) + '...'
+                                : chosenFile.name
                         )
                         : 'No file selected'
                     }
+                    {(chosenFile && field.showPreview) ? ` (${describeBytes(chosenFile.size)})` : ''}
                 </label>
+
+                {previewUrl !== '' && (
+                    String(chosenFile.type).startsWith('video/') ? (
+                        <video className="file-form-field-preview" src={previewUrl}
+                               preload="metadata" muted playsInline controls/>
+                    ) : (
+                        <img className="file-form-field-preview" src={previewUrl} alt={chosenFile.name}/>
+                    )
+                )}
+
+                {isUploading && renderUploadProgress(field)}
+
                 <input
                     type="file"
                     className="file-form-field"
@@ -1250,7 +1628,8 @@ function Form({
                     onChange={(e) => onChange(e, field)}
                     ref={fieldRefs.current[field.id]}
                 />
-                <label>Maximum file size: 2MB</label>
+
+                {!isUploading && <label>Maximum file size: {describeFileSizeLimit(field)}</label>}
             </div>
         );
     };
@@ -1332,6 +1711,12 @@ function Form({
     };
 
     const renderFieldBasedOnType = (field) => {
+        const stateFromParent = fieldStateFromParent ? fieldStateFromParent[field.id] : null;
+
+        if (stateFromParent) {
+            Object.assign(field, stateFromParent);
+        }
+
         if (field.type === 'hidden') {
             if (!fieldRefs.current[field.id]) {
                 fieldRefs.current[field.id] = createRef();
@@ -1347,6 +1732,7 @@ function Form({
                 />
             );
         }
+
         return (
             <Fragment key={String(field.id)}>
                 {(field.labelOutside && !field.labelOnTop) && renderLabel(field)}
@@ -1360,6 +1746,8 @@ function Form({
                 {field.type === 'checkbox' && renderChoiceInputs(field, 'checkbox')}
                 {field.type === 'search-select' && renderSearchSelect(field)}
                 {field.type === 'file' && renderFileInput(field)}
+                {field.type === 'files' && renderFilesInput(field)}
+                {field.type === 'video-thumbnail' && renderVideoThumbnailPicker(field)}
                 {field.type === 'button' && renderButton(field)}
                 {field.type === 'section' && ( renderSection(field) ) }
                 {field.type === 'dynamic-section-instance-header' && renderDynamicSectionInstanceHeader(field)}
@@ -1749,22 +2137,44 @@ function Form({
     }, []);
 
     const onChange = (e, field) => {
-        const maxSizeInBytes = 2 * 1024 * 1024;
         const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
 
         if (field.type === 'number' && (isNaN(value) || (field.minimumValue && Number(value) < field.minimumValue) || (field.maximumValue && Number(value) > field.maximumValue))) {
             e.target.setCustomValidity(`Value must be a number between ${field.minimumValue} and ${field.maximumValue}`);
-        } else if (field.type === 'file' && e.target.files[0].size > maxSizeInBytes) {
-            e.target.setCustomValidity('File size must be less than 2MB');
-        } else if (field.type === 'file' && !field.allowedFileTypes.includes(e.target.files[0].type)) {
-            e.target.setCustomValidity(`File type must be one of the following: ${field.allowedFileTypes.join(', ')}`);
-        } else if (field.type === 'file') {
-            const file = e.target.files[0];
+        } else if (field.type === 'file' || field.type === 'files') {
+            const chosen = Array.from(e.target.files || []);
+
+            if (chosen.length === 0) {
+                return;
+            }
+
+            const problem = chosen.map((file) => describeFileProblem(field, file)).find(Boolean) || '';
+
+            if (problem !== '') {
+                e.target.setCustomValidity(problem);
+                e.target.reportValidity();
+
+                return;
+            }
+
             e.target.setCustomValidity('');
             setGeneralFormError('');
             setSuccessMessage('');
-            setFileInputs(prev => ({...prev, [field.id]: file}));
-            field.file = file;
+
+            if (field.type === 'files') {
+                const existing = getChosenFiles(field);
+                const alreadyChosen = new Set(existing.map((file) => `${file.name}:${file.size}`));
+                const added = chosen.filter((file) => !alreadyChosen.has(`${file.name}:${file.size}`));
+                const merged = [...existing, ...added];
+                const capped = field.maxFiles ? merged.slice(0, field.maxFiles) : merged;
+
+                field.files = capped;
+                setFileInputs(prev => ({...prev, [field.id]: capped}));
+                e.target.value = '';
+            } else {
+                setFileInputs(prev => ({...prev, [field.id]: chosen[0]}));
+                field.file = chosen[0];
+            }
         } else {
             if (field.regex && !new RegExp(field.regex).test(value)) {
                 e.target.setCustomValidity(field.errorMsg);
@@ -1908,6 +2318,14 @@ function Form({
                     return;
                 }
             }
+
+            if (currentField.type === 'files' && currentField.required) {
+                if (getChosenFiles(currentField).length === 0) {
+                    setGeneralFormError(t('all-forms.field-required', { field1: getWhichLabelToUse(currentField) }));
+                    setTimeout(() => setGeneralFormError(''), msgTimeout);
+                    return;
+                }
+            }
         }
 
         setSubmitting(true);
@@ -1934,6 +2352,7 @@ function Form({
                     : `${field.id}`;
                 const labelForField = dynamicSectionInfo ? dynamicSectionInfo.templateLabel : field.label;
                 const uploadedFile = (field.type === 'file') ? (field.file || fileInputs[field.id]) : null;
+                const fileFieldLabel = dynamicSectionInfo ? `${labelForField} ${ordinalForDynamicField + 1}` : field.label;
 
                 if (field.type === 'file' && uploadedFile) {
                     const file = uploadedFile;
@@ -1942,9 +2361,22 @@ function Form({
                     const uniqueFileName = `${fileNameWithoutExt}-${uuidv6()}.${fileExtension}`;
                     const renamedFile = new File([file], uniqueFileName, {type: file.type});
                     value = uniqueFileName;
-                    const fileFieldLabel = dynamicSectionInfo ? `${labelForField} ${ordinalForDynamicField + 1}` : field.label;
                     formData.append(`uniqueFileName_${fileFieldLabel}`, uniqueFileName);
                     formData.append(fileFieldLabel, renamedFile, uniqueFileName);
+                } else if (field.type === 'files') {
+                    const uniqueFileNames = [];
+
+                    getChosenFiles(field).forEach((file) => {
+                        const fileExtension = file.name.split('.').pop();
+                        const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+                        const uniqueFileName = `${fileNameWithoutExt}-${uuidv6()}.${fileExtension}`;
+
+                        uniqueFileNames.push(uniqueFileName);
+                        formData.append(fileFieldLabel, new File([file], uniqueFileName, {type: file.type}), uniqueFileName);
+                    });
+
+                    value = uniqueFileNames.join(',');
+                    formData.append(`uniqueFileNames_${fileFieldLabel}`, value);
                 } else {
                     value = getFieldSubmitValue(field);
                 }
@@ -2732,6 +3164,19 @@ const fieldShape = {
     widthOfField: PropTypes.number,
     labelOutside: PropTypes.bool,
     allowedFileTypes: PropTypes.arrayOf(PropTypes.string),
+    maxFileSizeInBytes: PropTypes.number,
+    maxFiles: PropTypes.number,
+    sourceFieldId: PropTypes.number,
+    videoUrl: PropTypes.string,
+    showPreview: PropTypes.bool,
+    upload: PropTypes.shape({
+        phase: PropTypes.string,
+        percent: PropTypes.number,
+        sentBytes: PropTypes.number,
+        totalBytes: PropTypes.number,
+        isCancelling: PropTypes.bool,
+        onCancel: PropTypes.func,
+    }),
     placeholder: PropTypes.string,
     dontLetTheBrowserSaveField: PropTypes.bool,
     multiple: PropTypes.bool,
@@ -2796,6 +3241,7 @@ Form.propTypes = {
         fields: PropTypes.arrayOf(PropTypes.shape(fieldShape)).isRequired,
         instances: PropTypes.arrayOf(PropTypes.object),
     })),
+    fieldStateFromParent: PropTypes.objectOf(PropTypes.object),
 };
 
 export default Form;

@@ -35,7 +35,7 @@ try {
              FROM academic_calendars c
              LEFT JOIN academic_calendar_events e ON e.calendar_id = c.id
              WHERE c.calendar_key = ?
-             GROUP BY c.id
+             GROUP BY c.id, c.academic_year
              ORDER BY c.academic_year DESC"
         );
 

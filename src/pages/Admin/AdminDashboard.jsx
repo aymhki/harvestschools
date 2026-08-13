@@ -29,12 +29,13 @@ function AdminDashboard({ dashboardOptions, adminPermissions, isLoading, loggedI
             `${finalLoggedInName} Returns!`,
         ];
 
-        if (Math.random() < 0.5) {
+        if (Math.random() <= 0.5) {
             return timeBasedGreeting;
         } else {
             const randomIndex = Math.floor(Math.random() * otherOptions.length);
             return otherOptions[randomIndex];
         }
+
     }, [loggedInName]);
 
     return (

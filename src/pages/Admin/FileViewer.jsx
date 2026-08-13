@@ -16,6 +16,7 @@ function FileViewer({fetchFileService}) {
     const [mimeType, setMimeType] = useState('');
     const serveFile = fetchFileService;
     const isImage = mimeType.startsWith('image/');
+    const isVideo = mimeType.startsWith('video/');
 
     useEffect(() => {
 
@@ -75,6 +76,14 @@ function FileViewer({fetchFileService}) {
                                                     src={fileBlobUrl}
                                                     alt={filename}
                                                     className="file-image-viewer"
+                                                />
+                                            ) : isVideo ? (
+                                                <video
+                                                    src={fileBlobUrl}
+                                                    className="file-video-viewer"
+                                                    preload="metadata"
+                                                    controls
+                                                    playsInline
                                                 />
                                             ) : (
                                                 <embed

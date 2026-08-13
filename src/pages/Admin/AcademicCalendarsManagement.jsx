@@ -165,7 +165,7 @@ function AcademicCalendarsManagement() {
             title: 'Events',
             addButtonLabel: 'Add Event',
             removeButtonLabel: 'Remove Event',
-            insertAfterFieldId: pdfFieldId,
+            insertAfterFieldId: availableFromFieldId,
             minInstances: 1,
             maxInstances: 300,
             fields: eventRowFields,
@@ -174,8 +174,8 @@ function AcademicCalendarsManagement() {
         setModalFields([
             { id: yearFieldId, type: 'text', name: 'academic-year', label: 'Academic Year', required: true, errorMsg: 'Please enter the academic year as 2026/2027', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Academic Year (this year/next year)', httpName: 'academic-year', alwaysEnglish: true },
             { id: availableFromFieldId, type: 'date', name: 'available-from', label: 'Available From', required: true, errorMsg: 'Please choose when this calendar starts showing', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Start showing this academic calendar at', httpName: 'available-from', alwaysEnglish: true },
-            { id: noteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: '', widthOfField: 1, labelOutside: true, labelOnTop: true, placeholder: 'All holidays during the week are shifted to Thursday of that week as per the ministry of education instructions', displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
-            { id: noteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: '', widthOfField: 1, labelOutside: true, labelOnTop: true, lang: 'ar', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
+            { id: noteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, placeholder: 'All holidays during the week are shifted to Thursday of that week as per the ministry of education instructions', displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
+            { id: noteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, lang: 'ar', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
             { id: pdfFieldId, type: 'file', name: 'calendar-pdf', label: PDF_FIELD_LABEL, required: false, value: '', allowedFileTypes: ['application/pdf', '.pdf'], errorMsg: 'Please upload the calendar as a PDF', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Calendar PDF for the Download Calendar button (optional)', httpName: 'calendar-pdf' },
         ]);
     };
@@ -184,9 +184,9 @@ function AcademicCalendarsManagement() {
         setModalType({ kind: 'meta', calendarKey: openCalendarKey, academicYear: openAcademicYear });
         setModalDynamicSections(null);
         setModalFields([
-            { id: metaAvailableFromFieldId, type: 'date', name: 'available-from', label: 'Available From', required: true, errorMsg: 'Please choose when this calendar starts showing', value: openYear ? openYear.availableFrom : '', defaultValue: openYear ? openYear.availableFrom : '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Start showing this academic calendar at', httpName: 'available-from', alwaysEnglish: true },
-            { id: metaNoteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: openYear ? openYear.noteEn : '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
-            { id: metaNoteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: openYear ? openYear.noteAr : '', widthOfField: 1, labelOutside: true, labelOnTop: true, lang: 'ar', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
+            { id: metaAvailableFromFieldId, type: 'date', name: 'available-from', label: 'Available From', required: true, errorMsg: 'Please choose when this calendar starts showing', value: '', defaultValue: openYear ? openYear.availableFrom : '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Start showing this academic calendar at', httpName: 'available-from', alwaysEnglish: true },
+            { id: metaNoteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: '', defaultValue: openYear ? openYear.noteEn : '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
+            { id: metaNoteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: '', defaultValue: openYear ? openYear.noteAr : '', widthOfField: 1, labelOutside: true, labelOnTop: true, lang: 'ar', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
         ]);
     };
 
@@ -205,10 +205,10 @@ function AcademicCalendarsManagement() {
         setModalDynamicSections(null);
         setRowIndexToEdit(rowIndex ?? null);
         setModalFields([
-            { id: singleTitleEnFieldId, type: 'text', name: 'title-en', label: 'Title (EN)', required: true, errorMsg: 'Please enter the English title', value: row ? row[eventTitleEnColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'title-en' },
-            { id: singleTitleArFieldId, type: 'text', name: 'title-ar', label: 'Title (AR)', required: true, errorMsg: 'Please enter the Arabic title', value: row ? row[eventTitleArColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'title-ar' },
-            { id: singleStartFieldId, type: 'date', name: 'start-date', label: 'Start Date', required: true, errorMsg: 'Please choose the start date', value: row ? row[eventStartColIndex] : '', defaultValue: row ? row[eventStartColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Start Date', httpName: 'start-date', alwaysEnglish: true },
-            { id: singleEndFieldId, type: 'date', name: 'end-date', label: 'End Date', required: true, errorMsg: 'Please choose the end date', value: row ? row[eventEndColIndex] : '', defaultValue: row ? row[eventEndColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'End Date', httpName: 'end-date', alwaysEnglish: true },
+            { id: singleTitleEnFieldId, type: 'text', name: 'title-en', label: 'Title (EN)', required: true, errorMsg: 'Please enter the English title', value: '', defaultValue: row ? row[eventTitleEnColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'title-en' },
+            { id: singleTitleArFieldId, type: 'text', name: 'title-ar', label: 'Title (AR)', required: true, errorMsg: 'Please enter the Arabic title', value: '', defaultValue: row ? row[eventTitleArColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'title-ar' },
+            { id: singleStartFieldId, type: 'date', name: 'start-date', label: 'Start Date', required: true, errorMsg: 'Please choose the start date', value: '', defaultValue: row ? row[eventStartColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Start Date', httpName: 'start-date', alwaysEnglish: true },
+            { id: singleEndFieldId, type: 'date', name: 'end-date', label: 'End Date', required: true, errorMsg: 'Please choose the end date', value: '', defaultValue: row ? row[eventEndColIndex] : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'End Date', httpName: 'end-date', alwaysEnglish: true },
         ]);
     };
 
@@ -421,19 +421,7 @@ function AcademicCalendarsManagement() {
                     </div>
 
                     <div className={"general-large-admin-action-modal-content"}>
-                        {modalType && modalType.kind === 'add-year' && (
-                            <p className={"general-large-admin-action-modal-content-note"}>
-                                Note: The calendar stays hidden until the date you choose above arrives, and until then
-                                the previous academic year keeps showing on the website. That date has to fall after the
-                                last day of the calendar it replaces.
-                            </p>
-                        )}
 
-                        {modalType && (modalType.kind === 'meta' || modalType.kind === 'add-year') && (
-                            <p className={"general-large-admin-action-modal-content-note"}>
-                                Note: The note appears above the table on the public page, in the reader&apos;s language.
-                            </p>
-                        )}
 
                         {(modalType && modalFields != null) && (
                             <Form fields={modalFields}

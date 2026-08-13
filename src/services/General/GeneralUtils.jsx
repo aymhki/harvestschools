@@ -94,6 +94,15 @@ const getMimeType = (extension) => {
             return 'image/svg+xml';
         case 'webp':
             return 'image/webp';
+        case 'avif':
+            return 'image/avif';
+        case 'mp4':
+        case 'm4v':
+            return 'video/mp4';
+        case 'webm':
+            return 'video/webm';
+        case 'mov':
+            return 'video/quicktime';
         default:
             return 'application/octet-stream';
     }
@@ -141,7 +150,7 @@ const formatNumberByLocale = (number) => {
     return new Intl.NumberFormat(currentLanguage === 'ar' ? 'ar-SA' : 'en-US').format(number);
 };
 
-const EMBEDDABLE_EXTENSIONS = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
+const EMBEDDABLE_EXTENSIONS = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'avif', 'mp4', 'webm', 'mov', 'm4v'];
 const cdCost = 150;
 const additionalAttendeeCost = 150;
 const pendingPaymentStatus = 'Signed Up, pending payment';
@@ -174,6 +183,7 @@ const infoSystemManagementPermissionLevel = "7";
 const alumniStudentsManagementPermissionLevel = "13";
 const staffDirectoryManagementPermissionLevel = "14";
 const libraryManagementPermissionLevel = "22";
+const galleryManagementPermissionLevel = "23";
 const academicCalendarsMasterPermissionLevel = "15";
 const academicCalendarPermissionLevels = {
     'national': "16",
@@ -184,7 +194,6 @@ const academicCalendarPermissionLevels = {
     'american-kg': "21",
 };
 const anyAcademicCalendarPermissionLevels = [
-    libraryManagementPermissionLevel,
     academicCalendarsMasterPermissionLevel,
     ...Object.values(academicCalendarPermissionLevels),
 ];
@@ -266,6 +275,19 @@ const ENDPOINTS = {
     servePublicAssetFile: '/scripts/Public/General/servePublicAssetFile.php',
     servePublicVideoThumbnail: '/scripts/Public/General/serveVideoThumbnail.php',
     getPublicGallery: '/scripts/Public/Gallery/getPublicGallery.php',
+    getGallery: '/scripts/Admin/Gallery/getGallery.php',
+    addCollage: '/scripts/Admin/Gallery/addCollage.php',
+    addCollagePhotos: '/scripts/Admin/Gallery/addCollagePhotos.php',
+    updateCollage: '/scripts/Admin/Gallery/updateCollage.php',
+    deleteCollage: '/scripts/Admin/Gallery/deleteCollage.php',
+    deleteCollagePhoto: '/scripts/Admin/Gallery/deleteCollagePhoto.php',
+    updateVideo: '/scripts/Admin/Gallery/updateVideo.php',
+    deleteVideo: '/scripts/Admin/Gallery/deleteVideo.php',
+    beginVideoUpload: '/scripts/Admin/Gallery/beginVideoUpload.php',
+    uploadVideoChunk: '/scripts/Admin/Gallery/uploadVideoChunk.php',
+    finishVideoUpload: '/scripts/Admin/Gallery/finishVideoUpload.php',
+    cancelVideoUpload: '/scripts/Admin/Gallery/cancelVideoUpload.php',
+    getVideoUploadStatus: '/scripts/Admin/Gallery/getVideoUploadStatus.php',
     getPublicSchoolInfo: '/scripts/Public/SchoolInfo/getPublicSchoolInfo.php',
     getPublicSchoolStages: '/scripts/Public/SchoolInfo/getPublicSchoolStages.php',
     getPublicSchoolContacts: '/scripts/Public/SchoolInfo/getPublicSchoolContacts.php',
@@ -516,6 +538,7 @@ export {
     alumniStudentsManagementPermissionLevel,
     staffDirectoryManagementPermissionLevel,
     libraryManagementPermissionLevel,
+    galleryManagementPermissionLevel,
     academicCalendarsMasterPermissionLevel,
     academicCalendarPermissionLevels,
     anyAcademicCalendarPermissionLevels,

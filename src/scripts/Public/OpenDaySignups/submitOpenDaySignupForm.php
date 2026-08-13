@@ -83,6 +83,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $registrationId = null;
 
+        $lookupStmt = $conn->prepare(
+            "SELECT registration_id FROM open_day_registrations
+             WHERE LOWER(parent_name) = LOWER(?) AND parent_phone = ?
+             ORDER BY registration_id ASC LIMIT 1"
+        );
+        $lookupStmt->bind_param("ss", $parentName, $parentPhone);
+        $lookupStmt->execute();
+        $result = $lookupStmt->get_result();
+        $lookupStmt->close();
+
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $registrationId = $row['registration_id'];

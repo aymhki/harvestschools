@@ -8,6 +8,7 @@ import '../styles/App.css';
 import { headToAdminLoginOnInvalidSessionFromAdminDashboard } from '../services/Admin/Session/AdminNavigationServices.jsx';
 import { serveAlumniFile } from '../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx';
 import { serveJobApplicationFile } from '../services/Admin/JobApplications/AdminJobApplicationsManagementServices.jsx';
+import { serveGalleryFile } from '../services/Admin/Gallery/AdminGalleryServices.jsx';
 import { adminRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
 import { ROUTER_IDS } from '../routes/redirects.js';
@@ -17,7 +18,7 @@ const pages = makeLazyPages(
     import.meta.glob(['../pages/Admin/**/*.jsx', '../pages/NotFound.jsx'])
 );
 
-const services = { serveAlumniFile, serveJobApplicationFile };
+const services = { serveAlumniFile, serveJobApplicationFile, serveGalleryFile };
 
 function AdminRouter() {
     const location = useLocation();
@@ -29,7 +30,7 @@ function AdminRouter() {
     const [isAuthLoading, setIsAuthLoading] = useState(false);
     const [isSidebarPinned, setIsSidebarPinned] = useState(() => {
         const savedPreference = localStorage.getItem('isSidebarPinned');
-        return savedPreference === 'true';
+        return (savedPreference !== undefined && savedPreference !== null) ? savedPreference === 'true' : false;
     });
     const [adminPermissions, setAdminPermissions] = useState([]);
     const [refreshCurrentUserData, setRefreshCurrentUserData] = useState(false);

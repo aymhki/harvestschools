@@ -84,6 +84,7 @@ try {
     global $BRITISH_KG_CALENDAR_MANAGEMENT;
     global $AMERICAN_KG_CALENDAR_MANAGEMENT;
     global $LIBRARY_MANAGEMENT;
+    global $GALLERY_MANAGEMENT;
     global $JACK_OF_ALL_TRADES;
 
 
@@ -202,6 +203,17 @@ try {
                 "description" => "View & manage the books on the library pages",
                 "link" => "/library-management",
                 "buttonText" => "View Books",
+                "titleInArabic" => false,
+                "descriptionInArabic" => false
+            ]
+        ],
+        $GALLERY_MANAGEMENT => [
+            [
+                "title" => "Gallery",
+                "image" => "/images/Dashboard/Gallery.svg",
+                "description" => "View & manage the photo collages and videos on the gallery pages",
+                "link" => "/gallery-management",
+                "buttonText" => "View Gallery",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
             ]

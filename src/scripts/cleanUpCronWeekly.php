@@ -1,5 +1,8 @@
 <?php
 $dbConfig = require __DIR__ . '/../../configs/dbConfig.php';
+$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__);
+require_once __DIR__ . '/Admin/Gallery/galleryHelpers.php';
+
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $conn = null;
 
@@ -18,6 +21,8 @@ try {
     $conn->query("DELETE FROM admin_mfa_challenges WHERE expires_at < NOW() - INTERVAL 1 DAY;");
     $conn->query("DELETE FROM admin_ip_geolocations WHERE looked_up_at < NOW() - INTERVAL 180 DAY;");
     $conn->query("DELETE FROM alumni_login_events WHERE created_at < NOW() - INTERVAL 180 DAY;");
+    $gallerySweep = gallery_sweep_abandoned_uploads($conn);
+
     echo "Cron Job Successfully ran\n";
 
 } catch (Exception $e) {

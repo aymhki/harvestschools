@@ -179,7 +179,11 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                     ))}
 
 
-                    <div onClick={closeLightBox} className="close-lightbox">&#10007;</div>
+                    <div onClick={closeLightBox} className="close-lightbox" role="button" aria-label="Close">
+                        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                            <path d="M6 6 L18 18 M18 6 L6 18" />
+                        </svg>
+                    </div>
 
                     { photos.length > 1 && (
                         <>
@@ -191,7 +195,9 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
 
 
 
-                    <div className="photo-index"><p>{currentIndex + 1} / {photos.length}</p></div>
+                    {photos.length > 1 && (
+                        <div className="photo-index"><p>{currentIndex + 1} / {photos.length}</p></div>
+                    )}
                 </animated.div>
 
         </div>
