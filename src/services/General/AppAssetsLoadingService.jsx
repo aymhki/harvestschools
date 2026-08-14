@@ -4,12 +4,53 @@ import { useLoadingWhile } from './GlobalLoadingService.jsx'
 
 const MAX_WAIT_MS = 8000
 
-const waitForFonts = () => {
-    if (typeof document === 'undefined' || !document.fonts || !document.fonts.ready) {
+const ARABIC_FONT_VARIABLES = ['--arabic-title-font', '--arabic-normal-font', '--arabic-normal-font-bold']
+const ENGLISH_FONT_VARIABLES = ['--english-title-font', '--english-normal-font', '--english-normal-font-bold']
+
+const hasFontsApi = () => typeof document !== 'undefined' && Boolean(document.fonts)
+
+const fontSpecsForLanguage = (language) => {
+    if (typeof document === 'undefined') {
+        return []
+    }
+
+    const variables = language === 'ar' ? ARABIC_FONT_VARIABLES : ENGLISH_FONT_VARIABLES
+    const rootStyle = getComputedStyle(document.documentElement)
+
+    return variables
+        .map((variable) => rootStyle.getPropertyValue(variable).trim())
+        .filter(Boolean)
+        .map((family) => `1em ${family}`)
+}
+
+const areLanguageFontsReady = (language) => {
+    if (!hasFontsApi() || typeof document.fonts.check !== 'function') {
+        return true
+    }
+
+    return fontSpecsForLanguage(language).every((spec) => {
+        try {
+            return document.fonts.check(spec)
+        } catch (error) {
+            return true
+        }
+    })
+}
+
+const loadLanguageFonts = (language) => {
+    if (!hasFontsApi() || typeof document.fonts.load !== 'function') {
         return Promise.resolve()
     }
 
-    return document.fonts.ready
+    const loads = fontSpecsForLanguage(language).map((spec) => {
+        try {
+            return document.fonts.load(spec).catch(() => null)
+        } catch (error) {
+            return Promise.resolve(null)
+        }
+    })
+
+    return Promise.all(loads)
 }
 
 const useAppAssetsLoading = () => {
@@ -36,24 +77,20 @@ const useAppAssetsLoading = () => {
                 return
             }
 
-            requestAnimationFrame(() => {
-                if (!isActive) {
-                    return
-                }
+            const language = i18n.resolvedLanguage || i18n.language || 'en'
 
-                if (typeof document === 'undefined' || !document.fonts || document.fonts.status === 'loaded') {
-                    clearTimeout(safetyTimeout)
-                    markReady()
-                    return
-                }
+            if (areLanguageFontsReady(language)) {
+                clearTimeout(safetyTimeout)
+                markReady()
+                return
+            }
 
-                setAreAssetsReady(false)
-                startSafetyTimeout()
+            setAreAssetsReady(false)
+            startSafetyTimeout()
 
-                waitForFonts().then(() => {
-                    clearTimeout(safetyTimeout)
-                    markReady()
-                })
+            loadLanguageFonts(language).then(() => {
+                clearTimeout(safetyTimeout)
+                markReady()
             })
         }
 
