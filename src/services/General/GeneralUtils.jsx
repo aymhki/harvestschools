@@ -184,6 +184,7 @@ const alumniStudentsManagementPermissionLevel = "13";
 const staffDirectoryManagementPermissionLevel = "14";
 const libraryManagementPermissionLevel = "22";
 const galleryManagementPermissionLevel = "23";
+const pageGatesManagementPermissionLevel = "24";
 const academicCalendarsMasterPermissionLevel = "15";
 const academicCalendarPermissionLevels = {
     'national': "16",
@@ -292,6 +293,9 @@ const ENDPOINTS = {
     getPublicSchoolStages: '/scripts/Public/SchoolInfo/getPublicSchoolStages.php',
     getPublicSchoolContacts: '/scripts/Public/SchoolInfo/getPublicSchoolContacts.php',
     getPublicStages: '/scripts/Public/SchoolInfo/getPublicStages.php',
+    getPublicPageGates: '/scripts/Public/SchoolInfo/getPublicPageGates.php',
+    getPageGates: '/scripts/Admin/PageGates/getPageGates.php',
+    updatePageGate: '/scripts/Admin/PageGates/updatePageGate.php',
     getAllAdminUsers: '/scripts/Admin/AdminUsers/getAllAdminUsers.php',
     addAdminUser: '/scripts/Admin/AdminUsers/addAdminUser.php',
     editAdminUser: '/scripts/Admin/AdminUsers/editAdminUser.php',
@@ -539,6 +543,7 @@ export {
     staffDirectoryManagementPermissionLevel,
     libraryManagementPermissionLevel,
     galleryManagementPermissionLevel,
+    pageGatesManagementPermissionLevel,
     academicCalendarsMasterPermissionLevel,
     academicCalendarPermissionLevels,
     anyAcademicCalendarPermissionLevels,

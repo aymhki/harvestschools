@@ -80,6 +80,14 @@
     padding: 5rem;
 }
 
+.gated-page {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 .extreme-padding-container:lang(ar) {
     direction: rtl;
 }

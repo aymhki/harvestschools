@@ -19,12 +19,9 @@ import OfflineBanner from './OfflineBanner.jsx'
 import '../styles/AppUpdateGate.css'
 import PropTypes from 'prop-types'
 
-const SHOW_DOWNLOAD_PROGRESS_BAR = true
-
-const PROGRESS_BAR_HIDE_DELAY_MS = 3000
-
+const SHOW_DOWNLOAD_PROGRESS_BAR = false
+const PROGRESS_BAR_HIDE_DELAY_MS = 1000
 const OFFLINE_CONTENT_SAVED_EVENT = 'harvestOfflineContentSaved'
-
 const LAUNCH_UNKNOWN = 'unknown'
 const LAUNCH_NORMAL = 'normal'
 const LAUNCH_FROM_LINK = 'link'

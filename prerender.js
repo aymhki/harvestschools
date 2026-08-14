@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { prerenderTargets } from './src/routes/routes.js';
-import { prerenderFetchPlan, routeDataKeys } from './src/routes/prerenderData.js';
+import { prerenderFetchPlan, routeDataKeys, globalDataKeys } from './src/routes/prerenderData.js';
 
 const targetName = process.argv[2];
 const target = prerenderTargets[targetName];
@@ -47,7 +47,10 @@ async function fetchSnapshotEntry(key, plan) {
 }
 
 async function fetchSnapshot(routes) {
-    const neededKeys = new Set(routes.flatMap((route) => routeDataKeys[route] || []));
+    const neededKeys = new Set([
+        ...globalDataKeys,
+        ...routes.flatMap((route) => routeDataKeys[route] || []),
+    ]);
     const snapshot = {};
 
     await Promise.all([...neededKeys].map(async (key) => {
@@ -90,7 +93,7 @@ if (fs.existsSync(originalIndexPath)) {
 for (const url of routesToPrerender) {
     const routeData = {};
 
-    for (const key of routeDataKeys[url] || []) {
+    for (const key of [...globalDataKeys, ...(routeDataKeys[url] || [])]) {
         if (key in snapshot) {
             routeData[key] = snapshot[key];
         }
@@ -143,9 +146,21 @@ if (fs.existsSync(tempIndexPath)) {
 
 console.log('Pre-rendering complete.');
 
+function gatedPaths() {
+    const gates = snapshot.pageGates && snapshot.pageGates.gates;
+
+    if (!gates || typeof gates !== 'object') {
+        return [];
+    }
+
+    return Object.keys(gates);
+}
+
 function generateSitemap() {
+    const excluded = [...sitemapExclude, ...gatedPaths()];
+
     const urls = routesToPrerender
-        .filter(route => !sitemapExclude.includes(route))
+        .filter(route => !excluded.includes(route))
         .map(route => {
             const url = `${domain}${route}`;
             return `

@@ -1,8 +1,7 @@
 diff --git a/node_modules/@capgo/capacitor-native-biometric/android/src/main/java/ee/forgr/biometric/NativeBiometric.java b/node_modules/@capgo/capacitor-native-biometric/android/src/main/java/ee/forgr/biometric/NativeBiometric.java
-index 0705fab..89cf506 100644
 --- a/node_modules/@capgo/capacitor-native-biometric/android/src/main/java/ee/forgr/biometric/NativeBiometric.java
 +++ b/node_modules/@capgo/capacitor-native-biometric/android/src/main/java/ee/forgr/biometric/NativeBiometric.java
-@@ -7,7 +7,6 @@ import android.content.Context;
+@@ -7,7 +7,6 @@
  import android.content.Intent;
  import android.content.SharedPreferences;
  import android.content.pm.PackageManager;
@@ -10,7 +9,7 @@ index 0705fab..89cf506 100644
  import android.os.Build;
  import android.security.keystore.KeyGenParameterSpec;
  import android.security.keystore.KeyProperties;
-@@ -214,8 +213,8 @@ public class NativeBiometric extends Plugin {
+@@ -324,8 +323,8 @@
          }
  
          try {

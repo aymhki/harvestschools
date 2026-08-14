@@ -16,7 +16,7 @@
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/share": "^8.0.1",
     "@capgo/capacitor-inappbrowser": "^8.14.3",
-    "@capgo/capacitor-native-biometric": "^8.6.0",
+    "@capgo/capacitor-native-biometric": "^8.6.5",
     "@capgo/capacitor-updater": "^8.51.5",
     "capacitor-secure-storage-plugin": "^0.13.0"
   },

@@ -17,9 +17,15 @@ const SCRIPT_PATHS = {
     library: '/scripts/Public/Library/getPublicLibrary.php',
     gallery: '/scripts/Public/Gallery/getPublicGallery.php',
     calendar: '/scripts/Public/Calendars/getPublicCalendar.php',
+    pageGates: '/scripts/Public/SchoolInfo/getPublicPageGates.php',
 };
 
 export const prerenderFetchPlan = {};
+
+prerenderFetchPlan.pageGates = {
+    path: SCRIPT_PATHS.pageGates,
+    params: {},
+};
 
 for (const department of STAFF_DEPARTMENTS) {
     prerenderFetchPlan[`staff:${department}:${prerenderLanguage}`] = {
@@ -53,6 +59,8 @@ for (const calendarId of CALENDAR_IDS) {
         params: { calendar: calendarId, lang: prerenderLanguage },
     };
 }
+
+export const globalDataKeys = ['pageGates'];
 
 export const routeDataKeys = {
     '/academics/staff/national-staff': [`staff:national:${prerenderLanguage}`],

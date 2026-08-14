@@ -11,6 +11,7 @@ import { prefetchCalendars } from './SchoolCalendarsService.jsx'
 import { prefetchStages } from '../Public/SchoolInfo/PublicStagesServices.jsx'
 import { prefetchLibrary } from '../Public/Library/PublicLibraryServices.jsx'
 import { prefetchGallery } from '../Public/Gallery/PublicGalleryServices.jsx'
+import { prefetchPageGates } from '../Public/SchoolInfo/PageGatesServices.jsx'
 
 
 const PREFETCH_STAMP_KEY = 'harvest_offline_prefetch_stamp'
@@ -170,6 +171,12 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 }
             }
 
+            report('page-gates', 0)
+
+            const pageGateResult = await prefetchPageGates({
+                onProgress: (percent) => report('page-gates', percent),
+            })
+
             report('locales', 0)
 
             const localeResult = await prefetchAllLocales({
@@ -235,6 +242,7 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
 
             return {
                 skipped: false,
+                pageGates: pageGateResult,
                 locales: localeResult,
                 fonts: fontResult,
                 assets: assetResult,

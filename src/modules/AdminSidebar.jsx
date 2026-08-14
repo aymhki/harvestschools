@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import '../styles/AdminSidebar.css';
 import {isDevelopment, logoutCurrentAdmin, jackOfAllTradesPermissionLevel} from "../services/General/GeneralUtils.jsx";
@@ -20,6 +20,8 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ViewSidebarIcon from '@mui/icons-material/ViewSidebar';
 import SettingsIcon from '@mui/icons-material/Settings';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CollectionsIcon from '@mui/icons-material/Collections';
 import PropTypes from "prop-types";
 import {LinkOutlined} from "@mui/icons-material";
 import AdminSettingsModal from './AdminSettingsModal.jsx';
@@ -31,6 +33,7 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
     const [settingsNotice, setSettingsNotice] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
+    const navRef = useRef(null);
 
     const getIconForLink = (linkPath) => {
         switch(linkPath) {
@@ -43,7 +46,9 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
             case '/staff-directory-management' : return <BadgeIcon />;
             case '/academic-calendars-management' : return <CalendarMonthIcon />;
             case '/library-management' : return <MenuBookIcon />;
+            case '/gallery-management' : return <CollectionsIcon />;
             case '/admin-users-management' : return <ManageAccountsIcon />;
+            case '/page-gates-management' : return <VisibilityIcon />;
             case  '/view-job-application-file' : return <WorkIcon />;
             default: return <DashboardIcon />;
         }
@@ -51,6 +56,33 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
 
 
     const showText = isExpanded || isPinned || isMobileOpen;
+    const dashboardIsActive = location.pathname === '/admin-dashboard';
+
+    const scrollActiveItemIntoView = () => {
+        const nav = navRef.current;
+        const active = nav && nav.querySelector('li.active');
+
+        if (!nav || !active) {
+            return;
+        }
+
+        const stuckPosition = active.style.position;
+        active.style.position = 'static';
+        const naturalTop = active.offsetTop;
+        active.style.position = stuckPosition;
+
+        const centred = naturalTop - (nav.clientHeight - active.offsetHeight) / 2;
+
+        nav.scrollTo({ top: Math.max(0, centred), behavior: 'smooth' });
+    };
+
+    const onNavLinkClick = (isActive) => {
+        setIsMobileOpen(false);
+
+        if (isActive) {
+            scrollActiveItemIntoView();
+        }
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -143,10 +175,11 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
 
                 </div>
 
-                <nav className="sidebar-nav">
+                <nav className="sidebar-nav" ref={navRef}>
                     <ul className="sidebar-links">
-                        <li className={location.pathname === '/admin-dashboard' ? 'active' : ''}>
-                            <Link to="/admin-dashboard" title={!isExpanded ? 'Dashboard' : ''} onClick={() => setIsMobileOpen(false)}>
+                        <li className={dashboardIsActive ? 'active' : ''}>
+                            <Link to="/admin-dashboard" title={!isExpanded ? 'Dashboard' : ''}
+                                  onClick={() => onNavLinkClick(dashboardIsActive)}>
                                 <span className="icon"><DashboardIcon /></span>
                                 {showText && <span className="label">Dashboard</span>}
                             </Link>
@@ -157,7 +190,8 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
                             const isActive = location.pathname === link.link || viewJobApplicationFile;
                             return (
                                 <li key={link.link} className={isActive ? 'active' : ''}>
-                                    <Link to={link.link} title={!isExpanded ? link.title : ''} onClick={() => setIsMobileOpen(false)}>
+                                    <Link to={link.link} title={!isExpanded ? link.title : ''}
+                                          onClick={() => onNavLinkClick(isActive)}>
                                         <span className="icon">{getIconForLink(link.link)}</span>
                                         {showText && <span className="label">{link.title}</span>}
                                     </Link>

@@ -219,10 +219,47 @@ function public_school_events($conn, $language) {
     return public_calendar_all_events($conn, $language);
 }
 
-function public_school_pages($language) {
+function public_page_gates($conn) {
+    $gates = [];
+
+    if (!($conn instanceof mysqli)) {
+        return $gates;
+    }
+
+    try {
+        $result = $conn->query("SELECT page_id, is_enabled, message_en, message_ar FROM public_page_gates");
+    } catch (Throwable $e) {
+        return $gates;
+    }
+
+    if (!$result) {
+        return $gates;
+    }
+
+    while ($row = $result->fetch_assoc()) {
+        $gates[$row['page_id']] = [
+            'enabled'   => (int)$row['is_enabled'] === 1,
+            'messageEn' => $row['message_en'],
+            'messageAr' => $row['message_ar'],
+        ];
+    }
+
+    return $gates;
+}
+
+function public_page_is_enabled($gates, $pageId) {
+    return !isset($gates[$pageId]) || $gates[$pageId]['enabled'];
+}
+
+function public_school_pages($language, $conn = null) {
     $pages = [];
+    $gates = public_page_gates($conn);
 
     foreach (PUBLIC_PAGE_INVENTORY as $page) {
+        if (!public_page_is_enabled($gates, $page['id'])) {
+            continue;
+        }
+
         $title = null;
 
         if ($page['titleKey'] !== null) {
@@ -696,7 +733,7 @@ function public_school_section($conn, $language, $section) {
 
     switch ($section) {
         case 'pages':
-            return public_school_pages($language);
+            return public_school_pages($language, $conn);
 
         case 'departments':
             return public_school_departments($conn, $language);
@@ -788,7 +825,7 @@ function public_school_document($conn, $language) {
             public_school_library_facts($library, $language)
         ),
         'events'      => public_school_events($conn, $language),
-        'pages'       => public_school_pages($language),
+        'pages'       => public_school_pages($language, $conn),
     ];
 
     $document['contentHash'] = public_school_content_hash($document);

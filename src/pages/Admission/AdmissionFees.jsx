@@ -2,8 +2,6 @@ import '../../styles/Admission.css'
 import {useTranslation} from "react-i18next";
 import TuitionFeesTables from "../../modules/TuitionFeesTables.jsx";
 
-const showTuitionFees = true;
-
 function AdmissionFees() {
 
     const { t } = useTranslation(['admission-pages', 'common']);
@@ -23,13 +21,7 @@ function AdmissionFees() {
                 {t("admission-pages.options-page.admission-fees-option")}
             </h1>
 
-            {showTuitionFees ? (
-                <TuitionFeesTables/>
-            ) : (
-                <p>
-                    {t('common.this-page-is-under-construction', {ns: 'common'})}
-                </p>
-            )}
+            <TuitionFeesTables/>
         </div>
     </div>
   );

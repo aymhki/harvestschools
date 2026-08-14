@@ -85,6 +85,7 @@ try {
     global $AMERICAN_KG_CALENDAR_MANAGEMENT;
     global $LIBRARY_MANAGEMENT;
     global $GALLERY_MANAGEMENT;
+    global $PAGE_GATES_MANAGEMENT;
     global $JACK_OF_ALL_TRADES;
 
 
@@ -214,6 +215,17 @@ try {
                 "description" => "View & manage the photo collages and videos on the gallery pages",
                 "link" => "/gallery-management",
                 "buttonText" => "View Gallery",
+                "titleInArabic" => false,
+                "descriptionInArabic" => false
+            ]
+        ],
+        $PAGE_GATES_MANAGEMENT => [
+            [
+                "title" => "Page Visibility",
+                "image" => "/images/Dashboard/PageGates.svg",
+                "description" => "Switch public pages on or off and set the message shown while a page is off",
+                "link" => "/page-gates-management",
+                "buttonText" => "View Pages",
                 "titleInArabic" => false,
                 "descriptionInArabic" => false
             ]

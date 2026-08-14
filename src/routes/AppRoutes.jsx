@@ -1,7 +1,18 @@
 import { Route, Routes, Navigate } from 'react-router';
 import PropTypes from 'prop-types';
 import RouteRedirect from './RouteRedirect.jsx';
+import PageGate from '../modules/PageGate.jsx';
 import { ROUTER_IDS, redirectsForRouter } from './redirects.js';
+
+function pathsForRoute(route, routes) {
+    if (!route.page) {
+        return [route.path];
+    }
+
+    return routes
+        .filter((candidate) => candidate.page === route.page && !candidate.redirect)
+        .map((candidate) => candidate.path);
+}
 
 function AppRoutes({ routes, pages, ctx = {}, router = null }) {
     const declaredRedirects = redirectsForRouter(router);
@@ -32,7 +43,15 @@ function AppRoutes({ routes, pages, ctx = {}, router = null }) {
                 const props = route.props ? route.props(ctx) : {};
 
                 return (
-                    <Route key={route.path} path={route.path} element={<Component {...props} />} />
+                    <Route
+                        key={route.path}
+                        path={route.path}
+                        element={(
+                            <PageGate paths={pathsForRoute(route, routes)}>
+                                <Component {...props} />
+                            </PageGate>
+                        )}
+                    />
                 );
             })}
 

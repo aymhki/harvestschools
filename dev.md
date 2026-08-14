@@ -34,3 +34,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] When any of the form usage shows an error, the container should smooth scroll to make sure the error is in view. Same for the vide upload progress bar.
 - [ ] Fix sticky hover in mobile in all instances of css hover.
 - [ ] Fix the admin sidebar footer design in mobile.
+- [ ] Add search field to table header elements with optional prop.
+- [ ] Add option to import data to db via csv with required fields.
+- [ ] The notfound arabic text does not use the correct font, also it should not be arabic in admin pages.
+

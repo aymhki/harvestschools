@@ -245,6 +245,7 @@ const setLastUsedCredentialId = async (namespace, credentialId) => {
 const verifyBiometricIdentity = async (options) => {
     try {
         await NativeBiometric.verifyIdentity({
+            maxAttempts: 3,
             ...options,
             useFallback: true,
         });
