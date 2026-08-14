@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
-import Spinner from './Spinner.jsx'
 import '../styles/FancyList.css'
 
 function FancyList({
@@ -9,7 +8,6 @@ function FancyList({
                        title,
                        headerElements,
                        emptyMessage,
-                       isLoading = false,
                        selectedId = null,
                    }) {
     const { t } = useTranslation(['common'])
@@ -28,7 +26,6 @@ function FancyList({
                 </div>
             )}
 
-            {isLoading && <Spinner/>}
 
             {rows.length === 0 && (
                 <div className={'fancy-list-empty'}>

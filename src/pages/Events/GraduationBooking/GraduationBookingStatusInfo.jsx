@@ -5,17 +5,17 @@ import {fetchGraduationBookingInfoBySessionRequest} from "../../../services/Pare
 import {fetchWalletPassOffer, openWalletPass} from "../../../services/Parents/GraduationBookings/GraduationBookingWalletPassService.jsx";
 import { formatDateFromPacific, formatCeremonyDate, formatCeremonyTime, isMobileApp } from "../../../services/General/GeneralUtils.jsx"
 import {generateGraduationBookingConfirmationPDF} from "../../../services/Parents/GraduationBookings/GenerateGraduationBookingConfirmationPDFLazyWrapper.jsx"
-import Spinner from "../../../modules/Spinner.jsx";
 import WalletBadgeButton from "../../../modules/WalletBadgeButton.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 function GraduationBookingStatusInfo() {
     const {t, i18n} =  useTranslation(['events-pages']);
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [fetchBookingBySessionError, setFetchBookingBySessionError] = useState(null);
     const [detailedData, setDetailedData] = useState(null);
     const [bookingId, setBookingId] = useState(null);
@@ -623,7 +623,7 @@ function GraduationBookingStatusInfo() {
 
     return (
         <>
-            {isLoading ? (<Spinner/>) : (
+            {isLoading ? (null) : (
 
                 <div className={'booking-info-page'}>
                     <div className={"extreme-padding-container"}>

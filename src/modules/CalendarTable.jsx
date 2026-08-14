@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 import Table from './Table.jsx'
-import Spinner from './Spinner.jsx'
 import CalendarActions from './CalendarActions.jsx'
 import { buildCalendarFromDocument, loadCalendar } from '../services/General/SchoolCalendarsService.jsx'
 import { usePreloadedData } from '../services/General/PrerenderDataContext.jsx'
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 function CalendarTable({ calendarId, title, className }) {
     const { t, i18n } = useTranslation(['events-pages', 'common'])
@@ -18,7 +18,7 @@ function CalendarTable({ calendarId, title, className }) {
     )
 
     const [calendar, setCalendar] = useState(preloaded)
-    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [, setIsLoading] = useLoading(!preloaded)
     const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
@@ -91,7 +91,6 @@ function CalendarTable({ calendarId, title, className }) {
 
     return (
         <div className={className}>
-            {isLoading && <Spinner/>}
 
             <div className={'extreme-padding-container'}>
                 <h1>{title}</h1>

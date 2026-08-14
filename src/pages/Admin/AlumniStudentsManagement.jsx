@@ -2,7 +2,6 @@ import '../../styles/AdminDashboard.css';
 import '../../styles/AlumniStudents.css';
 import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Table from "../../modules/Table.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
@@ -22,6 +21,7 @@ import {
 } from "../../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx";
 import {Capacitor} from "@capacitor/core";
 import PropTypes from "prop-types";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 const PROFILE_UPDATE_FIELDS = [
     {key: 'username', label: 'Username'},
@@ -62,7 +62,7 @@ AdminNoteField.propTypes = {
 
 function AlumniStudentsManagement() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [accountsData, setAccountsData] = useState(null);
     const [accountRecordsById, setAccountRecordsById] = useState({});
     const [updatesData, setUpdatesData] = useState(null);
@@ -493,7 +493,6 @@ function AlumniStudentsManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
             <div className={"alumni-students-management-page"}>
                 <TabsPage tabData={tabData} initialTab={0} title={"Alumni Students Management"}/>
             </div>

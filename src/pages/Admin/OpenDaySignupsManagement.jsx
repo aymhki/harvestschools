@@ -1,16 +1,16 @@
 import '../../styles/AdminDashboard.css';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
-import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import { fetchAllOpenDaySignups } from "../../services/Admin/OpenDaySignups/AdminOpenDaySignupsManagementServices.jsx";
 import {openDaySignupManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx"
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 
 function OpenDaySignupsManagement() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [openDaySignups, setOpenDaySignups] = useState(null);
 
     useEffect(() => {
@@ -34,7 +34,6 @@ function OpenDaySignupsManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
             <div className={"open-day-signups-page"}>
                 <Table tableData={openDaySignups}
                        scrollable={true}

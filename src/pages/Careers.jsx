@@ -1,17 +1,16 @@
 import '../styles/Careers.css'
 import Form from "../modules/Form";
 import {submitJobApplicationRequest} from "../services/Public/JobApplications/JobApplicationsServices.jsx";
-import Spinner from "../modules/Spinner";
-import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router";
 import PropTypes from "prop-types";
 import {openSchoolEverywhereTarget} from "../services/General/ExternalSiteService.jsx";
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 const PREFER_HARVEST_JOB_APPLICATION = false;
 
 function Careers({isMobileApp = false}) {
-    const [submittingLocal, setSubmittingLocal] = useState(false);
+    const [, setSubmittingLocal] = useLoading(false);
     const {t} = useTranslation(['vacancies-page']);
     const navigate = useNavigate();
 
@@ -35,7 +34,6 @@ function Careers({isMobileApp = false}) {
 
   return (
       <>
-          {submittingLocal && <Spinner/>}
 
       <div className={"vacancies-page"}>
         <title>Harvest International School | Vacancies</title>

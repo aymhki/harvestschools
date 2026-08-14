@@ -1,6 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import Spinner from '../modules/Spinner.jsx';
 import AdminSidebar from '../modules/AdminSidebar.jsx';
 import AdminFooter from '../modules/AdminFooter.jsx';
 import NavigationBar from '../modules/NavigationBar.jsx';
@@ -13,6 +12,8 @@ import { adminRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
 import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
+import { useLoading, GlobalLoadingFallback, GlobalSpinner } from '../services/General/GlobalLoadingService.jsx';
+import { AppAssetsLoadingGate } from '../services/General/AppAssetsLoadingService.jsx';
 
 const pages = makeLazyPages(
     import.meta.glob(['../pages/Admin/**/*.jsx', '../pages/NotFound.jsx'])
@@ -27,7 +28,7 @@ function AdminRouter() {
     const [loggedInName, setLoggedInName] = useState('Admin');
     const [loggedInUsername, setLoggedInUsername] = useState('admin');
     const [loggedInUserId, setLoggedInUserId] = useState(-1);
-    const [isAuthLoading, setIsAuthLoading] = useState(false);
+    const [isAuthLoading, setIsAuthLoading] = useLoading(false);
     const [isSidebarPinned, setIsSidebarPinned] = useState(() => {
         const savedPreference = localStorage.getItem('isSidebarPinned');
         return (savedPreference !== undefined && savedPreference !== null) ? savedPreference === 'true' : false;
@@ -84,7 +85,10 @@ function AdminRouter() {
                     />
                 )}
 
-                <Suspense fallback={<div style={{ minHeight: '100vh' }}><Spinner /></div>}>
+                <GlobalSpinner />
+                <AppAssetsLoadingGate />
+
+                <Suspense fallback={<div style={{ minHeight: '100vh' }}><GlobalLoadingFallback /></div>}>
                     <AppRoutes routes={adminRoutes} pages={pages} ctx={ctx} router={ROUTER_IDS.admin} />
                 </Suspense>
 

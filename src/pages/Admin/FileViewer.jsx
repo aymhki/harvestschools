@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
-import Spinner from '../../modules/Spinner';
 import '../../styles/FileViewer.css';
 import PropTypes from "prop-types";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 
 function FileViewer({fetchFileService}) {
@@ -10,7 +10,7 @@ function FileViewer({fetchFileService}) {
 
     const [fileBlobUrl, setFileBlobUrl] = useState(null);
     const [filename, setFilename] = useState('file');
-    const [isLoading, setIsLoading] = useState(true);
+    const [, setIsLoading] = useLoading(true);
     const [error, setError] = useState(null);
     const [canEmbed, setCanEmbed] = useState(false);
     const [mimeType, setMimeType] = useState('');
@@ -48,7 +48,6 @@ function FileViewer({fetchFileService}) {
 
     return (
         <>
-            {isLoading && <Spinner />}
 
             <div className="file-viewer-page">
                 <div className={"standard-padding-container"}>

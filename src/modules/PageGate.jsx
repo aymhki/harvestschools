@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import PropTypes from 'prop-types'
-import Spinner from './Spinner.jsx'
+import {useLoading} from '../services/General/GlobalLoadingService.jsx'
 import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
 import {fetchPageGates} from '../services/Public/SchoolInfo/PageGatesServices.jsx'
 
@@ -95,9 +95,14 @@ GatedPage.propTypes = {
 
 function PageGate({paths, children}) {
     const gate = usePageGate(paths)
+    const [, setIsLoading] = useLoading(false)
+
+    useEffect(() => {
+        setIsLoading(gate.status === 'loading')
+    }, [gate.status, setIsLoading])
 
     if (gate.status === 'loading') {
-        return <Spinner/>
+        return null
     }
 
     if (gate.status === 'off') {

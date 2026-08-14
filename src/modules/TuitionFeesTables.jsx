@@ -1,9 +1,9 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import Table from './Table.jsx'
-import Spinner from './Spinner.jsx'
 import {fetchStages} from '../services/Public/SchoolInfo/PublicStagesServices.jsx'
 import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 function TuitionFeesTables() {
     const {t, i18n} = useTranslation(['admission-pages', 'common'])
@@ -12,7 +12,7 @@ function TuitionFeesTables() {
     const preloaded = usePreloadedData(`stages:${language}`)
 
     const [stages, setStages] = useState(preloaded)
-    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [, setIsLoading] = useLoading(!preloaded)
     const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
@@ -76,7 +76,6 @@ function TuitionFeesTables() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             {hasFailed && <p>{t('admission-pages.admission-fees-page.unavailable')}</p>}
 

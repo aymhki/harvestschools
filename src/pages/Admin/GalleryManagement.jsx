@@ -2,7 +2,6 @@ import '../../styles/AdminDashboard.css';
 import {useNavigate, useSearchParams} from "react-router";
 import {useEffect, useMemo, useRef, useState} from "react";
 import {Capacitor} from "@capacitor/core";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
@@ -27,6 +26,7 @@ import {
     fetchVideoUploadStatuses,
     galleryFileUrl
 } from "../../services/Admin/Gallery/AdminGalleryServices.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 const photoAltColIndex = 1;
 const photoIdColIndex = 4;
@@ -147,7 +147,7 @@ function GalleryManagement() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [collages, setCollages] = useState([]);
     const [photosData, setPhotosData] = useState(null);
     const [videosData, setVideosData] = useState(null);
@@ -728,7 +728,6 @@ function GalleryManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <div className={"gallery-management-page"}>
                 <TabsPage tabData={tabData}

@@ -1,7 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router";
 import {useEffect, useState, useRef} from "react";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import Table from "../../modules/Table.jsx";
@@ -9,10 +8,11 @@ import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/Adm
 import {fetchAllAdminUsers, addAdminUser, editAdminUser, deleteAdminUser} from "../../services/Admin/AdminUsers/AdminUsersManagementServices.jsx";
 import {adminUserManagementPermissionLevel, msgTimeout, jackOfAllTradesPermissionLevel} from "../../services/General/GeneralUtils.jsx"
 import PropTypes from "prop-types";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [adminUsers, setAdminUsers] = useState(null);
     const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
     const [showAddAdminUserModal, setShowAddAdminUserModal] = useState(false);
@@ -392,7 +392,6 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <div className={"admin-users-management-page"}>
 

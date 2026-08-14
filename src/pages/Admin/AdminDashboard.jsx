@@ -1,7 +1,6 @@
 import OptionsGrid from "../../modules/OptionsGrid.jsx";
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router";
-import Spinner from "../../modules/Spinner.jsx";
 import { useMemo} from "react";
 import PropTypes from "prop-types";
 import {logoutCurrentAdmin} from "../../services/General/GeneralUtils.jsx";
@@ -41,7 +40,7 @@ function AdminDashboard({ dashboardOptions, isLoading, loggedInName }) {
     return (
         <div className={"dashboard-page"}>
             {isLoading ? (
-                <Spinner />
+                null
             ) : (
                 <>
                     <OptionsGrid

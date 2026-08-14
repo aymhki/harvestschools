@@ -2,7 +2,6 @@ import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router";
 import {useEffect, useState, useRef, useMemo} from "react";
 import {msgTimeout, graduationBookingManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
-import Spinner from "../../modules/Spinner.jsx";
 import Table from "../../modules/Table.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
@@ -17,11 +16,12 @@ import {
 } from "../../services/Admin/GraduationBookings/AdminGraduationBookingManagementServices.jsx";
 import {searchPlaces} from "../../services/General/GooglePlacesService.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 function GraduationBookingManagement() {
     const navigate = useNavigate();
     const maxNumberOfStudents = 5;
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [allBookings, setAllBookings] = useState(null);
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
@@ -825,7 +825,6 @@ function GraduationBookingManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <div className={"booking-management-page"}>
                 <Table tableData={allBookings}

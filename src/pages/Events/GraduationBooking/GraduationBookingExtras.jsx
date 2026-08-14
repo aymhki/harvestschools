@@ -1,4 +1,3 @@
-import Spinner from "../../../modules/Spinner.jsx";
 import {useEffect, useState} from "react";
 import { fetchGraduationBookingInfoBySessionRequest } from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
 import { useNavigate } from "react-router";
@@ -11,11 +10,12 @@ import {confirmedStatus, pendingPaymentStatus, notSignedUpStatus, additionalAtte
 import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
 import {servePublicAsset} from "../../../services/General/GeneralServices.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 function GraduationBookingExtras() {
     const {t, i18n} = useTranslation(['events-pages']);
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [fetchBookingBySessionError, setFetchBookingBySessionError] = useState(null);
     const [extrasFormField, setExtrasFormField] = useState(null);
     const [resetFormFromParent, setResetFormFromParent] = useState(false);
@@ -301,7 +301,6 @@ function GraduationBookingExtras() {
 
     return (
         <>
-            {isLoading && (<Spinner/>)}
             <div className={'booking-extras-page'}>
                 <ParallaxScrollSection backgroundImage={servePublicAsset('/images/AcademicsPages/Facilities/Toys.jpg')} title={''} darken={true}
                                        divElements={[

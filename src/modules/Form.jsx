@@ -10,6 +10,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
+import {useLoading} from "../services/General/GlobalLoadingService.jsx";
 import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
@@ -197,7 +198,7 @@ function Form({
                   fieldStateFromParent,
               }) {
 
-    const [submitting, setSubmitting] = useState(false);
+    const [submitting, setSubmitting] = useLoading(false);
     const [generalFormError, setGeneralFormError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [dynamicFields, setDynamicFields] = useState(() =>

@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import Spinner from '../modules/Spinner.jsx';
 import AdminSidebar from '../modules/AdminSidebar.jsx';
 import AdminFooter from '../modules/AdminFooter.jsx';
 import NavigationBar from '../modules/NavigationBar.jsx';
@@ -26,6 +25,8 @@ import AppRoutes from '../routes/AppRoutes.jsx';
 import { ROUTER_IDS } from '../routes/redirects.js';
 import PageTransition from '../modules/PageTransition.jsx';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
+import { useLoading, GlobalLoadingFallback, GlobalSpinner } from '../services/General/GlobalLoadingService.jsx';
+import { AppAssetsLoadingGate } from '../services/General/AppAssetsLoadingService.jsx';
 
 const pages = makeLazyPages(
     import.meta.glob(['../pages/**/*.jsx', '!../pages/CorporateHome.jsx'])
@@ -49,7 +50,7 @@ function MobileAppRouter() {
     const [loggedInName, setLoggedInName] = useState('Admin');
     const [loggedInUsername, setLoggedInUsername] = useState('admin');
     const [loggedInUserId, setLoggedInUserId] = useState(-1);
-    const [isAuthLoading, setIsAuthLoading] = useState(false);
+    const [isAuthLoading, setIsAuthLoading] = useLoading(false);
     const [isSidebarPinned, setIsSidebarPinned] = useState(() => {
         const savedPreference = localStorage.getItem('isSidebarPinned');
         return (savedPreference !== undefined && savedPreference !== null) ? savedPreference === 'true' : false;
@@ -215,7 +216,10 @@ function MobileAppRouter() {
                             setRefreshCurrentUserData={setRefreshCurrentUserData}
                         />
                     )}
-                    <Suspense fallback={<div className="app-update-gate"><Spinner /></div>}>
+                    <GlobalSpinner />
+                    <AppAssetsLoadingGate />
+
+                    <Suspense fallback={<div className="app-update-gate"><GlobalLoadingFallback /></div>}>
                         <PageTransition key={location.pathname}>
                             <AppRoutes routes={mobileRoutes} pages={pages} ctx={ctx} router={ROUTER_IDS.mobile} />
                         </PageTransition>

@@ -1,16 +1,16 @@
 import OptionsGrid from "../../../modules/OptionsGrid.jsx";
 import '../../../styles/Events.css'
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {useNavigate} from "react-router";
-import Spinner from "../../../modules/Spinner.jsx";
 import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
 import {logoutGraduationBooking} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 function GraduationBookingDashboard() {
     const {t} = useTranslation(['events-pages'])
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
 
     useEffect(() => {
         headToGraduationBookingLoginOnInvalidSessionFromGraduationBookingDashboard(navigate, setIsLoading)
@@ -21,7 +21,7 @@ function GraduationBookingDashboard() {
     return (
         <div className={"booking-dashboard-page"}>
             {isLoading ? (
-                <Spinner />
+                null
             ) : (
                 <>
                     <OptionsGrid

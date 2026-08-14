@@ -2,7 +2,6 @@ import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router";
 import {Capacitor} from '@capacitor/core';
 import {useEffect, useMemo, useRef, useState} from "react";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
@@ -12,6 +11,7 @@ import {
     fetchPageGatesForAdmin,
     updatePageGate
 } from "../../services/Admin/PageGates/AdminPageGatesServices.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 const STATUS_CHOICES = ['On', 'Off'];
 
@@ -27,7 +27,7 @@ const messageArFieldId = 3;
 
 function PageGatesManagement() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [pages, setPages] = useState([]);
 
     const [showEditorModal, setShowEditorModal] = useState(false);
@@ -135,7 +135,6 @@ function PageGatesManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <div className={"page-gates-management-page"}>
                 <Table tableData={tableData}

@@ -1,6 +1,5 @@
 import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
-import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import '../../../styles/Events.css'
 import {
@@ -24,6 +23,7 @@ import {
     verifyBiometricIdentity,
     clearMobileSession,
 } from "../../../services/General/CapacitorSecureAuthUtils.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 
 const GB_PASSWORD_POLICY_REGEX = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$';
@@ -32,7 +32,7 @@ function GraduationBookingLogin() {
     const navigate = useNavigate();
     const {t} = useTranslation(['events-pages']);
     const isMountedRef = useRef(true);
-    const [submittingLocal, setSubmittingLocal] = useState(false);
+    const [submittingLocal, setSubmittingLocal] = useLoading(false);
     const [loginMode, setLoginMode] = useState('checking');
     const [prefillUsername, setPrefillUsername] = useState('');
     const [loginNotice, setLoginNotice] = useState(null);
@@ -571,7 +571,6 @@ function GraduationBookingLogin() {
 
     return (
         <>
-            {submittingLocal && <Spinner/>}
 
             <title>Harvest International School | Events | Booking</title>
             <meta name="description" content="Access booking info, extras, and media."/>

@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import PhotoCollage from './PhotoCollage.jsx'
-import Spinner from './Spinner.jsx'
 import {PUBLIC_GALLERY_MEDIA_ROOT, fetchGallerySection} from '../services/Public/Gallery/PublicGalleryServices.jsx'
 import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 function GalleryPhotoCollages() {
     const {t, i18n} = useTranslation(['gallery-pages'])
@@ -12,7 +12,7 @@ function GalleryPhotoCollages() {
     const preloaded = usePreloadedData(`gallery:photos:${language}`)
 
     const [gallery, setGallery] = useState(preloaded)
-    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [, setIsLoading] = useLoading(!preloaded)
     const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
@@ -74,7 +74,6 @@ function GalleryPhotoCollages() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             {hasFailed && <p>{t('gallery-pages.unavailable')}</p>}
 

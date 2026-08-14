@@ -1,7 +1,6 @@
 import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
 import {useSpring, animated} from "react-spring";
-import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 import AlumniMarkdownEditor from "../../../modules/AlumniMarkdownEditor.jsx";
 import MarkdownContent from "../../../modules/MarkdownContent.jsx";
@@ -24,6 +23,7 @@ import {
 } from "../../../services/Alumni/MainAlumniServices.jsx";
 import {alumniPublicFileUrl, msgTimeout, isMobileApp} from "../../../services/General/GeneralUtils.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 const PENDING_UPDATE_FIELD_LABELS = {
     newUsername: 'Username',
@@ -37,7 +37,7 @@ const PENDING_UPDATE_FIELD_LABELS = {
 
 function AlumniProfile() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useLoading(true);
     const [account, setAccount] = useState(null);
     const [pageMessage, setPageMessage] = useState('');
     const [pageError, setPageError] = useState('');
@@ -383,7 +383,6 @@ function AlumniProfile() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <title>Harvest International School | Students Life | Alumni Profile</title>
             <meta name="description" content="Manage your Harvest International School alumni profile and share your stories with the Harvest community."/>

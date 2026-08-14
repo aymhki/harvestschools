@@ -1,7 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router";
 import {useEffect, useMemo, useRef, useState} from "react";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
@@ -13,6 +12,7 @@ import {
     editEmployee,
     deleteEmployee
 } from "../../services/Admin/StaffDirectory/AdminStaffDirectoryManagementServices.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 const sortOrderColIndex = 0;
 const employeeCodeColIndex = 1;
@@ -66,7 +66,7 @@ const insuranceFormFieldId = 24;
 
 function StaffDirectoryManagement() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [employeesData, setEmployeesData] = useState(null);
     const [departments, setDepartments] = useState([]);
     const [displayStyles, setDisplayStyles] = useState([]);
@@ -244,7 +244,6 @@ function StaffDirectoryManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <div className={"staff-directory-management-page"}>
                 <Table tableData={employeesData}

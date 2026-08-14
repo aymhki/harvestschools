@@ -1,15 +1,15 @@
 import {useNavigate} from "react-router";
-import {useEffect, useState} from "react";
-import Spinner from "../../../modules/Spinner.jsx";
+import {useEffect} from "react";
 import PhotoCollage from "../../../modules/PhotoCollage.jsx";
 import '../../../styles/Events.css'
 import {useTranslation} from "react-i18next";
 import {headToGraduationBookingLoginOnInvalidSession} from "../../../services/Parents/GraduationBookings/GraduationBookingNavigationServices.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 function GraduationBookingMedia() {
     const {t} = useTranslation(['events-pages'])
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useLoading(false);
 
     useEffect(() => {
         headToGraduationBookingLoginOnInvalidSession(navigate, setIsLoading);
@@ -17,7 +17,6 @@ function GraduationBookingMedia() {
 
     return (
         <>
-            {isLoading && (<Spinner/>)}
 
             <div className={'booking-media-page'}>
                 <div className={'extreme-padding-container make-this-container-have-gaps'}>

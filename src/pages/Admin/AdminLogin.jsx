@@ -1,7 +1,6 @@
 import '../../styles/AdminLogin.css'
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from "react-router";
-import Spinner from "../../modules/Spinner.jsx";
 import Form from '../../modules/Form.jsx'
 import {headToAdminDashboardOnValidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx"
 import {
@@ -27,12 +26,13 @@ import {
 } from "../../services/General/CapacitorSecureAuthUtils.jsx";
 import {passkeySupported} from "../../services/General/PasskeyUtils.jsx";
 import {mfaResendCooldownSeconds, isMobileApp} from "../../services/General/GeneralUtils.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 
 function AdminLogin() {
     const navigate = useNavigate();
     const isMountedRef = useRef(true);
-    const [submittingLocal, setSubmittingLocal] = useState(false);
+    const [submittingLocal, setSubmittingLocal] = useLoading(false);
     const [mfaState, setMfaState] = useState(null);
     const [mfaMethod, setMfaMethod] = useState(null);
     const [mfaStatus, setMfaStatus] = useState(null);
@@ -918,7 +918,6 @@ function AdminLogin() {
 
     return (
         <>
-            {submittingLocal && <Spinner/>}
             <div className={'admin-login-page'}>
                 <div className={'admin-login-page-form-controller'}>
                     <div className={'admin-login-form-wrapper'}>

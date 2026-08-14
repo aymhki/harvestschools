@@ -2,9 +2,9 @@ import {useEffect, useMemo, useState} from 'react'
 import PropTypes from 'prop-types'
 import {useTranslation} from 'react-i18next'
 import Table from './Table.jsx'
-import Spinner from './Spinner.jsx'
 import {fetchLibraryCategory} from '../services/Public/Library/PublicLibraryServices.jsx'
 import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 function LibraryBooksTable({categoryKey}) {
     const {t, i18n} = useTranslation(['students-life-pages', 'common'])
@@ -13,7 +13,7 @@ function LibraryBooksTable({categoryKey}) {
     const preloaded = usePreloadedData(`library:${categoryKey}:${language}`)
 
     const [library, setLibrary] = useState(preloaded)
-    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [, setIsLoading] = useLoading(!preloaded)
     const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
@@ -78,7 +78,6 @@ function LibraryBooksTable({categoryKey}) {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             {hasFailed && <p>{t('students-life-pages.library-pages.unavailable')}</p>}
 

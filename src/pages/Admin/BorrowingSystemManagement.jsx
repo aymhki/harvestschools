@@ -1,13 +1,13 @@
 import '../../styles/AdminDashboard.css';
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {useNavigate} from "react-router";
-import Spinner from "../../modules/Spinner.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {BorrowingSystemManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 function BorrowingSystemManagement() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useLoading(false);
 
 
     useEffect(() => {
@@ -16,7 +16,6 @@ function BorrowingSystemManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
             <div className={"borrowing-system-management-page"}>
 
 

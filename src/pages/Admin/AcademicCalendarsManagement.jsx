@@ -1,7 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate, useSearchParams} from "react-router";
 import {useEffect, useMemo, useRef, useState} from "react";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
@@ -18,6 +17,7 @@ import {
     editCalendarEvent,
     deleteCalendarEvent
 } from "../../services/Admin/AcademicCalendars/AdminAcademicCalendarsServices.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 const eventTitleEnColIndex = 1;
 const eventTitleArColIndex = 2;
@@ -61,7 +61,7 @@ function AcademicCalendarsManagement() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [calendars, setCalendars] = useState([]);
     const [eventsData, setEventsData] = useState(null);
 
@@ -401,7 +401,6 @@ function AcademicCalendarsManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <div className={"academic-calendars-management-page"}>
                 {calendars.length > 1

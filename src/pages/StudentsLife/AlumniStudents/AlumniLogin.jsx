@@ -2,7 +2,6 @@ import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 
-import Spinner from "../../../modules/Spinner.jsx";
 import Form from "../../../modules/Form.jsx";
 
 import '../../../styles/AlumniStudents.css';
@@ -30,6 +29,7 @@ import {
     verifyBiometricIdentity,
     clearMobileSession,
 } from "../../../services/General/CapacitorSecureAuthUtils.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 
 function AlumniLogin() {
@@ -37,7 +37,7 @@ function AlumniLogin() {
     const {t} = useTranslation(['students-life-pages']);
     const isMountedRef = useRef(true);
 
-    const [submittingLocal, setSubmittingLocal] = useState(false);
+    const [submittingLocal, setSubmittingLocal] = useLoading(false);
     const [mode, setMode] = useState('sign-in');
     const [loginMode, setLoginMode] = useState('checking');
     const [prefillUsername, setPrefillUsername] = useState('');
@@ -599,7 +599,6 @@ function AlumniLogin() {
 
     return (
         <>
-            {submittingLocal && <Spinner/>}
 
             <title>Harvest International School | Students Life | Alumni Sign In</title>
             <meta name="description" content="Sign in or sign up to the Harvest International School alumni students platform to share your stories, updates, and achievements with the Harvest community."/>

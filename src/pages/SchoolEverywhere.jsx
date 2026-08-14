@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import Form from '../modules/Form.jsx'
-import Spinner from '../modules/Spinner.jsx'
 import { useOffline } from '../services/General/OfflineContext.jsx'
 import {
     isBiometricAvailable,
@@ -69,7 +68,7 @@ function SchoolEverywhere() {
     const [editingCredential, setEditingCredential] = useState(null)
     const [notice, setNotice] = useState(null)
     const [stageLabel, setStageLabel] = useState('')
-    const [submittingLocal, setSubmittingLocal] = useState(false)
+    const [submittingLocal, setSubmittingLocal] = useLoading(false)
 
     const isMountedRef = useRef(true)
     const hasHandledDirectTargetRef = useRef(false)
@@ -403,7 +402,6 @@ function SchoolEverywhere() {
 
     return (
         <>
-            {submittingLocal && <Spinner />}
 
             <title>SchoolEverywhere · Harvest International School</title>
             <meta name="robots" content="noindex, nofollow" />
@@ -659,3 +657,5 @@ function SchoolEverywhere() {
 
 
 export default SchoolEverywhere
+
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'

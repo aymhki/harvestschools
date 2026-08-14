@@ -4,13 +4,13 @@ import {useState, useEffect, useMemo} from "react";
 import Form from "../../modules/Form.jsx";
 import {costPerChildInOpenDaySignup, formatNumberByLocale} from "../../services/General/GeneralUtils.jsx";
 import {submitOpenDaySignupRequest} from "../../services/Public/OpenDaySignups/OpenDaySignupsServices.jsx";
-import Spinner from "../../modules/Spinner.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 function OpenDaySignup() {
     const { t } = useTranslation(['events-pages']);
     const [numberOfAttendeesSelected, setNumberOfAttendeesSelected] = useState(false);
     const [openDaySignupFormFields, setOpenDaySignupFormFields] = useState([])
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useLoading(false);
     const [openDaySignupFormSubmitted, setOpenDaySignupFormSubmitted] = useState(false)
     const [numberOfAttendees, setNumberOfAttendees] = useState(1);
     const isOpenDaySignupsClosed = true;
@@ -146,7 +146,6 @@ function OpenDaySignup() {
     if (isOpenDaySignupsClosed) {
         return (
             <>
-                {isLoading && (<Spinner/>)}
 
                 <div className="open-day-signup-page">
                     <p>
@@ -158,7 +157,6 @@ function OpenDaySignup() {
     } else {
         return (
             <>
-                {isLoading && (<Spinner/>)}
 
                 <div className="open-day-signup-page">
                     {!numberOfAttendeesSelected ? (

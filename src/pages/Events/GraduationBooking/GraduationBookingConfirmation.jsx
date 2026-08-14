@@ -1,16 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router";
-import Spinner from "../../../modules/Spinner.jsx";
 import '../../../styles/Events.css';
 import {fetchGraduationBookingConfirmationRequest} from "../../../services/Parents/GraduationBookings/MainParentsGraduationBookingServices.jsx";
 import {pendingPaymentStatus, notSignedUpStatus} from "../../../services/General/GeneralUtils.jsx";
 import { confirmedStatus} from "../../../services/General/GeneralUtils.jsx";
 import {useTranslation} from "react-i18next";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 function GraduationBookingConfirmation() {
     const { t } = useTranslation(['events-pages']);
     const [searchParams] = useSearchParams();
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useLoading(false);
     const [confirmationData, setConfirmationData] = useState(null);
     const [bookingConfirmationError, setBookingConfirmationError] = useState(null);
     const bookingId = searchParams.get('bookingId');
@@ -121,7 +121,6 @@ function GraduationBookingConfirmation() {
 
     return (
         <>
-            {isLoading && <Spinner />}
             <div className={'booking-confirmation-page'}>
                 <div className={'booking-confirmation-wrapper'}>
                     {bookingConfirmationError ? (

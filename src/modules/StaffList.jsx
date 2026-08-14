@@ -2,9 +2,9 @@ import {useEffect, useMemo, useState} from "react";
 import PropTypes from "prop-types";
 import {useTranslation} from "react-i18next";
 import Table from "./Table.jsx";
-import Spinner from "./Spinner.jsx";
 import {fetchPublicStaff} from "../services/Public/Staff/PublicStaffServices.jsx";
 import {usePreloadedData} from "../services/General/PrerenderDataContext.jsx";
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 function StaffList({departmentKey, title, className}) {
     const {t, i18n} = useTranslation(['academics-pages', 'common']);
@@ -13,7 +13,7 @@ function StaffList({departmentKey, title, className}) {
     const preloaded = usePreloadedData(`staff:${departmentKey}:${language}`);
 
     const [staff, setStaff] = useState(preloaded);
-    const [isLoading, setIsLoading] = useState(!preloaded);
+    const [isLoading, setIsLoading] = useLoading(!preloaded);
     const [hasFailed, setHasFailed] = useState(false);
 
     useEffect(() => {
@@ -82,7 +82,6 @@ function StaffList({departmentKey, title, className}) {
 
     return (
         <div className={className}>
-            {isLoading && <Spinner/>}
 
             <div className={"extreme-padding-container"}>
                 <h1>{title}</h1>

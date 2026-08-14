@@ -6,7 +6,7 @@ import {useSpring, animated} from 'react-spring';
 import QRCode from 'qrcode';
 import PropTypes from 'prop-types';
 import Form from './Form.jsx';
-import Spinner from './Spinner.jsx';
+import {useLoading, useLoadingWhile} from '../services/General/GlobalLoadingService.jsx';
 import {
     fetchMyAccount,
     dismissPasskeyPrompt,
@@ -97,7 +97,9 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
 
     const [activeTab, setActiveTab] = useState(PROFILE_TAB);
     const [account, setAccount] = useState(null);
-    const [isBusy, setIsBusy] = useState(false);
+    const [isBusy, setIsBusy] = useLoading(false);
+
+    useLoadingWhile(show && !account);
     const [statusMsg, setStatusMsg] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
 
@@ -1052,8 +1054,6 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                 <div className={'general-large-admin-action-modal-content admin-settings-modal-content'} ref={contentRef}>
                     {show && (
                         <>
-                            {(isBusy || !account) && <Spinner/>}
-
                             {gateClosed && (
                                 <div className={'admin-settings-card'}>
                                     <p className={'admin-settings-error'}>

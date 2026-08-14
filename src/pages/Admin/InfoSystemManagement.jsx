@@ -1,7 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router";
 import {useEffect, useMemo, useRef, useState} from "react";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
@@ -9,10 +8,11 @@ import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/Adm
 import {infoSystemManagementPermissionLevel, isDevelopment, msgTimeout} from "../../services/General/GeneralUtils.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
 import {fetchInfoSystemData, updateInfoSystemData} from "../../services/Admin/InfoSystem/AdminInfoSystemManagementServices.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 function InfoSystemManagement() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [globalSettingsData, setGlobalSettingsData] = useState(null);
     const [departmentsData, setDepartmentsData] = useState(null);
     const [stagesData, setStagesData] = useState(null);
@@ -490,7 +490,6 @@ function InfoSystemManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
 
 

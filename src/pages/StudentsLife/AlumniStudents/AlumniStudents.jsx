@@ -1,16 +1,16 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
 import {useTranslation} from "react-i18next";
-import Spinner from "../../../modules/Spinner.jsx";
 import AlumniPostCard from "../../../modules/AlumniPostCard.jsx";
 import '../../../styles/AlumniStudents.css';
 import {fetchApprovedAlumniPosts} from "../../../services/Public/AlumniStudents/AlumniStudentsPublicServices.jsx";
 import {alumniLoginPageUrl} from "../../../services/General/GeneralUtils.jsx";
+import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
 function AlumniStudents() {
     const navigate = useNavigate();
     const {t} = useTranslation(['students-life-pages']);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
@@ -26,7 +26,6 @@ function AlumniStudents() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <title>Harvest International School | Students Life | Alumni Students</title>
             <meta name="description" content="Stories, updates, and achievements shared by the alumni students of Harvest International Schools in Borg El Arab, Egypt. Current and future alumni can sign up to share their own stories."/>

@@ -1,7 +1,6 @@
 import '../../styles/AdminDashboard.css';
 import {useNavigate} from "react-router";
 import {useEffect, useMemo, useRef, useState} from "react";
-import Spinner from "../../modules/Spinner.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
@@ -14,6 +13,7 @@ import {
     editLibraryBook,
     deleteLibraryBook
 } from "../../services/Admin/Library/AdminLibraryServices.jsx";
+import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 const titleEnColIndex = 1;
 const titleArColIndex = 2;
@@ -31,7 +31,7 @@ const isPublicFieldId = 6;
 
 function LibraryManagement() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useLoading(false);
     const [collections, setCollections] = useState([]);
     const [categories, setCategories] = useState([]);
 
@@ -234,7 +234,6 @@ function LibraryManagement() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             <div className={"library-management-page"}>
                 {collections.length > 0 && (

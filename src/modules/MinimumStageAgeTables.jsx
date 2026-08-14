@@ -1,9 +1,9 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import Table from './Table.jsx'
-import Spinner from './Spinner.jsx'
 import {fetchStages} from '../services/Public/SchoolInfo/PublicStagesServices.jsx'
 import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 
 function MinimumStageAgeTables() {
@@ -13,7 +13,7 @@ function MinimumStageAgeTables() {
     const preloaded = usePreloadedData(`stages:${language}`)
 
     const [stages, setStages] = useState(preloaded)
-    const [isLoading, setIsLoading] = useState(!preloaded)
+    const [, setIsLoading] = useLoading(!preloaded)
     const [hasFailed, setHasFailed] = useState(false)
 
     useEffect(() => {
@@ -75,7 +75,6 @@ function MinimumStageAgeTables() {
 
     return (
         <>
-            {isLoading && <Spinner/>}
 
             {hasFailed && <p>{t('faqs-pages.minimum-stage-age-page.unavailable')}</p>}
 

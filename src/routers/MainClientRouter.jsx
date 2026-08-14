@@ -9,6 +9,8 @@ import { mainRoutes } from '../routes/routes.js';
 import AppRoutes from '../routes/AppRoutes.jsx';
 import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeLazyPages, useLangSync, findRoute } from '../routes/shared.js';
+import { GlobalLoadingFallback, GlobalSpinner } from '../services/General/GlobalLoadingService.jsx';
+import { AppAssetsLoadingGate } from '../services/General/AppAssetsLoadingService.jsx';
 
 const pages = makeLazyPages(
     import.meta.glob([
@@ -30,7 +32,10 @@ function MainClientRouter() {
             {!shouldExclude && <NavigationBar compactOrAdmin={false} isMobileApp={false}/>}
             <div className="content">
                 <ErrorBoundary ignoreLngUpdate={false}>
-                    <Suspense fallback={<div style={{minHeight: '100vh'}}></div>}>
+                    <GlobalSpinner />
+                    <AppAssetsLoadingGate />
+
+                    <Suspense fallback={<div style={{minHeight: '100vh'}}><GlobalLoadingFallback /></div>}>
                         <AppRoutes routes={mainRoutes} pages={pages} ctx={{ isMobileApp: false }} router={ROUTER_IDS.main} />
                     </Suspense>
                 </ErrorBoundary>
