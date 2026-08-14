@@ -9,9 +9,10 @@ import {fetchPageGates} from '../services/Public/SchoolInfo/PageGatesServices.js
 const usePageGate = (paths) => {
     const preloadedDocument = usePreloadedData('pageGates')
     const preloadedGates = preloadedDocument && preloadedDocument.gates ? preloadedDocument.gates : null
+    const isServerRender = typeof window === 'undefined'
 
     const [gates, setGates] = useState(preloadedGates)
-    const [isResolved, setIsResolved] = useState(Boolean(preloadedGates))
+    const [isResolved, setIsResolved] = useState(Boolean(preloadedGates) || isServerRender)
 
     useEffect(() => {
         let isActive = true
