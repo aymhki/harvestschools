@@ -36,8 +36,15 @@
     will-change: filter;
 }
 
-.footer-social-media-logo:hover {
-    filter: drop-shadow(0 0 1rem #1977f3);
+@media (hover: hover) {
+    .footer-social-media-logo:hover {
+        filter: drop-shadow(0 0 0.5rem #1977f3);
+    }
+}
+
+.footer-social-media-logo:active {
+    filter: drop-shadow(0 0 0.5rem #1977f3);
+    transition: none;
 }
 
 .copy-right-text {
@@ -91,21 +98,42 @@
     font-family: var(--arabic-normal-font);
 }
 
-.mobile-footer-action-icon-facebook:hover {
-    filter: drop-shadow(0 0 1rem #1977f3);
+@media (hover: hover) {
+    .mobile-footer-action-icon-facebook:hover {
+        filter: drop-shadow(0 0 0.5rem #1977f3);
+    }
+
+    .mobile-footer-action-icon-google-maps:hover {
+        filter: drop-shadow(0 0 0.5rem green);
+    }
+
+    .mobile-footer-chat-icon:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    }
+
+    .mobile-footer-call-icon:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    }
 }
 
-.mobile-footer-action-icon-google-maps:hover {
-    filter: drop-shadow(0 0 1rem green);
-
+.mobile-footer-action-icon-facebook:active {
+    filter: drop-shadow(0 0 0.5rem #1977f3);
+    transition: none;
 }
 
-.mobile-footer-chat-icon:hover {
-    filter: drop-shadow(0 0 1rem var(--primary-color) );
+.mobile-footer-action-icon-google-maps:active {
+    filter: drop-shadow(0 0 0.5rem green);
+    transition: none;
 }
 
-.mobile-footer-call-icon:hover {
-    filter: drop-shadow(0 0 1rem var(--primary-color) );
+.mobile-footer-chat-icon:active {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    transition: none;
+}
+
+.mobile-footer-call-icon:active {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    transition: none;
 }
 
 @media (max-width: 1600px) {
@@ -138,11 +166,11 @@
     }
 
     .mobile-footer-chat-icon {
-        filter: drop-shadow(0 0 1rem var(--fb-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
     .mobile-footer-call-icon {
-        filter: drop-shadow(0 0 1rem var(--fb-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
     .footer {
@@ -153,11 +181,23 @@
         box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.5);
     }
 
-    .mobile-footer-chat-icon:hover {
-        filter: drop-shadow(0 0 1rem var(--fb-white-color));
+    @media (hover: hover) {
+        .mobile-footer-chat-icon:hover {
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        }
+
+        .mobile-footer-call-icon:hover {
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        }
     }
 
-    .mobile-footer-call-icon:hover {
-        filter: drop-shadow(0 0 1rem var(--fb-white-color));
+    .mobile-footer-chat-icon:active {
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        transition: none;
+    }
+
+    .mobile-footer-call-icon:active {
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        transition: none;
     }
 }

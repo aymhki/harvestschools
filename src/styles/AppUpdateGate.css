@@ -37,9 +37,17 @@
     transition: filter 0.25s ease, background-color 0.25s ease, color 0.25s ease;
 }
 
-.app-update-gate__button:hover {
-    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+@media (hover: hover) {
+    .app-update-gate__button:hover {
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+        background-color: var(--secondary-color);
+    }
+}
+
+.app-update-gate__button:active {
+    filter: drop-shadow(0 0 0.1rem var(--primary-color));
     background-color: var(--secondary-color);
+    transition: none;
 }
 
 .app-update-gate__button:focus-visible {
@@ -80,10 +88,19 @@
         color: var(--primary-color);
     }
 
-    .app-update-gate__button:hover {
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    @media (hover: hover) {
+        .app-update-gate__button:hover {
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+            background-color: var(--primary-color);
+            color: var(--fb-white-color);
+        }
+    }
+
+    .app-update-gate__button:active {
+        filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
         background-color: var(--primary-color);
         color: var(--fb-white-color);
+        transition: none;
     }
 
     .app-update-gate__progress-track {

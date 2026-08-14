@@ -43,8 +43,10 @@
     display: none;
 }
 
-.admin-login-form-wrapper:hover {
-    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+@media (hover: hover) {
+    .admin-login-form-wrapper:hover {
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    }
 }
 
 
@@ -68,13 +70,26 @@
     filter:none;
 }
 
-.admin-login-forgot-password-btn:hover {
-    background: none;
-    color: var(--primary-color)
+@media (hover: hover) {
+    .admin-login-forgot-password-btn:hover {
+        background: none;
+        color: var(--primary-color)
+    }
+
+    .admin-login-forgot-password-btn:hover:not(:disabled) {
+        opacity: 1;
+    }
 }
 
-.admin-login-forgot-password-btn:hover:not(:disabled) {
+.admin-login-forgot-password-btn:active {
+    background: none;
+    color: var(--primary-color);
+    transition: none;
+}
+
+.admin-login-forgot-password-btn:active:not(:disabled) {
     opacity: 1;
+    transition: none;
 }
 
 .admin-login-forgot-password-btn:disabled {
@@ -172,10 +187,19 @@
     color: var(--al-ink);
 }
 
-.admin-login-mfa-picker button:hover:not(:disabled) {
+@media (hover: hover) {
+    .admin-login-mfa-picker button:hover:not(:disabled) {
+        filter: none;
+        background-color: var(--al-tint);
+        color: var(--al-ink);
+    }
+}
+
+.admin-login-mfa-picker button:active:not(:disabled) {
     filter: none;
     background-color: var(--al-tint);
     color: var(--al-ink);
+    transition: none;
 }
 
 .admin-login-mfa-picker button.current {
@@ -243,8 +267,10 @@
         background: radial-gradient(circle, var(--fb-white-color), var(--fb-black-gradient-color));
     }
 
-    .admin-login-form-wrapper:hover {
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    @media (hover: hover) {
+        .admin-login-form-wrapper:hover {
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        }
     }
 
     .admin-login-mfa .admin-login-mfa-picker button {
@@ -255,20 +281,38 @@
         filter: none;
     }
 
-    .admin-login-mfa .admin-login-mfa-picker button:hover:not(:disabled),
-    .admin-login-mfa .admin-login-mfa-picker button.current {
+    .admin-login-mfa .admin-login-mfa-picker button.current,
+    .admin-login-mfa .admin-login-mfa-picker button:active:not(:disabled) {
         background-color: var(--read-only-field-grey-color);
         border-color: var(--read-only-field-grey-color);
         color: var(--primary-color);
         box-shadow: none;
         filter: none;
+        transition: none;
+    }
+
+    @media (hover: hover) {
+        .admin-login-mfa .admin-login-mfa-picker button:hover:not(:disabled) {
+            background-color: var(--read-only-field-grey-color);
+            border-color: var(--read-only-field-grey-color);
+            color: var(--primary-color);
+            box-shadow: none;
+            filter: none;
+        }
     }
 
     .admin-login-forgot-password-btn {
         color: var(--fb-white-color)
     }
 
-    .admin-login-forgot-password-btn:hover {
-        color: var(--fb-white-color)
+    @media (hover: hover) {
+        .admin-login-forgot-password-btn:hover {
+            color: var(--fb-white-color)
+        }
+    }
+
+    .admin-login-forgot-password-btn:active {
+        color: var(--fb-white-color);
+        transition: none;
     }
 }

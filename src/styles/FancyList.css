@@ -92,12 +92,22 @@
 }
 
 
-.fancy-list-item:hover,
-.fancy-list-item:focus-visible {
-    filter: drop-shadow(0 0 0.3rem var(--primary-color) );
+.fancy-list-item:focus-visible,
+.fancy-list-item:active {
+    filter: drop-shadow(0 0 0.1rem var(--primary-color) );
     background-color: var(--fb-white-color);
     color: var(--primary-color);
     outline: none;
+    transition: none;
+}
+
+@media (hover: hover) {
+    .fancy-list-item:hover {
+        filter: drop-shadow(0 0 0.1rem var(--primary-color) );
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        outline: none;
+    }
 }
 
 .fancy-list-item.selected {
@@ -205,12 +215,21 @@ html[dir="rtl"] .fancy-list-item-chevron {
         filter: drop-shadow(0 0 0.1rem var(--fb-white-color) );
     }
 
-    .fancy-list-item:hover,
     .fancy-list-item:focus-visible,
+    .fancy-list-item:active,
     .fancy-list-item.selected {
-        filter: drop-shadow(0 0 0.3rem var(--fb-white-color) );
+        filter: drop-shadow(0 0 0.1rem var(--fb-white-color) );
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
+        transition: none;
+    }
+
+    @media (hover: hover) {
+        .fancy-list-item:hover {
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color) );
+            background-color: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+        }
     }
 
     .fancy-list-item-badge {

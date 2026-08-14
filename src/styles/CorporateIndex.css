@@ -88,8 +88,8 @@
 
     --primary-color: #0A2947;
     --secondary-color: #c94349;
-    --dark-accent-color: #454545;
-    --light-dark-accent-color: #242425FF;
+    --dark-accent-color: #242425;
+    --light-dark-accent-color: #151515;
     --fb-black-color: #000000;
     --fb-black-gradient-color: #0f0f0f;
     --fb-link-color: #052ced;
@@ -151,18 +151,21 @@ a {
     text-decoration: inherit;
 }
 
-a:hover {
-    color: #747bff;
-    cursor: pointer;
-
+@media (hover: hover) {
+    a:hover {
+        color: #747bff;
+        cursor: pointer;
+    }
 }
 
 a:visited {
     color: #747bff;
 }
 
-a:visited:hover {
-    color: var(--fb-white-color);
+@media (hover: hover) {
+    a:visited:hover {
+        color: var(--fb-white-color);
+    }
 }
 
 body {
@@ -257,10 +260,12 @@ button {
     box-shadow: 0 0 0.5rem var(--primary-color);
 }
 
-button:hover {
-    filter: drop-shadow(0 0 0.5rem var(--primary-color));
-    background-color: var(--primary-color);
-    color: var(--fb-white-color);
+@media (hover: hover) {
+    button:hover {
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+        background-color: var(--primary-color);
+        color: var(--fb-white-color);
+    }
 }
 
 button:lang(ar) {
@@ -297,8 +302,10 @@ label:lang(ar) {
         background-color: var(--fb-white-color);
     }
 
-    a:hover {
-        color: #747bff;
+    @media (hover: hover) {
+        a:hover {
+            color: #747bff;
+        }
     }
 
     button {
@@ -408,12 +415,14 @@ label:lang(ar) {
         color: var(--fb-white-color);
     }
 
-    a:visited:hover {
-        color: var(--fb-white-color);
-    }
+    @media (hover: hover) {
+        a:visited:hover {
+            color: var(--fb-white-color);
+        }
 
-    a:hover {
-        color: var(--fb-white-color);
+        a:hover {
+            color: var(--fb-white-color);
+        }
     }
 
     button {
@@ -421,11 +430,14 @@ label:lang(ar) {
         color: var(--primary-color);
     }
 
-    button:hover {
-        filter: drop-shadow(0 0 2rem var(--fb-white-color));
-        background-color: var(--light-dark-accent-color);
-        color: var(--fb-white-color);
+    @media (hover: hover) {
+        button:hover {
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+            background-color: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+        }
     }
+
 
     h1, h2, h3, p {
         color: var(--fb-white-color);

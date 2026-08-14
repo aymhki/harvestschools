@@ -103,8 +103,10 @@
     display: none;
 }
 
-.booking-login-form-wrapper:hover {
-    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+@media (hover: hover) {
+    .booking-login-form-wrapper:hover {
+        filter: drop-shadow(0 0 0.1rem var(--primary-color) );
+    }
 }
 
 .booking-extras-page {
@@ -381,9 +383,17 @@
     filter: none;
 }
 
-.booking-login-method-switch button:hover:not(:disabled) {
+@media (hover: hover) {
+    .booking-login-method-switch button:hover:not(:disabled) {
+        filter: none;
+        background-color: var(--read-only-field-grey-color);
+    }
+}
+
+.booking-login-method-switch button:active:not(:disabled) {
     filter: none;
     background-color: var(--read-only-field-grey-color);
+    transition: none;
 }
 
 .booking-login-method-switch button.current {
@@ -460,10 +470,19 @@
     transition: opacity 0.3s;
 }
 
-.booking-login-link-btn:hover:not(:disabled) {
+@media (hover: hover) {
+    .booking-login-link-btn:hover:not(:disabled) {
+        opacity: 1;
+        background: none;
+        color: var(--primary-color);
+    }
+}
+
+.booking-login-link-btn:active:not(:disabled) {
     opacity: 1;
     background: none;
     color: var(--primary-color);
+    transition: none;
 }
 
 .booking-login-link-btn:disabled {
@@ -516,10 +535,18 @@
         color: var(--fb-white-color);
     }
 
-    .booking-login-method-switch button:hover:not(:disabled),
-    .booking-login-method-switch button.current {
+    .booking-login-method-switch button.current,
+    .booking-login-method-switch button:active:not(:disabled) {
         background-color: var(--dark-accent-color);
         color: var(--fb-white-color);
+        transition: none;
+    }
+
+    @media (hover: hover) {
+        .booking-login-method-switch button:hover:not(:disabled) {
+            background-color: var(--dark-accent-color);
+            color: var(--fb-white-color);
+        }
     }
 
     .booking-login-method-switch button.current .booking-login-method-radio {
@@ -530,8 +557,15 @@
         color: var(--fb-white-color);
     }
 
-    .booking-login-link-btn:hover:not(:disabled) {
+    @media (hover: hover) {
+        .booking-login-link-btn:hover:not(:disabled) {
+            color: var(--fb-white-color);
+        }
+    }
+
+    .booking-login-link-btn:active:not(:disabled) {
         color: var(--fb-white-color);
+        transition: none;
     }
 
     .booking-login-page {
@@ -542,8 +576,10 @@
         background-color: var(--light-dark-accent-color);
     }
 
-    .booking-login-form-wrapper:hover {
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    @media (hover: hover) {
+        .booking-login-form-wrapper:hover {
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        }
     }
 
     .booking-extras-form-wrapper {

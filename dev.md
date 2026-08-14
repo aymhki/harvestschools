@@ -37,4 +37,4 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Add search field to table header elements with optional prop.
 - [ ] Add option to import data to db via csv with required fields.
 - [ ] The notfound arabic text does not use the correct font, also it should not be arabic in admin pages.
-
+- [ ] search-select field should allow new values on prop.

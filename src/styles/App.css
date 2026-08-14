@@ -53,12 +53,14 @@
     margin-bottom: 0;
 }
 
-.logo:hover {
-    filter: drop-shadow(0 0 1em var(--primary-color) );
-}
+@media (hover: hover) {
+    .logo:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    }
 
-.logo.react:hover {
-    filter: drop-shadow(0 0 1em var(--primary-color) );
+    .logo.react:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    }
 }
 
 .standard-padding-container {
@@ -85,6 +87,7 @@
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    text-align: center;
     width: 100%;
 }
 
@@ -191,11 +194,13 @@
 
 @media (prefers-color-scheme: dark) {
     .logo {
-        filter: drop-shadow(0 0 1em var(--fb-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
-    .logo:hover {
-        filter: drop-shadow(0 0 1em var(--fb-white-color));
+    @media (hover: hover) {
+        .logo:hover {
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        }
     }
 
     .extreme-padding-container:lang(ar) h1 {

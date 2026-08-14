@@ -27,10 +27,19 @@
     box-shadow: 0 0 0.5rem var(--secondary-color);
 }
 
-.admin-settings-modal-container button.danger:hover:not(:disabled) {
+@media (hover: hover) {
+    .admin-settings-modal-container button.danger:hover:not(:disabled) {
+        background-color: var(--secondary-color);
+        color: var(--fb-white-color);
+        filter: drop-shadow(0 0 0.1rem var(--secondary-color));
+    }
+}
+
+.admin-settings-modal-container button.danger:active:not(:disabled) {
     background-color: var(--secondary-color);
     color: var(--fb-white-color);
-    filter: drop-shadow(0 0 0.5rem var(--secondary-color));
+    filter: drop-shadow(0 0 0.1rem var(--secondary-color));
+    transition: none;
 }
 
 .admin-settings-modal-header {
@@ -69,13 +78,25 @@
     opacity: 0.55;
 }
 
-.admin-settings-modal-container .admin-settings-tabs button:hover:not(:disabled) {
+@media (hover: hover) {
+    .admin-settings-modal-container .admin-settings-tabs button:hover:not(:disabled) {
+        background: none;
+        background-color: transparent;
+        box-shadow: none;
+        color: var(--as-ink);
+        opacity: 1;
+        filter: none;
+    }
+}
+
+.admin-settings-modal-container .admin-settings-tabs button:active:not(:disabled) {
     background: none;
     background-color: transparent;
     box-shadow: none;
     color: var(--as-ink);
     opacity: 1;
     filter: none;
+    transition: none;
 }
 
 .admin-settings-modal-container .admin-settings-tabs button.active {
@@ -336,11 +357,22 @@
     }
 
     .admin-settings-modal-container .admin-settings-tabs button,
-    .admin-settings-modal-container .admin-settings-tabs button:hover:not(:disabled) {
+    .admin-settings-modal-container .admin-settings-tabs button:active:not(:disabled) {
         background: none;
         background-color: transparent;
         box-shadow: none;
         filter: none;
         color: var(--fb-white-color);
+        transition: none;
+    }
+
+    @media (hover: hover) {
+        .admin-settings-modal-container .admin-settings-tabs button:hover:not(:disabled) {
+            background: none;
+            background-color: transparent;
+            box-shadow: none;
+            filter: none;
+            color: var(--fb-white-color);
+        }
     }
 }

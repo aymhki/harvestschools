@@ -38,8 +38,8 @@
 .calendar-actions-modal-overlay {
     position: absolute;
     inset: 0;
-    background-color: var(--fb-black-color);
-    opacity: 0.55;
+    background-color: var(--light-dark-accent-color);
+    opacity: 0.3;
 }
 
 .calendar-actions-modal-container {
@@ -53,7 +53,7 @@
     border-radius: var(--calendar-actions-modal-radius);
     background-color: var(--fb-white-color);
     color: var(--primary-color);
-    box-shadow: 0 0 1rem var(--primary-color);
+    box-shadow: 0 0 0.5rem var(--primary-color);
 }
 
 .calendar-actions-modal-header {
@@ -136,6 +136,6 @@
     .calendar-actions-modal-container {
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
-        box-shadow: 0 0 1rem var(--fb-white-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 }

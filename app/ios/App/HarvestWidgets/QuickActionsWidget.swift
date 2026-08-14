@@ -8,7 +8,7 @@ private let tileSpacing: CGFloat = 6
 private let widgetPadding: CGFloat = 8
 private let tileGlowRadius: CGFloat = 4
 private let harvestNavyUIColor = UIColor(red: 0x1F / 255.0, green: 0x21 / 255.0, blue: 0x52 / 255.0, alpha: 1)
-private let harvestDarkSurfaceUIColor = UIColor(red: 0x24 / 255.0, green: 0x24 / 255.0, blue: 0x25 / 255.0, alpha: 1)
+private let harvestDarkSurfaceUIColor = UIColor(red: 0x15 / 255.0, green: 0x15 / 255.0, blue: 0x15 / 255.0, alpha: 1)
 
 private func harvestDynamicColor(light: UIColor, dark: UIColor) -> Color {
     Color(UIColor { traits in

@@ -27,7 +27,7 @@ final class PullToRefreshController: NSObject {
 
     public static var siteBackgroundColor: UIColor {
         UIColor { $0.userInterfaceStyle == .dark
-            ? UIColor(red: 0x24/255, green: 0x24/255, blue: 0x24/255, alpha: 1)
+            ? UIColor(red: 0x15 / 255, green: 0x15 / 255, blue: 0x15 / 255, alpha: 1)
             : .white
         }
     }

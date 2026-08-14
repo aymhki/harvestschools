@@ -392,4 +392,5 @@ export {
     deleteCollagePhoto,
     updateVideo,
     deleteVideo,
+    GALLERY_MEDIA_ROOT
 }

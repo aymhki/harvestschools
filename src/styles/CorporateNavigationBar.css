@@ -92,16 +92,33 @@
     box-shadow: none;
 }
 
-.translate-menu-icon-container:hover {
-    filter: drop-shadow(0 0 1rem var(--primary-color) );
-    box-shadow: 0 0 1rem var(--primary-color) ;
+@media (hover: hover) {
+    .translate-menu-icon-container:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+        box-shadow: 0 0 0.5rem var(--primary-color) ;
+        background: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+}
+
+.translate-menu-icon-container:active {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    box-shadow: 0 0 0.5rem var(--primary-color) ;
     background: var(--fb-white-color);
     color: var(--primary-color);
+    transition: none;
 }
 
 
-.menu-icon.react:hover {
-    filter: drop-shadow(0 0 1rem var(--primary-color) );
+@media (hover: hover) {
+    .menu-icon.react:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    }
+}
+
+.menu-icon.react:active {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color) );
+    transition: none;
 }
 
 .nav-links {
@@ -184,9 +201,17 @@
     width: 100%;
 }
 
-.nav-links li:hover, .dropdown-content li:hover, .nav-links-mobile li:hover {
+@media (hover: hover) {
+    .nav-links li:hover, .dropdown-content li:hover, .nav-links-mobile li:hover {
+        color: var(--primary-color);
+        background-color: var(--fb-white-color);
+    }
+}
+
+.nav-links li:active, .dropdown-content li:active, .nav-links-mobile li:active {
     color: var(--primary-color);
     background-color: var(--fb-white-color);
+    transition: none;
 }
 
 .nav-links li a, .dropdown-content li a, .nav-links-mobile li a {
@@ -194,9 +219,11 @@
     background-color: inherit;
 }
 
-.nav-links li a:hover, .dropdown-content li a:hover, .nav-links-mobile li a:hover {
-    color: inherit;
-    background-color: inherit;
+@media (hover: hover) {
+    .nav-links li a:hover, .dropdown-content li a:hover, .nav-links-mobile li a:hover {
+        color: inherit;
+        background-color: inherit;
+    }
 }
 
 .navbar-quick-action-buttons-container {
@@ -329,9 +356,17 @@
         background-color: var(--fb-white-color);
     }
 
-    .nav-links li:hover, .dropdown-content li:hover, .nav-links-mobile li:hover {
+    @media (hover: hover) {
+        .nav-links li:hover, .dropdown-content li:hover, .nav-links-mobile li:hover {
+            color: var(--fb-white-color);
+            background-color: var(--light-dark-accent-color);
+        }
+    }
+
+    .nav-links li:active, .dropdown-content li:active, .nav-links-mobile li:active {
         color: var(--fb-white-color);
         background-color: var(--light-dark-accent-color);
+        transition: none;
     }
 
     .nav-links li a, .dropdown-content li a, .nav-links-mobile li a {
@@ -339,9 +374,11 @@
         background-color: inherit;
     }
 
-    .nav-links li a:hover, .dropdown-content li a:hover, .nav-links-mobile li a:hover {
-        color: inherit;
-        background-color: inherit;
+    @media (hover: hover) {
+        .nav-links li a:hover, .dropdown-content li a:hover, .nav-links-mobile li a:hover {
+            color: inherit;
+            background-color: inherit;
+        }
     }
 
     .nav-links-mobile {
@@ -354,9 +391,17 @@
         color: var(--fb-white-color);
     }
 
-    .nav-links-mobile li:hover {
+    @media (hover: hover) {
+        .nav-links-mobile li:hover {
+            background-color: var(--fb-white-color);
+            color: var(--light-dark-accent-color);
+        }
+    }
+
+    .nav-links-mobile li:active {
         background-color: var(--fb-white-color);
         color: var(--light-dark-accent-color);
+        transition: none;
     }
 
     .dropdown-content {
@@ -373,10 +418,20 @@
         backdrop-filter: none;
     }
 
-    .translate-menu-icon-container:hover {
-        filter: drop-shadow(0 0 1rem var(--fb-white-color) );
-        box-shadow: 0 0 1rem var(--fb-white-color) ;
+    @media (hover: hover) {
+        .translate-menu-icon-container:hover {
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color) );
+            box-shadow: 0 0 0.5rem var(--fb-white-color) ;
+            background: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+        }
+    }
+
+    .translate-menu-icon-container:active {
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color) );
+        box-shadow: 0 0 0.5rem var(--fb-white-color) ;
         background: var(--light-dark-accent-color);
         color: var(--fb-white-color);
+        transition: none;
     }
 }

@@ -154,7 +154,8 @@
     position: absolute;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--light-dark-accent-color);
+    opacity: 0.3;
     border-radius: 0.5rem;
     z-index: var(--admin-action-popup-modals-overlay-z-index);
     top: 0;
@@ -235,7 +236,8 @@
     position: absolute;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--light-dark-accent-color);
+    opacity: 0.3;
     border-radius: 0.5rem;
     z-index: var(--admin-action-popup-modals-overlay-z-index);
     top: 0;

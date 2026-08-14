@@ -164,10 +164,19 @@
     box-shadow: none;
 }
 
-.app-home-text-button:hover {
+@media (hover: hover) {
+    .app-home-text-button:hover {
+        background-color: var(--primary-color);
+        color: var(--fb-white-color);
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    }
+}
+
+.app-home-text-button:active {
     background-color: var(--primary-color);
     color: var(--fb-white-color);
-    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+    filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    transition: none;
 }
 
 .app-home-chip {
@@ -198,16 +207,22 @@
     transition: transform 0.16s ease, filter 0.25s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
-.app-home-card:hover,
-.app-home-tile:hover {
-    background-color: var(--primary-color);
-    color: var(--fb-white-color);
-    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+@media (hover: hover) {
+    .app-home-card:hover,
+    .app-home-tile:hover {
+        background-color: var(--primary-color);
+        color: var(--fb-white-color);
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    }
 }
 
 .app-home-card:active,
 .app-home-tile:active {
     transform: scale(0.98);
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    transition: none;
 }
 
 .app-home-card:disabled,
@@ -216,11 +231,13 @@
     cursor: not-allowed;
 }
 
-.app-home-card:disabled:hover,
-.app-home-tile:disabled:hover {
-    background-color: var(--fb-white-color);
-    color: var(--primary-color);
-    filter: none;
+@media (hover: hover) {
+    .app-home-card:disabled:hover,
+    .app-home-tile:disabled:hover {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: none;
+    }
 }
 
 .app-home-tile {
@@ -281,9 +298,17 @@
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.app-home-event:hover .app-home-event-date {
+@media (hover: hover) {
+    .app-home-event:hover .app-home-event-date {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+}
+
+.app-home-event:active .app-home-event-date {
     background-color: var(--fb-white-color);
     color: var(--primary-color);
+    transition: none;
 }
 
 .app-home-event-body {
@@ -482,28 +507,49 @@
         box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
-    .app-home-card:hover,
-    .app-home-tile:hover {
-        background-color: var(--fb-white-color);
-        color: var(--primary-color);
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    @media (hover: hover) {
+        .app-home-card:hover,
+        .app-home-tile:hover {
+            background-color: var(--fb-white-color);
+            color: var(--primary-color);
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        }
     }
 
-    .app-home-card:disabled:hover,
-    .app-home-tile:disabled:hover {
-        background-color: var(--light-dark-accent-color);
-        color: var(--fb-white-color);
-        filter: none;
+    .app-home-card:active,
+    .app-home-tile:active {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        transition: none;
+    }
+
+    @media (hover: hover) {
+        .app-home-card:disabled:hover,
+        .app-home-tile:disabled:hover {
+            background-color: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+            filter: none;
+        }
     }
 
     .app-home-text-button {
         color: var(--fb-white-color);
     }
 
-    .app-home-text-button:hover {
+    @media (hover: hover) {
+        .app-home-text-button:hover {
+            background-color: var(--fb-white-color);
+            color: var(--primary-color);
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        }
+    }
+
+    .app-home-text-button:active {
         background-color: var(--fb-white-color);
         color: var(--primary-color);
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        transition: none;
     }
 
     .app-home-chip {
@@ -516,9 +562,17 @@
         color: var(--primary-color);
     }
 
-    .app-home-event:hover .app-home-event-date {
+    @media (hover: hover) {
+        .app-home-event:hover .app-home-event-date {
+            background-color: var(--primary-color);
+            color: var(--fb-white-color);
+        }
+    }
+
+    .app-home-event:active .app-home-event-date {
         background-color: var(--primary-color);
         color: var(--fb-white-color);
+        transition: none;
     }
 
     .app-home-empty {

@@ -55,10 +55,6 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
         setMoreInfoOpen(false);
     }
 
-    const toggleDropdown = (dropdown, setDropdown) => {
-        setDropdown(!dropdown);
-    }
-
     const openSchoolEverywhereTarget = (target) => {
         if (isMobile) {
             closeMenu();
@@ -67,13 +63,16 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
         openSchoolEverywhereTargetInApp({ target, isMobileApp, navigate });
     }
 
-    const handleDropdownClick = (e, mainLink) => {
-        if (!e.target.closest('.dropdown-content')) {
-            navigate(mainLink);
+    const closeMobileMenu = () => {
+        if (isMobile) {
+            closeMenu();
+        }
+    };
 
-            if (isMobile){
-                setIsOpen(true);
-            }
+    const handleDropdownLinkClick = (e, isDropdownOpen, setDropdownOpen) => {
+        if (isMobile) {
+            e.preventDefault();
+            setDropdownOpen(!isDropdownOpen);
         }
     };
 
@@ -129,7 +128,7 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
     return (
         <nav className={`navbar ${compactOrAdmin ? 'compact-navbar' : ''}`} >
             <div className={`logo-container ${compactOrAdmin ? 'compact-logo-container' : ''}`}>
-                <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate(isMobileApp ? '/app-home' : '/home'); } }>
+                <Link to={isMobileApp ? '/app-home' : '/home'} onClick={closeMobileMenu}>
                     <CachedImage src={servePublicAsset("/images/HarvestLogos/HarvestLogoCropped.avif")} alt="Harvest Logo" className={`logo ${compactOrAdmin ? 'compact-logo' : ''}`} fallbackClassName={`logo ${compactOrAdmin ? 'compact-logo' : ''}`}/>
                 </Link>
 
@@ -179,22 +178,15 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
                 opacity: menuAnimation.opacity,
                 position: (isMobile) ? (isOpen ? 'absolute' : 'fixed') : 'absolute',
             }} className={(isMobile) ? "nav-links-mobile" : "nav-links"}>
-                <li onClick={() => {
-                    (isMobile ? toggleMenu() : null);
-                    navigate(isMobileApp ? '/app-home' : '/home');
-                }}><Link to="/" onClick={() => {
-                    (isMobile ? toggleMenu() : null);
-                    navigate('/');
-                }}>
+                <li><Link to={isMobileApp ? '/app-home' : '/home'} onClick={closeMobileMenu}>
                     {t("nav.home")}
                 </Link></li>
 
-                <li className="dropdown"
-                    onClick={(e) => (isMobile ? (toggleDropdown(academicsOpen, setAcademicsOpen)) : handleDropdownClick(e, '/academics'))}
+                <li className={`dropdown ${academicsOpen ? 'is-open' : ''}`}
                     onMouseEnter={() => isMobile ? undefined : setAcademicsOpen(true)}
                     onMouseLeave={() => isMobile ? undefined : setAcademicsOpen(false)}>
 
-                    <Link to="/academics" onClick={() => isMobile ? null : navigate('/academics')}>
+                    <Link to="/academics" onClick={(e) => handleDropdownLinkClick(e, academicsOpen, setAcademicsOpen)}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.academics")}
                             {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
@@ -202,283 +194,198 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
                     </Link>
 
                     <ul className="dropdown-content" style={{display: academicsOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/academics/kindergarten');
-                        }}>
-                            <Link to={'/academics/kindergarten'}>
-                                {t("nav.kindergarten")}
-                            </Link>
-                        </li>
+                        <li><Link to="/academics/kindergarten" onClick={closeMobileMenu}>
+                            {t("nav.kindergarten")}
+                        </Link></li>
 
-
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/academics/national');
-                        }}><Link to="/academics/national">
+                        <li><Link to="/academics/national" onClick={closeMobileMenu}>
                             {t("nav.national")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/academics/british');
-                        }}><Link to="/academics/british">
+                        <li><Link to="/academics/british" onClick={closeMobileMenu}>
                             {t("nav.british")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/academics/american');
-                        }}><Link to="/academics/american">
+                        <li><Link to="/academics/american" onClick={closeMobileMenu}>
                             {t("nav.american")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/academics/partners');
-                        }}><Link to="/academics/partners">
+                        <li><Link to="/academics/partners" onClick={closeMobileMenu}>
                             {t("nav.partners")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/academics/staff');
-                        }}><Link to="/academics/staff">
+                        <li><Link to="/academics/staff" onClick={closeMobileMenu}>
                             {t("nav.staff")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/academics/facilities');
-                        }}><Link to="/academics/facilities">
+                        <li><Link to="/academics/facilities" onClick={closeMobileMenu}>
                             {t("nav.facilities")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            window.open('https://mail.harvestschools.com:2096/', '_blank');
-                        }}>
+                        <li>
                             <a href="https://mail.harvestschools.com:2096/" target="_blank" rel="noreferrer"
-                               style={{width: '100%', height: '100%'}}>
+                               onClick={closeMobileMenu}>
                                 {t("nav.web-mail")}
                             </a>
                         </li>
 
-                        <li onClick={() => {
-                            navigate(isMobileApp ? '/admin-login' : isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`);
-                        }}>
-                            <Link to={isMobileApp ? '/admin-login' : isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`}>
-                                {t("nav.admin-login")}
-                            </Link>
+                        <li>
+                            {isMobileApp ? (
+                                <Link to="/admin-login" onClick={closeMobileMenu}>
+                                    {t("nav.admin-login")}
+                                </Link>
+                            ) : (
+                                <a href={isDevelopment() ? `http://localhost:5174` : `https://admin.harvestschools.com`}
+                                   onClick={closeMobileMenu}>
+                                    {t("nav.admin-login")}
+                                </a>
+                            )}
                         </li>
                     </ul>
                 </li>
 
-                <li className="dropdown"
-                    onClick={(e) => (isMobile ? (toggleDropdown(admissionOpen, setAdmissionOpen)) : handleDropdownClick(e, '/admission'))}
+                <li className={`dropdown ${admissionOpen ? 'is-open' : ''}`}
                     onMouseEnter={() => isMobile ? undefined : setAdmissionOpen(true)}
                     onMouseLeave={() => isMobile ? undefined : setAdmissionOpen(false)}>
 
-                    <Link to="/admission" onClick={() => isMobile ? null : navigate('/admission')}>
+                    <Link to="/admission" onClick={(e) => handleDropdownLinkClick(e, admissionOpen, setAdmissionOpen)}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.admission")}
                             {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: admissionOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/admission/admission-process');
-                        }}><Link to="/admission/admission-process">
+                    <ul className="dropdown-content" style={{display: admissionOpen ? 'block' : 'none'}}>
+                        <li><Link to="/admission/admission-process" onClick={closeMobileMenu}>
                             {t("nav.admission-process")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/admission/admission-requirements');
-                        }}><Link to="/admission/admission-requirements">
+                        <li><Link to="/admission/admission-requirements" onClick={closeMobileMenu}>
                             {t("nav.admission-requirements")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/admission/admission-fees');
-                        }}><Link to="/admission/admission-fees">
+                        <li><Link to="/admission/admission-fees" onClick={closeMobileMenu}>
                             {t("nav.admission-fees")}
                         </Link></li>
                     </ul>
                 </li>
 
-                <li className="dropdown"
-                    onClick={(e) => (isMobile ? (toggleDropdown(studentsLifeOpen, setStudentsLifeOpen)) : handleDropdownClick(e, '/students-life'))}
+                <li className={`dropdown ${studentsLifeOpen ? 'is-open' : ''}`}
                     onMouseEnter={() => isMobile ? undefined : setStudentsLifeOpen(true)}
                     onMouseLeave={() => isMobile ? undefined : setStudentsLifeOpen(false)}>
 
-                    <Link to="/students-life" onClick={() => isMobile ? null : navigate('/students-life')}>
+                    <Link to="/students-life" onClick={(e) => handleDropdownLinkClick(e, studentsLifeOpen, setStudentsLifeOpen)}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.students-life")}
                             {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: studentsLifeOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/students-life/students-union');
-                        }}><Link to="/students-life/students-union">
+                    <ul className="dropdown-content" style={{display: studentsLifeOpen ? 'block' : 'none'}}>
+                        <li><Link to="/students-life/students-union" onClick={closeMobileMenu}>
                             {t("nav.students-union")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/students-life/activities');
-                        }}><Link to="/students-life/activities">
+                        <li><Link to="/students-life/activities" onClick={closeMobileMenu}>
                             {t("nav.activities")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/students-life/library');
-                        }}><Link to="/students-life/library">
+                        <li><Link to="/students-life/library" onClick={closeMobileMenu}>
                             {t("nav.library")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/students-life/alumni-students');
-                        }}><Link to="/students-life/alumni-students">
+                        <li><Link to="/students-life/alumni-students" onClick={closeMobileMenu}>
                             {t("nav.alumni-students")}
                         </Link></li>
                     </ul>
                 </li>
 
-                <li className="dropdown"
-                    onClick={(e) => (isMobile ? (toggleDropdown(eventsOpen, setEventsOpen)) : handleDropdownClick(e, '/events'))}
+                <li className={`dropdown ${eventsOpen ? 'is-open' : ''}`}
                     onMouseEnter={() => isMobile ? undefined : setEventsOpen(true)}
                     onMouseLeave={() => isMobile ? undefined : setEventsOpen(false)}>
 
-                    <Link to="/events" onClick={() => isMobile ? null : navigate('/events')}>
+                    <Link to="/events" onClick={(e) => handleDropdownLinkClick(e, eventsOpen, setEventsOpen)}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.events")}
                             {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: eventsOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/events/national-calendar');
-                        }}><Link to="/events/national-calendar">
+                    <ul className="dropdown-content" style={{display: eventsOpen ? 'block' : 'none'}}>
+                        <li><Link to="/events/national-calendar" onClick={closeMobileMenu}>
                             {t("nav.national-calendar")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/events/british-calendar');
-                        }}><Link to="/events/british-calendar">
+                        <li><Link to="/events/british-calendar" onClick={closeMobileMenu}>
                             {t("nav.british-calendar")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/events/american-calendar');
-                        }}><Link to="/events/american-calendar">
+                        <li><Link to="/events/american-calendar" onClick={closeMobileMenu}>
                             {t("nav.american-calendar")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/events/kg-calendars');
-                        }}><Link to="/events/kg-calendars">
+                        <li><Link to="/events/kg-calendars" onClick={closeMobileMenu}>
                             {t("nav.kg-calendars")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/events/graduation-booking');
-                        }}><Link to="/events/graduation-booking">
+                        <li><Link to="/events/graduation-booking" onClick={closeMobileMenu}>
                             {t("nav.booking")}
                         </Link></li>
                     </ul>
                 </li>
 
-                <li className="dropdown"
-                    onClick={(e) => (isMobile ? (toggleDropdown(galleryOpen, setGalleryOpen)) : handleDropdownClick(e, '/gallery'))}
+                <li className={`dropdown ${galleryOpen ? 'is-open' : ''}`}
                     onMouseEnter={() => isMobile ? undefined : setGalleryOpen(true)}
                     onMouseLeave={() => isMobile ? undefined : setGalleryOpen(false)}>
 
-                    <Link to="/gallery" onClick={() => isMobile ? null : navigate('/gallery')}>
+                    <Link to="/gallery" onClick={(e) => handleDropdownLinkClick(e, galleryOpen, setGalleryOpen)}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.gallery")}
                             {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: galleryOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/gallery/photos');
-                        }}><Link to="/gallery/photos">
+                    <ul className="dropdown-content" style={{display: galleryOpen ? 'block' : 'none'}}>
+                        <li><Link to="/gallery/photos" onClick={closeMobileMenu}>
                             {t("nav.photos")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/gallery/videos');
-                        }}><Link to="/gallery/videos">
+                        <li><Link to="/gallery/videos" onClick={closeMobileMenu}>
                             {t("nav.videos")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/gallery/360-tour');
-                        }}><Link to="/gallery/360-tour">
+                        <li><Link to="/gallery/360-tour" onClick={closeMobileMenu}>
                             {t("nav.360-tour")}
                         </Link></li>
                     </ul>
                 </li>
 
-                <li className="dropdown"
-                    onClick={(e) => (isMobile ? (toggleDropdown(moreInfoOpen, setMoreInfoOpen)) : handleDropdownClick(e, '/more-info'))}
+                <li className={`dropdown ${moreInfoOpen ? 'is-open' : ''}`}
                     onMouseEnter={() => isMobile ? undefined : setMoreInfoOpen(true)}
                     onMouseLeave={() => isMobile ? undefined : setMoreInfoOpen(false)}>
-                    <Link to="/more-info" onClick={() => isMobile ? null : navigate('/more-info')}>
+                    <Link to="/more-info" onClick={(e) => handleDropdownLinkClick(e, moreInfoOpen, setMoreInfoOpen)}>
                         <div className={"dropdown-icon-container"}>
                             {t("nav.faqs")}
                             {isMobile && isClient && <ArrowDropDownCircleOutlinedIcon />}
                         </div>
                     </Link>
 
-                    <ul className="dropdown-content" style={{display: moreInfoOpen ? 'block' : 'none'}} onClick={(e) => e.stopPropagation()}>
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/faqs');
-                        }}><Link to="/faqs">
+                    <ul className="dropdown-content" style={{display: moreInfoOpen ? 'block' : 'none'}}>
+                        <li><Link to="/faqs" onClick={closeMobileMenu}>
                             {t("nav.frequently-asked-questions")}
                         </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/minimum-stage-age');
-                        }}>
-                            <Link to='/minimum-stage-age'>
-                                {t("nav.minimum-registration-age")}
-                            </Link>
-                        </li>
+                        <li><Link to="/minimum-stage-age" onClick={closeMobileMenu}>
+                            {t("nav.minimum-registration-age")}
+                        </Link></li>
 
-                        <li onClick={() => {
-                            (isMobile ? toggleMenu() : null);
-                            navigate('/covid-19');
-                        }}><Link to="/covid-19">
+                        <li><Link to="/covid-19" onClick={closeMobileMenu}>
                             {t("nav.covid-19-policy")}
                         </Link></li>
                     </ul>
                 </li>
 
-                <li onClick={() => {
-                    (isMobile ? toggleMenu() : null);
-                    navigate('/careers');
-                }}><Link to="/careers">
+                <li><Link to="/careers" onClick={closeMobileMenu}>
                     {t("nav.vacancies")}
                 </Link></li>
 

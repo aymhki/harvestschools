@@ -27,9 +27,17 @@
     font-size: 100%;
 }
 
-.double-in-full-page-selector-left-option-in-full-page-selector:hover, .quadruple-full-page-selector-left-option-in-full-page-selector:hover {
+@media (hover: hover) {
+    .double-in-full-page-selector-left-option-in-full-page-selector:hover, .quadruple-full-page-selector-left-option-in-full-page-selector:hover {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+}
+
+.double-in-full-page-selector-left-option-in-full-page-selector:active, .quadruple-full-page-selector-left-option-in-full-page-selector:active {
     background-color: var(--fb-white-color);
     color: var(--primary-color);
+    transition: none;
 }
 
 .double-in-full-page-selector-right-option-in-full-page-selector, .quadruple-full-page-selector-right-option-in-full-page-selector {
@@ -43,9 +51,17 @@
     font-size: 100%;
 }
 
-.double-in-full-page-selector-right-option-in-full-page-selector:hover, .quadruple-full-page-selector-right-option-in-full-page-selector:hover {
+@media (hover: hover) {
+    .double-in-full-page-selector-right-option-in-full-page-selector:hover, .quadruple-full-page-selector-right-option-in-full-page-selector:hover {
+        background-color: var(--fb-white-color);
+        color: var(--secondary-color);
+    }
+}
+
+.double-in-full-page-selector-right-option-in-full-page-selector:active, .quadruple-full-page-selector-right-option-in-full-page-selector:active {
     background-color: var(--fb-white-color);
     color: var(--secondary-color);
+    transition: none;
 }
 
 .double-in-full-page-selector-left-option-in-full-page-selector h1 {
@@ -72,14 +88,28 @@
 
 @media (prefers-color-scheme: dark) {
 
-    .double-in-full-page-selector-right-option-in-full-page-selector:hover, .quadruple-full-page-selector-right-option-in-full-page-selector:hover {
-        background-color: var(--dark-accent-color);
-        color: var(--secondary-color);
+    @media (hover: hover) {
+        .double-in-full-page-selector-right-option-in-full-page-selector:hover, .quadruple-full-page-selector-right-option-in-full-page-selector:hover {
+            background-color: var(--dark-accent-color);
+            color: var(--secondary-color);
+        }
+
+        .double-in-full-page-selector-left-option-in-full-page-selector:hover, .quadruple-full-page-selector-left-option-in-full-page-selector:hover {
+            background-color: var(--dark-accent-color);
+            color: var(--primary-color);
+        }
     }
 
-    .double-in-full-page-selector-left-option-in-full-page-selector:hover, .quadruple-full-page-selector-left-option-in-full-page-selector:hover {
+    .double-in-full-page-selector-right-option-in-full-page-selector:active, .quadruple-full-page-selector-right-option-in-full-page-selector:active {
+        background-color: var(--dark-accent-color);
+        color: var(--secondary-color);
+        transition: none;
+    }
+
+    .double-in-full-page-selector-left-option-in-full-page-selector:active, .quadruple-full-page-selector-left-option-in-full-page-selector:active {
         background-color: var(--dark-accent-color);
         color: var(--primary-color);
+        transition: none;
     }
 }
 

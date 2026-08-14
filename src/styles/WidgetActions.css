@@ -90,10 +90,19 @@
 }
 
 .widget-actions-choice.is-chosen,
-.widget-actions-choice:hover {
+.widget-actions-choice:active {
     background-color: var(--primary-color);
     color: var(--fb-white-color);
-    filter: drop-shadow(0 0 0.35rem var(--primary-color));
+    filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    transition: none;
+}
+
+@media (hover: hover) {
+    .widget-actions-choice:hover {
+        background-color: var(--primary-color);
+        color: var(--fb-white-color);
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    }
 }
 
 .widget-actions-choice .widget-actions-choice-icon {
@@ -164,9 +173,18 @@
     }
 
     .widget-actions-choice.is-chosen,
-    .widget-actions-choice:hover {
+    .widget-actions-choice:active {
         background-color: var(--fb-white-color);
         color: var(--primary-color);
-        filter: drop-shadow(0 0 0.35rem var(--fb-white-color));
+        filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        transition: none;
+    }
+
+    @media (hover: hover) {
+        .widget-actions-choice:hover {
+            background-color: var(--fb-white-color);
+            color: var(--primary-color);
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        }
     }
 }

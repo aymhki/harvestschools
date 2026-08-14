@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import '../styles/CorporateNavigationBar.css';
 import { useSpring, animated } from 'react-spring';
-import {useNavigate} from "react-router";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
@@ -10,7 +9,6 @@ import {servePublicAsset} from "../services/General/GeneralServices.jsx";
 function CorporateNavigationBar(){
     const [isMobile, setIsMobile] = useState(true);
     const [isOpen, setIsOpen] = useState(!isMobile);
-    const navigate = useNavigate();
     const { i18n } = useTranslation(['corporate-nav']);
 
     const toggleMenu = () => {
@@ -62,7 +60,7 @@ function CorporateNavigationBar(){
     return (
         <nav className={`navbar`} >
             <div className={`logo-container`}>
-                <Link to="/" onClick={() => { (isMobile ? closeMenu() : null); navigate('/home'); } }>
+                <Link to="/home" onClick={() => { (isMobile ? closeMenu() : null); } }>
                     <img src={servePublicAsset("/images/CorporateLogo/Al-FajrAl-BasemLogo.png")} alt="Harvest Logo" className={`logo`}/>
                 </Link>
 

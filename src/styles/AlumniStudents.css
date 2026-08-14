@@ -42,10 +42,19 @@
     box-shadow: 0 0 0.5rem var(--secondary-color);
 }
 
-.alumni-danger-button:hover {
-    filter: drop-shadow(0 0 0.5rem var(--secondary-color));
+@media (hover: hover) {
+    .alumni-danger-button:hover {
+        filter: drop-shadow(0 0 0.1rem var(--secondary-color));
+        background-color: var(--secondary-color);
+        color: var(--fb-white-color);
+    }
+}
+
+.alumni-danger-button:active {
+    filter: drop-shadow(0 0 0.1rem var(--secondary-color));
     background-color: var(--secondary-color);
     color: var(--fb-white-color);
+    transition: none;
 }
 
 .alumni-students-page-posts {
@@ -215,10 +224,19 @@
     text-decoration: underline;
 }
 
-.alumni-post-card-read-more:hover {
+@media (hover: hover) {
+    .alumni-post-card-read-more:hover {
+        background: none;
+        color: var(--secondary-color);
+        filter: none;
+    }
+}
+
+.alumni-post-card-read-more:active {
     background: none;
     color: var(--secondary-color);
     filter: none;
+    transition: none;
 }
 
 .alumni-login-mode-buttons {
@@ -472,7 +490,7 @@
     border-radius: 0.75rem;
     padding: 1rem;
     text-align: start;
-    box-shadow: 0 0 1rem var(--primary-color);
+    box-shadow: 0 0 0.5rem var(--primary-color);
 }
 
 .alumni-profile-post-item-header {
@@ -556,7 +574,8 @@
     position: absolute;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--light-dark-accent-color);
+    opacity: 0.3;
     border-radius: 0.5rem;
     z-index: var(--admin-action-popup-modals-overlay-z-index);
     top: 0;
@@ -818,10 +837,19 @@
     letter-spacing: normal;
 }
 
-.alumni-admin-review-link:hover {
+@media (hover: hover) {
+    .alumni-admin-review-link:hover {
+        background: none;
+        color: var(--secondary-color);
+        filter: none;
+    }
+}
+
+.alumni-admin-review-link:active {
     background: none;
     color: var(--secondary-color);
     filter: none;
+    transition: none;
 }
 
 .alumni-admin-post-preview {
@@ -949,7 +977,7 @@
         background-color: var(--light-dark-accent-color);
         border: 1px solid var(--fb-white-color);
         box-shadow: var(--fb-white-color);
-        filter: drop-shadow(0px 1rem 1rem var(--fb-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
     }
 
     .alumni-profile-header-info h2 {
@@ -965,7 +993,7 @@
         background-color: var(--light-dark-accent-color);
         border: 1px solid var(--fb-white-color);
         box-shadow: var(--fb-white-color);
-        filter: drop-shadow(0px 1rem 1rem var(--fb-white-color));
+        filter: drop-shadow(0 0 0.5rem  var(--fb-white-color));
     }
 
     .alumni-profile-section-header h2 {
@@ -1020,7 +1048,7 @@
     }
 
     .alumni-profile-post-item {
-        box-shadow: 0 0 1rem var(--fb-white-color);
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
     .alumni-post-card-avatar-fallback {
@@ -1092,10 +1120,19 @@
     transition: opacity 0.3s;
 }
 
-.alumni-login-forgot-password-btn:hover:not(:disabled) {
+@media (hover: hover) {
+    .alumni-login-forgot-password-btn:hover:not(:disabled) {
+        opacity: 1;
+        background: none;
+        color: var(--primary-color);
+    }
+}
+
+.alumni-login-forgot-password-btn:active:not(:disabled) {
     opacity: 1;
     background: none;
     color: var(--primary-color);
+    transition: none;
 }
 
 .alumni-login-forgot-password-btn:disabled {
@@ -1139,9 +1176,17 @@
     cursor: pointer;
 }
 
-.alumni-login-method-picker button:hover:not(:disabled) {
+@media (hover: hover) {
+    .alumni-login-method-picker button:hover:not(:disabled) {
+        filter: none;
+        background-color: var(--read-only-field-grey-color);
+    }
+}
+
+.alumni-login-method-picker button:active:not(:disabled) {
     filter: none;
     background-color: var(--read-only-field-grey-color);
+    transition: none;
 }
 
 .alumni-login-method-picker button.current {
@@ -1175,13 +1220,27 @@
         border-color: var(--fb-white-color);
     }
 
-    .alumni-login-forgot-password-btn:hover:not(:disabled) {
-        color: var(--fb-white-color);
+    @media (hover: hover) {
+        .alumni-login-forgot-password-btn:hover:not(:disabled) {
+            color: var(--fb-white-color);
+        }
     }
 
-    .alumni-login-method-picker button:hover:not(:disabled),
-    .alumni-login-method-picker button.current {
+    .alumni-login-forgot-password-btn:active:not(:disabled) {
+        color: var(--fb-white-color);
+        transition: none;
+    }
+
+    .alumni-login-method-picker button.current,
+    .alumni-login-method-picker button:active:not(:disabled) {
         background-color: var(--dark-accent-color);
+        transition: none;
+    }
+
+    @media (hover: hover) {
+        .alumni-login-method-picker button:hover:not(:disabled) {
+            background-color: var(--dark-accent-color);
+        }
     }
 
     .alumni-login-method-picker button.current .alumni-login-method-radio {

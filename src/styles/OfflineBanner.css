@@ -46,20 +46,39 @@
     transition: filter 0.25s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
-.offline-banner-action:hover,
-.offline-banner-close:hover {
-    background-color: var(--primary-color);
-    color: var(--fb-white-color);
-    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+@media (hover: hover) {
+    .offline-banner-action:hover,
+    .offline-banner-close:hover {
+        background-color: var(--primary-color);
+        color: var(--fb-white-color);
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    }
 }
 
-.offline-banner-action:disabled,
-.offline-banner-action:disabled:hover {
+.offline-banner-action:active,
+.offline-banner-close:active {
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    transition: none;
+}
+
+.offline-banner-action:disabled {
     opacity: 0.5;
     background-color: var(--fb-white-color);
     color: var(--primary-color);
     filter: none;
     cursor: not-allowed;
+}
+
+@media (hover: hover) {
+    .offline-banner-action:disabled:hover {
+        opacity: 0.5;
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: none;
+        cursor: not-allowed;
+    }
 }
 
 .offline-banner-close {
@@ -104,17 +123,34 @@
         box-shadow: 0 0 0.4rem var(--fb-white-color);
     }
 
-    .offline-banner-action:hover,
-    .offline-banner-close:hover {
-        background-color: var(--fb-white-color);
-        color: var(--primary-color);
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    @media (hover: hover) {
+        .offline-banner-action:hover,
+        .offline-banner-close:hover {
+            background-color: var(--fb-white-color);
+            color: var(--primary-color);
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        }
     }
 
-    .offline-banner-action:disabled,
-    .offline-banner-action:disabled:hover {
+    .offline-banner-action:active,
+    .offline-banner-close:active {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        transition: none;
+    }
+
+    .offline-banner-action:disabled {
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
         filter: none;
+    }
+
+    @media (hover: hover) {
+        .offline-banner-action:disabled:hover {
+            background-color: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+            filter: none;
+        }
     }
 }

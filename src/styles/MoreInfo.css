@@ -35,8 +35,8 @@
     align-items: center;
     text-align: center;
     width: 100%;
-    filter: drop-shadow(0 0 1rem var(--secondary-color) );
-    box-shadow: 0 0 1rem var(--secondary-color);
+    filter: drop-shadow(0 0 0.5rem var(--secondary-color) );
+    box-shadow: 0 0 0.5rem var(--secondary-color);
     color: var(--secondary-color);
     border-radius: 3rem;
     margin-top: 1rem;
@@ -90,9 +90,16 @@
     color: var(--secondary-color);
 }
 
-.covid-19-read-link:hover {
+@media (hover: hover) {
+    .covid-19-read-link:hover {
+        color: var(--primary-color);
+        cursor: pointer;
+    }
+}
+
+.covid-19-read-link:active {
     color: var(--primary-color);
-    cursor: pointer;
+    transition: none;
 }
 
 .faq-q-and-a-container {
@@ -153,8 +160,8 @@
 @media (prefers-color-scheme: dark) {
     .faq-q-and-a-breaker {
         color: var(--fb-white-color);
-        filter: drop-shadow(0 0 1rem var(--fb-white-color) );
-        box-shadow: 0 0 1rem var(--fb-white-color);
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color) );
+        box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
     .faq-q-and-a-breaker h1:lang(ar) {
@@ -182,7 +189,14 @@
         color: deepskyblue;
     }
 
-    .covid-19-read-link:hover {
+    @media (hover: hover) {
+        .covid-19-read-link:hover {
+            color: var(--fb-white-color);
+        }
+    }
+
+    .covid-19-read-link:active {
         color: var(--fb-white-color);
+        transition: none;
     }
 }

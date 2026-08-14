@@ -44,9 +44,11 @@
     font-family: var(--english-normal-font);
 }
 
-.mobile-nav-tabs-bar-arrow:hover {
-    background-color: transparent;
-    color: var(--primary-color);
+@media (hover: hover) {
+    .mobile-nav-tabs-bar-arrow:hover {
+        background-color: transparent;
+        color: var(--primary-color);
+    }
 }
 
 .tabs-bar-scroll-arrow {
@@ -83,12 +85,20 @@
     box-shadow: -0.35rem 0 0.6rem -0.2rem var(--read-only-field-grey-color);
 }
 
-.tabs-bar-scroll-arrow:hover,
 .tabs-bar-scroll-arrow:focus-visible {
     background-color: var(--fb-white-color);
     color: var(--primary-color);
     filter: none;
     outline: none;
+}
+
+@media (hover: hover) {
+    .tabs-bar-scroll-arrow:hover {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+        filter: none;
+        outline: none;
+    }
 }
 
 .tab-btn {
@@ -267,20 +277,28 @@
 
     .tabs-bar {
         background-color: var(--light-dark-accent-color);
-        border: none;
+        border: var(--dark-accent-color) 0.1rem solid;
         /*box-shadow: 0.1rem 0.1rem 1rem var(--fb-white-color);*/
     }
 
-    .mobile-nav-tabs-bar-arrow:hover {
-        background-color: transparent;
-        color: var(--fb-white-color);
+    @media (hover: hover) {
+        .mobile-nav-tabs-bar-arrow:hover {
+            background-color: transparent;
+            color: var(--fb-white-color);
+        }
     }
 
     .tabs-bar-scroll-arrow,
-    .tabs-bar-scroll-arrow:hover,
     .tabs-bar-scroll-arrow:focus-visible {
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
+    }
+
+    @media (hover: hover) {
+        .tabs-bar-scroll-arrow:hover {
+            background-color: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+        }
     }
 
     .tabs-bar-scroll-arrow.scroll-left {

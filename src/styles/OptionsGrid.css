@@ -123,12 +123,24 @@
 }
 
 
-.options-grid-items-container:hover {
-    filter: drop-shadow(0 0 1em var(--primary-color));
+@media (hover: hover) {
+    .options-grid-items-container:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color));
+    }
+
+    .options-grid-compact-items-container:hover {
+        filter: drop-shadow(0 0 0.5rem var(--primary-color));
+    }
 }
 
-.options-grid-compact-items-container:hover {
-    filter: drop-shadow(0 0 3em var(--primary-color));
+.options-grid-items-container:active {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+    transition: none;
+}
+
+.options-grid-compact-items-container:active {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+    transition: none;
 }
 
 .options-grid-items-container img {
@@ -247,8 +259,15 @@
         box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
-    .options-grid-items-container:hover {
-        filter: drop-shadow(0 0 1em var(--fb-white-color));
+    @media (hover: hover) {
+        .options-grid-items-container:hover {
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        }
+    }
+
+    .options-grid-items-container:active {
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        transition: none;
     }
 
     .options-grid-compact-items-container {
@@ -256,8 +275,15 @@
         box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
-    .options-grid-compact-items-container:hover {
-        filter: drop-shadow(0 0 3em var(--fb-white-color));
+    @media (hover: hover) {
+        .options-grid-compact-items-container:hover {
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        }
+    }
+
+    .options-grid-compact-items-container:active {
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        transition: none;
     }
 
 }

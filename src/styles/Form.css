@@ -114,8 +114,7 @@
 .file-form-field,
 .select-multiple-form-field,
 .file-form-field-styled {
-    will-change: filter;
-    transition: filter 0.5s;
+    transition: box-shadow 0.25s;
     color: var(--ff-field-color);
     background-color: var(--ff-field-bg);
     font-size: large;
@@ -292,8 +291,15 @@
     stroke-linecap: round;
 }
 
-.files-form-field-grid .files-form-field-grid-remove:hover {
-    filter: drop-shadow(0 0 0.3rem var(--ff-field-border));
+@media (hover: hover) {
+    .files-form-field-grid .files-form-field-grid-remove:hover {
+        filter: drop-shadow(0 0 0.1rem var(--ff-field-border));
+    }
+}
+
+.files-form-field-grid .files-form-field-grid-remove:active {
+    filter: drop-shadow(0 0 0.1rem var(--ff-field-border));
+    transition: none;
 }
 
 .files-form-field-grid .files-form-field-grid-remove:disabled {
@@ -302,13 +308,18 @@
     filter: none;
 }
 
-.text-form-field:hover,
-.textarea-form-field:hover,
-.select-form-field:hover,
-.radio-form-field:hover,
-.checkbox-form-field:hover,
-.file-form-field:hover,
-.file-form-field-styled:hover,
+@media (hover: hover) {
+    .text-form-field:hover,
+    .textarea-form-field:hover,
+    .select-form-field:hover,
+    .radio-form-field:hover,
+    .checkbox-form-field:hover,
+    .file-form-field:hover,
+    .file-form-field-styled:hover {
+        box-shadow: 0 0 0.1rem var(--ff-field-border);
+    }
+}
+
 .text-form-field:focus,
 .textarea-form-field:focus,
 .select-form-field:focus,
@@ -317,7 +328,7 @@
 .file-form-field:focus,
 .select-multiple-form-field:focus,
 .file-form-field-styled:focus {
-    filter: drop-shadow(0 0 0.5rem var(--ff-field-border));
+    box-shadow: 0 0 0.1rem var(--ff-field-border);
 }
 
 .text-form-field:lang(ar),
@@ -464,8 +475,6 @@
 }
 
 .number-form-field {
-    will-change: filter;
-    transition: filter 0.5s;
     color: var(--ff-field-color);
     font-size: large;
     font-family: var(--english-normal-font);
@@ -529,11 +538,21 @@
     color: var(--ff-field-color);
 }
 
-.toggle-password-visibility:hover {
+@media (hover: hover) {
+    .toggle-password-visibility:hover {
+        opacity: 0.8;
+        color: var(--ff-field-color);
+        background: transparent;
+        backdrop-filter: none;
+    }
+}
+
+.toggle-password-visibility:active {
     opacity: 0.8;
     color: var(--ff-field-color);
     background: transparent;
     backdrop-filter: none;
+    transition: none;
 }
 
 .txtPassword {
@@ -562,8 +581,7 @@
     gap: 1rem;
     justify-content: center;
     align-items: center;
-    transition: filter 1s;
-    will-change: filter;
+    transition: box-shadow 0.25s;
 }
 
 .file-form-field-styled-buttons-wrapper {
@@ -573,9 +591,17 @@
     align-items: center;
 }
 
-.remove-button:hover {
+@media (hover: hover) {
+    .remove-button:hover {
+        background-color: var(--secondary-color);
+        color: var(--fb-white-color);
+    }
+}
+
+.remove-button:active {
     background-color: var(--secondary-color);
     color: var(--fb-white-color);
+    transition: none;
 }
 
 .remove-section-button {
@@ -584,10 +610,19 @@
     box-shadow: 0 0 0.5rem var(--secondary-color);
 }
 
-.remove-section-button:hover {
+@media (hover: hover) {
+    .remove-section-button:hover {
+        background-color: var(--secondary-color);
+        color: var(--fb-white-color);
+        filter: drop-shadow(0 0 0.5rem var(--secondary-color));
+    }
+}
+
+.remove-section-button:active {
     background-color: var(--secondary-color);
     color: var(--fb-white-color);
-    filter: drop-shadow(0 0 1em var(--secondary-color));
+    filter: drop-shadow(0 0 0.5rem var(--secondary-color));
+    transition: none;
 }
 
 .add-section-button {
@@ -813,7 +848,8 @@
     position: absolute;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--light-dark-accent-color);
+    opacity: 0.3;
     border-radius: var(--ff-radius);
     z-index: var(--form-date-popup-modal-overlay-z-index);
     top: 0;
@@ -904,13 +940,17 @@
     border-radius: var(--ff-radius);
     background-color: var(--ff-field-bg);
     cursor: text;
-    will-change: filter;
-    transition: filter 0.5s;
+    transition: box-shadow 0.25s;
 }
 
-.search-select-input-area:focus-within,
-.search-select-input-area:hover {
-    filter: drop-shadow(0 0 0.5rem var(--ff-field-border));
+.search-select-input-area:focus-within {
+    box-shadow: 0 0 0.1rem var(--ff-field-border);
+}
+
+@media (hover: hover) {
+    .search-select-input-area:hover {
+        box-shadow: 0 0 0.1rem var(--ff-field-border);
+    }
 }
 
 .search-select-search-input {
@@ -958,9 +998,17 @@
     box-shadow: none;
 }
 
-.search-select-tag-remove:hover {
+@media (hover: hover) {
+    .search-select-tag-remove:hover {
+        color: var(--secondary-color);
+        background: transparent;
+    }
+}
+
+.search-select-tag-remove:active {
     color: var(--secondary-color);
     background: transparent;
+    transition: none;
 }
 
 .search-select-dropdown {
@@ -1198,7 +1246,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --ff-field-border: var(--fb-white-color);
-        --ff-field-bg: var(--fb-black-gradient-color);
+        --ff-field-bg: var(--light-dark-accent-color);
         --ff-field-color: var(--fb-white-color);
         --ff-readonly-bg: var(--dark-accent-color);
         --ff-readonly-color: var(--fb-white-color);
@@ -1216,10 +1264,19 @@
         box-shadow: 0 0 0.5rem var(--fb-white-color);
     }
 
-    .remove-section-button:hover {
+    @media (hover: hover) {
+        .remove-section-button:hover {
+            background-color: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        }
+    }
+
+    .remove-section-button:active {
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
-        filter: drop-shadow(0 0 1em var(--fb-white-color));
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        transition: none;
     }
 
     .captcha-box {

@@ -40,8 +40,10 @@
     display: none;
 }
 
-.school-everywhere-login-form-wrapper:hover {
-    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+@media (hover: hover) {
+    .school-everywhere-login-form-wrapper:hover {
+        filter: drop-shadow(0 0 0.1rem var(--primary-color));
+    }
 }
 
 .school-everywhere-login-notice {
@@ -101,13 +103,25 @@
     letter-spacing: normal;
 }
 
-.school-everywhere-link-btn:hover,
-.school-everywhere-link-btn:hover:not(:disabled) {
+@media (hover: hover) {
+    .school-everywhere-link-btn:hover,
+    .school-everywhere-link-btn:hover:not(:disabled) {
+        background: none;
+        color: inherit;
+        opacity: 1;
+        filter: none;
+        box-shadow: none;
+    }
+}
+
+.school-everywhere-link-btn:active,
+.school-everywhere-link-btn:active:not(:disabled) {
     background: none;
     color: inherit;
     opacity: 1;
     filter: none;
     box-shadow: none;
+    transition: none;
 }
 
 .school-everywhere-link-btn:disabled {
@@ -150,8 +164,10 @@
         color: var(--fb-white-color);
     }
 
-    .school-everywhere-login-form-wrapper:hover {
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    @media (hover: hover) {
+        .school-everywhere-login-form-wrapper:hover {
+            filter: drop-shadow(0 0 0.1rem var(--fb-white-color));
+        }
     }
 
     .school-everywhere-link-btn {

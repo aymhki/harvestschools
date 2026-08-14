@@ -10,9 +10,17 @@
     line-height: 0;
 }
 
-.wallet-badge-button:hover {
+@media (hover: hover) {
+    .wallet-badge-button:hover {
+        background-color: transparent;
+        filter: none;
+    }
+}
+
+.wallet-badge-button:active {
     background-color: transparent;
     filter: none;
+    transition: none;
 }
 
 .wallet-badge-button:disabled {
@@ -32,9 +40,17 @@
     color: var(--fb-white-color);
 }
 
-.wallet-badge-fallback-button:hover {
+@media (hover: hover) {
+    .wallet-badge-fallback-button:hover {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+}
+
+.wallet-badge-fallback-button:active {
     background-color: var(--fb-white-color);
     color: var(--primary-color);
+    transition: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,8 +59,16 @@
         color: var(--primary-color);
     }
 
-    .wallet-badge-fallback-button:hover {
+    @media (hover: hover) {
+        .wallet-badge-fallback-button:hover {
+            background-color: var(--light-dark-accent-color);
+            color: var(--fb-white-color);
+        }
+    }
+
+    .wallet-badge-fallback-button:active {
         background-color: var(--light-dark-accent-color);
         color: var(--fb-white-color);
+        transition: none;
     }
 }

@@ -4,6 +4,7 @@ import Table from "../../modules/Table.jsx";
 import Form from "../../modules/Form.jsx";
 import {useTranslation} from "react-i18next";
 import {servePublicAsset} from "../../services/General/GeneralServices.jsx";
+import {GALLERY_MEDIA_ROOT} from "../../services/Admin/Gallery/AdminGalleryServices.jsx";
 
 function Activities() {
     const {t} = useTranslation(['students-life-pages']);
@@ -21,7 +22,7 @@ function Activities() {
         <meta name="robots" content="index, follow"/>
         <meta name="googlebot" content="index, follow"/>
 
-            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={servePublicAsset('/images/Gallery/Photos/HarvestAcademy/HarvestAcademy5.jpg')} darken={true}
+            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={servePublicAsset('/images/Gallery/Photos/HarvestAcademy/HarvestAcademy5.jpg', {root: GALLERY_MEDIA_ROOT})} darken={true}
                                    divElements={[
                                        (
                                              <div className={'students-life-activities-page-content'} key={1}>

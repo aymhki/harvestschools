@@ -4,7 +4,7 @@ require_once __DIR__ . '/publicSchoolInfoHelpers.php';
 require_once __DIR__ . '/publicRateLimit.php';
 
 const PUBLIC_STAGE_FEES_DEPARTMENTS = ['national', 'british', 'american'];
-const PUBLIC_STAGE_AGE_DEPARTMENTS = ['national', 'british', 'american', 'early'];
+const PUBLIC_STAGE_AGE_DEPARTMENTS = ['early', 'national', 'british', 'american'];
 
 const PUBLIC_STAGE_FEES_HIDDEN = [];
 const PUBLIC_STAGE_AGE_HIDDEN = [];
