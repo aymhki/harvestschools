@@ -26,7 +26,7 @@ function EnglishLevels() {
                     {t("students-life-pages.library-pages.suggest-book-form.recommend-a-book-for-the-library-to-add-to-its-collection")}
               </h2>
 
-              <Form sendPdf={false} mailTo={'ayman.hassan@harvestschools.com'}
+              <Form sendPdf={false} formKey={'library-book-request'}
                     formTitle={t("students-life-pages.library-pages.suggest-book-form.student-book-recommendation-form")} fields={
                   [
                       {

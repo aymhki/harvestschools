@@ -1,6 +1,7 @@
 <?php
 require_once '../../headers.php';
 require_once '../authHelpers.php';
+require_once __DIR__ . '/../../emailRecipients.php';
 require_once '../../permissionLevels.php';
 require_once __DIR__ . '/../../Public/SchoolInfo/publicSchoolInfoHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
@@ -30,6 +31,21 @@ try {
     if (!$authStatus['success']) {
         echo json_encode($authStatus);
         exit;
+    }
+
+    $adminUserId = null;
+
+    if (isset($authStatus['session_id'])) {
+        $adminLookup = $conn->prepare("SELECT user_id FROM admin_sessions WHERE id = ?");
+        $adminLookup->bind_param("s", $authStatus['session_id']);
+        $adminLookup->execute();
+        $adminLookupResult = $adminLookup->get_result();
+
+        if ($adminLookupRow = $adminLookupResult->fetch_assoc()) {
+            $adminUserId = (int)$adminLookupRow['user_id'];
+        }
+
+        $adminLookup->close();
     }
 
     $conn->begin_transaction();
@@ -147,6 +163,28 @@ try {
 
         foreach ($postData['policies'] as $pi) {
             $stmt->bind_param("ssssssi", $pi['item_key'], $pi['group_key'], $pi['title_en'], $pi['title_ar'], $pi['detail_en'], $pi['detail_ar'], $pi['sort_order']);
+            $stmt->execute();
+        }
+
+        $stmt->close();
+    }
+
+    if (!$updateStaticOnly && isset($postData['formEmails'])) {
+        $stmt = $conn->prepare("INSERT INTO info_system_form_emails (form_key, label, recipient_email, is_active, sort_order, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, NOW(), ?) ON DUPLICATE KEY UPDATE label=VALUES(label), recipient_email=VALUES(recipient_email), is_active=VALUES(is_active), sort_order=VALUES(sort_order), updated_at=NOW(), updated_by=VALUES(updated_by)");
+
+        foreach ($postData['formEmails'] as $fe) {
+            $recipient = trim((string)$fe['recipient_email']);
+
+            if (filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
+                $conn->rollback();
+                echo json_encode(["success" => false, "message" => "Invalid recipient email: " . $recipient, "code" => 400]);
+                exit;
+            }
+
+            $isActive = (isset($fe['is_active']) && ($fe['is_active'] === 'Yes' || $fe['is_active'] === 1 || $fe['is_active'] === '1')) ? 1 : 0;
+            $sortOrder = isset($fe['sort_order']) ? (int)$fe['sort_order'] : 0;
+
+            $stmt->bind_param("sssiii", $fe['form_key'], $fe['label'], $recipient, $isActive, $sortOrder, $adminUserId);
             $stmt->execute();
         }
 
@@ -271,6 +309,8 @@ try {
         }
     }
 
+    $schoolContactEmail = configured_email('contact-us');
+
     $systemPrompt = <<<PROMPT
 
 You are the official AI assistant for **Harvest International Schools**, located in **Borg Al Arab, Alexandria, Egypt**.
@@ -303,7 +343,7 @@ SCHOOL INFORMATION
 
 - Address: Borg Al Arab, Alexandria, Egypt
 - Phone: +201118900165
-- Email: inquiries@harvestschools.com
+- Email: $schoolContactEmail
 - Website: https://harvestschools.com
 - Facebook: https://www.facebook.com/HarvestInternationalSchools/
 - Working hours: Sunday to Thursday: 8:00 AM - 3:00 PM

@@ -1,13 +1,35 @@
 <?php
 
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
-require_once dirname($doc_root) . '/configs/turnstileConfig.php';
+$turnstileConfigPath = dirname($doc_root) . '/configs/turnstileConfig.php';
 
-function verify_turnstile_token_if_present() {
-    $token = isset($_POST['cf-turnstile-response']) ? trim((string)$_POST['cf-turnstile-response']) : '';
+if (is_file($turnstileConfigPath)) {
+    require_once $turnstileConfigPath;
+}
+
+
+function turnstile_token_from_request($explicitToken = null) {
+    if (is_string($explicitToken) && trim($explicitToken) !== '') {
+        return trim($explicitToken);
+    }
+
+    if (isset($_POST['cf-turnstile-response'])) {
+        return trim((string)$_POST['cf-turnstile-response']);
+    }
+
+    return '';
+}
+
+
+function verify_turnstile_token_if_present($explicitToken = null) {
+    $token = turnstile_token_from_request($explicitToken);
 
     if ($token === '') {
         return ['ok' => true, 'mode' => 'fallback'];
+    }
+
+    if (!function_exists('turnstile_config')) {
+        return ['ok' => true, 'mode' => 'cf-unreachable'];
     }
 
     if (!function_exists('curl_init')) {

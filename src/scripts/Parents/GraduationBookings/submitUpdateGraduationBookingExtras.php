@@ -1,5 +1,6 @@
 <?php
 require_once '../../headers.php';
+require_once '../../turnstileHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
@@ -9,6 +10,17 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $turnstileCheck = verify_turnstile_token_if_present();
+
+    if (!$turnstileCheck['ok']) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Human verification failed. Please refresh the page and try again.',
+            'code' => 403
+        ]);
+        exit;
+    }
+
     $conn = null;
     $errorInfo = [
         'success' => true,

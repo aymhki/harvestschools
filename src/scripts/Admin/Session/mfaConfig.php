@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../emailRecipients.php';
+
 require_once __DIR__ . '/../../securityHeaders.php';
 
 function mfa_default_config() {
@@ -28,9 +30,9 @@ function mfa_default_config() {
         'ip_geo_lookup_enabled' => true,
         'ip_geo_ttl_days'       => 30,
         'ip_known_window_days'  => 90,
-        'mail_from'      => 'no-reply@admin.harvestschools.com',
+        'mail_from'      => configured_email('admin-system-sender'),
         'mail_from_name' => 'Harvest Schools Admin',
-        'admin_email'    => 'ayman.hassan@admin.harvestschools.com',
+        'admin_email'    => configured_email('admin-notifications'),
     ];
 }
 

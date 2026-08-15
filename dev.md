@@ -23,4 +23,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] The notfound arabic text does not use the correct font, also it should not be arabic in admin pages.
 - [ ] search-select field should allow new values on prop.
 - [ ] global is loading/submitting spinner state should be handled via hook context.
-
+- [ ] Change the harvest in app browser icon from x to home icon.
+- [ ] App opening normally should not navigate to the last opened page.

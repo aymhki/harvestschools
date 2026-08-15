@@ -1,6 +1,7 @@
 <?php
 require_once '../../headers.php';
 require_once '../../turnstileHelpers.php';
+require_once __DIR__ . '/../../emailRecipients.php';
 set_cors_headers();
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
@@ -27,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn->set_charset("utf8mb4");
         $conn->begin_transaction();
 
-        $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'careers@harvestschools.com';
+        $mailTo = configured_email('careers');
         $subject = isset($_POST['formTitle']) ? $_POST['formTitle'] : 'Job Application Submission';
         $emailText = "New Job Application Received:\n\n";
         $attachmentLinks = [];
@@ -211,8 +212,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $boundary = md5(time());
-            $headers = "From: no-reply@harvestschools.com\r\n";
-            $headers .= "Reply-To: no-reply@harvestschools.com\r\n";
+            $senderAddress = configured_email('system-sender');
+
+            if ($senderAddress === null) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'No system sender address is configured. Add it under Info System then Form Emails.',
+                    'code' => 500
+                ]);
+                exit;
+            }
+
+            $headers = "From: " . $senderAddress . "\r\n";
+            $headers .= "Reply-To: " . $senderAddress . "\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
 

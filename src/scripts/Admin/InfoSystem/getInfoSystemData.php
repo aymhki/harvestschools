@@ -97,6 +97,21 @@ try {
     }
     $policyData = moveColumnFirst(array_merge([$policyHeaders], $policyRows), "ID");
 
+    $formEmailHeaders = ["Form Key", "Form", "Recipient Email", "Is Active", "ID"];
+    $formEmailRows = [];
+    $formEmailsTable = $conn->query("SHOW TABLES LIKE 'info_system_form_emails'");
+
+    if ($formEmailsTable && $formEmailsTable->num_rows > 0) {
+        $res = $conn->query("SELECT form_key, label, recipient_email, is_active, sort_order FROM info_system_form_emails ORDER BY sort_order ASC");
+
+        while ($row = $res->fetch_assoc()) {
+            $row['is_active'] = $row['is_active'] == 1 ? 'Yes' : 'No';
+            $formEmailRows[] = array_map('strval', array_values($row));
+        }
+    }
+
+    $formEmailData = moveColumnFirst(array_merge([$formEmailHeaders], $formEmailRows), "ID");
+
     echo json_encode([
         "success" => true,
         "message" => "Data retrieved successfully",
@@ -106,7 +121,8 @@ try {
             "departments" => $deptData,
             "stages" => $stageData,
             "profile" => $profileData,
-            "policies" => $policyData
+            "policies" => $policyData,
+            "formEmails" => $formEmailData
         ]
     ]);
 } catch (Exception $e) {

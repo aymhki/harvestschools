@@ -1,5 +1,6 @@
 <?php
 require_once '../../headers.php';
+require_once '../../turnstileHelpers.php';
 require_once 'mfaHelpers.php';
 set_cors_headers();
 
@@ -13,6 +14,18 @@ try {
         echo json_encode(["success" => false, "message" => "Method Not Allowed", "code" => 405]);
         exit;
     }
+
+    $turnstileCheck = verify_turnstile_token_if_present();
+
+    if (!$turnstileCheck['ok']) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Human verification failed. Please refresh the page and try again.',
+            'code' => 403
+        ]);
+        exit;
+    }
+
 
     $conn = new mysqli(
         $dbConfig['db_host'],

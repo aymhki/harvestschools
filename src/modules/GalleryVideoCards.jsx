@@ -71,6 +71,7 @@ function GalleryVideoCards() {
                                 alt: video.title,
                                 isVideo: true,
                                 thumbnailAt: video.thumbnailAt,
+                                durationSeconds: video.durationSeconds,
                                 root: PUBLIC_GALLERY_MEDIA_ROOT,
                             }
                         ]

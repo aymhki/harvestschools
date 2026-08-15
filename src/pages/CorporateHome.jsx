@@ -112,7 +112,7 @@ function CorporateHome() {
                     </p>
 
 
-                    <Form fields={contactUsFormFields} sendPdf={false} mailTo={'info@alfajralbasem.com'} formTitle={'Contact Us Form Submission'} lang={"en"} captchaLength={2}/>
+                    <Form fields={contactUsFormFields} sendPdf={false} formKey={'corporate-contact-us'} formTitle={'Contact Us Form Submission'} lang={"en"} captchaLength={2}/>
                 </div>
 
                 <div className="home-page-visit-us-section">

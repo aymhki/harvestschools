@@ -3,15 +3,34 @@ import '../styles/PhotoCollage.css';
 import PropTypes from "prop-types";
 import { useSpring, animated } from 'react-spring';
 import {servePublicAsset} from "../services/General/GeneralServices.jsx";
+import {useLoadingWhile} from "../services/General/GlobalLoadingService.jsx";
+import VideoHoverPreview from "./VideoHoverPreview.jsx";
 
 const DEFAULT_THUMBNAIL_SECONDS = 0.1;
+const LIGHTBOX_VIDEO_REVEAL_TIMEOUT_MS = 6000;
 
 const PhotoCollage = ({ type, photos, title, collagePreview }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [failedThumbnails, setFailedThumbnails] = useState({});
+    const [isLightboxVideoReady, setIsLightboxVideoReady] = useState(false);
     const lightboxVideoRef = useRef(null);
+
+    const currentItem = photos.length > 0 ? photos[currentIndex] : null;
+    const isCurrentItemVideo = Boolean(currentItem && currentItem.isVideo);
+
+    useLoadingWhile(isOpen && isCurrentItemVideo && !isLightboxVideoReady);
+
+    useEffect(() => {
+        if (!isOpen || !isCurrentItemVideo || isLightboxVideoReady) {
+            return undefined;
+        }
+
+        const revealAnyway = setTimeout(() => setIsLightboxVideoReady(true), LIGHTBOX_VIDEO_REVEAL_TIMEOUT_MS);
+
+        return () => clearTimeout(revealAnyway);
+    }, [isOpen, isCurrentItemVideo, isLightboxVideoReady]);
 
     const openLightBox = (index) => {
         setCurrentIndex(index);
@@ -69,24 +88,30 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                 }
             }}
         >
-            {failedThumbnails[item.src] ? (
-                <video
-                    src={`${mediaSource(item)}#t=${thumbnailSeconds(item)}`}
-                    className={`${mediaClassName} video-preview-media`}
-                    preload="metadata"
-                    muted
-                    playsInline
-                />
-            ) : (
-                <img
-                    src={thumbnailSource(item)}
-                    alt={item.alt}
-                    className={`${mediaClassName} video-preview-media`}
-                    loading="lazy"
-                    decoding="async"
-                    onError={() => markThumbnailFailed(item.src)}
-                />
-            )}
+            <VideoHoverPreview
+                path={item.src}
+                root={item.root}
+                durationSeconds={Number.isFinite(item.durationSeconds) ? item.durationSeconds : undefined}
+            >
+                {failedThumbnails[item.src] ? (
+                    <video
+                        src={`${mediaSource(item)}#t=${thumbnailSeconds(item)}`}
+                        className={`${mediaClassName} video-preview-media`}
+                        preload="metadata"
+                        muted
+                        playsInline
+                    />
+                ) : (
+                    <img
+                        src={thumbnailSource(item)}
+                        alt={item.alt}
+                        className={`${mediaClassName} video-preview-media`}
+                        loading="lazy"
+                        decoding="async"
+                        onError={() => markThumbnailFailed(item.src)}
+                    />
+                )}
+            </VideoHoverPreview>
 
             <span className="video-preview-play" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
@@ -156,17 +181,23 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                     })
                 }>
 
-                    {photos.length > 0 && (photos[currentIndex].isVideo ? (
+                    {photos.length > 0 && (photos[currentIndex].isVideo ? (isOpen && (
                         <video
                             key={photos[currentIndex].src}
                             ref={lightboxVideoRef}
                             src={mediaSource(photos[currentIndex])}
                             poster={failedThumbnails[photos[currentIndex].src] ? undefined : thumbnailSource(photos[currentIndex])}
-                            className={`lightbox-photo ${isTransitioning ? 'hidden' : ''}`}
-                            preload="none"
+                            className={`lightbox-photo lightbox-video ${isTransitioning ? 'hidden' : ''} ${isLightboxVideoReady ? 'is-ready' : ''}`}
+                            preload="metadata"
                             playsInline
                             controls
+                            onLoadStart={() => setIsLightboxVideoReady(false)}
+                            onLoadedMetadata={() => setIsLightboxVideoReady(true)}
+                            onLoadedData={() => setIsLightboxVideoReady(true)}
+                            onCanPlay={() => setIsLightboxVideoReady(true)}
+                            onError={() => setIsLightboxVideoReady(true)}
                             />
+                        )
                         ) : (
 
                         <img
@@ -209,6 +240,7 @@ const mediaShape = PropTypes.shape({
     alt: PropTypes.string.isRequired,
     isVideo: PropTypes.bool,
     thumbnailAt: PropTypes.number,
+    durationSeconds: PropTypes.number,
     root: PropTypes.string
 });
 

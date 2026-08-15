@@ -841,14 +841,14 @@ function AdminSettingsModal({show, notice, onClose, setRefreshCurrentUserData}) 
                     ? [{
                         id: emailFieldId, type: 'email', name: 'email', label: 'Email',
                         displayLabel: 'New Email Address', httpName: 'email', required: true,
-                        placeholder: 'name@harvestschools.com', errorMsg: 'Please enter a valid email address',
+                        placeholder: 'Enter an email address', errorMsg: 'Please enter a valid email address',
                         defaultValue: account?.email || '', value: '', setValue: null, widthOfField: 1,
                         labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                     }]
                     : [{
                         id: emailFieldId, type: 'email', name: 'email', label: 'Email',
                         displayLabel: 'New Email Address', httpName: 'email', required: true,
-                        placeholder: 'name@harvestschools.com', errorMsg: 'Please enter a valid email address',
+                        placeholder: 'Enter an email address', errorMsg: 'Please enter a valid email address',
                         defaultValue: account?.email || '', value: '', setValue: null, widthOfField: 1,
                         labelOutside: true, labelOnTop: true, dontLetTheBrowserSaveField: true,
                     }, bootstrapPasswordField(emailBootstrapPasswordFieldId)],

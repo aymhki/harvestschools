@@ -18,6 +18,7 @@ function InfoSystemManagement() {
     const [stagesData, setStagesData] = useState(null);
     const [profileData, setProfileData] = useState(null);
     const [policiesData, setPoliciesData] = useState(null);
+    const [formEmailsData, setFormEmailsData] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [resetEditModal, setResetEditModal] = useState(false);
     const [editFormFields, setEditFormFields] = useState(null);
@@ -33,7 +34,7 @@ function InfoSystemManagement() {
 
     const reloadData = async () => {
         setIsLoading(true);
-        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData);
+        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setFormEmailsData);
         setIsLoading(false);
     };
 
@@ -77,6 +78,12 @@ function InfoSystemManagement() {
     const profileValueArColIndex = 4;
     const profileNoteEnColIndex = 5;
     const profileNoteArColIndex = 6;
+
+    const formEmailSortOrderColIndex = 0;
+    const formEmailKeyColIndex = 1;
+    const formEmailLabelColIndex = 2;
+    const formEmailRecipientColIndex = 3;
+    const formEmailIsActiveColIndex = 4;
 
     const policySortOrderColIndex = 0;
     const policyKeyColIndex = 1;
@@ -125,6 +132,10 @@ function InfoSystemManagement() {
     const profileValueArFormFieldId = 4;
     const profileNoteEnFormFieldId = 5;
     const profileNoteArFormFieldId = 6;
+
+    const formEmailLabelFormFieldId = 1;
+    const formEmailRecipientFormFieldId = 2;
+    const formEmailIsActiveFormFieldId = 3;
 
     const policyKeyFormFieldId = 1;
     const policyGroupKeyFormFieldId = 2;
@@ -189,10 +200,17 @@ function InfoSystemManagement() {
             formFieldsConfig = [
                 { id: profileKeyFormFieldId, type: 'text', name: 'profile_key', label: 'Profile Key', required: true, value: rowData[profileKeyColIndex], defaultValue: rowData[profileKeyColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Profile Key', readOnlyField: true, httpName: 'profile-key' },
                 { id: profileCategoryFormFieldId, type: 'select', name: 'category', label: 'Category', required: true, choices: profileCategories, defaultValue: rowData[profileCategoryColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Category', httpName: 'profile-category' },
-                { id: profileValueEnFormFieldId, type: 'textarea', name: 'value_en', label: 'Value (EN)', required: false, value: '', defaultValue: rowData[profileValueEnColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Value (EN)', httpName: 'profile-value-en' },
-                { id: profileValueArFormFieldId, type: 'textarea', name: 'value_ar', label: 'Value (AR)', required: false, value: '', defaultValue: rowData[profileValueArColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Value (AR)', lang: 'ar', httpName: 'profile-value-ar' },
-                { id: profileNoteEnFormFieldId, type: 'textarea', name: 'note_en', label: 'Note (EN)', required: false, value: '', defaultValue: rowData[profileNoteEnColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Note (EN)', httpName: 'profile-note-en' },
-                { id: profileNoteArFormFieldId, type: 'textarea', name: 'note_ar', label: 'Note (AR)', required: false, value: '', defaultValue: rowData[profileNoteArColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Note (AR)', lang: 'ar', httpName: 'profile-note-ar' },
+                { id: profileValueEnFormFieldId, type: 'textarea', name: 'value_en', label: 'Value (EN)', required: false, value: '', defaultValue: rowData[profileValueEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Value (EN)', httpName: 'profile-value-en' },
+                { id: profileValueArFormFieldId, type: 'textarea', name: 'value_ar', label: 'Value (AR)', required: false, value: '', defaultValue: rowData[profileValueArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Value (AR)', lang: 'ar', httpName: 'profile-value-ar' },
+                { id: profileNoteEnFormFieldId, type: 'textarea', name: 'note_en', label: 'Note (EN)', required: false, value: '', defaultValue: rowData[profileNoteEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Note (EN)', httpName: 'profile-note-en' },
+                { id: profileNoteArFormFieldId, type: 'textarea', name: 'note_ar', label: 'Note (AR)', required: false, value: '', defaultValue: rowData[profileNoteArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Note (AR)', lang: 'ar', httpName: 'profile-note-ar' },
+            ];
+        } else if (type === 'formEmails') {
+            rowData = formEmailsData[rowIndex];
+            formFieldsConfig = [
+                { id: formEmailLabelFormFieldId, type: 'text', name: 'label', label: 'Form', required: true, value: '', defaultValue: rowData[formEmailLabelColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Form', httpName: 'form-email-label' },
+                { id: formEmailRecipientFormFieldId, type: 'text', name: 'recipient_email', label: 'Recipient Email', required: true, value: '', defaultValue: rowData[formEmailRecipientColIndex], widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Recipient Email', httpName: 'form-email-recipient' },
+                { id: formEmailIsActiveFormFieldId, type: 'select', name: 'is_active', label: 'Is Active', required: true, choices: ['Yes', 'No'], defaultValue: rowData[formEmailIsActiveColIndex], value: '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Is Active', httpName: 'form-email-is-active' },
             ];
         } else if (type === 'policies') {
             rowData = policiesData[rowIndex];
@@ -201,8 +219,8 @@ function InfoSystemManagement() {
                 { id: policyGroupKeyFormFieldId, type: 'select', name: 'group_key', label: 'Group Key', required: true, choices: policyGroupKeys, defaultValue: rowData[policyGroupKeyColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Group Key', httpName: 'policy-group-key' },
                 { id: policyTitleEnFormFieldId, type: 'text', name: 'title_en', label: 'Title (EN)', required: true, value: '', defaultValue: rowData[policyTitleEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'policy-title-en' },
                 { id: policyTitleArFormFieldId, type: 'text', name: 'title_ar', label: 'Title (AR)', required: true, value: '', defaultValue: rowData[policyTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'policy-title-ar' },
-                { id: policyDetailEnFormFieldId, type: 'textarea', name: 'detail_en', label: 'Detail (EN)', required: false, value: '', defaultValue: rowData[policyDetailEnColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (EN)', httpName: 'policy-detail-en' },
-                { id: policyDetailArFormFieldId, type: 'textarea', name: 'detail_ar', label: 'Detail (AR)', required: false, value: '', defaultValue: rowData[policyDetailArColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (AR)', lang: 'ar', httpName: 'policy-detail-ar' },
+                { id: policyDetailEnFormFieldId, type: 'textarea', name: 'detail_en', label: 'Detail (EN)', required: false, value: '', defaultValue: rowData[policyDetailEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (EN)', httpName: 'policy-detail-en' },
+                { id: policyDetailArFormFieldId, type: 'textarea', name: 'detail_ar', label: 'Detail (AR)', required: false, value: '', defaultValue: rowData[policyDetailArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (AR)', lang: 'ar', httpName: 'policy-detail-ar' },
             ];
         }
 
@@ -292,6 +310,16 @@ function InfoSystemManagement() {
                         note_en: formDataJson[`field_${profileNoteEnFormFieldId}`] || '',
                         note_ar: formDataJson[`field_${profileNoteArFormFieldId}`] || '',
                         sort_order: Number(profileData[indexOfRowToEdit][profileSortOrderColIndex])
+                    }]
+                };
+            } else if (currentEditType === 'formEmails') {
+                payload = {
+                    formEmails: [{
+                        form_key: formEmailsData[indexOfRowToEdit][formEmailKeyColIndex],
+                        label: formDataJson[`field_${formEmailLabelFormFieldId}`],
+                        recipient_email: formDataJson[`field_${formEmailRecipientFormFieldId}`],
+                        is_active: formDataJson[`field_${formEmailIsActiveFormFieldId}`],
+                        sort_order: Number(formEmailsData[indexOfRowToEdit][formEmailSortOrderColIndex])
                     }]
                 };
             } else if (currentEditType === 'policies') {
@@ -460,6 +488,23 @@ function InfoSystemManagement() {
         </div>
     );
 
+    const FormEmails = () => (
+        <div className="admin-page-tab-content">
+            <Table tableData={formEmailsData}
+                   scrollable={true}
+                   compact={true}
+                   allowHideColumns={true}
+                   allowSticky={true}
+                   forceEnglishTable={true}
+                   allowEditEntryOption={true}
+                   onEditEntryOption={(rowIndex) => handleEditInitialization('formEmails', rowIndex)}
+                   isLoading={isLoading}
+                   headerModuleElements={getTableModuleHeaderElements}
+                   sortConfigParam={{column: 1, direction: 'ascending'}}
+            />
+        </div>
+    );
+
     const tabData = [
         {
             id: 0,
@@ -485,6 +530,11 @@ function InfoSystemManagement() {
             id: 4,
             label: 'Policy Items',
             component: PolicyItems
+        },
+        {
+            id: 5,
+            label: 'Form Emails',
+            component: FormEmails
         },
     ];
 
@@ -524,6 +574,13 @@ function InfoSystemManagement() {
                         { (currentEditType === 'profile' || currentEditType === 'policies') && (
                             <p className={"general-large-admin-action-modal-content-note"}>
                                 Note: These values are read by Siri, Gemini and the chat bot.
+                            </p>
+                        )}
+
+                        {currentEditType === 'formEmails' && (
+                            <p className={"general-large-admin-action-modal-content-note"}>
+                                Note: This is the mailbox that receives submissions from this form. Setting Is Active to No
+                                sends them to the default inquiries mailbox instead.
                             </p>
                         )}
 

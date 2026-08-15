@@ -86,7 +86,7 @@ function Careers({isMobileApp = false}) {
 
                     <Form sendPdf={false}
                           formTitle={'Job Application Submission'}
-                          mailTo={'careers@harvestschools.com'}
+                          formKey={'careers'}
                           fields={[
                         {
                             id: 1,

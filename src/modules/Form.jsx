@@ -164,7 +164,8 @@ const describeBytes = (bytes) => {
 
 function Form({
                   fields,
-                  mailTo,
+                  mailTo = '',
+                  formKey = '',
                   formTitle,
                   captchaLength = 1,
                   noInputFieldsCache,
@@ -2391,6 +2392,7 @@ function Form({
             });
 
             formData.append('mailTo', mailTo);
+            formData.append('formKey', formKey);
             formData.append('formTitle', formTitle);
 
             if (!noCaptcha && turnstileTokenRef.current) {
@@ -3201,7 +3203,8 @@ const fieldShape = {
 
 Form.propTypes = {
     fields: PropTypes.arrayOf(PropTypes.shape(fieldShape)).isRequired,
-    mailTo: PropTypes.string.isRequired,
+    mailTo: PropTypes.string,
+    formKey: PropTypes.string,
     formTitle: PropTypes.string.isRequired,
     captchaLength: PropTypes.number,
     noInputFieldsCache: PropTypes.bool,

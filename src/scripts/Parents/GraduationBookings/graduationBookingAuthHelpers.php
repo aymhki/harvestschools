@@ -1,4 +1,6 @@
 <?php
+
+require_once __DIR__ . '/../../emailRecipients.php';
 require_once __DIR__ . '/../../headers.php';
 require_once __DIR__ . '/../../passwordResetHelpers.php';
 require_once __DIR__ . '/../../textMatchHelpers.php';
@@ -24,9 +26,9 @@ function gb_config($key = null) {
             'recover_max_per_window'      => 8,
             'search_min_query_length'     => 2,
             'search_max_results'          => 8,
-            'mail_from'                   => 'no-reply@harvestschools.com',
+            'mail_from'                   => configured_email('system-sender'),
             'mail_from_name'              => 'Harvest Schools Graduation',
-            'admin_notification_email'    => 'ayman.hassan@admin.harvestschools.com',
+            'admin_notification_email'    => configured_email('booking-notifications'),
         ];
 
         $docRoot      = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');

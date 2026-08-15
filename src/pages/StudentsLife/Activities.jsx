@@ -42,7 +42,7 @@ function Activities() {
                 {t("students-life-pages.activities-page.enroll-now")}
             </h1>
 
-            <Form sendPdf={false} mailTo={'asmaa.samir@harvestschools.com'} formTitle={'Harvest Academy Enrollment'} fields={[
+            <Form sendPdf={false} formKey={'harvest-academy'} formTitle={'Harvest Academy Enrollment'} fields={[
                 {id: 1, type: 'text', label: 'Student Name', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.student-name-field"), httpName: 'student-name', required: true, value: '', setValue: null, widthOfField: 3 },
                 {id: 2, type: 'tel', label: 'Contact Phone Number', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.contact-phone-number-field"), httpName: 'contact-phone-number', required: true, value: '', setValue: null, widthOfField: 3 },
                 {id: 3, type: 'date', label: 'Date of Birth', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.date-of-birth-field"),  httpName: 'dob', required: true, value: '', setValue: null, widthOfField: 3 , errorMsg: 'Please enter a valid date in the format YYYY-MM-DD' },

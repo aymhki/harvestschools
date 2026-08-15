@@ -1,4 +1,6 @@
 <?php
+
+require_once __DIR__ . '/../emailRecipients.php';
 require_once __DIR__ . '/../headers.php';
 
 function alumni_config($key = null) {
@@ -15,9 +17,9 @@ function alumni_config($key = null) {
             'max_uploaded_images_per_user' => 60,
             'max_upload_size_bytes'        => 2 * 1024 * 1024,
             'max_posts_per_user'           => 100,
-            'mail_from'                    => 'no-reply@harvestschools.com',
+            'mail_from'                    => configured_email('system-sender'),
             'mail_from_name'               => 'Harvest Schools Alumni',
-            'admin_notification_email'     => 'alumni@admin.harvestschools.com',
+            'admin_notification_email'     => configured_email('alumni-notifications'),
         ];
 
         $docRoot      = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');

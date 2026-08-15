@@ -1,6 +1,7 @@
 <?php
 require_once '../../headers.php';
 require_once '../../turnstileHelpers.php';
+require_once __DIR__ . '/../../emailRecipients.php';
 set_cors_headers();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -16,11 +17,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     try {
-        $mailTo = isset($_POST['mailTo']) ? $_POST['mailTo'] : 'inquiries@harvestschools.com';
-        $subject = isset($_POST['formTitle']) ? $_POST['formTitle'] : 'Form Submission';
+        $mailTo = configured_email(trim(isset($_POST['formKey']) ? (string)$_POST['formKey'] : ''));
+
+        if ($mailTo === null) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'This form has no configured recipient. Add it under Info System then Form Emails.',
+                'code' => 403
+            ]);
+            exit;
+        }
+
+        $rawSubject = isset($_POST['formTitle']) ? (string)$_POST['formTitle'] : 'Form Submission';
+        $subject = trim(str_replace(["\r", "\n", "\0"], ' ', $rawSubject));
+
+        if ($subject === '') {
+            $subject = 'Form Submission';
+        }
         $boundary = md5(time());
-        $headers = "From: no-reply@harvestschools.com\r\n";
-        $headers .= "Reply-To: no-reply@harvestschools.com\r\n";
+        $senderAddress = configured_email('system-sender');
+
+        if ($senderAddress === null) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'No system sender address is configured. Add it under Info System then Form Emails.',
+                'code' => 500
+            ]);
+            exit;
+        }
+
+        $headers = "From: " . $senderAddress . "\r\n";
+        $headers .= "Reply-To: " . $senderAddress . "\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
         $body = "--$boundary\r\n";
