@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { useGesture } from '@use-gesture/react'
 import { requestVideoPreviewFrames, preloadFramesSequentially } from '../services/Public/Gallery/VideoPreviewServices.jsx'
 
-const FRAME_INTERVAL_MS = 180
-const SWIPE_ACTIVATION_PX = 24
+const FRAME_INTERVAL_MS = 300
+const SWIPE_ACTIVATION_PX = 8
 
 function VideoHoverPreview({ path, root, durationSeconds, children, onActivate }) {
     const [frames, setFrames] = useState([])
