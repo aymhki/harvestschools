@@ -521,11 +521,21 @@ function AlumniLogin() {
             <h2 className={"alumni-login-recovery-title"}>{t("students-life-pages.alumni-login-page.forgot-title")}</h2>
             <p>{t("students-life-pages.alumni-login-page.forgot-instructions")}</p>
             <Form key={'alumni-forgot-form'}
-                  mailTo={''} sendPdf={false} formTitle={'Alumni Forgot Password Form'} noSuccessMessage={true}
-                  lang={'en'} captchaLength={1} noInputFieldsCache={true} noCaptcha={false}
-                  noClearOption={true} centerSubmitButton={true} fullMarginField={true}
-                  hasSetSubmittingLocal={true} setSubmittingLocal={setSubmittingLocal}
-                  hasDifferentOnSubmitBehaviour={true} differentOnSubmitBehaviour={handleAlumniForgot}
+                  mailTo={''}
+                  sendPdf={false}
+                  formTitle={'Alumni Forgot Password Form'}
+                  noSuccessMessage={true}
+                  lang={'en'}
+                  captchaLength={1}
+                  noInputFieldsCache={true}
+                  noCaptcha={false}
+                  noClearOption={true}
+                  centerSubmitButton={true}
+                  fullMarginField={true}
+                  hasSetSubmittingLocal={true}
+                  setSubmittingLocal={setSubmittingLocal}
+                  hasDifferentOnSubmitBehaviour={true}
+                  differentOnSubmitBehaviour={handleAlumniForgot}
                   hasDifferentSubmitButtonText={true}
                   differentSubmitButtonText={[t("students-life-pages.alumni-login-page.forgot-continue"), t("students-life-pages.alumni-login-page.checking")]}
                   fields={[{
@@ -537,7 +547,7 @@ function AlumniLogin() {
                       value: '', setValue: null, widthOfField: 1, labelOutside: true, labelOnTop: true,
                   }]}
             />
-            <p className={"alumni-login-switch-mode"} onClick={() => backToSignIn(null)}>
+            <p className={"various-login-text-options"} onClick={() => backToSignIn(null)}>
                 {t("students-life-pages.alumni-login-page.back-to-sign-in")}
             </p>
         </div>
@@ -686,11 +696,10 @@ function AlumniLogin() {
                                 </div>
 
                                 <div className={"alumni-login-secondary-links"}>
-                                    <span className={"alumni-login-switch-mode"} onClick={() => setMode('sign-up')}>
+                                    <span className={"various-login-text-options"} onClick={() => setMode('sign-up')}>
                                         {t("students-life-pages.alumni-login-page.switch-to-sign-up")}
                                     </span>
-                                    <span className={'alumni-login-switch-mode'}
-                                            onClick={() => { resetRecoveryState(); setLoginNotice(null); setAuthView('forgot'); }}>
+                                    <span className={'various-login-text-options'} onClick={() => { resetRecoveryState(); setLoginNotice(null); setAuthView('forgot'); }}>
                                         {t("students-life-pages.alumni-login-page.forgot-password")}
                                     </span>
                                 </div>
@@ -858,7 +867,7 @@ function AlumniLogin() {
                                 )}
 
                                 {!signupSuccess && (
-                                    <p className={"alumni-login-switch-mode"} onClick={() => setMode('sign-in')}>
+                                    <p className={"various-login-text-options"} onClick={() => setMode('sign-in')}>
                                         {t("students-life-pages.alumni-login-page.switch-to-sign-in")}
                                     </p>
                                 )}

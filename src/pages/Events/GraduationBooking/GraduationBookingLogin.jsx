@@ -400,9 +400,9 @@ function GraduationBookingLogin() {
                       errorMsg: 'Please enter username', value: '', setValue: null, widthOfField: 1, labelOutside: true, labelOnTop: true,
                   }]}
             />
-            <button type={'button'} className={'booking-login-link-btn'} onClick={() => goToLoginView(null)}>
+            <span className={'various-login-text-options'} onClick={() => goToLoginView(null)}>
                 {t("events-pages.graduation-booking-pages.login-page.back-to-login")}
-            </button>
+            </span>
         </>
     );
 
@@ -432,15 +432,19 @@ function GraduationBookingLogin() {
             {pwResetStatus && <p className={'booking-login-status'} role={'status'}>{pwResetStatus}</p>}
             {pwResetError && <p className={'booking-login-notice'} role={'alert'}>{pwResetError}</p>}
             <div className={'booking-login-recovery-actions'}>
-                <button type={'button'} className={'booking-login-link-btn'} disabled={submittingLocal || resendIn > 0}
-                        onClick={() => sendResetCode(pwResetState.resetToken)}>
+                <span className={'various-login-text-options'} onClick={() => {
+                    if (!submittingLocal && resendIn <= 0) {
+                        sendResetCode(pwResetState.resetToken)
+                    }
+                }}>
                     {resendIn > 0
                         ? t("events-pages.graduation-booking-pages.login-page.resend-in", {seconds: resendIn})
                         : t("events-pages.graduation-booking-pages.login-page.resend-code")}
-                </button>
-                <button type={'button'} className={'booking-login-link-btn'} onClick={() => goToLoginView(null)}>
+                </span>
+
+                <span  className={'various-login-text-options'} onClick={() => goToLoginView(null)}>
                     {t("events-pages.graduation-booking-pages.login-page.back-to-login")}
-                </button>
+                </span>
             </div>
         </>
     );
@@ -457,9 +461,9 @@ function GraduationBookingLogin() {
                     {recoveredUsernames.map((u) => (
                         <li key={u}>
                             <span className={'booking-login-username-value'}>{u}</span>
-                            <button type={'button'} className={'booking-login-link-btn'} onClick={() => applyRecoveredUsername(u)}>
+                            <span className={'various-login-text-options'} onClick={() => applyRecoveredUsername(u)}>
                                 {t("events-pages.graduation-booking-pages.login-page.use-this-username")}
-                            </button>
+                            </span>
                         </li>
                     ))}
                 </ul>
@@ -541,9 +545,9 @@ function GraduationBookingLogin() {
 
             {renderRecoveredUsernames()}
 
-            <button type={'button'} className={'booking-login-link-btn'} onClick={() => goToLoginView(null)}>
+            <span className={'various-login-text-options'} onClick={() => goToLoginView(null)}>
                 {t("events-pages.graduation-booking-pages.login-page.back-to-login")}
-            </button>
+            </span>
         </>
     );
 
@@ -660,14 +664,14 @@ function GraduationBookingLogin() {
                         />
 
                         <div className={'booking-login-recovery-links'}>
-                            <button type={'button'} className={'booking-login-link-btn'}
+                            <span  className={'various-login-text-options'}
                                     onClick={() => { setLoginNotice(null); setRecoveredUsernames(null); setRecoverError(null); setRecoverMethod('student'); ensureStudentsLoaded(); setView('forgotUsername'); }}>
                                 {t("events-pages.graduation-booking-pages.login-page.forgot-username-link")}
-                            </button>
-                            <button type={'button'} className={'booking-login-link-btn'}
+                            </span>
+                            <span  className={'various-login-text-options'}
                                     onClick={() => { setLoginNotice(null); setView('forgotPassword'); }}>
                                 {t("events-pages.graduation-booking-pages.login-page.forgot-password-link")}
-                            </button>
+                            </span>
                         </div>
                         </>
                         )

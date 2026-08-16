@@ -541,23 +541,24 @@
     z-index: var(--form-toggle-password-visibility-button-z-index);
     box-shadow: none;
     color: var(--ff-field-color);
+    filter: none;
 }
 
 @media (hover: hover) {
     .toggle-password-visibility:hover {
-        opacity: 0.8;
         color: var(--ff-field-color);
         background: transparent;
         backdrop-filter: none;
+        filter: none;
     }
 }
 
 .toggle-password-visibility:active {
-    opacity: 0.8;
     color: var(--ff-field-color);
     background: transparent;
     backdrop-filter: none;
     transition: none;
+    filter: none;
 }
 
 .txtPassword {

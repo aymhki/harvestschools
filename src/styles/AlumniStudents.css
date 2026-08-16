@@ -124,16 +124,6 @@
     line-height: 1.6;
 }
 
-.alumni-login-switch-mode {
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin: 0.75rem 0 0 0;
-    text-align: center;
-    font-family: var(--english-normal-font);
-}
-
-.alumni-login-switch-mode:lang(ar),
 .alumni-login-forgot-password-btn:lang(ar) {
     font-family: var(--arabic-normal-font);
 }
