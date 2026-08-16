@@ -533,17 +533,20 @@ function AdminLogin() {
     const renderMfaActions = () => (
         <div className={'admin-login-mfa-actions'}>
             {mfaMethod === 'email' && (
-                <button
-                    type={'button'}
-                    disabled={submittingLocal || resendIn > 0}
-                    onClick={() => sendEmailCode(mfaState.mfaToken)}
+                <span
+                    className={'various-login-text-options'}
+                    onClick={() => {
+                        if (!(submittingLocal || resendIn > 0)) {
+                            sendEmailCode(mfaState.mfaToken)
+                        }
+                    }}
                 >
                     {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
-                </button>
+                </span>
             )}
-            <button type={'button'} disabled={submittingLocal} onClick={() => exitMfaToFullForm(null)}>
+            <span className={'various-login-text-options'} onClick={() => { if (!submittingLocal) { exitMfaToFullForm(null)} } }>
                 Back to login
-            </button>
+            </span>
         </div>
     );
 
@@ -727,9 +730,9 @@ function AdminLogin() {
             </div>
 
             <div className={'admin-login-mfa-actions'}>
-                <button type={'button'} disabled={submittingLocal} onClick={() => exitMfaToFullForm(null)}>
+                <span className={'various-login-text-options'} onClick={() => { if (!submittingLocal) { exitMfaToFullForm(null)} } }>
                     Back to login
-                </button>
+                </span>
             </div>
         </div>
     );
@@ -803,17 +806,20 @@ function AdminLogin() {
 
             <div className={'admin-login-mfa-actions'}>
                 {mfaMethod === 'email' && (
-                    <button
-                        type={'button'}
-                        disabled={submittingLocal || resendIn > 0}
-                        onClick={() => sendResetEmailCode(resetState.resetToken)}
+                    <span
+                        className={'various-login-text-options'}
+                        onClick={() => {
+                            if ( !(submittingLocal || resendIn > 0) ) {
+                                sendResetEmailCode(resetState.resetToken)
+                            }
+                        }}
                     >
                         {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
-                    </button>
+                    </span>
                 )}
-                <button type={'button'} disabled={submittingLocal} onClick={() => exitMfaToFullForm(null)}>
+                <span className={'various-login-text-options'} onClick={() => { if (!submittingLocal) { exitMfaToFullForm(null)} } }>
                     Back to login
-                </button>
+                </span>
             </div>
         </div>
     );
@@ -827,24 +833,25 @@ function AdminLogin() {
             >
                 Login with Biometrics
             </button>
-            <button
-                type={'button'}
+            <span
+                className={'various-login-text-options'}
                 onClick={() => {
-                    setLoginMode('full')
+                    if(!submittingLocal) {
+                        setLoginMode('full')
+                    }
                 }}
-                disabled={submittingLocal}
             >
                 Try a different login
-            </button>
+            </span>
         </div>
     );
 
     const renderForm = () => (
         <div className={'admin-login-recovery-only-prompt-wrapper'}>
             {loginMode === 'recovery' && (
-                <button type={'button'} onClick={resetToFirstTimeMobileExperience}>
+                <span className={'various-login-text-options'} onClick={resetToFirstTimeMobileExperience}>
                     Try a different login
-                </button>
+                </span>
             )}
             <Form key={loginMode === 'recovery' ? 'recovery-form' : 'normal-form'}
                   mailTo={''}
@@ -900,18 +907,18 @@ function AdminLogin() {
                   }
             />
             {loginMode === 'full' && (
-                <button
-                    type={'button'}
-                    className={'admin-login-forgot-password-btn'}
-                    disabled={submittingLocal}
+                <span
+                    className={'various-login-text-options'}
                     onClick={() => {
-                        resetMfaState();
-                        setLoginNotice(null);
-                        setLoginMode('forgot');
+                        if (!submittingLocal) {
+                            resetMfaState();
+                            setLoginNotice(null);
+                            setLoginMode('forgot');
+                        }
                     }}
                 >
                     Forgot password?
-                </button>
+                </span>
             )}
         </div>
     );

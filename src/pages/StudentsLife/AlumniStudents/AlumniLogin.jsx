@@ -593,16 +593,24 @@ function AlumniLogin() {
 
             <div className={"alumni-login-method-switch"}>
                 {resetMethod === 'email' && (
-                    <button type={'button'} disabled={submittingLocal || resendIn > 0}
-                            onClick={() => sendAlumniResetEmailCode(resetState.resetToken)}>
+                    <span className={'various-login-text-options'}
+                        onClick={() => {
+                            if (!(submittingLocal || resendIn > 0)) {
+                                sendAlumniResetEmailCode(resetState.resetToken)
+                            }
+                        }}>
                         {resendIn > 0
                             ? t("students-life-pages.alumni-login-page.resend-in", {seconds: resendIn})
                             : t("students-life-pages.alumni-login-page.resend-code")}
-                    </button>
+                    </span>
                 )}
-                <button type={'button'} disabled={submittingLocal} onClick={() => backToSignIn(null)}>
+                <span className={'various-login-text-options'} onClick={() => {
+                        if (!submittingLocal) {
+                            backToSignIn(null)
+                        }
+                }}>
                     {t("students-life-pages.alumni-login-page.back-to-sign-in")}
-                </button>
+                </span>
             </div>
         </div>
     );
@@ -686,19 +694,23 @@ function AlumniLogin() {
 
                                 <div className={"alumni-login-method-switch"}>
                                     <div ref={signInAlumniStudentButtonsRef} className="modal-footer-buttons-portal-target"/>
-
-                                    {passkeyUsable && (
-                                        <button type={'button'} className={'alumni-login-passkey-btn'} disabled={submittingLocal}
-                                                onClick={handleDiscoverablePasskeyLogin}>
-                                            {t("students-life-pages.alumni-login-page.use-a-passkey")}
-                                        </button>
-                                    )}
                                 </div>
 
                                 <div className={"alumni-login-secondary-links"}>
                                     <span className={"various-login-text-options"} onClick={() => setMode('sign-up')}>
                                         {t("students-life-pages.alumni-login-page.switch-to-sign-up")}
                                     </span>
+
+                                    {passkeyUsable && (
+                                        <span  className={'various-login-text-options'} onClick={() => {
+                                            if (!submittingLocal) {
+                                                handleDiscoverablePasskeyLogin()
+                                            }
+                                        }}>
+                                            {t("students-life-pages.alumni-login-page.use-a-passkey")}
+                                        </span>
+                                    )}
+
                                     <span className={'various-login-text-options'} onClick={() => { resetRecoveryState(); setLoginNotice(null); setAuthView('forgot'); }}>
                                         {t("students-life-pages.alumni-login-page.forgot-password")}
                                     </span>

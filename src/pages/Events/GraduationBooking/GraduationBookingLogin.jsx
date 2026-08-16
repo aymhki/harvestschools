@@ -560,16 +560,17 @@ function GraduationBookingLogin() {
             >
                 {t("events-pages.graduation-booking-pages.login-page.biometric-button")}
             </button>
-            <button
-                type={'button'}
+            <span
+                className={'various-login-text-options'}
                 onClick={() => {
-                    setLoginNotice(null);
-                    setLoginMode('full');
+                    if (!submittingLocal) {
+                        setLoginNotice(null);
+                        setLoginMode('full');
+                    }
                 }}
-                disabled={submittingLocal}
             >
                 {t("events-pages.graduation-booking-pages.login-page.biometric-different-login")}
-            </button>
+            </span>
         </div>
     );
 
@@ -603,9 +604,9 @@ function GraduationBookingLogin() {
                         <>
 
                         {loginMode === 'recovery' && (
-                            <button type={'button'} className={'booking-login-different-login-btn'} onClick={resetToFirstTimeMobileExperience}>
+                            <span className={'various-login-text-options'} onClick={resetToFirstTimeMobileExperience}>
                                 {t("events-pages.graduation-booking-pages.login-page.biometric-different-login")}
-                            </button>
+                            </span>
                         )}
 
                         <Form key={loginMode === 'recovery' ? 'booking-recovery-form' : 'booking-normal-form'}
