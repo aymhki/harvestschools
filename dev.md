@@ -30,3 +30,25 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Remove departments without a whatsapp number in the info system.
 - [ ] Hide scrollbars platform wide.
 - [ ] Use form component in alumni management popup.
+- [ ] Drag and drop for file fields.
+- [ ] Progress bar similar to video upload for collage photos upload with cancel option.
+- [ ] Fix: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script-src 'self' https://challenges.cloudflare.com”. Consider using a hash ('sha256-O+8D+Fyfyg5FMqShKccJ0wTnQ7ALrwd3ZE3d7L75ch0=') or a nonce in fileviewer for files.
+- [ ] Fix transcoding/encoding video breaks the file audio with weird noise.
+- [ ] Fix upload video field and frame selector field not working for video types before processing.
+- [ ] Fix Frame selector not showing loading indicator when loading the frame on change.
+- [ ] Fix video link should not work for a file that is still processing.
+- [ ] Fix: Videos with tall aspect ratio don't have a max height and so their photo collage takes up the entire frame.
+- [ ] Add a narrow/wide option for video uploads similar to photo collages and update the css accordingly.
+- [ ] Editing Photo Collage or Videos should also allow editing the position/order.
+- [ ] Allow interactive solves on turnstile.
+- [ ] Drag and drop for file fields.
+- [ ] Progress bar similar to video upload for collage photos upload with cancel option.
+- [ ] Fix: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script-src 'self' https://challenges.cloudflare.com”. Consider using a hash ('sha256-O+8D+Fyfyg5FMqShKccJ0wTnQ7ALrwd3ZE3d7L75ch0=') or a nonce in fileviewer for files.
+- [ ] Fix transcoding/encoding video breaks the file audio with weird noise.
+- [ ] Fix upload video field and frame selector field not working for video types before processing.
+- [ ] Fix Frame selector not showing loading indicator when loading the frame on change.
+- [ ] Fix video link should not work for a file that is still processing.
+- [ ] Fix: Videos with tall aspect ratio don't have a max height and so their photo collage takes up the entire frame.
+- [ ] Add a narrow/wide option for video uploads similar to photo collages and update the css accordingly.
+- [ ] Editing Photo Collage or Videos should also allow editing the position/order.
+- [ ] Allow interactive solves on turnstile.
