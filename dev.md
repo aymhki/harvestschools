@@ -52,4 +52,6 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Editing Photo Collage or Videos should also allow editing the position/order.
 - [ ] Allow interactive solves on turnstile.
 - [ ] Add an admission requirements endpoint from the info system and/or the info system file.
+- [ ] Syncing locales is useless when assets are already synced in the deployment script.
+
 

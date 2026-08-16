@@ -484,9 +484,7 @@
 }
 
 .booking-login-username-value {
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    word-break: break-all;
+
 }
 
 @media (prefers-color-scheme: dark) {
