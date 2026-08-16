@@ -272,10 +272,10 @@ function gallery_delete_file($absolutePath) {
 }
 
 
-function gallery_store_photos($conn, $collage, array $files) {
-    $collageId = (int)$collage['id'];
+function gallery_store_photos($conn, $collage, array $files, $maxPixelDimension = 2560, $maxFileBytes = 2097152) {
+    $collageId  = (int)$collage['id'];
     $folderName = (string)$collage['folder_name'];
-    $directory = gallery_photos_directory($folderName);
+    $directory  = gallery_photos_directory($folderName);
 
     if ($directory === null) {
         return gallery_error('The gallery folder could not be created on the server.', 500);
@@ -292,15 +292,37 @@ function gallery_store_photos($conn, $collage, array $files) {
     $stored = 0;
 
     foreach ($files as $file) {
-        $number = gallery_next_photo_number($conn, $collageId, $folderName);
-        $fileName = $folderName . $number . '.' . gallery_extension_of($file['name']);
+        $number    = gallery_next_photo_number($conn, $collageId, $folderName);
+        $extension = gallery_extension_of($file['name']);
+        $tmpPath   = $file['tmp_name'];
+        $isJpeg    = in_array($extension, ['jpg', 'jpeg'], true);
+        $needsConversion = !$isJpeg || (int)$file['size'] > $maxFileBytes;
 
-        if (!@move_uploaded_file($file['tmp_name'], $directory . $fileName)) {
-            return gallery_error('One of the photos could not be saved on the server.', 500);
+        if (!$needsConversion) {
+            $imageInfo = @getimagesize($tmpPath);
+
+            if ($imageInfo === false) {
+                $needsConversion = true;
+            } else {
+                $needsConversion = $imageInfo[0] > $maxPixelDimension || $imageInfo[1] > $maxPixelDimension;
+            }
+        }
+
+        $fileName = $folderName . $number . ($needsConversion ? '.jpg' : '.' . $extension);
+        $destPath = $directory . $fileName;
+        $converted = false;
+
+        if ($needsConversion) {
+            $converted = media_convert_photo($tmpPath, $destPath, $maxPixelDimension);
+        }
+
+        if (!$converted) {
+            if (!@move_uploaded_file($tmpPath, $destPath)) {
+                return gallery_error('One of the photos could not be saved on the server.', 500);
+            }
         }
 
         $sortOrder = gallery_next_sort_order($conn, 'gallery_photos', 'collage_id', $collageId);
-
         $stmt = $conn->prepare("INSERT INTO gallery_photos (collage_id, sort_order, file_name) VALUES (?, ?, ?)");
         $stmt->bind_param("iis", $collageId, $sortOrder, $fileName);
         $stmt->execute();

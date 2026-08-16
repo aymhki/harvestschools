@@ -366,7 +366,7 @@ function GalleryManagement() {
         setModalFields([
             ...collageFields(null),
             placementFieldFor(collagePlacementFieldId, collageAfterFieldId, collages, 'collage'),
-            photosField(false),
+            photosField(true),
         ]);
     };
 

@@ -75,6 +75,7 @@ function media_binary_candidates($tool) {
     if ($isWindows) {
         $candidates[] = 'C:\\ffmpeg\\bin\\' . $executable;
         $candidates[] = 'C:\\Program Files\\ffmpeg\\bin\\' . $executable;
+        $candidates[] = 'C:\\Program Files\\imagemagick\\bin\\' . $executable;
         $candidates[] = 'C:\\ProgramData\\chocolatey\\bin\\' . $executable;
         $candidates[] = $executable;
 
@@ -86,6 +87,7 @@ function media_binary_candidates($tool) {
     $candidates[] = '/usr/local/bin/' . $executable;
     $candidates[] = '/opt/homebrew/bin/' . $executable;
     $candidates[] = '/usr/local/opt/ffmpeg/bin/' . $executable;
+    $candidates[] = '/usr/local/opt/imagemagick/bin/' . $executable;
     $candidates[] = '/opt/local/bin/' . $executable;
     $candidates[] = '/snap/bin/' . $executable;
     $candidates[] = $executable;
@@ -178,7 +180,12 @@ function media_probe_tool($tool) {
 
             $probe = media_run([$candidate, '-version'], MEDIA_TOOL_PROBE_TIMEOUT_SECONDS);
 
-            if ($probe['ok'] && stripos($probe['output'], $tool . ' version') !== false) {
+            $needle = match ($tool) {
+                'convert', 'magick' => 'ImageMagick',
+                default => $tool . ' version',
+            };
+
+            if ($probe['ok'] && stripos($probe['output'], $needle) !== false) {
                 $found = $candidate;
                 break;
             }
@@ -203,6 +210,43 @@ function media_tool_path($tool) {
     return $resolved[$tool];
 }
 
+function media_imagemagick_path() {
+    static $resolved = null;
+
+    if ($resolved !== null) {
+        return $resolved === false ? null : $resolved;
+    }
+
+    foreach (['magick', 'convert'] as $tool) {
+        $path = media_tool_path($tool);
+
+        if ($path !== null) {
+            $resolved = $path;
+            return $path;
+        }
+    }
+
+    $resolved = false;
+    return null;
+}
+
+function media_convert_photo($sourcePath, $destinationPath, $maxDimension = 2560) {
+    $binary = media_imagemagick_path();
+
+    if ($binary === null) {
+        return false;
+    }
+
+    $run = media_run([
+        $binary,
+        $sourcePath,
+        '-resize', (int)$maxDimension . 'x' . (int)$maxDimension . '>',
+        '-quality', '85',
+        $destinationPath,
+    ], 30);
+
+    return $run['ok'] && is_file($destinationPath) && filesize($destinationPath) > 0;
+}
 
 function media_acquire_job_slot($waitSeconds = MEDIA_TOOL_SLOT_WAIT_SECONDS) {
     $directory = media_lock_directory();

@@ -9,9 +9,8 @@ tree --gitignore -I 'assets|.git' -a
 ## TODOs:
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
-- [ ] Turnstile on cloud flare needs site verify, explore seo impact first.
 - [ ] Alumni students should have public profile pages.
-- [ ] Scrolling to the top inside a modal popup interferes with pull to refresh mechanism.
+- [ ] Scrolling to the top inside a modal popup interferes with pull to refresh mechanism in android.
 - [ ] Add admin mcp features.
 - [ ] Low opacity on login options in graduation booking login and admin login should be removed and should be like alumni login.
 - [ ] Add option to delete academic calendar year after creating.
@@ -25,3 +24,9 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] global is loading/submitting spinner state should be handled via hook context.
 - [ ] Change the harvest in app browser icon from x to home icon.
 - [ ] App opening normally should not navigate to the last opened page.
+- [ ] Full page options selector should be changed for a compact options grid in the staff department selection page.
+- [ ] In browser chat instead of the contact us form that matches the existing bot design.
+- [ ] Greyscaling schoolevery in dark mode with a boolean toggle and a night icon at the bottom.
+- [ ] Remove departments without a whatsapp number in the info system.
+- [ ] Hide scrollbars platform wide.
+- [ ] Use form component in alumni management popup.
