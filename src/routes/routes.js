@@ -1,6 +1,3 @@
-import EventBookingLogin from "../pages/Events/EventBooking/EventBookingLogin.jsx";
-import EventBookingManagement from "../pages/Admin/EventBookingManagement.jsx";
-
 export const mainRoutes = [
     { path: '/', page: 'Home.jsx' },
     { path: '/home', page: 'Home.jsx' },
