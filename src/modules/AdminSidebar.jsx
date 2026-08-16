@@ -38,7 +38,7 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
     const getIconForLink = (linkPath) => {
         switch(linkPath) {
             case '/job-applications': return <WorkIcon />;
-            case '/graduation-booking-management': return <EventIcon />;
+            case '/event-booking-management': return <EventIcon />;
             case '/open-day-signups-management': return <CelebrationIcon />;
             case '/borrowing-system-management': return <LibraryBooksIcon />;
             case '/info-system-management': return <InfoIcon />;

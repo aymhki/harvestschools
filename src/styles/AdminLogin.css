@@ -23,14 +23,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 50vw;
+    width: min(95vw, 45rem);
     height: auto;
-    min-height: min(35rem, calc(100dvh - 4rem));
+    min-height: min(30rem, calc(100dvh - 4rem));
     max-height: calc(100dvh - 4rem);
     overflow-y: auto;
-    padding: 2rem;
+    padding: 1rem;
     box-sizing: border-box;
-
     background-color: var(--al-surface);
     border-radius: 1rem;
     will-change: filter;
@@ -203,14 +202,11 @@
 .admin-login-mfa-status { color: var(--success-color); }
 
 @media (max-width: 1200px) {
-    .admin-login-form-wrapper {
-        width: 70vw;
-    }
+
 }
 
 @media (max-width: 768px) {
     .admin-login-form-wrapper {
-        width: 90vw;
         min-height: min(30rem, calc(100dvh - 2rem));
         max-height: calc(100dvh - 2rem);
         padding: 1.5rem 1rem;

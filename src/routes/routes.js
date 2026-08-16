@@ -1,3 +1,6 @@
+import EventBookingLogin from "../pages/Events/EventBooking/EventBookingLogin.jsx";
+import EventBookingManagement from "../pages/Admin/EventBookingManagement.jsx";
+
 export const mainRoutes = [
     { path: '/', page: 'Home.jsx' },
     { path: '/home', page: 'Home.jsx' },
@@ -51,12 +54,12 @@ export const mainRoutes = [
     { path: '/events/american-kg-calendar', page: 'Events/AmericanKGCalendar.jsx' },
     { path: '/events/british-kg-calendar', page: 'Events/BritishKGCalendar.jsx' },
     { path: '/events/national-kg-calendar', page: 'Events/NationalKGCalendar.jsx' },
-    { path: '/events/graduation-booking', page: 'Events/GraduationBooking/GraduationBookingLogin.jsx', prerender: false },
-    { path: '/events/graduation-booking/dashboard', page: 'Events/GraduationBooking/GraduationBookingDashboard.jsx', prerender: false },
-    { path: '/events/graduation-booking/media', page: 'Events/GraduationBooking/GraduationBookingMedia.jsx', prerender: false },
-    { path: '/events/graduation-booking/extras', page: 'Events/GraduationBooking/GraduationBookingExtras.jsx', prerender: false },
-    { path: '/events/graduation-booking/info', page: 'Events/GraduationBooking/GraduationBookingStatusInfo.jsx', prerender: false },
-    { path: '/events/graduation-booking-confirmation', page: 'Events/GraduationBooking/GraduationBookingConfirmation.jsx', prerender: false },
+    { path: '/events/event-booking', page: 'Events/EventBooking/EventBookingLogin.jsx', prerender: false },
+    { path: '/events/event-booking/dashboard', page: 'Events/EventBooking/EventBookingDashboard.jsx', prerender: false },
+    { path: '/events/event-booking/media', page: 'Events/EventBooking/EventBookingMedia.jsx', prerender: false },
+    { path: '/events/event-booking/extras', page: 'Events/EventBooking/EventBookingExtras.jsx', prerender: false },
+    { path: '/events/event-booking/info', page: 'Events/EventBooking/EventBookingStatusInfo.jsx', prerender: false },
+    { path: '/events/event-booking-confirmation', page: 'Events/EventBooking/EventBookingConfirmation.jsx', prerender: false },
     { path: '/events/open-day-signup', page: 'Events/OpenDaySignup.jsx', prerender: false },
     { path: '/gallery', page: 'Gallery/Gallery.jsx' },
     { path: '/gallery/photos', page: 'Gallery/Photos.jsx' },
@@ -77,7 +80,7 @@ export const adminRoutes = [
             loggedInName: ctx.loggedInName,
         }) },
     { path: '/job-applications', page: 'Admin/JobApplications.jsx', section: 'admin' },
-    { path: '/graduation-booking-management', page: 'Admin/GraduationBookingManagement.jsx', section: 'admin' },
+    { path: '/event-booking-management', page: 'Admin/EventBookingManagement.jsx', section: 'admin' },
     { path: '/open-day-signups-management', page: 'Admin/OpenDaySignupsManagement.jsx', section: 'admin' },
     { path: '/borrowing-system-management', page: 'Admin/BorrowingSystemManagement.jsx', section: 'admin' },
     { path: '/info-system-management', page: 'Admin/InfoSystemManagement.jsx', section: 'admin' },

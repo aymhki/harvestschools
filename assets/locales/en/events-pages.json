@@ -10,8 +10,8 @@
       "american-calendar-option-description": "Detailed timeline of the American academic year",
       "kg-calendars-option": "KG Calendars",
       "kg-calendars-option-description": "Detailed timelines of the Kindergarten academic year",
-      "booking-login-option": "Graduation Bookings",
-      "booking-login-option-description": "Access graduation booking info, extras, and media"
+      "booking-login-option": "Event Bookings",
+      "booking-login-option-description": "Access event booking info, extras, and media"
     },
     "common": {
       "download-calendar-btn": "Download Calendar",
@@ -62,7 +62,7 @@
         "title": "National KG Calendar"
       }
     },
-    "graduation-booking-pages": {
+    "event-booking-pages": {
       "login-page": {
         "title": "Booking Login",
         "username-field": "Username",

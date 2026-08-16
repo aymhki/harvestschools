@@ -28,7 +28,8 @@
 }
 
 .options-grid-container-compact h2 {
-    margin-bottom: 3rem;
+    margin-bottom: 5rem;
+    margin-top: 0;
     line-height: 1.5;
 }
 
@@ -204,6 +205,9 @@
         grid-template-columns: repeat(auto-fill, minmax(calc(33% - 1rem), 1fr));
     }
 
+    .options-grid-container-compact h2 {
+        margin-bottom: 3rem;
+    }
 
 }
 
@@ -245,6 +249,10 @@
     .options-grid-container-compact .options-grid-quadruple {
         gap: 2rem;
         grid-template-columns: repeat(auto-fill, minmax(calc(80% - 1rem), 1fr));
+    }
+
+    .options-grid-container-compact h2 {
+        margin-bottom: 2rem;
     }
 }
 

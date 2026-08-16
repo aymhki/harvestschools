@@ -11,8 +11,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Alumni students should have public profile pages.
 - [ ] Scrolling to the top inside a modal popup interferes with pull to refresh mechanism in android.
-- [ ] Add admin mcp features.
-- [ ] Low opacity on login options in graduation booking login and admin login should be removed and should be like alumni login.
+- [ ] Add admin mcp write features.
 - [ ] Add option to delete academic calendar year after creating.
 - [ ] Add custom date ranges to date fields in the form.
 - [ ] Fix form search select field does not filter properly.
@@ -52,3 +51,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Add a narrow/wide option for video uploads similar to photo collages and update the css accordingly.
 - [ ] Editing Photo Collage or Videos should also allow editing the position/order.
 - [ ] Allow interactive solves on turnstile.
+- [ ] Add an admission requirements endpoint from the info system and/or the info system file.
+

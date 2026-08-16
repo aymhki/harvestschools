@@ -91,7 +91,7 @@ const COPY = {
         cancel: 'Cancel',
         actions: {
             calendars: 'Calendars',
-            booking: 'Graduation booking',
+            booking: 'Event booking',
             admission: 'Admission',
             schooleverywhere: 'SchoolEverywhere',
             academics: 'Academics',
@@ -183,7 +183,7 @@ const WIDGET_EXCLUDED_ACTION_IDS = ['website', 'moreInfo', 'vacancies', 'admissi
 
 const QUICK_ACTIONS = [
     { id: 'calendars', path: '/events', Icon: CalendarMonthOutlinedIcon },
-    { id: 'booking', path: '/events/graduation-booking', Icon: HowToRegOutlinedIcon },
+    { id: 'booking', path: '/events/event-booking', Icon: HowToRegOutlinedIcon },
     { id: 'admission', path: '/admission', Icon: SchoolOutlinedIcon },
     { id: 'schooleverywhere', path: '/schooleverywhere', Icon: CastForEducationOutlinedIcon },
     { id: 'academics', path: '/academics', Icon: MenuBookOutlinedIcon },

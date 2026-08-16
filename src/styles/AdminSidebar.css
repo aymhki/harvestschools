@@ -1,8 +1,8 @@
 .floating-mobile-menu {
     display: none;
     position: fixed;
-    bottom: 0;
-    right: 0;
+    bottom: 1rem;
+    right: 1rem;
     z-index: var(--admin-sidebar-z-index);
     background-color:  var(--fb-white-color);
     color: var(--primary-color);

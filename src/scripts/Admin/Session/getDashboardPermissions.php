@@ -70,7 +70,7 @@ try {
 
     global $ADMIN_USER_MANAGEMENT;
     global $JOB_APPLICATION_MANAGEMENT;
-    global $GRADUATION_BOOKING_MANAGEMENT;
+    global $EVENT_BOOKING_MANAGEMENT;
     global $OPEN_DAY_SIGNUP_MANAGEMENT;
     global $BORROWING_SYSTEM_MANAGEMENT;
     global $INFO_SYSTEM_MANAGEMENT;
@@ -124,12 +124,12 @@ try {
                 "descriptionInArabic" => false
             ]
         ],
-        $GRADUATION_BOOKING_MANAGEMENT => [
+        $EVENT_BOOKING_MANAGEMENT => [
             [
-                "title" => "Graduation Bookings",
-                "image" => '/images/Dashboard/GraduationBookingManagement.png',
+                "title" => "Event Bookings",
+                "image" => '/images/Dashboard/EventBookingManagement.png',
                 "description" => "View & manage Graduatuin Bookings",
-                "link" => '/graduation-booking-management',
+                "link" => '/event-booking-management',
                 "buttonText" => 'View Bookings',
                 "titleInArabic" => false,
                 "descriptionInArabic" => false

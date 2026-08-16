@@ -713,7 +713,6 @@ td button {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
     margin: 1rem 0;
     flex-wrap: wrap;
 }
@@ -729,6 +728,7 @@ td button {
     font-family: inherit;
     font-size: small;
     letter-spacing: 0.05rem;
+    margin-inline-start: 1rem;
 }
 
 @media (hover: hover) {
@@ -985,6 +985,11 @@ td button {
         margin-left: 0;
         margin-right: 1rem;
         font-size: small;
+    }
+
+
+    .table-pagination-controls {
+        row-gap: 1rem;
     }
 
 }

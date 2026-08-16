@@ -328,7 +328,7 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
                             {t("nav.kg-calendars")}
                         </Link></li>
 
-                        <li><Link to="/events/graduation-booking" onClick={closeMobileMenu}>
+                        <li><Link to="/events/event-booking" onClick={closeMobileMenu}>
                             {t("nav.booking")}
                         </Link></li>
                     </ul>

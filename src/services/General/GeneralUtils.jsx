@@ -38,8 +38,8 @@ const getAdminSessionId = async () => {
     return Capacitor.isNativePlatform() ? await getMobileSession('harvest_schools_admin') : localStorage.getItem('harvest_schools_admin_session_id');
 }
 
-const getGraduationBookingSessionId = async () => {
-    return Capacitor.isNativePlatform() ? await getMobileSession('harvest_schools_graduation_booking') : localStorage.getItem('harvest_schools_graduation_booking_session_id');
+const getEventBookingSessionId = async () => {
+    return Capacitor.isNativePlatform() ? await getMobileSession('harvest_schools_event_booking') : localStorage.getItem('harvest_schools_event_booking_session_id');
 }
 
 const formatDateFromPacific = (pacificTimeString) => {
@@ -165,8 +165,8 @@ const TURNSTILE_SCRIPT_TIMEOUT_MS = 8000;
 
 const mfaResendCooldownSeconds = 30;
 const mfaResendMaxPerWindow = 5;
-const graduationBookingLoginPageUrl = '/events/graduation-booking';
-const graduationBookingDashboardPageUrl = '/events/graduation-booking/dashboard';
+const EventBookingLoginPageUrl = '/events/event-booking';
+const EventBookingDashboardPageUrl = '/events/event-booking/dashboard';
 const adminLoginPageUrl = '/admin-login';
 const adminDashboardPageUrl = '/admin-dashboard';
 const alumniStudentsPageUrl = '/students-life/alumni-students';
@@ -176,7 +176,7 @@ const costPerChildInOpenDaySignup = 150;
 
 const adminUserManagementPermissionLevel = "1000";
 const jobApplicationManagementPermissionLevel = "0";
-const graduationBookingManagementPermissionLevel = "1";
+const EventBookingManagementPermissionLevel = "1";
 const openDaySignupManagementPermissionLevel = "2";
 const BorrowingSystemManagementPermissionLevel = "3";
 const infoSystemManagementPermissionLevel = "7";
@@ -249,14 +249,14 @@ const getCurrentLangCode = () => (i18n.language === 'ar' ? 'ar' : 'en');
 
 
 const ENDPOINTS = {
-    checkGraduationBookingSession: '/scripts/Parents/GraduationBookings/checkGraduationBookingSession.php',
-    getAllGraduationBookings: '/scripts/Admin/GraduationBookings/getAllGraduationBookings.php',
-    validateGraduationBookingLogin: '/scripts/Parents/GraduationBookings/validateGraduationBookingLogin.php',
-    createGraduationBookingSession: '/scripts/Parents/GraduationBookings/createGraduationBookingSession.php',
-    deleteGraduationBookingEntry: '/scripts/Admin/GraduationBookings/deleteGraduationBookingEntry.php',
-    submitAddGraduationBookingForm: '/scripts/Admin/GraduationBookings/submitAddGraduationBookingForm.php',
-    getGraduationBookingInfoBySession: '/scripts/Parents/GraduationBookings/getGraduationBookingBySession.php',
-    submitEditGraduationBookingForm: '/scripts/Admin/GraduationBookings/submitEditGraduationBookingForm.php',
+    checkEventBookingSession: '/scripts/Parents/EventBookings/checkEventBookingSession.php',
+    getAllEventBookings: '/scripts/Admin/EventBookings/getAllEventBookings.php',
+    validateEventBookingLogin: '/scripts/Parents/EventBookings/validateEventBookingLogin.php',
+    createEventBookingSession: '/scripts/Parents/EventBookings/createEventBookingSession.php',
+    deleteEventBookingEntry: '/scripts/Admin/EventBookings/deleteEventBookingEntry.php',
+    submitAddEventBookingForm: '/scripts/Admin/EventBookings/submitAddEventBookingForm.php',
+    getEventBookingInfoBySession: '/scripts/Parents/EventBookings/getEventBookingBySession.php',
+    submitEditEventBookingForm: '/scripts/Admin/EventBookings/submitEditEventBookingForm.php',
     validateAdminSession: '/scripts/Admin/Session/checkAdminSession.php',
     validateAdminLogin: '/scripts/Admin/Session/validateAdminLogin.php',
     deleteAdminSession: '/scripts/Admin/Session/deleteAdminSession.php',
@@ -265,11 +265,11 @@ const ENDPOINTS = {
     submitForm: '/scripts/Public/General/submitForm.php',
     submitJobApplication: '/scripts/Public/JobApplications/submitJobApplication.php',
     getJobApplications: '/scripts/Admin/JobApplications/getJobApplications.php',
-    updateGraduationBookingExtras: '/scripts/Parents/GraduationBookings/submitUpdateGraduationBookingExtras.php',
-    getGraduationBookingConfirmation: '/scripts/Public/GraduationBookings/getGraduationBookingConfirmation.php',
-    createGraduationBookingWalletPass: '/scripts/Parents/GraduationBookings/createGraduationBookingWalletPass.php',
-    getGraduationCeremonyDetails: '/scripts/Admin/GraduationBookings/getGraduationCeremonyDetails.php',
-    updateGraduationCeremonyDetails: '/scripts/Admin/GraduationBookings/updateGraduationCeremonyDetails.php',
+    updateEventBookingExtras: '/scripts/Parents/EventBookings/submitUpdateEventBookingExtras.php',
+    getEventBookingConfirmation: '/scripts/Public/EventBookings/getEventBookingConfirmation.php',
+    createEventBookingWalletPass: '/scripts/Parents/EventBookings/createEventBookingWalletPass.php',
+    getEventCeremonyDetails: '/scripts/Admin/EventBookings/getEventMetaDetails.php',
+    updateEventMetaDetails: '/scripts/Admin/EventBookings/updateEventMetaDetails.php',
     serveJobApplicationFile: '/scripts/Admin/JobApplications/serveJobApplicationFile.php?file=',
     submitOpenDaySignupForm: '/scripts/Public/OpenDaySignups/submitOpenDaySignupForm.php',
     getOpenDaySignups: '/scripts/Admin/OpenDaySignups/getOpenDaySignups.php',
@@ -355,11 +355,11 @@ const ENDPOINTS = {
     requestAlumniResetEmailCode: '/scripts/Public/AlumniStudents/requestAlumniResetEmailCode.php',
     alumniResetPasskeyOptions: '/scripts/Public/AlumniStudents/alumniResetPasskeyOptions.php',
     verifyAlumniPasswordReset: '/scripts/Public/AlumniStudents/verifyAlumniPasswordReset.php',
-    requestGraduationBookingPasswordReset: '/scripts/Parents/GraduationBookings/requestGraduationBookingPasswordReset.php',
-    requestGraduationBookingResetEmailCode: '/scripts/Parents/GraduationBookings/requestGraduationBookingResetEmailCode.php',
-    verifyGraduationBookingPasswordReset: '/scripts/Parents/GraduationBookings/verifyGraduationBookingPasswordReset.php',
-    searchGraduationBookingStudents: '/scripts/Parents/GraduationBookings/searchGraduationBookingStudents.php',
-    recoverGraduationBookingUsername: '/scripts/Parents/GraduationBookings/recoverGraduationBookingUsername.php',
+    requestEventBookingPasswordReset: '/scripts/Parents/EventBookings/requestEventBookingPasswordReset.php',
+    requestEventBookingResetEmailCode: '/scripts/Parents/EventBookings/requestEventBookingResetEmailCode.php',
+    verifyEventBookingPasswordReset: '/scripts/Parents/EventBookings/verifyEventBookingPasswordReset.php',
+    searchEventBookingStudents: '/scripts/Parents/EventBookings/searchEventBookingStudents.php',
+    recoverEventBookingUsername: '/scripts/Parents/EventBookings/recoverEventBookingUsername.php',
     getApprovedAlumniPosts: '/scripts/Public/AlumniStudents/getApprovedAlumniPosts.php',
     serveAlumniPublicFile: '/scripts/Public/AlumniStudents/serveAlumniPublicFile.php',
     checkAlumniSession: '/scripts/Alumni/checkAlumniSession.php',
@@ -518,8 +518,8 @@ export {
     turnstileSiteKey,
     mfaResendCooldownSeconds,
     mfaResendMaxPerWindow,
-    graduationBookingLoginPageUrl,
-    graduationBookingDashboardPageUrl,
+    EventBookingLoginPageUrl,
+    EventBookingDashboardPageUrl,
     adminLoginPageUrl,
     adminDashboardPageUrl,
     alumniStudentsPageUrl,
@@ -536,7 +536,7 @@ export {
     useToggleLanguage,
     logoutCurrentAdmin,
     adminUserManagementPermissionLevel,
-    graduationBookingManagementPermissionLevel,
+    EventBookingManagementPermissionLevel,
     openDaySignupManagementPermissionLevel,
     jobApplicationManagementPermissionLevel,
     infoSystemManagementPermissionLevel,
@@ -553,7 +553,7 @@ export {
     getBaseUrl,
     getSessionsFromLocalStorage,
     getAdminSessionId,
-    getGraduationBookingSessionId,
+    getEventBookingSessionId,
     useDarkMode,
     getClientFingerprint,
     buildAuthHeaders,

@@ -7,3 +7,8 @@
     width: 100vw;
     text-align: center;
 }
+
+.not-found-page h2:lang(ar) {
+    font-family: var(--arabic-title-font) !important;
+    direction: rtl;
+}

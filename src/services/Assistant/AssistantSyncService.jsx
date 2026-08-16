@@ -22,12 +22,12 @@ const EXCLUDED_ROUTE_PATHS = new Set([
     '/students-life/alumni-students',
     '/students-life/alumni-students/login',
     '/students-life/alumni-students/profile',
-    '/events/graduation-booking',
-    '/events/graduation-booking/dashboard',
-    '/events/graduation-booking/media',
-    '/events/graduation-booking/extras',
-    '/events/graduation-booking/info',
-    '/events/graduation-booking-confirmation',
+    '/events/event-booking',
+    '/events/event-booking/dashboard',
+    '/events/event-booking/media',
+    '/events/event-booking/extras',
+    '/events/event-booking/info',
+    '/events/event-booking-confirmation',
     '/events/open-day-signup',
 ])
 

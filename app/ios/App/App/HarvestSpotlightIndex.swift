@@ -38,7 +38,7 @@ enum HarvestSpotlightIndex {
         attributes.title = "Harvest International Schools"
         attributes.displayName = "Harvest International Schools"
         attributes.alternateNames = searchTerms
-        attributes.contentDescription = "Calendars, admission, graduation booking and the SchoolEverywhere portal."
+        attributes.contentDescription = "Calendars, admission, event booking and the SchoolEverywhere portal."
         attributes.keywords = searchTerms
 
         let item = CSSearchableItem(
