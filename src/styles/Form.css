@@ -92,6 +92,11 @@
     display: block;
 }
 
+.field-with-label-on-top .form-label-outside {
+    align-self: flex-start;
+    margin-bottom: 0.3rem;
+}
+
 .form-label-outside:lang(ar) {
     direction: rtl;
     text-align: right;
