@@ -27,6 +27,7 @@ import PageTransition from '../modules/PageTransition.jsx';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
 import { useLoading, GlobalLoadingFallback, GlobalSpinner } from '../services/General/GlobalLoadingService.jsx';
 import { AppAssetsLoadingGate } from '../services/General/AppAssetsLoadingService.jsx';
+import { SCROLL_LOCK_CLASS } from '../services/General/ScrollLockService.jsx';
 
 const pages = makeLazyPages(
     import.meta.glob(['../pages/**/*.jsx', '!../pages/CorporateHome.jsx'])
@@ -177,11 +178,18 @@ function MobileAppRouter() {
         let isPtrDisabled = false;
 
         const handleTouchStart = (e) => {
+
+            if (document.body.classList.contains(SCROLL_LOCK_CLASS)) {
+                return;
+            }
+
             let target = e.target;
             let shouldDisablePtr = false;
 
             while (target && target !== document.documentElement) {
+
                 if (target instanceof HTMLElement) {
+
                     const style = window.getComputedStyle(target);
                     const isScrollable = target.scrollHeight > target.clientHeight && (style.overflowY === 'auto' || style.overflowY === 'scroll');
 

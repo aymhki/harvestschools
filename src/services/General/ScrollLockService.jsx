@@ -90,6 +90,10 @@ const lockPageScroll = () => {
         lockGeneration += 1
 
         setModalOpen(true)
+
+        if (window.AndroidNativeBridge) {
+            window.AndroidNativeBridge.setSwipeRefreshEnabled(false)
+        }
     }
 }
 
@@ -111,6 +115,10 @@ const unlockPageScroll = () => {
         window.requestAnimationFrame(() => {
             if (unlockGeneration === lockGeneration) {
                 setModalOpen(false)
+
+                if (window.AndroidNativeBridge) {
+                    window.AndroidNativeBridge.setSwipeRefreshEnabled(true)
+                }
             }
         })
     }
