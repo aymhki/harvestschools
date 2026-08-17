@@ -251,11 +251,10 @@ function MobileAppRouter() {
         if (window.webkit?.messageHandlers?.nativeShareUrl) {
 
             window.webkit.messageHandlers.nativeShareUrl.postMessage(shareUrl);
+            window.webkit.messageHandlers.nativeNavChange?.postMessage(true);
 
         } else if (window.AndroidNativeBridge?.setShareUrl) {
-
             window.AndroidNativeBridge.setShareUrl(shareUrl);
-
         }
 
     }, [location, isAdminSection]);
