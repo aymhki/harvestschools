@@ -9,12 +9,12 @@ tree --gitignore -I 'assets|.git' -a
 ## TODOs:
 - [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
 - [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
-- [ ] Add: Add admin mcp write features.
+- [ ] Add: Add admin mcp write features for all endpoints and and bulk data.
 - [ ] Add: Alumni students should have public profile pages with their username where their posts don't need approval.
 - [ ] Fix: Scrolling to the top inside a modal popup interferes with pull to refresh mechanism in android.
 - [ ] Add: Option to delete academic calendar year after creating it and naturally go back to the last available one.
 - [ ] Add: custom date ranges to date field in the form component and use it in places like alumni sign up graduation date to start from 2016.
-- [ ] Fix: form search select field does not filter properly due to remove vouels.
+- [ ] Fix: form search select field does not filter properly due to remove vowels.
 - [ ] Add: When any of the form usage shows an error, the container should smooth scroll to make sure the error is in view. Same for the vide upload progress bar.
 - [ ] Add: search field to table header elements with optional prop that will only show rows where any colum contains the query.
 - [ ] Add: Option to import data to db table via csv with required fields in the table component with add behaviour and a prop to allow import and a point to bulk add end point.

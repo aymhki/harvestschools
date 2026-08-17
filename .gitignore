@@ -26,12 +26,12 @@ dist-ssr
 /configs/dbConfig.php
 db.sql
 
-PopulateGraduationBookingDataScript/All 2025 KG Graduation Bookings.csv
-PopulateGraduationBookingDataScript/All 2025 KG Graduation Bookings.xlsx
-PopulateGraduationBookingDataScript/All 2026 KG Graduation Bookings.xlsx
-PopulateGraduationBookingDataScript/All 2026 KG Graduation Bookings.csv
-PopulateGraduationBookingDataScript/.venv
-PopulateGraduationBookingDataScript/main.py
+PopulateEventBookingDataScript/All 2025 KG Event Bookings.csv
+PopulateEventBookingDataScript/All 2025 KG Event Bookings.xlsx
+PopulateEventBookingDataScript/All 2026 KG Event Bookings.xlsx
+PopulateEventBookingDataScript/All 2026 KG Event Bookings.csv
+PopulateEventBookingDataScript/.venv
+PopulateEventBookingDataScript/main.py
 
 tmp.md
 tmp.sql

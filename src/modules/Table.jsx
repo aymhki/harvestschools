@@ -1298,6 +1298,22 @@ function Table({
     }, [updateVerticalThumbPosition]);
 
     useEffect(() => {
+        if (!window.AndroidNativeBridge) return;
+
+        if (isDragging || isVerticalDragging) {
+            window.AndroidNativeBridge.setSwipeRefreshEnabled(false);
+        } else {
+            window.AndroidNativeBridge.setSwipeRefreshEnabled(true);
+        }
+
+        return () => {
+            if (window.AndroidNativeBridge) {
+                window.AndroidNativeBridge.setSwipeRefreshEnabled(true);
+            }
+        };
+    }, [isDragging, isVerticalDragging]);
+
+    useEffect(() => {
         if (currentPage > totalPages && totalPages > 0) {
             setCurrentPage(totalPages);
         } else if (totalPages === 0) {
