@@ -172,6 +172,54 @@ function MobileAppRouter() {
     }, [navigate]);
 
     useEffect(() => {
+        if (!window.AndroidNativeBridge) return;
+
+        let isPtrDisabled = false;
+
+        const handleTouchStart = (e) => {
+            let target = e.target;
+            while (target && target !== document.documentElement) {
+                if (target instanceof HTMLElement) {
+                    const style = window.getComputedStyle(target);
+                    const isScrollable =
+                        target.scrollHeight > target.clientHeight &&
+                        (style.overflowY === 'auto' || style.overflowY === 'scroll');
+
+                    if (isScrollable) {
+                        if (!isPtrDisabled) {
+                            isPtrDisabled = true;
+                            window.AndroidNativeBridge.setSwipeRefreshEnabled(false);
+                        }
+                        break;
+                    }
+                }
+                target = target.parentElement;
+            }
+        };
+
+        const handleTouchEnd = () => {
+            if (isPtrDisabled) {
+                isPtrDisabled = false;
+                window.AndroidNativeBridge.setSwipeRefreshEnabled(true);
+            }
+        };
+
+        window.addEventListener('touchstart', handleTouchStart, true);
+        window.addEventListener('touchend', handleTouchEnd, true);
+        window.addEventListener('touchcancel', handleTouchEnd, true);
+
+        return () => {
+            window.removeEventListener('touchstart', handleTouchStart, true);
+            window.removeEventListener('touchend', handleTouchEnd, true);
+            window.removeEventListener('touchcancel', handleTouchEnd, true);
+
+            if (isPtrDisabled && window.AndroidNativeBridge) {
+                window.AndroidNativeBridge.setSwipeRefreshEnabled(true);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
         const host = isAdminSection ? SHARE_HOSTS.admin : SHARE_HOSTS.client;
         const shareUrl = `https://${host}${location.pathname}${location.search}${location.hash}`;
 
