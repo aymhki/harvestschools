@@ -54,5 +54,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Add an admission requirements endpoint from the info system and/or the info system file.
 - [ ] Syncing locales is useless when assets are already synced in the deployment script.
 - [ ] SchoolEverywhere in admin side bar should open the in app browser accordingly.
+- [ ] Swipe on videos should also work on touch/hover in mobile and the loading indicator should be a progress bar at the top because it currently hidden by play icon.
+
 
 

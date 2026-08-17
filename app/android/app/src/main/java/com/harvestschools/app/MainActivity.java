@@ -46,7 +46,7 @@ public class MainActivity extends BridgeActivity {
     private Runnable revealRunnable;
     private boolean isNavBarHidden = false;
     private boolean isNavBarSuppressed = false;
-    private static final long NAV_BAR_REVEAL_DELAY_MS = 1200L;
+    private static final long NAV_BAR_REVEAL_DELAY_MS = 500L;
     private static final int NAV_BAR_SCROLL_TOLERANCE_PX = 12;
     private static final long NAV_BAR_SCROLL_SETTLE_MS = 400L;
     private long ignoreScrollUntilMs = 0L;
@@ -269,11 +269,27 @@ public class MainActivity extends BridgeActivity {
         for (CardView card : new CardView[] { floatingNavBarCard, floatingActionBarCard }) {
             if (card == null) { continue; }
 
-            card.animate()
-                    .alpha(hidden ? 0f : 1f)
-                    .translationY(hidden ? dp(24) : 0f)
-                    .setDuration(220)
-                    .start();
+            if (card == floatingActionBarCard && isNavBarMerged) { continue; }
+
+            if (hidden) {
+                card.animate()
+                        .alpha(0f)
+                        .translationY(dp(24))
+                        .setDuration(220)
+                        .withEndAction(() -> {
+                            if (isNavBarHidden && !(card == floatingActionBarCard && isNavBarMerged)) {
+                                card.setVisibility(View.INVISIBLE);
+                            }
+                        })
+                        .start();
+            } else {
+                card.setVisibility(View.VISIBLE);
+                card.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .setDuration(220)
+                        .start();
+            }
         }
     }
 
@@ -440,6 +456,22 @@ public class MainActivity extends BridgeActivity {
             if (url != null && !url.isEmpty()) {
                 currentShareUrl = url;
             }
+        }
+
+        @JavascriptInterface
+        public void setSwipeRefreshEnabled(final boolean enabled) {
+            runOnUiThread(() -> {
+                if (swipeRefreshLayout != null) {
+                    swipeRefreshLayout.setEnabled(enabled);
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void ignoreNextScroll() {
+            runOnUiThread(() -> {
+                ignoreScrollUntilMs = System.currentTimeMillis() + 1000L;
+            });
         }
     }
 }

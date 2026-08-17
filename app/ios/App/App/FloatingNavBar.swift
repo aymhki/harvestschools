@@ -13,7 +13,7 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
     private var revealWorkItem: DispatchWorkItem?
     private var isBarHidden = false
     private var isSuppressed = false
-    private let revealDelay: TimeInterval = 1.2
+    private let revealDelay: TimeInterval = 0.5
     private let scrollTolerance: CGFloat = 6
 
     private var lastScrollOffset: CGFloat = 0
@@ -274,9 +274,11 @@ final class FloatingNavBar: UIView, WKScriptMessageHandler {
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == "nativeShareUrl",
-              let urlString = message.body as? String,
-              let url = URL(string: urlString) else { return }
-        currentShareURL = url
+        if message.name == "nativeShareUrl", let urlString = message.body as? String, let url = URL(string: urlString) {
+            currentShareURL = url
+        } else if message.name == "nativeNavChange" {
+            lastScrollOffset = webView?.scrollView.contentOffset.y ?? lastScrollOffset
+            ignoreScrollUntil = Date().addingTimeInterval(1.0)
+        }
     }
 }
