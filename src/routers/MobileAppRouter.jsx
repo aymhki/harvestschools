@@ -178,22 +178,39 @@ function MobileAppRouter() {
 
         const handleTouchStart = (e) => {
             let target = e.target;
+            let shouldDisablePtr = false;
+
             while (target && target !== document.documentElement) {
                 if (target instanceof HTMLElement) {
                     const style = window.getComputedStyle(target);
-                    const isScrollable =
-                        target.scrollHeight > target.clientHeight &&
-                        (style.overflowY === 'auto' || style.overflowY === 'scroll');
+                    const isScrollable = target.scrollHeight > target.clientHeight && (style.overflowY === 'auto' || style.overflowY === 'scroll');
 
                     if (isScrollable) {
-                        if (!isPtrDisabled) {
-                            isPtrDisabled = true;
-                            window.AndroidNativeBridge.setSwipeRefreshEnabled(false);
+                        if (target.scrollTop > 0) {
+                            shouldDisablePtr = true;
+                            break;
                         }
-                        break;
                     }
+
                 }
+
                 target = target.parentElement;
+            }
+
+            if (shouldDisablePtr) {
+
+                if (!isPtrDisabled) {
+                    isPtrDisabled = true;
+                    window.AndroidNativeBridge.setSwipeRefreshEnabled(false);
+                }
+
+            } else {
+
+                if (isPtrDisabled) {
+                    isPtrDisabled = false;
+                    window.AndroidNativeBridge.setSwipeRefreshEnabled(true);
+                }
+
             }
         };
 
