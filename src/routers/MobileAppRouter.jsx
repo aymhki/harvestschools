@@ -255,6 +255,9 @@ function MobileAppRouter() {
 
         } else if (window.AndroidNativeBridge?.setShareUrl) {
             window.AndroidNativeBridge.setShareUrl(shareUrl);
+            if (window.AndroidNativeBridge.ignoreNextScroll) {
+                window.AndroidNativeBridge.ignoreNextScroll();
+            }
         }
 
     }, [location, isAdminSection]);
