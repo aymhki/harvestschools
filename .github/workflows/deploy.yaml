@@ -2,7 +2,7 @@ name: Deploy Vite React App to cPanel via FTP
 
 concurrency:
   group: production-deployment
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 on:
   push:
@@ -29,7 +29,12 @@ jobs:
           fi
 
       - name: Install lftp
-        run: sudo apt-get update -qq && sudo apt-get install -y lftp
+        timeout-minutes: 30
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq -o DPkg::Lock::Timeout=1200
+          sudo apt-get install -y -o DPkg::Lock::Timeout=1200 lftp
 
       - name: Sync assets
         if: steps.check_assets_changes.outputs.changed == 'true'
@@ -94,6 +99,7 @@ jobs:
           npm run build:corporate
 
       - name: Package mobile app update bundle
+        timeout-minutes: 30
         run: |
           sudo apt-get update -qq && sudo apt-get install -y zip
           mkdir -p mobile-app-bundle
