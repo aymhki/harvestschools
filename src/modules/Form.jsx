@@ -210,6 +210,7 @@ function Form({
     const [fileInputs, setFileInputs] = useState({});
     const [videoThumbnailUrls, setVideoThumbnailUrls] = useState({});
     const [videoThumbnailDurations, setVideoThumbnailDurations] = useState({});
+    const [videoThumbnailSeeking, setVideoThumbnailSeeking] = useState({});
     const [filePreviewUrls, setFilePreviewUrls] = useState({});
     const [showSelectDateModal, setShowSelectDateModal] = useState(false);
     const [selectedDateDay, setSelectedDateDay] = useState('');
@@ -1427,6 +1428,22 @@ function Form({
 
         const describePoint = (seconds) => `Frame at ${(Number(seconds) || 0).toFixed(1)}s of ${duration.toFixed(1)}s`;
 
+        const markSeeking = (isSeeking) => setVideoThumbnailSeeking(prev => {
+            if (!!prev[field.id] === isSeeking) {
+                return prev;
+            }
+
+            const next = {...prev};
+
+            if (isSeeking) {
+                next[field.id] = true;
+            } else {
+                delete next[field.id];
+            }
+
+            return next;
+        });
+
         const seekTo = (seconds) => {
             const input = fieldRefs.current[field.id];
             const video = fieldRefs.current[videoRefKey];
@@ -1460,31 +1477,42 @@ function Form({
                     <label>Choose a video first, then pick its cover frame here</label>
                 ) : (
                     <>
-                        <video
-                            className="video-thumbnail-field-preview"
-                            src={objectUrl}
-                            ref={fieldRefs.current[videoRefKey]}
-                            preload="metadata"
-                            muted
-                            playsInline
-                            onLoadedMetadata={(e) => {
-                                const loaded = Number(e.target.duration) || 0;
+                        <div className="video-thumbnail-field-stage">
+                            <video
+                                className="video-thumbnail-field-preview"
+                                src={objectUrl}
+                                ref={fieldRefs.current[videoRefKey]}
+                                preload="metadata"
+                                muted
+                                playsInline
+                                onSeeking={() => markSeeking(true)}
+                                onSeeked={() => markSeeking(false)}
+                                onError={() => markSeeking(false)}
+                                onLoadedMetadata={(e) => {
+                                    const loaded = Number(e.target.duration) || 0;
 
-                                setVideoThumbnailDurations(prev => (
-                                    prev[field.id] === loaded ? prev : {...prev, [field.id]: loaded}
-                                ));
+                                    setVideoThumbnailDurations(prev => (
+                                        prev[field.id] === loaded ? prev : {...prev, [field.id]: loaded}
+                                    ));
 
-                                const scrubber = fieldRefs.current[scrubberRefKey];
+                                    const scrubber = fieldRefs.current[scrubberRefKey];
 
-                                if (scrubber && scrubber.current) {
-                                    scrubber.current.max = String(Math.max(loaded - 0.1, 0.1));
-                                }
+                                    if (scrubber && scrubber.current) {
+                                        scrubber.current.max = String(Math.max(loaded - 0.1, 0.1));
+                                    }
 
-                                const startAt = Math.min(Math.max(Number(field.defaultValue) || 0, 0), Math.max(loaded - 0.1, 0));
+                                    const startAt = Math.min(Math.max(Number(field.defaultValue) || 0, 0), Math.max(loaded - 0.1, 0));
 
-                                seekTo(Number(startAt.toFixed(1)));
-                            }}
-                        />
+                                    seekTo(Number(startAt.toFixed(1)));
+                                }}
+                            />
+
+                            {videoThumbnailSeeking[field.id] && (
+                                <span className="video-thumbnail-field-seeking" role="status" aria-live="polite">
+                                    Loading the frame...
+                                </span>
+                            )}
+                        </div>
 
                         <input
                             type="range"

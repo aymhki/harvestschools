@@ -28,7 +28,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Fix: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script-src 'self' https://challenges.cloudflare.com”. Consider using a hash ('sha256-O+8D+Fyfyg5FMqShKccJ0wTnQ7ALrwd3ZE3d7L75ch0=') or a nonce in fileviewer for files.
 - [ ] Fix transcoding/encoding video breaks the file audio with weird noise.
 - [ ] Fix upload video field and frame selector field not working for some video types/codecs/containers before processing.
-- [ ] Fix Frame selector not showing loading indicator when loading the frame on change.
+- [x] Fix Frame selector not showing loading indicator when loading the frame on change.
 - [x] Fix video link column/row should not work for a file that is still processing.
 - [x] Fix: Videos with tall aspect ratio don't have a max heighted containers and so their photo collage takes up the entire view port even in mobile view.
 - [ ] Add a narrow/wide option for video uploads similar to photo collages and update the css accordingly.
@@ -42,4 +42,6 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Add a new column to the info system departments table available_to_chat_with where if it false then the bot should not show it in the chat with department menu for now student affairs, american department, and accounting are off. Bot should indicate that some department numbers are hidden because they are not available to chat with
 - [ ] Look into adding static content in the info system to edit things like the tuition fees disclaimer or the faqs or important notes used here and there in the bot like the minimum registration age requirement.
 - [ ] SiteVerify still flagged as sometimes not working on cloudflare.
-
+- [ ] Add: Analytics tab in the info system pulling from the Google Analytics Data API for the gtag on the main website, plus figures from the database such as the chatbot user sessions not yet cleared by the cron.
+- [ ] Add: Total employees (around 400) and total students (around 2000) into the school info at every layer where it fits, so the MCP tools, agents and assistants can answer with them.
+- [ ] Add: "Import From CSV" next to the existing Export CSV on every admin table/list that has an add option, driven by an optional prop and a matching bulk add endpoint per domain. A wrongly formatted or incomplete CSV must come back with a descriptive error naming the offending row and column plus an example of correct usage for that endpoint's fields. The MCP bulk tools must not reuse the CSV endpoint, they take JSON, and only share the underlying add function.
