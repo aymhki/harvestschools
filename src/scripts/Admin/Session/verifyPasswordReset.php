@@ -3,6 +3,7 @@ require_once '../../headers.php';
 require_once '../authHelpers.php';
 require_once 'mfaHelpers.php';
 require_once '../../webauthnHelpers.php';
+require_once '../../turnstileHelpers.php';
 set_cors_headers();
 
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
@@ -29,6 +30,13 @@ try {
     }
 
     $conn->set_charset("utf8mb4");
+
+    $turnstileCheck = verify_turnstile_token_if_present(null, true);
+
+    if (!$turnstileCheck['ok']) {
+        echo json_encode(["success" => false, "message" => "Human verification failed. Please refresh the page and try again.", "code" => 403]);
+        exit;
+    }
 
     $data        = json_decode(file_get_contents('php://input'), true);
     $resetToken  = is_array($data) ? (string)($data['reset_token'] ?? '') : '';

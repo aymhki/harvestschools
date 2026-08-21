@@ -933,7 +933,7 @@ function AlumniProfile() {
                             formTitle={'Change Password'}
                             captchaLength={1}
                             noInputFieldsCache={true}
-                            noCaptcha={false}
+                            noCaptcha={true}
                             hasDifferentOnSubmitBehaviour={true}
                             differentOnSubmitBehaviour={handleChangePassword}
                             noClearOption={true}

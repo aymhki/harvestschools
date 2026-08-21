@@ -11,7 +11,7 @@ $dbname = $dbConfig['db_name'];
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $turnstileCheck = verify_turnstile_token_if_present();
+    $turnstileCheck = verify_turnstile_token_if_present(null, true);
 
     if (!$turnstileCheck['ok']) {
         echo json_encode([

@@ -159,6 +159,15 @@ const confirmedStatus = 'Confirmed';
 const sessionDurationInHours = 12;
 const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
+
+let pendingTurnstileToken = '';
+
+const setPendingTurnstileToken = (token) => {
+    pendingTurnstileToken = typeof token === 'string' ? token : '';
+};
+
+const turnstileHeaders = () => (pendingTurnstileToken ? {'X-Turnstile-Token': pendingTurnstileToken} : {});
+
 const schoolFoundedYear = 2016;
 const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
@@ -243,6 +252,7 @@ const buildAuthHeaders = async (sessionId) => {
 const buildLoginHeaders = () => ({
     'Content-Type': 'application/json',
     'X-Client-Platform': Capacitor.isNativePlatform() ? 'native' : 'web',
+    ...turnstileHeaders(),
 });
 
 
@@ -250,6 +260,7 @@ const buildRecoveryHeaders = async () => ({
     'Content-Type': 'application/json',
     'X-Client-Platform': Capacitor.isNativePlatform() ? 'native' : 'web',
     'X-Client-Fingerprint': await getClientFingerprint(),
+    ...turnstileHeaders(),
 });
 
 const getCurrentLangCode = () => (i18n.language === 'ar' ? 'ar' : 'en');
@@ -532,6 +543,8 @@ export {
     confirmedStatus,
     sessionDuration,
     msgTimeout,
+    setPendingTurnstileToken,
+    turnstileHeaders,
     schoolFoundedYear,
     turnstileSiteKey,
     mfaResendCooldownSeconds,

@@ -10,6 +10,7 @@ import {
     buildLoginHeaders,
     buildRecoveryHeaders,
     getCurrentLangCode,
+    turnstileHeaders,
 } from "../General/GeneralUtils.jsx";
 
 import {
@@ -167,7 +168,7 @@ const performAlumniLogin = async (username, password, navigate, persistBiometric
     try {
         const response = await fetch(endpoints.validateAlumniLogin, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', ...turnstileHeaders()},
             body: JSON.stringify({username, password}),
         });
 

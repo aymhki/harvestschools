@@ -14,7 +14,7 @@ try {
         exit;
     }
 
-    $turnstileCheck = verify_turnstile_token_if_present();
+    $turnstileCheck = verify_turnstile_token_if_present(null, true);
 
     if (!$turnstileCheck['ok']) {
         echo json_encode(['success' => false, 'message' => 'Human verification failed. Please refresh the page and try again.', 'code' => 403]);

@@ -33,7 +33,7 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Fix: Videos with tall aspect ratio don't have a max heighted containers and so their photo collage takes up the entire view port even in mobile view.
 - [ ] Add a narrow/wide option for video uploads similar to photo collages and update the css accordingly.
 - [ ] Editing Photo Collage or Videos should also allow editing the position/order.
-- [ ] Allow interactive solves on turnstile.
+- [x] Allow interactive solves on turnstile.
 - [ ] Add an admission requirements endpoint from the info system and/or the info system file and connect it to the corresponding public page(s).
 - [x] Syncing locales is useless when assets are already synced in the deployment script, isn't it? or does the sha generated defer?
 - [x] SchoolEverywhere in admin side bar should open the in app browser accordingly.

@@ -17,15 +17,31 @@ function turnstile_token_from_request($explicitToken = null) {
         return trim((string)$_POST['cf-turnstile-response']);
     }
 
+    $header = $_SERVER['HTTP_X_TURNSTILE_TOKEN'] ?? '';
+
+    if (is_string($header) && trim($header) !== '') {
+        return trim($header);
+    }
+
+    $rawBody = file_get_contents('php://input');
+
+    if (is_string($rawBody) && $rawBody !== '') {
+        $decoded = json_decode($rawBody, true);
+
+        if (is_array($decoded) && isset($decoded['cf-turnstile-response'])) {
+            return trim((string)$decoded['cf-turnstile-response']);
+        }
+    }
+
     return '';
 }
 
 
-function verify_turnstile_token_if_present($explicitToken = null) {
+function verify_turnstile_token_if_present($explicitToken = null, $required = false) {
     $token = turnstile_token_from_request($explicitToken);
 
     if ($token === '') {
-        return ['ok' => true, 'mode' => 'fallback'];
+        return $required ? ['ok' => false, 'mode' => 'missing'] : ['ok' => true, 'mode' => 'fallback'];
     }
 
     if (!function_exists('turnstile_config')) {

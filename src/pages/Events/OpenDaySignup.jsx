@@ -197,7 +197,7 @@ function OpenDaySignup() {
                                       hasDifferentSubmitButtonText={true}
                                       differentSubmitButtonText={[t("events-pages.open-day-signup-page.next-btn"), t("events-pages.open-day-signup-page.next-btn")]}
                                       noClearOption={true}
-                                      noCaptcha={true}
+                                      noCaptcha={false}
                                       noInputFieldsCache={true}
                                       switchFooterButtonsOrder={true}
                                       footerButtonsSpaceBetween={true}
@@ -218,7 +218,7 @@ function OpenDaySignup() {
                                             fields={openDaySignupFormFields}
                                             hasDifferentOnSubmitBehaviour={true}
                                             differentOnSubmitBehaviour={onSubmitOpenDaySignupFormBehaviour}
-                                            noCaptcha={true}
+                                            noCaptcha={false}
                                             noInputFieldsCache={true}
                                             switchFooterButtonsOrder={true}
                                             footerButtonsSpaceBetween={true}

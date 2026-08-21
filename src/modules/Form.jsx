@@ -11,7 +11,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
 import {useLoading} from "../services/General/GlobalLoadingService.jsx";
-import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS} from "../services/General/GeneralUtils.jsx";
+import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS, setPendingTurnstileToken} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 import {createPortal} from "react-dom";
@@ -2263,6 +2263,21 @@ function Form({
         }
     }
 
+    const resetTurnstileWidget = () => {
+        turnstileTokenRef.current = '';
+        setPendingTurnstileToken('');
+
+        if (noCaptcha || turnstileWidgetIdRef.current === null || !window.turnstile || typeof window.turnstile.reset !== 'function') {
+            return;
+        }
+
+        try {
+            window.turnstile.reset(turnstileWidgetIdRef.current);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
 
@@ -2463,6 +2478,8 @@ function Form({
                 formData.append('cf-turnstile-response', turnstileTokenRef.current);
             }
 
+            setPendingTurnstileToken(noCaptcha ? '' : turnstileTokenRef.current);
+
             if (hasDifferentOnSubmitBehaviour && differentOnSubmitBehaviour) {
                 try {
                     const result = await differentOnSubmitBehaviour(formData);
@@ -2487,14 +2504,7 @@ function Form({
                         setGeneralFormError('');
                     }, msgTimeout);
 
-                    turnstileTokenRef.current = '';
-                    if (!noCaptcha && turnstileWidgetIdRef.current !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
-                        try {
-                            window.turnstile.reset(turnstileWidgetIdRef.current);
-                        } catch (error) {
-                            console.log(error);
-                        }
-                    }
+                    resetTurnstileWidget();
 
                     setSubmitting(false);
 
@@ -2525,12 +2535,17 @@ function Form({
                         setTimeout(() => {
                             setGeneralFormError('');
                         }, msgTimeout);
+
+                        resetTurnstileWidget();
                     }
                 } catch (error) {
                     setGeneralFormError(error.message || t('all-forms.general-error'));
                     setTimeout(() => {
                         setGeneralFormError('');
                     }, msgTimeout);
+
+                    resetTurnstileWidget();
+
                     setSubmitting(false);
                     if (hasSetSubmittingLocal) {
                         setSubmittingLocal(false)
@@ -2541,6 +2556,7 @@ function Form({
             setGeneralFormError(error || error.message + ': ' +   t('all-forms.general-error'));
             setTimeout(() => {setGeneralFormError('');}, msgTimeout);
         } finally {
+            setPendingTurnstileToken('');
             setSubmitting(false);
 
             if (hasSetSubmittingLocal) {
@@ -3008,9 +3024,6 @@ function Form({
                 <div className={`${fullMarginField ? 'turnstile-wrapper-with-full-margin' : 'turnstile-wrapper'}${turnstileStatus === 'failed' ? ' turnstile-wrapper-hidden' : ''}`}>
                     <div ref={turnstileContainerRef} className="turnstile-container"/>
                 </div>
-                {turnstileStatus === 'pending' && (
-                    <p className="turnstile-loading">Verifying you&apos;re human...</p>
-                )}
                 {turnstileStatus === 'failed' && (
                     <>
                         {!easySimpleCaptcha && (
