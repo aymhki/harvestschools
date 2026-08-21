@@ -23,7 +23,7 @@ export const mainRoutes = [
     { path: '/academics/american', page: 'Academics/American.jsx' },
     { path: '/academics/partners', page: 'Academics/Partners.jsx' },
     { path: '/academics/facilities', page: 'Academics/Facilities.jsx' },
-    { path: '/academics/staff', page: 'Academics/Staff.jsx', chromeExcluded: true },
+    { path: '/academics/staff', page: 'Academics/Staff.jsx' },
     { path: '/academics/staff/national-staff', page: 'Academics/Staff/NationalStaff.jsx' },
     { path: '/academics/staff/british-staff', page: 'Academics/Staff/BritishStaff.jsx' },
     { path: '/academics/staff/american-staff', page: 'Academics/Staff/AmericanStaff.jsx' },

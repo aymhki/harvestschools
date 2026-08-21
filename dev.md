@@ -19,7 +19,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] search-select field should allow non existing values if an optional prop is passed.
 - [x] Change the harvest in app browser icon from x to home icon in both iOS and android.
 - [ ] App opening normally should not navigate to the last opened page.
-- [ ] Full page options selector should be changed for a compact options grid in the staff department selection page using the same image urls that the academics departments used where needed.
+- [x] Full page options selector should be changed for a compact options grid in the staff department selection page using the same image urls that the academics departments used where needed.
 - [ ] In browser chat instead of the contact us form that matches the existing bot design from whatsapp and instagram.
 - [ ] Greyscaling schoolevery in app browser in dark mode with a boolean toggle for developer to completely disable and a night icon at the bottom for user to toggle if needed.
 - [x] Hide scrollbars platform wide.

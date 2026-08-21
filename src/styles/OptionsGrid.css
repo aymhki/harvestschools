@@ -14,7 +14,7 @@
 .options-grid-container-compact {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     min-height: 80dvh;
     align-items: center;
     width: 90%;

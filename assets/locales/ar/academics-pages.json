@@ -102,9 +102,13 @@
     },
     "staff": {
       "national-option": "الناشونال",
+      "national-option-description": "تعرف على كوادر قسم الناشونال",
       "british-option": "البريطاني",
+      "british-option-description": "تعرف على كوادر القسم البريطاني",
       "american-option": "الأمريكي",
+      "american-option-description": "تعرف على كوادر القسم الأمريكي",
       "kindergarten-option": "رياض الأطفال",
+      "kindergarten-option-description": "تعرف على كوادر قسم رياض الأطفال",
       "national-staff-title": "قسم الناشونال",
       "british-staff-title": "القسم البريطاني",
       "american-staff-title": "القسم الأمريكي",

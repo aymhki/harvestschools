@@ -102,9 +102,13 @@
     },
     "staff": {
       "national-option": "National",
+      "national-option-description": "Meet the staff of the National department",
       "british-option": "British",
+      "british-option-description": "Meet the staff of the British department",
       "american-option": "American",
+      "american-option-description": "Meet the staff of the American department",
       "kindergarten-option": "KG",
+      "kindergarten-option-description": "Meet the staff of the Kindergarten department",
       "national-staff-title": "National",
       "british-staff-title": "British",
       "american-staff-title": "American",
