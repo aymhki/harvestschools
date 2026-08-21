@@ -116,9 +116,9 @@ const toTransliterationKey = (text) => {
         .replace(/x/g, 'ks')
         .replace(/p/g, 'b')
         .replace(/v/g, 'f')
-        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/[^a-z0-9\s]/g, ' ')
         .replace(/(.)\1+/g, '$1')
-        .replace(/[aeiou]/g, '')
+        .replace(/[aeiouwy]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
 };
@@ -133,15 +133,20 @@ const normalizeArabicText = (text) => String(text)
 
 
 
+const SKELETON_MIN_QUERY_LENGTH = 3;
+const SKELETON_MIN_KEY_LENGTH = 2;
+
 const searchSelectMatches = (choice, query) => {
     const trimmedQuery = String(query || '').trim();
     if (!trimmedQuery) return true;
     const normChoice = normalizeArabicText(choice).toLowerCase();
     const normQuery = normalizeArabicText(trimmedQuery).toLowerCase();
     if (normChoice.includes(normQuery)) return true;
+    if (normQuery.length < SKELETON_MIN_QUERY_LENGTH) return false;
     const choiceKey = toTransliterationKey(choice);
     const queryKey = toTransliterationKey(trimmedQuery);
-    return queryKey.length > 0 && choiceKey.includes(queryKey);
+    if (queryKey.length < SKELETON_MIN_KEY_LENGTH) return false;
+    return ` ${choiceKey}`.includes(` ${queryKey}`);
 };
 
 const OPTION_TAP_TOLERANCE = 8;

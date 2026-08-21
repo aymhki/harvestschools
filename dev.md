@@ -14,7 +14,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Add: Alumni students should have public profile pages with their username in the url path where their posts don't need approval. The url should appear in their profile page to share with others and posts should get a new badge for that page.
 - [ ] Add: Option to delete academic calendar year after creating it and naturally go back to the last available one.
 - [x] Add: optional custom date ranges to date field in the form component and use it in places like alumni sign up graduation date to start from 2016.
-- [ ] Fix: form search select field does not filter properly due to removed vowels.
+- [x] Fix: form search select field does not filter properly due to removed vowels.
 - [ ] Add: search field to table header elements with optional prop that will only show rows where any colum/row contains the query.
 - [ ] search-select field should allow non existing values if an optional prop is passed.
 - [x] Change the harvest in app browser icon from x to home icon in both iOS and android.
