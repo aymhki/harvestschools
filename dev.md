@@ -56,4 +56,5 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Separate BOT_ON for whatsapp and messenger/Instagram.
 - [ ] Add a new column to the info system department available_to_chat_with where if it false then the bot should not show it in the chat with department menu for now student affairs, american department, and accounting are off.
 - [ ] Look into adding static content in the info system to edit things like the tuition fees disclaimer or the faqs or important notes used here and there in the bot.
+- [ ] SiteVerify still flagged on cloudflare.
 

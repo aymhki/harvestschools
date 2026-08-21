@@ -450,6 +450,11 @@
     background-image: url('data:image/svg+xml;utf8,<svg fill="%231f2152" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
 }
 
+.select-form-field.read-only-field {
+    background-image: none;
+
+}
+
 .select-form-field:lang(ar) {
     background-position: left 0.7rem top 50%;
     font-family: var(--arabic-normal-font);

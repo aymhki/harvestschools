@@ -522,7 +522,7 @@ tr.admin-diff-changed td {
     min-height: auto;
     max-height: 90vh;
     max-width: min(95vw, 80rem);
-    min-width: min(50rem, 95vw);
+    min-width: min(50rem, 90vw);
 }
 
 
