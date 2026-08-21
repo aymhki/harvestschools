@@ -7,8 +7,6 @@ tree --gitignore -I 'assets|.git' -a
 1. Any `capacitor` plugin added to the root `package.json` should be added to the `package.json` in the MobileApp workspace.
 
 ## TODOs:
-- [ ] Update the webhook subscription for the needed types of messages such as reply to ads (Intake) in both messenger and Instagram.
-- [ ] Publish both the whatsapp app bot and the messenger app bot on meta for developers.
 - [ ] Add: Add admin mcp write features for all endpoints and and bulk data.
 - [ ] Add: Alumni students should have public profile pages with their username where their posts don't need approval.
 - [ ] Fix: Scrolling to the top inside a modal popup interferes with pull to refresh mechanism in android.
@@ -55,6 +53,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Syncing locales is useless when assets are already synced in the deployment script.
 - [ ] SchoolEverywhere in admin side bar should open the in app browser accordingly.
 - [ ] Swipe on videos should also work on touch/hover in mobile and the loading indicator should be a progress bar at the top because it currently hidden by play icon.
-
-
+- [ ] Separate BOT_ON for whatsapp and messenger/Instagram.
+- [ ] Add a new column to the info system department available_to_chat_with where if it false then the bot should not show it in the chat with department menu for now student affairs, american department, and accounting are off.
+- [ ] Look into adding static content in the info system to edit things like the tuition fees disclaimer or the faqs or important notes used here and there in the bot.
 

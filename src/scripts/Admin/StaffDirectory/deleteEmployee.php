@@ -3,6 +3,7 @@ require_once '../../headers.php';
 require_once '../authHelpers.php';
 require_once '../../permissionLevels.php';
 require_once __DIR__ . '/staffDirectoryHelpers.php';
+require_once __DIR__ . '/../BorrowingSystem/borrowingHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
@@ -37,6 +38,13 @@ try {
         exit;
     }
 
+    $borrowing = borrowing_on_employee_removed($conn, $employeeCode);
+
+    if (!$borrowing['success']) {
+        echo json_encode($borrowing);
+        exit;
+    }
+
     $stmt = $conn->prepare("DELETE FROM staff_employees WHERE employee_code = ?");
     $stmt->bind_param("s", $employeeCode);
     $stmt->execute();
@@ -50,7 +58,7 @@ try {
 
     echo json_encode([
         "success" => true,
-        "message" => "Employee deleted successfully.",
+        "message" => trim("Employee deleted successfully. " . $borrowing['message']),
         "code"    => 200
     ]);
 } catch (Throwable $e) {

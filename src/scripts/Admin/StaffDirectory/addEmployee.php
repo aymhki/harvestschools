@@ -51,12 +51,12 @@ try {
                 (employee_code, sort_order, name_en, name_ar, position_en, position_ar,
                  subject_en, subject_ar, departments, display_style, is_public,
                  email, phone, hire_date, notes, degree_en, degree_ar, fingerprint_code, classification, graduation_year,
-                 national_id, insurance_number, birth_date, address)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                 national_id, insurance_number, birth_date, address, basic_salary)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->bind_param(
-            "sisssssssssssss" . "sssssssss",
+            "sisssssssssssss" . "sssssssss" . "d",
             $employee['employee_code'],
             $employee['sort_order'],
             $employee['name_en'],
@@ -80,7 +80,8 @@ try {
             $employee['national_id'],
             $employee['insurance_number'],
             $employee['birth_date'],
-            $employee['address']
+            $employee['address'],
+            $employee['basic_salary']
         );
 
         try {

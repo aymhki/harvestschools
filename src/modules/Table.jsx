@@ -25,6 +25,9 @@ function Table({
                    allowEditEntryOption,
                    onEditEntryOption,
                    likelyUrlColumns,
+                   cellRenderers,
+                   rowClassNames,
+                   reviewMode = false,
                    allowSticky,
                    allowStickyOnMobile,
                    dataTypes,
@@ -718,6 +721,10 @@ function Table({
     const sortedData = useMemo(() => sortedDataWithIndices?.map(item => item.row), [sortedDataWithIndices]);
 
     const requestSort = (columnIndex) => {
+        if (reviewMode) {
+            return;
+        }
+
         let direction = 'ascending';
         if (sortConfig.column === columnIndex) {
             if (sortConfig.direction === 'ascending') direction = 'descending';
@@ -730,13 +737,18 @@ function Table({
     };
 
     const getSortIndicator = (columnIndex) => {
+        if (reviewMode) return '';
         if (sortConfig.column !== columnIndex) return ' ⇅';
         if (sortConfig.direction === 'ascending') return ' ⇧';
         if (sortConfig.direction === 'descending') return ' ⇩';
         return ' ⇅';
     };
 
-    const applyLikelyUrlOrCurrencyFunction = (columnName, cellValue) => {
+    const applyLikelyUrlOrCurrencyFunction = (columnName, cellValue, dataRowIndex) => {
+        if (cellRenderers && cellRenderers[columnName]) {
+            return cellRenderers[columnName](cellValue, dataRowIndex);
+        }
+
         if (likelyUrlColumns && likelyUrlColumns[columnName]) {
             return <a className={"table-link"} lang={"en"}
                       onClick={() => likelyUrlColumns[columnName](cellValue)}>{cellValue}</a>;
@@ -1543,7 +1555,7 @@ function Table({
     }, []);
 
     return (
-        <div className={`table-module ${!isScrollbarVisible ? 'compressed' : '' }`} ref={tableModuleRef} >
+        <div className={`table-module ${!isScrollbarVisible ? 'compressed' : '' } ${reviewMode ? 'review-mode' : ''}`} ref={tableModuleRef} >
 
 
             { (headerModuleElements || allowHideColumns || allowExport || hasActiveFilters() || isScrollbarVisible) && (
@@ -1629,16 +1641,18 @@ function Table({
                             const customActionColVisible = !!(customActionColumn && !hiddenColumns.has(customActionColumn.headerText));
                             const customActionCellIndex = row.length + (editColVisible ? 1 : 0);
                             const deleteCellIndex = customActionCellIndex + (customActionColVisible ? 1 : 0);
+                            const rowClassName = rowIndex === 0 || !rowClassNames ? undefined : rowClassNames(finalTableIndex);
+
                             return (
-                                <tr key={rowIndex}>
+                                <tr key={rowIndex} className={rowClassName}>
                                     {row.map((cell, cellIndex) => {
                                         const isStickyRow = actualRowIndex < stickyRows;
                                         const isStickyCol = cellIndex < stickyCols;
                                         const isCorner = isStickyRow && isStickyCol;
 
                                         const isHovered = hoveredCell.r === actualRowIndex && hoveredCell.c === cellIndex;
-                                        const showColControl = isHovered && rowIndex === 0 && cellIndex < 1;
-                                        const showRowControl = isHovered && cellIndex === 0 && rowIndex < 1;
+                                        const showColControl = !reviewMode && isHovered && rowIndex === 0 && cellIndex < 1;
+                                        const showRowControl = !reviewMode && isHovered && cellIndex === 0 && rowIndex < 1;
                                         const colName = displayedTableData[0] && displayedTableData[0][cellIndex];
                                         const breakWordMaxWidth = rowIndex !== 0 && allowBreakWordColumns && colName
                                             ? allowBreakWordColumns[colName]
@@ -1651,7 +1665,7 @@ function Table({
                                         const displayCell = isCellTruncated ? rawCellStr.slice(0, maxTruncLen) + '...' : cell;
                                         const truncateTitle = isCellTruncated ? rawCellStr : undefined;
                                         let inlineStyles = {
-                                            cursor: rowIndex === 0 ? 'pointer' : 'default',
+                                            cursor: (rowIndex === 0 && !reviewMode) ? 'pointer' : 'default',
                                             whiteSpace: `${(scrollable && rowIndex === 0) ? 'nowrap' : 'normal'}`,
                                             position: (isStickyRow || isStickyCol) ? 'sticky' : 'relative',
                                             zIndex: isCorner ? 3 : (isStickyRow || isStickyCol ? 2 : undefined),
@@ -1705,7 +1719,7 @@ function Table({
 
                                                 {rowIndex === 0 ? (
                                                     <>
-                                                        {compact ? (
+                                                        {(compact || reviewMode) ? (
                                                             <div style={{
                                                                 display: 'flex',
                                                                 justifyContent: 'space-between',
@@ -1741,16 +1755,16 @@ function Table({
                                                     </>
                                                 ) : (
                                                     <>
-                                                        {compact ? (
+                                                        {(compact || reviewMode) ? (
                                                             <p className={"compact-table-cell-text"}
                                                                lang={detectLang(cell)}
                                                                title={truncateTitle}>
-                                                                {applyLikelyUrlOrCurrencyFunction(colName, displayCell)}
+                                                                {applyLikelyUrlOrCurrencyFunction(colName, displayCell, finalTableIndex)}
                                                             </p>
                                                         ) : (
                                                             <p lang={detectLang(cell)}
                                                                title={truncateTitle}>
-                                                                {applyLikelyUrlOrCurrencyFunction(colName, displayCell)}
+                                                                {applyLikelyUrlOrCurrencyFunction(colName, displayCell, finalTableIndex)}
                                                             </p>
                                                         )}
                                                     </>
@@ -1852,15 +1866,17 @@ function Table({
                                                 <h3 className={"compact-table-header-text"}>{customActionColumn.headerText}</h3>
                                             ) : (
                                                 <div className={"action-buttons-wrapper-in-table-module"}>
-                                                    {customActionColumn.actions.map((action, actionIndex) => (
-                                                        <button
-                                                            key={actionIndex}
-                                                            onClick={() => action.onClick(rowMapping[finalTableIndex])}
-                                                            aria-label={action.label}
-                                                        >
-                                                            {action.label}
-                                                        </button>
-                                                    ))}
+                                                    {customActionColumn.actions
+                                                        .filter((action) => !action.isVisible || action.isVisible(rowMapping[finalTableIndex]))
+                                                        .map((action, actionIndex) => (
+                                                            <button
+                                                                key={actionIndex}
+                                                                onClick={() => action.onClick(rowMapping[finalTableIndex])}
+                                                                aria-label={action.label}
+                                                            >
+                                                                {action.label}
+                                                            </button>
+                                                        ))}
                                                 </div>
                                             )}
                                         </td>
@@ -2228,6 +2244,9 @@ Table.propTypes = {
     allowEditEntryOption: PropTypes.bool,
     onEditEntryOption: PropTypes.func,
     likelyUrlColumns: PropTypes.objectOf(PropTypes.func),
+    cellRenderers: PropTypes.objectOf(PropTypes.func),
+    rowClassNames: PropTypes.func,
+    reviewMode: PropTypes.bool,
     allowSticky: PropTypes.bool,
     allowStickyOnMobile: PropTypes.bool,
     dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
@@ -2247,6 +2266,7 @@ Table.propTypes = {
         actions: PropTypes.arrayOf(PropTypes.shape({
             label: PropTypes.string.isRequired,
             onClick: PropTypes.func.isRequired,
+            isVisible: PropTypes.func,
         })).isRequired,
     }),
 };

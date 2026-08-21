@@ -47,7 +47,7 @@ try {
         "Subject (EN)", "Subject (AR)", "Degree (EN)", "Degree (AR)", "Departments",
         "Display", "Public", "Classification", "Fingerprint Code", "Email", "Phone",
         "Address", "Birth Date", "Hire Date", "Graduation Year", "National ID",
-        "Insurance Number", "Notes", "Last Updated", "ID"
+        "Insurance Number", "Notes", "Basic Salary", "Last Updated", "ID"
     ];
     $rows = [];
 
@@ -56,6 +56,7 @@ try {
                 subject_en, subject_ar, degree_en, degree_ar, departments, display_style,
                 is_public, classification, fingerprint_code, email, phone, address,
                 birth_date, hire_date, graduation_year, national_id, insurance_number, notes,
+                basic_salary,
                 DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i') AS updated_label
          FROM staff_employees
          ORDER BY sort_order ASC"
@@ -86,6 +87,7 @@ try {
             (string)$row['national_id'],
             (string)$row['insurance_number'],
             (string)($row['notes'] ?? ''),
+            (string)$row['basic_salary'],
             (string)$row['updated_label'],
             (string)$row['sort_order'],
         ];

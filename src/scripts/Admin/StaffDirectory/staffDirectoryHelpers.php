@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../Public/SchoolInfo/publicSchoolInfoHelpers.php';
 const STAFF_EMPLOYEE_CODE_START = 1001;
 const STAFF_EMPLOYEE_CODE_PATTERN = '/^[A-Za-z0-9_-]{1,32}$/';
 const STAFF_MAX_NOTE_LENGTH = 2000;
+const STAFF_MAX_BASIC_SALARY = 99999999.99;
 
 const STAFF_DISPLAY_STYLE_LABELS = [
     'table'     => 'Table Row',
@@ -182,6 +183,22 @@ function staff_validate_employee($conn, $data, $isNew) {
         return staff_error("The ID must be between 0 and 100000.");
     }
 
+    $basicSalary = staff_trim($data['basic_salary'] ?? '', 20);
+
+    if ($basicSalary === '') {
+        $basicSalary = '0';
+    }
+
+    if (!is_numeric($basicSalary)) {
+        return staff_error("The basic salary must be a number, or left blank.");
+    }
+
+    $basicSalary = round((float)$basicSalary, 2);
+
+    if ($basicSalary < 0 || $basicSalary > STAFF_MAX_BASIC_SALARY) {
+        return staff_error("The basic salary must be between 0 and " . number_format(STAFF_MAX_BASIC_SALARY) . ".");
+    }
+
     return [
         "success"  => true,
         "employee" => [
@@ -209,6 +226,7 @@ function staff_validate_employee($conn, $data, $isNew) {
             'insurance_number' => staff_trim($data['insurance_number'] ?? '', 32),
             'birth_date'       => $birthDate === '' ? null : $birthDate,
             'address'          => staff_trim($data['address'] ?? '', 255),
+            'basic_salary'     => $basicSalary,
         ]
     ];
 }

@@ -86,8 +86,22 @@ try {
     global $LIBRARY_MANAGEMENT;
     global $GALLERY_MANAGEMENT;
     global $PAGE_GATES_MANAGEMENT;
+    global $BORROWING_HR_MANAGEMENT;
+    global $BORROWING_ACCOUNTING_MANAGEMENT;
     global $JACK_OF_ALL_TRADES;
 
+
+    $borrowingSystemTile = [
+        [
+            "title" => "Borrowing  System",
+            "image" => "/images/Dashboard/BorrowingSystem.png",
+            "description" => "View the borrowing system",
+            "link" => "/borrowing-system-management",
+            "buttonText" => "View System",
+            "titleInArabic" => false,
+            "descriptionInArabic" => false
+        ]
+    ];
 
     $academicCalendarsTile = [
         [
@@ -147,17 +161,9 @@ try {
             ]
 
         ],
-        $BORROWING_SYSTEM_MANAGEMENT => [
-            [
-                "title" => "Borrowing  System",
-                "image" => "/images/Dashboard/BorrowingSystem.png",
-                "description" => "View the borrowing system",
-                "link" => "/borrowing-system-management",
-                "buttonText" => "View System",
-                "titleInArabic" => false,
-                "descriptionInArabic" => false
-            ]
-        ],
+        $BORROWING_SYSTEM_MANAGEMENT     => $borrowingSystemTile,
+        $BORROWING_HR_MANAGEMENT         => $borrowingSystemTile,
+        $BORROWING_ACCOUNTING_MANAGEMENT => $borrowingSystemTile,
         $INFO_SYSTEM_MANAGEMENT => [
             [
                 "title" => "Info System",

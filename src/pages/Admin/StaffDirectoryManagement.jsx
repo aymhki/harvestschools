@@ -38,6 +38,7 @@ const graduationYearColIndex = 20;
 const nationalIdColIndex = 21;
 const insuranceColIndex = 22;
 const notesColIndex = 23;
+const basicSalaryColIndex = 24;
 
 const sortOrderFormFieldId = 1;
 const employeeCodeFormFieldId = 2;
@@ -63,6 +64,7 @@ const birthDateFormFieldId = 21;
 const graduationYearFormFieldId = 22;
 const nationalIdFormFieldId = 23;
 const insuranceFormFieldId = 24;
+const basicSalaryFormFieldId = 25;
 
 function StaffDirectoryManagement() {
     const navigate = useNavigate();
@@ -133,7 +135,8 @@ function StaffDirectoryManagement() {
         { id: graduationYearFormFieldId, type: 'text', name: 'graduation_year', label: 'Graduation Year', required: false, value: '', defaultValue: rowData ? rowData[graduationYearColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Graduation Year (never published)', httpName: 'staff-graduation-year', alwaysEnglish: true },
         { id: emailFormFieldId, type: 'email', name: 'email', label: 'Email', required: false, value: '', defaultValue: rowData ? rowData[emailColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Email (never published)', httpName: 'staff-email', dontLetTheBrowserSaveField: true },
         { id: phoneFormFieldId, type: 'text', name: 'phone', label: 'Phone', required: false, value: '', defaultValue: rowData ? rowData[phoneColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Phone (never published)', httpName: 'staff-phone', dontLetTheBrowserSaveField: true },
-        { id: hireDateFormFieldId, type: 'date', name: 'hire_date', label: 'Hire Date', required: false, value: '', defaultValue: rowData ? rowData[hireDateColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Hire Date (never published)', httpName: 'staff-hire-date', alwaysEnglish: true },
+        { id: hireDateFormFieldId, type: 'date', name: 'hire_date', label: 'Hire Date', required: false, value: '', defaultValue: rowData ? rowData[hireDateColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Hire Date (never published, drives the borrowing system score)', httpName: 'staff-hire-date', alwaysEnglish: true },
+        { id: basicSalaryFormFieldId, type: 'text', name: 'basic_salary', label: 'Basic Salary', required: false, value: '', defaultValue: rowData ? rowData[basicSalaryColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Basic Salary in EGP (never published, drives the borrowing system ceiling)', httpName: 'staff-basic-salary', alwaysEnglish: true, regex: '^$|^[0-9]{1,8}(\\.[0-9]{1,2})?$', errorMsg: 'Enter the basic salary as a number, for example 5000 or 5000.50' },
         { id: addressFormFieldId, type: 'text', name: 'address', label: 'Address', required: false, value: '', defaultValue: rowData ? rowData[addressColIndex] : '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Address (never published)', httpName: 'staff-address' },
         { id: birthDateFormFieldId, type: 'date', name: 'birth_date', label: 'Date of Birth', required: false, value: '', defaultValue: rowData ? rowData[birthDateColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'Date of Birth (never published)', httpName: 'staff-birth-date', alwaysEnglish: true },
         { id: nationalIdFormFieldId, type: 'text', name: 'national_id', label: 'National ID', required: false, value: '', defaultValue: rowData ? rowData[nationalIdColIndex] : '', widthOfField: 3, labelOutside: true, labelOnTop: true, displayLabel: 'National ID (never published)', httpName: 'staff-national-id', alwaysEnglish: true, dontLetTheBrowserSaveField: true },
@@ -190,6 +193,7 @@ function StaffDirectoryManagement() {
                 birth_date: values[`field_${birthDateFormFieldId}`] || '',
                 national_id: values[`field_${nationalIdFormFieldId}`] || '',
                 insurance_number: values[`field_${insuranceFormFieldId}`] || '',
+                basic_salary: values[`field_${basicSalaryFormFieldId}`] || '',
             };
 
             const result = editorMode === 'edit' ? await editEmployee(payload) : await addEmployee(payload);
@@ -254,8 +258,11 @@ function StaffDirectoryManagement() {
                        forceEnglishTable={true}
                        isLoading={isLoading}
                        sortConfigParam={{column: 0, direction: 'ascending'}}
-                       defaultHiddenColumns={['Address', 'Birth Date', 'Graduation Year', 'National ID', 'Insurance Number', 'Notes', 'Hidden']}
+                       defaultHiddenColumns={['Address', 'Birth Date', 'Graduation Year', 'National ID', 'Insurance Number', 'Notes', 'Basic Salary', 'Hidden']}
                        filterableColumns={['Departments', 'Display', 'Public', 'Classification']}
+                       currencyColumns={['Basic Salary']}
+                       currencySymbols={['EGP']}
+                       currencySymbolPositions={['right-space']}
                        allowEditEntryOption={true}
                        onEditEntryOption={(rowIndex) => openEditor('edit', rowIndex)}
                        allowDeleteEntryOption={true}

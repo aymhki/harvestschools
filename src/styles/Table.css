@@ -1145,3 +1145,47 @@ td button {
         color: var(--fb-white-color);
     }
 }
+
+.table-module.review-mode .table-with-vertical-scrollbar-wrapper,
+.table-module.review-mode .table-with-vertical-scrollbar-wrapper.fixed {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.table-module.review-mode .table-scroll-container {
+    box-shadow: none;
+}
+
+.table-module.review-mode .table-module-table td,
+.table-module.review-mode .table-module-table th {
+    border: 1px solid var(--fb-off-white-color);
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+}
+
+.table-module.review-mode .table-module-table td .borrowing-inline-buttons {
+    justify-content: center;
+}
+
+
+.table-module.review-mode .table-module-table tr:first-child td,
+.table-module.review-mode .table-module-table tr:first-child th {
+    background-color: var(--fb-off-white-color);
+}
+
+.table-module.review-mode .table-module-table tr:first-child .compact-table-header-text,
+.table-module.review-mode .table-module-table tr:first-child .compact-table-cell-text {
+    color: var(--primary-color);
+    font-family: inherit;
+    font-size: 0.9rem;
+    letter-spacing: normal;
+}
+
+.table-module.review-mode .compact-table-cell-text {
+    font-size: 0.9rem;
+}
+
+.table-module.review-mode .table-module-table tr.admin-diff-changed td {
+    background-color: rgba(201, 67, 73, 0.08);
+}

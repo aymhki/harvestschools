@@ -3,6 +3,7 @@ import '../../styles/AlumniStudents.css';
 import {useNavigate} from "react-router";
 import {useEffect, useRef, useState} from "react";
 import {useSpring, animated} from "react-spring";
+import Form from "../../modules/Form.jsx";
 import Table from "../../modules/Table.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
 import MarkdownContent from "../../modules/MarkdownContent.jsx";
@@ -20,8 +21,42 @@ import {
     deleteAlumniPostByAdmin,
 } from "../../services/Admin/AlumniStudents/AdminAlumniStudentsManagementServices.jsx";
 import {Capacitor} from "@capacitor/core";
-import PropTypes from "prop-types";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
+
+const REVIEW_DECISIONS = {Approve: 'approved', Reject: 'rejected'};
+
+const ACCOUNT_DECISIONS = {
+    Approve: 'approved', Reject: 'rejected',
+    'Enable the account': 'approved', 'Disable the account': 'disabled',
+};
+
+const accountDecisionChoices = (accountStatus) => {
+    if (accountStatus === 'approved') { return ['Disable the account']; }
+    if (accountStatus === 'disabled') { return ['Enable the account']; }
+    if (accountStatus === 'rejected') { return ['Approve']; }
+
+    return ['Approve', 'Reject'];
+};
+
+const decisionFieldId = 1;
+const noteFieldId = 2;
+const placementHomeFieldId = 3;
+const placementAlumniFieldId = 4;
+const notifyAuthorFieldId = 5;
+
+const noteField = (displayLabel) => ({
+    id: noteFieldId, type: 'textarea', name: 'admin-note', httpName: 'admin-note',
+    label: 'Note', displayLabel: displayLabel, required: false, value: '',
+    placeholder: 'Optional note that is included in the email sent to the alumni student',
+    widthOfField: 1, labelOutside: true, labelOnTop: true,
+});
+
+const decisionField = (displayLabel, choices) => ({
+    id: decisionFieldId, type: 'select', name: 'decision', httpName: 'decision',
+    label: 'Decision', displayLabel: displayLabel, required: true,
+    errorMsg: 'Choose what to do with this request', value: '', choices: choices,
+    widthOfField: 1, labelOutside: true, labelOnTop: true,
+});
 
 const PROFILE_UPDATE_FIELDS = [
     {key: 'username', label: 'Username'},
@@ -33,32 +68,6 @@ const PROFILE_UPDATE_FIELDS = [
     {key: 'profilePictureLink', label: 'Profile Picture'},
 ];
 
-
-function AdminNoteField({label, valueRef}) {
-    const [note, setNote] = useState('');
-    return (
-        <label className={"alumni-admin-note-field"}>
-            {label}
-            <textarea
-                value={note}
-                className="textarea-form-field"
-                maxLength={500}
-                placeholder={"Optional note that is included in the email sent to the alumni student"}
-                onChange={(e) => {
-                    setNote(e.target.value);
-                    valueRef.current = e.target.value;
-                }}
-            />
-        </label>
-    );
-}
-
-AdminNoteField.propTypes = {
-    label: PropTypes.string.isRequired,
-    valueRef: PropTypes.shape({
-        current: PropTypes.any
-    }).isRequired
-}
 
 function AlumniStudentsManagement() {
     const navigate = useNavigate();
@@ -82,17 +91,16 @@ function AlumniStudentsManagement() {
     const [showPostReviewModal, setShowPostReviewModal] = useState(false);
     const [showPlacementModal, setShowPlacementModal] = useState(false);
     const [showDeletePostModal, setShowDeletePostModal] = useState(false);
-    const [placementHome, setPlacementHome] = useState('no');
-    const [placementAlumniPage, setPlacementAlumniPage] = useState('no');
-    const [notifyAuthorOnDelete, setNotifyAuthorOnDelete] = useState(true);
     const [modalBusy, setModalBusy] = useState(false);
     const [modalError, setModalError] = useState('');
-    const adminNoteRef = useRef('');
-    const [noteFieldKey, setNoteFieldKey] = useState(0);
-    const resetAdminNote = () => {
-        adminNoteRef.current = '';
-        setNoteFieldKey((k) => k + 1);
-    };
+    const [modalFields, setModalFields] = useState(null);
+    const [resetModalForm, setResetModalForm] = useState(false);
+    const accountFooterRef = useRef(null);
+    const updateFooterRef = useRef(null);
+    const deletionFooterRef = useRef(null);
+    const postFooterRef = useRef(null);
+    const placementFooterRef = useRef(null);
+    const deletePostFooterRef = useRef(null);
 
     const animateAccountReviewModal = useSpring({
         opacity: showAccountReviewModal ? 1 : 0,
@@ -174,14 +182,16 @@ function AlumniStudentsManagement() {
     };
 
     const finishModalAction = async (result, closeModal, reloadFn) => {
-        setModalBusy(false);
-
         if (result && result.success) {
             closeModal();
+            setModalFields(null);
+            setResetModalForm(true);
             await reloadFn();
-        } else {
-            setModalError((result && result.message) || 'The action could not be completed.');
+
+            return true;
         }
+
+        throw new Error((result && result.message) || 'The action could not be completed.');
     };
 
     const openAccountReviewModal = (rowIndex) => {
@@ -192,7 +202,10 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedAccount(record);
-        resetAdminNote();
+        setModalFields([
+            decisionField('Decision', accountDecisionChoices(record.accountStatus)),
+            noteField('Note to the alumni student'),
+        ]);
         setModalError('');
         setShowAccountReviewModal(true);
     };
@@ -209,13 +222,16 @@ function AlumniStudentsManagement() {
         setShowDeleteAccountModal(true);
     };
 
-    const handleSetAccountStatus = async (newStatus) => {
-        if (!selectedAccount || modalBusy) { return; }
+    const handleSetAccountStatus = async (formData) => {
+        if (!selectedAccount) { return false; }
 
-        setModalBusy(true);
+        const values = Object.fromEntries(formData.entries());
+        const status = ACCOUNT_DECISIONS[values[`field_${decisionFieldId}`]];
+
         setModalError('');
-        const result = await setAlumniAccountStatus(selectedAccount.id, newStatus, adminNoteRef.current);
-        await finishModalAction(result, () => setShowAccountReviewModal(false), reloadAccountsData);
+        const result = await setAlumniAccountStatus(selectedAccount.id, status, values[`field_${noteFieldId}`] || '');
+
+        return finishModalAction(result, () => setShowAccountReviewModal(false), reloadAccountsData);
     };
 
     const handleDeleteAccount = async () => {
@@ -223,8 +239,15 @@ function AlumniStudentsManagement() {
 
         setModalBusy(true);
         setModalError('');
-        const result = await deleteAlumniAccount(selectedAccount.id);
-        await finishModalAction(result, () => setShowDeleteAccountModal(false), reloadEverything);
+
+        try {
+            const result = await deleteAlumniAccount(selectedAccount.id);
+            await finishModalAction(result, () => setShowDeleteAccountModal(false), reloadEverything);
+        } catch (error) {
+            setModalError(error.message);
+        }
+
+        setModalBusy(false);
     };
 
     const openUpdateReviewModal = (rowIndex) => {
@@ -235,18 +258,26 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedUpdate(record);
-        resetAdminNote();
+        setModalFields([
+            decisionField('Decision', ['Approve', 'Reject']),
+            noteField('Note to the alumni student'),
+        ]);
         setModalError('');
         setShowUpdateReviewModal(true);
     };
 
-    const handleReviewProfileUpdate = async (decision) => {
-        if (!selectedUpdate || modalBusy) { return; }
+    const handleReviewProfileUpdate = async (formData) => {
+        if (!selectedUpdate) { return false; }
 
-        setModalBusy(true);
+        const values = Object.fromEntries(formData.entries());
+
         setModalError('');
-        const result = await reviewAlumniProfileUpdate(selectedUpdate.id, decision, adminNoteRef.current);
-        await finishModalAction(result, () => setShowUpdateReviewModal(false), reloadAccountsData);
+        const result = await reviewAlumniProfileUpdate(
+            selectedUpdate.id, REVIEW_DECISIONS[values[`field_${decisionFieldId}`]],
+            values[`field_${noteFieldId}`] || ''
+        );
+
+        return finishModalAction(result, () => setShowUpdateReviewModal(false), reloadAccountsData);
     };
 
     const openDeletionReviewModal = (rowIndex) => {
@@ -257,18 +288,25 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedDeletionRequest(record);
-        resetAdminNote();
+        setModalFields([
+            decisionField('Decision', ['Approve', 'Reject']),
+            noteField('Note to the alumni student'),
+        ]);
         setModalError('');
         setShowDeletionReviewModal(true);
     };
 
-    const handleReviewDeletionRequest = async (decision) => {
-        if (!selectedDeletionRequest || modalBusy) { return; }
+    const handleReviewDeletionRequest = async (formData) => {
+        if (!selectedDeletionRequest) { return false; }
 
-        setModalBusy(true);
+        const values = Object.fromEntries(formData.entries());
+
         setModalError('');
-        const result = await reviewAlumniDeletionRequest(selectedDeletionRequest.id, decision, adminNoteRef.current);
-        await finishModalAction(result, () => setShowDeletionReviewModal(false), reloadEverything);
+        const result = await reviewAlumniDeletionRequest(
+            selectedDeletionRequest.id, REVIEW_DECISIONS[values[`field_${decisionFieldId}`]], values[`field_${noteFieldId}`] || ''
+        );
+
+        return finishModalAction(result, () => setShowDeletionReviewModal(false), reloadEverything);
     };
 
     const openPostReviewModal = (rowIndex) => {
@@ -279,7 +317,10 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedPost(record);
-        resetAdminNote();
+        setModalFields([
+            decisionField(record.pendingEdit ? 'Decision on the edit' : 'Decision', ['Approve', 'Reject']),
+            noteField('Note to the alumni student'),
+        ]);
         setModalError('');
         setShowPostReviewModal(true);
     };
@@ -292,8 +333,22 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedPost(record);
-        setPlacementHome(record.showOnHome ? 'yes' : 'no');
-        setPlacementAlumniPage(record.showOnAlumniPage ? 'yes' : 'no');
+        setModalFields([
+            {
+                id: placementHomeFieldId, type: 'select', name: 'show-on-home', httpName: 'show-on-home',
+                label: 'Home page', displayLabel: 'Show on the home page?', required: true,
+                errorMsg: 'Choose whether this post shows on the home page', value: '',
+                defaultValue: record.showOnHome ? 'Yes' : 'No', choices: ['No', 'Yes'],
+                widthOfField: 2, labelOutside: true, labelOnTop: true,
+            },
+            {
+                id: placementAlumniFieldId, type: 'select', name: 'show-on-alumni', httpName: 'show-on-alumni',
+                label: 'Alumni page', displayLabel: 'Show on the alumni page?', required: true,
+                errorMsg: 'Choose whether this post shows on the alumni students page', value: '',
+                defaultValue: record.showOnAlumniPage ? 'Yes' : 'No', choices: ['No', 'Yes'],
+                widthOfField: 2, labelOutside: true, labelOnTop: true,
+            },
+        ]);
         setModalError('');
         setShowPlacementModal(true);
     };
@@ -306,37 +361,62 @@ function AlumniStudentsManagement() {
         if (!record) { return; }
 
         setSelectedPost(record);
-        setNotifyAuthorOnDelete(true);
-        resetAdminNote();
+        setModalFields([
+            {
+                id: notifyAuthorFieldId, type: 'select', name: 'notify-author', httpName: 'notify-author',
+                label: 'Notify', displayLabel: 'Notify the author by email?', required: true,
+                errorMsg: 'Choose whether the author is emailed', value: '',
+                defaultValue: 'Yes', choices: ['Yes', 'No'],
+                widthOfField: 1, labelOutside: true, labelOnTop: true,
+            },
+            noteField('Note to the alumni student, sent only if notified'),
+        ]);
         setModalError('');
         setShowDeletePostModal(true);
     };
 
-    const handleReviewPost = async (target, decision) => {
-        if (!selectedPost || modalBusy) { return; }
+    const handleReviewPost = async (formData) => {
+        if (!selectedPost) { return false; }
 
-        setModalBusy(true);
+        const values = Object.fromEntries(formData.entries());
+        const target = selectedPost.pendingEdit ? 'edit' : 'post';
+
         setModalError('');
-        const result = await reviewAlumniPost(selectedPost.id, target, decision, adminNoteRef.current);
-        await finishModalAction(result, () => setShowPostReviewModal(false), reloadPostsData);
+        const result = await reviewAlumniPost(
+            selectedPost.id, target, REVIEW_DECISIONS[values[`field_${decisionFieldId}`]],
+            values[`field_${noteFieldId}`] || ''
+        );
+
+        return finishModalAction(result, () => setShowPostReviewModal(false), reloadPostsData);
     };
 
-    const handleSavePlacement = async () => {
-        if (!selectedPost || modalBusy) { return; }
+    const handleSavePlacement = async (formData) => {
+        if (!selectedPost) { return false; }
 
-        setModalBusy(true);
+        const values = Object.fromEntries(formData.entries());
+
         setModalError('');
-        const result = await setAlumniPostPlacement(selectedPost.id, placementHome === 'yes', placementAlumniPage === 'yes');
-        await finishModalAction(result, () => setShowPlacementModal(false), reloadPostsData);
+        const result = await setAlumniPostPlacement(
+            selectedPost.id,
+            values[`field_${placementHomeFieldId}`] === 'Yes',
+            values[`field_${placementAlumniFieldId}`] === 'Yes'
+        );
+
+        return finishModalAction(result, () => setShowPlacementModal(false), reloadPostsData);
     };
 
-    const handleDeletePost = async () => {
-        if (!selectedPost || modalBusy) { return; }
+    const handleDeletePost = async (formData) => {
+        if (!selectedPost) { return false; }
 
-        setModalBusy(true);
+        const values = Object.fromEntries(formData.entries());
+        const notify = values[`field_${notifyAuthorFieldId}`] === 'Yes';
+
         setModalError('');
-        const result = await deleteAlumniPostByAdmin(selectedPost.id, notifyAuthorOnDelete, adminNoteRef.current);
-        await finishModalAction(result, () => setShowDeletePostModal(false), reloadPostsData);
+        const result = await deleteAlumniPostByAdmin(
+            selectedPost.id, notify, notify ? (values[`field_${noteFieldId}`] || '') : ''
+        );
+
+        return finishModalAction(result, () => setShowDeletePostModal(false), reloadPostsData);
     };
 
     const AccountsTab = () => (
@@ -487,8 +567,52 @@ function AlumniStudentsManagement() {
         },
     ];
 
-    const renderNoteField = (labelText) => (
-        <AdminNoteField key={noteFieldKey} label={labelText} valueRef={adminNoteRef}/>
+    const profileUpdateCellText = (value) => (
+        value === null || value === undefined || value === '' ? '—' : String(value)
+    );
+
+    const renderPictureCell = (field, value, label, fallback) => {
+        if (!field || field.key !== 'profilePictureLink') {
+            return fallback;
+        }
+
+        if (value === null || value === undefined || value === '') {
+            return fallback;
+        }
+
+        return (
+            <button className={"alumni-admin-review-link"} onClick={() => openAlumniFile(value)}>
+                {label}
+            </button>
+        );
+    };
+
+    const renderModalForm = (formTitle, onSubmit, submitText, closeModal, footerRef) => (
+        <Form key={formTitle}
+              fields={modalFields}
+              mailTo={''}
+              formTitle={formTitle}
+              lang={"en"}
+              captchaLength={1}
+              noInputFieldsCache={true}
+              noCaptcha={true}
+              resetFormFromParent={resetModalForm}
+              setResetForFromParent={setResetModalForm}
+              hasDifferentOnSubmitBehaviour={true}
+              differentOnSubmitBehaviour={onSubmit}
+              formInModalPopup={true}
+              setShowFormModalPopup={closeModal}
+              formHasPasswordField={false}
+              footerButtonsSpaceBetween={true}
+              switchFooterButtonsOrder={true}
+              forceEnglishForm={true}
+              noClearOption={true}
+              noSuccessMessage={true}
+              hasDifferentSubmitButtonText={true}
+              differentSubmitButtonText={submitText}
+              formFooterButtonsAreOutside={true}
+              footerButtonsPortalTarget={footerRef}
+        />
     );
 
     return (
@@ -532,35 +656,21 @@ function AlumniStudentsManagement() {
                                     <p><strong>Previous Note:</strong> {selectedAccount.adminNote}</p>
                                 )}
 
-                                {renderNoteField('Note to the alumni student (optional)')}
-
                                 {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
                             </div>
+                        )}
+
+                        {selectedAccount && modalFields && showAccountReviewModal && renderModalForm(
+                            "Review Alumni Account Form", handleSetAccountStatus,
+                            ['Save', 'Saving...'], () => setShowAccountReviewModal(false), accountFooterRef
                         )}
                     </div>
 
                     <div className={"general-large-admin-action-modal-footer"}>
-                        <button onClick={() => setShowAccountReviewModal(false)} disabled={modalBusy}>
-                            Close
+                        <button onClick={() => setShowAccountReviewModal(false)}>
+                            Cancel
                         </button>
-
-                        {selectedAccount && selectedAccount.accountStatus !== 'approved' && (
-                            <button onClick={() => handleSetAccountStatus('approved')} disabled={modalBusy}>
-                                {selectedAccount.accountStatus === 'disabled' ? 'Enable Account' : 'Approve'}
-                            </button>
-                        )}
-
-                        {selectedAccount && selectedAccount.accountStatus === 'pending' && (
-                            <button onClick={() => handleSetAccountStatus('rejected')} disabled={modalBusy}>
-                                Reject
-                            </button>
-                        )}
-
-                        {selectedAccount && selectedAccount.accountStatus === 'approved' && (
-                            <button onClick={() => handleSetAccountStatus('disabled')} disabled={modalBusy}>
-                                Disable Account
-                            </button>
-                        )}
+                        <div ref={accountFooterRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>
@@ -612,74 +722,61 @@ function AlumniStudentsManagement() {
                                     {' · '}<strong>Status:</strong> {selectedUpdate.status}
                                 </p>
 
-                                <table className={"alumni-admin-diff-table"}>
-                                    <thead>
-                                    <tr>
-                                        <th>Field</th>
-                                        <th>Current</th>
-                                        <th>Requested</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {PROFILE_UPDATE_FIELDS.map(field => {
-                                        const requestedValue = selectedUpdate.requested[field.key];
-                                        const currentValue = selectedUpdate.current[field.key];
-                                        const changed = requestedValue !== null && requestedValue !== undefined;
+                                <Table tableData={[
+                                    ['Field', 'Current', 'Requested'],
+                                    ...PROFILE_UPDATE_FIELDS.map((field) => [
+                                        field.label,
+                                        profileUpdateCellText(selectedUpdate.current[field.key]),
+                                        selectedUpdate.requested[field.key] === null
+                                        || selectedUpdate.requested[field.key] === undefined
+                                            ? 'No change'
+                                            : profileUpdateCellText(selectedUpdate.requested[field.key]),
+                                    ]),
+                                ]}
+                                       reviewMode={true}
+                                       forceEnglishTable={true}
+                                       rowClassNames={(rowIndex) => {
+                                           const field = PROFILE_UPDATE_FIELDS[rowIndex - 1];
+                                           const value = field && selectedUpdate.requested[field.key];
 
-                                        return (
-                                            <tr key={field.key} className={changed ? 'alumni-admin-diff-changed' : ''}>
-                                                <td>{field.label}</td>
-                                                <td>
-                                                    {field.key === 'profilePictureLink' ? (
-                                                        currentValue ? (
-                                                            <button className={"alumni-admin-review-link"} onClick={() => openAlumniFile(currentValue)}>
-                                                                View current picture
-                                                            </button>
-                                                        ) : '—'
-                                                    ) : (currentValue || '—')}
-                                                </td>
-                                                <td>
-                                                    {changed ? (
-                                                        field.key === 'profilePictureLink' ? (
-                                                            <button className={"alumni-admin-review-link"} onClick={() => openAlumniFile(requestedValue)}>
-                                                                View requested picture
-                                                            </button>
-                                                        ) : requestedValue
-                                                    ) : 'No change'}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                    </tbody>
-                                </table>
+                                           return (value === null || value === undefined)
+                                               ? undefined
+                                               : 'admin-diff-changed';
+                                       }}
+                                       cellRenderers={{
+                                           Current: (value, rowIndex) => renderPictureCell(
+                                               PROFILE_UPDATE_FIELDS[rowIndex - 1],
+                                               selectedUpdate.current[PROFILE_UPDATE_FIELDS[rowIndex - 1].key],
+                                               'View current picture', value
+                                           ),
+                                           Requested: (value, rowIndex) => renderPictureCell(
+                                               PROFILE_UPDATE_FIELDS[rowIndex - 1],
+                                               selectedUpdate.requested[PROFILE_UPDATE_FIELDS[rowIndex - 1].key],
+                                               'View requested picture', value
+                                           ),
+                                       }}
+                                />
 
-                                {selectedUpdate.status === 'pending'
-                                    ? renderNoteField('Note to the alumni student (optional)')
-                                    : selectedUpdate.adminNote && (
+                                {selectedUpdate.status !== 'pending' && selectedUpdate.adminNote && (
                                     <p><strong>Review Note:</strong> {selectedUpdate.adminNote}</p>
                                 )}
 
                                 {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
                             </div>
                         )}
+
+                        {selectedUpdate && selectedUpdate.status === 'pending' && modalFields && showUpdateReviewModal && renderModalForm(
+                            "Review Profile Update Form", handleReviewProfileUpdate,
+                            ['Save', 'Saving...'], () => setShowUpdateReviewModal(false), updateFooterRef
+                        )}
                     </div>
 
                     <div className={"general-large-admin-action-modal-footer"}>
-                        <button onClick={() => setShowUpdateReviewModal(false)} disabled={modalBusy}>
-                            Close
+                        <button onClick={() => setShowUpdateReviewModal(false)}>
+                            {selectedUpdate && selectedUpdate.status === 'pending' ? 'Cancel' : 'Close'}
                         </button>
+                        <div ref={updateFooterRef} className="modal-footer-buttons-portal-target"/>
 
-                        {selectedUpdate && selectedUpdate.status === 'pending' && (
-                            <>
-                                <button onClick={() => handleReviewProfileUpdate('rejected')} disabled={modalBusy}>
-                                    Reject
-                                </button>
-
-                                <button onClick={() => handleReviewProfileUpdate('approved')} disabled={modalBusy}>
-                                    Approve &amp; Apply
-                                </button>
-                            </>
-                        )}
                     </div>
                 </div>
             </animated.div>
@@ -713,33 +810,26 @@ function AlumniStudentsManagement() {
                                     </p>
                                 )}
 
-                                {selectedDeletionRequest.status === 'pending'
-                                    ? renderNoteField('Note to the alumni student (optional)')
-                                    : selectedDeletionRequest.adminNote && (
+                                {selectedDeletionRequest.status !== 'pending' && selectedDeletionRequest.adminNote && (
                                     <p><strong>Review Note:</strong> {selectedDeletionRequest.adminNote}</p>
                                 )}
 
                                 {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
                             </div>
                         )}
+
+                        {selectedDeletionRequest && selectedDeletionRequest.status === 'pending' && modalFields
+                            && showDeletionReviewModal && renderModalForm(
+                                "Review Deletion Request Form", handleReviewDeletionRequest,
+                                ['Save', 'Saving...'], () => setShowDeletionReviewModal(false), deletionFooterRef
+                            )}
                     </div>
 
                     <div className={"general-large-admin-action-modal-footer"}>
-                        <button onClick={() => setShowDeletionReviewModal(false)} disabled={modalBusy}>
-                            Close
+                        <button onClick={() => setShowDeletionReviewModal(false)}>
+                            {selectedDeletionRequest && selectedDeletionRequest.status === 'pending' ? 'Cancel' : 'Close'}
                         </button>
-
-                        {selectedDeletionRequest && selectedDeletionRequest.status === 'pending' && (
-                            <>
-                                <button onClick={() => handleReviewDeletionRequest('rejected')} disabled={modalBusy}>
-                                    Reject
-                                </button>
-
-                                <button onClick={() => handleReviewDeletionRequest('approved')} disabled={modalBusy}>
-                                    Approve &amp; Delete Account
-                                </button>
-                            </>
-                        )}
+                        <div ref={deletionFooterRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>
@@ -799,42 +889,23 @@ function AlumniStudentsManagement() {
                                     <p><strong>Previous Note:</strong> {selectedPost.adminNote}</p>
                                 )}
 
-                                {(selectedPost.status === 'pending' || selectedPost.pendingEdit) &&
-                                    renderNoteField('Note to the alumni student (optional)')}
-
                                 {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
                             </div>
                         )}
+
+                        {selectedPost && (selectedPost.status === 'pending' || selectedPost.pendingEdit)
+                            && modalFields && showPostReviewModal && renderModalForm(
+                                "Review Post Form", handleReviewPost,
+                                ['Save', 'Saving...'], () => setShowPostReviewModal(false), postFooterRef
+                            )}
                     </div>
 
                     <div className={"general-large-admin-action-modal-footer"}>
-                        <button onClick={() => setShowPostReviewModal(false)} disabled={modalBusy}>
-                            Close
+                        <button onClick={() => setShowPostReviewModal(false)}>
+                            {selectedPost && (selectedPost.status === 'pending' || selectedPost.pendingEdit)
+                                ? 'Cancel' : 'Close'}
                         </button>
-
-                        {selectedPost && selectedPost.pendingEdit && (
-                            <>
-                                <button onClick={() => handleReviewPost('edit', 'rejected')} disabled={modalBusy}>
-                                    Reject Edit
-                                </button>
-
-                                <button onClick={() => handleReviewPost('edit', 'approved')} disabled={modalBusy}>
-                                    Approve Edit
-                                </button>
-                            </>
-                        )}
-
-                        {selectedPost && !selectedPost.pendingEdit && selectedPost.status === 'pending' && (
-                            <>
-                                <button onClick={() => handleReviewPost('post', 'rejected')} disabled={modalBusy}>
-                                    Reject
-                                </button>
-
-                                <button onClick={() => handleReviewPost('post', 'approved')} disabled={modalBusy}>
-                                    Approve
-                                </button>
-                            </>
-                        )}
+                        <div ref={postFooterRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>
@@ -860,37 +931,21 @@ function AlumniStudentsManagement() {
                                     </p>
                                 )}
 
-                                <div className={"alumni-admin-placement-selects"}>
-                                    <label className={"form-label-outside"}>
-                                        Show on the home page?
-                                        <select className={"select-form-field field-with-label-on-top"} value={placementHome} onChange={(e) => setPlacementHome(e.target.value)}>
-                                            <option value="no">No</option>
-                                            <option value="yes">Yes</option>
-                                        </select>
-                                    </label>
-
-                                    <label className={"form-label-outside"}>
-                                        Show on the alumni students page?
-                                        <select className={"select-form-field field-with-label-on-top"} value={placementAlumniPage} onChange={(e) => setPlacementAlumniPage(e.target.value)}>
-                                            <option value="no">No</option>
-                                            <option value="yes">Yes</option>
-                                        </select>
-                                    </label>
-                                </div>
-
                                 {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
                             </div>
+                        )}
+
+                        {selectedPost && modalFields && showPlacementModal && renderModalForm(
+                            "Post Placement Form", handleSavePlacement,
+                            ['Save Placement', 'Saving...'], () => setShowPlacementModal(false), placementFooterRef
                         )}
                     </div>
 
                     <div className={"general-large-admin-action-modal-footer"}>
-                        <button onClick={() => setShowPlacementModal(false)} disabled={modalBusy}>
+                        <button onClick={() => setShowPlacementModal(false)}>
                             Cancel
                         </button>
-
-                        <button onClick={handleSavePlacement} disabled={modalBusy}>
-                            {modalBusy ? 'Saving...' : 'Save Placement'}
-                        </button>
+                        <div ref={placementFooterRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>
@@ -911,32 +966,21 @@ function AlumniStudentsManagement() {
                                     This cannot be reversed.
                                 </p>
 
-                                <div className={"alumni-admin-actions-row"}>
-                                    <label className={"alumni-admin-note-field"} style={{flexDirection: 'row', alignItems: 'center', gap: '0.5rem'}}>
-                                        <input
-                                            type="checkbox"
-                                            checked={notifyAuthorOnDelete}
-                                            onChange={(e) => setNotifyAuthorOnDelete(e.target.checked)}
-                                        />
-                                        Notify the author by email
-                                    </label>
-                                </div>
-
-                                {notifyAuthorOnDelete && renderNoteField('Note to the alumni student (optional)')}
-
                                 {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
                             </div>
+                        )}
+
+                        {selectedPost && modalFields && showDeletePostModal && renderModalForm(
+                            "Delete Post Form", handleDeletePost,
+                            ['Delete', 'Deleting...'], () => setShowDeletePostModal(false), deletePostFooterRef
                         )}
                     </div>
 
                     <div className={"general-large-admin-action-modal-footer"}>
-                        <button onClick={() => setShowDeletePostModal(false)} disabled={modalBusy}>
+                        <button onClick={() => setShowDeletePostModal(false)}>
                             Cancel
                         </button>
-
-                        <button onClick={handleDeletePost} disabled={modalBusy}>
-                            {modalBusy ? 'Deleting...' : 'Delete'}
-                        </button>
+                        <div ref={deletePostFooterRef} className="modal-footer-buttons-portal-target"/>
                     </div>
                 </div>
             </animated.div>

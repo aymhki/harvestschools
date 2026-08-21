@@ -220,6 +220,7 @@ function Form({
     const [selectedDateError, setSelectedDateError] = useState('');
     const animateDateModal = useSpring({ opacity: showSelectDateModal ? 1 : 0, transform: showSelectDateModal ? 'translateY(0)' : 'translateY(-100%)' });
     const [showPasswords, setShowPasswords] = useState(false);
+    const generalFormErrorRef = useRef(null);
     const dynamicInstanceUidCounter = useRef(0);
     const dynamicInstanceSeeds = useRef({});
     const DYNAMIC_CACHE_MAX_PROBE = 25;
@@ -817,6 +818,8 @@ function Form({
                         placeholder: newFieldData.placeholder,
                         errorMsg: newFieldData.errorMsg,
                         choices: newFieldData.choices,
+                        disabled: newFieldData.disabled,
+                        required: newFieldData.required,
                         value: newFieldData.value !== undefined ? newFieldData.value : currentField.value,
                     };
                 }
@@ -854,8 +857,8 @@ function Form({
     const getCommonInputProps = (field) => ({
         id: field.id,
         name: field.httpName,
-        required: field.required,
-        disabled: submitting,
+        required: field.required && !field.disabled,
+        disabled: submitting || field.disabled || false,
         readOnly: field.readOnlyField || formIsReadOnly || submitting || false,
         onChange: (e) => onChange(e, field),
         ref: fieldRefs.current[field.id],
@@ -920,7 +923,7 @@ function Form({
             ...baseProps,
             type,
             placeholder: getPlaceholder(field),
-            className: `text-form-field ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`,
+            className: `text-form-field ${(field.readOnlyField || field.disabled) ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`,
         };
 
         if (field.dontLetTheBrowserSaveField) {
@@ -969,7 +972,7 @@ function Form({
         const numberInput = (
             <div className={`number-input-container ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${ (field.readOnlyField || formIsReadOnly || submitting) ? 'read-only-field' : ''} ${(field.alwaysEnglish) ? 'always-english' : ''}`}>
                 <button className="number-input-reduce-button" type="button" onClick={handleNumberChange(-1)}
-                        disabled={field.readOnlyField || submitting || formIsReadOnly || false}
+                        disabled={field.readOnlyField || submitting || formIsReadOnly || field.disabled || false}
                 >
                     <span><RemoveIcon/></span>
                 </button>
@@ -984,7 +987,7 @@ function Form({
                 />
 
                 <button className="number-input-add-button" type="button" onClick={handleNumberChange(1)}
-                        disabled={field.readOnlyField || submitting || formIsReadOnly || false}
+                        disabled={field.readOnlyField || submitting || formIsReadOnly || field.disabled || false}
                 >
                     <span><AddIcon/></span>
                 </button>
@@ -1072,7 +1075,7 @@ function Form({
             <textarea
                 {...baseProps}
                 placeholder={getPlaceholder(field)}
-                className={`textarea-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.large ? 'large-height-textarea' : ''} ${field.readOnlyField ? 'read-only-field' : ''}`}
+                className={`textarea-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.large ? 'large-height-textarea' : ''} ${(field.readOnlyField || field.disabled) ? 'read-only-field' : ''}`}
             />
         );
 
@@ -1212,8 +1215,8 @@ function Form({
                 multiple={field.multiple}
                 className={
                     field.multiple ?
-                        `select-multiple-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}` :
-                        `select-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${field.readOnlyField ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`
+                        `select-multiple-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${(field.readOnlyField || field.disabled) ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}` :
+                        `select-form-field ${!field.labelOutside || !field.labelOnTop ? widthClass : ''} ${(field.readOnlyField || field.disabled) ? 'read-only-field' : ''} ${field.alwaysEnglish ? 'always-english' : ''}`
                 }
             >
                 {!field.multiple && <option value="">{getLabelText(field)}</option>}
@@ -1241,9 +1244,9 @@ function Form({
                         type={type}
                         id={field.id}
                         name={field.httpName}
-                        required={field.required}
+                        required={field.required && !field.disabled}
                         value={choice}
-                        disabled={submitting}
+                        disabled={submitting || field.disabled || false}
                         className={`${type}-form-field ${widthClass}`}
                         onChange={(e) => onChange(e, field)}
                         defaultChecked={(!field.readOnlyField && field.value) ? field.value === choice : false}
@@ -1835,7 +1838,7 @@ function Form({
         if (!fieldRefs.current[field.id]) fieldRefs.current[field.id] = createRef();
         if (!searchSelectWrapperRefs.current[field.id]) searchSelectWrapperRefs.current[field.id] = createRef();
 
-        const isFieldReadOnly = field.readOnlyField || formIsReadOnly || submitting;
+        const isFieldReadOnly = field.readOnlyField || formIsReadOnly || submitting || field.disabled;
         const selected = getSearchSelectSelected(field);
         const typedQuery = searchSelectQueries[field.id];
         const filterText = typedQuery ?? '';
@@ -1974,7 +1977,7 @@ function Form({
                         id={`${field.id}_search`}
                         value={displayText}
                         placeholder={selected.length === 0 ? getPlaceholder(field) : ''}
-                        disabled={submitting}
+                        disabled={submitting || field.disabled || false}
                         readOnly={isFieldReadOnly}
                         autoComplete="off"
                         role="combobox"
@@ -2650,6 +2653,29 @@ function Form({
     }, [captchaValue, setCaptchaValue, generateCaptcha, turnstileStatus]);
 
     useEffect(() => {
+        if (generalFormError === '' || !generalFormErrorRef.current) {
+            return;
+        }
+
+        const message = generalFormErrorRef.current;
+        let scroller  = message.parentElement;
+
+        while (scroller && scroller.scrollHeight <= scroller.clientHeight) {
+            scroller = scroller.parentElement;
+        }
+
+        if (!scroller) {
+            message.scrollIntoView({behavior: 'smooth', block: 'center'});
+            return;
+        }
+
+        const messageTop = message.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+        const target     = scroller.scrollTop + messageTop - (scroller.clientHeight / 2) + (message.offsetHeight / 2);
+
+        scroller.scrollTo({top: Math.max(0, target), behavior: 'smooth'});
+    }, [generalFormError]);
+
+    useEffect(() => {
         if (noCaptcha) {
             return;
         }
@@ -3009,7 +3035,7 @@ function Form({
 
         return (
             <div className={footerClass}>
-                {generalFormError && <p className="general-form-error">{generalFormError}</p>}
+                {generalFormError && <p ref={generalFormErrorRef} className="general-form-error">{generalFormError}</p>}
                 {successMessage && <p className="success-message">{successMessage}</p>}
                 {formFooterButtonsAreOutside && footerButtonsPortalTarget?.current
                     ? createPortal(buttonsMarkup, footerButtonsPortalTarget.current)
@@ -3160,6 +3186,7 @@ const fieldShape = {
     type: PropTypes.string.isRequired,
     required: PropTypes.bool.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    disabled: PropTypes.bool,
     setValue: PropTypes.func,
     errorMsg: PropTypes.string,
     choices: PropTypes.arrayOf(PropTypes.string),

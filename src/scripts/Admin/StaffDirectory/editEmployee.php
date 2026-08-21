@@ -56,12 +56,12 @@ try {
          SET sort_order = ?, name_en = ?, name_ar = ?, position_en = ?, position_ar = ?,
              subject_en = ?, subject_ar = ?, departments = ?, display_style = ?, is_public = ?,
              email = ?, phone = ?, hire_date = ?, notes = ?, degree_en = ?, degree_ar = ?, fingerprint_code = ?, classification = ?,
-             graduation_year = ?, national_id = ?, insurance_number = ?, birth_date = ?, address = ?
+             graduation_year = ?, national_id = ?, insurance_number = ?, birth_date = ?, address = ?, basic_salary = ?
          WHERE employee_code = ?"
     );
 
     $stmt->bind_param(
-        "issssssssissss" . "sssssssss" . "s",
+        "issssssssissss" . "sssssssss" . "ds",
         $employee['sort_order'],
         $employee['name_en'],
         $employee['name_ar'],
@@ -85,6 +85,7 @@ try {
         $employee['insurance_number'],
         $employee['birth_date'],
         $employee['address'],
+        $employee['basic_salary'],
         $employee['employee_code']
     );
 

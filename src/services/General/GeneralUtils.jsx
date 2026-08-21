@@ -179,6 +179,11 @@ const jobApplicationManagementPermissionLevel = "0";
 const EventBookingManagementPermissionLevel = "1";
 const openDaySignupManagementPermissionLevel = "2";
 const BorrowingSystemManagementPermissionLevel = "3";
+const borrowingRolePermissionLevels = {
+    'hr': "25",
+    'accounting': "26",
+    'board': BorrowingSystemManagementPermissionLevel,
+};
 const infoSystemManagementPermissionLevel = "7";
 const alumniStudentsManagementPermissionLevel = "13";
 const staffDirectoryManagementPermissionLevel = "14";
@@ -198,6 +203,7 @@ const anyAcademicCalendarPermissionLevels = [
     academicCalendarsMasterPermissionLevel,
     ...Object.values(academicCalendarPermissionLevels),
 ];
+const anyBorrowingSystemPermissionLevels = Object.values(borrowingRolePermissionLevels);
 const jackOfAllTradesPermissionLevel = "7246262252458111903";
 
 
@@ -321,6 +327,16 @@ const ENDPOINTS = {
     addCalendarEvent: '/scripts/Admin/AcademicCalendars/addCalendarEvent.php',
     editCalendarEvent: '/scripts/Admin/AcademicCalendars/editCalendarEvent.php',
     deleteCalendarEvent: '/scripts/Admin/AcademicCalendars/deleteCalendarEvent.php',
+    getBorrowingSystem: '/scripts/Admin/BorrowingSystem/getBorrowingSystem.php',
+    getEmployeeScore: '/scripts/Admin/BorrowingSystem/getEmployeeScore.php',
+    recordEligibilityInputs: '/scripts/Admin/BorrowingSystem/recordEligibilityInputs.php',
+    submitBorrowingApplication: '/scripts/Admin/BorrowingSystem/submitApplication.php',
+    reviewBorrowingApplication: '/scripts/Admin/BorrowingSystem/reviewApplication.php',
+    submitBorrowingDelayRequest: '/scripts/Admin/BorrowingSystem/submitDelayRequest.php',
+    reviewBorrowingDelayRequest: '/scripts/Admin/BorrowingSystem/reviewDelayRequest.php',
+    recordBorrowingPayment: '/scripts/Admin/BorrowingSystem/recordPayment.php',
+    reviewBorrowingEditRequest: '/scripts/Admin/BorrowingSystem/reviewEditRequest.php',
+    updateBorrowingConfig: '/scripts/Admin/BorrowingSystem/updateBorrowingConfig.php',
     verifyMfa: '/scripts/Admin/Session/verifyMfa.php',
     requestMfaEmailCode: '/scripts/Admin/Session/requestMfaEmailCode.php',
     getMyAccount: '/scripts/Admin/Session/getMyAccount.php',
@@ -549,6 +565,8 @@ export {
     academicCalendarPermissionLevels,
     anyAcademicCalendarPermissionLevels,
     BorrowingSystemManagementPermissionLevel,
+    borrowingRolePermissionLevels,
+    anyBorrowingSystemPermissionLevels,
     jackOfAllTradesPermissionLevel,
     getBaseUrl,
     getSessionsFromLocalStorage,
