@@ -303,7 +303,7 @@ public class HarvestBrowserDialog extends Dialog {
 
         if (chrome.showShare) { actionButtons.add(makeIconButton(R.drawable.ic_nav_share, view -> shareCurrentUrl())); }
 
-        if (chrome.showClose) { actionButtons.add(makeIconButton(R.drawable.ic_nav_close, view -> closeFromChrome())); }
+        if (chrome.showClose) { actionButtons.add(makeIconButton(R.drawable.ic_nav_home, view -> closeFromChrome())); }
 
         navBar = makePill(navButtons, Gravity.START);
         actionBar = makePill(actionButtons, Gravity.END);

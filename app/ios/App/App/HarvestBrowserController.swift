@@ -265,7 +265,7 @@ final class HarvestBrowserController: UIViewController, WKNavigationDelegate, WK
 
         if chrome.showReload { actionButtons.append(styledButton(reloadButton, systemName: "arrow.clockwise", action: #selector(handleReload))) }
         if chrome.showShare { actionButtons.append(styledButton(shareButton, systemName: "square.and.arrow.up", action: #selector(handleShare))) }
-        if chrome.showClose { actionButtons.append(styledButton(closeButton, systemName: "xmark", action: #selector(handleClose))) }
+        if chrome.showClose { actionButtons.append(styledButton(closeButton, systemName: "house", action: #selector(handleClose))) }
 
         let bottom = view.safeAreaLayoutGuide.bottomAnchor
 
