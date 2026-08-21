@@ -34,12 +34,6 @@
     overflow-x: hidden;
     font-family: var(--english-normal-font);
     letter-spacing: 0.1rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.admin-sidebar::-webkit-scrollbar {
-    display: none;
 }
 
 
@@ -90,8 +84,6 @@
     position: relative;
     flex-grow: 1;
     overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 }
 
 .sidebar-nav .sidebar-links li.active {
@@ -99,10 +91,6 @@
     top: 0;
     bottom: 0;
     z-index: 1;
-}
-
-.sidebar-nav::-webkit-scrollbar {
-    display: none;
 }
 
 .sidebar-links {

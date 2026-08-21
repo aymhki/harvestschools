@@ -32,12 +32,6 @@
     border-radius: 1rem;
     will-change: filter;
     transition: filter 0.5s;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.school-everywhere-login-form-wrapper::-webkit-scrollbar {
-    display: none;
 }
 
 @media (hover: hover) {

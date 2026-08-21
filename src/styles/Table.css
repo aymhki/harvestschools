@@ -4,17 +4,11 @@
     flex-direction: column;
     position: relative;
     padding: 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
     overflow-y: visible;
 }
 
 .table-module.compressed {
     margin: 0;
-}
-
-.table-module::-webkit-scrollbar {
-    display: none;
 }
 
 .table-module-table {
@@ -105,12 +99,6 @@
 .table-scroll-container.scrollable {
     overflow-x: auto;
     margin: 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.table-scroll-container.scrollable::-webkit-scrollbar {
-    display: none;
 }
 
 .table-module-header {
@@ -559,12 +547,6 @@ td button {
 .table-scroll-container.scrollable {
     overflow-x: auto;
     margin: 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.table-scroll-container.scrollable::-webkit-scrollbar {
-    display: none;
 }
 
 .compact-table-header-row {
@@ -803,13 +785,8 @@ td button {
         justify-content: flex-start;
         overflow-x: auto;
         overflow-y: hidden;
-        scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         padding: 0 0.5rem 0.25rem 0.5rem;
-    }
-
-    .table-module-header-buttons-wrapper::-webkit-scrollbar {
-        display: none;
     }
 
     .table-module-header-buttons-wrapper button {

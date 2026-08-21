@@ -55,12 +55,6 @@
     list-style: none;
     max-height: 75vh;
     overflow-y:scroll;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.fancy-list-items::-webkit-scrollbar {
-    display: none;
 }
 
 .fancy-list-item-wrapper {

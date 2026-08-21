@@ -16,11 +16,6 @@
     justify-content: safe center;
     align-items: center;
     margin: 0 auto;
-    scrollbar-width: none;
-}
-
-.tabs-bar::-webkit-scrollbar {
-    display: none;
 }
 
 .tabs-bar-wrapper {
