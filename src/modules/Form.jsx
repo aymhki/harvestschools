@@ -525,6 +525,12 @@ function Form({
             : field.sourceFieldId;
     };
 
+    const framePickerSourceIds = new Set(
+        composedFields
+            .filter((candidate) => candidate.type === 'video-thumbnail')
+            .map((candidate) => resolveSourceFieldId(candidate))
+    );
+
     useEffect(() => {
         const videoUrls = {};
         const previewUrls = {};
@@ -542,10 +548,9 @@ function Form({
                 previewUrls[field.id] = chosen.map((file) => (
                     String(file.type).startsWith('image/') ? URL.createObjectURL(file) : ''
                 ));
-            } else if (field.type === 'file' && field.showPreview) {
+            } else if (field.type === 'file' && field.showPreview && !framePickerSourceIds.has(field.id)) {
                 const chosen = fileInputs[field.id];
-                const canPreview = chosen instanceof File
-                    && (String(chosen.type).startsWith('image/') || String(chosen.type).startsWith('video/'));
+                const canPreview = chosen instanceof File && (String(chosen.type).startsWith('image/') || String(chosen.type).startsWith('video/'));
 
                 previewUrls[field.id] = canPreview ? [URL.createObjectURL(chosen)] : [];
             }
@@ -1638,7 +1643,7 @@ function Form({
                     {(chosenFile && field.showPreview) ? ` (${describeBytes(chosenFile.size)})` : ''}
                 </label>
 
-                {previewUrl !== '' && (
+                {(chosenFile && previewUrl !== '') && (
                     String(chosenFile.type).startsWith('video/') ? (
                         <video className="file-form-field-preview" src={previewUrl}
                                preload="metadata" muted playsInline controls/>
