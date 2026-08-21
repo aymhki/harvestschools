@@ -615,6 +615,8 @@ function EventBookingManagement() {
         {
             id: ceremonyDateFieldId,
             type: 'date',
+            minYear: new Date().getFullYear() - 2,
+            maxYear: new Date().getFullYear() + 2,
             name: 'ceremony-date',
             label: 'Ceremony Date',
             displayLabel: 'Ceremony Date',

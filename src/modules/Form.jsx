@@ -3103,6 +3103,23 @@ function Form({
             }
         };
 
+        const generateYearOptions = () => {
+            const openField = composedFields.find(field => field.id === selectedDateFieldID);
+            const fromYear = Number(openField?.minYear) || 1950;
+            const toYear = Number(openField?.maxYear) || new Date().getFullYear();
+            const years = toYear >= fromYear ? Array.from({length: toYear - fromYear + 1}, (v, k) => k + fromYear) : [];
+            const storedYear = parseInt(selectedDateYear, 10);
+
+            if (storedYear && !years.includes(storedYear)) {
+                years.push(storedYear);
+                years.sort((first, second) => first - second);
+            }
+
+            return years.map(year => (
+                <option key={year} value={year}>{year}</option>
+            ));
+        };
+
         const generateDayOptions = () => {
             if (selectedDateMonth && selectedDateYear && parseInt(selectedDateYear) && parseInt(selectedDateMonth)) {
                 const daysInMonth = new Date(parseInt(selectedDateYear), parseInt(selectedDateMonth), 0).getDate();
@@ -3135,9 +3152,7 @@ function Form({
                                     {t('all-forms.year')}
                                 </option>
 
-                                {Array.from({length: new Date().getFullYear() - 1950 + 1}, (v, k) => k + 1950).map(year => (
-                                    <option key={year} value={year}>{year}</option>
-                                ))}
+                                {generateYearOptions()}
                             </select>
                             <select
                                 className="select-form-field third-width"
@@ -3251,6 +3266,8 @@ const fieldShape = {
     defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     minimumValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     maximumValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    minYear: PropTypes.number,
+    maxYear: PropTypes.number,
     rules: PropTypes.arrayOf(PropTypes.shape({
         value: PropTypes.string.isRequired,
         ruleResult: PropTypes.arrayOf(PropTypes.object).isRequired

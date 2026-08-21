@@ -21,7 +21,7 @@ import {
     uploadAlumniPostImage,
     logoutCurrentAlumni,
 } from "../../../services/Alumni/MainAlumniServices.jsx";
-import {alumniPublicFileUrl, msgTimeout, isMobileApp} from "../../../services/General/GeneralUtils.jsx";
+import {alumniPublicFileUrl, msgTimeout, isMobileApp, schoolFoundedYear} from "../../../services/General/GeneralUtils.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
 import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
 
@@ -750,6 +750,7 @@ function AlumniProfile() {
                                           {
                                               id: editProfileFieldIds.graduationDate,
                                               type: 'date',
+                                              minYear: schoolFoundedYear,
                                               name: 'graduation-date',
                                               label: 'Graduation Date',
                                               required: false,

@@ -19,7 +19,7 @@ import {
     updateAlumniBiometricCredentials,
     submitAlumniSignup
 } from "../../../services/Alumni/MainAlumniServices.jsx";
-import {msgTimeout, isMobileApp, mfaResendCooldownSeconds} from "../../../services/General/GeneralUtils.jsx";
+import {msgTimeout, isMobileApp, mfaResendCooldownSeconds, schoolFoundedYear} from "../../../services/General/GeneralUtils.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
 import {
     isBiometricAvailable,
@@ -805,6 +805,7 @@ function AlumniLogin() {
                                               {
                                                   id: signUpGraduationDateFieldId,
                                                   type: 'date',
+                                                  minYear: schoolFoundedYear,
                                                   name: 'graduation-date',
                                                   label: 'Graduation Date',
                                                   required: true,

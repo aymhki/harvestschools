@@ -6,7 +6,7 @@ import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
-import {msgTimeout, anyBorrowingSystemPermissionLevels} from "../../services/General/GeneralUtils.jsx";
+import {msgTimeout, anyBorrowingSystemPermissionLevels, schoolFoundedYear} from "../../services/General/GeneralUtils.jsx";
 import {
     fetchBorrowingSystem,
     fetchEmployeeScore,
@@ -117,6 +117,8 @@ const addMonths = (isoDate, months) => {
 
     return `${shifted.getFullYear()}-${String(shifted.getMonth() + 1).padStart(2, '0')}-01`;
 };
+
+const borrowingYear = () => new Date().getFullYear();
 
 const firstOfNextMonth = () => {
     const now = new Date();
@@ -328,7 +330,7 @@ function BorrowingSystemManagement() {
 
         if (data && data.hireDateCapture === 'eligibility_form') {
             fields.push({
-                id: eligibilityHireDateFieldId, type: 'date', name: 'hire_date', httpName: 'hire-date',
+                id: eligibilityHireDateFieldId, type: 'date', minYear: schoolFoundedYear, maxYear: borrowingYear() + 1, name: 'hire_date', httpName: 'hire-date',
                 label: 'Hire Date', displayLabel: 'Hire date, leave blank to use the stored one',
                 required: false, value: '',
                 widthOfField: 1, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
@@ -515,7 +517,7 @@ function BorrowingSystemManagement() {
 
         if (data.allowFirstMonth) {
             fields.push({
-                id: firstMonthFieldId, type: 'date', name: 'first_month', httpName: 'first-month',
+                id: firstMonthFieldId, type: 'date', minYear: borrowingYear() - 2, maxYear: borrowingYear() + 2, name: 'first_month', httpName: 'first-month',
                 label: 'First Instalment', displayLabel: 'Month the first instalment falls in',
                 required: false, value: '', defaultValue: firstOfNextMonth(),
                 widthOfField: 2, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
@@ -646,7 +648,7 @@ function BorrowingSystemManagement() {
                 widthOfField: 2, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
             },
             {
-                id: planFirstMonthFieldId, type: 'date', name: 'plan_first_month', httpName: 'plan-first-month',
+                id: planFirstMonthFieldId, type: 'date', minYear: borrowingYear() - 2, maxYear: borrowingYear() + 2, name: 'plan_first_month', httpName: 'plan-first-month',
                 label: 'First Instalment', displayLabel: 'Month the first instalment falls in',
                 required: true, errorMsg: 'Choose the month the first instalment falls in', value: '',
                 defaultValue: application.firstDueMonth || firstOfNextMonth(),
