@@ -25,6 +25,7 @@ import CreditScoreIcon from '@mui/icons-material/CreditScore';
 import PropTypes from "prop-types";
 import {LinkOutlined} from "@mui/icons-material";
 import AdminSettingsModal from './AdminSettingsModal.jsx';
+import {openSchoolEverywhereTarget} from "../services/General/ExternalSiteService.jsx";
 
 function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned, onTogglePin, setRefreshCurrentUserData}) {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -129,6 +130,15 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
         }
     }, []);
 
+    const openSchoolEverywhere = () => {
+        setIsMobileOpen(false);
+        openSchoolEverywhereTarget({
+            target: 'portal',
+            isMobileApp: Capacitor.isNativePlatform(),
+            navigate,
+        });
+    };
+
     const openSettings = () => {
         setSettingsNotice(null);
         setShowSettingsModal(true);
@@ -212,14 +222,11 @@ function AdminSidebar({ adminLinks, adminPermissions, loggedInUsername, isPinned
                                 {showText && <span className="label">Main Site</span>}
                             </Link>
                         </li>
-                        <li>
-                            <Link
-                                to={ "https://schooleverywhere-harvest.com/schooleverywhere/" }
-                                title={!isExpanded ? 'SchoolEverywhere' : ''}
-                            >
+                        <li onClick={openSchoolEverywhere}>
+                            <div className="nav-item-content" title={!isExpanded ? 'SchoolEverywhere' : ''}>
                                 <span className="icon"><LinkOutlined /></span>
                                 {showText && <span className="label">SchoolEverywhere</span>}
-                            </Link>
+                            </div>
                         </li>
 
                         {(adminPermissions.includes(jackOfAllTradesPermissionLevel)) && (<li>
