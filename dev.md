@@ -30,7 +30,7 @@ tree --gitignore -I 'assets|.git' -a
 - [ ] Fix upload video field and frame selector field not working for some video types/codecs/containers before processing.
 - [ ] Fix Frame selector not showing loading indicator when loading the frame on change.
 - [ ] Fix video link column/row should not work for a file that is still processing.
-- [ ] Fix: Videos with tall aspect ratio don't have a max heighted containers and so their photo collage takes up the entire view port even in mobile view.
+- [x] Fix: Videos with tall aspect ratio don't have a max heighted containers and so their photo collage takes up the entire view port even in mobile view.
 - [ ] Add a narrow/wide option for video uploads similar to photo collages and update the css accordingly.
 - [ ] Editing Photo Collage or Videos should also allow editing the position/order.
 - [ ] Allow interactive solves on turnstile.

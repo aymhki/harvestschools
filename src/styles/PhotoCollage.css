@@ -85,6 +85,11 @@
 
 .video-preview-slider .video-preview-media {
     height: auto;
+    max-height: min(70vh, 40rem);
+}
+
+.video-preview-collage .video-preview-media {
+    max-height: min(60vh, 30rem);
 }
 
 .video-preview-play {
