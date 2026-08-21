@@ -528,6 +528,12 @@ function BorrowingSystemManagement() {
             widthOfField: 1, labelOutside: true, labelOnTop: true,
         });
 
+        const halfWidthFields = fields.filter((field) => field.widthOfField === 2);
+
+        if (halfWidthFields.length % 2 === 1) {
+            halfWidthFields[halfWidthFields.length - 1].widthOfField = 1;
+        }
+
         setModalContext({
             employeeCode: score.employee.employeeCode,
             employeeName: score.employee.nameEn,
@@ -625,7 +631,7 @@ function BorrowingSystemManagement() {
                 id: planRowAmountFieldId, type: 'text', name: 'plan_installment', httpName: 'plan-installment',
                 label: 'Instalment', displayLabel: 'Amount in EGP', required: true,
                 errorMsg: 'Enter the instalment as a number, for example 500 or 500.50',
-                regex: moneyRegex, value: '', widthOfField: 2, labelOutside: true, labelOnTop: true,
+                regex: moneyRegex, value: '', widthOfField: 1, labelOutside: true, labelOnTop: true,
                 alwaysEnglish: true,
             }],
             instances: buildEvenPlan(application.requestedAmount, application.installmentCount).map((amount) => ({[planRowAmountFieldId]: amount})),
@@ -1167,17 +1173,13 @@ function BorrowingSystemManagement() {
                 label: `Multiplier ${label}`, displayLabel: `Salary multiplier · ${label}`, required: true,
                 errorMsg: 'Enter a number such as 1.25', regex: '^[0-9]{1,3}([.][0-9]{1,2})?$',
                 value: '', defaultValue: row[2 + position],
-                widthOfField: 3, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
-            });
-        });
-
-        bracketLabels.forEach((label, position) => {
-            fields.push({
+                widthOfField: 2, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
+            }, {
                 id: matrixFlatFieldIds[position], type: 'text', name: `f${position}`, httpName: `f${position}`,
                 label: `Flat ${label}`, displayLabel: `Flat amount in EGP · ${label}`, required: true,
                 errorMsg: 'Enter a number', regex: moneyRegex,
                 value: '', defaultValue: row[7 + position],
-                widthOfField: 3, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
+                widthOfField: 2, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
             });
         });
 
@@ -1229,14 +1231,14 @@ function BorrowingSystemManagement() {
                 id: bandThresholdFieldId, type: 'text', name: 'threshold', httpName: 'threshold',
                 label: 'Threshold', displayLabel: 'Threshold, blank for the last band',
                 required: false, value: '', defaultValue: row[bandThresholdColIndex],
-                widthOfField: 3, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
+                widthOfField: 2, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
             },
             {
                 id: bandScoreFieldId, type: 'number', name: 'score', httpName: 'score',
                 label: 'Score', displayLabel: 'Score this band awards', required: true,
                 errorMsg: 'A band score is between 0 and 100', value: '', defaultValue: row[bandScoreColIndex],
                 minimumValue: 0, maximumValue: 100,
-                widthOfField: 3, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
+                widthOfField: 2, labelOutside: true, labelOnTop: true, alwaysEnglish: true,
             },
             {
                 id: bandLabelFieldId, type: 'text', name: 'label', httpName: 'band-label',
@@ -1336,25 +1338,25 @@ function BorrowingSystemManagement() {
                 id: emailEmployeeFieldId, type: 'select', name: 'employee', httpName: 'employee',
                 label: 'Employee', displayLabel: 'Email the employee', required: true,
                 choices: ['Yes', 'No'], value: '', defaultValue: row[1],
-                widthOfField: 3, labelOutside: true, labelOnTop: true,
+                widthOfField: 2, labelOutside: true, labelOnTop: true,
             },
             {
                 id: emailHrFieldId, type: 'select', name: 'hr', httpName: 'hr',
                 label: 'HR', displayLabel: 'Email Human Resources', required: true,
                 choices: ['Yes', 'No'], value: '', defaultValue: row[2],
-                widthOfField: 3, labelOutside: true, labelOnTop: true,
+                widthOfField: 2, labelOutside: true, labelOnTop: true,
             },
             {
                 id: emailAccountingFieldId, type: 'select', name: 'accounting', httpName: 'accounting',
                 label: 'Accounting', displayLabel: 'Email Accounting & Finance', required: true,
                 choices: ['Yes', 'No'], value: '', defaultValue: row[3],
-                widthOfField: 3, labelOutside: true, labelOnTop: true,
+                widthOfField: 2, labelOutside: true, labelOnTop: true,
             },
             {
                 id: emailBoardFieldId, type: 'select', name: 'board', httpName: 'board',
                 label: 'Board', displayLabel: 'Email the board', required: true,
                 choices: ['Yes', 'No'], value: '', defaultValue: row[4],
-                widthOfField: 3, labelOutside: true, labelOnTop: true,
+                widthOfField: 2, labelOutside: true, labelOnTop: true,
             },
         ]);
         setModalKind('email');
