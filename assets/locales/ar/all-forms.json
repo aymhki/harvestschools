@@ -21,6 +21,7 @@
     "year-month-day": " (سنة-شهر-يوم) ",
     "field-required": "هذه الخانة '{{field1}}' مطلوبة",
     "no-results": "لا نتائج",
+    "use-typed-value": "استخدم \"{{value}}\"",
     "dynamic-section-min-error": "يجب إضافة {{min}} على الأقل من قسم '{{title}}' قبل الإرسال"
   }
 }

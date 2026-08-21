@@ -150,6 +150,14 @@ const searchSelectMatches = (choice, query) => {
 };
 
 const OPTION_TAP_TOLERANCE = 8;
+const CUSTOM_VALUE_MAX_LENGTH = 255;
+
+const sanitiseCustomValue = (value) => String(value)
+    .replace(/,/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, CUSTOM_VALUE_MAX_LENGTH);
+
 const DEFAULT_MAX_FILE_BYTES = 2 * 1024 * 1024;
 
 const describeBytes = (bytes) => {
@@ -305,6 +313,7 @@ function Form({
     const turnstileContainerRef = useRef(null);
     const turnstileWidgetIdRef = useRef(null);
     const turnstileTokenRef = useRef('');
+    const turnstileRetriedRef = useRef(false);
     const [turnstileStatus, setTurnstileStatus] = useState('pending');
     const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
@@ -1888,6 +1897,11 @@ function Form({
             && (field.onSearchQueryChange !== undefined || searchSelectMatches(choice, filterText))
         );
 
+        const customValue = field.allowCustomValues ? sanitiseCustomValue(filterText) : '';
+        const alreadyKnown = (value) => (field.choices || []).some(choice => String(choice).toLowerCase() === value.toLowerCase()) || selected.some(chosen => String(chosen).toLowerCase() === value.toLowerCase());
+        const canAddCustomValue = customValue !== '' && filteredChoices.length === 0 && !alreadyKnown(customValue);
+        const dropdownEntries = canAddCustomValue ? [{isCustom: true, value: customValue}, ...filteredChoices.map(choice => ({isCustom: false, value: choice}))] : filteredChoices.map(choice => ({isCustom: false, value: choice}));
+
         const clearQuery = () => setSearchSelectQueries(prev => {
             const next = { ...prev };
             delete next[field.id];
@@ -1895,6 +1909,10 @@ function Form({
         });
 
         const closeDropdown = () => {
+            if (canAddCustomValue) {
+                applySearchSelectSelection(field, field.multiple ? [...selected, customValue] : [customValue]);
+            }
+
             setOpenSearchSelectId(null);
             setSearchSelectHighlight(-1);
             clearQuery();
@@ -1949,21 +1967,26 @@ function Form({
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 if (!isOpen) { openDropdown(); setSearchSelectHighlight(0); return; }
-                setSearchSelectHighlight(h => (filteredChoices.length === 0 ? -1 : Math.min(h + 1, filteredChoices.length - 1)));
+                setSearchSelectHighlight(h => (dropdownEntries.length === 0 ? -1 : Math.min(h + 1, dropdownEntries.length - 1)));
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 setSearchSelectHighlight(h => Math.max(h - 1, 0));
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (isOpen && searchSelectHighlight >= 0 && filteredChoices[searchSelectHighlight]) {
-                    pickChoice(filteredChoices[searchSelectHighlight]);
-                } else if (isOpen && filteredChoices.length === 1) {
-                    pickChoice(filteredChoices[0]);
+                if (isOpen && searchSelectHighlight >= 0 && dropdownEntries[searchSelectHighlight]) {
+                    pickChoice(dropdownEntries[searchSelectHighlight].value);
+                } else if (isOpen && dropdownEntries.length === 1) {
+                    pickChoice(dropdownEntries[0].value);
                 } else {
                     const exactMatch = (field.choices || []).find(
                         c => String(c).toLowerCase() === String(displayText).trim().toLowerCase()
                     );
-                    if (exactMatch) pickChoice(exactMatch);
+
+                    if (exactMatch) {
+                        pickChoice(exactMatch);
+                    } else if (canAddCustomValue) {
+                        pickChoice(customValue);
+                    }
                 }
             } else if (e.key === 'Escape' || e.key === 'Tab') {
                 closeDropdown();
@@ -2034,15 +2057,15 @@ function Form({
                         ref={searchSelectDropdownRef}
                         {...(field.lang !== undefined && { lang: field.lang })}
                     >
-                        {filteredChoices.length === 0 && (
+                        {dropdownEntries.length === 0 && (
                             <li className="search-select-no-results">{t('all-forms.no-results')}</li>
                         )}
-                        {filteredChoices.map((choice, index) => (
+                        {dropdownEntries.map(({isCustom, value: choice}, index) => (
                             <li
-                                key={choice}
+                                key={isCustom ? '__custom__' : choice}
                                 role="option"
                                 aria-selected={!field.multiple && selected[0] === choice}
-                                className={`search-select-option ${index === searchSelectHighlight ? 'highlighted' : ''} ${!field.multiple && selected[0] === choice ? 'selected' : ''}`}
+                                className={`search-select-option ${isCustom ? 'search-select-option-create' : ''} ${index === searchSelectHighlight ? 'highlighted' : ''} ${!field.multiple && selected[0] === choice ? 'selected' : ''}`}
                                 onPointerDown={(e) => {
                                     if (e.pointerType === 'mouse') {
                                         e.preventDefault();
@@ -2067,7 +2090,7 @@ function Form({
                                 onPointerCancel={() => { optionPointerStartRef.current = null; }}
                                 onMouseEnter={() => setSearchSelectHighlight(index)}
                             >
-                                {choice}
+                                {isCustom ? t('all-forms.use-typed-value', {value: choice}) : choice}
                             </li>
                         ))}
                     </ul>
@@ -2735,11 +2758,34 @@ function Form({
                     sitekey: turnstileSiteKey,
                     theme: 'auto',
                     size: 'flexible',
+                    appearance: 'always',
                     callback: (token) => {
                         turnstileTokenRef.current = token || '';
+                        turnstileRetriedRef.current = false;
                         setTurnstileStatus('ready');
                     },
                     'error-callback': () => {
+                        turnstileTokenRef.current = '';
+
+                        const canReset = turnstileWidgetIdRef.current !== null
+                            && window.turnstile
+                            && typeof window.turnstile.reset === 'function';
+
+                        if (turnstileRetriedRef.current || !canReset) {
+                            setTurnstileStatus('failed');
+
+                            return;
+                        }
+
+                        turnstileRetriedRef.current = true;
+
+                        try {
+                            window.turnstile.reset(turnstileWidgetIdRef.current);
+                        } catch (ignored) {
+                            setTurnstileStatus('failed');
+                        }
+                    },
+                    'unsupported-callback': () => {
                         turnstileTokenRef.current = '';
                         setTurnstileStatus('failed');
                     },
@@ -2778,6 +2824,7 @@ function Form({
 
             turnstileWidgetIdRef.current = null;
             turnstileTokenRef.current = '';
+            turnstileRetriedRef.current = false;
         };
     }, [noCaptcha]);
 
@@ -3278,6 +3325,7 @@ const fieldShape = {
         ruleResult: PropTypes.arrayOf(PropTypes.object).isRequired
     })),
     alwaysEnglish: PropTypes.bool,
+    allowCustomValues: PropTypes.bool,
     lang: PropTypes.string,
     autoSelect: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     onSearchQueryChange: PropTypes.func,

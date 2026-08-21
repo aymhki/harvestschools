@@ -778,6 +778,7 @@
 .turnstile-container {
     width: 100%;
     min-width: 0;
+    min-height: 4.0625rem;
 }
 
 .captcha-wrapper,
@@ -1111,6 +1112,11 @@
 .search-select-option.highlighted {
     background-color: var(--ff-field-border);
     color: var(--ff-panel-bg);
+}
+
+.search-select-option-create {
+    font-style: italic;
+    opacity: 0.85;
 }
 
 .search-select-option.selected {

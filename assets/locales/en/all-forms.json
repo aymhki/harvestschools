@@ -21,6 +21,7 @@
     "year-month-day": " (YYYY-MM-DD)",
     "field-required": "Field '{{field1}}' is required",
     "no-results": "No Results",
+    "use-typed-value": "Use \"{{value}}\"",
     "dynamic-section-min-error": "At least {{min}} '{{title}}' section(s) must be added before submitting"
   }
 }

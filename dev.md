@@ -16,7 +16,7 @@ tree --gitignore -I 'assets|.git' -a
 - [x] Add: optional custom date ranges to date field in the form component and use it in places like alumni sign up graduation date to start from 2016.
 - [x] Fix: form search select field does not filter properly due to removed vowels.
 - [ ] Add: search field to table header elements with optional prop that will only show rows where any colum/row contains the query.
-- [ ] search-select field should allow non existing values if an optional prop is passed.
+- [x] search-select field should allow non existing values if an optional prop is passed.
 - [x] Change the harvest in app browser icon from x to home icon in both iOS and android.
 - [ ] App opening normally should not navigate to the last opened page.
 - [x] Full page options selector should be changed for a compact options grid in the staff department selection page using the same image urls that the academics departments used where needed.
