@@ -974,8 +974,7 @@ function BorrowingSystemManagement() {
                                        currencyColumns={['Amount']}
                                        currencySymbols={['EGP']}
                                        currencySymbolPositions={['right-space']}
-                                       cellRenderers={{Actions: (value, rowIndex) =>
-                                               renderInstallmentActions(application.schedule[rowIndex - 1])}}
+                                       cellRenderers={{Actions: (value, rowIndex) => renderInstallmentActions(application.schedule[rowIndex - 1])}}
                                 />
                             </>
                         )}

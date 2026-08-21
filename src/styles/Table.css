@@ -219,8 +219,7 @@ td:lang(ar) {
 .table-link {
     text-decoration: underline;
     color: var(--fb-link-color);
-    font-family: var(--english-normal-font-bold);
-    font-weight: bold;
+    font-family: var(--english-normal-font);
     font-size: 80%;
     padding: 0;
     margin: 0;
@@ -238,6 +237,13 @@ td:lang(ar) {
     color: var(--fb-link-color);
     text-decoration: underline;
     transition: none;
+}
+
+.table-cell-inert {
+    font-family: var(--english-normal-font);
+    font-size: 80%;
+    opacity: 0.8;
+    cursor: default;
 }
 
 .compact-table-cell-text {

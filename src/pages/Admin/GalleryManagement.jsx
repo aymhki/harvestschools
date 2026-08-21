@@ -666,7 +666,12 @@ function GalleryManagement() {
                    isLoading={isLoading}
                    defaultHiddenColumns={['Video ID', 'File Name']}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
-                   likelyUrlColumns={{'Video Path': openGalleryFile}}
+                   cellRenderers={{
+                       'Video Path': (cellValue) => {
+                           const video = videoRecords.find((record) => `videos/${record.fileName}` === cellValue);
+                           return (video && video.status === 'ready') ? <a className={"table-link"} lang={"en"} onClick={() => openGalleryFile(cellValue)}>{cellValue}</a> : <span className={"table-cell-inert"} lang={"en"}>{cellValue}</span>;
+                       },
+                   }}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => openEditVideoModal(rowIndex)}
                    allowDeleteEntryOption={true}
