@@ -78,7 +78,7 @@ function handleAdvancedMode($from, $message) {
             return;
         }
 
-        if (isset($DEPARTMENTS[$listId])) {
+        if (departmentIsChattable($DEPARTMENTS, $listId)) {
             $dept = $DEPARTMENTS[$listId];
             $deptName = $dept[$lang];
             $waLink = "https://wa.me/" . $dept['number'];
@@ -135,11 +135,19 @@ function sendFeedbackButtons($to, $lang) {
 
 function sendDepartmentList($to, $lang) {
     global $DEPARTMENTS, $STRINGS;
+    $available = chattableDepartments($DEPARTMENTS);
     $rows = [];
-    foreach ($DEPARTMENTS as $id => $d) {
+    foreach ($available as $id => $d) {
         $rows[] = ["id" => $id, "title" => $d[$lang]];
     }
-    sendList($to, $STRINGS['departments_title'][$lang], $STRINGS['departments_title'][$lang], [[
+
+    $bodyText = $STRINGS['departments_title'][$lang];
+
+    if (count($available) !== count($DEPARTMENTS) && isset($STRINGS['hidden_departments_note'][$lang])) {
+        $bodyText .= "\n\n_" . $STRINGS['hidden_departments_note'][$lang] . "_";
+    }
+
+    sendList($to, $bodyText, $STRINGS['departments_title'][$lang], [[
         "title" => $STRINGS['departments_title'][$lang],
         "rows"  => $rows
     ]]);

@@ -17,6 +17,20 @@ function activeChannel() {
     return $GLOBALS['ACTIVE_CHAT_CHANNEL'] ?? 'whatsapp';
 }
 
+function chattableDepartments($departments) {
+    $available = [];
+    foreach ($departments as $key => $dept) {
+        if ((int)($dept['available'] ?? 1) === 1) {
+            $available[$key] = $dept;
+        }
+    }
+    return $available;
+}
+
+function departmentIsChattable($departments, $key) {
+    return isset($departments[$key]) && (int)($departments[$key]['available'] ?? 1) === 1;
+}
+
 function getSession($phone, $channel = null) {
     $channel = $channel ?? activeChannel();
     $stmt = db()->prepare("SELECT * FROM chat_bot_user_sessions WHERE phone_number = ? AND channel = ?");

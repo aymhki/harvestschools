@@ -120,7 +120,7 @@ function handleIntermediateMode($from, $message) {
         if (strpos($replyId, 'contact_') === 0) {
             $deptId = substr($replyId, 8);
             $contacts = $config['contact_departments'];
-            if (isset($contacts[$deptId])) {
+            if (departmentIsChattable($contacts, $deptId)) {
                 $dept = $contacts[$deptId];
                 $deptName = $dept[$lang];
                 $waLink = "https://wa.me/" . $dept['number'];
@@ -373,8 +373,16 @@ function sendContactMenuIntermediate($to, $lang) {
     $ui = $config['ui'];
     $rows = [];
 
-    foreach ($config['contact_departments'] as $id => $dept) {
+    $available = chattableDepartments($config['contact_departments']);
+
+    foreach ($available as $id => $dept) {
         $rows[] = ["id" => "contact_" . $id, "title" => $dept[$lang]];
+    }
+
+    $bodyText = $ui['contact_body'][$lang];
+
+    if (count($available) !== count($config['contact_departments']) && isset($ui['contact_hidden_note'][$lang])) {
+        $bodyText .= "\n\n_" . $ui['contact_hidden_note'][$lang] . "_";
     }
 
     $sections = [
@@ -391,7 +399,7 @@ function sendContactMenuIntermediate($to, $lang) {
         ]
     ];
 
-    sendList($to, $ui['contact_body'][$lang], $ui['main_btn'][$lang], $sections);
+    sendList($to, $bodyText, $ui['main_btn'][$lang], $sections);
 }
 
 function sendFeesAndDiscountsMenuIntermediate($to, $lang) {
