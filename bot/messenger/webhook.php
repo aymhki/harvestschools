@@ -57,7 +57,9 @@ try {
         exit;
     }
 
-    if (BOT_ON === 1) {
+    $channelOn = defined('BOT_ON_MESSENGER') ? BOT_ON_MESSENGER : BOT_ON;
+
+    if (BOT_ON === 1 && $channelOn === 1) {
         if (BOT_MODE === 'advanced') {
             require_once __DIR__ . '/../shared/modes/advanced_mode.php';
             handleAdvancedMode($from, $message);
