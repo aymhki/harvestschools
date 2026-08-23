@@ -22,6 +22,8 @@
     "field-required": "هذه الخانة '{{field1}}' مطلوبة",
     "no-results": "لا نتائج",
     "use-typed-value": "استخدم \"{{value}}\"",
+    "drop-file-here": "أترك ملفاً هنا، أو استخدم الزر بالأعلى",
+    "drop-files-here": "أترك الملفات هنا، أو استخدم الزر بالأعلى",
     "dynamic-section-min-error": "يجب إضافة {{min}} على الأقل من قسم '{{title}}' قبل الإرسال"
   }
 }

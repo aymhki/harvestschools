@@ -22,6 +22,8 @@
     "field-required": "Field '{{field1}}' is required",
     "no-results": "No Results",
     "use-typed-value": "Use \"{{value}}\"",
+    "drop-file-here": "Drop a file here, or use the button above",
+    "drop-files-here": "Drop files here, or use the button above",
     "dynamic-section-min-error": "At least {{min}} '{{title}}' section(s) must be added before submitting"
   }
 }
