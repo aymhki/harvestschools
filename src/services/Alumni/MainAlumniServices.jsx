@@ -213,7 +213,7 @@ const performAlumniDiscoverablePasskeyLogin = async (navigate) => {
 
         const optionsResponse = await fetch(endpoints.alumniPasskeyDiscoverableLoginOptions, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', ...turnstileHeaders()},
             body: JSON.stringify({}),
         });
         const optionsResult = await optionsResponse.json();

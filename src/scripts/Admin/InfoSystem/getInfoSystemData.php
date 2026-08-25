@@ -59,11 +59,12 @@ try {
     $stmt->close();
     $settingsData = moveColumnFirst(array_merge([$settingsHeaders], $settingsRows), "ID");
 
-    $deptHeaders = ["Department Key", "Name (EN)", "Name (AR)", "Contact Number", "Is Academic", "ID"];
+    $deptHeaders = ["Department Key", "Name (EN)", "Name (AR)", "Contact Number", "Is Academic", "Available To Chat With", "ID"];
     $deptRows = [];
-    $res = $conn->query("SELECT dept_key, name_en, name_ar, contact_number, is_academic, sort_order FROM info_system_departments ORDER BY sort_order ASC");
+    $res = $conn->query("SELECT dept_key, name_en, name_ar, contact_number, is_academic, available_to_chat_with, sort_order FROM info_system_departments ORDER BY sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $row['is_academic'] = $row['is_academic'] == 1 ? 'Yes' : 'No';
+        $row['available_to_chat_with'] = $row['available_to_chat_with'] == 1 ? 'Yes' : 'No';
         $deptRows[] = array_map('strval', array_values($row));
     }
     $deptData = moveColumnFirst(array_merge([$deptHeaders], $deptRows), "ID");
@@ -97,6 +98,20 @@ try {
     }
     $policyData = moveColumnFirst(array_merge([$policyHeaders], $policyRows), "ID");
 
+    $staticContentHeaders = ["Content Key", "Group Key", "Title (EN)", "Title (AR)", "Body (EN)", "Body (AR)", "ID"];
+    $staticContentRows = [];
+    $staticContentTable = $conn->query("SHOW TABLES LIKE 'info_system_static_content'");
+
+    if ($staticContentTable && $staticContentTable->num_rows > 0) {
+        $res = $conn->query("SELECT content_key, group_key, title_en, title_ar, body_en, body_ar, sort_order FROM info_system_static_content ORDER BY group_key, sort_order ASC");
+
+        while ($row = $res->fetch_assoc()) {
+            $staticContentRows[] = array_map('strval', array_values($row));
+        }
+    }
+
+    $staticContentData = moveColumnFirst(array_merge([$staticContentHeaders], $staticContentRows), "ID");
+
     $formEmailHeaders = ["Form Key", "Form", "Recipient Email", "Is Active", "ID"];
     $formEmailRows = [];
     $formEmailsTable = $conn->query("SHOW TABLES LIKE 'info_system_form_emails'");
@@ -122,6 +137,7 @@ try {
             "stages" => $stageData,
             "profile" => $profileData,
             "policies" => $policyData,
+            "staticContent" => $staticContentData,
             "formEmails" => $formEmailData
         ]
     ]);

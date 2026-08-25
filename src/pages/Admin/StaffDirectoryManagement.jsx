@@ -4,6 +4,7 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
+import {fetchImportDescriptor, importCsvFile} from "../../services/Admin/Imports/AdminImportServices.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {msgTimeout, staffDirectoryManagementPermissionLevel, schoolFoundedYear} from "../../services/General/GeneralUtils.jsx";
 import {
@@ -72,6 +73,7 @@ function StaffDirectoryManagement() {
     const [employeesData, setEmployeesData] = useState(null);
     const [departments, setDepartments] = useState([]);
     const [displayStyles, setDisplayStyles] = useState([]);
+    const [importDescriptor, setImportDescriptor] = useState(null);
 
     const [showEditorModal, setShowEditorModal] = useState(false);
     const [resetEditorModal, setResetEditorModal] = useState(false);
@@ -106,6 +108,7 @@ function StaffDirectoryManagement() {
         headToAdminLoginOnInvalidSession(navigate, staffDirectoryManagementPermissionLevel, setIsLoading)
             .then(() => {
                 reloadData();
+                fetchImportDescriptor(navigate, 'staff').then(setImportDescriptor);
             });
     }, []);
 
@@ -260,9 +263,26 @@ function StaffDirectoryManagement() {
                        sortConfigParam={{column: 0, direction: 'ascending'}}
                        defaultHiddenColumns={['Address', 'Birth Date', 'Graduation Year', 'National ID', 'Insurance Number', 'Notes', 'Basic Salary', 'Hidden']}
                        filterableColumns={['Departments', 'Display', 'Public', 'Classification']}
+                       allowSearch={true}
+                       searchPlaceholder={'Search employees'}
                        currencyColumns={['Basic Salary']}
                        currencySymbols={['EGP']}
                        currencySymbolPositions={['right-space']}
+                       allowExport={true}
+                       exportFileName={'staff-directory'}
+                       importConfig={{
+                           templateName: 'staff-directory',
+                           descriptor: importDescriptor,
+                           onImport: async (file) => {
+                               const result = await importCsvFile('staff', {}, file);
+
+                               if (result.imported > 0) {
+                                   await reloadData();
+                               }
+
+                               return result;
+                           },
+                       }}
                        allowEditEntryOption={true}
                        onEditEntryOption={(rowIndex) => openEditor('edit', rowIndex)}
                        allowDeleteEntryOption={true}

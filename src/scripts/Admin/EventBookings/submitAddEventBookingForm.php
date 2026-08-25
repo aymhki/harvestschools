@@ -2,6 +2,7 @@
 require_once '../../headers.php';
 require_once '../../permissionLevels.php';
 require_once '../authHelpers.php';
+require_once __DIR__ . '/eventBookingHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
@@ -91,312 +92,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
 
-        $conn->autocommit(false);
+        $booking = event_booking_normalise([
+            'booking_username'    => $formData['Booking Username'] ?? '',
+            'booking_password'    => $formData['Booking Password'] ?? '',
+            'first_parent_name'   => $formData['First Parent Name'] ?? '',
+            'first_parent_email'  => $formData['First Parent Email'] ?? '',
+            'first_parent_phone'  => $formData['First Parent Phone Number'] ?? '',
+            'second_parent_name'  => $formData['Second Parent Name'] ?? '',
+            'second_parent_email' => $formData['Second Parent Email'] ?? '',
+            'second_parent_phone' => $formData['Second Parent Phone Number'] ?? '',
+            'cd_count'            => $formData['CD Count'] ?? 0,
+            'additional_attendees'=> $formData['Additional Attendees'] ?? 0,
+            'payment_status'      => $formData['Extras Payment Status'] ?? 'Not Signed Up',
+        ]);
 
-        if (empty($formData['Booking Username']) || empty($formData['Booking Password'])) {
+        $booking['students'] = [];
+
+        foreach ($studentSections as $studentData) {
+            if (empty($studentData['Student Name'])) {
+                continue;
+            }
+
+            $booking['students'][] = [
+                'name'            => $studentData['Student Name'],
+                'school_division' => $studentData['Student School Division'] ?? 'Other',
+                'grade'           => $studentData['Student Grade'] ?? '',
+            ];
+        }
+
+        $problem = event_booking_validate($conn, $booking);
+
+        if ($problem !== null) {
             $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Username and password are required';
+            $errorInfo['message'] = $problem['message'];
             $errorInfo['code'] = 400;
             echo json_encode($errorInfo);
             return;
         }
 
-        $bookingUsername = $formData['Booking Username'];
-        $bookingPassword = $formData['Booking Password'];
-        $stmt = $conn->prepare("SELECT auth_id FROM event_booking_auth_credentials WHERE username = ?");
+        $conn->begin_transaction();
 
-        if (!$stmt) {
+        try {
+            $bookingId = event_booking_insert($conn, $booking);
+            $conn->commit();
+        } catch (Throwable $insertError) {
+            $conn->rollback();
+
             $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
+            $errorInfo['message'] = 'Failed to create the booking: ' . $insertError->getMessage();
             $errorInfo['code'] = 500;
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt->bind_param("s", $bookingUsername);
-
-        if (!$stmt->execute()) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Database error checking username: ' . $stmt->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Username already exists. Please choose a different username.';
-            $errorInfo['code'] = 409;
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt = $conn->prepare("INSERT INTO event_booking_auth_credentials (username, password_hash) VALUES (?, SHA2(?, 256))");
-
-        if (!$stmt) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-            $errorInfo['code'] = 500;
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt->bind_param("ss", $bookingUsername, $bookingPassword);
-
-        if (!$stmt->execute()) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Failed to create authentication record: ' . $stmt->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $data['authId'] = $conn->insert_id;
-        $stmt = $conn->prepare("INSERT INTO event_bookings (auth_id) VALUES (?)");
-
-        if (!$stmt) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt->bind_param("i", $data['authId']);
-
-        if (!$stmt->execute()) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Failed to create booking record: ' . $stmt->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $data['bookingId'] = $conn->insert_id;
-
-        if (empty($formData['First Parent Name'])) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'First parent information is incomplete';
-            $errorInfo['code'] = 400;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $firstParentName = $formData['First Parent Name'];
-        $firstParentEmail = $formData['First Parent Email'] ?? '';
-        $firstParentPhone = $formData['First Parent Phone Number'] ?? '';
-        $stmt = $conn->prepare("INSERT INTO event_booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
-
-        if (!$stmt) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt->bind_param("sss", $firstParentName, $firstParentEmail, $firstParentPhone);
-
-        if (!$stmt->execute()) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Failed to add first parent: ' . $stmt->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $data['firstParentId'] = $conn->insert_id;
-        $isPrimary = 1;
-        $stmt = $conn->prepare("INSERT INTO event_booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
-
-        if (!$stmt) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt->bind_param("iii", $data['bookingId'], $data['firstParentId'], $isPrimary);
-
-        if (!$stmt->execute()) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Failed to link first parent to booking: ' . $stmt->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        if (!empty($formData['Second Parent Name'])) {
-            $secondParentName = $formData['Second Parent Name'];
-            $secondParentEmail = $formData['Second Parent Email'] ?? '';
-            $secondParentPhone = $formData['Second Parent Phone Number'] ?? '';
-            $stmt = $conn->prepare("INSERT INTO event_booking_parents (name, email, phone_number) VALUES (?, ?, ?)");
-
-            if (!$stmt) {
-                $errorInfo['success'] = false;
-                $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-                $errorInfo['code'] = 500;
-                performRollback($conn, $data);
-                echo json_encode($errorInfo);
-                return;
-            }
-
-            $stmt->bind_param("sss", $secondParentName, $secondParentEmail, $secondParentPhone);
-
-            if (!$stmt->execute()) {
-                $errorInfo['success'] = false;
-                $errorInfo['message'] = 'Failed to add second parent: ' . $stmt->error;
-                $errorInfo['code'] = 500;
-                performRollback($conn, $data);
-                echo json_encode($errorInfo);
-                return;
-            }
-
-            $data['secondParentId'] = $conn->insert_id;
-            $isPrimary = 0;
-            $stmt = $conn->prepare("INSERT INTO event_booking_parents_linker (booking_id, parent_id, is_primary) VALUES (?, ?, ?)");
-
-            if (!$stmt) {
-                $errorInfo['success'] = false;
-                $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-                $errorInfo['code'] = 500;
-                performRollback($conn, $data);
-                echo json_encode($errorInfo);
-                return;
-            }
-
-            $stmt->bind_param("iii", $data['bookingId'], $data['secondParentId'], $isPrimary);
-
-            if (!$stmt->execute()) {
-                $errorInfo['success'] = false;
-                $errorInfo['message'] = 'Failed to link second parent to booking: ' . $stmt->error;
-                $errorInfo['code'] = 500;
-                performRollback($conn, $data);
-                echo json_encode($errorInfo);
-                return;
-            }
-        }
-
-        $hasStudents = false;
-
-        foreach ($studentSections as $index => $studentData) {
-            if (!empty($studentData['Student Name'])) {
-                $hasStudents = true;
-                $studentName = $studentData['Student Name'];
-                $schoolDivision = $studentData['Student School Division'] ?? 'Other';
-                $grade = $studentData['Student Grade'] ?? '';
-                $stmt = $conn->prepare("INSERT INTO event_booking_students (name, school_division, grade) VALUES (?, ?, ?)");
-
-                if (!$stmt) {
-                    $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-                    $errorInfo['code'] = 500;
-                    performRollback($conn, $data);
-                    echo json_encode($errorInfo);
-                    return;
-                }
-
-                $stmt->bind_param("sss", $studentName, $schoolDivision, $grade);
-
-                if (!$stmt->execute()) {
-                    $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Failed to add student #' . ($index + 1) . ': ' . $stmt->error;
-                    $errorInfo['code'] = 500;
-                    performRollback($conn, $data);
-                    echo json_encode($errorInfo);
-                    return;
-                }
-
-                $studentId = $conn->insert_id;
-                $data['studentIds'][] = $studentId;
-                $stmt = $conn->prepare("INSERT INTO event_booking_students_linker (booking_id, student_id) VALUES (?, ?)");
-
-                if (!$stmt) {
-                    $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-                    $errorInfo['code'] = 500;
-                    performRollback($conn, $data);
-                    echo json_encode($errorInfo);
-                    return;
-                }
-
-                $stmt->bind_param("ii", $data['bookingId'], $studentId);
-
-                if (!$stmt->execute()) {
-                    $errorInfo['success'] = false;
-                    $errorInfo['message'] = 'Failed to link student #' . ($index + 1) . ' to booking: ' . $stmt->error;
-                    $errorInfo['code'] = 500;
-                    performRollback($conn, $data);
-                    echo json_encode($errorInfo);
-                    return;
-                }
-            }
-        }
-
-        if (!$hasStudents) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'At least one student is required';
-            $errorInfo['code'] = 400;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $cdCount = isset($formData['CD Count']) ? intval($formData['CD Count']) : 0;
-        $additionalAttendees = isset($formData['Additional Attendees']) ? intval($formData['Additional Attendees']) : 0;
-        $paymentStatus = $formData['Extras Payment Status'] ?? 'Not Signed Up';
-
-
-        if (($cdCount > 0 || $additionalAttendees > 0) && $paymentStatus === 'Not Signed Up') {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'You can\'t sign up for extras without updating the extras status';
-            $errorInfo['code'] = 400;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt = $conn->prepare("INSERT INTO event_booking_extras (booking_id, cd_count, additional_attendees, payment_status) VALUES (?, ?, ?, ?)");
-
-        if (!$stmt) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Database error preparing statement: ' . $conn->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $stmt->bind_param("iiis", $data['bookingId'], $cdCount, $additionalAttendees, $paymentStatus);
-
-        if (!$stmt->execute()) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Failed to create extras record: ' . $stmt->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
-            echo json_encode($errorInfo);
-            return;
-        }
-
-        $data['extrasId'] = $conn->insert_id;
-
-        if (!$conn->commit()) {
-            $errorInfo['success'] = false;
-            $errorInfo['message'] = 'Failed to commit transaction: ' . $conn->error;
-            $errorInfo['code'] = 500;
-            performRollback($conn, $data);
             echo json_encode($errorInfo);
             return;
         }
@@ -405,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'success' => true,
             'message' => 'Booking created successfully',
             'code' => 200,
-            'booking_id' => $data['bookingId']
+            'booking_id' => $bookingId
         ]);
 
     } catch (Exception $e) {

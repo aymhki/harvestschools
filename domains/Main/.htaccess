@@ -24,6 +24,10 @@
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 </IfModule>
 
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/avif "access plus 1 year"

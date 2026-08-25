@@ -36,7 +36,7 @@ function set_cors_headers($customOptions = []) {
     }
 
     header('Access-Control-Allow-Methods: ' . $config['allowed_methods']);
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Client-Fingerprint, X-Client-Platform, X-Device-Binding');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Client-Fingerprint, X-Client-Platform, X-Device-Binding, X-Turnstile-Token');
     header('Cache-Control: ' . $config['cache_control']);
     header('Pragma: ' . $config['pragma']);
     header('Expires: 0');
@@ -62,7 +62,7 @@ function set_public_cors_headers($customOptions = []) {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Credentials: false');
     header('Access-Control-Allow-Methods: ' . $config['allowed_methods']);
-    header('Access-Control-Allow-Headers: Content-Type, If-None-Match');
+    header('Access-Control-Allow-Headers: Content-Type, If-None-Match, , X-Turnstile-Token');
     header('Access-Control-Expose-Headers: ETag');
     header('Cache-Control: ' . $config['cache_control']);
     header('Vary: Accept-Encoding');

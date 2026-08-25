@@ -3,6 +3,7 @@ import {useNavigate} from "react-router";
 import {useEffect, useState, useRef, useMemo} from "react";
 import {msgTimeout, EventBookingManagementPermissionLevel} from "../../services/General/GeneralUtils.jsx";
 import Table from "../../modules/Table.jsx";
+import {fetchImportDescriptor, importCsvFile} from "../../services/Admin/Imports/AdminImportServices.jsx";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import debounce from "lodash.debounce";
@@ -23,6 +24,7 @@ function EventBookingManagement() {
     const maxNumberOfStudents = 5;
     const [isLoading, setIsLoading] = useLoading(false);
     const [allBookings, setAllBookings] = useState(null);
+    const [importDescriptor, setImportDescriptor] = useState(null);
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
     const [showDeleteBookingModal, setShowDeleteBookingModal] = useState(false);
@@ -797,6 +799,7 @@ function EventBookingManagement() {
         .then(
             () => {
                 fetchBookings();
+                fetchImportDescriptor(navigate, 'eventBookings').then(setImportDescriptor);
             }
         )
     }, []);
@@ -853,6 +856,19 @@ function EventBookingManagement() {
                        ]}
                        allowExport={true}
                        exportFileName={'bookings'}
+                       importConfig={{
+                           templateName: 'bookings',
+                           descriptor: importDescriptor,
+                           onImport: async (file) => {
+                               const result = await importCsvFile('eventBookings', {}, file);
+
+                               if (result.imported > 0) {
+                                   await fetchBookings();
+                               }
+
+                               return result;
+                           },
+                       }}
                        sortConfigParam={{column: 0, direction: 'descending'}}
                        filterableColumns={
                        [

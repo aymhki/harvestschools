@@ -77,11 +77,12 @@ try {
     }
 
     if (!$updateStaticOnly && isset($postData['departments'])) {
-        $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, sort_order) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic), sort_order=VALUES(sort_order)");
+        $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, available_to_chat_with, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic), available_to_chat_with=VALUES(available_to_chat_with), sort_order=VALUES(sort_order)");
 
         foreach ($postData['departments'] as $d) {
             $isAc = $d['is_academic'] === 'Yes' ? 1 : 0;
-            $stmt->bind_param("ssssii", $d['dept_key'], $d['name_en'], $d['name_ar'], $d['contact_number'], $isAc, $d['sort_order']);
+            $isChattable = $d['available_to_chat_with'] === 'Yes' ? 1 : 0;
+            $stmt->bind_param("ssssiii", $d['dept_key'], $d['name_en'], $d['name_ar'], $d['contact_number'], $isAc, $isChattable, $d['sort_order']);
             $stmt->execute();
         }
 
@@ -169,6 +170,17 @@ try {
         $stmt->close();
     }
 
+    if (!$updateStaticOnly && isset($postData['staticContent'])) {
+        $stmt = $conn->prepare("INSERT INTO info_system_static_content (content_key, group_key, title_en, title_ar, body_en, body_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE group_key=VALUES(group_key), title_en=VALUES(title_en), title_ar=VALUES(title_ar), body_en=VALUES(body_en), body_ar=VALUES(body_ar), sort_order=VALUES(sort_order)");
+
+        foreach ($postData['staticContent'] as $sc) {
+            $stmt->bind_param("ssssssi", $sc['content_key'], $sc['group_key'], $sc['title_en'], $sc['title_ar'], $sc['body_en'], $sc['body_ar'], $sc['sort_order']);
+            $stmt->execute();
+        }
+
+        $stmt->close();
+    }
+
     if (!$updateStaticOnly && isset($postData['formEmails'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_form_emails (form_key, label, recipient_email, is_active, sort_order, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, NOW(), ?) ON DUPLICATE KEY UPDATE label=VALUES(label), recipient_email=VALUES(recipient_email), is_active=VALUES(is_active), sort_order=VALUES(sort_order), updated_at=NOW(), updated_by=VALUES(updated_by)");
 
@@ -206,10 +218,88 @@ try {
         $depts[$row['dept_key']] = $row;
     }
 
+    $profileValues = [];
+    $res = $conn->query("SELECT profile_key, value_en FROM info_system_school_profile");
+    while ($row = $res->fetch_assoc()) {
+        $profileValues[$row['profile_key']] = (string)$row['value_en'];
+    }
+
     $stagesData = [];
     $res = $conn->query("SELECT * FROM info_system_stages ORDER BY dept_key, sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $stagesData[$row['dept_key']][$row['section_key']][] = $row;
+    }
+
+    $staticContentArr = [
+        'menu_disc' => [
+            'en' => "*Discounts:*\n\n• *Siblings Discount:* 10% off tuition fees\n• *Staff Discount:* 40% off tuition fees\n\n_For combined discount cases, please confirm directly with our Accounting department to get an accurate quote._",
+            'ar' => "*الخصومات:*\n\n• *خصم الأخوة:* 10% من المصروفات الدراسية\n• *خصم العاملين:* 40% من المصروفات الدراسية\n\n_في حالات الخصومات المجمعة، يرجى مراجعة قسم الحسابات مباشرة للحصول على التأكيد الدقيق._"
+        ],
+        'menu_accr' => [
+            'en' => "*Accreditations:*\n\n• *National Dept:* Accredited by the Egyptian Ministry of Education\n• *British Dept:* Accredited by Cambridge / Pearson Edexcel / Oxford\n• *American Dept:* Accredited by Cognia",
+            'ar' => "*الاعتمادات:*\n\n• *القسم القومي:* معتمد من وزارة التربية والتعليم المصرية\n• *القسم البريطاني:* معتمد من Cambridge / Pearson Edexcel / Oxford\n• *القسم الأمريكي:* معتمد من Cognia"
+        ],
+        'menu_careers' => [
+            'en' => "We're always open to talented educators joining the Harvest family. Please click the link below to apply:",
+            'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست. يرجى الضغط على الزر أدناه للتقدم:"
+        ],
+        'menu_address' => [
+            'en' => "*Our Address:*\nHod Sakrah WA Abu Hamad, New Borg El Arab, Alexandria Governorate 5221440, Egypt",
+            'ar' => "*عنواننا:*\nحوض سكرة وأبو حمد، برج العرب الجديدة، محافظة الإسكندرية 5221440"
+        ],
+        'fees_disclaimer' => [
+            'en' => "\n\n_Note: Tuition does NOT include uniforms, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
+            'ar' => "\n\n_ملاحظة: المصروفات لا تشمل الزي المدرسي، الباص، أو الأنشطة. قد تكون مؤهلاً لخصومات الأخوة أو العاملين. يرجى مراجعة قسم الحسابات للتفاصيل._"
+        ],
+        'minimum_age_disc' => [
+            'en' => "\n\n_Note: Students MUST meet the minimum age by October 1st._",
+            'ar' => "\n\n_ملاحطة: يجب على الطالب ان يكون في العمر المطلوب قبل يوم ١ أكتوبر_"
+        ]
+    ];
+
+    $faqsArr = [
+        'faq_mixed' => ['q' => ['en' => 'Is the school mixed?', 'ar' => 'هل المدرسة مختلطة؟'], 'a' => ['en' => 'Yes, Harvest International Schools is a mixed school.', 'ar' => 'نعم، مدارس هارڤست هي مدرسة مختلطة.']],
+        'faq_transfer' => ['q' => ['en' => 'Accept transfers?', 'ar' => 'هل تقبل التحويلات؟'], 'a' => ['en' => 'Yes, transfer students are accepted as long as they pass an entry test held at the school.', 'ar' => 'نعم، تقبل المدرسة التحويلات بشرط اجتياز الطالب لاختبار القبول بالمدرسة.']],
+        'faq_fees' => ['q' => ['en' => 'Do fees change yearly?', 'ar' => 'هل تتغير المصروفات سنوياً؟'], 'a' => ['en' => 'Only increases applied by the Ministry of Education are applied, which can be up to 10%.', 'ar' => 'تطبق فقط الزيادات المقررة من وزارة التربية والتعليم، والتي قد تصل إلى 10%.']],
+        'faq_teachers' => ['q' => ['en' => 'Are there foreign teachers?', 'ar' => 'هل يوجد مدرسين أجانب؟'], 'a' => ['en' => 'Our teachers are mostly Egyptian and highly qualified.', 'ar' => 'المدرسون في الغالب مصريون ذوو كفاءة عالية جداً.']],
+        'faq_bus' => ['q' => ['en' => 'Is there transportation?', 'ar' => 'هل يوجد باصات للمدرسة؟'], 'a' => ['en' => 'Yes, school buses cover every district in Alexandria.', 'ar' => 'نعم، تغطي الباصات جميع مناطق الإسكندرية.']],
+        'faq_sports' => ['q' => ['en' => 'Are there sports?', 'ar' => 'هل توجد أنشطة رياضية؟'], 'a' => ['en' => 'Yes, Harvest Academy provides all kinds of sports activities throughout the year.', 'ar' => 'نعم، توفر المدرسة جميع أنواع الأنشطة الرياضية على مدار العام.']],
+    ];
+
+    $staticContentRows = [];
+    $staticContentTable = $conn->query("SHOW TABLES LIKE 'info_system_static_content'");
+
+    if ($staticContentTable && $staticContentTable->num_rows > 0) {
+        $res = $conn->query("SELECT content_key, group_key, title_en, title_ar, body_en, body_ar FROM info_system_static_content ORDER BY group_key, sort_order ASC");
+        while ($row = $res->fetch_assoc()) {
+            $staticContentRows[] = $row;
+        }
+    }
+
+    $staticFromDb = [];
+    $faqsFromDb = [];
+
+    foreach ($staticContentRows as $row) {
+        if ($row['group_key'] === 'faq') {
+            $faqsFromDb[$row['content_key']] = [
+                'q' => ['en' => $row['title_en'], 'ar' => $row['title_ar']],
+                'a' => ['en' => $row['body_en'], 'ar' => $row['body_ar']]
+            ];
+        } else {
+            $staticFromDb[$row['content_key']] = ['en' => $row['body_en'], 'ar' => $row['body_ar']];
+        }
+    }
+
+    if ($staticFromDb !== []) {
+        $staticContentArr = $staticFromDb + $staticContentArr;
+    }
+
+    if ($faqsFromDb !== []) {
+        $faqsArr = $faqsFromDb + $faqsArr;
+    }
+
+    function plainNote($v) {
+        return trim(str_replace(['*', '_'], '', (string)$v));
     }
 
     function phpStr($v) {
@@ -289,6 +379,29 @@ try {
     $llmAge = "";
     $llmFees = "";
 
+    $llmSchoolSize = "";
+
+    foreach (['total_students' => 'Students', 'total_employees' => 'Employees'] as $sizeKey => $sizeLabel) {
+        if (($profileValues[$sizeKey] ?? '') !== '') {
+            $llmSchoolSize .= "- $sizeLabel: " . $profileValues[$sizeKey] . "\n";
+        }
+    }
+
+    if ($llmSchoolSize === "") {
+        $llmSchoolSize = "- Not published. Say the figure is not available rather than estimating.\n";
+    }
+
+    $llmFaqs = "";
+    $faqNumber = 1;
+
+    foreach ($faqsArr as $faq) {
+        $llmFaqs .= "Q$faqNumber: " . $faq['q']['en'] . "\nA$faqNumber: " . $faq['a']['en'] . "\n\n";
+        $faqNumber++;
+    }
+
+    $llmFeesNote = plainNote($staticContentArr['fees_disclaimer']['en'] ?? '');
+    $llmAgeNote = plainNote($staticContentArr['minimum_age_disc']['en'] ?? '');
+
     foreach ($stagesData as $deptKey => $sections) {
         $deptName =  $depts[$deptKey]['name_en'];
         $llmStagesOffered .= "\nDepartment: $deptName\n";
@@ -348,6 +461,11 @@ SCHOOL INFORMATION
 - Facebook: https://www.facebook.com/HarvestInternationalSchools/
 - Working hours: Sunday to Thursday: 8:00 AM - 3:00 PM
 
+🏫 SCHOOL SIZE
+
+$llmSchoolSize
+These are approximate figures. Never present them as exact counts.
+
 🎓 Available DEPARTMENTS
 
 1. **American Department** — Playschool / Pre-KG through **Senior 3 (Grade 12 equivalent)**, aligned with US curriculum standards.
@@ -360,7 +478,7 @@ $llmStagesOffered
 
 👶 MINIMUM REGISTRATION AGE
 
-Note: Students must meet the minimum age by October 1st.
+$llmAgeNote
 
 $llmAge
 
@@ -378,7 +496,8 @@ $llmAge
 $llmFees
 
 All prices are in **Egyptian Pounds (EGP / ج.م)**.
-Note: Tuition does NOT typically include uniforms, books, transportation, or activities — these are separate fees. Direct fee specifics to the **Accounting department**.
+$llmFeesNote
+Direct fee specifics to the **Accounting department**.
 
 🎁 DISCOUNTS
 
@@ -396,29 +515,12 @@ If a parent asks whether sibling and staff discounts stack: **do NOT confirm or 
 
 ❓ FREQUENTLY ASKED QUESTIONS (FAQs)
 
-Q1: Is the school mixed?
-A1: Yes.
+$llmFaqs
+Q: What is the admission age for each stage?
+A: Minimum registration ages vary by stage and department. Refer to the MINIMUM REGISTRATION AGE section above.
 
-Q2: What is the admission age for each stage?
-A2: Minimum registration ages vary by stage and department. Refer to the MINIMUM REGISTRATION AGE section above.
-
-Q3: Does the school accept transfers from other schools?
-A3: Yes, transfer students are accepted as long as they pass an entry test held at the school.
-
-Q4: What are the school fees?
-A4: Fees vary depending on the educational stage and department. Refer to the TUITION FEES section above.
-
-Q5: Do school fees change every year?
-A5: Only increases applied by the Ministry of Education are applied, which can be up to 10%.
-
-Q6: Are there any foreign teachers at the school?
-A6: Teachers are mostly Egyptian and highly qualified.
-
-Q7: Does the school provide a transportation service?
-A8: Yes, school buses cover every district in Alexandria.
-
-Q8: Does the school provide sports activities?
-A9: Yes, Harvest Academy provides all kinds of sports activities throughout the year.
+Q: What are the school fees?
+A: Fees vary depending on the educational stage and department. Refer to the TUITION FEES section above.
 
 ============================================================
 WEBSITE LINK DIRECTORY
@@ -536,6 +638,7 @@ PROMPT;
             'contact_title' => ['en' => 'Contact Departments', 'ar' => 'أقسام التواصل'],
             'contact_body' => ['en' => 'Please select the department you wish to chat with:', 'ar' => 'يرجى اختيار القسم الذي تريد التحدث معه:'],
             'unoffered_note' => ['en' => 'Please note that unavailable stages will not be shown here.', 'ar' => 'يرجى ملاحظة أنه لن يتم عرض المراحل غير المتاحة هنا.'],
+            'contact_hidden_note' => ['en' => 'Some departments are not shown here because they are not available for chat.', 'ar' => 'بعض الأقسام غير معروضة هنا لأنها غير متاحة للمحادثة.'],
             'fees_disc_body' => ['en' => 'Select a department to view tuition fees, or view our discounts policy:', 'ar' => 'اختر القسم لعرض المصروفات أو اطلع على سياسة الخصومات:'],
             'disc_section' => ['en' => 'Discounts', 'ar' => 'الخصومات'],
             'disc_item' => ['en' => 'View Discounts', 'ar' => 'عرض الخصومات'],
@@ -556,40 +659,8 @@ PROMPT;
             ['id' => 'menu_contact', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
             ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
         ],
-        'static_content' => [
-            'menu_disc' => [
-                'en' => "*Discounts:*\n\n• *Siblings Discount:* 10% off tuition fees\n• *Staff Discount:* 40% off tuition fees\n\n_For combined discount cases, please confirm directly with our Accounting department to get an accurate quote._",
-                'ar' => "*الخصومات:*\n\n• *خصم الأخوة:* 10% من المصروفات الدراسية\n• *خصم العاملين:* 40% من المصروفات الدراسية\n\n_في حالات الخصومات المجمعة، يرجى مراجعة قسم الحسابات مباشرة للحصول على التأكيد الدقيق._"
-            ],
-            'menu_accr' => [
-                'en' => "*Accreditations:*\n\n• *National Dept:* Accredited by the Egyptian Ministry of Education\n• *British Dept:* Accredited by Cambridge / Pearson Edexcel / Oxford\n• *American Dept:* Accredited by Cognia",
-                'ar' => "*الاعتمادات:*\n\n• *القسم القومي:* معتمد من وزارة التربية والتعليم المصرية\n• *القسم البريطاني:* معتمد من Cambridge / Pearson Edexcel / Oxford\n• *القسم الأمريكي:* معتمد من Cognia"
-            ],
-            'menu_careers' => [
-                'en' => "We're always open to talented educators joining the Harvest family. Please click the link below to apply:",
-                'ar' => "نحن نرحب دائماً بالكوادر التعليمية المتميزة للانضمام إلى عائلة هارڤست. يرجى الضغط على الزر أدناه للتقدم:"
-            ],
-            'menu_address' => [
-                'en' => "*Our Address:*\nHod Sakrah WA Abu Hamad, New Borg El Arab, Alexandria Governorate 5221440, Egypt",
-                'ar' => "*عنواننا:*\nحوض سكرة وأبو حمد، برج العرب الجديدة، محافظة الإسكندرية 5221440"
-            ],
-            'fees_disclaimer' => [
-                'en' => "\n\n_Note: Tuition does NOT include uniforms, transportation, or activities. You may also be eligible for siblings/staff discounts. Please check with Accounting for specifics._",
-                'ar' => "\n\n_ملاحظة: المصروفات لا تشمل الزي المدرسي، الباص، أو الأنشطة. قد تكون مؤهلاً لخصومات الأخوة أو العاملين. يرجى مراجعة قسم الحسابات للتفاصيل._"
-            ],
-            'minimum_age_disc' => [
-                'en' => "\n\n_Note: Students MUST meet the minimum age by October 1st._",
-                'ar' => "\n\n_ملاحطة: يجب على الطالب ان يكون في العمر المطلوب قبل يوم ١ أكتوبر_"
-            ]
-        ],
-        'faqs' => [
-            'faq_mixed' => ['q' => ['en' => 'Is the school mixed?', 'ar' => 'هل المدرسة مختلطة؟'], 'a' => ['en' => 'Yes, Harvest International Schools is a mixed school.', 'ar' => 'نعم، مدارس هارڤست هي مدرسة مختلطة.']],
-            'faq_transfer' => ['q' => ['en' => 'Accept transfers?', 'ar' => 'هل تقبل التحويلات؟'], 'a' => ['en' => 'Yes, transfer students are accepted as long as they pass an entry test held at the school.', 'ar' => 'نعم، تقبل المدرسة التحويلات بشرط اجتياز الطالب لاختبار القبول بالمدرسة.']],
-            'faq_fees' => ['q' => ['en' => 'Do fees change yearly?', 'ar' => 'هل تتغير المصروفات سنوياً؟'], 'a' => ['en' => 'Only increases applied by the Ministry of Education are applied, which can be up to 10%.', 'ar' => 'تطبق فقط الزيادات المقررة من وزارة التربية والتعليم، والتي قد تصل إلى 10%.']],
-            'faq_teachers' => ['q' => ['en' => 'Are there foreign teachers?', 'ar' => 'هل يوجد مدرسين أجانب؟'], 'a' => ['en' => 'Our teachers are mostly Egyptian and highly qualified.', 'ar' => 'المدرسون في الغالب مصريون ذوو كفاءة عالية جداً.']],
-            'faq_bus' => ['q' => ['en' => 'Is there transportation?', 'ar' => 'هل يوجد باصات للمدرسة؟'], 'a' => ['en' => 'Yes, school buses cover every district in Alexandria.', 'ar' => 'نعم، تغطي الباصات جميع مناطق الإسكندرية.']],
-            'faq_sports' => ['q' => ['en' => 'Are there sports?', 'ar' => 'هل توجد أنشطة رياضية؟'], 'a' => ['en' => 'Yes, Harvest Academy provides all kinds of sports activities throughout the year.', 'ar' => 'نعم، توفر المدرسة جميع أنواع الأنشطة الرياضية على مدار العام.']],
-        ],
+        'static_content' => $staticContentArr,
+        'faqs' => $faqsArr,
         'departments' => []
     ];
 
@@ -599,7 +670,8 @@ PROMPT;
         $contactObj = [
             'en' => $deptRow['name_en'],
             'ar' => $deptRow['name_ar'],
-            'number' => $deptRow['contact_number']
+            'number' => $deptRow['contact_number'],
+            'available' => (int)($deptRow['available_to_chat_with'] ?? 1)
         ];
         $schoolConfigArr['contact_departments'][$dKey] = $contactObj;
         $departmentsArr[$dKey] = $contactObj;
@@ -664,6 +736,10 @@ $STRINGS = [
     'departments_title' => [
         'en' => "Departments",
         'ar' => "الأقسام",
+    ],
+    'hidden_departments_note' => [
+        'en' => "Some departments are not shown here because they are not available for chat.",
+        'ar' => "بعض الأقسام غير معروضة هنا لأنها غير متاحة للمحادثة.",
     ],
     'tap_to_chat' => [
         'en' => "Tap the link to chat with",

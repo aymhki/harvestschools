@@ -1,5 +1,6 @@
 <?php
 require_once '../../headers.php';
+require_once '../../turnstileHelpers.php';
 require_once '../../Alumni/alumniAuthHelpers.php';
 require_once '../../webauthnHelpers.php';
 set_cors_headers();
@@ -12,6 +13,17 @@ $conn = null;
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         echo json_encode(["success" => false, "message" => "Method Not Allowed", "code" => 405]);
+        exit;
+    }
+
+    $turnstileCheck = verify_turnstile_token_if_present(null, false);
+
+    if (!$turnstileCheck['ok']) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Human verification failed. Please refresh the page and try again.',
+            'code' => 403
+        ]);
         exit;
     }
 

@@ -2,7 +2,7 @@ import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx";
 import {adminLoginPageUrl, endpoints, buildAuthHeaders} from "../../General/GeneralUtils.jsx";
 
 
-const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setFormEmailsData) => {
+const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setStaticContentData, setFormEmailsData) => {
     const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
@@ -15,6 +15,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
     setStagesData(null);
     setProfileData(null);
     setPoliciesData(null);
+    setStaticContentData(null);
     setFormEmailsData(null);
 
     try {
@@ -29,6 +30,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
             setStagesData(result.data.stages);
             setProfileData(result.data.profile);
             setPoliciesData(result.data.policies);
+            setStaticContentData(result.data.staticContent);
             setFormEmailsData(result.data.formEmails);
         } else {
             setGlobalSettingsData(null);
@@ -36,6 +38,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
             setStagesData(null);
             setProfileData(null);
             setPoliciesData(null);
+            setStaticContentData(null);
             setFormEmailsData(null);
 
             if (result && result.message) {
@@ -49,6 +52,54 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
     } catch (error) {
         console.log(error.message);
     }
+}
+
+
+const fetchAnalyticsData = async (navigate, setWebsiteAnalytics, setChatBotAnalytics) => {
+    const sessionId = await validateAdminSessionLocally();
+
+    if (!sessionId) {
+        navigate(adminLoginPageUrl, { replace: true });
+        return 'Session expired';
+    }
+
+    setWebsiteAnalytics(null);
+    setChatBotAnalytics(null);
+
+    const headers = await buildAuthHeaders(sessionId);
+
+    const load = async (endpoint) => {
+        try {
+            const response = await fetch(endpoint, {method: 'GET', headers});
+            const result = await response.json();
+
+            if (result && result.code && (result.code === 401 || result.code === 403)) {
+                navigate(adminLoginPageUrl, { replace: true });
+            }
+
+            return result;
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    };
+
+    const [website, chatBot] = await Promise.all([
+        load(endpoints.getWebsiteAnalytics),
+        load(endpoints.getDatabaseAnalytics)
+    ]);
+
+    setWebsiteAnalytics(website && website.success
+        ? {
+            configured: true,
+            totals: (website.data && website.data.totals) || [],
+            usersOverTime: (website.data && website.data.usersOverTime) || [],
+            rankings: (website.data && website.data.rankings) || [],
+            reportingWindow: website.reportingWindow,
+            cacheAgeSeconds: website.cacheAgeSeconds,
+        }
+        : { configured: false, message: (website && website.message) || 'The website figures could not be loaded.' });
+
+    setChatBotAnalytics(chatBot && chatBot.success ? chatBot.data : null);
 }
 
 
@@ -80,5 +131,6 @@ const updateInfoSystemData = async (newInfoSystemData) => {
 
 export {
     fetchInfoSystemData,
+    fetchAnalyticsData,
     updateInfoSystemData
 }

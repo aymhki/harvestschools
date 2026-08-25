@@ -2,6 +2,7 @@
 require_once '../../headers.php';
 require_once '../authHelpers.php';
 require_once '../../permissionLevels.php';
+require_once '../../csvImportHelpers.php';
 require_once __DIR__ . '/libraryHelpers.php';
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
@@ -24,24 +25,14 @@ try {
         exit;
     }
 
-    $validation = library_validate_book($data);
+    $result = library_add_books($conn, [$data]);
 
-    if (!$validation["success"]) {
-        echo json_encode($validation);
+    if ($result['failed'] !== []) {
+        $first = $result['failed'][0];
+
+        echo json_encode(["success" => false, "message" => $first['message'], "code" => 400]);
         exit;
     }
-
-    $book = $validation["book"];
-
-    $stmt = $conn->prepare(
-        "INSERT INTO library_books (category_key, sort_order, title_en, title_ar, series_en, series_ar, is_public)
-         VALUES (?, 0, ?, ?, ?, ?, ?)"
-    );
-    $stmt->bind_param("sssssi", $book["category_key"], $book["title_en"], $book["title_ar"], $book["series_en"], $book["series_ar"], $book["is_public"]);
-    $stmt->execute();
-    $stmt->close();
-
-    library_resequence($conn, $book["category_key"]);
 
     echo json_encode(["success" => true, "message" => "Book added.", "code" => 200]);
 } catch (Throwable $e) {

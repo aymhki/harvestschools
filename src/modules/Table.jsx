@@ -1,9 +1,44 @@
 import {useEffect, useMemo, useState, useCallback, Fragment, useRef} from "react";
 import PropTypes from "prop-types";
+import {createPortal} from "react-dom";
 import '../styles/Table.css';
 import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import {useTranslation} from 'react-i18next';
+import {normalizeArabicText} from "../services/General/GeneralUtils.jsx";
+import Form from "./Form.jsx";
+
+const IMPORT_FILE_LABEL = 'CSV file';
+
+const escapeCsvField = (field) => {
+    const value = (field === null || field === undefined) ? '' : String(field);
+
+    return /[",\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+};
+
+
+const downloadCsv = (rows, fileName) => {
+    const csv = rows.map((row) => row.map(escapeCsvField).join(',')).join('\n');
+    const blob = new Blob([`\uFEFF${csv}`], {type: 'text/csv;charset=utf-8'});
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
+};
+
+
+const downloadImportTemplate = (config) => {
+    const columns = (config.descriptor && config.descriptor.columns) || [];
+
+    downloadCsv(
+        [columns.map((column) => column.label), columns.map((column) => column.example || '')],
+        `${config.templateName || 'import'}-template.csv`
+    );
+};
+
 
 function Table({
                    tableHeader,
@@ -15,6 +50,9 @@ function Table({
                    allowHideColumns,
                    defaultHiddenColumns,
                    allowExport,
+                   importConfig,
+                   allowSearch,
+                   searchPlaceholder,
                    exportFileName,
                    filterableColumns,
                    headerModuleElements,
@@ -30,6 +68,7 @@ function Table({
                    reviewMode = false,
                    allowSticky,
                    allowStickyOnMobile,
+                   stickyActionColumns = true,
                    dataTypes,
                    hideHorizontalScrollBar,
                    hideVerticalScrollBar,
@@ -51,9 +90,13 @@ function Table({
     });
     const [hiddenColumns, setHiddenColumns] = useState(new Set(defaultHiddenColumns || []));
     const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    const [resetImportForm, setResetImportForm] = useState(false);
+    const [importResult, setImportResult] = useState(null);
     const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
     const [columnToFilterBasedOn, setColumnToFilterBasedOn] = useState(null);
     const [uniqueValueSearch, setUniqueValueSearch] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [isMobile, setIsMobile] = useState(() => {
         if (typeof window !== 'undefined') {
             return window.innerWidth < 768;
@@ -75,6 +118,64 @@ function Table({
     const scrollbarThumbRef = useRef(null);
     const tableModuleRef = useRef(null);
     const tableRef = useRef(null);
+    const importFooterButtonsRef = useRef(null);
+
+    const animateImportModal = useSpring({
+        opacity: isImportModalOpen ? 1 : 0,
+        transform: isImportModalOpen ? 'translateY(0)' : 'translateY(-100%)'
+    });
+
+    const importFormFields = useMemo(() => ([
+        {
+            id: 1,
+            type: 'file',
+            name: 'file',
+            label: IMPORT_FILE_LABEL,
+            required: true,
+            errorMsg: 'Please choose a CSV file',
+            value: '',
+            allowedFileTypes: ['text/csv', 'application/vnd.ms-excel', '.csv'],
+            widthOfField: 1,
+            labelOutside: true,
+            labelOnTop: true,
+            displayLabel: 'CSV file',
+            httpName: 'import-file',
+        },
+    ]), []);
+
+    const closeImportModal = useCallback(() => {
+        setIsImportModalOpen(false);
+        setResetImportForm(true);
+        setImportResult(null);
+    }, []);
+
+    const handleImportSubmit = useCallback(async (formData) => {
+        const file = formData.get(IMPORT_FILE_LABEL);
+
+        if (!file) {
+            throw new Error('Please choose a CSV file.');
+        }
+
+        const raw = await importConfig.onImport(file);
+
+        const result = raw && typeof raw === 'object'
+            ? raw
+            : {success: false, message: String(raw), failed: [], warnings: []};
+
+        setResetImportForm(true);
+
+        if (result.success && (result.failed || []).length === 0 && (result.warnings || []).length === 0) {
+            setIsImportModalOpen(false);
+            setImportResult(null);
+
+            return true;
+        }
+
+        setImportResult(result);
+
+        return true;
+    }, [importConfig]);
+
     const verticalScrollbarTrackRef = useRef(null);
     const verticalScrollbarThumbRef = useRef(null);
     const [isScrollbarVisible, setIsScrollbarVisible] = useState(false);
@@ -95,6 +196,7 @@ function Table({
     const [hoveredCell, setHoveredCell] = useState({r: null, c: null});
     const [colWidths, setColWidths] = useState([]);
     const [rowHeights, setRowHeights] = useState([]);
+    const [containerWidth, setContainerWidth] = useState(0);
     const [columnFilters, setColumnFilters] = useState({});
     const showVerticalScrollBarInMobile = true
     const showHorizontalScrollBarInMobile = true
@@ -173,13 +275,59 @@ function Table({
         const rows = Array.from(tableRef.current.querySelectorAll('tr'));
         if (rows.length === 0) return;
 
-        const heights = rows.map(r => r.getBoundingClientRect().height);
-        const firstRowCells = Array.from(rows[0].children);
-        const widths = firstRowCells.map(c => c.getBoundingClientRect().width);
+        const unchanged = (current, next) => current.length === next.length
+            && current.every((value, index) => Math.abs(value - next[index]) < 0.5);
 
-        setRowHeights(heights);
-        setColWidths(widths);
-    }, []);
+        const heights = rows.map(r => r.getBoundingClientRect().height);
+        const columnRow = rows[tableHeader ? 1 : 0];
+
+        setRowHeights((current) => (unchanged(current, heights) ? current : heights));
+
+        if (scrollContainerRef.current) {
+            const width = scrollContainerRef.current.clientWidth;
+
+            setContainerWidth((current) => (current === width ? current : width));
+        }
+
+        if (columnRow) {
+            const widths = Array.from(columnRow.children).map(c => c.getBoundingClientRect().width);
+
+            setColWidths((current) => (unchanged(current, widths) ? current : widths));
+        }
+    }, [tableHeader]);
+
+    const editColVisible = !!(allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit"));
+    const customActionColVisible = !!(customActionColumn && !hiddenColumns.has(customActionColumn.headerText));
+    const deleteColVisible = !!(allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete"));
+    const actionColCount = (editColVisible ? 1 : 0) + (customActionColVisible ? 1 : 0) + (deleteColVisible ? 1 : 0);
+    const leadingPinnedActionCol = editColVisible ? 'edit' : (customActionColVisible ? 'custom' : (deleteColVisible ? 'delete' : null));
+
+    const actionColsWidth = useMemo(
+        () => (actionColCount === 0 ? 0 : colWidths.slice(colWidths.length - actionColCount).reduce((a, b) => a + b, 0)),
+        [colWidths, actionColCount]
+    );
+
+    const leftStickyWidth = useMemo(
+        () => colWidths.slice(0, stickyCols).reduce((a, b) => a + b, 0),
+        [colWidths, stickyCols]
+    );
+
+    const pinActionCols = stickyActionColumns
+        && (!isMobile || allowStickyOnMobile !== false)
+        && actionColsWidth > 0
+        && containerWidth > 0
+        && (leftStickyWidth + actionColsWidth) <= containerWidth * 0.7;
+
+    const rightStickyOffsetOf = useCallback(
+        (cellIndex) => colWidths.slice(cellIndex + 1).reduce((a, b) => a + b, 0),
+        [colWidths]
+    );
+
+    const pinnedActionClassName = (which) => (
+        pinActionCols
+            ? `table-module-pinned-action-cell${leadingPinnedActionCol === which ? ' table-module-pinned-action-leading' : ''}`
+            : undefined
+    );
 
     const parseDate = (val) => {
         if (!val) return null;
@@ -820,13 +968,28 @@ function Table({
             }
         }
 
+        const query = normalizeArabicText(searchQuery.trim().toLowerCase());
+
+        if (query !== '') {
+            const visibleColumnIndices = tableData[0]
+                .map((columnName, columnIndex) => (hiddenColumns.has(columnName) ? -1 : columnIndex))
+                .filter((columnIndex) => columnIndex !== -1);
+
+            filteredDataWithIndices = filteredDataWithIndices.filter((item, rowIndex) => {
+                if (rowIndex === 0 || (tableHeader && rowIndex === 1)) return true;
+
+                return visibleColumnIndices.some((columnIndex) =>
+                    normalizeArabicText(String(item.row[columnIndex] ?? '').toLowerCase()).includes(query));
+            });
+        }
+
         const newRowMapping = filteredDataWithIndices?.map(item => item.originalIndex);
         setRowMapping(newRowMapping);
         const filteredData = filteredDataWithIndices?.map(item =>
             item.row.filter((cell, colIndex) => !hiddenColumns.has(sortedData[0][colIndex]))
         );
         setFinalTableData(filteredData);
-    }, [tableData, sortedDataWithIndices, filterableColumns, columnFilters, tableHeader, applyFilter, hiddenColumns, sortedData]);
+    }, [tableData, sortedDataWithIndices, filterableColumns, columnFilters, tableHeader, applyFilter, hiddenColumns, sortedData, searchQuery]);
 
     const smartFilterData = useMemo(() => {
         if (!isFilterPopupOpen || !columnToFilterBasedOn || !tableData || tableData.length === 0) {
@@ -1277,6 +1440,9 @@ function Table({
     useEffect(() => {
         updateStickyOffsets();
         const resizeObserver = new ResizeObserver(updateStickyOffsets);
+        if (tableRef.current) {
+            resizeObserver.observe(tableRef.current);
+        }
         if (scrollContainerRef.current) {
             resizeObserver.observe(scrollContainerRef.current);
         }
@@ -1285,7 +1451,7 @@ function Table({
             resizeObserver.disconnect();
             window.removeEventListener('resize', updateStickyOffsets);
         };
-    }, [updateStickyOffsets]);
+    }, [updateStickyOffsets, displayedTableData, hiddenColumns, columnFilters, currentPage, sortConfig]);
 
     useEffect(() => {
         const handleExternalScroll = () => updateThumbPosition();
@@ -1406,6 +1572,10 @@ function Table({
     useEffect(() => {
         updateFinalTableData();
     }, [hiddenColumns, sortedDataWithIndices, columnFilters, updateFinalTableData, sortConfig]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     useEffect(() => {
         if (!scrollable || (isMobile && !showHorizontalScrollBarInMobile) || hideHorizontalScrollBar) {
@@ -1558,26 +1728,61 @@ function Table({
         <div className={`table-module ${!isScrollbarVisible ? 'compressed' : '' } ${reviewMode ? 'review-mode' : ''}`} ref={tableModuleRef} >
 
 
-            { (headerModuleElements || allowHideColumns || allowExport || hasActiveFilters() || isScrollbarVisible) && (
+            { (headerModuleElements || allowHideColumns || allowExport || importConfig || allowSearch || hasActiveFilters() || isScrollbarVisible) && (
 
                     <div className={"table-module-header"}>
+                    {allowSearch && (
+                        <div className={"table-module-header-search"}>
+                            <input
+                                type={"text"}
+                                className={"table-module-header-search-input"}
+                                value={searchQuery}
+                                placeholder={searchPlaceholder || t("common.search-the-table", {ns: 'common'})}
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                aria-label={searchPlaceholder || t("common.search-the-table", {ns: 'common'})}
+                            />
+
+                            {searchQuery !== '' && (
+                                <span className={"table-module-header-search-clear"}
+                                      role={"button"}
+                                      tabIndex={0}
+                                      aria-label={"Clear search"}
+                                      onClick={() => setSearchQuery('')}
+                                      onKeyDown={(event) => {
+                                          if (event.key === 'Enter' || event.key === ' ') {
+                                              event.preventDefault();
+                                              setSearchQuery('');
+                                          }
+                                      }}>×</span>
+                            )}
+                        </div>
+                    )}
+
                     <div className={"table-module-header-buttons-wrapper"}>
                         {finalTableData && allowHideColumns && (
                             <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
-                                {'Show/Hide Columns'}
+                                {'Columns'}
                             </button>
+                        )}
+
+                        {importConfig && importConfig.onImport && (
+                            <>
+                                <button onClick={() => { setImportResult(null); setIsImportModalOpen(true); }}>
+                                    Import from CSV
+                                </button>
+
+                                {importConfig.descriptor && (
+                                    <button onClick={() => downloadImportTemplate(importConfig)}>
+                                        Download a template
+                                    </button>
+                                )}
+                            </>
                         )}
 
                         {finalTableData && allowExport && (
                             <button onClick={() => {
                                 if (!finalTableData) return;
-                                const csv = finalTableData.map(row =>
-                                    row.map(field => {
-                                        if (field && typeof field === 'string' && field.length > 0) {
-                                            return (field.includes(',') || field.includes('\n')) ? `"${field}"` : field
-                                        } else return '';
-                                    }).join(',')
-                                ).join('\n');
+                                const csv = finalTableData.map(row => row.map(escapeCsvField).join(',')).join('\n');
                                 const blob = new Blob([csv], {type: 'text/csv'});
                                 const url = window.URL.createObjectURL(blob);
                                 const a = document.createElement('a');
@@ -1586,12 +1791,12 @@ function Table({
                                 a.click();
                                 window.URL.revokeObjectURL(url);
                             }}>
-                                Export to CSV
+                                Export CSV
                             </button>
                         )}
 
-                        {finalTableData && hasActiveFilters() && (
-                            <button onClick={resetAllFilters}>Reset Filters</button>
+                        {finalTableData && (hasActiveFilters() || searchQuery !== '') && (
+                            <button onClick={() => { resetAllFilters(); setSearchQuery(''); }}>Reset Filters</button>
                         )}
 
                         {headerModuleElements && headerModuleElements.map((element, index) => (
@@ -1637,8 +1842,6 @@ function Table({
                             const finalTableIndex = isPaginated && rowIndex >= headerRowCount
                                 ? headerRowCount + (currentPage - 1) * pageSize + (rowIndex - headerRowCount)
                                 : rowIndex;
-                            const editColVisible = !!(allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit"));
-                            const customActionColVisible = !!(customActionColumn && !hiddenColumns.has(customActionColumn.headerText));
                             const customActionCellIndex = row.length + (editColVisible ? 1 : 0);
                             const deleteCellIndex = customActionCellIndex + (customActionColVisible ? 1 : 0);
                             const rowClassName = rowIndex === 0 || !rowClassNames ? undefined : rowClassNames(finalTableIndex);
@@ -1687,6 +1890,7 @@ function Table({
                                         return (
                                             <td
                                                 key={cellIndex}
+                                                className={(isStickyCol && cellIndex === stickyCols - 1) ? 'table-module-pinned-left-trailing' : undefined}
                                                 style={inlineStyles}
                                                 onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: cellIndex})}
                                                 onMouseLeave={() => setHoveredCell({r: null, c: null})}
@@ -1772,46 +1976,33 @@ function Table({
                                             </td>
                                         );
                                     })}
-                                    {allowEditEntryOption && onEditEntryOption && !hiddenColumns.has("Edit") && (
+                                    {editColVisible && (
                                         <td
+                                            className={pinnedActionClassName('edit')}
                                             onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: row.length})}
                                             onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             style={{
                                                 textAlign: 'center',
-                                                position: (actualRowIndex < stickyRows || row.length < stickyCols) ? 'sticky' : 'relative',
-                                                zIndex: (actualRowIndex < stickyRows && row.length < stickyCols) ? 3 : ((actualRowIndex < stickyRows || row.length < stickyCols) ? 2 : undefined),
-                                                backgroundColor: (actualRowIndex < stickyRows || row.length < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
+                                                position: (actualRowIndex < stickyRows || pinActionCols) ? 'sticky' : 'relative',
+                                                zIndex: (actualRowIndex < stickyRows && pinActionCols) ? 3 : ((actualRowIndex < stickyRows || pinActionCols) ? 2 : undefined),
+                                                backgroundColor: (actualRowIndex < stickyRows || pinActionCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
                                                 top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                                left: row.length < stickyCols ? (colWidths.slice(0, row.length).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                                right: pinActionCols ? rightStickyOffsetOf(row.length) : undefined,
                                             }}>
                                             {(() => {
-                                                const editCellIndex = row.length;
-                                                const isHoveredEdit = hoveredCell.r === actualRowIndex && hoveredCell.c === editCellIndex;
-                                                const showColControlEdit = isHoveredEdit && rowIndex === 0 && editCellIndex < 1;
-                                                const showRowControlEdit = isHoveredEdit && editCellIndex === 0 && rowIndex < 1;
+                                                const isHoveredEdit = hoveredCell.r === actualRowIndex && hoveredCell.c === row.length;
+                                                const showRowControlEdit = isHoveredEdit && row.length === 0 && rowIndex < 1;
 
-                                                return isCurrentlySticky && (showColControlEdit || showRowControlEdit) ? (
+                                                return isCurrentlySticky && showRowControlEdit ? (
                                                     <div className="sticky-control-widget">
-                                                        {showColControlEdit && (
-                                                            <label className="sticky-control-checkbox"
-                                                                   title="Fix all columns up to this one">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={stickyCols > editCellIndex}
-                                                                    onChange={(e) => setStickyCols(e.target.checked ? editCellIndex + 1 : editCellIndex)}
-                                                                /> Fix Col
-                                                            </label>
-                                                        )}
-                                                        {showRowControlEdit && (
-                                                            <label className="sticky-control-checkbox"
-                                                                   title="Fix all rows up to this one">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={stickyRows > actualRowIndex}
-                                                                    onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
-                                                                /> Fix Row
-                                                            </label>
-                                                        )}
+                                                        <label className="sticky-control-checkbox"
+                                                               title="Fix all rows up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyRows > actualRowIndex}
+                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                            /> Fix Row
+                                                        </label>
                                                     </div>
                                                 ) : null;
                                             })()}
@@ -1825,40 +2016,30 @@ function Table({
                                     )}
                                     {customActionColVisible && (
                                         <td
+                                            className={pinnedActionClassName('custom')}
                                             onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: customActionCellIndex})}
                                             onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             style={{
                                                 textAlign: 'center',
-                                                position: (actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? 'sticky' : 'relative',
-                                                zIndex: (actualRowIndex < stickyRows && customActionCellIndex < stickyCols) ? 3 : ((actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? 2 : undefined),
-                                                backgroundColor: (actualRowIndex < stickyRows || customActionCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
+                                                position: (actualRowIndex < stickyRows || pinActionCols) ? 'sticky' : 'relative',
+                                                zIndex: (actualRowIndex < stickyRows && pinActionCols) ? 3 : ((actualRowIndex < stickyRows || pinActionCols) ? 2 : undefined),
+                                                backgroundColor: (actualRowIndex < stickyRows || pinActionCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
                                                 top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                                left: customActionCellIndex < stickyCols ? (colWidths.slice(0, customActionCellIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                                right: pinActionCols ? rightStickyOffsetOf(customActionCellIndex) : undefined,
                                             }}>
                                             {(() => {
                                                 const isHoveredCustomAction = hoveredCell.r === actualRowIndex && hoveredCell.c === customActionCellIndex;
-                                                const showColControlCustomAction = isHoveredCustomAction && rowIndex === 0 && customActionCellIndex < 1;
                                                 const showRowControlCustomAction = isHoveredCustomAction && customActionCellIndex === 0 && rowIndex < 1;
-                                                return isCurrentlySticky && (showColControlCustomAction || showRowControlCustomAction) ? (
+
+                                                return isCurrentlySticky && showRowControlCustomAction ? (
                                                     <div className="sticky-control-widget">
-                                                        {showColControlCustomAction && (
-                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={stickyCols > customActionCellIndex}
-                                                                    onChange={(e) => setStickyCols(e.target.checked ? customActionCellIndex + 1 : customActionCellIndex)}
-                                                                /> Fix Col
-                                                            </label>
-                                                        )}
-                                                        {showRowControlCustomAction && (
-                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={stickyRows > actualRowIndex}
-                                                                    onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
-                                                                /> Fix Row
-                                                            </label>
-                                                        )}
+                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyRows > actualRowIndex}
+                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                            /> Fix Row
+                                                        </label>
                                                     </div>
                                                 ) : null;
                                             })()}
@@ -1881,42 +2062,32 @@ function Table({
                                             )}
                                         </td>
                                     )}
-                                    {allowDeleteEntryOption && onDeleteEntry && !hiddenColumns.has("Delete") && (
+                                    {deleteColVisible && (
                                         <td
+                                            className={pinnedActionClassName('delete')}
                                             onMouseEnter={() => setHoveredCell({r: actualRowIndex, c: deleteCellIndex})}
                                             onMouseLeave={() => setHoveredCell({r: null, c: null})}
                                             style={{
                                                 textAlign: 'center',
-                                                position: (actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? 'sticky' : 'relative',
-                                                zIndex: (actualRowIndex < stickyRows && deleteCellIndex < stickyCols) ? 3 : ((actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? 2 : undefined),
-                                                backgroundColor: (actualRowIndex < stickyRows || deleteCellIndex < stickyCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
+                                                position: (actualRowIndex < stickyRows || pinActionCols) ? 'sticky' : 'relative',
+                                                zIndex: (actualRowIndex < stickyRows && pinActionCols) ? 3 : ((actualRowIndex < stickyRows || pinActionCols) ? 2 : undefined),
+                                                backgroundColor: (actualRowIndex < stickyRows || pinActionCols) ? isDarkMode ? 'var(--dark-accent-color)' : 'var(--fb-off-white-color)' : undefined,
                                                 top: actualRowIndex < stickyRows ? (rowHeights.slice(0, actualRowIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
-                                                left: deleteCellIndex < stickyCols ? (colWidths.slice(0, deleteCellIndex).reduce((a, b) => a + b, 0) || 0) : undefined,
+                                                right: pinActionCols ? rightStickyOffsetOf(deleteCellIndex) : undefined,
                                             }}>
                                             {(() => {
                                                 const isHoveredDelete = hoveredCell.r === actualRowIndex && hoveredCell.c === deleteCellIndex;
-                                                const showColControlDelete = isHoveredDelete && rowIndex === 0 && deleteCellIndex < 1;
                                                 const showRowControlDelete = isHoveredDelete && deleteCellIndex === 0 && rowIndex < 1;
-                                                return isCurrentlySticky && (showColControlDelete || showRowControlDelete) ? (
+
+                                                return isCurrentlySticky && showRowControlDelete ? (
                                                     <div className="sticky-control-widget">
-                                                        {showColControlDelete && (
-                                                            <label className="sticky-control-checkbox" title="Fix all columns up to this one">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={stickyCols > deleteCellIndex}
-                                                                    onChange={(e) => setStickyCols(e.target.checked ? deleteCellIndex + 1 : deleteCellIndex)}
-                                                                /> Fix Col
-                                                            </label>
-                                                        )}
-                                                        {showRowControlDelete && (
-                                                            <label className="sticky-control-checkbox" title="Fix all rows up to this one">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={stickyRows > actualRowIndex}
-                                                                    onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
-                                                                /> Fix Row
-                                                            </label>
-                                                        )}
+                                                        <label className="sticky-control-checkbox" title="Fix all rows up to this one">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={stickyRows > actualRowIndex}
+                                                                onChange={(e) => setStickyRows(e.target.checked ? actualRowIndex + 1 : actualRowIndex)}
+                                                            /> Fix Row
+                                                        </label>
                                                     </div>
                                                 ) : null;
                                             })()}
@@ -2217,6 +2388,97 @@ function Table({
                     </div>
                 </div>
             </animated.div>
+
+            {importConfig && importConfig.onImport && createPortal((
+                <animated.div style={animateImportModal}
+                              className={`general-large-admin-action-modal table-module-import-modal ${isImportModalOpen ? 'is-open' : ''}`}>
+                    <div className={"general-large-admin-action-modal-overlay"} onClick={closeImportModal}/>
+                    <div className={"general-large-admin-action-modal-container"}>
+                        <div className={"general-large-admin-action-modal-header"}>
+                            <h3>Import from CSV</h3>
+                        </div>
+
+                        <div className={"general-large-admin-action-modal-content"}>
+                            {importResult === null ? (
+                                <>
+                                    <p className={"general-large-admin-action-modal-content-note"}>
+                                        The file needs a header row naming the columns. Columns may be in any order, and
+                                        anything the import does not use is ignored. Download a template to start from a
+                                        correct file.
+                                    </p>
+
+                                    {isImportModalOpen && (
+                                    <Form fields={importFormFields}
+                                          mailTo={''}
+                                          sendPdf={false}
+                                          formTitle={"Import From CSV Form"}
+                                          lang={"en"}
+                                          captchaLength={1}
+                                          noInputFieldsCache={true}
+                                          noCaptcha={true}
+                                          resetFormFromParent={resetImportForm}
+                                          setResetForFromParent={setResetImportForm}
+                                          hasDifferentOnSubmitBehaviour={true}
+                                          differentOnSubmitBehaviour={handleImportSubmit}
+                                          formInModalPopup={true}
+                                          setShowFormModalPopup={setIsImportModalOpen}
+                                          formHasPasswordField={false}
+                                          footerButtonsSpaceBetween={true}
+                                          switchFooterButtonsOrder={true}
+                                          forceEnglishForm={true}
+                                          noClearOption={true}
+                                          hasDifferentSubmitButtonText={true}
+                                          differentSubmitButtonText={['Import', 'Importing...']}
+                                          formFooterButtonsAreOutside={true}
+                                          footerButtonsPortalTarget={importFooterButtonsRef}
+                                    />
+                                    )}
+                                </>
+                            ) : (
+                                <div className={"table-module-import-result"}>
+                                    <p className={importResult.success
+                                        ? "admin-inline-success-message"
+                                        : "admin-inline-error-message"}>
+                                        {importResult.message}
+                                    </p>
+
+                                    {(importResult.warnings || []).map((warning, index) => (
+                                        <p key={index} className={"table-module-import-warning"}>{warning}</p>
+                                    ))}
+
+                                    {(importResult.failed || []).length > 0 && (
+                                        <div className={"table-module-import-failures"}>
+                                            {importResult.failed.map((failure, index) => (
+                                                <div key={index} className={"table-module-import-failure"}>
+                                                    <span className={"table-module-import-failure-where"}>
+                                                        Row {failure.row}{failure.column ? ` · ${failure.column}` : ''}
+                                                    </span>
+                                                    <span>{failure.message}</span>
+                                                    {failure.example !== '' && (
+                                                        <span className={"table-module-import-failure-example"}>
+                                                            Example: {failure.example}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={"general-large-admin-action-modal-footer"}>
+                            <button className={"add-admin-user-modal-form-cancel-button"} onClick={closeImportModal}>
+                                {importResult === null ? 'Cancel' : 'Close'}
+                            </button>
+
+                            {importResult === null
+                                ? <div ref={importFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
+                                : <button onClick={() => setImportResult(null)}>Import another file</button>}
+                        </div>
+                    </div>
+                </animated.div>
+            ), document.body)}
         </div>
     );
 }
@@ -2234,6 +2496,16 @@ Table.propTypes = {
     allowHideColumns: PropTypes.bool,
     defaultHiddenColumns: PropTypes.arrayOf(PropTypes.string),
     allowExport: PropTypes.bool,
+    importConfig: PropTypes.shape({
+        onImport: PropTypes.func.isRequired,
+        templateName: PropTypes.string,
+        descriptor: PropTypes.shape({
+            label: PropTypes.string,
+            columns: PropTypes.array,
+        }),
+    }),
+    allowSearch: PropTypes.bool,
+    searchPlaceholder: PropTypes.string,
     exportFileName: PropTypes.string,
     filterableColumns: PropTypes.arrayOf(PropTypes.string),
     headerModuleElements: PropTypes.array,
@@ -2249,6 +2521,7 @@ Table.propTypes = {
     reviewMode: PropTypes.bool,
     allowSticky: PropTypes.bool,
     allowStickyOnMobile: PropTypes.bool,
+    stickyActionColumns: PropTypes.bool,
     dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     hideHorizontalScrollBar: PropTypes.bool,
     hideVerticalScrollBar: PropTypes.bool,

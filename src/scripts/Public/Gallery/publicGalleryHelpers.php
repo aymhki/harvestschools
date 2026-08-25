@@ -70,7 +70,7 @@ function public_gallery_videos($conn, $language) {
     $isArabic = $language === 'ar';
 
     $stmt = $conn->prepare(
-        "SELECT id, title_en, title_ar, file_name, thumbnail_at, duration_seconds,
+        "SELECT id, title_en, title_ar, layout, file_name, thumbnail_at, duration_seconds,
                 UNIX_TIMESTAMP(updated_at) AS updated_at
          FROM gallery_videos
          WHERE is_public = 1 AND status = 'ready'
@@ -90,6 +90,7 @@ function public_gallery_videos($conn, $language) {
         $videos[] = [
             'id'              => (int)$row['id'],
             'title'           => (string)($isArabic ? $row['title_ar'] : $row['title_en']),
+            'layout'          => (string)$row['layout'],
             'path'            => 'videos/' . $row['file_name'],
             'thumbnailAt'     => (float)$row['thumbnail_at'],
             'durationSeconds' => $row['duration_seconds'] === null ? null : (float)$row['duration_seconds'],

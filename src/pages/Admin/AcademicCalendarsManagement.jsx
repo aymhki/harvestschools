@@ -4,6 +4,7 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
+import {fetchImportDescriptor, importCsvFile} from "../../services/Admin/Imports/AdminImportServices.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
 import FancyList from "../../modules/FancyList.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
@@ -15,7 +16,8 @@ import {
     uploadCalendarPdf,
     addCalendarEvent,
     editCalendarEvent,
-    deleteCalendarEvent
+    deleteCalendarEvent,
+    deleteAcademicCalendarYear
 } from "../../services/Admin/AcademicCalendars/AdminAcademicCalendarsServices.jsx";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
@@ -67,6 +69,7 @@ function AcademicCalendarsManagement() {
     const [isLoading, setIsLoading] = useLoading(false);
     const [calendars, setCalendars] = useState([]);
     const [eventsData, setEventsData] = useState(null);
+    const [importDescriptor, setImportDescriptor] = useState(null);
 
     const [modalType, setModalType] = useState(null);
     const [modalFields, setModalFields] = useState(null);
@@ -75,6 +78,7 @@ function AcademicCalendarsManagement() {
     const [rowIndexToEdit, setRowIndexToEdit] = useState(null);
 
     const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
+    const [deleteKind, setDeleteKind] = useState('event');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteError, setDeleteError] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -117,6 +121,19 @@ function AcademicCalendarsManagement() {
             .then(() => {
                 reloadData();
             });
+    }, [openCalendarKey, openAcademicYear]);
+
+    useEffect(() => {
+        if (!openCalendarKey || !openAcademicYear) {
+            setImportDescriptor(null);
+
+            return;
+        }
+
+        fetchImportDescriptor(navigate, 'calendarEvents', {
+            calendar_key: openCalendarKey,
+            academic_year: openAcademicYear,
+        }).then(setImportDescriptor);
     }, [openCalendarKey, openAcademicYear]);
 
     useEffect(() => {
@@ -169,7 +186,7 @@ function AcademicCalendarsManagement() {
             addButtonLabel: 'Add Event',
             removeButtonLabel: 'Remove Event',
             insertAfterFieldId: availableFromFieldId,
-            minInstances: 1,
+            minInstances: 0,
             maxInstances: 300,
             fields: eventRowFields(),
         }]);
@@ -177,8 +194,8 @@ function AcademicCalendarsManagement() {
         setModalFields([
             { id: yearFieldId, type: 'text', name: 'academic-year', label: 'Academic Year', required: true, errorMsg: 'Please enter the academic year as 2026/2027', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Academic Year (this year/next year)', httpName: 'academic-year', alwaysEnglish: true },
             { id: availableFromFieldId, type: 'date', minYear: schoolFoundedYear, maxYear: calendarYear() + CALENDAR_YEARS_AHEAD, name: 'available-from', label: 'Available From', required: true, errorMsg: 'Please choose when this calendar starts showing', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Start showing this academic calendar at', httpName: 'available-from', alwaysEnglish: true },
-            { id: noteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, placeholder: 'All holidays during the week are shifted to Thursday of that week as per the ministry of education instructions', displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
-            { id: noteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, lang: 'ar', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
+            { id: noteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, placeholder: 'For example: All holidays during the week are shifted to Thursday of that week as per the ministry of education instructions', displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
+            { id: noteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, lang: 'ar', placeholder: 'على سبيل المثال: يتم تحويل جميع الإجازات التي تقع خلال الأسبوع إلى يوم الخميس من نفس الأسبوع وفقاً لتعليمات وزارة التربية والتعليم', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
             { id: pdfFieldId, type: 'file', name: 'calendar-pdf', label: PDF_FIELD_LABEL, required: false, value: '', allowedFileTypes: ['application/pdf', '.pdf'], errorMsg: 'Please upload the calendar as a PDF', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Calendar PDF for the Download Calendar button (optional)', httpName: 'calendar-pdf' },
         ]);
     };
@@ -188,8 +205,8 @@ function AcademicCalendarsManagement() {
         setModalDynamicSections(null);
         setModalFields([
             { id: metaAvailableFromFieldId, type: 'date', minYear: schoolFoundedYear, maxYear: calendarYear() + CALENDAR_YEARS_AHEAD, name: 'available-from', label: 'Available From', required: true, errorMsg: 'Please choose when this calendar starts showing', value: '', defaultValue: openYear ? openYear.availableFrom : '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Start showing this academic calendar at', httpName: 'available-from', alwaysEnglish: true },
-            { id: metaNoteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: '', defaultValue: openYear ? openYear.noteEn : '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
-            { id: metaNoteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: '', defaultValue: openYear ? openYear.noteAr : '', widthOfField: 1, labelOutside: true, labelOnTop: true, lang: 'ar', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
+            { id: metaNoteEnFieldId, type: 'textarea', name: 'note-en', label: 'Note (EN)', required: false, value: '', defaultValue: openYear ? openYear.noteEn : '', widthOfField: 1, labelOutside: true, labelOnTop: true, placeholder: 'For example: All holidays during the week are shifted to Thursday of that week as per the ministry of education instructions', displayLabel: 'Note shown above the public table (EN)', httpName: 'note-en' },
+            { id: metaNoteArFieldId, type: 'textarea', name: 'note-ar', label: 'Note (AR)', required: false, value: '', defaultValue: openYear ? openYear.noteAr : '', widthOfField: 1, labelOutside: true, labelOnTop: true, lang: 'ar', placeholder: 'على سبيل المثال: يتم تحويل جميع الإجازات التي تقع خلال الأسبوع إلى يوم الخميس من نفس الأسبوع وفقاً لتعليمات وزارة التربية والتعليم', displayLabel: 'Note shown above the public table (AR)', httpName: 'note-ar' },
         ]);
     };
 
@@ -303,7 +320,7 @@ function AcademicCalendarsManagement() {
     };
 
     const handleDelete = async () => {
-        if (rowIndexToDelete === null) {
+        if (deleteKind === 'event' && rowIndexToDelete === null) {
             return;
         }
 
@@ -311,18 +328,26 @@ function AcademicCalendarsManagement() {
         setIsDeleting(true);
 
         try {
-            const result = await deleteCalendarEvent(Number(eventsData[rowIndexToDelete][eventIdColIndex]));
+            const result = deleteKind === 'year'
+                ? await deleteAcademicCalendarYear(openCalendarKey, openAcademicYear)
+                : await deleteCalendarEvent(Number(eventsData[rowIndexToDelete][eventIdColIndex]));
 
             if (result && result.success) {
                 setShowDeleteModal(false);
                 setRowIndexToDelete(null);
-                await reloadData();
+
+                if (deleteKind === 'year') {
+                    goBackToList();
+                } else {
+                    await reloadData();
+                }
+
                 return true;
             }
 
             throw new Error((result && result.message) || result);
         } catch (error) {
-            setDeleteError(error.message || 'An error occurred while deleting the event.');
+            setDeleteError(error.message || 'An error occurred while deleting.');
             setTimeout(() => { setDeleteError(null); }, msgTimeout);
         } finally {
             setIsLoading(false);
@@ -365,19 +390,49 @@ function AcademicCalendarsManagement() {
                    isLoading={isLoading}
                    defaultHiddenColumns={['Event ID']}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
+                   allowExport={true}
+                   exportFileName={`${openCalendarKey}-${openAcademicYear}`}
+                   importConfig={{
+                       templateName: `${openCalendarKey}-${openAcademicYear}`,
+                       descriptor: importDescriptor,
+                       onImport: async (file) => {
+                           const result = await importCsvFile(
+                               'calendarEvents',
+                               {calendar_key: openCalendarKey, academic_year: openAcademicYear},
+                               file
+                           );
+
+                           if (result.imported > 0) {
+                               await reloadData();
+                           }
+
+                           return result;
+                       },
+                   }}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => openEventModal('edit', rowIndex)}
                    allowDeleteEntryOption={true}
                    onDeleteEntry={(rowIndex) => {
+                       setDeleteKind('event');
                        setRowIndexToDelete(rowIndex);
                        setDeleteError(null);
                        setShowDeleteModal(true);
                    }}
                    headerModuleElements={[
-                       (<button key={1} onClick={goBackToList}>Go Back</button>),
+                       (<button key={1} onClick={goBackToList}>Back</button>),
                        (<button key={2} onClick={openPdfModal}>Update PDF</button>),
                        (<button key={3} onClick={() => openEventModal('add', null)}>Add Event</button>),
-                       (<button key={4} onClick={openMetaDataModal}>Update Meta Data</button>),
+                       (<button key={4} onClick={openMetaDataModal}>Update Metadata</button>),
+                       (
+                           <button key={5} onClick={() => {
+                               setDeleteKind('year');
+                               setRowIndexToDelete(null);
+                               setDeleteError(null);
+                               setShowDeleteModal(true);
+                           }}>
+                               Delete Year
+                           </button>
+                       ),
                    ]}
                    footerModuleElements={[]}
             />
@@ -396,7 +451,7 @@ function AcademicCalendarsManagement() {
 
     const modalTitles = {
         'add-year': 'Add a new Academic Calendar Year',
-        'meta': 'Update Meta Data',
+        'meta': 'Update Metadata',
         'pdf': 'Update PDF',
         'add-event': 'Add Event',
         'edit-event': 'Edit Event',
@@ -467,15 +522,28 @@ function AcademicCalendarsManagement() {
                 <div className={"general-small-admin-action-modal-overlay"} onClick={() => setShowDeleteModal(false)}/>
                 <div className={"general-small-admin-action-modal-container"}>
                     <div className={"general-small-admin-action-modal-header"}>
-                        <h3>Delete Event</h3>
+                        <h3>{deleteKind === 'year' ? 'Delete Academic Calendar' : 'Delete Event'}</h3>
                     </div>
 
                     <div className={"general-small-admin-action-modal-content"}>
-                        <p>
-                            Are you sure you want to
-                            delete {eventsData && eventsData[rowIndexToDelete] && eventsData[rowIndexToDelete][eventTitleEnColIndex]}?
-                            This action cannot be reversed.
-                        </p>
+                        {deleteKind === 'year' ? (
+                            <p>
+                                Are you sure you want to delete the {openAcademicYear} calendar
+                                for {openCalendar ? openCalendar.label : ''}?
+                                {openYear ? ` Its ${openYear.eventCount} events are removed with it` : ''}
+                                {openYear && openYear.hasPdf ? ', and its PDF is deleted from the server' : ''}.
+                                {openYear && openYear.isLive
+                                    ? ' It is the calendar showing on the website right now, so the previous year takes over.'
+                                    : ''}
+                                {' '}This action cannot be reversed.
+                            </p>
+                        ) : (
+                            <p>
+                                Are you sure you want to
+                                delete {eventsData && eventsData[rowIndexToDelete] && eventsData[rowIndexToDelete][eventTitleEnColIndex]}?
+                                This action cannot be reversed.
+                            </p>
+                        )}
 
                         {deleteError && (
                             <>

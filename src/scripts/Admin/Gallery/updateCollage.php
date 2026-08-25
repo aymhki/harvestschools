@@ -23,8 +23,9 @@ try {
     }
 
     $collageId = (int)($data['collage_id'] ?? 0);
+    $collage = gallery_collage_by_id($conn, $collageId);
 
-    if (gallery_collage_by_id($conn, $collageId) === null) {
+    if ($collage === null) {
         echo json_encode(gallery_error('That collage does not exist.', 404));
         exit;
     }
@@ -43,6 +44,19 @@ try {
     $stmt->bind_param("sssii", $titleEn, $titleAr, $layout, $isPublic, $collageId);
     $stmt->execute();
     $stmt->close();
+
+    $placement = strtolower(trim((string)($data['placement'] ?? '')));
+
+    if ($placement !== '' && $placement !== GALLERY_PLACEMENT_KEEP) {
+        gallery_apply_placement(
+            $conn,
+            'gallery_collages',
+            $collageId,
+            gallery_placement_of($placement),
+            (int)($data['after_id'] ?? 0),
+            $collage['media_date']
+        );
+    }
 
     echo json_encode(["success" => true, "message" => "Collage updated.", "code" => 200]);
 } catch (Throwable $e) {

@@ -256,7 +256,7 @@ const prepareUploadDiscard = async (videoId) => {
 }
 
 
-const runVideoUpload = async (videoId, chunkSize, file, {titleEn, titleAr, thumbnailAt, placement, afterId, onProgress, signal} = {}) => {
+const runVideoUpload = async (videoId, chunkSize, file, {titleEn, titleAr, thumbnailAt, layout, placement, afterId, onProgress, signal} = {}) => {
     const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
@@ -328,6 +328,7 @@ const runVideoUpload = async (videoId, chunkSize, file, {titleEn, titleAr, thumb
     const finished = await postToGallery(endpoints.finishVideoUpload, {
         video_id: videoId,
         source_name: file.name,
+        layout: layout || 'wide',
         placement: placement || 'end',
         after_id: afterId || 0,
     }, 'The upload could not be finished.', signal);
@@ -341,6 +342,7 @@ const runVideoUpload = async (videoId, chunkSize, file, {titleEn, titleAr, thumb
             title_en: titleEn,
             title_ar: titleAr,
             thumbnail_at: Number(thumbnailAt),
+            layout: layout || 'wide',
             is_public: true,
         });
     }

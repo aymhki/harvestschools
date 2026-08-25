@@ -6,7 +6,7 @@ import { requestVideoPreviewFrames, preloadFramesSequentially } from '../service
 const FRAME_INTERVAL_MS = 700
 const SWIPE_ACTIVATION_PX = 8
 
-function VideoHoverPreview({ path, root, durationSeconds, children, onActivate }) {
+function VideoHoverPreview({ path, root, durationSeconds, children, label }) {
     const [frames, setFrames] = useState([])
     const [progress, setProgress] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
@@ -14,21 +14,20 @@ function VideoHoverPreview({ path, root, durationSeconds, children, onActivate }
     const [frameIndex, setFrameIndex] = useState(0)
 
     const abortRef = useRef(null)
-    const hasFailedRef = useRef(false)
+    const framesRef = useRef([])
+    const loadingRef = useRef(false)
 
     const startPreview = useCallback(() => {
-        if (hasFailedRef.current || isPreviewing) {
-            return
-        }
-
         setIsPreviewing(true)
 
-        if (frames.length > 0 || isLoading) {
+        if (framesRef.current.length > 0 || loadingRef.current) {
             return
         }
 
         const controller = new AbortController()
+
         abortRef.current = controller
+        loadingRef.current = true
 
         setIsLoading(true)
         setProgress(0)
@@ -43,30 +42,23 @@ function VideoHoverPreview({ path, root, durationSeconds, children, onActivate }
                     return
                 }
 
-                if (loaded.length === 0) {
-                    hasFailedRef.current = true
+                framesRef.current = loaded
+                setFrames(loaded)
+            })
+            .catch(() => null)
+            .finally(() => {
+                if (abortRef.current === controller) {
+                    abortRef.current = null
                 }
 
-                setFrames(loaded)
+                loadingRef.current = false
                 setIsLoading(false)
             })
-            .catch(() => {
-                hasFailedRef.current = true
-                setIsLoading(false)
-            })
-    }, [path, root, durationSeconds, frames.length, isLoading, isPreviewing])
+    }, [path, root, durationSeconds])
 
     const stopPreview = useCallback(() => {
         setIsPreviewing(false)
         setFrameIndex(0)
-
-        if (abortRef.current) {
-            abortRef.current.abort()
-            abortRef.current = null
-        }
-
-        setIsLoading(false)
-        setProgress(0)
     }, [])
 
     useEffect(() => {
@@ -91,22 +83,7 @@ function VideoHoverPreview({ path, root, durationSeconds, children, onActivate }
 
     const bind = useGesture(
         {
-            onHover: ({ hovering }) => {
-                if (!window.matchMedia('(hover: hover)').matches) {
-                    return
-                }
-
-                if (hovering) {
-                    startPreview()
-                } else {
-                    stopPreview()
-                }
-            },
-            onDrag: ({ movement: [mx, my], last, tap }) => {
-                if (tap) {
-                    return
-                }
-
+            onDrag: ({ movement: [mx, my], last }) => {
                 if (last) {
                     stopPreview()
                     return
@@ -123,9 +100,15 @@ function VideoHoverPreview({ path, root, durationSeconds, children, onActivate }
     )
 
     const activeFrame = frames.length > 0 ? frames[frameIndex] : null
+    const percent = Math.round(progress * 100)
 
     return (
-        <div className={'video-hover-preview'} {...bind()} onClick={onActivate}>
+        <div
+            className={'video-hover-preview'}
+            {...bind()}
+            onMouseEnter={startPreview}
+            onMouseLeave={stopPreview}
+        >
             {children}
 
             {isPreviewing && activeFrame && (
@@ -133,19 +116,16 @@ function VideoHoverPreview({ path, root, durationSeconds, children, onActivate }
             )}
 
             {isPreviewing && isLoading && (
-                <span className={'video-hover-preview-progress'} aria-hidden={'true'}>
-                    <svg viewBox={'0 0 36 36'} focusable={'false'}>
-                        <circle className={'video-hover-preview-progress-track'} cx={'18'} cy={'18'} r={'16'}/>
-                        <circle
-                            className={'video-hover-preview-progress-line'}
-                            cx={'18'}
-                            cy={'18'}
-                            r={'16'}
-                            pathLength={'100'}
-                            style={{ strokeDashoffset: 100 - Math.round(progress * 100) }}
-                        />
-                    </svg>
-                </span>
+                <div
+                    className={'video-hover-preview-progress'}
+                    role={'progressbar'}
+                    aria-valuenow={percent}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${label || 'Video'} preview loading progress`}
+                >
+                    <span className={'video-hover-preview-progress-fill'} style={{ width: `${percent}%` }}/>
+                </div>
             )}
         </div>
     )
@@ -156,7 +136,7 @@ VideoHoverPreview.propTypes = {
     root: PropTypes.string,
     durationSeconds: PropTypes.number,
     children: PropTypes.node,
-    onActivate: PropTypes.func,
+    label: PropTypes.string,
 }
 
 export default VideoHoverPreview

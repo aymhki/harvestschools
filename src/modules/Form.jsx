@@ -11,7 +11,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
 import {useLoading} from "../services/General/GlobalLoadingService.jsx";
-import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS, setPendingTurnstileToken} from "../services/General/GeneralUtils.jsx";
+import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS, setPendingTurnstileToken, ARABIC_MARKS_REGEX, normalizeArabicText} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 import {createPortal} from "react-dom";
@@ -82,7 +82,6 @@ const captchaSeededUnitRandom = (seed, index) => {
     return ((h >>> 0) % 100000) / 100000;
 };
 
-const ARABIC_MARKS_REGEX = /[\u064B-\u065F\u0670\u0640]/g;
 
 const AR_TO_LAT = {
     'ا': 'a', 'أ': 'a', 'إ': 'i', 'آ': 'a', 'ٱ': 'a', 'ب': 'b', 'ت': 't', 'ث': 's',
@@ -123,13 +122,6 @@ const toTransliterationKey = (text) => {
         .trim();
 };
 
-const normalizeArabicText = (text) => String(text)
-    .replace(ARABIC_MARKS_REGEX, '')
-    .replace(/[أإآٱ]/g, 'ا')
-    .replace(/ى/g, 'ي')
-    .replace(/ة/g, 'ه')
-    .replace(/ؤ/g, 'و')
-    .replace(/ئ/g, 'ي');
 
 
 
@@ -224,6 +216,7 @@ function Form({
     const [videoThumbnailUrls, setVideoThumbnailUrls] = useState({});
     const [videoThumbnailDurations, setVideoThumbnailDurations] = useState({});
     const [videoThumbnailSeeking, setVideoThumbnailSeeking] = useState({});
+    const [fileDropTargets, setFileDropTargets] = useState({});
     const [filePreviewUrls, setFilePreviewUrls] = useState({});
     const [showSelectDateModal, setShowSelectDateModal] = useState(false);
     const [selectedDateDay, setSelectedDateDay] = useState('');
@@ -327,6 +320,7 @@ function Form({
     const searchSelectWrapperRefs = useRef({});
     const searchSelectDropdownRef = useRef(null);
     const optionPointerStartRef = useRef(null);
+    const fileDropDepths = useRef({});
 
     const processFieldOnChangeResult = useCallback((field, value) => {
 
@@ -1327,7 +1321,7 @@ function Form({
         };
 
         return (
-            <div className={`file-form-field-styled files-form-field-styled ${widthClass}`}>
+            <div className={`file-form-field-styled files-form-field-styled ${widthClass} ${fileDropTargets[field.id] ? 'is-drop-target' : ''}`}{...dropTargetProps(field)}>
                 <label htmlFor={field.id}>
                     {getLabelText(field)}
                 </label>
@@ -1360,7 +1354,7 @@ function Form({
                 </div>
 
                 {chosen.length === 0 ? (
-                    <label>No files selected</label>
+                    <label>{t('all-forms.drop-files-here')}</label>
                 ) : (
                     <ul className="files-form-field-grid">
                         {chosen.map((file, index) => (
@@ -1607,7 +1601,7 @@ function Form({
         }
 
         return (
-            <div className={`file-form-field-styled ${widthClass}`} >
+            <div className={`file-form-field-styled ${widthClass} ${fileDropTargets[field.id] ? 'is-drop-target' : ''}`}{...dropTargetProps(field)}>
                 <label htmlFor={field.id}>
                     {getLabelText(field)}
                 </label>
@@ -1651,8 +1645,7 @@ function Form({
                         ? (chosenFile.name.length > 20
                                 ? chosenFile.name.substring(0, 20) + '...'
                                 : chosenFile.name
-                        )
-                        : 'No file selected'
+                        ) : t('all-forms.drop-file-here')
                     }
                     {(chosenFile && field.showPreview) ? ` (${describeBytes(chosenFile.size)})` : ''}
                 </label>
@@ -1674,7 +1667,6 @@ function Form({
                     id={field.id}
                     name={field.httpName}
                     label={field.label}
-                    required={field.required}
                     accept={field.allowedFileTypes ? field.allowedFileTypes.join(',') : ''}
                     disabled={submitting}
                     onChange={(e) => onChange(e, field)}
@@ -2202,19 +2194,122 @@ function Form({
         return currentFields;
     }, []);
 
+    const acceptFiles = (field, fileList) => {
+        const chosen = Array.from(fileList || []);
+
+        if (chosen.length === 0) {
+            return '';
+        }
+
+        const problem = chosen.map((file) => describeFileProblem(field, file)).find(Boolean) || '';
+
+        if (problem !== '') {
+            return problem;
+        }
+
+        setGeneralFormError('');
+        setSuccessMessage('');
+
+        if (field.type === 'files') {
+            const existing = getChosenFiles(field);
+            const alreadyChosen = new Set(existing.map((file) => `${file.name}:${file.size}`));
+            const added = chosen.filter((file) => !alreadyChosen.has(`${file.name}:${file.size}`));
+            const merged = [...existing, ...added];
+            const capped = field.maxFiles ? merged.slice(0, field.maxFiles) : merged;
+
+            field.files = capped;
+            setFileInputs(prev => ({...prev, [field.id]: capped}));
+            syncFileInputElement(field, capped);
+        } else {
+            field.file = chosen[0];
+            setFileInputs(prev => ({...prev, [field.id]: chosen[0]}));
+            syncFileInputElement(field, [chosen[0]]);
+        }
+
+        return '';
+    };
+
+    const syncFileInputElement = (field, files) => {
+        const ref = fieldRefs.current[field.id];
+        if (!ref || !ref.current) {
+            return;
+        }
+        ref.current.setCustomValidity('');
+        if (field.type !== 'file' || typeof DataTransfer === 'undefined') {
+            return;
+        }
+        try {
+            const transfer = new DataTransfer();
+            files.forEach((file) => transfer.items.add(file));
+            ref.current.files = transfer.files;
+        } catch (ignored) {
+            console.log(ignored);
+        }
+    };
+
+    const dropTargetProps = (field) => {
+        const isBusy = submitting || !!(field.upload && field.upload.phase);
+
+        const setHovering = (hovering) => setFileDropTargets(prev => (
+            prev[field.id] === hovering ? prev : {...prev, [field.id]: hovering}
+        ));
+
+        return {
+            onDragEnter: (event) => {
+                event.preventDefault();
+
+                if (isBusy) {
+                    return;
+                }
+
+                fileDropDepths.current[field.id] = (fileDropDepths.current[field.id] || 0) + 1;
+                setHovering(true);
+            },
+            onDragOver: (event) => {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = isBusy ? 'none' : 'copy';
+            },
+            onDragLeave: (event) => {
+                event.preventDefault();
+                fileDropDepths.current[field.id] = Math.max(0, (fileDropDepths.current[field.id] || 0) - 1);
+
+                if (fileDropDepths.current[field.id] === 0) {
+                    setHovering(false);
+                }
+            },
+            onDrop: (event) => {
+                event.preventDefault();
+                fileDropDepths.current[field.id] = 0;
+                setHovering(false);
+
+                if (isBusy) {
+                    return;
+                }
+
+                const ref = fieldRefs.current[field.id];
+
+                if (ref && ref.current) {
+                    ref.current.setCustomValidity('');
+                }
+
+                const dropped = Array.from(event.dataTransfer.files || []);
+                const problem = acceptFiles(field, field.type === 'files' ? dropped : dropped.slice(0, 1));
+
+                if (problem !== '') {
+                    setGeneralFormError(problem);
+                    setTimeout(() => setGeneralFormError(''), msgTimeout);
+                }
+            },
+        };
+    };
+
     const onChange = (e, field) => {
         const value = (field.type === 'radio' || field.type === 'checkbox') ? e.target.checked : e.target.value;
 
         if (field.type === 'number' && (isNaN(value) || (field.minimumValue && Number(value) < field.minimumValue) || (field.maximumValue && Number(value) > field.maximumValue))) {
             e.target.setCustomValidity(`Value must be a number between ${field.minimumValue} and ${field.maximumValue}`);
         } else if (field.type === 'file' || field.type === 'files') {
-            const chosen = Array.from(e.target.files || []);
-
-            if (chosen.length === 0) {
-                return;
-            }
-
-            const problem = chosen.map((file) => describeFileProblem(field, file)).find(Boolean) || '';
+            const problem = acceptFiles(field, e.target.files);
 
             if (problem !== '') {
                 e.target.setCustomValidity(problem);
@@ -2224,22 +2319,9 @@ function Form({
             }
 
             e.target.setCustomValidity('');
-            setGeneralFormError('');
-            setSuccessMessage('');
 
             if (field.type === 'files') {
-                const existing = getChosenFiles(field);
-                const alreadyChosen = new Set(existing.map((file) => `${file.name}:${file.size}`));
-                const added = chosen.filter((file) => !alreadyChosen.has(`${file.name}:${file.size}`));
-                const merged = [...existing, ...added];
-                const capped = field.maxFiles ? merged.slice(0, field.maxFiles) : merged;
-
-                field.files = capped;
-                setFileInputs(prev => ({...prev, [field.id]: capped}));
                 e.target.value = '';
-            } else {
-                setFileInputs(prev => ({...prev, [field.id]: chosen[0]}));
-                field.file = chosen[0];
             }
         } else {
             if (field.regex && !new RegExp(field.regex).test(value)) {
@@ -2402,6 +2484,14 @@ function Form({
 
             if (currentField.type === 'files' && currentField.required) {
                 if (getChosenFiles(currentField).length === 0) {
+                    setGeneralFormError(t('all-forms.field-required', { field1: getWhichLabelToUse(currentField) }));
+                    setTimeout(() => setGeneralFormError(''), msgTimeout);
+                    return;
+                }
+            }
+
+            if (currentField.type === 'file' && currentField.required) {
+                if (!(currentField.file || fileInputs[currentField.id])) {
                     setGeneralFormError(t('all-forms.field-required', { field1: getWhichLabelToUse(currentField) }));
                     setTimeout(() => setGeneralFormError(''), msgTimeout);
                     return;

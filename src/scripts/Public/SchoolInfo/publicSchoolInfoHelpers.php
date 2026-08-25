@@ -294,6 +294,8 @@ const PUBLIC_PROFILE_LABELS = [
     'working_hours'      => ['en' => 'Working hours', 'ar' => 'مواعيد العمل', 'keywords' => ['working hours', 'opening hours', 'hours', 'open', 'close', 'مواعيد', 'ساعات العمل', 'الدوام', 'مفتوحة']],
     'tuition_currency'   => ['en' => 'Currency', 'ar' => 'العملة', 'keywords' => ['currency', 'العملة']],
     'minimum_age_cutoff' => ['en' => 'Minimum age cutoff', 'ar' => 'موعد حساب السن', 'keywords' => ['age cutoff', 'october', 'minimum age', 'السن', 'أكتوبر', 'العمر']],
+    'total_students'     => ['en' => 'Number of students', 'ar' => 'عدد الطلاب', 'keywords' => ['students', 'pupils', 'children', 'enrolment', 'enrollment', 'size', 'how many', 'الطلاب', 'طلاب', 'التلاميذ', 'عدد']],
+    'total_employees'    => ['en' => 'Number of employees', 'ar' => 'عدد العاملين', 'keywords' => ['employees', 'staff', 'teachers', 'workforce', 'size', 'how many', 'العاملين', 'الموظفين', 'المدرسين', 'الكوادر', 'عدد']],
 ];
 
 function public_profile_label($profileKey, $language) {

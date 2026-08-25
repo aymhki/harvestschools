@@ -54,29 +54,53 @@ function GalleryVideoCards() {
         }
     }, [language, preloaded])
 
+    const videos = gallery?.videos || []
+
+    const renderVideo = (video) => (
+        <PhotoCollage
+            key={video.id}
+            type={'slider'}
+            title={video.title}
+            photos={
+                [
+                    {
+                        src: video.path,
+                        alt: video.title,
+                        isVideo: true,
+                        thumbnailAt: video.thumbnailAt,
+                        durationSeconds: video.durationSeconds,
+                        root: PUBLIC_GALLERY_MEDIA_ROOT,
+                    }
+                ]
+            }
+        />
+    )
+
+    const groups = []
+
+    videos.forEach((video) => {
+        const isNarrow = video.layout === 'narrow'
+        const lastGroup = groups[groups.length - 1]
+
+        if (isNarrow && lastGroup && lastGroup.isNarrow) {
+            lastGroup.videos.push(video)
+            return
+        }
+
+        groups.push({isNarrow, videos: [video]})
+    })
+
     return (
         <>
 
             {hasFailed && <p>{t('gallery-pages.unavailable')}</p>}
 
-            {(gallery?.videos || []).map((video) => (
-                <PhotoCollage
-                    key={video.id}
-                    type={'slider'}
-                    title={video.title}
-                    photos={
-                        [
-                            {
-                                src: video.path,
-                                alt: video.title,
-                                isVideo: true,
-                                thumbnailAt: video.thumbnailAt,
-                                durationSeconds: video.durationSeconds,
-                                root: PUBLIC_GALLERY_MEDIA_ROOT,
-                            }
-                        ]
-                    }
-                />
+            {groups.map((group, index) => (
+                group.isNarrow ? (
+                    <div key={`narrow-${index}`} className={'narrow-sliders-grid'}>
+                        {group.videos.map(renderVideo)}
+                    </div>
+                ) : group.videos.map(renderVideo)
             ))}
         </>
     )

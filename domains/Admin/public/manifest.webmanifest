@@ -1,0 +1,49 @@
+{
+    "id": "/",
+    "name": "Harvest Admin Portal",
+    "short_name": "Harvest Admin",
+    "description": "Staff portal for Harvest International School: gallery, library, staff directory, calendars, bookings and the info system.",
+    "lang": "en",
+    "dir": "ltr",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "categories": [
+        "education",
+        "productivity"
+    ],
+    "prefer_related_applications": true,
+    "related_applications": [
+        {
+            "platform": "play",
+            "id": "com.harvestschools.app",
+            "url": "https://play.google.com/store/apps/details?id=com.harvestschools.app"
+        },
+        {
+            "platform": "itunes",
+            "id": "6785948819",
+            "url": "https://apps.apple.com/app/id6785948819"
+        }
+    ],
+    "icons": [
+        {
+            "src": "/assets/images/HarvestLogos/HarvestAppIcon192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/images/HarvestLogos/HarvestAppIcon512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/images/HarvestLogos/HarvestAppIconMaskable512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

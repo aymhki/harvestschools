@@ -14,6 +14,7 @@ import {
     deleteLibraryBook
 } from "../../services/Admin/Library/AdminLibraryServices.jsx";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
+import {fetchImportDescriptor, importCsvFile} from "../../services/Admin/Imports/AdminImportServices.jsx";
 
 const titleEnColIndex = 1;
 const titleArColIndex = 2;
@@ -34,6 +35,7 @@ function LibraryManagement() {
     const [isLoading, setIsLoading] = useLoading(false);
     const [collections, setCollections] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [importDescriptor, setImportDescriptor] = useState(null);
 
     const [showEditorModal, setShowEditorModal] = useState(false);
     const [resetEditorModal, setResetEditorModal] = useState(false);
@@ -68,6 +70,7 @@ function LibraryManagement() {
         headToAdminLoginOnInvalidSession(navigate, libraryManagementPermissionLevel, setIsLoading)
             .then(() => {
                 reloadData();
+                fetchImportDescriptor(navigate, 'library').then(setImportDescriptor);
             });
     }, []);
 
@@ -188,6 +191,23 @@ function LibraryManagement() {
                    defaultHiddenColumns={['Book ID']}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
                    filterableColumns={['Public']}
+                   allowSearch={true}
+                   searchPlaceholder={'Search this category'}
+                   allowExport={true}
+                   exportFileName={`library-${category.key}`}
+                   importConfig={{
+                       templateName: `library-${category.key}`,
+                       descriptor: importDescriptor,
+                       onImport: async (file) => {
+                           const result = await importCsvFile('library', {category_key: category.key}, file);
+
+                           if (result.imported > 0) {
+                               await reloadData();
+                           }
+
+                           return result;
+                       },
+                   }}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => openEditor('edit', category, rowIndex)}
                    allowDeleteEntryOption={true}

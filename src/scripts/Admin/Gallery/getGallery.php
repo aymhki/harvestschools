@@ -75,9 +75,9 @@ try {
 
 
     $videoRecords = [];
-    $videos = [['No.', 'Title (EN)', 'Title (AR)', 'Video Path', 'File Name', 'Thumbnail At', 'Duration', 'Status', 'Shown', 'Video ID']];
+    $videos = [['No.', 'Title (EN)', 'Title (AR)', 'Video Path', 'File Name', 'Thumbnail At', 'Duration', 'Status', 'Layout', 'Shown', 'Video ID']];
     $result = $conn->query(
-        "SELECT id, title_en, title_ar, file_name, thumbnail_at, duration_seconds, is_public,
+        "SELECT id, title_en, title_ar, layout, file_name, thumbnail_at, duration_seconds, is_public,
                 status, progress_percent, status_message, sort_order
          FROM gallery_videos
          ORDER BY sort_order ASC, id ASC"
@@ -107,6 +107,7 @@ try {
             rtrim(rtrim(number_format((float)$row['thumbnail_at'], 1, '.', ''), '0'), '.') . 's',
             $duration,
             $statusLabel,
+            (string)$row['layout'] === 'narrow' ? 'Narrow' : 'Wide',
             (int)$row['is_public'] === 1 ? 'Yes' : 'No',
             (string)$row['id'],
         ];
@@ -115,6 +116,7 @@ try {
             'id'              => (int)$row['id'],
             'titleEn'         => (string)$row['title_en'],
             'titleAr'         => (string)$row['title_ar'],
+            'layout'          => (string)$row['layout'],
             'fileName'        => (string)$row['file_name'],
             'thumbnailAt'     => (float)$row['thumbnail_at'],
             'durationSeconds' => $row['duration_seconds'] === null ? null : (float)$row['duration_seconds'],

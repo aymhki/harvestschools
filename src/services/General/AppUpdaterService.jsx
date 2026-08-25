@@ -10,6 +10,8 @@ const APP_UPDATE_CHANNELS = ['latest', 'stable']
 
 const APP_UPDATE_RESTORE_PATH_KEY = 'harvest_schools_app_update_restore_path'
 
+const APP_LAST_PATH_KEY = 'harvest_schools_app_last_path'
+
 const APP_UPDATE_PULL_TO_REFRESH_EVENT = 'harvestPullToRefresh'
 
 
@@ -53,9 +55,25 @@ const rememberRestorePath = async (path) => {
     }
 
     try {
-        await Preferences.set({ key: APP_UPDATE_RESTORE_PATH_KEY, value: path })
+        await Preferences.set({ key: APP_LAST_PATH_KEY, value: path })
     } catch (storageError) {
         console.warn('Could not save the current path', storageError)
+    }
+}
+
+const armRestorePath = async () => {
+    if (!Capacitor.isNativePlatform()) {
+        return
+    }
+
+    try {
+        const { value } = await Preferences.get({ key: APP_LAST_PATH_KEY })
+
+        if (value) {
+            await Preferences.set({ key: APP_UPDATE_RESTORE_PATH_KEY, value })
+        }
+    } catch (storageError) {
+        console.warn('Could not arm the restore path', storageError)
     }
 }
 
@@ -70,10 +88,12 @@ const handlePullToRefresh = async () => {
     }
 }
 
+
 const attachPullToRefreshListener = () => {
     window.addEventListener(APP_UPDATE_PULL_TO_REFRESH_EVENT, handlePullToRefresh)
     return () => window.removeEventListener(APP_UPDATE_PULL_TO_REFRESH_EVENT, handlePullToRefresh)
 }
+
 
 const applyChannel = async (channel, currentVersion, onProgress) => {
     const manifest = await fetchManifest(channel)
@@ -95,6 +115,7 @@ const applyChannel = async (channel, currentVersion, onProgress) => {
         throw new Error(`Downloaded bundle for "${channel}" could not be validated`)
     }
 
+    await armRestorePath()
     await CapacitorUpdater.set({ id: bundle.id })
 
     return { updated: true, channel }

@@ -18,6 +18,10 @@
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 </IfModule>
 
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_headers.c>
   <FilesMatch "\.(html|htm)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"

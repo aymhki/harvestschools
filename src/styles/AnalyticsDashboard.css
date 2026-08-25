@@ -1,0 +1,225 @@
+.analytics-dashboard {
+    --ad-ink: var(--primary-color);
+    --ad-ink-muted: rgba(31, 33, 82, 0.62);
+    --ad-line: rgba(31, 33, 82, 0.16);
+    --ad-accent: var(--primary-color);
+    --ad-accent-soft: rgba(31, 33, 82, 0.15);
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0 0.5rem 2rem 0.5rem;
+    color: var(--ad-ink);
+    text-align: start;
+}
+
+.analytics-dashboard-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.05rem;
+    letter-spacing: 0.05rem;
+}
+
+.analytics-dashboard-heading span {
+    font-size: 0.78rem;
+    letter-spacing: normal;
+    color: var(--ad-ink-muted);
+}
+
+.analytics-dashboard-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.75rem;
+}
+
+.analytics-dashboard-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.85rem 1rem;
+    border: 0.09rem solid var(--ad-line);
+    border-radius: 0.6rem;
+}
+
+.analytics-dashboard-tile-label {
+    font-size: 0.74rem;
+    letter-spacing: 0.04rem;
+    text-transform: uppercase;
+    color: var(--ad-ink-muted);
+}
+
+.analytics-dashboard-tile-value {
+    font-size: 1.7rem;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.analytics-dashboard-tile-context {
+    font-size: 0.76rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ad-ink-muted);
+}
+
+.analytics-dashboard-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+    border: 0.09rem solid var(--ad-line);
+    border-radius: 0.6rem;
+}
+
+.analytics-dashboard-panel-title {
+    margin: 0;
+    font-size: 0.86rem;
+    letter-spacing: 0.04rem;
+    color: var(--ad-ink);
+}
+
+.analytics-dashboard-chart {
+    position: relative;
+    width: 100%;
+}
+
+.analytics-dashboard-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.analytics-dashboard-grid-line {
+    stroke: var(--ad-line);
+    stroke-width: 1;
+}
+
+.analytics-dashboard-axis-text {
+    fill: var(--ad-ink-muted);
+    font-size: 11px;
+    font-family: var(--english-normal-font);
+}
+
+.analytics-dashboard-area {
+    fill: var(--ad-accent-soft);
+}
+
+.analytics-dashboard-line {
+    fill: none;
+    stroke: var(--ad-accent);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.analytics-dashboard-marker {
+    fill: var(--ad-accent);
+    stroke: var(--fb-white-color);
+    stroke-width: 2;
+}
+
+.analytics-dashboard-crosshair {
+    stroke: var(--ad-ink-muted);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+
+.analytics-dashboard-tooltip {
+    position: absolute;
+    top: 0;
+    transform: translate(-50%, -110%);
+    padding: 0.3rem 0.5rem;
+    border: 0.09rem solid var(--ad-line);
+    border-radius: 0.4rem;
+    background-color: var(--fb-white-color);
+    color: var(--ad-ink);
+    font-size: 0.76rem;
+    white-space: nowrap;
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.analytics-dashboard-rankings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1rem;
+}
+
+.analytics-dashboard-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.analytics-dashboard-bar-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+}
+
+.analytics-dashboard-bar-label {
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    direction: ltr;
+}
+
+.analytics-dashboard-bar-value {
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ad-ink-muted);
+}
+
+.analytics-dashboard-bar-track {
+    grid-column: 1 / -1;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: var(--ad-accent-soft);
+    overflow: hidden;
+}
+
+.analytics-dashboard-bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 0.25rem;
+    background-color: var(--ad-accent);
+}
+
+.analytics-dashboard-empty {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--ad-ink-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+    .analytics-dashboard {
+        --ad-ink: var(--fb-white-color);
+        --ad-ink-muted: rgba(241, 241, 241, 0.66);
+        --ad-line: rgba(255, 255, 255, 1);
+        --ad-accent: rgba(255, 255, 255, 1);
+        --ad-accent-soft: rgba(255, 255, 255, 0.2);
+    }
+
+    .analytics-dashboard-marker {
+        stroke: var(--light-dark-accent-color);
+    }
+
+    .analytics-dashboard-tooltip {
+        background-color: var(--light-dark-accent-color);
+    }
+}
+
+@media (max-width: 768px) {
+    .analytics-dashboard-rankings {
+        grid-template-columns: 1fr;
+    }
+
+    .analytics-dashboard-tiles {
+        grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    }
+}

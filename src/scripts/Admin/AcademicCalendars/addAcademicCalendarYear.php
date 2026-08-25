@@ -61,11 +61,6 @@ try {
 
     $rawEvents = is_array($data['events'] ?? null) ? $data['events'] : [];
 
-    if ($rawEvents === []) {
-        echo json_encode(calendar_error("Add at least one event to the calendar."));
-        exit;
-    }
-
     if (count($rawEvents) > CALENDAR_MAX_EVENTS_PER_YEAR) {
         echo json_encode(calendar_error("A calendar may hold at most " . CALENDAR_MAX_EVENTS_PER_YEAR . " events."));
         exit;
@@ -144,7 +139,9 @@ try {
 
     echo json_encode([
         "success"      => true,
-        "message"      => "Academic calendar created with " . count($events) . " events.",
+        "message"      => count($events) === 0
+            ? "Academic calendar created. You can add or import its events now."
+            : "Academic calendar created with " . count($events) . " event" . (count($events) === 1 ? "" : "s") . ".",
         "code"         => 200,
         "calendarKey"  => $calendarKey,
         "academicYear" => $academicYear

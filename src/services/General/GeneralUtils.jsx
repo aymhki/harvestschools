@@ -168,6 +168,16 @@ const setPendingTurnstileToken = (token) => {
 
 const turnstileHeaders = () => (pendingTurnstileToken ? {'X-Turnstile-Token': pendingTurnstileToken} : {});
 
+const ARABIC_MARKS_REGEX = /[\u064B-\u065F\u0670\u0640]/g;
+
+const normalizeArabicText = (text) => String(text)
+    .replace(ARABIC_MARKS_REGEX, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي');
+
 const schoolFoundedYear = 2016;
 const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
@@ -321,6 +331,8 @@ const ENDPOINTS = {
     deleteAdminUser: '/scripts/Admin/AdminUsers/deleteAdminUser.php',
     getInfoSystem: '/scripts/Admin/InfoSystem/getInfoSystemData.php',
     updateInfoSystem: '/scripts/Admin/InfoSystem/updateInfoSystemData.php',
+    getWebsiteAnalytics: '/scripts/Admin/Analytics/getWebsiteAnalytics.php',
+    getDatabaseAnalytics: '/scripts/Admin/Analytics/getDatabaseAnalytics.php',
     getStaffDirectory: '/scripts/Admin/StaffDirectory/getStaffDirectory.php',
     addEmployee: '/scripts/Admin/StaffDirectory/addEmployee.php',
     editEmployee: '/scripts/Admin/StaffDirectory/editEmployee.php',
@@ -330,6 +342,8 @@ const ENDPOINTS = {
     getPublicLibrary: '/scripts/Public/Library/getPublicLibrary.php',
     getLibraryBooks: '/scripts/Admin/Library/getLibraryBooks.php',
     addLibraryBook: '/scripts/Admin/Library/addLibraryBook.php',
+    importCsv: '/scripts/Admin/Imports/importCsv.php',
+    getImportDescriptor: '/scripts/Admin/Imports/getImportDescriptor.php',
     editLibraryBook: '/scripts/Admin/Library/editLibraryBook.php',
     deleteLibraryBook: '/scripts/Admin/Library/deleteLibraryBook.php',
     getAcademicCalendars: '/scripts/Admin/AcademicCalendars/getAcademicCalendars.php',
@@ -339,6 +353,7 @@ const ENDPOINTS = {
     addCalendarEvent: '/scripts/Admin/AcademicCalendars/addCalendarEvent.php',
     editCalendarEvent: '/scripts/Admin/AcademicCalendars/editCalendarEvent.php',
     deleteCalendarEvent: '/scripts/Admin/AcademicCalendars/deleteCalendarEvent.php',
+    deleteAcademicCalendarYear: '/scripts/Admin/AcademicCalendars/deleteAcademicCalendarYear.php',
     getBorrowingSystem: '/scripts/Admin/BorrowingSystem/getBorrowingSystem.php',
     getEmployeeScore: '/scripts/Admin/BorrowingSystem/getEmployeeScore.php',
     recordEligibilityInputs: '/scripts/Admin/BorrowingSystem/recordEligibilityInputs.php',
@@ -546,6 +561,8 @@ export {
     setPendingTurnstileToken,
     turnstileHeaders,
     schoolFoundedYear,
+    ARABIC_MARKS_REGEX,
+    normalizeArabicText,
     turnstileSiteKey,
     mfaResendCooldownSeconds,
     mfaResendMaxPerWindow,

@@ -4,6 +4,16 @@ const framesCache = new Map()
 
 const cacheKey = (path, root, count, width) => `${root || ''}|${path}|${count}|${width}`
 
+const absoluteFrameUrl = (url) => {
+    if (/^[a-z]+:\/\//i.test(url)) {
+        return url
+    }
+
+    const base = String(endpoints.servePublicVideoPreviewFrames || '').replace(/\/scripts\/.*$/, '')
+
+    return `${base}${url}`
+}
+
 const requestVideoPreviewFrames = async ({ path, root, durationSeconds, count = 6, width = 320, signal }) => {
     const key = cacheKey(path, root, count, width)
 
@@ -28,9 +38,14 @@ const requestVideoPreviewFrames = async ({ path, root, durationSeconds, count = 
         throw new Error(body && body.message ? body.message : 'The preview frames response was not usable')
     }
 
-    framesCache.set(key, body.data)
+    const data = {
+        ...body.data,
+        frames: body.data.frames.map((frame) => ({...frame, url: absoluteFrameUrl(frame.url)})),
+    }
 
-    return body.data
+    framesCache.set(key, data)
+
+    return data
 }
 
 const preloadFrame = (url, signal) => new Promise((resolve) => {

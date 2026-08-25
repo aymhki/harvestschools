@@ -136,6 +136,9 @@ const editCalendarEvent = async (payload) =>
 const deleteCalendarEvent = async (eventId) =>
     postToCalendars(endpoints.deleteCalendarEvent, { event_id: eventId }, 'An error occurred while deleting the event.');
 
+const deleteAcademicCalendarYear = async (calendarKey, academicYear) =>
+    postToCalendars(endpoints.deleteAcademicCalendarYear, { calendar_key: calendarKey, academic_year: academicYear }, 'An error occurred while deleting the academic calendar.');
+
 
 export {
     fetchAcademicCalendars,
@@ -144,5 +147,6 @@ export {
     uploadCalendarPdf,
     addCalendarEvent,
     editCalendarEvent,
-    deleteCalendarEvent
+    deleteCalendarEvent,
+    deleteAcademicCalendarYear
 }

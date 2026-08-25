@@ -92,6 +92,7 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
                 path={item.src}
                 root={item.root}
                 durationSeconds={Number.isFinite(item.durationSeconds) ? item.durationSeconds : undefined}
+                label={item.alt}
             >
                 {failedThumbnails[item.src] ? (
                     <video

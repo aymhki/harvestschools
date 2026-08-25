@@ -4,11 +4,14 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx';
 import Table from "../../modules/Table.jsx";
+import AnalyticsDashboard from "../../modules/AnalyticsDashboard.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
 import {infoSystemManagementPermissionLevel, isDevelopment, msgTimeout} from "../../services/General/GeneralUtils.jsx";
 import TabsPage from "../../modules/TabsPage.jsx";
-import {fetchInfoSystemData, updateInfoSystemData} from "../../services/Admin/InfoSystem/AdminInfoSystemManagementServices.jsx";
+import {fetchAnalyticsData, fetchInfoSystemData, updateInfoSystemData} from "../../services/Admin/InfoSystem/AdminInfoSystemManagementServices.jsx";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
+
+const analyticsTabId = 7;
 
 function InfoSystemManagement() {
     const navigate = useNavigate();
@@ -18,6 +21,11 @@ function InfoSystemManagement() {
     const [stagesData, setStagesData] = useState(null);
     const [profileData, setProfileData] = useState(null);
     const [policiesData, setPoliciesData] = useState(null);
+    const [staticContentData, setStaticContentData] = useState(null);
+    const [websiteAnalytics, setWebsiteAnalytics] = useState(null);
+    const [chatBotAnalytics, setChatBotAnalytics] = useState(null);
+    const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
+    const [analyticsTabOpened, setAnalyticsTabOpened] = useState(() => Number(localStorage.getItem('activeTab_Info System Management')) === analyticsTabId);
     const [formEmailsData, setFormEmailsData] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [resetEditModal, setResetEditModal] = useState(false);
@@ -32,9 +40,17 @@ function InfoSystemManagement() {
         transform: showEditModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
+    const reloadAnalytics = async () => {
+        setIsLoadingAnalytics(true);
+        setIsLoading(true);
+        await fetchAnalyticsData(navigate, setWebsiteAnalytics, setChatBotAnalytics);
+        setIsLoadingAnalytics(false);
+        setIsLoading(false);
+    };
+
     const reloadData = async () => {
         setIsLoading(true);
-        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setFormEmailsData);
+        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setStaticContentData, setFormEmailsData);
         setIsLoading(false);
     };
 
@@ -44,6 +60,12 @@ function InfoSystemManagement() {
                 reloadData();
             });
     }, []);
+
+    useEffect(() => {
+        if (analyticsTabOpened && websiteAnalytics === null && chatBotAnalytics === null && !isLoadingAnalytics) {
+            reloadAnalytics();
+        }
+    }, [analyticsTabOpened]);
 
     const settingSortOrderColIndex = 0;
     const settingKeyColIndex = 1;
@@ -57,6 +79,7 @@ function InfoSystemManagement() {
     const departmentNameArColIndex = 3;
     const departmentContactNumberColIndex = 4;
     const departmentIsAcademicColIndex = 5;
+    const departmentAvailableToChatWithColIndex = 6;
 
     const stageSortOrderColIndex = 0;
     const stageKeyColIndex = 1;
@@ -85,6 +108,14 @@ function InfoSystemManagement() {
     const formEmailRecipientColIndex = 3;
     const formEmailIsActiveColIndex = 4;
 
+    const staticContentSortOrderColIndex = 0;
+    const staticContentKeyColIndex = 1;
+    const staticContentGroupKeyColIndex = 2;
+    const staticContentTitleEnColIndex = 3;
+    const staticContentTitleArColIndex = 4;
+    const staticContentBodyEnColIndex = 5;
+    const staticContentBodyArColIndex = 6;
+
     const policySortOrderColIndex = 0;
     const policyKeyColIndex = 1;
     const policyGroupKeyColIndex = 2;
@@ -99,6 +130,8 @@ function InfoSystemManagement() {
         'LLM_PROVIDER': ['deepseek', 'gemini', 'claude'],
         'SESSION_TIMEOUT_MINUTES': ['30', '60', '120'],
         'BOT_ON': ['Yes', 'No'],
+        'BOT_ON_WHATSAPP': ['Yes', 'No'],
+        'BOT_ON_MESSENGER': ['Yes', 'No'],
         'NUMBER_OF_MESSAGES_BEFORE_LLM_ASKS_FOR_FEEDBACK': ['3', '5', '10', '20'],
         'SHOW_UNOFFERED_STAGES': ['Yes', 'No']
     }
@@ -113,6 +146,7 @@ function InfoSystemManagement() {
     const departmentNameArFormFieldId = 3;
     const departmentContactNumberFormFieldId = 4;
     const departmentIsAcademicFormFieldId = 5;
+    const departmentAvailableToChatWithFormFieldId = 6;
 
     const stageKeyFormFieldId = 1;
     const stageDeptKeyFormFieldId = 2;
@@ -137,6 +171,13 @@ function InfoSystemManagement() {
     const formEmailRecipientFormFieldId = 2;
     const formEmailIsActiveFormFieldId = 3;
 
+    const staticContentKeyFormFieldId = 1;
+    const staticContentGroupKeyFormFieldId = 2;
+    const staticContentTitleEnFormFieldId = 3;
+    const staticContentTitleArFormFieldId = 4;
+    const staticContentBodyEnFormFieldId = 5;
+    const staticContentBodyArFormFieldId = 6;
+
     const policyKeyFormFieldId = 1;
     const policyGroupKeyFormFieldId = 2;
     const policyTitleEnFormFieldId = 3;
@@ -146,6 +187,7 @@ function InfoSystemManagement() {
 
     const profileCategories = ['identity', 'location', 'contact', 'social', 'hours', 'fees', 'admission', 'general'];
     const policyGroupKeys = ['discounts', 'accreditations', 'fee_exclusions'];
+    const staticContentGroupKeys = ['static', 'faq'];
 
     const handleEditInitialization = (type, rowIndex) => {
         let rowData;
@@ -178,7 +220,8 @@ function InfoSystemManagement() {
                 { id: departmentNameEnFormFieldId, type: 'text', name: 'name_en', label: 'Name (EN)', required: true, value: '', defaultValue: rowData[departmentNameEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (EN)', httpName: 'department-name-en' },
                 { id: departmentNameArFormFieldId, type: 'text', name: 'name_ar', label: 'Name (AR)', required: true, value: '', defaultValue: rowData[departmentNameArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Name (AR)', lang: 'ar', httpName: 'department-name-ar' },
                 { id: departmentContactNumberFormFieldId, type: 'text', name: 'contact_number', label: 'Contact Number', required: true, value: '', defaultValue: rowData[departmentContactNumberColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: "Contact Number (Do not add a '+' at the beginning and always start with 20 for this work correctly in WhatsApp api)", httpName: 'department-contact-number' },
-                { id: departmentIsAcademicFormFieldId, type: 'select', name: 'is_academic', label: 'Is Academic', required: true, choices: ['Yes', 'No'], defaultValue: rowData[departmentIsAcademicColIndex], value: '', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Is Academic', httpName: 'department-is-academic' },
+                { id: departmentIsAcademicFormFieldId, type: 'select', name: 'is_academic', label: 'Is Academic', required: true, choices: ['Yes', 'No'], defaultValue: rowData[departmentIsAcademicColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Is Academic', httpName: 'department-is-academic' },
+                { id: departmentAvailableToChatWithFormFieldId, type: 'select', name: 'available_to_chat_with', label: 'Available To Chat With', required: true, choices: ['Yes', 'No'], defaultValue: rowData[departmentAvailableToChatWithColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Available To Chat With (No hides the department from the bot\'s chat with a department menu)', httpName: 'department-available-to-chat-with' },
             ];
         } else if (type === 'stages') {
             rowData = stagesData[rowIndex];
@@ -221,6 +264,16 @@ function InfoSystemManagement() {
                 { id: policyTitleArFormFieldId, type: 'text', name: 'title_ar', label: 'Title (AR)', required: true, value: '', defaultValue: rowData[policyTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'policy-title-ar' },
                 { id: policyDetailEnFormFieldId, type: 'textarea', name: 'detail_en', label: 'Detail (EN)', required: false, value: '', defaultValue: rowData[policyDetailEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (EN)', httpName: 'policy-detail-en' },
                 { id: policyDetailArFormFieldId, type: 'textarea', name: 'detail_ar', label: 'Detail (AR)', required: false, value: '', defaultValue: rowData[policyDetailArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Detail (AR)', lang: 'ar', httpName: 'policy-detail-ar' },
+            ];
+        } else if (type === 'staticContent') {
+            rowData = staticContentData[rowIndex];
+            formFieldsConfig = [
+                { id: staticContentKeyFormFieldId, type: 'text', name: 'content_key', label: 'Content Key', required: true, value: rowData[staticContentKeyColIndex], defaultValue: rowData[staticContentKeyColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Content Key', readOnlyField: true, httpName: 'static-content-key' },
+                { id: staticContentGroupKeyFormFieldId, type: 'select', name: 'group_key', label: 'Group Key', required: true, choices: staticContentGroupKeys, defaultValue: rowData[staticContentGroupKeyColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Group Key', httpName: 'static-content-group-key' },
+                { id: staticContentTitleEnFormFieldId, type: 'text', name: 'title_en', label: 'Title (EN)', required: false, value: '', defaultValue: rowData[staticContentTitleEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN) (The question for a FAQ, a label you will recognise for anything else)', httpName: 'static-content-title-en' },
+                { id: staticContentTitleArFormFieldId, type: 'text', name: 'title_ar', label: 'Title (AR)', required: false, value: '', defaultValue: rowData[staticContentTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR) (The question for a FAQ, left empty for anything else)', lang: 'ar', httpName: 'static-content-title-ar' },
+                { id: staticContentBodyEnFormFieldId, type: 'textarea', name: 'body_en', label: 'Body (EN)', required: false, value: '', defaultValue: rowData[staticContentBodyEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Body (EN)', httpName: 'static-content-body-en' },
+                { id: staticContentBodyArFormFieldId, type: 'textarea', name: 'body_ar', label: 'Body (AR)', required: false, value: '', defaultValue: rowData[staticContentBodyArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Body (AR)', lang: 'ar', httpName: 'static-content-body-ar' },
             ];
         }
 
@@ -280,6 +333,7 @@ function InfoSystemManagement() {
                         name_ar: formDataJson[`field_${departmentNameArFormFieldId}`],
                         contact_number: formDataJson[`field_${departmentContactNumberFormFieldId}`],
                         is_academic: formDataJson[`field_${departmentIsAcademicFormFieldId}`],
+                        available_to_chat_with: formDataJson[`field_${departmentAvailableToChatWithFormFieldId}`],
                         sort_order: Number(departmentsData[indexOfRowToEdit][departmentSortOrderColIndex])
                     }]
                 };
@@ -334,6 +388,18 @@ function InfoSystemManagement() {
                         sort_order: Number(policiesData[indexOfRowToEdit][policySortOrderColIndex])
                     }]
                 };
+            } else if (currentEditType === 'staticContent') {
+                payload = {
+                    staticContent: [{
+                        content_key: staticContentData[indexOfRowToEdit][staticContentKeyColIndex],
+                        group_key: formDataJson[`field_${staticContentGroupKeyFormFieldId}`],
+                        title_en: formDataJson[`field_${staticContentTitleEnFormFieldId}`] || '',
+                        title_ar: formDataJson[`field_${staticContentTitleArFormFieldId}`] || '',
+                        body_en: formDataJson[`field_${staticContentBodyEnFormFieldId}`] || '',
+                        body_ar: formDataJson[`field_${staticContentBodyArFormFieldId}`] || '',
+                        sort_order: Number(staticContentData[indexOfRowToEdit][staticContentSortOrderColIndex])
+                    }]
+                };
             }
 
             payload.is_development = isDevelopment();
@@ -376,11 +442,6 @@ function InfoSystemManagement() {
                     {isLoading ? 'Syncing...' : 'Trigger Server Static Data Update'}
                 </button>
             ),
-            syncConfigDataError && (
-                <p key={3} className={'admin-table-header-button-error'}>
-                    {syncConfigDataError}
-                </p>
-            )
         ];
     }, [syncConfigDataError]);
 
@@ -417,6 +478,10 @@ function InfoSystemManagement() {
                    isLoading={isLoading}
                    headerModuleElements={getTableModuleHeaderElements}
                    sortConfigParam={{column: 0, direction: 'ascending'}}
+                   filterableColumns={[
+                       'Is Academic',
+                       'Available To Chat With'
+                   ]}
             />
         </div>
     );
@@ -488,6 +553,62 @@ function InfoSystemManagement() {
         </div>
     );
 
+    const Analytics = () => (
+        <div className="admin-page-tab-content">
+            <div className="extreme-padding-container">
+
+                {websiteAnalytics && !websiteAnalytics.configured && (
+                    <p className={"admin-inline-error-message"}>{websiteAnalytics.message}</p>
+                )}
+
+                {websiteAnalytics && websiteAnalytics.configured && (
+                    <AnalyticsDashboard totals={websiteAnalytics.totals}
+                                        usersOverTime={websiteAnalytics.usersOverTime}
+                                        rankings={websiteAnalytics.rankings}
+                                        reportingWindow={websiteAnalytics.reportingWindow}
+                                        cacheAgeSeconds={websiteAnalytics.cacheAgeSeconds}
+                    />
+                )}
+
+                <div className={"analytics-tab-buttons-container"}>
+                    <button onClick={reloadAnalytics} disabled={isLoadingAnalytics}>
+                        {isLoadingAnalytics ? 'Loading...' : 'Reload Analytics'}
+                    </button>
+                </div>
+
+                <Table tableData={chatBotAnalytics}
+                       scrollable={true}
+                       compact={true}
+                       allowSticky={false}
+                       forceEnglishTable={true}
+                       isLoading={isLoadingAnalytics}
+                />
+
+
+            </div>
+        </div>
+    );
+
+    const StaticContent = () => (
+        <div className="admin-page-tab-content">
+            <Table tableData={staticContentData}
+                   scrollable={true}
+                   compact={true}
+                   allowHideColumns={true}
+                   allowSticky={true}
+                   forceEnglishTable={true}
+                   allowEditEntryOption={true}
+                   onEditEntryOption={(rowIndex) => handleEditInitialization('staticContent', rowIndex)}
+                   isLoading={isLoading}
+                   headerModuleElements={getTableModuleHeaderElements}
+                   sortConfigParam={{column: 2, direction: 'ascending'}}
+                   filterableColumns={[
+                       'Group Key'
+                   ]}
+            />
+        </div>
+    );
+
     const FormEmails = () => (
         <div className="admin-page-tab-content">
             <Table tableData={formEmailsData}
@@ -533,8 +654,18 @@ function InfoSystemManagement() {
         },
         {
             id: 5,
+            label: 'Static Content',
+            component: StaticContent
+        },
+        {
+            id: 6,
             label: 'Form Emails',
             component: FormEmails
+        },
+        {
+            id: analyticsTabId,
+            label: 'Analytics',
+            component: Analytics
         },
     ];
 
@@ -545,7 +676,15 @@ function InfoSystemManagement() {
 
             <div className={"info-system-management-page"}>
 
-                <TabsPage tabData={tabData} initialTab={0} title={"Info System Management"}/>
+                <TabsPage tabData={tabData}
+                          initialTab={0}
+                          title={"Info System Management"}
+                          onTabChange={(tab) => {
+                              if (tab === analyticsTabId) {
+                                  setAnalyticsTabOpened(true);
+                              }
+                          }}
+                />
             </div>
 
             <animated.div style={animateEditModal} className={"general-large-admin-action-modal"}>
@@ -568,6 +707,14 @@ function InfoSystemManagement() {
                         { (currentEditType === 'departments' || currentEditType === 'stages') && (
                             <p className={"general-large-admin-action-modal-content-note"}>
                                 Note: Titles & names should preferably be under 20 characters (Spaces are characters).
+                            </p>
+                        )}
+
+                        {currentEditType === 'staticContent' && (
+                            <p className={"general-large-admin-action-modal-content-note"}>
+                                Note: This is what the chat bot sends word for word. *Text* renders bold and _text_ renders
+                                italic on WhatsApp, Messenger and Instagram. Changes only reach the bot after you press
+                                Trigger Server Static Data Update.
                             </p>
                         )}
 

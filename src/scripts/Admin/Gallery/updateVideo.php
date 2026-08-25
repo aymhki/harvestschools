@@ -33,6 +33,7 @@ try {
     $titleEn = gallery_trim($data['title_en'] ?? '', 255);
     $titleAr = gallery_trim($data['title_ar'] ?? '', 255);
     $isPublic = !empty($data['is_public']) ? 1 : 0;
+    $layout = ($data['layout'] ?? 'wide') === 'narrow' ? 'narrow' : 'wide';
 
     if ($titleEn === '' || $titleAr === '') {
         echo json_encode(gallery_error('Both the English and the Arabic title are required.', 400));
@@ -47,10 +48,23 @@ try {
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE gallery_videos SET title_en = ?, title_ar = ?, thumbnail_at = ?, is_public = ? WHERE id = ?");
-    $stmt->bind_param("ssdii", $titleEn, $titleAr, $thumbnailAt, $isPublic, $videoId);
+    $stmt = $conn->prepare("UPDATE gallery_videos SET title_en = ?, title_ar = ?, layout = ?, thumbnail_at = ?, is_public = ? WHERE id = ?");
+    $stmt->bind_param("sssdii", $titleEn, $titleAr, $layout, $thumbnailAt, $isPublic, $videoId);
     $stmt->execute();
     $stmt->close();
+
+    $placement = strtolower(trim((string)($data['placement'] ?? '')));
+
+    if ($placement !== '' && $placement !== GALLERY_PLACEMENT_KEEP) {
+        gallery_apply_placement(
+            $conn,
+            'gallery_videos',
+            $videoId,
+            gallery_placement_of($placement),
+            (int)($data['after_id'] ?? 0),
+            $video['media_date']
+        );
+    }
 
     echo json_encode(["success" => true, "message" => "Video updated.", "code" => 200]);
 } catch (Throwable $e) {

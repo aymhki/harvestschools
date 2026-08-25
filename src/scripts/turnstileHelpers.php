@@ -37,18 +37,31 @@ function turnstile_token_from_request($explicitToken = null) {
 }
 
 
-function verify_turnstile_token_if_present($explicitToken = null, $required = false) {
+function turnstile_log_outcome($mode, $detail = '') {
+    $endpoint = $_SERVER['SCRIPT_NAME'] ?? 'unknown';
+
+    error_log('Turnstile ' . $mode . ' at ' . $endpoint . ($detail === '' ? '' : ' - ' . $detail));
+}
+
+
+function verify_turnstile_token_if_present($explicitToken, $required) {
     $token = turnstile_token_from_request($explicitToken);
 
     if ($token === '') {
+//        turnstile_log_outcome($required ? 'missing' : 'fallback');
+
         return $required ? ['ok' => false, 'mode' => 'missing'] : ['ok' => true, 'mode' => 'fallback'];
     }
 
     if (!function_exists('turnstile_config')) {
+//        turnstile_log_outcome('cf-unreachable', 'turnstileConfig.php is missing, the token was accepted unverified');
+
         return ['ok' => true, 'mode' => 'cf-unreachable'];
     }
 
     if (!function_exists('curl_init')) {
+//        turnstile_log_outcome('cf-unreachable', 'curl is not installed, the token was accepted unverified');
+
         return ['ok' => true, 'mode' => 'cf-unreachable'];
     }
 
@@ -72,18 +85,29 @@ function verify_turnstile_token_if_present($explicitToken = null, $required = fa
 
     $responseBody = curl_exec($ch);
     $curlErrorNumber = curl_errno($ch);
+    $curlErrorMessage = curl_error($ch);
 
     if ($curlErrorNumber !== 0 || $responseBody === false) {
+//        turnstile_log_outcome('cf-unreachable', 'curl error ' . $curlErrorNumber . ' ' . $curlErrorMessage . ', the token was accepted unverified');
+
         return ['ok' => true, 'mode' => 'cf-unreachable'];
     }
 
     $decoded = json_decode($responseBody, true);
 
     if (!is_array($decoded)) {
+//        turnstile_log_outcome('cf-unreachable', 'siteverify returned an unparseable body, the token was accepted unverified');
+
         return ['ok' => true, 'mode' => 'cf-unreachable'];
     }
 
     if (empty($decoded['success'])) {
+        $errorCodes = isset($decoded['error-codes']) && is_array($decoded['error-codes'])
+            ? implode(', ', $decoded['error-codes'])
+            : 'none reported';
+
+//        turnstile_log_outcome('rejected', $errorCodes);
+
         return ['ok' => false, 'mode' => 'rejected'];
     }
 

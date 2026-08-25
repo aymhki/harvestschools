@@ -10,8 +10,12 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
 
     const [internalTab, setInternalTab] = useState(() => {
         if (storageKey) {
-            const saved = Number(localStorage.getItem(storageKey));
-            if (saved && tabData.some((t) => t.id === saved)) return saved;
+            const stored = localStorage.getItem(storageKey);
+
+            if (stored !== null) {
+                const saved = Number(stored);
+                if (Number.isInteger(saved) && tabData.some((t) => t.id === saved)) return saved;
+            }
         }
 
         return initialTab || tabData[0].id;

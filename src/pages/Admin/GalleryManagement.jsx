@@ -33,7 +33,7 @@ const photoIdColIndex = 4;
 
 const videoTitleEnColIndex = 1;
 const videoStatusColIndex = 7;
-const videoIdColIndex = 9;
+const videoIdColIndex = 10;
 
 const collageTitleEnFieldId = 1;
 const collageTitleArFieldId = 2;
@@ -67,6 +67,7 @@ const photosField = (isRequired) => ({
 
 const videoTitleEnFieldId = 11;
 const videoTitleArFieldId = 12;
+const videoLayoutFieldId = 13;
 const videoShownFieldId = 14;
 const videoFileFieldId = 15;
 const videoThumbnailPickerFieldId = 16;
@@ -82,6 +83,7 @@ const collageAfterFieldId = 7;
 const videoPlacementFieldId = 17;
 const videoAfterFieldId = 18;
 
+const PLACEMENT_KEEP = 'Keep where it is';
 const PLACEMENT_TOP = 'At the top';
 const PLACEMENT_CHOOSE = 'Choose the position myself';
 const PLACEMENT_DATE = 'Use the date from the file';
@@ -89,6 +91,7 @@ const PLACEMENT_END = 'At the bottom';
 const PLACEMENT_CHOICES = [PLACEMENT_TOP, PLACEMENT_CHOOSE, PLACEMENT_DATE, PLACEMENT_END];
 
 const placementValueOf = (choice) => {
+    if (choice === PLACEMENT_KEEP) return 'keep';
     if (choice === PLACEMENT_TOP) return 'top';
     if (choice === PLACEMENT_CHOOSE) return 'after';
     if (choice === PLACEMENT_DATE) return 'date';
@@ -114,16 +117,16 @@ const afterFieldFor = (fieldId, items, noun) => ({
     httpName: 'place-after',
 });
 
-const placementFieldFor = (fieldId, afterFieldId, items, noun) => ({
+const placementFieldFor = (fieldId, afterFieldId, items, noun, canKeep = false) => ({
     id: fieldId,
     type: 'select',
     name: 'placement',
     label: 'Position',
     required: true,
-    choices: items.length === 0 ? [PLACEMENT_TOP, PLACEMENT_DATE] : PLACEMENT_CHOICES,
+    choices: (canKeep ? [PLACEMENT_KEEP] : []).concat(items.length === 0 ? [PLACEMENT_TOP, PLACEMENT_DATE] : PLACEMENT_CHOICES),
     errorMsg: 'Please choose where it goes',
     value: '',
-    defaultValue: PLACEMENT_TOP,
+    defaultValue: canKeep ? PLACEMENT_KEEP : PLACEMENT_TOP,
     widthOfField: 1,
     labelOutside: true,
     labelOnTop: true,
@@ -380,6 +383,7 @@ function GalleryManagement() {
         setModalFields([
             { id: videoTitleEnFieldId, type: 'text', name: 'title-en', label: 'Title (EN)', required: true, errorMsg: 'Please enter the English title', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'title-en' },
             { id: videoTitleArFieldId, type: 'text', name: 'title-ar', label: 'Title (AR)', required: true, errorMsg: 'Please enter the Arabic title', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'title-ar' },
+            { id: videoLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: LAYOUT_CHOICES[0], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Card width on the public page (narrow sits three across)', httpName: 'layout' },
             { id: videoFileFieldId, type: 'file', name: 'video', label: VIDEO_FIELD_LABEL, required: true, errorMsg: 'Please choose a video', value: '', allowedFileTypes: VIDEO_FILE_TYPES, maxFileSizeInBytes: MAX_VIDEO_BYTES, showPreview: true, widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Video', httpName: 'video' },
             { id: videoThumbnailPickerFieldId, type: 'video-thumbnail', name: 'thumbnail-at', label: 'Cover Frame', required: false, sourceFieldId: videoFileFieldId, value: '', defaultValue: '0', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Cover frame', httpName: 'thumbnail-at' },
             placementFieldFor(videoPlacementFieldId, videoAfterFieldId, videoRecords, 'video'),
@@ -387,8 +391,13 @@ function GalleryManagement() {
     };
 
     const openEditCollageModal = () => {
-        setModalType({ kind: 'edit-collage', collageId: openCollage.id });
-        setModalFields(collageFields(openCollage));
+        const otherCollages = collages.filter((collage) => collage.id !== openCollage.id);
+
+        setModalType({ kind: 'edit-collage', collageId: openCollage.id, orderedItems: otherCollages });
+        setModalFields([
+            ...collageFields(openCollage),
+            placementFieldFor(collagePlacementFieldId, collageAfterFieldId, otherCollages, 'collage', true),
+        ]);
     };
 
     const openEditVideoModal = (rowIndex) => {
@@ -399,16 +408,20 @@ function GalleryManagement() {
             return;
         }
 
-        setModalType({ kind: 'edit-video', videoId, duration: video.durationSeconds });
+        const otherVideos = videoRecords.filter((record) => record.id !== videoId);
+
+        setModalType({ kind: 'edit-video', videoId, duration: video.durationSeconds, orderedItems: otherVideos });
         setModalFields([
             { id: videoTitleEnFieldId, type: 'text', name: 'title-en', label: 'Title (EN)', required: true, errorMsg: 'Please enter the English title', value: '', defaultValue: video.titleEn, widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'title-en' },
             { id: videoTitleArFieldId, type: 'text', name: 'title-ar', label: 'Title (AR)', required: true, errorMsg: 'Please enter the Arabic title', value: '', defaultValue: video.titleAr, widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'title-ar' },
-            { id: videoShownFieldId, type: 'select', name: 'is-public', label: 'Visibility', required: true, choices: SHOWN_CHOICES, errorMsg: 'Please choose the visibility', value: '', defaultValue: shownChoiceOf(video.isPublic), widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Visibility', httpName: 'is-public' },
+            { id: videoLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: layoutChoiceOf(video.layout), widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Card width on the public page (narrow sits three across)', httpName: 'layout' },
+            { id: videoShownFieldId, type: 'select', name: 'is-public', label: 'Visibility', required: true, choices: SHOWN_CHOICES, errorMsg: 'Please choose the visibility', value: '', defaultValue: shownChoiceOf(video.isPublic), widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Visibility', httpName: 'is-public' },
             { id: videoThumbnailPickerFieldId, type: 'video-thumbnail', name: 'thumbnail-at', label: 'Cover Frame', required: false, videoUrl: galleryFileUrl(`videos/${video.fileName}`), value: '', defaultValue: String(video.thumbnailAt), widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Cover frame', httpName: 'thumbnail-at' },
+            placementFieldFor(videoPlacementFieldId, videoAfterFieldId, otherVideos, 'video', true),
         ]);
     };
 
-    const uploadVideoFromModal = async (videoFile, {titleEn, titleAr, thumbnailAt, placement, afterId}) => {
+    const uploadVideoFromModal = async (videoFile, {titleEn, titleAr, thumbnailAt, layout, placement, afterId}) => {
         const begun = await beginVideoUpload({
             titleEn,
             titleAr,
@@ -439,6 +452,7 @@ function GalleryManagement() {
             titleEn,
             titleAr,
             thumbnailAt,
+            layout,
             placement,
             afterId,
             signal: controller.signal,
@@ -503,23 +517,33 @@ function GalleryManagement() {
                     titleEn: values[`field_${videoTitleEnFieldId}`],
                     titleAr: values[`field_${videoTitleArFieldId}`],
                     thumbnailAt: Number(values[`field_${videoThumbnailPickerFieldId}`] || 0),
+                    layout: layoutValueOf(values[`field_${videoLayoutFieldId}`]),
                     ...chosenPlacement(videoPlacementFieldId, videoAfterFieldId),
                 });
             } else if (modalType.kind === 'edit-collage') {
+                const placed = chosenPlacement(collagePlacementFieldId, collageAfterFieldId);
+
                 result = await updateCollage({
                     collage_id: modalType.collageId,
                     title_en: values[`field_${collageTitleEnFieldId}`],
                     title_ar: values[`field_${collageTitleArFieldId}`],
                     layout: layoutValueOf(values[`field_${collageLayoutFieldId}`]),
                     is_public: shownValueOf(values[`field_${collageShownFieldId}`]),
+                    placement: placed.placement,
+                    after_id: placed.afterId,
                 });
             } else if (modalType.kind === 'edit-video') {
+                const placed = chosenPlacement(videoPlacementFieldId, videoAfterFieldId);
+
                 result = await updateVideo({
                     video_id: modalType.videoId,
                     title_en: values[`field_${videoTitleEnFieldId}`],
                     title_ar: values[`field_${videoTitleArFieldId}`],
                     thumbnail_at: Number(values[`field_${videoThumbnailPickerFieldId}`]),
+                    layout: layoutValueOf(values[`field_${videoLayoutFieldId}`]),
                     is_public: shownValueOf(values[`field_${videoShownFieldId}`]),
+                    placement: placed.placement,
+                    after_id: placed.afterId,
                 });
             }
 
@@ -638,7 +662,7 @@ function GalleryManagement() {
                        });
                    }}
                    headerModuleElements={[
-                       (<button key={1} onClick={goBackToList}>Go Back</button>),
+                       (<button key={1} onClick={goBackToList}>Back</button>),
                        (<button key={2} onClick={openAddPhotosModal}>Add Photos</button>),
                        (<button key={3} onClick={openEditCollageModal}>Edit Collage</button>),
                        (

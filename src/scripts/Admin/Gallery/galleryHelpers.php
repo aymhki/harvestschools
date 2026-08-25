@@ -240,7 +240,7 @@ function gallery_uploaded_files($fieldName) {
 
 
 function gallery_collage_by_id($conn, $collageId) {
-    $stmt = $conn->prepare("SELECT id, folder_name, title_en, title_ar, layout, sort_order, is_public FROM gallery_collages WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, folder_name, title_en, title_ar, layout, sort_order, media_date, is_public FROM gallery_collages WHERE id = ?");
     $stmt->bind_param("i", $collageId);
     $stmt->execute();
     $collage = $stmt->get_result()->fetch_assoc();
@@ -252,7 +252,7 @@ function gallery_collage_by_id($conn, $collageId) {
 
 function gallery_video_by_id($conn, $videoId) {
     $stmt = $conn->prepare(
-        "SELECT id, title_en, title_ar, file_name, thumbnail_at, duration_seconds, is_public,
+        "SELECT id, title_en, title_ar, file_name, thumbnail_at, duration_seconds, media_date, is_public,
                 status, progress_percent, status_message
          FROM gallery_videos WHERE id = ?"
     );
@@ -361,6 +361,7 @@ const GALLERY_PLACEMENT_TOP = 'top';
 const GALLERY_PLACEMENT_AFTER = 'after';
 const GALLERY_PLACEMENT_DATE = 'date';
 const GALLERY_PLACEMENT_END = 'end';
+const GALLERY_PLACEMENT_KEEP = 'keep';
 
 function gallery_placement_of($value) {
     $placement = strtolower(trim((string)$value));

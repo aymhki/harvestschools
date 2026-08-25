@@ -48,6 +48,13 @@ try {
     $stmt->execute();
     $stmt->close();
 
+    $layout = ($data['layout'] ?? 'wide') === 'narrow' ? 'narrow' : 'wide';
+
+    $stmt = $conn->prepare("UPDATE gallery_videos SET layout = ? WHERE id = ?");
+    $stmt->bind_param("si", $layout, $videoId);
+    $stmt->execute();
+    $stmt->close();
+
     gallery_set_media_date($conn, 'gallery_videos', $videoId, $probe['recordedAt']);
     gallery_apply_placement(
         $conn,

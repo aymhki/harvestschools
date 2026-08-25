@@ -181,6 +181,12 @@
     pointer-events: none;
 }
 
+.file-form-field-styled.is-drop-target {
+    border-style: dashed;
+    background-color: var(--ff-panel-bg);
+    box-shadow: 0 0 0.5rem var(--ff-field-border);
+}
+
 .file-form-field-preview {
     align-self: stretch;
     width: 100%;
@@ -776,9 +782,8 @@
 }
 
 .turnstile-container {
-    width: 100%;
+    padding-top: 1rem;
     min-width: 0;
-    min-height: 4.0625rem;
 }
 
 .captcha-wrapper,

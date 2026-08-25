@@ -9,8 +9,8 @@ const CALENDAR_MAX_EVENTS_PER_YEAR = 300;
 const CALENDAR_PDF_MAX_BYTES = 20 * 1024 * 1024;
 const CALENDAR_PDF_DIRECTORY = 'documents/Calendars';
 
-function calendar_error($message, $code = 400) {
-    return ["success" => false, "message" => $message, "code" => $code];
+function calendar_error($message, $code = 400, $field = null) {
+    return ["success" => false, "message" => $message, "code" => $code, "field" => $field];
 }
 
 function calendar_trim($value, $limit) {
@@ -117,19 +117,19 @@ function calendar_validate_event($event, $position) {
     $titleAr = calendar_trim($event['title_ar'] ?? '', 255);
 
     if ($titleEn === '' || $titleAr === '') {
-        return calendar_error("Event " . $position . " needs a title in both English and Arabic.");
+        return calendar_error("A title is required in both English and Arabic.", 400, 'title_en');
     }
 
     $startDate = calendar_valid_date($event['start_date'] ?? '');
 
     if ($startDate === null) {
-        return calendar_error("Event " . $position . " needs a valid start date.");
+        return calendar_error("A valid start date is required.", 400, 'start_date');
     }
 
     $endDate = calendar_valid_date($event['end_date'] ?? '') ?? $startDate;
 
     if (strtotime($endDate) < strtotime($startDate)) {
-        return calendar_error("Event " . $position . " ends before it starts.");
+        return calendar_error("The end date is before the start date.", 400, 'end_date');
     }
 
     return [
@@ -142,6 +142,100 @@ function calendar_validate_event($event, $position) {
         ]
     ];
 }
+
+function calendar_insert_event($conn, $calendarId, $event) {
+    $stmt = $conn->prepare(
+        "INSERT INTO academic_calendar_events (calendar_id, sort_order, title_en, title_ar, start_date, end_date)
+         VALUES (?, 0, ?, ?, ?, ?)"
+    );
+    $stmt->bind_param("issss", $calendarId, $event['title_en'], $event['title_ar'], $event['start_date'], $event['end_date']);
+    $stmt->execute();
+    $stmt->close();
+}
+
+
+function calendar_import_descriptor() {
+    return [
+        'title_en'   => ['required' => true,  'type' => 'text', 'label' => 'Title (EN)', 'example' => 'First Term Begins'],
+        'title_ar'   => ['required' => true,  'type' => 'text', 'label' => 'Title (AR)', 'example' => 'بداية الفصل الدراسي الأول'],
+        'start_date' => ['required' => true,  'type' => 'date', 'label' => 'Start Date', 'example' => '2026-09-13'],
+        'end_date'   => ['required' => false, 'type' => 'date', 'label' => 'End Date',   'example' => '2026-09-17'],
+    ];
+}
+
+
+function calendar_import_authorise($conn, array $context = []) {
+    $authorisation = calendar_authorise($conn);
+
+    if (!$authorisation['success']) {
+        return $authorisation;
+    }
+
+    $calendarKey = calendar_trim($context['calendar_key'] ?? '', 32);
+
+    if (!academic_calendar_exists($calendarKey) || !calendar_may_edit($authorisation, $calendarKey)) {
+        return calendar_error("Permission denied", 403);
+    }
+
+    return $authorisation;
+}
+
+
+function calendar_add_events($conn, array $rows, array $context = []) {
+    $descriptor = calendar_import_descriptor();
+    $calendarKey = calendar_trim($context['calendar_key'] ?? '', 32);
+    $academicYear = calendar_trim($context['academic_year'] ?? '', 9);
+
+    $stmt = $conn->prepare("SELECT id FROM academic_calendars WHERE calendar_key = ? AND academic_year = ?");
+    $stmt->bind_param("ss", $calendarKey, $academicYear);
+    $stmt->execute();
+    $calendar = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$calendar) {
+        return ['ok' => 0, 'failed' => [], 'message' => 'That academic calendar does not exist.'];
+    }
+
+    $calendarId = (int)$calendar['id'];
+    $failed = [];
+    $events = [];
+
+    foreach ($rows as $index => $row) {
+        $line = $row['line'] ?? ($index + 2);
+        $values = array_key_exists('values', $row) ? $row['values'] : $row;
+        $validation = calendar_validate_event($values, $line);
+
+        if (!$validation['success']) {
+            $failed[] = csv_import_row_failure($line, $descriptor, $validation['field'] ?? null, $validation['message']);
+            continue;
+        }
+
+        $events[] = $validation['event'];
+    }
+
+    if ($failed !== []) {
+        return ['ok' => 0, 'failed' => $failed];
+    }
+
+    $conn->begin_transaction();
+
+    try {
+        foreach ($events as $event) {
+            calendar_insert_event($conn, $calendarId, $event);
+        }
+
+        $conn->commit();
+    } catch (Throwable $insertError) {
+        $conn->rollback();
+
+        throw $insertError;
+    }
+
+    calendar_resequence_events($conn, $calendarId);
+
+    return ['ok' => count($events), 'failed' => []];
+}
+
 
 function calendar_resequence_events($conn, $calendarId) {
     $stmt = $conn->prepare(
