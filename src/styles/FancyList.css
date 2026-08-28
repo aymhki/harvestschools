@@ -4,11 +4,13 @@
     align-items: center;
     gap: var(--fancy-list-gap);
     width: 100%;
-    max-width: var(--fancy-list-max-width);
+    /*max-width: var(--fancy-list-max-width);*/
     margin: 0 auto;
     padding: var(--fancy-list-gap) var(--fancy-list-side-padding);
     box-sizing: border-box;
     color: var(--primary-color);
+    overflow-y: scroll;
+    max-height: 90vh;
 }
 
 
@@ -49,12 +51,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--fancy-list-items-gap);
-    width: 100%;
+    width: min(95%, 48rem);
+    box-sizing: border-box;
     margin: 0;
     padding: 1rem 1rem 1rem 1rem;
     list-style: none;
-    max-height: 75vh;
-    overflow-y:scroll;
 }
 
 .fancy-list-item-wrapper {
