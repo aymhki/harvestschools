@@ -72,9 +72,18 @@ const deleteLibraryBook = async (bookId) =>
     postToLibrary(endpoints.deleteLibraryBook, { book_id: bookId }, 'An error occurred while deleting the book.');
 
 
+const deleteLibraryBooks = async (scope, categoryKey) =>
+    postToLibrary(
+        endpoints.deleteLibraryBooks,
+        { scope: scope, category_key: categoryKey || '' },
+        'An error occurred while deleting the books.'
+    );
+
+
 export {
     fetchLibraryBooks,
     addLibraryBook,
     editLibraryBook,
-    deleteLibraryBook
+    deleteLibraryBook,
+    deleteLibraryBooks
 }

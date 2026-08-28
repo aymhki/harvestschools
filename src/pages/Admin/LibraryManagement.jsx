@@ -11,7 +11,8 @@ import {
     fetchLibraryBooks,
     addLibraryBook,
     editLibraryBook,
-    deleteLibraryBook
+    deleteLibraryBook,
+    deleteLibraryBooks
 } from "../../services/Admin/Library/AdminLibraryServices.jsx";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 import {fetchImportDescriptor, importCsvFile} from "../../services/Admin/Imports/AdminImportServices.jsx";
@@ -43,6 +44,11 @@ function LibraryManagement() {
     const [editorMode, setEditorMode] = useState('add');
     const [editorContext, setEditorContext] = useState(null);
 
+    const [showDeleteBooksModal, setShowDeleteBooksModal] = useState(false);
+    const [deleteBooksCategory, setDeleteBooksCategory] = useState(null);
+    const [isDeletingBooks, setIsDeletingBooks] = useState(false);
+    const [deleteBooksError, setDeleteBooksError] = useState(null);
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteContext, setDeleteContext] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
@@ -58,6 +64,11 @@ function LibraryManagement() {
     const animateDeleteModal = useSpring({
         opacity: showDeleteModal ? 1 : 0,
         transform: showDeleteModal ? 'translateY(0)' : 'translateY(-100%)'
+    });
+
+    const animateDeleteBooksModal = useSpring({
+        opacity: showDeleteBooksModal ? 1 : 0,
+        transform: showDeleteBooksModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
     const reloadData = async () => {
@@ -179,6 +190,49 @@ function LibraryManagement() {
         }
     };
 
+    const booksInCategory = (category) => Math.max((category && category.books ? category.books.length : 1) - 1, 0);
+
+    const booksMatchingDeleteScope = booksInCategory(deleteBooksCategory);
+
+    const openDeleteBooksModal = (category) => {
+        setDeleteBooksCategory(category);
+        setDeleteBooksError(null);
+        setShowDeleteBooksModal(true);
+    };
+
+    const closeDeleteBooksModal = () => {
+        setShowDeleteBooksModal(false);
+        setDeleteBooksCategory(null);
+        setDeleteBooksError(null);
+    };
+
+    const handleDeleteBooks = async () => {
+        if (!deleteBooksCategory) {
+            return;
+        }
+
+        setIsLoading(true);
+        setIsDeletingBooks(true);
+
+        try {
+            const result = await deleteLibraryBooks('category', deleteBooksCategory.key);
+
+            if (result && result.success) {
+                closeDeleteBooksModal();
+                await reloadData();
+                return true;
+            }
+
+            throw new Error((result && result.message) || result);
+        } catch (error) {
+            setDeleteBooksError(error.message || 'An error occurred while deleting the books.');
+            setTimeout(() => { setDeleteBooksError(null); }, msgTimeout);
+        } finally {
+            setIsLoading(false);
+            setIsDeletingBooks(false);
+        }
+    };
+
     const renderCategoryTable = (category) => (
         <div className="admin-page-tab-content">
             <Table tableData={category.books}
@@ -218,6 +272,7 @@ function LibraryManagement() {
                    }}
                    headerModuleElements={[
                        (<button key={1} onClick={() => openEditor('add', category, null)}>Add Book</button>),
+                       (<button key={3} onClick={() => openDeleteBooksModal(category)} disabled={isLoading}>Delete Books</button>),
                        (<button key={2} onClick={reloadData} disabled={isLoading}>
                            {isLoading ? 'Loading...' : 'Reload Table Data'}
                        </button>),
@@ -303,6 +358,41 @@ function LibraryManagement() {
                             Cancel
                         </button>
                         <div ref={editorModalFooterButtonsRef} className="modal-footer-buttons-portal-target"/>
+                    </div>
+                </div>
+            </animated.div>
+
+            <animated.div style={animateDeleteBooksModal} className={"general-small-admin-action-modal"}>
+                <div className={"general-small-admin-action-modal-overlay"} onClick={closeDeleteBooksModal}/>
+                <div className={"general-small-admin-action-modal-container"}>
+                    <div className={"general-small-admin-action-modal-header"}>
+                        <h3>Delete Books</h3>
+                    </div>
+
+                    <div className={"general-small-admin-action-modal-content"}>
+                        <p>
+                            This will delete every book in{' '}
+                            <strong>{deleteBooksCategory ? deleteBooksCategory.label : 'this category'}</strong>,{' '}
+                            <strong>{booksMatchingDeleteScope}</strong>{' '}
+                            book{booksMatchingDeleteScope === 1 ? '' : 's'}. This action cannot be reversed.
+                        </p>
+
+                        {deleteBooksError && (
+                            <>
+                                <br/>
+                                <p>{deleteBooksError}</p>
+                            </>
+                        )}
+                    </div>
+
+                    <div className={"general-small-admin-action-modal-footer"}>
+                        <button onClick={closeDeleteBooksModal}>
+                            Cancel
+                        </button>
+
+                        <button onClick={handleDeleteBooks} disabled={booksMatchingDeleteScope === 0}>
+                            {isDeletingBooks ? 'Deleting...' : 'Delete'}
+                        </button>
                     </div>
                 </div>
             </animated.div>

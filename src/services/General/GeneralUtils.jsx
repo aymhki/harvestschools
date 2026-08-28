@@ -347,6 +347,7 @@ const ENDPOINTS = {
     getImportDescriptor: '/scripts/Admin/Imports/getImportDescriptor.php',
     editLibraryBook: '/scripts/Admin/Library/editLibraryBook.php',
     deleteLibraryBook: '/scripts/Admin/Library/deleteLibraryBook.php',
+    deleteLibraryBooks: '/scripts/Admin/Library/deleteLibraryBooks.php',
     getAcademicCalendars: '/scripts/Admin/AcademicCalendars/getAcademicCalendars.php',
     addAcademicCalendarYear: '/scripts/Admin/AcademicCalendars/addAcademicCalendarYear.php',
     updateCalendarMetaData: '/scripts/Admin/AcademicCalendars/updateCalendarMetaData.php',
