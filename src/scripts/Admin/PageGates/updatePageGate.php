@@ -38,6 +38,12 @@ try {
     $messageAr = page_gate_normalise_message($data['message_ar'] ?? null);
     $updatedBy = page_gate_user_id($conn, $authStatus['session_id'] ?? '');
 
+    $stmt = $conn->prepare("SELECT is_enabled, message_en, message_ar FROM public_page_gates WHERE page_id = ?");
+    $stmt->bind_param("s", $pageId);
+    $stmt->execute();
+    $gateBefore = $stmt->get_result()->fetch_assoc() ?: [];
+    $stmt->close();
+
     $stmt = $conn->prepare(
         "INSERT INTO public_page_gates (page_id, is_enabled, message_en, message_ar, updated_at, updated_by)
          VALUES (?, ?, ?, ?, NOW(), ?)
@@ -53,6 +59,10 @@ try {
     $stmt->execute();
     $stmt->close();
 
+    admin_log_action($conn, 'Updated the public page "' . $pageId . '": ' . admin_changes_summary(
+        ['Visible to the public' => isset($gateBefore['is_enabled']) ? (int)$gateBefore['is_enabled'] === 1 : null, 'Closed message (EN)' => $gateBefore['message_en'] ?? null, 'Closed message (AR)' => $gateBefore['message_ar'] ?? null],
+        ['Visible to the public' => $isEnabled === 1, 'Closed message (EN)' => $messageEn, 'Closed message (AR)' => $messageAr]
+    ) . '.');
     echo json_encode([
         "success" => true,
         "message" => $isEnabled ? "Page switched on." : "Page switched off.",

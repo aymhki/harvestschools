@@ -38,6 +38,41 @@ const fetchAllAdminUsers = async (navigate, setAdminUsers, setAvailablePermissio
     }
 }
 
+const fetchAdminActionEvents = async (navigate, setAdminActionEvents) => {
+    const sessionId = await validateAdminSessionLocally();
+
+    if (!sessionId) {
+        navigate(adminLoginPageUrl, { replace: true });
+        return 'Session expired';
+    }
+
+    setAdminActionEvents(null);
+
+    try {
+        const response = await fetch(endpoints.getAdminActionEvents, {method: 'GET',
+            headers: await buildAuthHeaders(sessionId)
+        })
+
+        const result = await response.json();
+
+        if (result && result.data && Array.isArray(result.data) ) {
+            setAdminActionEvents(result.data);
+        } else {
+            setAdminActionEvents(null);
+
+            if (result && result.message) {
+                console.log(result.message);
+            }
+
+            if (result && result.code && (result.code === 401 || result.code === 403)) {
+                navigate(adminLoginPageUrl, { replace: true });
+            }
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 const addAdminUser = async (newAdminUser) => {
     try {
         const sessionId = await validateAdminSessionLocally();
@@ -130,6 +165,7 @@ const deleteAdminUser = async (adminUserToDeleteId, logoutAfterDelete, navigate)
 
 export {
     fetchAllAdminUsers,
+    fetchAdminActionEvents,
     addAdminUser,
     editAdminUser,
     deleteAdminUser

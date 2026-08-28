@@ -20,6 +20,7 @@ import {
     deleteAcademicCalendarYear
 } from "../../services/Admin/AcademicCalendars/AdminAcademicCalendarsServices.jsx";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
+import { rememberedTab } from '../../services/General/TabsMemoryService.jsx';
 
 const eventTitleEnColIndex = 1;
 const eventTitleArColIndex = 2;
@@ -61,6 +62,8 @@ const eventRowFields = () => [
     { id: eventStartTemplateId, type: 'date', minYear: schoolFoundedYear, maxYear: calendarYear() + CALENDAR_YEARS_AHEAD, name: 'start-date', label: 'Start Date', required: true, errorMsg: 'Please choose the start date', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Start Date', httpName: 'event-start-date', alwaysEnglish: true },
     { id: eventEndTemplateId, type: 'date', minYear: schoolFoundedYear, maxYear: calendarYear() + CALENDAR_YEARS_AHEAD, name: 'end-date', label: 'End Date', required: true, errorMsg: 'Please choose the end date', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'End Date', httpName: 'event-end-date', alwaysEnglish: true },
 ];
+
+const CALENDARS_TABS_TITLE = 'Academic Calendars Management';
 
 function AcademicCalendarsManagement() {
     const navigate = useNavigate();
@@ -138,7 +141,7 @@ function AcademicCalendarsManagement() {
 
     useEffect(() => {
         if (calendars.length > 0 && openCalendarKey === '') {
-            setSearchParams({ calendar: calendars[0].key }, { replace: true });
+            setSearchParams({ calendar: calendars[openTabIndex].key }, { replace: true });
         }
     }, [calendars, openCalendarKey]);
 
@@ -160,7 +163,10 @@ function AcademicCalendarsManagement() {
         setSearchParams(openCalendarKey ? { calendar: openCalendarKey } : {});
     };
 
-    const openTabIndex = Math.max(0, calendars.findIndex((calendar) => calendar.key === openCalendarKey));
+    const rememberedCalendarTab = rememberedTab(CALENDARS_TABS_TITLE);
+    const openTabIndex = openCalendarKey
+        ? Math.max(0, calendars.findIndex((calendar) => calendar.key === openCalendarKey))
+        : ((rememberedCalendarTab !== null && calendars[rememberedCalendarTab]) ? rememberedCalendarTab : 0);
 
     const handleTabChange = (tabIndex) => {
         const calendar = calendars[tabIndex];
@@ -468,7 +474,7 @@ function AcademicCalendarsManagement() {
                                 initialTab={0}
                                 controlledTab={openTabIndex}
                                 onTabChange={handleTabChange}
-                                title={"Academic Calendars Management"}/>
+                                title={CALENDARS_TABS_TITLE}/>
                     : (calendars.length === 1 ? renderCalendarPane(calendars[0]) : null)}
             </div>
 

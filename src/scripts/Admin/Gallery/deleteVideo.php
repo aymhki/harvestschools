@@ -43,6 +43,7 @@ try {
     $stmt->execute();
     $stmt->close();
 
+    admin_log_action($conn, 'Deleted the gallery video #' . $videoId . ' ("' . (string)$video['title_en'] . '").');
     echo json_encode(["success" => true, "message" => "Video deleted.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

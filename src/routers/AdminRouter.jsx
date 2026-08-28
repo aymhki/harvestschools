@@ -14,6 +14,7 @@ import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeLazyPages, findRoute } from '../routes/shared.js';
 import { useLoading, GlobalLoadingFallback, GlobalSpinner } from '../services/General/GlobalLoadingService.jsx';
 import { AppAssetsLoadingGate } from '../services/General/AppAssetsLoadingService.jsx';
+import { useScrollToTopOnNavigation } from '../services/General/ScrollToTopService.jsx';
 
 const pages = makeLazyPages(
     import.meta.glob(['../pages/Admin/**/*.jsx', '../pages/NotFound.jsx'])
@@ -22,6 +23,7 @@ const pages = makeLazyPages(
 const services = { serveAlumniFile, serveJobApplicationFile, serveGalleryFile };
 
 function AdminRouter() {
+    useScrollToTopOnNavigation();
     const location = useLocation();
     const navigate = useNavigate();
     const [adminLinks, setAdminLinks] = useState([]);

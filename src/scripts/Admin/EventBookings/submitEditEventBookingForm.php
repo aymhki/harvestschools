@@ -1090,6 +1090,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $data['haveSuccessfullyUpdatedBooking'] = true;
                     }
 
+                    $editedParts = [];
+
+                    if (!empty($data['firstParentDataHaveChanged']) || !empty($data['secondParentDataHaveChanged'])) {
+                        $editedParts[] = 'parent details';
+                    }
+
+                    if (!empty($data['studentsInfoHaveChanged'])) {
+                        $editedParts[] = 'student details';
+                    }
+
+                    if (!empty($data['authDataHaveChanged'])) {
+                        $editedParts[] = 'login details';
+                    }
+
+                    if (!empty($data['extrasDataHaveChanged'])) {
+                        $editedParts[] = 'extras (' . admin_changes_summary(
+                            ['CDs' => $data['oldCdCount'], 'Additional attendees' => $data['oldAdditionalAttendeesCount'], 'Payment status' => $data['oldPaymentStatus']],
+                            ['CDs' => $newCdCount ?? null, 'Additional attendees' => $newAdditionalAttendees ?? null, 'Payment status' => $newPaymentStatus ?? null]
+                        ) . ')';
+                    }
+
+                    admin_log_action($conn, 'Edited the event booking #' . (int)($data['bookingId'] ?? 0) . ': ' . ($editedParts === [] ? 'no sections changed' : 'changed ' . implode(', ', $editedParts)) . '.');
                     echo json_encode([
                         'success' => true,
                         'message' => 'Booking updated successfully',

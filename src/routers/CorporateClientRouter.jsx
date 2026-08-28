@@ -10,12 +10,14 @@ import { ROUTER_IDS } from '../routes/redirects.js';
 import { makeLazyPages, useLangSync } from '../routes/shared.js';
 import { GlobalLoadingFallback, GlobalSpinner } from '../services/General/GlobalLoadingService.jsx';
 import { AppAssetsLoadingGate } from '../services/General/AppAssetsLoadingService.jsx';
+import { useScrollToTopOnNavigation } from '../services/General/ScrollToTopService.jsx';
 
 const pages = makeLazyPages(
     import.meta.glob(['../pages/CorporateHome.jsx', '../pages/NotFound.jsx'])
 );
 
 function CorporateClientRouter() {
+    useScrollToTopOnNavigation();
     useLangSync();
 
     return (

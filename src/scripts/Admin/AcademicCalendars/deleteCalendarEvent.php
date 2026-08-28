@@ -32,7 +32,7 @@ try {
     }
 
     $stmt = $conn->prepare(
-        "SELECT c.calendar_key
+        "SELECT c.calendar_key, c.academic_year, e.title_en, e.title_ar, e.start_date, e.end_date
          FROM academic_calendar_events e
          JOIN academic_calendars c ON c.id = e.calendar_id
          WHERE e.id = ?"
@@ -61,6 +61,7 @@ try {
 
     calendar_resequence_events($conn, $calendarId);
 
+    admin_log_action($conn, 'Deleted calendar event #' . $eventId . ' ("' . (string)$owner['title_en'] . '", ' . (string)$owner['start_date'] . ' to ' . (string)$owner['end_date'] . ') from the ' . (string)$owner['academic_year'] . ' "' . (string)$owner['calendar_key'] . '" academic calendar.');
     echo json_encode([
         "success" => true,
         "message" => "Event deleted.",

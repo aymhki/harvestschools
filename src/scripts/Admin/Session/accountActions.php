@@ -123,6 +123,8 @@ function execute_step_up_action($conn, $userId, $action, $payload) {
             $stmt->execute();
             $stmt->close();
 
+            admin_sync_logged_identity($conn, $userId);
+
             if ($password !== '') {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
 

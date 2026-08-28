@@ -45,6 +45,12 @@ try {
         exit;
     }
 
+    $stmt = $conn->prepare("SELECT name_en, position_en FROM staff_employees WHERE employee_code = ?");
+    $stmt->bind_param("s", $employeeCode);
+    $stmt->execute();
+    $employeeBefore = $stmt->get_result()->fetch_assoc() ?: [];
+    $stmt->close();
+
     $stmt = $conn->prepare("DELETE FROM staff_employees WHERE employee_code = ?");
     $stmt->bind_param("s", $employeeCode);
     $stmt->execute();
@@ -56,6 +62,7 @@ try {
         exit;
     }
 
+    admin_log_action($conn, 'Deleted employee ' . $employeeCode . ' ("' . (string)($employeeBefore['name_en'] ?? '') . '", ' . (string)($employeeBefore['position_en'] ?? '') . ') from the staff directory.');
     echo json_encode([
         "success" => true,
         "message" => trim("Employee deleted successfully. " . $borrowing['message']),

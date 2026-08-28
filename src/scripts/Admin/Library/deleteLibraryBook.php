@@ -32,6 +32,12 @@ try {
         exit;
     }
 
+    $stmt = $conn->prepare("SELECT title_en, series_en FROM library_books WHERE id = ?");
+    $stmt->bind_param("i", $bookId);
+    $stmt->execute();
+    $bookBefore = $stmt->get_result()->fetch_assoc() ?: [];
+    $stmt->close();
+
     $stmt = $conn->prepare("DELETE FROM library_books WHERE id = ?");
     $stmt->bind_param("i", $bookId);
     $stmt->execute();
@@ -39,6 +45,7 @@ try {
 
     library_resequence($conn, $categoryKey);
 
+    admin_log_action($conn, 'Deleted library book #' . $bookId . ' ("' . (string)($bookBefore['title_en'] ?? '') . '"' . (($bookBefore['series_en'] ?? '') === '' ? '' : ', series "' . (string)$bookBefore['series_en'] . '"') . ') from the "' . $categoryKey . '" category.');
     echo json_encode(["success" => true, "message" => "Book deleted.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

@@ -42,6 +42,12 @@ try {
         echo json_encode(["success" => false, "message" => "Valid Admin ID is required", "code" => 400]);
     }
 
+    $stmt = $conn->prepare("SELECT username, name, email FROM admin_users WHERE id = ?");
+    $stmt->bind_param("i", $adminUserToDeleteId);
+    $stmt->execute();
+    $deletedUser = $stmt->get_result()->fetch_assoc() ?: [];
+    $stmt->close();
+
     $sql = "DELETE FROM admin_sessions WHERE user_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $adminUserToDeleteId);
@@ -59,6 +65,7 @@ try {
 
     $conn->commit();
 
+    admin_log_action($conn, 'Deleted the admin user #' . (int)$adminUserToDeleteId . ' ("' . (string)($deletedUser['username'] ?? '') . '" / ' . (string)($deletedUser['name'] ?? '') . ', ' . (string)($deletedUser['email'] ?? '') . ') and all of their sessions and permissions.');
     echo json_encode(["success" => true, "message" => "Admin user deleted successfully", "code" => 200]);
 
 

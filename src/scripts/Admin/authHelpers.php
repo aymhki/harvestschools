@@ -255,6 +255,83 @@ function check_admin_user_permission($conn, $requiredPermission, $explicitSessio
     ];
 }
 
+function admin_action_value($value) {
+    if (is_bool($value)) { return $value ? 'Yes' : 'No'; }
+    if (is_array($value)) { $value = implode(', ', $value); }
+    if ($value === null) { return '(empty)'; }
+
+    $text = trim((string)$value);
+
+    if ($text === '') { return '(empty)'; }
+
+    return mb_strlen($text) > 120 ? mb_substr($text, 0, 120) . '...' : $text;
+}
+
+function admin_changes_summary(array $before, array $after) {
+    $changes = [];
+
+    foreach ($after as $label => $newValue) {
+        $oldText = admin_action_value(array_key_exists($label, $before) ? $before[$label] : null);
+        $newText = admin_action_value($newValue);
+
+        if ($oldText === $newText) { continue; }
+
+        $changes[] = $label . ' from "' . $oldText . '" to "' . $newText . '"';
+    }
+
+    return $changes === [] ? 'no fields changed' : 'changed ' . implode('; ', $changes);
+}
+
+function admin_list_summary(array $items, $limit = 10) {
+    $count = count($items);
+
+    if ($count === 0) { return 'none'; }
+    if ($count <= $limit) { return implode(', ', $items); }
+
+    return implode(', ', array_slice($items, 0, $limit)) . ' and ' . ($count - $limit) . ' more';
+}
+
+function admin_log_action($conn, $action) {
+    try {
+        $tokenHash = get_bearer_token_hash();
+
+        if (!$tokenHash) { return; }
+
+        $action = mb_substr(trim((string)$action), 0, 5000);
+
+        if ($action === '') { return; }
+
+        $stmt = $conn->prepare(
+            "INSERT INTO admin_action_events (user_id, username, name, action)
+             SELECT u.id, u.username, u.name, ?
+             FROM admin_sessions s
+             JOIN admin_users u ON u.id = s.user_id
+             WHERE s.id = ?"
+        );
+        $stmt->bind_param("ss", $action, $tokenHash);
+        $stmt->execute();
+        $stmt->close();
+    } catch (Throwable $e) {
+        return;
+    }
+}
+
+function admin_sync_logged_identity($conn, $userId) {
+    try {
+        $stmt = $conn->prepare(
+            "UPDATE admin_action_events e
+             JOIN admin_users u ON u.id = e.user_id
+             SET e.username = u.username, e.name = u.name
+             WHERE e.user_id = ?"
+        );
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $stmt->close();
+    } catch (Throwable $e) {
+        return;
+    }
+}
+
 function issue_admin_session($conn, $userId, $fingerprintHash = null) {
     $idleTtl     = (int)mfa_config('session_idle_ttl_seconds');
     $absoluteTtl = (int)mfa_config('session_absolute_ttl_seconds');

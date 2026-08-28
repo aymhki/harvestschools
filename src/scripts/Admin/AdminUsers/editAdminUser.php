@@ -126,7 +126,7 @@ try {
         $editAdminPermissionLevel = array_values($editAdminPermissionLevel);
     }
 
-    $availablePermissions = $conn->query("SELECT permission_id FROM available_permissions")->fetch_all(MYSQLI_ASSOC);
+    $availablePermissions = $conn->query("SELECT permission_id, permission_name FROM available_permissions")->fetch_all(MYSQLI_ASSOC);
     $permissionIds = array_map(fn($n) => (string)$n, array_column($availablePermissions, 'permission_id'));
     $invalidPermissionIds = array_diff($editAdminPermissionLevel, $permissionIds);
 
@@ -135,6 +135,18 @@ try {
         echo json_encode(["success" => false, "message" => "Invalid permission level provided", "code" => 400]);
         exit;
     }
+
+    $stmt = $conn->prepare("SELECT username, name, email FROM admin_users WHERE id = ?");
+    $stmt->bind_param("i", $adminId);
+    $stmt->execute();
+    $userBefore = $stmt->get_result()->fetch_assoc() ?: [];
+    $stmt->close();
+
+    $permissionNames = array_column($availablePermissions, 'permission_name', 'permission_id');
+    $permsBefore = array_map(fn($p) => $permissionNames[$p] ?? $p, $currentPerms ?? []);
+    $permsAfter = array_map(fn($p) => $permissionNames[$p] ?? $p, $editAdminPermissionLevel);
+    sort($permsBefore);
+    sort($permsAfter);
 
     if ($updatePassword) {
         $hashedPassword = password_hash($editAdminPassword, PASSWORD_DEFAULT);
@@ -179,6 +191,11 @@ try {
     }
 
     $conn->commit();
+    admin_sync_logged_identity($conn, (int)$adminId);
+    admin_log_action($conn, 'Edited the admin user #' . $adminId . ' ("' . $editUsername . '"): ' . admin_changes_summary(
+        ['Username' => $userBefore['username'] ?? null, 'Name' => $userBefore['name'] ?? null, 'Email' => $userBefore['email'] ?? null, 'Permissions' => $permsBefore],
+        ['Username' => $editUsername, 'Name' => $editAdminName, 'Email' => $editAdminEmail, 'Permissions' => $permsAfter]
+    ) . ($updatePassword ? '; changed their password' : '') . '.');
     echo json_encode(["success" => true, "message" => "Admin user updated successfully", "code" => 200]);
 
 } catch (Exception $e) {

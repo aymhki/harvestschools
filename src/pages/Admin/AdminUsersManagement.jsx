@@ -4,8 +4,9 @@ import {useEffect, useState, useRef} from "react";
 import {useSpring, animated} from "react-spring";
 import Form from '../../modules/Form.jsx'
 import Table from "../../modules/Table.jsx";
+import TabsPage from "../../modules/TabsPage.jsx";
 import {headToAdminLoginOnInvalidSession} from "../../services/Admin/Session/AdminNavigationServices.jsx";
-import {fetchAllAdminUsers, addAdminUser, editAdminUser, deleteAdminUser} from "../../services/Admin/AdminUsers/AdminUsersManagementServices.jsx";
+import {fetchAllAdminUsers, fetchAdminActionEvents, addAdminUser, editAdminUser, deleteAdminUser} from "../../services/Admin/AdminUsers/AdminUsersManagementServices.jsx";
 import {adminUserManagementPermissionLevel, msgTimeout, jackOfAllTradesPermissionLevel} from "../../services/General/GeneralUtils.jsx"
 import PropTypes from "prop-types";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
@@ -14,6 +15,8 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useLoading(false);
     const [adminUsers, setAdminUsers] = useState(null);
+    const [adminActionEvents, setAdminActionEvents] = useState(null);
+    const [isLoadingAdminActions, setIsLoadingAdminActions] = useState(false);
     const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
     const [showAddAdminUserModal, setShowAddAdminUserModal] = useState(false);
     const [showDeleteAdminUserModal, setShowDeleteAdminUserModal] = useState(false);
@@ -149,11 +152,22 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
         await fetchAllAdminUsers(navigate, setAdminUsers, setAvailablePermissionsDict);
     }
 
+    const reloadAdminActionsTableData = async () => {
+        setIsLoadingAdminActions(true);
+
+        try {
+            await fetchAdminActionEvents(navigate, setAdminActionEvents);
+        } finally {
+            setIsLoadingAdminActions(false);
+        }
+    }
+
     useEffect(() => {
         headToAdminLoginOnInvalidSession(navigate, adminUserManagementPermissionLevel, setIsLoading)
             .then(
                 () => {
                     reloadTableData()
+                    reloadAdminActionsTableData()
                 }
             )
     }, []);
@@ -390,54 +404,117 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
         setRowIndexToDelete(null);
     }
 
+    const AdminUsers = () => (
+        <div className="admin-page-tab-content">
+            <Table tableData={adminUsers}
+                   scrollable={true}
+                   compact={true}
+                   allowHideColumns={true}
+                   allowSticky={true}
+                   forceEnglishTable={true}
+                   defaultHiddenColumns={
+                        [
+                            'Permissions In Numbers'
+                        ]
+                   }
+                   sortConfigParam={{column: 0, direction: 'descending'}}
+                   filterableColumns={
+                       [
+                           'Permissions'
+                       ]
+                   }
+                   headerModuleElements={[
+                       (
+                           <button key={3} onClick={() => {
+                               setShowAddAdminUserModal(true);
+                           }}>
+                               Add User
+                           </button>
+                       ),
+                       (
+                           <button key={4} onClick={reloadTableData} disabled={isLoading}>
+                               {isLoading ? 'Loading...' : 'Reload Table Data'}
+                           </button>
+                       )
+                   ]}
+                   footerModuleElements={[]}
+                   onDeleteEntry={(rowIndex) => {
+                       setRowIndexToDelete(rowIndex);
+                       setShowDeleteAdminUserModal(true);
+                   }}
+                   allowDeleteEntryOption={true}
+                   columnsToWrap={[]}
+                   allowEditEntryOption={true}
+                   onEditEntryOption={(rowIndex) => {
+                       handleEditAdminUserModalInitialization(rowIndex);
+                   }}
+                   isLoading={isLoading}
+            />
+        </div>
+    );
+
+    const AdminActions = () => (
+        <div className="admin-page-tab-content">
+            <Table tableData={adminActionEvents}
+                   scrollable={true}
+                   compact={true}
+                   allowHideColumns={true}
+                   allowSticky={true}
+                   forceEnglishTable={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search admin actions'}
+                   defaultHiddenColumns={
+                       [
+                           'Username'
+                       ]
+                   }
+                   filterableColumns={
+                       [
+                           'User ID',
+                           'Username',
+                           'Name',
+                           'Date & Time'
+                       ]
+                   }
+                   dataTypes={
+                       {
+                           "date": ["Date & Time"],
+                           "number": ["User ID"]
+                       }
+                   }
+                   headerModuleElements={[
+                       (
+                           <button key={1} onClick={reloadAdminActionsTableData} disabled={isLoadingAdminActions}>
+                               {isLoadingAdminActions ? 'Loading...' : 'Reload Table Data'}
+                           </button>
+                       )
+                   ]}
+                   isLoading={isLoadingAdminActions}
+            />
+        </div>
+    );
+
+    const tabData = [
+        {
+            id: 0,
+            label: 'Admin Users',
+            component: AdminUsers
+        },
+        {
+            id: 1,
+            label: 'Admin Actions',
+            component: AdminActions
+        }
+    ];
+
     return (
         <>
 
             <div className={"admin-users-management-page"}>
 
-                <Table tableData={adminUsers}
-                       scrollable={true}
-                       compact={true}
-                       allowHideColumns={true}
-                       allowSticky={true}
-                       forceEnglishTable={true}
-                       defaultHiddenColumns={
-                            [
-                                'Permissions In Numbers'
-                            ]
-                       }
-                       sortConfigParam={{column: 0, direction: 'descending'}}
-                       filterableColumns={
-                           [
-                               'Permissions'
-                           ]
-                       }
-                       headerModuleElements={[
-                           (
-                               <button key={3} onClick={() => {
-                                   setShowAddAdminUserModal(true);
-                               }}>
-                                   Add User
-                               </button>
-                           ),
-                           (
-                               <button key={4} onClick={reloadTableData} disabled={isLoading}>
-                                   {isLoading ? 'Loading...' : 'Reload Table Data'}
-                               </button>
-                           )
-                       ]}
-                       footerModuleElements={[]}
-                       onDeleteEntry={(rowIndex) => {
-                           setRowIndexToDelete(rowIndex);
-                           setShowDeleteAdminUserModal(true);
-                       }}
-                       allowDeleteEntryOption={true}
-                       columnsToWrap={[]}
-                       allowEditEntryOption={true}
-                       onEditEntryOption={(rowIndex) => {
-                           handleEditAdminUserModalInitialization(rowIndex);
-                       }}
-                       isLoading={isLoading}
+                <TabsPage tabData={tabData}
+                          initialTab={0}
+                          title={"Admin Users Management"}
                 />
 
             </div>

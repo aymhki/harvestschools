@@ -64,6 +64,7 @@ try {
 
     alumni_delete_account_files($alumniRow['storage_folder']);
 
+    admin_log_action($conn, 'Deleted the alumni account "' . (string)$alumniRow['username'] . '" (#' . $alumniId . '), its posts and its files.');
     echo json_encode([
         "success" => true,
         "message" => "The alumni account '" . $alumniRow['username'] . "', its posts, and its uploaded files were deleted.",

@@ -140,6 +140,7 @@ try {
             . ($note === '' ? '' : "\r\n\r\nNote from the board: " . $note),
     ]);
 
+    admin_log_action($conn, 'Recorded a "' . $decision . '" decision on the salary advance delay request #' . $requestId . '.');
     echo json_encode([
         "success" => true,
         "message" => $decision === 'approved' ? ($outcome ?: "Request approved.") : "Request rejected.",

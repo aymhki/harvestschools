@@ -1324,3 +1324,31 @@ td button {
 .table-module.review-mode .table-module-table tr.admin-diff-changed td {
     background-color: rgba(201, 67, 73, 0.08);
 }
+
+.table-module-table p span:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+.table-module-table p span:lang(en) {
+    font-family: var(--english-normal-font);
+}
+
+.table-module-table h2 span:lang(ar),
+.table-module-table h3 span:lang(ar) {
+    font-family: var(--arabic-title-font);
+}
+
+.table-module-table h2 span:lang(en),
+.table-module-table h3 span:lang(en) {
+    font-family: var(--english-title-font);
+}
+
+.table-module-table span:lang(ar) {
+    direction: rtl;
+    unicode-bidi: isolate;
+}
+
+.table-module-table span:lang(en) {
+    direction: ltr;
+    unicode-bidi: isolate;
+}

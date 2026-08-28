@@ -32,7 +32,7 @@ try {
     }
 
     $stmt = $conn->prepare(
-        "SELECT c.calendar_key
+        "SELECT c.calendar_key, c.academic_year, e.title_en, e.title_ar, e.start_date, e.end_date
          FROM academic_calendar_events e
          JOIN academic_calendars c ON c.id = e.calendar_id
          WHERE e.id = ?"
@@ -72,6 +72,10 @@ try {
 
     calendar_resequence_events($conn, calendar_id_for_event($conn, $eventId));
 
+    admin_log_action($conn, 'Edited calendar event #' . $eventId . ' in the ' . (string)$owner['academic_year'] . ' "' . (string)$owner['calendar_key'] . '" academic calendar: ' . admin_changes_summary(
+        ['Title (EN)' => $owner['title_en'], 'Title (AR)' => $owner['title_ar'], 'Start date' => $owner['start_date'], 'End date' => $owner['end_date']],
+        ['Title (EN)' => $event['title_en'], 'Title (AR)' => $event['title_ar'], 'Start date' => $event['start_date'], 'End date' => $event['end_date']]
+    ) . '.');
     echo json_encode([
         "success" => true,
         "message" => "Event updated.",

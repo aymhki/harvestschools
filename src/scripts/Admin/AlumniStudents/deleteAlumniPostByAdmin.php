@@ -78,6 +78,7 @@ try {
         alumni_send_email($postRow['author_email'], 'Your alumni post was removed', $body);
     }
 
+    admin_log_action($conn, 'Deleted the alumni post #' . $postId . ' ("' . (string)$postRow['title'] . '") by ' . (string)$postRow['author_name'] . '.');
     echo json_encode([
         "success" => true,
         "message" => "The post was deleted" . ($notifyAuthor ? " and the alumni student was notified by email." : "."),

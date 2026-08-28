@@ -50,6 +50,7 @@ try {
     $stmt->execute();
     $stmt->close();
 
+    admin_log_action($conn, 'Deleted photo #' . $photoId . ' ("' . (string)$photo['file_name'] . '") from the gallery collage folder "' . (string)$photo['folder_name'] . '".');
     echo json_encode(["success" => true, "message" => "Photo deleted.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

@@ -40,6 +40,12 @@ try {
 
     $book = $validation["book"];
 
+    $stmt = $conn->prepare("SELECT category_key, title_en, title_ar, series_en, series_ar, is_public FROM library_books WHERE id = ?");
+    $stmt->bind_param("i", $bookId);
+    $stmt->execute();
+    $bookBefore = $stmt->get_result()->fetch_assoc() ?: [];
+    $stmt->close();
+
     $stmt = $conn->prepare(
         "UPDATE library_books SET category_key = ?, title_en = ?, title_ar = ?, series_en = ?, series_ar = ?, is_public = ?
          WHERE id = ?"
@@ -50,6 +56,10 @@ try {
 
     library_resequence($conn, $book["category_key"]);
 
+    admin_log_action($conn, 'Edited library book #' . $bookId . ' ("' . $book['title_en'] . '"): ' . admin_changes_summary(
+        ['Category' => $bookBefore['category_key'] ?? null, 'Title (EN)' => $bookBefore['title_en'] ?? null, 'Title (AR)' => $bookBefore['title_ar'] ?? null, 'Series (EN)' => $bookBefore['series_en'] ?? null, 'Series (AR)' => $bookBefore['series_ar'] ?? null, 'Shown on the website' => isset($bookBefore['is_public']) ? (int)$bookBefore['is_public'] === 1 : null],
+        ['Category' => $book['category_key'], 'Title (EN)' => $book['title_en'], 'Title (AR)' => $book['title_ar'], 'Series (EN)' => $book['series_en'], 'Series (AR)' => $book['series_ar'], 'Shown on the website' => (int)$book['is_public'] === 1]
+    ) . '.');
     echo json_encode(["success" => true, "message" => "Book updated.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

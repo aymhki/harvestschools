@@ -34,6 +34,7 @@ try {
         exit;
     }
 
+    admin_log_action($conn, 'Added a library book to the "' . (string)($data['category_key'] ?? '') . '" category — Title (EN): "' . (string)($data['title_en'] ?? '') . '"; Title (AR): "' . (string)($data['title_ar'] ?? '') . '"; Series (EN): ' . admin_action_value($data['series_en'] ?? '') . '; Series (AR): ' . admin_action_value($data['series_ar'] ?? '') . '; Shown on the website: ' . (empty($data['is_public']) ? 'No' : 'Yes') . '.');
     echo json_encode(["success" => true, "message" => "Book added.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

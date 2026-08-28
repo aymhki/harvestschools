@@ -13,6 +13,52 @@ $password = $dbConfig['db_password'];
 $dbname = $dbConfig['db_name'];
 $dbEncryptionKeyPhrase = $dbConfig['encryption_key_phrase'];
 
+function info_system_snapshot(mysqli $conn, $sql, $keyColumn, $bindValue = null) {
+    $rows = [];
+
+    if ($bindValue === null) {
+        $result = $conn->query($sql);
+    } else {
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $bindValue);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    }
+
+    while ($result && $row = $result->fetch_assoc()) {
+        $rows[(string)$row[$keyColumn]] = $row;
+    }
+
+    if (isset($stmt)) {
+        $stmt->close();
+    }
+
+    return $rows;
+}
+
+function info_system_row_changes($noun, $key, $title, $beforeRow, array $fields) {
+    $rowLabel = $noun . ' "' . $key . '"' . (trim((string)$title) === '' ? '' : ' (' . trim((string)$title) . ')');
+
+    if ($beforeRow === null) {
+        return [$rowLabel . ' added'];
+    }
+
+    $changes = [];
+
+    foreach ($fields as $label => $pair) {
+        $oldText = admin_action_value($beforeRow[$pair[0]] ?? null);
+        $newText = admin_action_value($pair[1]);
+
+        if ($oldText === $newText) {
+            continue;
+        }
+
+        $changes[] = $label . ' from "' . $oldText . '" to "' . $newText . '"';
+    }
+
+    return $changes === [] ? [] : [$rowLabel . ': ' . implode('; ', $changes)];
+}
+
 try {
     $input = file_get_contents('php://input');
     $postData = json_decode($input, true);
@@ -48,14 +94,45 @@ try {
         $adminLookup->close();
     }
 
+    $infoChanges = [];
+
     $conn->begin_transaction();
 
     if (!$updateStaticOnly && isset($postData['settings'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_global_settings (setting_key, setting_value, is_encrypted, description, sort_order) VALUES (?, IF(?, HEX(AES_ENCRYPT(?, ?)), ?), ?, ?, ?) ON DUPLICATE KEY UPDATE setting_value = IF(VALUES(is_encrypted), HEX(AES_ENCRYPT(?, ?)), ?), is_encrypted = VALUES(is_encrypted), description=VALUES(description), sort_order=VALUES(sort_order)");
 
+        $settingsBefore = info_system_snapshot(
+            $conn,
+            "SELECT setting_key, IF(is_encrypted, CAST(AES_DECRYPT(UNHEX(setting_value), ?) AS CHAR), setting_value) AS setting_value, IF(is_encrypted, 'Yes', 'No') AS is_encrypted, description, sort_order FROM info_system_global_settings",
+            'setting_key',
+            $dbEncryptionKeyPhrase
+        );
+
         foreach ($postData['settings'] as $s) {
             $val = in_array($s['val'], ['Yes', 'No']) ? ($s['val'] === 'Yes' ? '1' : '0') : $s['val'];
             $isEnc = $s['is_encrypted'] === 'Yes' ? 1 : 0;
+
+            $settingBeforeRow = $settingsBefore[$s['setting_key']] ?? null;
+            $settingIsSecret = $isEnc === 1 || ($settingBeforeRow !== null && $settingBeforeRow['is_encrypted'] === 'Yes');
+            $settingFields = [
+                'Encrypted' => ['is_encrypted', $isEnc === 1 ? 'Yes' : 'No'],
+                'Description' => ['description', $s['description']],
+                'Sort order' => ['sort_order', $s['sort_order']],
+            ];
+
+            if (!$settingIsSecret) {
+                $settingFields = ['Value' => ['setting_value', $val]] + $settingFields;
+            }
+
+            $settingChanges = info_system_row_changes('Setting', $s['setting_key'], $s['description'], $settingBeforeRow, $settingFields);
+
+            if ($settingIsSecret && $settingBeforeRow !== null && (string)$settingBeforeRow['setting_value'] !== (string)$val) {
+                $settingChanges = $settingChanges === []
+                    ? ['Setting "' . $s['setting_key'] . '": encrypted value changed (not shown)']
+                    : [$settingChanges[0] . '; encrypted value changed (not shown)'];
+            }
+
+            $infoChanges = array_merge($infoChanges, $settingChanges);
 
             $stmt->bind_param("sisssisisss",
                 $s['setting_key'],
@@ -79,9 +156,24 @@ try {
     if (!$updateStaticOnly && isset($postData['departments'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_departments (dept_key, name_en, name_ar, contact_number, is_academic, available_to_chat_with, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name_en=VALUES(name_en), name_ar=VALUES(name_ar), contact_number=VALUES(contact_number), is_academic=VALUES(is_academic), available_to_chat_with=VALUES(available_to_chat_with), sort_order=VALUES(sort_order)");
 
+        $departmentsBefore = info_system_snapshot(
+            $conn,
+            "SELECT dept_key, name_en, name_ar, contact_number, IF(is_academic, 'Yes', 'No') AS is_academic, IF(available_to_chat_with, 'Yes', 'No') AS available_to_chat_with, sort_order FROM info_system_departments",
+            'dept_key'
+        );
+
         foreach ($postData['departments'] as $d) {
             $isAc = $d['is_academic'] === 'Yes' ? 1 : 0;
             $isChattable = $d['available_to_chat_with'] === 'Yes' ? 1 : 0;
+
+            $infoChanges = array_merge($infoChanges, info_system_row_changes('Department', $d['dept_key'], $d['name_en'], $departmentsBefore[$d['dept_key']] ?? null, [
+                'Name (EN)' => ['name_en', $d['name_en']],
+                'Name (AR)' => ['name_ar', $d['name_ar']],
+                'Contact number' => ['contact_number', $d['contact_number']],
+                'Academic' => ['is_academic', $isAc === 1 ? 'Yes' : 'No'],
+                'Available to chat with' => ['available_to_chat_with', $isChattable === 1 ? 'Yes' : 'No'],
+                'Sort order' => ['sort_order', $d['sort_order']],
+            ]));
             $stmt->bind_param("ssssiii", $d['dept_key'], $d['name_en'], $d['name_ar'], $d['contact_number'], $isAc, $isChattable, $d['sort_order']);
             $stmt->execute();
         }
@@ -96,8 +188,28 @@ try {
 
         $sectionTitles = [];
 
+        $stagesBefore = info_system_snapshot(
+            $conn,
+            "SELECT stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, IF(is_offered, 'Yes', 'No') AS is_offered, age_en, age_ar, tuition_fees, sort_order FROM info_system_stages",
+            'stage_key'
+        );
+
         foreach ($postData['stages'] as $st) {
             $isOff = $st['is_offered'] === 'Yes' ? 1 : 0;
+
+            $infoChanges = array_merge($infoChanges, info_system_row_changes('Stage', $st['stage_key'], $st['name_en'], $stagesBefore[$st['stage_key']] ?? null, [
+                'Department' => ['dept_key', $st['dept_key']],
+                'Section' => ['section_key', $st['section_key']],
+                'Section title (EN)' => ['section_title_en', $st['section_title_en']],
+                'Section title (AR)' => ['section_title_ar', $st['section_title_ar']],
+                'Name (EN)' => ['name_en', $st['name_en']],
+                'Name (AR)' => ['name_ar', $st['name_ar']],
+                'Offered' => ['is_offered', $isOff === 1 ? 'Yes' : 'No'],
+                'Age (EN)' => ['age_en', $st['age_en']],
+                'Age (AR)' => ['age_ar', $st['age_ar']],
+                'Tuition fees' => ['tuition_fees', $st['tuition_fees']],
+                'Sort order' => ['sort_order', $st['sort_order']],
+            ]));
 
             $oldKeyStmt->bind_param("s", $st['stage_key']);
             $oldKeyStmt->execute();
@@ -151,7 +263,18 @@ try {
     if (!$updateStaticOnly && isset($postData['profile'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_school_profile (profile_key, category, value_en, value_ar, note_en, note_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE category=VALUES(category), value_en=VALUES(value_en), value_ar=VALUES(value_ar), note_en=VALUES(note_en), note_ar=VALUES(note_ar), sort_order=VALUES(sort_order)");
 
+        $profileBefore = info_system_snapshot($conn, "SELECT profile_key, category, value_en, value_ar, note_en, note_ar, sort_order FROM info_system_school_profile", 'profile_key');
+
         foreach ($postData['profile'] as $p) {
+            $infoChanges = array_merge($infoChanges, info_system_row_changes('School profile item', $p['profile_key'], $p['category'], $profileBefore[$p['profile_key']] ?? null, [
+                'Category' => ['category', $p['category']],
+                'Value (EN)' => ['value_en', $p['value_en']],
+                'Value (AR)' => ['value_ar', $p['value_ar']],
+                'Note (EN)' => ['note_en', $p['note_en']],
+                'Note (AR)' => ['note_ar', $p['note_ar']],
+                'Sort order' => ['sort_order', $p['sort_order']],
+            ]));
+
             $stmt->bind_param("ssssssi", $p['profile_key'], $p['category'], $p['value_en'], $p['value_ar'], $p['note_en'], $p['note_ar'], $p['sort_order']);
             $stmt->execute();
         }
@@ -162,7 +285,18 @@ try {
     if (!$updateStaticOnly && isset($postData['policies'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_policy_items (item_key, group_key, title_en, title_ar, detail_en, detail_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE group_key=VALUES(group_key), title_en=VALUES(title_en), title_ar=VALUES(title_ar), detail_en=VALUES(detail_en), detail_ar=VALUES(detail_ar), sort_order=VALUES(sort_order)");
 
+        $policiesBefore = info_system_snapshot($conn, "SELECT item_key, group_key, title_en, title_ar, detail_en, detail_ar, sort_order FROM info_system_policy_items", 'item_key');
+
         foreach ($postData['policies'] as $pi) {
+            $infoChanges = array_merge($infoChanges, info_system_row_changes('Policy item', $pi['item_key'], $pi['title_en'], $policiesBefore[$pi['item_key']] ?? null, [
+                'Group' => ['group_key', $pi['group_key']],
+                'Title (EN)' => ['title_en', $pi['title_en']],
+                'Title (AR)' => ['title_ar', $pi['title_ar']],
+                'Detail (EN)' => ['detail_en', $pi['detail_en']],
+                'Detail (AR)' => ['detail_ar', $pi['detail_ar']],
+                'Sort order' => ['sort_order', $pi['sort_order']],
+            ]));
+
             $stmt->bind_param("ssssssi", $pi['item_key'], $pi['group_key'], $pi['title_en'], $pi['title_ar'], $pi['detail_en'], $pi['detail_ar'], $pi['sort_order']);
             $stmt->execute();
         }
@@ -173,7 +307,18 @@ try {
     if (!$updateStaticOnly && isset($postData['staticContent'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_static_content (content_key, group_key, title_en, title_ar, body_en, body_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE group_key=VALUES(group_key), title_en=VALUES(title_en), title_ar=VALUES(title_ar), body_en=VALUES(body_en), body_ar=VALUES(body_ar), sort_order=VALUES(sort_order)");
 
+        $staticBefore = info_system_snapshot($conn, "SELECT content_key, group_key, title_en, title_ar, body_en, body_ar, sort_order FROM info_system_static_content", 'content_key');
+
         foreach ($postData['staticContent'] as $sc) {
+            $infoChanges = array_merge($infoChanges, info_system_row_changes('Static content item', $sc['content_key'], $sc['title_en'], $staticBefore[$sc['content_key']] ?? null, [
+                'Group' => ['group_key', $sc['group_key']],
+                'Title (EN)' => ['title_en', $sc['title_en']],
+                'Title (AR)' => ['title_ar', $sc['title_ar']],
+                'Body (EN)' => ['body_en', $sc['body_en']],
+                'Body (AR)' => ['body_ar', $sc['body_ar']],
+                'Sort order' => ['sort_order', $sc['sort_order']],
+            ]));
+
             $stmt->bind_param("ssssssi", $sc['content_key'], $sc['group_key'], $sc['title_en'], $sc['title_ar'], $sc['body_en'], $sc['body_ar'], $sc['sort_order']);
             $stmt->execute();
         }
@@ -183,6 +328,8 @@ try {
 
     if (!$updateStaticOnly && isset($postData['formEmails'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_form_emails (form_key, label, recipient_email, is_active, sort_order, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, NOW(), ?) ON DUPLICATE KEY UPDATE label=VALUES(label), recipient_email=VALUES(recipient_email), is_active=VALUES(is_active), sort_order=VALUES(sort_order), updated_at=NOW(), updated_by=VALUES(updated_by)");
+
+        $formEmailsBefore = info_system_snapshot($conn, "SELECT form_key, label, recipient_email, IF(is_active, 'Yes', 'No') AS is_active, sort_order FROM info_system_form_emails", 'form_key');
 
         foreach ($postData['formEmails'] as $fe) {
             $recipient = trim((string)$fe['recipient_email']);
@@ -195,6 +342,13 @@ try {
 
             $isActive = (isset($fe['is_active']) && ($fe['is_active'] === 'Yes' || $fe['is_active'] === 1 || $fe['is_active'] === '1')) ? 1 : 0;
             $sortOrder = isset($fe['sort_order']) ? (int)$fe['sort_order'] : 0;
+
+            $infoChanges = array_merge($infoChanges, info_system_row_changes('Form email', $fe['form_key'], $fe['label'], $formEmailsBefore[$fe['form_key']] ?? null, [
+                'Label' => ['label', $fe['label']],
+                'Recipient' => ['recipient_email', $recipient],
+                'Active' => ['is_active', $isActive === 1 ? 'Yes' : 'No'],
+                'Sort order' => ['sort_order', $sortOrder],
+            ]));
 
             $stmt->bind_param("sssiii", $fe['form_key'], $fe['label'], $recipient, $isActive, $sortOrder, $adminUserId);
             $stmt->execute();
@@ -774,6 +928,7 @@ PHP_CODE;
         throw new Exception("Failed to write to $configPath", 500);
     }
 
+    admin_log_action($conn, 'Saved the info system data and regenerated ' . basename($configPath) . '. ' . ($infoChanges === [] ? 'No values changed.' : implode(' | ', $infoChanges) . '.'));
     echo json_encode([
         "success" => true,
         "message" => "Database updated and botConfig.php generated successfully.",

@@ -80,6 +80,7 @@ try {
         exit;
     }
 
+    admin_log_action($conn, 'Imported ' . $result['ok'] . ' ' . ($result['ok'] === 1 ? $domain['label'] : $domain['plural']) . ' from the CSV file "' . (string)($_FILES['file']['name'] ?? 'uploaded file') . '"' . ($variant === null ? '' : ' using the "' . (string)$variant['key'] . '" column layout') . '.');
     echo json_encode([
         "success"  => true,
         "message"  => $result['ok'] . ' ' . ($result['ok'] === 1 ? $domain['label'] : $domain['plural']) . ' imported.',

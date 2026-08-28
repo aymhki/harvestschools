@@ -55,6 +55,7 @@ try {
         }
     }
 
+    $metaBefore = event_meta_details($conn);
     $ceremonyDate = $formData[CEREMONY_DATE_LABEL] ?? '';
     $hour = $formData[CEREMONY_HOUR_LABEL] ?? '';
     $minute = $formData[CEREMONY_MINUTE_LABEL] ?? '';
@@ -162,6 +163,10 @@ try {
 
     $stmt->close();
 
+    admin_log_action($conn, 'Edited the event ceremony details: ' . admin_changes_summary(
+        ['Date' => $metaBefore['ceremonyDate'] ?? null, 'Time' => $metaBefore['ceremonyTime'] ?? null, 'Time zone' => $metaBefore['timeZone'] ?? null, 'Location' => $metaBefore['locationName'] ?? null, 'Address' => $metaBefore['locationAddress'] ?? null],
+        ['Date' => $ceremonyDate, 'Time' => $ceremonyTime, 'Time zone' => $timeZone, 'Location' => $locationName, 'Address' => $locationAddress]
+    ) . '.');
     echo json_encode([
         'success' => true,
         'message' => 'Ceremony details updated',

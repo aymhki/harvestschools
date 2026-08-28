@@ -44,10 +44,30 @@ try {
         $stmt->bind_param("s", $categoryKey);
     }
 
+    if ($scope === 'all') {
+        $titlesResult = $conn->query("SELECT title_en FROM library_books");
+    } else {
+        $titlesStmt = $conn->prepare("SELECT title_en FROM library_books WHERE category_key = ?");
+        $titlesStmt->bind_param("s", $categoryKey);
+        $titlesStmt->execute();
+        $titlesResult = $titlesStmt->get_result();
+    }
+
+    $deletedTitles = [];
+
+    while ($titlesResult && $row = $titlesResult->fetch_assoc()) {
+        $deletedTitles[] = (string)$row['title_en'];
+    }
+
+    if (isset($titlesStmt)) {
+        $titlesStmt->close();
+    }
+
     $stmt->execute();
     $deleted = $stmt->affected_rows;
     $stmt->close();
 
+    admin_log_action($conn, ($scope === 'all' ? 'Deleted all ' . $deleted . ' library books' : 'Deleted ' . $deleted . ' library books from the "' . $categoryKey . '" category') . ' — ' . admin_list_summary($deletedTitles) . '.');
     echo json_encode([
         "success" => true,
         "message" => $deleted . ' book' . ($deleted === 1 ? '' : 's') . ' deleted.',

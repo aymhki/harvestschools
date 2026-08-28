@@ -58,6 +58,13 @@ try {
         );
     }
 
+    $collageChanges = admin_changes_summary(
+        ['Title (EN)' => $collage['title_en'], 'Title (AR)' => $collage['title_ar'], 'Layout' => $collage['layout'], 'Shown on the website' => (int)$collage['is_public'] === 1],
+        ['Title (EN)' => $titleEn, 'Title (AR)' => $titleAr, 'Layout' => $layout, 'Shown on the website' => $isPublic === 1]
+    );
+    $collageMoved = $placement !== '' && $placement !== GALLERY_PLACEMENT_KEEP;
+
+    admin_log_action($conn, 'Edited the gallery collage #' . $collageId . ' ("' . $titleEn . '"): ' . $collageChanges . ($collageMoved ? '; repositioned it (' . $placement . ')' : '') . '.');
     echo json_encode(["success" => true, "message" => "Collage updated.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

@@ -63,6 +63,42 @@ const PhotoCollage = ({ type, photos, title, collagePreview }) => {
         setIsTransitioning(false);
     }
 
+    useEffect(() => {
+        if (!isOpen || photos.length < 2) {
+            return undefined;
+        }
+
+        const isTypingTarget = (target) => (
+            target instanceof HTMLElement
+            && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+        );
+
+        const handleKeyDown = (event) => {
+            if (event.repeat || isTypingTarget(event.target)) {
+                return;
+            }
+
+            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+                return;
+            }
+
+            event.preventDefault();
+
+            const isRightToLeft = document.documentElement.dir === 'rtl';
+            const goesForward = isRightToLeft ? event.key === 'ArrowLeft' : event.key === 'ArrowRight';
+
+            if (goesForward) {
+                nextPhoto();
+            } else {
+                prevPhoto();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, photos.length, currentIndex]);
+
     const thumbnailSeconds = (item) => (
         Number.isFinite(item.thumbnailAt) ? item.thumbnailAt : DEFAULT_THUMBNAIL_SECONDS
     );

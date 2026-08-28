@@ -104,6 +104,7 @@ try {
             . ($note === '' ? '' : "\r\n\r\nNote from the board: " . $note),
     ]);
 
+    admin_log_action($conn, 'Recorded a "' . $decision . '" decision on the borrowing system change request #' . $requestId . '.');
     echo json_encode([
         "success" => true,
         "message" => $decision === 'approved' ? "Change approved and applied." : "Change rejected.",

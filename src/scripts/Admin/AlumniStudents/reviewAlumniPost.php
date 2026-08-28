@@ -148,6 +148,7 @@ try {
 
     alumni_send_email($postRow['author_email'], $subject, $body);
 
+    admin_log_action($conn, 'Set the alumni ' . $reviewedThing . ' #' . $postId . ' ("' . (string)$postRow['title'] . '") to ' . $decision . '.');
     echo json_encode([
         "success" => true,
         "message" => "The " . $reviewedThing . " was " . $decision . " and the alumni student was notified by email.",

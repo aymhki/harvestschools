@@ -38,7 +38,11 @@ try {
     $photos = $stmt->get_result();
     $stmt->close();
 
+    $deletedPhotoNames = [];
+
     while ($row = $photos->fetch_assoc()) {
+        $deletedPhotoNames[] = (string)$row['file_name'];
+
         if ($directory !== null) {
             gallery_delete_file($directory . $row['file_name']);
         }
@@ -53,6 +57,7 @@ try {
         @rmdir($directory);
     }
 
+    admin_log_action($conn, 'Deleted the gallery collage #' . $collageId . ' ("' . (string)$collage['title_en'] . '" / "' . (string)$collage['title_ar'] . '", layout ' . (string)$collage['layout'] . ') and its ' . count($deletedPhotoNames) . ' photo' . (count($deletedPhotoNames) === 1 ? '' : 's') . ' (' . admin_list_summary($deletedPhotoNames) . ').');
     echo json_encode(["success" => true, "message" => "Collage deleted.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

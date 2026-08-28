@@ -27,6 +27,7 @@ import {
     galleryFileUrl
 } from "../../services/Admin/Gallery/AdminGalleryServices.jsx";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
+import { rememberedTab } from '../../services/General/TabsMemoryService.jsx';
 
 const photoAltColIndex = 1;
 const photoIdColIndex = 4;
@@ -146,6 +147,7 @@ const shownValueOf = (choice) => choice === SHOWN_CHOICES[0];
 
 const PHOTOS_TAB = 0;
 const VIDEOS_TAB = 1;
+const GALLERY_TABS_TITLE = 'Gallery Management';
 
 function GalleryManagement() {
     const navigate = useNavigate();
@@ -178,7 +180,10 @@ function GalleryManagement() {
     const isUploadingPhotos = photoUpload !== null;
     const isUploadingAnything = isUploadingVideo || isUploadingPhotos;
 
-    const openTab = searchParams.get('tab') === 'videos' ? VIDEOS_TAB : PHOTOS_TAB;
+    const tabParam = searchParams.get('tab');
+    const openTab = tabParam
+        ? (tabParam === 'videos' ? VIDEOS_TAB : PHOTOS_TAB)
+        : (rememberedTab(GALLERY_TABS_TITLE) === VIDEOS_TAB ? VIDEOS_TAB : PHOTOS_TAB);
     const openCollageId = searchParams.get('collage') || '';
     const isTableView = openTab === PHOTOS_TAB && openCollageId !== '';
 
@@ -817,7 +822,7 @@ function GalleryManagement() {
                           initialTab={PHOTOS_TAB}
                           controlledTab={openTab}
                           onTabChange={handleTabChange}
-                          title={"Gallery Management"}/>
+                          title={GALLERY_TABS_TITLE}/>
             </div>
 
             <animated.div style={animateModal} className={"general-large-admin-action-modal"}>

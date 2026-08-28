@@ -28,6 +28,7 @@ import { makeLazyPages, findRoute } from '../routes/shared.js';
 import { useLoading, GlobalLoadingFallback, GlobalSpinner } from '../services/General/GlobalLoadingService.jsx';
 import { AppAssetsLoadingGate } from '../services/General/AppAssetsLoadingService.jsx';
 import { SCROLL_LOCK_CLASS } from '../services/General/ScrollLockService.jsx';
+import { useScrollToTopOnNavigation } from '../services/General/ScrollToTopService.jsx';
 
 const pages = makeLazyPages(
     import.meta.glob(['../pages/**/*.jsx', '!../pages/CorporateHome.jsx'])
@@ -38,6 +39,7 @@ const services = { serveAlumniFile, serveJobApplicationFile, serveGalleryFile };
 const SHARE_HOSTS = { admin: 'admin.harvestschools.com', client: 'harvestschools.com' };
 
 function MobileAppRouter() {
+    useScrollToTopOnNavigation();
     const location = useLocation();
     const navigate = useNavigate();
     const { i18n } = useTranslation();

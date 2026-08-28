@@ -330,6 +330,7 @@ const ENDPOINTS = {
     addAdminUser: '/scripts/Admin/AdminUsers/addAdminUser.php',
     editAdminUser: '/scripts/Admin/AdminUsers/editAdminUser.php',
     deleteAdminUser: '/scripts/Admin/AdminUsers/deleteAdminUser.php',
+    getAdminActionEvents: '/scripts/Admin/AdminUsers/getAdminActionEvents.php',
     getInfoSystem: '/scripts/Admin/InfoSystem/getInfoSystemData.php',
     updateInfoSystem: '/scripts/Admin/InfoSystem/updateInfoSystemData.php',
     getWebsiteAnalytics: '/scripts/Admin/Analytics/getWebsiteAnalytics.php',

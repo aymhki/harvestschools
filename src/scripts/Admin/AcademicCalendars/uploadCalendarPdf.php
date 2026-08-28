@@ -60,6 +60,7 @@ try {
     $stmt->execute();
     $stmt->close();
 
+    admin_log_action($conn, 'Uploaded a new PDF for the ' . $academicYear . ' "' . $calendarKey . '" academic calendar.');
     echo json_encode([
         "success" => true,
         "message" => "Calendar PDF updated.",

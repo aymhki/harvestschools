@@ -45,11 +45,13 @@ function TabsPage({ tabData, initialTab, barOnTopInMobile = true, stickyOnDeskto
         setActiveTab(tabData[nextIndex].id);
     };
 
+    const isKnownTab = tabData.some((tab) => tab.id === activeTab);
+
     useEffect(() => {
-        if (storageKey && !isControlled) {
+        if (storageKey && isKnownTab) {
             localStorage.setItem(storageKey, activeTab);
         }
-    }, [activeTab, storageKey, isControlled]);
+    }, [activeTab, storageKey, isKnownTab]);
 
 
     const mobilePosition = pinnedInMobile ? (barOnTopInMobile ? 'bar-position-top' : 'bar-position-bottom') : 'bar-position-inline';

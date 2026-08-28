@@ -138,6 +138,7 @@ try {
                 : ''),
     ]);
 
+    admin_log_action($conn, 'Submitted a delay request (#' . $requestId . ') on the salary advance application #' . $applicationId . '.');
     echo json_encode([
         "success"   => true,
         "message"   => $overCap === 1

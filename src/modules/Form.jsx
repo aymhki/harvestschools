@@ -150,6 +150,24 @@ const sanitiseCustomValue = (value) => String(value)
     .trim()
     .slice(0, CUSTOM_VALUE_MAX_LENGTH);
 
+const scrollElementIntoCentre = (element) => {
+    let scroller = element.parentElement;
+
+    while (scroller && scroller.scrollHeight <= scroller.clientHeight) {
+        scroller = scroller.parentElement;
+    }
+
+    if (!scroller) {
+        element.scrollIntoView({behavior: 'smooth', block: 'center'});
+        return;
+    }
+
+    const elementTop = element.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+    const target     = scroller.scrollTop + elementTop - (scroller.clientHeight / 2) + (element.offsetHeight / 2);
+
+    scroller.scrollTo({top: Math.max(0, target), behavior: 'smooth'});
+};
+
 const DEFAULT_MAX_FILE_BYTES = 2 * 1024 * 1024;
 
 const describeBytes = (bytes) => {
@@ -230,6 +248,8 @@ function Form({
     const animateDateModal = useSpring({ opacity: showSelectDateModal ? 1 : 0, transform: showSelectDateModal ? 'translateY(0)' : 'translateY(-100%)' });
     const [showPasswords, setShowPasswords] = useState(false);
     const generalFormErrorRef = useRef(null);
+    const uploadProgressRef = useRef(null);
+    const wasUploadingRef = useRef(false);
     const dynamicInstanceUidCounter = useRef(0);
     const dynamicInstanceSeeds = useRef({});
     const DYNAMIC_CACHE_MAX_PROBE = 25;
@@ -531,6 +551,17 @@ function Form({
     const hasFieldUploadProgress = fieldStateFromParent ? Object.values(fieldStateFromParent).some((state) => state && state.upload && state.upload.phase) : false;
 
     useLoadingWhile(submitting && !hasFieldUploadProgress);
+
+    useEffect(() => {
+        const wasUploading = wasUploadingRef.current;
+        wasUploadingRef.current = hasFieldUploadProgress;
+
+        if (wasUploading || !hasFieldUploadProgress || !uploadProgressRef.current) {
+            return;
+        }
+
+        scrollElementIntoCentre(uploadProgressRef.current);
+    }, [hasFieldUploadProgress]);
 
     const resolveSourceFieldId = (field) => {
         const dynamicSectionInfo = field.__dynamicSection;
@@ -1591,7 +1622,7 @@ function Form({
         const isFinishing = upload.phase === 'finishing';
 
         return (
-            <div className="file-form-field-upload">
+            <div className="file-form-field-upload" ref={uploadProgressRef}>
                 <div className="file-form-field-upload-bar" role="progressbar"
                      aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}
                      aria-label={`${getLabelText(field)} upload progress`}>
@@ -2951,22 +2982,7 @@ function Form({
             return;
         }
 
-        const message = generalFormErrorRef.current;
-        let scroller  = message.parentElement;
-
-        while (scroller && scroller.scrollHeight <= scroller.clientHeight) {
-            scroller = scroller.parentElement;
-        }
-
-        if (!scroller) {
-            message.scrollIntoView({behavior: 'smooth', block: 'center'});
-            return;
-        }
-
-        const messageTop = message.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
-        const target     = scroller.scrollTop + messageTop - (scroller.clientHeight / 2) + (message.offsetHeight / 2);
-
-        scroller.scrollTo({top: Math.max(0, target), behavior: 'smooth'});
+        scrollElementIntoCentre(generalFormErrorRef.current);
     }, [generalFormError]);
 
     useEffect(() => {

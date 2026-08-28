@@ -99,6 +99,7 @@ try {
     $requestId = $conn->insert_id;
     $stmt->close();
 
+    admin_log_action($conn, 'Submitted a change request (#' . $requestId . ') on ' . $targetType . ' ' . $targetKey . ' in the borrowing system.');
     echo json_encode([
         "success"   => true,
         "message"   => "Change submitted for review.",

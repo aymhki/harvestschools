@@ -20,6 +20,7 @@ import {
     updateBorrowingConfig
 } from "../../services/Admin/BorrowingSystem/AdminBorrowingSystemServices.jsx";
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
+import { rememberedTab } from '../../services/General/TabsMemoryService.jsx';
 
 const applicationIdColIndex = 13;
 const delayRequestIdColIndex = 11;
@@ -126,6 +127,8 @@ const firstOfNextMonth = () => {
 
     return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-01`;
 };
+
+const BORROWING_TABS_TITLE = 'Borrowing System';
 
 function BorrowingSystemManagement() {
     const navigate = useNavigate();
@@ -1747,7 +1750,16 @@ function BorrowingSystemManagement() {
         return tabs;
     }, [data, isLoading, scoreData, scoreError, selectedEmployeeLabel, employeePickerFields]);
 
-    const openTabIndex = Math.max(0, tabData.findIndex((tab) => tab.key === openTab));
+    const rememberedBorrowingTab = rememberedTab(BORROWING_TABS_TITLE);
+    const openTabIndex = openTab
+        ? Math.max(0, tabData.findIndex((tab) => tab.key === openTab))
+        : ((rememberedBorrowingTab !== null && tabData[rememberedBorrowingTab]) ? rememberedBorrowingTab : 0);
+
+    useEffect(() => {
+        if (tabData.length > 0 && openTab === '') {
+            setSearchParams({tab: tabData[openTabIndex].key}, {replace: true});
+        }
+    }, [tabData, openTab]);
 
     const handleTabChange = (tabIndex) => {
         const tab = tabData[tabIndex];
@@ -1883,7 +1895,7 @@ function BorrowingSystemManagement() {
                               stickyOnDesktop={false}
                               controlledTab={openTabIndex}
                               onTabChange={handleTabChange}
-                              title={"Borrowing System"}/>
+                              title={BORROWING_TABS_TITLE}/>
                 )}
 
             </div>

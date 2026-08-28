@@ -157,6 +157,7 @@ try {
 
     alumni_send_email($alumniEmail, $subject, $body);
 
+    admin_log_action($conn, 'Set the alumni profile update from "' . $alumniName . '" to ' . $decision . '.');
     echo json_encode([
         "success" => true,
         "message" => "The profile update was " . $decision . " and the alumni student was notified by email.",

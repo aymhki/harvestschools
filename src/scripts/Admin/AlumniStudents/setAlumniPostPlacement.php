@@ -41,7 +41,7 @@ try {
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT status FROM alumni_posts WHERE id = ?");
+    $stmt = $conn->prepare("SELECT status, title, show_on_home, show_on_alumni_page FROM alumni_posts WHERE id = ?");
     $stmt->bind_param("i", $postId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -64,6 +64,10 @@ try {
     $stmt->execute();
     $stmt->close();
 
+    admin_log_action($conn, 'Set the placement of the alumni post #' . $postId . ' ("' . (string)$postRow['title'] . '"): ' . admin_changes_summary(
+        ['On the home page' => (int)$postRow['show_on_home'] === 1, 'On the alumni students page' => (int)$postRow['show_on_alumni_page'] === 1],
+        ['On the home page' => $showOnHome === 1, 'On the alumni students page' => $showOnAlumniPage === 1]
+    ) . '.');
     echo json_encode([
         "success" => true,
         "message" => "The post placement was updated.",

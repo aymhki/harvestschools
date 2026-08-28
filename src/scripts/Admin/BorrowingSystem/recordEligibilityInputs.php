@@ -103,6 +103,7 @@ try {
             exit;
         }
 
+        admin_log_action($conn, 'Recorded ' . borrowing_join_words($recorded) . ' for employee ' . $employeeCode . '.');
         echo json_encode(["success" => true, "code" => 200,
                           "message" => ucfirst(borrowing_join_words($recorded)) . " recorded."]);
         exit;
@@ -165,6 +166,7 @@ try {
 
     $recorded[] = 'attendance for the ' . $contractYear . '/' . ($contractYear + 1) . ' contract year';
 
+    admin_log_action($conn, 'Recorded ' . borrowing_join_words($recorded) . ' for employee ' . $employeeCode . '.');
     echo json_encode([
         "success" => true,
         "message" => ucfirst(borrowing_join_words($recorded)) . " recorded.",

@@ -42,6 +42,7 @@ try {
 
     $employeeCode = $result['codes'][0] ?? null;
 
+    admin_log_action($conn, 'Added the employee ' . (string)($employeeCode ?? '') . ' to the staff directory — Name (EN): "' . (string)($data['name_en'] ?? '') . '"; Name (AR): "' . (string)($data['name_ar'] ?? '') . '"; Position (EN): ' . admin_action_value($data['position_en'] ?? '') . '; Departments: ' . admin_action_value($data['departments'] ?? '') . '; Classification: ' . admin_action_value($data['classification'] ?? '') . '; Hire date: ' . admin_action_value($data['hire_date'] ?? '') . '; Shown on the website: ' . (empty($data['is_public']) ? 'No' : 'Yes') . '.');
     echo json_encode([
         "success"      => true,
         "message"      => "Employee added successfully.",

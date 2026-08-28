@@ -74,6 +74,7 @@ try {
 
         gallery_set_video_status($conn, $videoId, 'ready', 100);
 
+        admin_log_action($conn, 'Uploaded the gallery video #' . $videoId . ' ("' . (string)$video['title_en'] . '").');
         echo json_encode([
             "success" => true,
             "message" => "Upload finished.",
@@ -143,6 +144,7 @@ try {
 
     gallery_set_video_status($conn, $videoId, 'processing', 0);
 
+    admin_log_action($conn, 'Uploaded the gallery video #' . $videoId . ' ("' . (string)$video['title_en'] . '") and started converting it.');
     echo json_encode([
         "success" => true,
         "message" => "Converting the video.",

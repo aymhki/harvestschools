@@ -253,7 +253,7 @@ function gallery_collage_by_id($conn, $collageId) {
 
 function gallery_video_by_id($conn, $videoId) {
     $stmt = $conn->prepare(
-        "SELECT id, title_en, title_ar, file_name, thumbnail_at, duration_seconds, media_date, is_public,
+        "SELECT id, title_en, title_ar, layout, file_name, thumbnail_at, duration_seconds, media_date, is_public,
                 status, progress_percent, status_message
          FROM gallery_videos WHERE id = ?"
     );
