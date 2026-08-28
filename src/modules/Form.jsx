@@ -2248,9 +2248,9 @@ function Form({
 
     const loadHeicConverter = async () => {
         try {
-            const converterModule = await import('heic2any');
+            const converterModule = await import('heic-to/csp');
 
-            return [converterModule, converterModule.default, converterModule.default && converterModule.default.default, window.heic2any]
+            return [converterModule.heicTo, converterModule.default && converterModule.default.heicTo]
                 .find((candidate) => typeof candidate === 'function') || null;
         } catch (loadError) {
             return null;
@@ -2283,7 +2283,7 @@ function Form({
             }
 
             try {
-                const output = await converter({blob: file, toType: 'image/jpeg', quality: 0.92});
+                const output = await converter({blob: file, type: 'image/jpeg', quality: 0.92});
                 const jpeg = Array.isArray(output) ? output[0] : output;
 
                 converted.push(new File([jpeg], `${file.name.replace(/\.[^.]+$/, '')}.jpg`, {type: 'image/jpeg'}));

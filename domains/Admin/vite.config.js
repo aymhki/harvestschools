@@ -16,8 +16,8 @@ export default defineConfig({
             input: 'index.html',
             output: {
                 manualChunks(id) {
-                    if (id.includes('node_modules/heic2any')) {
-                        return 'heic2any'
+                    if (id.includes('node_modules/heic-to')) {
+                        return 'heic-to'
                     }
 
                     if (id.includes('node_modules')) {
