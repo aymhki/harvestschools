@@ -85,7 +85,7 @@
 
 .video-preview-media {
     display: block;
-    object-fit: contain;
+    object-fit: cover;
     background-color: rgb(0, 0, 0);
 }
 
