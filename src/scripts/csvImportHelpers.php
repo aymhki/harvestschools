@@ -62,6 +62,41 @@ function csv_import_rows($rawCsv) {
 }
 
 
+function csv_import_header_labels($rawCsv) {
+    $rows = csv_import_rows($rawCsv);
+
+    if ($rows === null || $rows === []) {
+        return [];
+    }
+
+    return array_map('csv_import_normalise_header', $rows[0]);
+}
+
+
+function csv_import_pick_variant($rawCsv, array $variants) {
+    $given = csv_import_header_labels($rawCsv);
+    $best = $variants[0];
+    $bestScore = -1;
+
+    foreach ($variants as $variant) {
+        $score = 0;
+
+        foreach ($variant['columns'] as $spec) {
+            if (in_array(csv_import_normalise_header($spec['label']), $given, true)) {
+                $score += empty($spec['required']) ? 1 : 2;
+            }
+        }
+
+        if ($score > $bestScore) {
+            $best = $variant;
+            $bestScore = $score;
+        }
+    }
+
+    return $best;
+}
+
+
 function csv_import_value_problem($spec, $value) {
     if ($value === '') {
         return empty($spec['required']) ? null : 'this column is required but was left empty';

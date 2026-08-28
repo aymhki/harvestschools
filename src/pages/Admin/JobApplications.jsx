@@ -80,6 +80,8 @@ function JobApplications() {
                        ]}
                        footerModuleElements={[]}
                        dataTypes={columnDataTypes}
+                       allowSearch={true}
+                       searchPlaceholder={'Search applications'}
                        sortConfigParam={{column: 0, direction: 'descending'}}
                        filterableColumns={
                            [

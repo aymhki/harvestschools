@@ -31,25 +31,44 @@ try {
         exit;
     }
 
-    $descriptor = call_user_func($domain['descriptor']);
-    $columns = [];
+    $describeColumns = function ($descriptor) {
+        $columns = [];
 
-    foreach ($descriptor as $key => $spec) {
-        $columns[] = [
-            'key'      => $key,
-            'label'    => $spec['label'],
-            'required' => !empty($spec['required']),
-            'type'     => $spec['type'] ?? 'text',
-            'example'  => (string)($spec['example'] ?? ''),
-            'values'   => $spec['values'] ?? null,
-        ];
+        foreach ($descriptor as $key => $spec) {
+            $columns[] = [
+                'key'      => $key,
+                'label'    => $spec['label'],
+                'required' => !empty($spec['required']),
+                'type'     => $spec['type'] ?? 'text',
+                'example'  => (string)($spec['example'] ?? ''),
+                'values'   => $spec['values'] ?? null,
+            ];
+        }
+
+        return $columns;
+    };
+
+    $variants = [];
+
+    if (isset($domain['variants'])) {
+        foreach (call_user_func($domain['variants']) as $variant) {
+            $variants[] = [
+                'key'     => $variant['key'],
+                'label'   => $variant['label'],
+                'columns' => $describeColumns($variant['columns']),
+            ];
+        }
     }
+
+    $columns = $variants === []
+        ? $describeColumns(call_user_func($domain['descriptor']))
+        : $variants[0]['columns'];
 
     echo json_encode([
         "success" => true,
         "message" => "Descriptor retrieved successfully",
         "code"    => 200,
-        "data"    => ["label" => $domain['label'], "columns" => $columns]
+        "data"    => ["label" => $domain['label'], "columns" => $columns, "variants" => $variants]
     ]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

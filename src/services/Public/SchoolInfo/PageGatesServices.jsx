@@ -21,6 +21,8 @@ const requestPageGates = async () => {
 
 
 let gatesPromise = null
+let loadedGates = null
+let gatesHaveLoaded = false
 
 const fetchPageGates = async () => {
     if (!gatesPromise) {
@@ -28,12 +30,16 @@ const fetchPageGates = async () => {
             try {
                 const {data} = await cachedRequest('public-page-gates', requestPageGates)
 
-                return isGatesDocumentUsable(data) ? data.gates : null
+                loadedGates = isGatesDocumentUsable(data) ? data.gates : null
             } catch (error) {
                 console.log(error.message)
 
-                return null
+                loadedGates = null
             }
+
+            gatesHaveLoaded = true
+
+            return loadedGates
         })()
     }
 
@@ -41,8 +47,16 @@ const fetchPageGates = async () => {
 }
 
 
+const getLoadedPageGates = () => loadedGates
+
+
+const pageGatesHaveLoaded = () => gatesHaveLoaded
+
+
 const refreshPageGates = async () => {
     gatesPromise = null
+    gatesHaveLoaded = false
+    loadedGates = null
 
     return fetchPageGates()
 }
@@ -61,6 +75,8 @@ const prefetchPageGates = async ({onProgress} = {}) => {
 
 export {
     fetchPageGates,
+    getLoadedPageGates,
+    pageGatesHaveLoaded,
     refreshPageGates,
     prefetchPageGates,
 }

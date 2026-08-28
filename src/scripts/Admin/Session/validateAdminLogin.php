@@ -16,7 +16,7 @@ try {
         exit;
     }
 
-    $turnstileCheck = verify_turnstile_token_if_present(null, true);
+    $turnstileCheck = verify_turnstile_token_if_present(null, !turnstile_client_is_native());
 
     if (!$turnstileCheck['ok']) {
         echo json_encode([

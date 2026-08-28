@@ -116,7 +116,7 @@ const postToGallery = async (endpoint, payload, fallbackMessage, signal) => {
 }
 
 
-const sendGalleryForm = async (endpoint, formData, fallbackMessage) => {
+const sendGalleryFormWithProgress = async (endpoint, formData, fallbackMessage, {onProgress, signal} = {}) => {
     try {
         const sessionId = await validateAdminSessionLocally();
 
@@ -128,21 +128,81 @@ const sendGalleryForm = async (endpoint, formData, fallbackMessage) => {
 
         delete headers['Content-Type'];
 
-        const response = await fetch(endpoint, {method: 'POST', body: formData, headers});
-        const result = await response.json();
+        return await new Promise((resolve, reject) => {
+            const request = new XMLHttpRequest();
 
-        if (result && result.success) {
-            return result;
+            const abort = () => request.abort();
+
+            request.open('POST', endpoint);
+
+            Object.entries(headers).forEach(([name, value]) => request.setRequestHeader(name, value));
+
+            request.upload.onprogress = (event) => {
+                if (typeof onProgress === 'function' && event.lengthComputable) {
+                    onProgress({
+                        phase: event.loaded >= event.total ? 'finishing' : 'uploading',
+                        percent: Math.round((event.loaded / event.total) * 100),
+                        sentBytes: event.loaded,
+                        totalBytes: event.total,
+                    });
+                }
+            };
+
+            request.onload = () => {
+                if (signal) {
+                    signal.removeEventListener('abort', abort);
+                }
+
+                let result;
+
+                try {
+                    result = JSON.parse(request.responseText);
+                } catch {
+                    resolve(fallbackMessage);
+                    return;
+                }
+
+                resolve((result && result.success) ? result : ((result && result.message) || fallbackMessage));
+            };
+
+            request.onerror = () => {
+                if (signal) {
+                    signal.removeEventListener('abort', abort);
+                }
+
+                resolve(fallbackMessage);
+            };
+
+            request.onabort = () => {
+                if (signal) {
+                    signal.removeEventListener('abort', abort);
+                }
+
+                reject(new UploadCancelledError());
+            };
+
+            if (signal) {
+                if (signal.aborted) {
+                    reject(new UploadCancelledError());
+                    return;
+                }
+
+                signal.addEventListener('abort', abort);
+            }
+
+            request.send(formData);
+        });
+    } catch (error) {
+        if (error instanceof UploadCancelledError) {
+            throw error;
         }
 
-        return (result && result.message) || fallbackMessage;
-    } catch (error) {
         return error.message;
     }
 }
 
 
-const addCollage = async ({titleEn, titleAr, layout, placement, afterId}, photoFiles) => {
+const addCollage = async ({titleEn, titleAr, layout, placement, afterId}, photoFiles, options) => {
     const formData = new FormData();
 
     formData.append('title_en', titleEn);
@@ -153,18 +213,18 @@ const addCollage = async ({titleEn, titleAr, layout, placement, afterId}, photoF
 
     photoFiles.forEach((photo) => formData.append('photos[]', photo));
 
-    return sendGalleryForm(endpoints.addCollage, formData, 'An error occurred while creating the collage.');
+    return sendGalleryFormWithProgress(endpoints.addCollage, formData, 'An error occurred while creating the collage.', options);
 }
 
 
-const addCollagePhotos = async (collageId, photoFiles) => {
+const addCollagePhotos = async (collageId, photoFiles, options) => {
     const formData = new FormData();
 
     formData.append('collage_id', String(collageId));
 
     photoFiles.forEach((photo) => formData.append('photos[]', photo));
 
-    return sendGalleryForm(endpoints.addCollagePhotos, formData, 'An error occurred while adding the photos.');
+    return sendGalleryFormWithProgress(endpoints.addCollagePhotos, formData, 'An error occurred while adding the photos.', options);
 }
 
 

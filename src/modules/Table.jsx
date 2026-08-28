@@ -30,12 +30,17 @@ const downloadCsv = (rows, fileName) => {
 };
 
 
-const downloadImportTemplate = (config) => {
-    const columns = (config.descriptor && config.descriptor.columns) || [];
+const importTemplateVariants = (config) => (
+    (config.descriptor && config.descriptor.variants) || []
+);
+
+
+const downloadImportTemplate = (config, variant) => {
+    const columns = (variant ? variant.columns : (config.descriptor && config.descriptor.columns)) || [];
 
     downloadCsv(
         [columns.map((column) => column.label), columns.map((column) => column.example || '')],
-        `${config.templateName || 'import'}-template.csv`
+        `${config.templateName || 'import'}${variant ? `-${variant.key}` : ''}-template.csv`
     );
 };
 
@@ -68,6 +73,8 @@ function Table({
                    reviewMode = false,
                    allowSticky,
                    allowStickyOnMobile,
+                   maxStickyColumnIndex = 0,
+                   maxStickyRowIndex = 0,
                    stickyActionColumns = true,
                    dataTypes,
                    hideHorizontalScrollBar,
@@ -250,6 +257,23 @@ function Table({
         return [...finalTableData.slice(0, headerRowCount), ...paginatedDataRows];
     }, [finalTableData, headerRowCount, paginatedDataRows]);
 
+    const resolveStickyControlLimit = (requestedIndex, availableCount) => {
+        const requested = Math.floor(Number(requestedIndex));
+
+        if (!Number.isFinite(requested) || requested < 0 || availableCount <= 0) {
+            return -1;
+        }
+
+        return Math.min(requested, availableCount - 1);
+    };
+
+    const stickyColumnControlLimit = resolveStickyControlLimit(
+        maxStickyColumnIndex,
+        displayedTableData[0] ? displayedTableData[0].length : 0
+    );
+
+    const stickyRowControlLimit = resolveStickyControlLimit(maxStickyRowIndex, displayedTableData.length);
+
     const [isDarkMode, setIsDarkMode] = useState(() => {
         if (typeof window !== 'undefined') {
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -275,8 +299,7 @@ function Table({
         const rows = Array.from(tableRef.current.querySelectorAll('tr'));
         if (rows.length === 0) return;
 
-        const unchanged = (current, next) => current.length === next.length
-            && current.every((value, index) => Math.abs(value - next[index]) < 0.5);
+        const unchanged = (current, next) => current.length === next.length && current.every((value, index) => Math.abs(value - next[index]) < 0.5);
 
         const heights = rows.map(r => r.getBoundingClientRect().height);
         const columnRow = rows[tableHeader ? 1 : 0];
@@ -1772,9 +1795,17 @@ function Table({
                                 </button>
 
                                 {importConfig.descriptor && (
-                                    <button onClick={() => downloadImportTemplate(importConfig)}>
-                                        Download a template
-                                    </button>
+                                    importTemplateVariants(importConfig).length > 1
+                                        ? importTemplateVariants(importConfig).map((variant) => (
+                                            <button key={variant.key} onClick={() => downloadImportTemplate(importConfig, variant)}>
+                                                {variant.label}
+                                            </button>
+                                        ))
+                                        : (
+                                            <button onClick={() => downloadImportTemplate(importConfig)}>
+                                                Download a template
+                                            </button>
+                                        )
                                 )}
                             </>
                         )}
@@ -1854,8 +1885,8 @@ function Table({
                                         const isCorner = isStickyRow && isStickyCol;
 
                                         const isHovered = hoveredCell.r === actualRowIndex && hoveredCell.c === cellIndex;
-                                        const showColControl = !reviewMode && isHovered && rowIndex === 0 && cellIndex < 1;
-                                        const showRowControl = !reviewMode && isHovered && cellIndex === 0 && rowIndex < 1;
+                                        const showColControl = !reviewMode && isHovered && rowIndex === 0 && cellIndex <= stickyColumnControlLimit;
+                                        const showRowControl = !reviewMode && isHovered && cellIndex === 0 && rowIndex <= stickyRowControlLimit;
                                         const colName = displayedTableData[0] && displayedTableData[0][cellIndex];
                                         const breakWordMaxWidth = rowIndex !== 0 && allowBreakWordColumns && colName
                                             ? allowBreakWordColumns[colName]
@@ -2390,8 +2421,7 @@ function Table({
             </animated.div>
 
             {importConfig && importConfig.onImport && createPortal((
-                <animated.div style={animateImportModal}
-                              className={`general-large-admin-action-modal table-module-import-modal ${isImportModalOpen ? 'is-open' : ''}`}>
+                <animated.div style={animateImportModal} className={`general-large-admin-action-modal table-module-import-modal ${isImportModalOpen ? 'is-open' : ''}`}>
                     <div className={"general-large-admin-action-modal-overlay"} onClick={closeImportModal}/>
                     <div className={"general-large-admin-action-modal-container"}>
                         <div className={"general-large-admin-action-modal-header"}>
@@ -2406,6 +2436,13 @@ function Table({
                                         anything the import does not use is ignored. Download a template to start from a
                                         correct file.
                                     </p>
+
+                                    {importTemplateVariants(importConfig).length > 1 && (
+                                        <p className={"general-large-admin-action-modal-content-note"}>
+                                            This import accepts more than one column layout. Upload either one, the
+                                            layout is matched from the header row.
+                                        </p>
+                                    )}
 
                                     {isImportModalOpen && (
                                     <Form fields={importFormFields}
@@ -2502,6 +2539,7 @@ Table.propTypes = {
         descriptor: PropTypes.shape({
             label: PropTypes.string,
             columns: PropTypes.array,
+            variants: PropTypes.array,
         }),
     }),
     allowSearch: PropTypes.bool,
@@ -2521,6 +2559,8 @@ Table.propTypes = {
     reviewMode: PropTypes.bool,
     allowSticky: PropTypes.bool,
     allowStickyOnMobile: PropTypes.bool,
+    maxStickyColumnIndex: PropTypes.number,
+    maxStickyRowIndex: PropTypes.number,
     stickyActionColumns: PropTypes.bool,
     dataTypes: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     hideHorizontalScrollBar: PropTypes.bool,

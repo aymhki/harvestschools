@@ -453,6 +453,8 @@ function InfoSystemManagement() {
                    allowHideColumns={true}
                    allowSticky={true}
                    forceEnglishTable={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search settings'}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('settings', rowIndex)}
                    isLoading={isLoading}
@@ -493,6 +495,8 @@ function InfoSystemManagement() {
                    compact={true}
                    allowHideColumns={true}
                    allowSticky={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search stages'}
                    forceEnglishTable={true}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('stages', rowIndex)}
@@ -520,6 +524,8 @@ function InfoSystemManagement() {
                    compact={true}
                    allowHideColumns={true}
                    allowSticky={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search profile items'}
                    forceEnglishTable={true}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('profile', rowIndex)}
@@ -540,6 +546,8 @@ function InfoSystemManagement() {
                    compact={true}
                    allowHideColumns={true}
                    allowSticky={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search policy items'}
                    forceEnglishTable={true}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('policies', rowIndex)}
@@ -597,6 +605,8 @@ function InfoSystemManagement() {
                    allowHideColumns={true}
                    allowSticky={true}
                    forceEnglishTable={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search static content items'}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('staticContent', rowIndex)}
                    isLoading={isLoading}
@@ -617,6 +627,8 @@ function InfoSystemManagement() {
                    allowHideColumns={true}
                    allowSticky={true}
                    forceEnglishTable={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search form emails'}
                    allowEditEntryOption={true}
                    onEditEntryOption={(rowIndex) => handleEditInitialization('formEmails', rowIndex)}
                    isLoading={isLoading}

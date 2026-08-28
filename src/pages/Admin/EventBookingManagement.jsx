@@ -11,6 +11,7 @@ import {
     fetchEventBookingsRequest,
     handleAddEventBookingRequest,
     handleDeleteEventBookingRequest,
+    handleDeleteEventBookingsRequest,
     handleEditEventBookingRequest,
     fetchEventMetaDetailsRequest,
     handleUpdateEventMetaDetailsRequest
@@ -28,6 +29,10 @@ function EventBookingManagement() {
     const [resetAddBookingModal, setResetAddBookingModal] = useState(false);
     const [showAddBookingModal, setShowAddBookingModal] = useState(false);
     const [showDeleteBookingModal, setShowDeleteBookingModal] = useState(false);
+    const [showDeleteBookingsModal, setShowDeleteBookingsModal] = useState(false);
+    const [deleteBookingsScope, setDeleteBookingsScope] = useState('');
+    const [isDeletingBookings, setIsDeletingBookings] = useState(false);
+    const [deleteBookingsError, setDeleteBookingsError] = useState(null);
     const [rowIndexToDelete, setRowIndexToDelete] = useState(null);
     const [rowIndexToEdit, setRowIndexToEdit] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -71,6 +76,9 @@ function EventBookingManagement() {
     const studentGradeTemplateFieldId = 16;
     const minNumberOfStudents = 1;
 
+    const deleteAllBookingsChoice = 'All bookings';
+    const schoolDivisions = ['International', 'National', 'Kindergarten', 'American', 'British'];
+
     const colIndexForBookingId = 0;
     const colIndexForBookingUsername = 6;
     const colIndexForStudentIds = 8;
@@ -92,6 +100,11 @@ function EventBookingManagement() {
     const animateDeleteBookingModal = useSpring({
         opacity: showDeleteBookingModal ? 1 : 0,
         transform: showDeleteBookingModal ? 'translateY(0)' : 'translateY(-100%)'
+    });
+
+    const animateDeleteBookingsModal = useSpring({
+        opacity: showDeleteBookingsModal ? 1 : 0,
+        transform: showDeleteBookingsModal ? 'translateY(0)' : 'translateY(-100%)'
     });
 
     const animateEditBookingModal = useSpring({
@@ -444,6 +457,63 @@ function EventBookingManagement() {
             setTimeout(() => {setDeleteError(null);}, msgTimeout);
         } finally {
             setIsDeleting(false);
+            setIsLoading(false);
+        }
+    };
+
+    const bookingsMatchingDeleteScope = useMemo(() => {
+        if (!allBookings || allBookings.length <= 1) {
+            return 0;
+        }
+
+        const rows = allBookings.slice(1);
+
+        if (deleteBookingsScope === deleteAllBookingsChoice) {
+            return rows.length;
+        }
+
+        return rows.filter((row) => {
+            const divisions = String(row[colIndexForStudentSchoolDivisions] || '')
+                .split(',')
+                .map((division) => division.trim())
+                .filter(Boolean);
+
+            return divisions.length > 0 && divisions.every((division) => division === deleteBookingsScope);
+        }).length;
+    }, [allBookings, deleteBookingsScope]);
+
+    const openDeleteBookingsModal = () => {
+        setDeleteBookingsScope(deleteAllBookingsChoice);
+        setDeleteBookingsError(null);
+        setShowDeleteBookingsModal(true);
+    };
+
+    const handleCancelDeleteBookingsModal = () => {
+        setShowDeleteBookingsModal(false);
+        setDeleteBookingsError(null);
+    };
+
+    const handleDeleteBookings = async () => {
+        setIsLoading(true);
+        setIsDeletingBookings(true);
+
+        try {
+            const isAll = deleteBookingsScope === deleteAllBookingsChoice;
+            const response = await handleDeleteEventBookingsRequest(isAll ? 'all' : 'division', isAll ? '' : deleteBookingsScope);
+
+            if (response.success) {
+                setShowDeleteBookingsModal(false);
+                setDeleteBookingsError(null);
+                fetchBookings();
+            } else {
+                setDeleteBookingsError(response || 'An error occurred while deleting the bookings.');
+                setTimeout(() => {setDeleteBookingsError(null);}, msgTimeout);
+            }
+        } catch (error) {
+            setDeleteBookingsError(error.message || 'An error occurred while deleting the bookings.');
+            setTimeout(() => {setDeleteBookingsError(null);}, msgTimeout);
+        } finally {
+            setIsDeletingBookings(false);
             setIsLoading(false);
         }
     };
@@ -805,7 +875,7 @@ function EventBookingManagement() {
     }, []);
 
     useEffect(() => {
-        if (showAddBookingModal || showDeleteBookingModal || showEditBookingModal || showUpdateVenueModal) {
+        if (showAddBookingModal || showDeleteBookingModal || showDeleteBookingsModal || showEditBookingModal || showUpdateVenueModal) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
@@ -814,7 +884,7 @@ function EventBookingManagement() {
         return () => {
             document.body.style.overflow = '';
         };
-    }, [showAddBookingModal, showDeleteBookingModal, showEditBookingModal, showUpdateVenueModal]);
+    }, [showAddBookingModal, showDeleteBookingModal, showDeleteBookingsModal, showEditBookingModal, showUpdateVenueModal]);
 
     useEffect(() => {
         return () => {
@@ -838,6 +908,8 @@ function EventBookingManagement() {
                        allowHideColumns={true}
                        allowSticky={true}
                        forceEnglishTable={true}
+                       allowSearch={true}
+                       searchPlaceholder={'Search bookings'}
                        defaultHiddenColumns={
                        [
                            'Booking Status',
@@ -898,6 +970,11 @@ function EventBookingManagement() {
                            (
                                <button key={5} onClick={openUpdateVenueModal} disabled={isLoading}>
                                    Update Venue
+                               </button>
+                           ),
+                           (
+                               <button key={6} onClick={openDeleteBookingsModal} disabled={isLoading}>
+                                   Delete Bookings
                                </button>
                            ),
                            (
@@ -1018,6 +1095,60 @@ function EventBookingManagement() {
 
                 </div>
 
+
+            </animated.div>
+
+            <animated.div style={animateDeleteBookingsModal} className={"general-small-admin-action-modal"}>
+                <div className={"general-small-admin-action-modal-overlay"} onClick={handleCancelDeleteBookingsModal}/>
+
+                <div className={"general-small-admin-action-modal-container"}>
+
+                    <div className={"general-small-admin-action-modal-header"}>
+                        <h3>
+                            Delete Bookings
+                        </h3>
+                    </div>
+
+                    <div className={"general-small-admin-action-modal-content"}>
+
+                        <select id={"delete-bookings-scope"} className={"select-form-field"} value={deleteBookingsScope}
+                                onChange={(event) => setDeleteBookingsScope(event.target.value)}>
+                            <option value={deleteAllBookingsChoice}>{deleteAllBookingsChoice}</option>
+                            {schoolDivisions.map((division) => (
+                                <option key={division} value={division}>
+                                    {`Bookings whose students are all in ${division}`}
+                                </option>
+                            ))}
+                        </select>
+
+                        <br/>
+
+                        <p>
+                            This will delete <strong>{bookingsMatchingDeleteScope}</strong>{' '}
+                            booking{bookingsMatchingDeleteScope === 1 ? '' : 's'}, and all the student(s),
+                            parent(s) and authentication credentials that belong to them. A booking with a
+                            student outside the chosen division is left alone.
+                        </p>
+
+                        {deleteBookingsError && (
+                            <>
+                                <br/>
+                                <p>{deleteBookingsError}</p>
+                            </>
+                        )}
+                    </div>
+
+                    <div className={"general-small-admin-action-modal-footer"}>
+                        <button onClick={handleCancelDeleteBookingsModal}>
+                            Cancel
+                        </button>
+
+                        <button onClick={handleDeleteBookings} disabled={bookingsMatchingDeleteScope === 0}>
+                            {isDeletingBookings ? 'Deleting...' : 'Delete'}
+                        </button>
+                    </div>
+
+                </div>
 
             </animated.div>
 

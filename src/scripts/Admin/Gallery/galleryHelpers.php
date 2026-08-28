@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../Public/General/publicMediaRoots.php';
 require_once __DIR__ . '/../../Public/General/mediaToolchain.php';
 
 const GALLERY_PHOTO_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif'];
+const GALLERY_BROWSER_SAFE_PHOTO_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif'];
 const GALLERY_VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'm4v'];
 const GALLERY_MAX_PHOTO_BYTES = 1073741824;
 const GALLERY_MAX_VIDEO_BYTES = 5368709120;
@@ -290,6 +291,21 @@ function gallery_store_photos($conn, $collage, array $files, $maxPixelDimension 
     }
 
     $stored = 0;
+    $writtenPaths = [];
+
+    $unwind = function ($failure) use ($conn, &$writtenPaths) {
+        $conn->rollback();
+
+        foreach ($writtenPaths as $writtenPath) {
+            if (is_file($writtenPath)) {
+                @unlink($writtenPath);
+            }
+        }
+
+        return $failure;
+    };
+
+    $conn->begin_transaction();
 
     foreach ($files as $file) {
         $number    = gallery_next_photo_number($conn, $collageId, $folderName);
@@ -317,10 +333,22 @@ function gallery_store_photos($conn, $collage, array $files, $maxPixelDimension 
         }
 
         if (!$converted) {
+            if ($needsConversion && !in_array($extension, GALLERY_BROWSER_SAFE_PHOTO_EXTENSIONS, true)) {
+                return $unwind(gallery_error(
+                    '"' . basename((string)$file['name']) . '" could not be converted on this server. Please upload it as JPEG or PNG.',
+                    500
+                ));
+            }
+
+            $fileName = $folderName . $number . '.' . $extension;
+            $destPath = $directory . $fileName;
+
             if (!@move_uploaded_file($tmpPath, $destPath)) {
-                return gallery_error('One of the photos could not be saved on the server.', 500);
+                return $unwind(gallery_error('One of the photos could not be saved on the server.', 500));
             }
         }
+
+        $writtenPaths[] = $destPath;
 
         $sortOrder = gallery_next_sort_order($conn, 'gallery_photos', 'collage_id', $collageId);
         $stmt = $conn->prepare("INSERT INTO gallery_photos (collage_id, sort_order, file_name) VALUES (?, ?, ?)");
@@ -330,6 +358,8 @@ function gallery_store_photos($conn, $collage, array $files, $maxPixelDimension 
 
         $stored += 1;
     }
+
+    $conn->commit();
 
     return ["success" => true, "stored" => $stored];
 }

@@ -10,6 +10,7 @@
 }
 
 .photo-slider {
+    box-sizing: border-box;
     color: var(--primary-color);
     background-color: var(--fb-white-color);
     border-radius: 1rem;
@@ -36,6 +37,11 @@
     border-radius: 1rem;
 }
 
+.photo-slider-main-photo:not(.video-preview-media) {
+    max-height: min(70vh, 40rem);
+    object-fit: cover;
+}
+
 .photo-collage {
     display: flex;
     flex-wrap: wrap;
@@ -55,7 +61,7 @@
     width: auto;
     height: auto;
     max-width: 90%;
-    max-height: 90%;
+    max-height: min(60vh, 30rem);
 }
 
 .video-preview {

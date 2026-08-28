@@ -476,7 +476,7 @@
     background-size: 1.5rem;
     padding-inline-end: 1rem;
     cursor: pointer;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%231f2152" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%231f2152" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"/></svg>');
 }
 
 .select-form-field.read-only-field {
@@ -1293,7 +1293,7 @@
     }
 
     .select-form-field {
-        background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
+        background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"/></svg>');
     }
 
     .remove-section-button {

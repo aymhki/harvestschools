@@ -38,7 +38,12 @@ try {
         exit;
     }
 
-    $descriptor = call_user_func($domain['descriptor']);
+    $variant = isset($domain['variants']) ? csv_import_pick_variant($upload['contents'], call_user_func($domain['variants'])) : null;
+
+    $descriptor = $variant === null ? call_user_func($domain['descriptor']) : $variant['columns'];
+    $context['import_descriptor'] = $descriptor;
+    $context['import_variant'] = $variant === null ? '' : $variant['key'];
+
     $read = csv_import_read($upload['contents'], $descriptor);
 
     if (!$read['success']) {

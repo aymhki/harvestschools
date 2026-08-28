@@ -15,6 +15,19 @@ const EVENT_BOOKING_GRADES = [
 const EVENT_BOOKING_PAYMENT_STATUSES = ['Not Signed Up', 'Signed Up, pending payment', 'Confirmed'];
 
 
+function event_booking_canonical_division($value) {
+    $candidate = trim((string)$value);
+
+    foreach (EVENT_BOOKING_DIVISIONS as $division) {
+        if (strcasecmp($division, $candidate) === 0) {
+            return $division;
+        }
+    }
+
+    return '';
+}
+
+
 function event_booking_import_authorise($conn) {
     global $EVENT_BOOKING_MANAGEMENT;
 
@@ -85,7 +98,7 @@ function event_booking_normalise($values) {
 
         $students[] = [
             'name'            => $name,
-            'school_division' => trim((string)($values['student_' . $index . '_division'] ?? '')) ?: 'Other',
+            'school_division' => event_booking_canonical_division($values['student_' . $index . '_division'] ?? ''),
             'grade'           => trim((string)($values['student_' . $index . '_grade'] ?? '')),
         ];
     }
@@ -103,6 +116,176 @@ function event_booking_normalise($values) {
             'email' => trim((string)($values['second_parent_email'] ?? '')),
             'phone' => trim((string)($values['second_parent_phone'] ?? '')),
         ],
+        'students'             => $students,
+        'cd_count'             => (int)($values['cd_count'] ?? 0),
+        'additional_attendees' => (int)($values['additional_attendees'] ?? 0),
+        'payment_status'       => trim((string)($values['payment_status'] ?? '')) ?: 'Not Signed Up',
+    ];
+}
+
+
+function event_booking_combined_import_descriptor() {
+    return [
+        'booking_username'     => ['required' => true,  'type' => 'text',   'label' => 'Booking Username',       'example' => 'omar.hassan'],
+        'booking_password'     => ['required' => true,  'type' => 'text',   'label' => 'Booking Password',       'example' => 'Ceremony2026'],
+        'parent_names'         => ['required' => true,  'type' => 'text',   'label' => 'Parent Names',           'example' => 'Hassan Omar, Mona Fouad'],
+        'parent_emails'        => ['required' => false, 'type' => 'text',   'label' => 'Parent Emails',          'example' => 'hassan@example.com, mona@example.com'],
+        'parent_phones'        => ['required' => false, 'type' => 'text',   'label' => 'Parent Phones',          'example' => '01000000000, 01111111111'],
+        'student_names'        => ['required' => true,  'type' => 'text',   'label' => 'Student Names',          'example' => 'Salma Hassan, Youssef Hassan'],
+        'student_divisions'    => ['required' => false, 'type' => 'text',   'label' => 'School Divisions',       'example' => 'National, International'],
+        'student_grades'       => ['required' => false, 'type' => 'text',   'label' => 'Grades',                 'example' => 'Grade 6, Grade 3'],
+        'cd_count'             => ['required' => false, 'type' => 'number', 'label' => 'CD Count',               'example' => '0'],
+        'additional_attendees' => ['required' => false, 'type' => 'number', 'label' => 'Additional Attendees',   'example' => '0'],
+        'payment_status'       => [
+            'required' => false,
+            'type'     => 'enum',
+            'label'    => 'Booking Extras Status',
+            'example'  => 'Not Signed Up',
+            'values'   => EVENT_BOOKING_PAYMENT_STATUSES,
+        ],
+    ];
+}
+
+
+function event_booking_import_variants() {
+    return [
+        [
+            'key'     => 'perPerson',
+            'label'   => 'Template (a column per person)',
+            'columns' => event_booking_import_descriptor(),
+        ],
+        [
+            'key'     => 'combined',
+            'label'   => 'Template (comma separated lists)',
+            'columns' => event_booking_combined_import_descriptor(),
+        ],
+    ];
+}
+
+
+function event_booking_split_list($value) {
+    $parts = array_map('trim', explode(',', (string)$value));
+
+    while ($parts !== [] && end($parts) === '') {
+        array_pop($parts);
+    }
+
+    return $parts;
+}
+
+
+function event_booking_list_has($value, array $allowed) {
+    foreach ($allowed as $option) {
+        if (strcasecmp($option, $value) === 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+function event_booking_combined_problem($values) {
+    $studentNames = event_booking_split_list($values['student_names'] ?? '');
+    $divisions    = event_booking_split_list($values['student_divisions'] ?? '');
+    $grades       = event_booking_split_list($values['student_grades'] ?? '');
+    $parentNames  = event_booking_split_list($values['parent_names'] ?? '');
+    $parentEmails = event_booking_split_list($values['parent_emails'] ?? '');
+    $parentPhones = event_booking_split_list($values['parent_phones'] ?? '');
+
+    if (count($parentNames) > 2) {
+        return ['field' => 'parent_names', 'message' => 'A booking can list at most two parents.'];
+    }
+
+    $lists = [
+        ['parent_emails',     $parentEmails, count($parentNames),  'emails',           'parent names'],
+        ['parent_phones',     $parentPhones, count($parentNames),  'phone numbers',    'parent names'],
+        ['student_divisions', $divisions,    count($studentNames), 'school divisions', 'student names'],
+        ['student_grades',    $grades,       count($studentNames), 'grades',           'student names'],
+    ];
+
+    foreach ($lists as $list) {
+        if (count($list[1]) > $list[2]) {
+            return [
+                'field'   => $list[0],
+                'message' => 'There are more ' . $list[3] . ' than ' . $list[4]
+                    . '. Keep one entry per person, in the same order, and leave a gap empty to skip one.',
+            ];
+        }
+    }
+
+    foreach ($divisions as $division) {
+        if ($division !== '' && !event_booking_list_has($division, EVENT_BOOKING_DIVISIONS)) {
+            return [
+                'field'   => 'student_divisions',
+                'message' => '"' . $division . '" is not a school division. Use one of: ' . implode(' / ', EVENT_BOOKING_DIVISIONS) . '.',
+            ];
+        }
+    }
+
+    foreach ($grades as $grade) {
+        if ($grade !== '' && !event_booking_list_has($grade, EVENT_BOOKING_GRADES)) {
+            return [
+                'field'   => 'student_grades',
+                'message' => '"' . $grade . '" is not a grade. Use one of: ' . implode(' / ', EVENT_BOOKING_GRADES) . '.',
+            ];
+        }
+    }
+
+    return null;
+}
+
+
+function event_booking_combined_field_key($fieldKey) {
+    $keysByPerPersonKey = [
+        'first_parent_name'  => 'parent_names',
+        'second_parent_name' => 'parent_names',
+        'student_1_name'     => 'student_names',
+    ];
+
+    for ($index = 1; $index <= EVENT_BOOKING_MAX_STUDENTS; $index++) {
+        $keysByPerPersonKey['student_' . $index . '_division'] = 'student_divisions';
+        $keysByPerPersonKey['student_' . $index . '_grade'] = 'student_grades';
+    }
+
+    return $keysByPerPersonKey[$fieldKey] ?? $fieldKey;
+}
+
+
+function event_booking_normalise_combined($values) {
+    $names        = event_booking_split_list($values['student_names'] ?? '');
+    $divisions    = event_booking_split_list($values['student_divisions'] ?? '');
+    $grades       = event_booking_split_list($values['student_grades'] ?? '');
+    $parentNames  = event_booking_split_list($values['parent_names'] ?? '');
+    $parentEmails = event_booking_split_list($values['parent_emails'] ?? '');
+    $parentPhones = event_booking_split_list($values['parent_phones'] ?? '');
+    $students     = [];
+
+    foreach ($names as $position => $name) {
+        if ($name === '') {
+            continue;
+        }
+
+        $students[] = [
+            'name'            => $name,
+            'school_division' => event_booking_canonical_division($divisions[$position] ?? ''),
+            'grade'           => (string)($grades[$position] ?? ''),
+        ];
+    }
+
+    $parentAt = function ($position) use ($parentNames, $parentEmails, $parentPhones) {
+        return [
+            'name'  => (string)($parentNames[$position] ?? ''),
+            'email' => (string)($parentEmails[$position] ?? ''),
+            'phone' => (string)($parentPhones[$position] ?? ''),
+        ];
+    };
+
+    return [
+        'username'             => trim((string)($values['booking_username'] ?? '')),
+        'password'             => (string)($values['booking_password'] ?? ''),
+        'first_parent'         => $parentAt(0),
+        'second_parent'        => $parentAt(1),
         'students'             => $students,
         'cd_count'             => (int)($values['cd_count'] ?? 0),
         'additional_attendees' => (int)($values['additional_attendees'] ?? 0),
@@ -140,6 +323,15 @@ function event_booking_validate($conn, $booking, $seenUsernames = []) {
 
     if (count($booking['students']) > EVENT_BOOKING_MAX_STUDENTS) {
         return ['field' => 'student_1_name', 'message' => 'A maximum of ' . EVENT_BOOKING_MAX_STUDENTS . ' students is allowed per booking.'];
+    }
+
+    foreach ($booking['students'] as $position => $student) {
+        if (event_booking_canonical_division($student['school_division']) === '') {
+            return [
+                'field'   => 'student_' . ($position + 1) . '_division',
+                'message' => $student['name'] . ' needs a school division. Use one of: ' . implode(' / ', EVENT_BOOKING_DIVISIONS) . '.',
+            ];
+        }
     }
 
     if (($booking['cd_count'] > 0 || $booking['additional_attendees'] > 0) && $booking['payment_status'] === 'Not Signed Up') {
@@ -206,7 +398,10 @@ function event_booking_insert($conn, $booking) {
 
 
 function event_booking_add_bookings($conn, array $rows, array $context = []) {
-    $descriptor = event_booking_import_descriptor();
+    $isCombined = ($context['import_variant'] ?? '') === 'combined';
+    $descriptor = isset($context['import_descriptor']) && is_array($context['import_descriptor'])
+        ? $context['import_descriptor']
+        : ($isCombined ? event_booking_combined_import_descriptor() : event_booking_import_descriptor());
     $failed = [];
     $bookings = [];
     $seenUsernames = [];
@@ -214,11 +409,16 @@ function event_booking_add_bookings($conn, array $rows, array $context = []) {
     foreach ($rows as $index => $row) {
         $line = $row['line'] ?? ($index + 2);
         $values = array_key_exists('values', $row) ? $row['values'] : $row;
-        $booking = event_booking_normalise($values);
-        $problem = event_booking_validate($conn, $booking, $seenUsernames);
+        $booking = $isCombined ? event_booking_normalise_combined($values) : event_booking_normalise($values);
+        $problem = $isCombined ? event_booking_combined_problem($values) : null;
+
+        if ($problem === null) {
+            $problem = event_booking_validate($conn, $booking, $seenUsernames);
+        }
 
         if ($problem !== null) {
-            $failed[] = csv_import_row_failure($line, $descriptor, $problem['field'], $problem['message']);
+            $failedField = $isCombined ? event_booking_combined_field_key($problem['field']) : $problem['field'];
+            $failed[] = csv_import_row_failure($line, $descriptor, $failedField, $problem['message']);
             continue;
         }
 

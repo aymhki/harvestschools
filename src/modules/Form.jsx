@@ -10,7 +10,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
-import {useLoading} from "../services/General/GlobalLoadingService.jsx";
+import {useLoadingWhile} from "../services/General/GlobalLoadingService.jsx";
 import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS, setPendingTurnstileToken, ARABIC_MARKS_REGEX, normalizeArabicText} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
@@ -204,7 +204,7 @@ function Form({
                   fieldStateFromParent,
               }) {
 
-    const [submitting, setSubmitting] = useLoading(false);
+    const [submitting, setSubmitting] = useState(false);
     const [generalFormError, setGeneralFormError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [dynamicFields, setDynamicFields] = useState(() =>
@@ -215,6 +215,8 @@ function Form({
     const [fileInputs, setFileInputs] = useState({});
     const [videoThumbnailUrls, setVideoThumbnailUrls] = useState({});
     const [videoThumbnailDurations, setVideoThumbnailDurations] = useState({});
+    const [videoThumbnailValues, setVideoThumbnailValues] = useState({});
+    const [heicConverting, setHeicConverting] = useState({});
     const [videoThumbnailSeeking, setVideoThumbnailSeeking] = useState({});
     const [fileDropTargets, setFileDropTargets] = useState({});
     const [filePreviewUrls, setFilePreviewUrls] = useState({});
@@ -308,7 +310,8 @@ function Form({
     const turnstileTokenRef = useRef('');
     const turnstileRetriedRef = useRef(false);
     const [turnstileStatus, setTurnstileStatus] = useState('pending');
-    const [refsHaveBeenSet, setRefsHaveBeenSet] = useState(false);
+    const [refsVersion, setRefsVersion] = useState(0);
+    const refsHaveBeenSet = refsVersion > 0;
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
     const { t } = useTranslation(['all-forms'], forceEnglishForm ? { lng: 'en' } : {});
     const formId = useId();
@@ -525,6 +528,10 @@ function Form({
         return mergedFields;
     }, [dynamicFields, dynamicSectionInstances, normalizedDynamicSections, formIsReadOnly]);
 
+    const hasFieldUploadProgress = fieldStateFromParent ? Object.values(fieldStateFromParent).some((state) => state && state.upload && state.upload.phase) : false;
+
+    useLoadingWhile(submitting && !hasFieldUploadProgress);
+
     const resolveSourceFieldId = (field) => {
         const dynamicSectionInfo = field.__dynamicSection;
 
@@ -538,6 +545,11 @@ function Form({
             .filter((candidate) => candidate.type === 'video-thumbnail')
             .map((candidate) => resolveSourceFieldId(candidate))
     );
+
+    const previewSourcesSignature = composedFields
+        .filter((field) => field.type === 'video-thumbnail' || field.type === 'files' || (field.type === 'file' && field.showPreview))
+        .map((field) => `${field.id}:${field.type}:${resolveSourceFieldId(field) ?? ''}`)
+        .join('|');
 
     useEffect(() => {
         const videoUrls = {};
@@ -575,7 +587,7 @@ function Form({
                 }
             }));
         };
-    }, [fileInputs, composedFields]);
+    }, [fileInputs, previewSourcesSignature]);
 
     const getFieldSubmitValue = (field) => {
         const ref = fieldRefs.current[field.id];
@@ -1310,6 +1322,7 @@ function Form({
     const renderFilesInput = (field) => {
         const widthClass = getWidthClass(field.widthOfField);
         const chosen = getChosenFiles(field);
+        const isUploading = !!(field.upload && field.upload.phase);
 
         if (!fieldRefs.current[field.id]) {
             fieldRefs.current[field.id] = createRef();
@@ -1326,6 +1339,7 @@ function Form({
                     {getLabelText(field)}
                 </label>
 
+                {!isUploading && (
                 <div className="file-form-field-styled-buttons-wrapper">
                     <button type="button" disabled={submitting}
                             onClick={() => {
@@ -1352,6 +1366,15 @@ function Form({
                         </button>
                     )}
                 </div>
+                )}
+
+                {isUploading && renderUploadProgress(field)}
+
+                {heicConverting[field.id] && (
+                    <label>
+                        {`Converting iPhone photos... ${heicConverting[field.id].done} of ${heicConverting[field.id].total}`}
+                    </label>
+                )}
 
                 {chosen.length === 0 ? (
                     <label>{t('all-forms.drop-files-here')}</label>
@@ -1439,7 +1462,13 @@ function Form({
             fieldRefs.current[readoutRefKey] = createRef();
         }
 
-        const describePoint = (seconds) => `Frame at ${(Number(seconds) || 0).toFixed(1)}s of ${duration.toFixed(1)}s`;
+        const pickedValue = videoThumbnailValues[field.id] !== undefined ? String(videoThumbnailValues[field.id]) : (field.defaultValue || '');
+
+        const describePoint = (seconds, total) => {
+            const span = Number.isFinite(total) ? total : duration;
+
+            return `Frame at ${(Number(seconds) || 0).toFixed(1)}s of ${span.toFixed(1)}s`;
+        };
 
         const markSeeking = (isSeeking) => setVideoThumbnailSeeking(prev => {
             if (!!prev[field.id] === isSeeking) {
@@ -1457,7 +1486,7 @@ function Form({
             return next;
         });
 
-        const seekTo = (seconds) => {
+        const seekTo = (seconds, total) => {
             const input = fieldRefs.current[field.id];
             const video = fieldRefs.current[videoRefKey];
             const scrubber = fieldRefs.current[scrubberRefKey];
@@ -1476,8 +1505,12 @@ function Form({
             }
 
             if (readout && readout.current) {
-                readout.current.textContent = describePoint(seconds);
+                readout.current.textContent = describePoint(seconds, total);
             }
+
+            setVideoThumbnailValues((prev) => (
+                String(prev[field.id]) === String(seconds) ? prev : {...prev, [field.id]: seconds}
+            ));
         };
 
         return (
@@ -1514,9 +1547,11 @@ function Form({
                                         scrubber.current.max = String(Math.max(loaded - 0.1, 0.1));
                                     }
 
-                                    const startAt = Math.min(Math.max(Number(field.defaultValue) || 0, 0), Math.max(loaded - 0.1, 0));
-
-                                    seekTo(Number(startAt.toFixed(1)));
+                                    const picked = fieldRefs.current[field.id];
+                                    const alreadyPicked = (picked && picked.current) ? Number(picked.current.value) : NaN;
+                                    const wanted = (Number.isFinite(alreadyPicked) && alreadyPicked > 0) ? alreadyPicked : (Number(field.defaultValue) || 0);
+                                    const startAt = Math.min(Math.max(wanted, 0), Math.max(loaded - 0.1, 0));
+                                    seekTo(Number(startAt.toFixed(1)), loaded);
                                 }}
                             />
 
@@ -1540,12 +1575,12 @@ function Form({
                         />
 
                         <label className="video-thumbnail-field-readout" ref={fieldRefs.current[readoutRefKey]}>
-                            {describePoint(fieldRefs.current[field.id]?.current?.value)}
+                            {describePoint(pickedValue)}
                         </label>
                     </>
                 )}
 
-                <input type="hidden" {...getCommonInputProps(field)} />
+                <input type="hidden" {...getCommonInputProps(field)} defaultValue={pickedValue} />
             </div>
         );
     };
@@ -1660,6 +1695,12 @@ function Form({
                 )}
 
                 {isUploading && renderUploadProgress(field)}
+
+                {heicConverting[field.id] && (
+                    <label>
+                        {`Converting iPhone photos... ${heicConverting[field.id].done} of ${heicConverting[field.id].total}`}
+                    </label>
+                )}
 
                 <input
                     type="file"
@@ -2194,6 +2235,83 @@ function Form({
         return currentFields;
     }, []);
 
+    const isHeicFile = (file) => (
+        /image\/hei[cf]/i.test(file.type)
+        || ['heic', 'heif'].includes(String(file.name.split('.').pop() || '').toLowerCase())
+    );
+
+    const clearHeicConverting = (field) => setHeicConverting((prev) => {
+        const next = {...prev};
+        delete next[field.id];
+        return next;
+    });
+
+    const loadHeicConverter = async () => {
+        try {
+            const converterModule = await import('heic2any');
+
+            return [converterModule, converterModule.default, converterModule.default && converterModule.default.default, window.heic2any]
+                .find((candidate) => typeof candidate === 'function') || null;
+        } catch (loadError) {
+            return null;
+        }
+    };
+
+    const convertHeicThenAccept = async (field, chosen) => {
+        const total = chosen.filter(isHeicFile).length;
+
+        setHeicConverting((prev) => ({...prev, [field.id]: {done: 0, total}}));
+
+        const converter = await loadHeicConverter();
+
+        if (!converter) {
+            clearHeicConverting(field);
+            setGeneralFormError('The photo converter could not be loaded. Please export these photos as JPEG and try again.');
+            setTimeout(() => setGeneralFormError(''), msgTimeout);
+
+            return;
+        }
+
+        const converted = [];
+        const unreadable = [];
+        let done = 0;
+
+        for (const file of chosen) {
+            if (!isHeicFile(file)) {
+                converted.push(file);
+                continue;
+            }
+
+            try {
+                const output = await converter({blob: file, toType: 'image/jpeg', quality: 0.92});
+                const jpeg = Array.isArray(output) ? output[0] : output;
+
+                converted.push(new File([jpeg], `${file.name.replace(/\.[^.]+$/, '')}.jpg`, {type: 'image/jpeg'}));
+            } catch (conversionError) {
+                unreadable.push(file.name);
+            }
+
+            done += 1;
+            setHeicConverting((prev) => ({...prev, [field.id]: {done, total}}));
+        }
+
+        clearHeicConverting(field);
+
+        if (converted.length > 0) {
+            const problem = acceptFiles(field, converted);
+
+            if (problem !== '') {
+                setGeneralFormError(problem);
+                setTimeout(() => setGeneralFormError(''), msgTimeout);
+            }
+        }
+
+        if (unreadable.length > 0) {
+            setGeneralFormError(`${unreadable.length} photo${unreadable.length === 1 ? '' : 's'} could not be read in this browser (${unreadable.join(', ')}). Please export ${unreadable.length === 1 ? 'it' : 'them'} as JPEG and try again.`);
+            setTimeout(() => setGeneralFormError(''), msgTimeout);
+        }
+    };
+
     const acceptFiles = (field, fileList) => {
         const chosen = Array.from(fileList || []);
 
@@ -2209,6 +2327,12 @@ function Form({
 
         setGeneralFormError('');
         setSuccessMessage('');
+
+        if (chosen.some(isHeicFile)) {
+            convertHeicThenAccept(field, chosen);
+
+            return '';
+        }
 
         if (field.type === 'files') {
             const existing = getChosenFiles(field);
@@ -2758,9 +2882,12 @@ function Form({
     }, [dynamicFields, noInputFieldsCache, cacheHaveBeenLoaded, fieldRefs, processFieldRules, refsHaveBeenSet, loadCachedValues, normalizedDynamicSections, dynamicSectionInstances]);
 
     useEffect(() => {
+        let createdAnyRef = false;
+
         dynamicFields.forEach(field => {
             if (!fieldRefs.current[field.id]) {
                 fieldRefs.current[field.id] = createRef();
+                createdAnyRef = true;
 
                 if (field.value !== undefined && field.value !== null && field.value !== '') {
                     const ref = fieldRefs.current[field.id];
@@ -2775,7 +2902,7 @@ function Form({
             }
         });
 
-        setRefsHaveBeenSet(true);
+        setRefsVersion(version => (createdAnyRef || version === 0 ? version + 1 : version));
     }, [dynamicFields]);
 
     useEffect(() => {

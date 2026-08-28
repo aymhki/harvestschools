@@ -418,6 +418,8 @@ function AcademicCalendarsManagement() {
                        setDeleteError(null);
                        setShowDeleteModal(true);
                    }}
+                   allowSearch={true}
+                   searchPlaceholder={'Search events'}
                    headerModuleElements={[
                        (<button key={1} onClick={goBackToList}>Back</button>),
                        (<button key={2} onClick={openPdfModal}>Update PDF</button>),

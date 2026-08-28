@@ -282,6 +282,7 @@ const ENDPOINTS = {
     validateEventBookingLogin: '/scripts/Parents/EventBookings/validateEventBookingLogin.php',
     createEventBookingSession: '/scripts/Parents/EventBookings/createEventBookingSession.php',
     deleteEventBookingEntry: '/scripts/Admin/EventBookings/deleteEventBookingEntry.php',
+    deleteEventBookings: '/scripts/Admin/EventBookings/deleteEventBookings.php',
     submitAddEventBookingForm: '/scripts/Admin/EventBookings/submitAddEventBookingForm.php',
     getEventBookingInfoBySession: '/scripts/Parents/EventBookings/getEventBookingBySession.php',
     submitEditEventBookingForm: '/scripts/Admin/EventBookings/submitEditEventBookingForm.php',

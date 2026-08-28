@@ -37,6 +37,11 @@ function turnstile_token_from_request($explicitToken = null) {
 }
 
 
+function turnstile_client_is_native() {
+    return ($_SERVER['HTTP_X_CLIENT_PLATFORM'] ?? '') === 'native';
+}
+
+
 function turnstile_log_outcome($mode, $detail = '') {
     $endpoint = $_SERVER['SCRIPT_NAME'] ?? 'unknown';
 

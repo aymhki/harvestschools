@@ -95,27 +95,41 @@ try {
     gallery_delete_file($paths['output']);
     gallery_delete_file($paths['pid']);
 
+    $sourceAudioCodec = strtolower(trim((string)($probe['audioCodec'] ?? '')));
+    $mp4SafeAudioCodecs = ['aac', 'mp3', 'mp2', 'alac', 'ac3', 'eac3'];
+
+    if (in_array($sourceAudioCodec, $mp4SafeAudioCodecs, true)) {
+        $audioArguments = ['-c:a', 'copy'];
+    } else {
+        $audioArguments = ['-ac', '2', '-ar', '48000', '-af', 'aresample=async=1:first_pts=0', '-c:a', 'aac', '-b:a', '192k'];
+    }
+
     $encodeCommand = [
         $ffmpeg,
         '-nostdin',
         '-hide_banner',
-        '-loglevel', 'error',
+        '-loglevel', 'warning',
         '-y',
         '-i', $paths['part'],
+        '-map', '0:v:0',
+        '-map', '0:a:0?',
+    ];
+
+    array_push(
+        $encodeCommand,
         '-c:v', 'libx264',
         '-preset', 'slow',
         '-crf', '20',
         '-pix_fmt', 'yuv420p',
-    ];
+        '-max_muxing_queue_size', '1024'
+    );
 
     $cap = GALLERY_MAX_VIDEO_SHORT_SIDE;
 
     $encodeCommand[] = '-vf';
     $encodeCommand[] = "scale='if(gt(iw,ih),-2,min($cap,iw))':'if(gt(iw,ih),min($cap,ih),-2)'";
 
-    $started = media_spawn_detached(array_merge($encodeCommand, [
-        '-c:a', 'aac',
-        '-b:a', '160k',
+    $started = media_spawn_detached(array_merge($encodeCommand, $audioArguments, [
         '-movflags', '+faststart',
         '-progress', $paths['progress'],
         $paths['output'],

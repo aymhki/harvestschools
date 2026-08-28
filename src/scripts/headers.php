@@ -50,7 +50,7 @@ function set_public_cors_headers($customOptions = []) {
     $defaults = [
         'content_type'    => 'application/json; charset=utf-8',
         'allowed_methods' => 'GET, OPTIONS',
-        'cache_control'   => 'public, max-age=300, stale-while-revalidate=3600'
+        'cache_control'   => 'public, no-cache, must-revalidate'
     ];
 
     $config = array_merge($defaults, $customOptions);

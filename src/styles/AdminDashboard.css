@@ -641,6 +641,10 @@ tr.admin-diff-changed td {
 
 }
 
+.general-small-admin-action-modal-content .select-form-field {
+    margin-top: 1rem;
+}
+
 .general-small-admin-action-modal-footer {
     display: flex;
     flex-direction: row;

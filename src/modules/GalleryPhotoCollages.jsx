@@ -69,21 +69,32 @@ function GalleryPhotoCollages() {
         />
     )
 
-    const wideCollages = collages.filter((collage) => collage.layout !== 'narrow')
-    const narrowCollages = collages.filter((collage) => collage.layout === 'narrow')
+    const groups = []
+
+    collages.forEach((collage) => {
+        const isNarrow = collage.layout === 'narrow'
+        const lastGroup = groups[groups.length - 1]
+
+        if (isNarrow && lastGroup && lastGroup.isNarrow) {
+            lastGroup.collages.push(collage)
+            return
+        }
+
+        groups.push({isNarrow, collages: [collage]})
+    })
 
     return (
         <>
 
             {hasFailed && <p>{t('gallery-pages.unavailable')}</p>}
 
-            {wideCollages.map(renderCollage)}
-
-            {narrowCollages.length > 0 && (
-                <div className={'narrow-sliders-grid'}>
-                    {narrowCollages.map(renderCollage)}
-                </div>
-            )}
+            {groups.map((group, index) => (
+                group.isNarrow ? (
+                    <div key={`narrow-${index}`} className={'narrow-sliders-grid'}>
+                        {group.collages.map(renderCollage)}
+                    </div>
+                ) : group.collages.map(renderCollage)
+            ))}
         </>
     )
 }

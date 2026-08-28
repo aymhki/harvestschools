@@ -120,6 +120,33 @@ const handleEditEventBookingRequest = async (formData, bookingId) => {
 }
 
 
+const handleDeleteEventBookingsRequest = async (scope, division) => {
+    try {
+        const sessionId = await validateAdminSessionLocally();
+
+        if (!sessionId) {
+            return 'Session expired'
+        }
+
+        const response = await fetch(endpoints.deleteEventBookings, {
+            method: 'POST',
+            body: JSON.stringify({scope: scope, division: division || ''}),
+            headers: await buildAuthHeaders(sessionId)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            return result;
+        } else {
+            return result.message;
+        }
+    } catch (error) {
+        return error.message;
+    }
+}
+
+
 const fetchEventMetaDetailsRequest = async () => {
     try {
         const sessionId = await validateAdminSessionLocally();
@@ -180,6 +207,7 @@ const handleUpdateEventMetaDetailsRequest = async (formData, selectedPlace) => {
 export {
     fetchEventBookingsRequest,
     handleDeleteEventBookingRequest,
+    handleDeleteEventBookingsRequest,
     handleAddEventBookingRequest,
     handleEditEventBookingRequest,
     fetchEventMetaDetailsRequest,

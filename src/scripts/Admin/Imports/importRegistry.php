@@ -26,6 +26,7 @@ function import_registry() {
         'eventBookings' => [
             'label'      => 'booking',          'plural' => 'bookings',
             'descriptor' => 'event_booking_import_descriptor',
+            'variants'   => 'event_booking_import_variants',
             'authorise'  => 'event_booking_import_authorise',
             'add'        => 'event_booking_add_bookings',
             'context'    => [],

@@ -52,6 +52,7 @@
    php_flag display_errors Off
    php_value error_log "/home/harvest/logs/php.error.log"
    php_flag log_errors On
+   php_value max_file_uploads 100
    php_value upload_max_filesize 5000M
    php_value post_max_size 5000M
    php_value max_execution_time 3000
@@ -72,6 +73,7 @@
    php_value max_input_time 3000
    php_value max_input_vars 4096
    php_value memory_limit 8192M
+   php_value max_file_uploads 100
    php_value session.gc_maxlifetime 1440
    php_value session.save_path "/var/cpanel/php/sessions/ea-php84"
    php_flag zlib.output_compression Off

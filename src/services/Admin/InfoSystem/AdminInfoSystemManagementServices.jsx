@@ -88,16 +88,14 @@ const fetchAnalyticsData = async (navigate, setWebsiteAnalytics, setChatBotAnaly
         load(endpoints.getDatabaseAnalytics)
     ]);
 
-    setWebsiteAnalytics(website && website.success
-        ? {
+    setWebsiteAnalytics(website && website.success ? {
             configured: true,
             totals: (website.data && website.data.totals) || [],
             usersOverTime: (website.data && website.data.usersOverTime) || [],
             rankings: (website.data && website.data.rankings) || [],
             reportingWindow: website.reportingWindow,
             cacheAgeSeconds: website.cacheAgeSeconds,
-        }
-        : { configured: false, message: (website && website.message) || 'The website figures could not be loaded.' });
+        } : { configured: false, message: (website && website.message) || 'The website figures could not be loaded.' });
 
     setChatBotAnalytics(chatBot && chatBot.success ? chatBot.data : null);
 }

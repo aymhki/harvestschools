@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import PropTypes from 'prop-types'
 import {useLoading} from '../services/General/GlobalLoadingService.jsx'
 import {usePreloadedData} from '../services/General/PrerenderDataContext.jsx'
-import {fetchPageGates} from '../services/Public/SchoolInfo/PageGatesServices.jsx'
+import {fetchPageGates, getLoadedPageGates, pageGatesHaveLoaded} from '../services/Public/SchoolInfo/PageGatesServices.jsx'
 
 
 const usePageGate = (paths) => {
@@ -11,10 +11,14 @@ const usePageGate = (paths) => {
     const preloadedGates = preloadedDocument && preloadedDocument.gates ? preloadedDocument.gates : null
     const isServerRender = typeof window === 'undefined'
 
-    const [gates, setGates] = useState(preloadedGates)
-    const [isResolved, setIsResolved] = useState(Boolean(preloadedGates) || isServerRender)
+    const [gates, setGates] = useState(() => preloadedGates || getLoadedPageGates())
+    const [isResolved, setIsResolved] = useState(() => Boolean(preloadedGates) || pageGatesHaveLoaded() || isServerRender)
 
     useEffect(() => {
+        if (pageGatesHaveLoaded()) {
+            return undefined
+        }
+
         let isActive = true
 
         fetchPageGates().then((fetched) => {

@@ -43,7 +43,8 @@ const collagePhotosFieldId = 5;
 const PHOTOS_FIELD_LABEL = 'Collage Photos';
 
 const PHOTO_FILE_TYPES = [
-    'image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', '.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif',
+    'image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'image/heic', 'image/heif',
+    '.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif', '.heic', '.heif',
 ];
 
 const MAX_PHOTO_BYTES = 1024 * 1024 * 1024;
@@ -113,7 +114,7 @@ const afterFieldFor = (fieldId, items, noun) => ({
     widthOfField: 1,
     labelOutside: true,
     labelOnTop: true,
-    displayLabel: `Place it after this ${noun}`,
+    displayLabel: 'Place After',
     httpName: 'place-after',
 });
 
@@ -130,7 +131,7 @@ const placementFieldFor = (fieldId, afterFieldId, items, noun, canKeep = false) 
     widthOfField: 1,
     labelOutside: true,
     labelOnTop: true,
-    displayLabel: 'Where it goes on the public page',
+    displayLabel: 'Position',
     httpName: 'placement',
     rules: items.length === 0 ? [] : [
         {value: PLACEMENT_CHOOSE, ruleResult: [afterFieldFor(afterFieldId, items, noun)]},
@@ -164,14 +165,18 @@ function GalleryManagement() {
     const [deleteError, setDeleteError] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [videoUpload, setVideoUpload] = useState(null);
+    const [photoUpload, setPhotoUpload] = useState(null);
 
     const modalFooterButtonsRef = useRef(null);
     const uploadAbortRef = useRef(null);
     const uploadVideoIdRef = useRef(null);
     const uploadDiscardRef = useRef(null);
     const uploadPromiseRef = useRef(null);
+    const photoAbortRef = useRef(null);
 
     const isUploadingVideo = videoUpload !== null;
+    const isUploadingPhotos = photoUpload !== null;
+    const isUploadingAnything = isUploadingVideo || isUploadingPhotos;
 
     const openTab = searchParams.get('tab') === 'videos' ? VIDEOS_TAB : PHOTOS_TAB;
     const openCollageId = searchParams.get('collage') || '';
@@ -187,8 +192,10 @@ function GalleryManagement() {
         transform: pendingDelete ? 'translateY(0)' : 'translateY(-100%)'
     });
 
-    const reloadData = async () => {
-        setIsLoading(true);
+    const reloadData = async ({silent = false} = {}) => {
+        if (!silent) {
+            setIsLoading(true);
+        }
 
         const data = await fetchGallery(navigate, { collageId: openCollageId });
 
@@ -199,7 +206,9 @@ function GalleryManagement() {
             setVideoRecords(data.videoRecords || []);
         }
 
-        setIsLoading(false);
+        if (!silent) {
+            setIsLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -253,7 +262,7 @@ function GalleryManagement() {
             })));
 
             if (statuses.every((status) => status.status !== 'uploading' && status.status !== 'processing')) {
-                await reloadData();
+                await reloadData({silent: true});
             }
         }, UPLOAD_POLL_INTERVAL_MS);
 
@@ -311,11 +320,40 @@ function GalleryManagement() {
             console.log(cancelled);
         }
 
-        await reloadData();
+        await reloadData({silent: true});
+    };
+
+    const cancelPhotoUploadInProgress = () => {
+        setPhotoUpload((current) => (current ? {...current, isCancelling: true} : current));
+
+        if (photoAbortRef.current) {
+            photoAbortRef.current.abort();
+        }
+    };
+
+    const uploadPhotosWith = async (photoFiles, send) => {
+        const controller = new AbortController();
+        const totalBytes = photoFiles.reduce((sum, file) => sum + (file.size || 0), 0);
+
+        photoAbortRef.current = controller;
+
+        setPhotoUpload({phase: 'uploading', percent: 0, sentBytes: 0, totalBytes, isCancelling: false});
+
+        try {
+            return await send({
+                signal: controller.signal,
+                onProgress: ({phase, percent, sentBytes, totalBytes}) => {
+                    setPhotoUpload((current) => (current ? {...current, phase, percent, sentBytes, totalBytes} : current));
+                },
+            });
+        } finally {
+            photoAbortRef.current = null;
+            setPhotoUpload(null);
+        }
     };
 
     useEffect(() => {
-        if (!isUploadingVideo) {
+        if (!isUploadingAnything) {
             return undefined;
         }
 
@@ -343,10 +381,10 @@ function GalleryManagement() {
             window.removeEventListener('beforeunload', warnBeforeLeaving);
             window.removeEventListener('pagehide', discardOnLeaving);
         };
-    }, [isUploadingVideo]);
+    }, [isUploadingAnything]);
 
     const closeModal = () => {
-        if (uploadVideoIdRef.current !== null) {
+        if (uploadVideoIdRef.current !== null || photoAbortRef.current !== null) {
             return;
         }
 
@@ -358,7 +396,7 @@ function GalleryManagement() {
     const collageFields = (collage) => ([
         { id: collageTitleEnFieldId, type: 'text', name: 'title-en', label: 'Title (EN)', required: true, errorMsg: 'Please enter the English title', value: '', defaultValue: collage ? collage.titleEn : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'title-en' },
         { id: collageTitleArFieldId, type: 'text', name: 'title-ar', label: 'Title (AR)', required: true, errorMsg: 'Please enter the Arabic title', value: '', defaultValue: collage ? collage.titleAr : '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'title-ar' },
-        { id: collageLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: layoutChoiceOf(collage ? collage.layout : 'wide'), widthOfField: collage ? 2 : 1, labelOutside: true, labelOnTop: true, displayLabel: 'Card width on the public page (narrow sits three across)', httpName: 'layout' },
+        { id: collageLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: layoutChoiceOf(collage ? collage.layout : 'wide'), widthOfField: collage ? 2 : 1, labelOutside: true, labelOnTop: true, displayLabel: 'Layout', httpName: 'layout' },
         ...(collage ? [
             { id: collageShownFieldId, type: 'select', name: 'is-public', label: 'Visibility', required: true, choices: SHOWN_CHOICES, errorMsg: 'Please choose the visibility', value: '', defaultValue: shownChoiceOf(collage.isPublic), widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Visibility', httpName: 'is-public' },
         ] : []),
@@ -383,7 +421,7 @@ function GalleryManagement() {
         setModalFields([
             { id: videoTitleEnFieldId, type: 'text', name: 'title-en', label: 'Title (EN)', required: true, errorMsg: 'Please enter the English title', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'title-en' },
             { id: videoTitleArFieldId, type: 'text', name: 'title-ar', label: 'Title (AR)', required: true, errorMsg: 'Please enter the Arabic title', value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'title-ar' },
-            { id: videoLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: LAYOUT_CHOICES[0], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Card width on the public page (narrow sits three across)', httpName: 'layout' },
+            { id: videoLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: LAYOUT_CHOICES[0], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Layout', httpName: 'layout' },
             { id: videoFileFieldId, type: 'file', name: 'video', label: VIDEO_FIELD_LABEL, required: true, errorMsg: 'Please choose a video', value: '', allowedFileTypes: VIDEO_FILE_TYPES, maxFileSizeInBytes: MAX_VIDEO_BYTES, showPreview: true, widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Video', httpName: 'video' },
             { id: videoThumbnailPickerFieldId, type: 'video-thumbnail', name: 'thumbnail-at', label: 'Cover Frame', required: false, sourceFieldId: videoFileFieldId, value: '', defaultValue: '0', widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Cover frame', httpName: 'thumbnail-at' },
             placementFieldFor(videoPlacementFieldId, videoAfterFieldId, videoRecords, 'video'),
@@ -414,7 +452,7 @@ function GalleryManagement() {
         setModalFields([
             { id: videoTitleEnFieldId, type: 'text', name: 'title-en', label: 'Title (EN)', required: true, errorMsg: 'Please enter the English title', value: '', defaultValue: video.titleEn, widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (EN)', httpName: 'title-en' },
             { id: videoTitleArFieldId, type: 'text', name: 'title-ar', label: 'Title (AR)', required: true, errorMsg: 'Please enter the Arabic title', value: '', defaultValue: video.titleAr, widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR)', lang: 'ar', httpName: 'title-ar' },
-            { id: videoLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: layoutChoiceOf(video.layout), widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Card width on the public page (narrow sits three across)', httpName: 'layout' },
+            { id: videoLayoutFieldId, type: 'select', name: 'layout', label: 'Layout', required: true, choices: LAYOUT_CHOICES, errorMsg: 'Please choose a layout', value: '', defaultValue: layoutChoiceOf(video.layout), widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Layout', httpName: 'layout' },
             { id: videoShownFieldId, type: 'select', name: 'is-public', label: 'Visibility', required: true, choices: SHOWN_CHOICES, errorMsg: 'Please choose the visibility', value: '', defaultValue: shownChoiceOf(video.isPublic), widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Visibility', httpName: 'is-public' },
             { id: videoThumbnailPickerFieldId, type: 'video-thumbnail', name: 'thumbnail-at', label: 'Cover Frame', required: false, videoUrl: galleryFileUrl(`videos/${video.fileName}`), value: '', defaultValue: String(video.thumbnailAt), widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Cover frame', httpName: 'thumbnail-at' },
             placementFieldFor(videoPlacementFieldId, videoAfterFieldId, otherVideos, 'video', true),
@@ -479,7 +517,7 @@ function GalleryManagement() {
     };
 
     const handleModalSubmit = async (formData) => {
-        const showsPageSpinner = modalType.kind !== 'upload-video';
+        const showsPageSpinner = !['upload-video', 'add-collage', 'add-photos'].includes(modalType.kind);
 
         if (showsPageSpinner) {
             setIsLoading(true);
@@ -502,16 +540,20 @@ function GalleryManagement() {
             };
 
             if (modalType.kind === 'add-collage') {
-                result = await addCollage({
+                const collagePhotoFiles = formData.getAll(PHOTOS_FIELD_LABEL);
+
+                result = await uploadPhotosWith(collagePhotoFiles, (options) => addCollage({
                     titleEn: values[`field_${collageTitleEnFieldId}`],
                     titleAr: values[`field_${collageTitleArFieldId}`],
                     layout: layoutValueOf(values[`field_${collageLayoutFieldId}`]),
                     ...chosenPlacement(collagePlacementFieldId, collageAfterFieldId),
-                }, formData.getAll(PHOTOS_FIELD_LABEL));
+                }, collagePhotoFiles, options));
 
                 nextCollageId = result && result.collageId ? result.collageId : null;
             } else if (modalType.kind === 'add-photos') {
-                result = await addCollagePhotos(modalType.collageId, formData.getAll(PHOTOS_FIELD_LABEL));
+                const extraPhotoFiles = formData.getAll(PHOTOS_FIELD_LABEL);
+
+                result = await uploadPhotosWith(extraPhotoFiles, (options) => addCollagePhotos(modalType.collageId, extraPhotoFiles, options));
             } else if (modalType.kind === 'upload-video') {
                 result = await uploadVideoFromModal(formData.get(VIDEO_FIELD_LABEL), {
                     titleEn: values[`field_${videoTitleEnFieldId}`],
@@ -553,7 +595,7 @@ function GalleryManagement() {
                 if (nextCollageId) {
                     showTableView(nextCollageId);
                 } else {
-                    await reloadData();
+                    await reloadData({silent: !showsPageSpinner});
                 }
 
                 return true;
@@ -562,7 +604,9 @@ function GalleryManagement() {
             throw new Error((result && result.message) || result);
         } catch (error) {
             if (error instanceof UploadCancelledError) {
-                throw new Error('Upload cancelled. Choose another video, or close this window.');
+                throw new Error(modalType.kind === 'upload-video'
+                    ? 'Upload cancelled. Choose another video, or close this window.'
+                    : 'Upload cancelled. Choose different photos, or close this window.');
             }
 
             throw new Error(error.message || 'An error occurred while saving.');
@@ -729,6 +773,16 @@ function GalleryManagement() {
     ]), [collages, photosData, videosData, videoRecords, isLoading, openCollageId, openTab]);
 
     const modalFieldState = useMemo(() => ({
+        [collagePhotosFieldId]: {
+            upload: photoUpload === null ? null : {
+                phase: photoUpload.phase,
+                percent: photoUpload.percent,
+                sentBytes: photoUpload.sentBytes,
+                totalBytes: photoUpload.totalBytes,
+                isCancelling: photoUpload.isCancelling,
+                onCancel: cancelPhotoUploadInProgress,
+            },
+        },
         [videoFileFieldId]: {
             upload: videoUpload === null ? null : {
                 phase: videoUpload.phase,
@@ -739,7 +793,7 @@ function GalleryManagement() {
                 onCancel: cancelVideoUploadInProgress,
             },
         },
-    }), [videoUpload]);
+    }), [videoUpload, photoUpload]);
 
     const modalTitles = {
         'add-collage': 'Add a new Photo Collage',
@@ -805,7 +859,7 @@ function GalleryManagement() {
 
                     <div className={"general-large-admin-action-modal-footer"}>
                         <button className={"add-admin-user-modal-form-cancel-button"}
-                                disabled={isUploadingVideo}
+                                disabled={isUploadingAnything}
                                 onClick={closeModal}>
                             Cancel
                         </button>

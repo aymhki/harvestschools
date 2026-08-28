@@ -142,6 +142,8 @@ function PageGatesManagement() {
                        compact={true}
                        allowHideColumns={true}
                        allowSticky={true}
+                       allowSearch={true}
+                       searchPlaceholder={'Search pages'}
                        forceEnglishTable={true}
                        isLoading={isLoading}
                        defaultHiddenColumns={['Page ID']}
