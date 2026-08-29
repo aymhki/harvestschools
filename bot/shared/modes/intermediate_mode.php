@@ -16,7 +16,38 @@ function findStageById($stageId) {
     return null;
 }
 
+function admissionNotesText($lang) {
+    global $SCHOOL_CONFIG;
+
+    $notes = $SCHOOL_CONFIG['admission_notes'] ?? [];
+    $text = '';
+
+    foreach ($notes as $note) {
+        $body = $note['body'][$lang] ?? '';
+
+        if (trim($body) === '') {
+            continue;
+        }
+
+        $title = $note['title'][$lang] ?? '';
+        $text .= "\n" . ($title === '' ? '' : "*" . $title . ":*\n") . $body . "\n";
+    }
+
+    return $text;
+}
+
 function getRequirementsForStage($stageId, $stageName, $lang) {
+    $stage = findStageById($stageId);
+    $lines = $stage['requirements'][$lang] ?? [];
+
+    if (is_array($lines) && $lines !== []) {
+        $heading = $lang === 'en'
+            ? "*Admission Requirements for {$stageName}:*\n"
+            : "*متطلبات التقديم لمرحلة {$stageName}:*\n";
+
+        return $heading . '• ' . implode("\n• ", $lines) . "\n" . admissionNotesText($lang);
+    }
+
     $medicalStages = ['stg_nat_kg1', 'stg_brit_fs1', 'stg_am_prek'];
     $noReportStages = ['stg_pre_play', 'stg_play', 'stg_nat_kg1', 'stg_brit_fs1', 'stg_am_prek'];
     $needsMedical = in_array($stageId, $medicalStages);

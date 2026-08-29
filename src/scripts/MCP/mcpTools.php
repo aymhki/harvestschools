@@ -75,10 +75,14 @@ function mcp_tool_schemas(): array {
         ],
         'get_stages_offered' => [
             'title' => 'Get stages offered',
-            'description' => 'Lists the school\'s stages with their minimum registration ages. Students must meet the '
+            'description' => 'Lists the school\'s stages with their minimum registration ages and the admission '
+                . 'requirements for each one. Students must meet the '
                 . 'minimum age by October 1st. Every stage listed here carries isOffered: true, meaning the school '
                 . 'publishes it and accepts students into it. A stage missing from this list is one the school does '
-                . 'not publish, so say it is not available rather than guessing at its age or its fee.',
+                . 'not publish, so say it is not available rather than guessing at its age or its fee. '
+                . 'admissionRequirements lists the documents that stage needs; applicants transferring from another '
+                . 'school, coming from outside Egypt, or holding a foreign nationality need extra documents beyond '
+                . 'that list, so refer them to the admission requirements page for those cases.',
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
@@ -223,6 +227,7 @@ function mcp_stage_view(array $stage, string $currency): array {
         'tuitionFees'        => $fees,
         'tuitionCurrency'    => $fees === null ? null : $currency,
         'isTuitionPublished' => $fees !== null,
+        'admissionRequirements' => $stage['admissionRequirements'] ?? [],
         'routePath'          => $stage['routePath'] ?? null,
     ];
 }

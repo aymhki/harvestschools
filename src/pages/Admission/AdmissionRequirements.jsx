@@ -1,41 +1,13 @@
-import OptionsGrid from "../../modules/OptionsGrid.jsx";
+import ParallaxScrollSection from "../../modules/ParallaxScrollSection.jsx";
 import '../../styles/Admission.css'
 import {useTranslation} from "react-i18next";
+import {servePublicAsset} from "../../services/General/GeneralServices.jsx"
+import AdmissionRequirementsList from "../../modules/AdmissionRequirementsList.jsx";
 
 
 function AdmissionRequirements() {
 
     const { t } = useTranslation(['admission-pages']);
-
-    const options = [
-        {
-            title: t("admission-pages.admission-requirements-page.options-page.inside-egypt-option"),
-            image: "/images/AdmissionPages/Egypt1.png",
-            description: t("admission-pages.admission-requirements-page.options-page.inside-egypt-option-description"),
-            link: "/admission/inside-egypt-requirements",
-            buttonText: t("common.learn-more", {ns: 'common'}),
-            titleInArabic: false,
-            descriptionInArabic: false
-        },
-        {
-            title: t("admission-pages.admission-requirements-page.options-page.outside-egypt-option"),
-            image: "/images/AdmissionPages/Globe1.png",
-            description: t("admission-pages.admission-requirements-page.options-page.outside-egypt-option-description"),
-            link: "/admission/outside-egypt-requirements",
-            buttonText: t("common.learn-more", {ns: 'common'}),
-            titleInArabic: false,
-            descriptionInArabic: false
-        },
-        {
-            title: t("admission-pages.admission-requirements-page.options-page.outside-egypt-foreigners-option"),
-            image: "/images/AdmissionPages/Foreigner1.png",
-            description: t("admission-pages.admission-requirements-page.options-page.outside-egypt-foreigners-option-description"),
-            link: "/admission/outside-egypt-requirements-foreigners",
-            buttonText: t("common.learn-more", {ns: 'common'}),
-            titleInArabic: false,
-            descriptionInArabic: false
-        }
-    ];
 
   return (
       <div className="admission-requirements-page">
@@ -46,7 +18,14 @@ function AdmissionRequirements() {
           <meta name="robots" content="index, follow"/>
           <meta name="googlebot" content="index, follow"/>
 
-          <OptionsGrid title={t("admission-pages.admission-requirements-page.options-page.admission-requirements-title")} titleInArabic={false} options={options}/>
+          <ParallaxScrollSection
+              backgroundImage={servePublicAsset('/images/AdmissionPages/InsideEgyptRequirementsHeaderBackground.jpg')}
+              title={t('admission-pages.admission-requirements-page.options-page.admission-requirements-title')}
+              titleInArabic={false}
+              darken={true}
+          />
+
+          <AdmissionRequirementsList/>
       </div>
   );
 }

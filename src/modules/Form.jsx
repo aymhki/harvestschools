@@ -920,7 +920,8 @@ function Form({
         onChange: (e) => onChange(e, field),
         ref: fieldRefs.current[field.id],
         defaultValue: field.defaultValue || '',
-        ...(field.lang !== undefined && { lang: field.lang })
+        ...(field.lang !== undefined && { lang: field.lang }),
+        ...(field.autoComplete !== undefined && { autoComplete: field.autoComplete })
     });
 
     const expandAutoSelectDependents = (autoSelect, choiceName, visited = new Set()) => {
@@ -3573,6 +3574,7 @@ const fieldShape = {
     alwaysEnglish: PropTypes.bool,
     allowCustomValues: PropTypes.bool,
     lang: PropTypes.string,
+    autoComplete: PropTypes.string,
     autoSelect: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     onSearchQueryChange: PropTypes.func,
 };

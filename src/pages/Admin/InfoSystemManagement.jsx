@@ -93,6 +93,8 @@ function InfoSystemManagement() {
     const stageAgeArColIndex = 10;
     const stageIsOfferedColIndex = 8;
     const stageTuitionFeesColIndex = 11;
+    const stageRequirementsEnColIndex = 12;
+    const stageRequirementsArColIndex = 13;
 
     const profileSortOrderColIndex = 0;
     const profileKeyColIndex = 1;
@@ -159,6 +161,8 @@ function InfoSystemManagement() {
     const stageAgeArFormFieldId = 10;
     const stageIsOfferedFormFieldId = 8;
     const stageTuitionFeesFormFieldId = 11;
+    const stageRequirementsEnFormFieldId = 12;
+    const stageRequirementsArFormFieldId = 13;
 
     const profileKeyFormFieldId = 1;
     const profileCategoryFormFieldId = 2;
@@ -187,7 +191,7 @@ function InfoSystemManagement() {
 
     const profileCategories = ['identity', 'location', 'contact', 'social', 'hours', 'fees', 'admission', 'general'];
     const policyGroupKeys = ['discounts', 'accreditations', 'fee_exclusions'];
-    const staticContentGroupKeys = ['static', 'faq'];
+    const staticContentGroupKeys = ['static', 'faq', 'admission_notes'];
 
     const handleEditInitialization = (type, rowIndex) => {
         let rowData;
@@ -237,6 +241,8 @@ function InfoSystemManagement() {
                 { id: stageAgeArFormFieldId, type: 'text', name: 'age_ar', label: 'Age (AR)', required: true, value: '', defaultValue: rowData[stageAgeArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Age (AR)', lang: 'ar', httpName: 'stage-age-ar' },
                 { id: stageIsOfferedFormFieldId, type: 'select', name: 'is_offered', label: 'Is Offered', required: true, choices: ['Yes', 'No'], defaultValue: rowData[stageIsOfferedColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Is Offered', httpName: 'stage-is-offered' },
                 { id: stageTuitionFeesFormFieldId, type: 'number', name: 'tuition_fees', label: 'Tuition Fees', required: true, value: '', defaultValue: rowData[stageTuitionFeesColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Tuition Fees', minimumValue: 1, maximumValue: 1000000000, httpName: 'stage-tuition-fees' },
+                { id: stageRequirementsEnFormFieldId, type: 'textarea', name: 'admission_requirements_en', label: 'Admission Requirements (EN)', required: false, value: '', defaultValue: rowData[stageRequirementsEnColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Admission Requirements (EN) — one per line', httpName: 'stage-admission-requirements-en' },
+                { id: stageRequirementsArFormFieldId, type: 'textarea', name: 'admission_requirements_ar', label: 'Admission Requirements (AR)', required: false, value: '', defaultValue: rowData[stageRequirementsArColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Admission Requirements (AR) — one per line', lang: 'ar', httpName: 'stage-admission-requirements-ar' },
             ];
         } else if (type === 'profile') {
             rowData = profileData[rowIndex];
@@ -351,6 +357,8 @@ function InfoSystemManagement() {
                         age_en: formDataJson[`field_${stageAgeEnFormFieldId}`],
                         age_ar: formDataJson[`field_${stageAgeArFormFieldId}`],
                         tuition_fees: Number(formDataJson[`field_${stageTuitionFeesFormFieldId}`]),
+                        admission_requirements_en: formDataJson[`field_${stageRequirementsEnFormFieldId}`] ?? '',
+                        admission_requirements_ar: formDataJson[`field_${stageRequirementsArFormFieldId}`] ?? '',
                         sort_order: Number(stagesData[indexOfRowToEdit][stageSortOrderColIndex])
                     }]
                 };
@@ -584,12 +592,24 @@ function InfoSystemManagement() {
                     </button>
                 </div>
 
-                <Table tableData={chatBotAnalytics}
+
+
+                <Table tableData={chatBotAnalytics?.rows || null}
                        scrollable={true}
                        compact={true}
                        allowSticky={false}
                        forceEnglishTable={true}
                        isLoading={isLoadingAnalytics}
+                       headerModuleElements={[
+                           (
+                               <p className={'analytics-dashboard-heading'} key={1}>
+                                   Chatbot traffic
+                                   {chatBotAnalytics?.reportingWindow && (
+                                       <span>{chatBotAnalytics.reportingWindow} · cleared weekly</span>
+                                   )}
+                               </p>
+                           )
+                       ]}
                 />
 
 
@@ -724,7 +744,7 @@ function InfoSystemManagement() {
 
                         {currentEditType === 'staticContent' && (
                             <p className={"general-large-admin-action-modal-content-note"}>
-                                Note: This is what the chat bot sends word for word. *Text* renders bold and _text_ renders
+                                Note: This is what the chatbot sends word for word. *Text* renders bold and _text_ renders
                                 italic on WhatsApp, Messenger and Instagram. Changes only reach the bot after you press
                                 Trigger Server Static Data Update.
                             </p>
@@ -732,7 +752,7 @@ function InfoSystemManagement() {
 
                         { (currentEditType === 'profile' || currentEditType === 'policies') && (
                             <p className={"general-large-admin-action-modal-content-note"}>
-                                Note: These values are read by Siri, Gemini and the chat bot.
+                                Note: These values are read by Siri, Gemini and the chatbot.
                             </p>
                         )}
 

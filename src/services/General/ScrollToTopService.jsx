@@ -30,9 +30,7 @@ const useScrollToTopOnNavigation = () => {
             return;
         }
 
-        const prefersReducedMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        window.scrollTo({ top: 0, left: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        window.scrollTo({ top: 0, left: 0, behavior:  'auto' });
     }, [pathname, search, hash, navigationType]);
 };
 

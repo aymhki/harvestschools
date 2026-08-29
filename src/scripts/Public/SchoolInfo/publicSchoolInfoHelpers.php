@@ -140,10 +140,17 @@ function public_school_departments($conn, $language) {
     return $departments;
 }
 
+function public_info_requirement_lines($value) {
+    $lines = preg_split('/\r\n|\r|\n/', (string)$value);
+    $lines = array_map('trim', $lines === false ? [] : $lines);
+
+    return array_values(array_filter($lines, static function ($line) { return $line !== ''; }));
+}
+
 function public_school_stages($conn, $language, $includeUnoffered, $departmentKey = null) {
     $stages = [];
 
-    $sql = "SELECT s.stage_key, s.dept_key, s.section_key, s.section_title_en, s.section_title_ar, s.name_en, s.name_ar, s.is_offered, s.age_en, s.age_ar, s.tuition_fees, s.sort_order, d.name_en AS dept_name_en, d.name_ar AS dept_name_ar
+    $sql = "SELECT s.stage_key, s.dept_key, s.section_key, s.section_title_en, s.section_title_ar, s.name_en, s.name_ar, s.is_offered, s.age_en, s.age_ar, s.tuition_fees, s.admission_requirements_en, s.admission_requirements_ar, s.sort_order, d.name_en AS dept_name_en, d.name_ar AS dept_name_ar
             FROM info_system_stages s
             LEFT JOIN info_system_departments d ON d.dept_key = s.dept_key";
 
@@ -190,6 +197,7 @@ function public_school_stages($conn, $language, $includeUnoffered, $departmentKe
             'isOffered'      => $includeUnoffered ? true : ((int)$row['is_offered'] === 1),
             'minimumAge'     => public_info_localised($row, 'age', $language),
             'tuitionFees'    => $normalisedFees,
+            'admissionRequirements' => public_info_requirement_lines(public_info_localised($row, 'admission_requirements', $language)),
             'sortOrder'      => (int)$row['sort_order'],
             'routePath'      => PUBLIC_DEPARTMENT_ROUTE_PATHS[$row['dept_key']] ?? null,
         ];
@@ -198,6 +206,44 @@ function public_school_stages($conn, $language, $includeUnoffered, $departmentKe
     $stmt->close();
 
     return $stages;
+}
+
+function public_school_admission_note_facts(array $notes, $language) {
+    $facts = [];
+
+    foreach ($notes as $note) {
+        if (trim((string)$note['body']) === '') {
+            continue;
+        }
+
+        $facts[] = public_school_fact(
+            'fact.admission.note.' . $note['key'],
+            'admission',
+            $note['title'],
+            $note['body'],
+            [$note['title'], 'admission', 'requirements', 'documents', 'متطلبات', 'أوراق', 'التقديم'],
+            '/admission/admission-requirements',
+            'infosystem',
+            'info_system_static_content.' . $note['key']
+        );
+    }
+
+    return $facts;
+}
+
+function public_school_admission_notes($conn, $language) {
+    $notes = [];
+    $result = $conn->query("SELECT content_key, title_en, title_ar, body_en, body_ar FROM info_system_static_content WHERE group_key = 'admission_notes' ORDER BY sort_order ASC");
+
+    while ($result && $row = $result->fetch_assoc()) {
+        $notes[] = [
+            'key'   => $row['content_key'],
+            'title' => public_info_localised($row, 'title', $language),
+            'body'  => public_info_localised($row, 'body', $language),
+        ];
+    }
+
+    return $notes;
 }
 
 function public_school_policies($conn, $language) {
@@ -532,6 +578,21 @@ function public_school_facts($profile, $departments, $stages, $policies, $langua
                 'info_system_stages.' . $stage['key'] . '.age_' . $language
             );
         }
+
+        if ($stage['admissionRequirements'] !== []) {
+            $facts[] = public_school_fact(
+                'fact.admission.' . $stage['key'],
+                'admission',
+                $topic,
+                ($language === 'ar'
+                    ? 'أوراق التقديم المطلوبة: ' . implode('، ', $stage['admissionRequirements'])
+                    : 'Admission requirements: ' . implode(', ', $stage['admissionRequirements'])),
+                [$stage['name'], $stage['departmentName'], 'admission', 'requirements', 'documents', 'papers', 'متطلبات', 'أوراق', 'التقديم'],
+                '/admission/admission-requirements',
+                'infosystem',
+                'info_system_stages.' . $stage['key'] . '.admission_requirements_' . $language
+            );
+        }
     }
 
     foreach ($policies as $groupKey => $items) {
@@ -773,7 +834,8 @@ function public_school_section($conn, $language, $section) {
             return array_merge(
                 public_school_facts($profile, $departments, $stages, $policies, $language),
                 public_school_staff_facts(public_staff_directory($conn, $language), $language),
-                public_school_library_facts(public_library_catalogue($conn, $language), $language)
+                public_school_library_facts(public_library_catalogue($conn, $language), $language),
+                public_school_admission_note_facts(public_school_admission_notes($conn, $language), $language)
             );
     }
 
@@ -824,7 +886,8 @@ function public_school_document($conn, $language) {
         'facts'       => array_merge(
             public_school_facts($profile, $departments, $stages, $policies, $language),
             public_school_staff_facts($staff, $language),
-            public_school_library_facts($library, $language)
+            public_school_library_facts($library, $language),
+            public_school_admission_note_facts(public_school_admission_notes($conn, $language), $language)
         ),
         'events'      => public_school_events($conn, $language),
         'pages'       => public_school_pages($language, $conn),

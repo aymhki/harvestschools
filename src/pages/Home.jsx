@@ -31,7 +31,7 @@ function Home() {
 
     const homeSliderPhotos = [
         { id: 1, url: '/images/HomePage/VisionBackground.v6.avif', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
-        { id: 2, url: '/images/HomePage/MissionBckground.v6.avif', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
+        { id: 2, url: '/images/CorporateHome/MissionBackground.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
     ]
 
     const contactUsFormFields = [

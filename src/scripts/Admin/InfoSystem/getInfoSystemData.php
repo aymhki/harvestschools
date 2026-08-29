@@ -72,10 +72,11 @@ try {
     $stageHeaders = [
         "Stage Key", "Department Key", "Section Key", "Section Title (EN)",
         "Section Title (AR)", "Name (EN)", "Name (AR)", "Is Offered",
-        "Age (EN)", "Age (AR)", "Tuition Fees", "ID"
+        "Age (EN)", "Age (AR)", "Tuition Fees", "ID",
+        "Admission Requirements (EN)", "Admission Requirements (AR)"
     ];
     $stageRows = [];
-    $res = $conn->query("SELECT stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order FROM info_system_stages ORDER BY dept_key, sort_order ASC");
+    $res = $conn->query("SELECT stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order, admission_requirements_en, admission_requirements_ar FROM info_system_stages ORDER BY dept_key, sort_order ASC");
     while ($row = $res->fetch_assoc()) {
         $row['is_offered'] = $row['is_offered'] == 1 ? 'Yes' : 'No';
         $stageRows[] = array_map('strval', array_values($row));

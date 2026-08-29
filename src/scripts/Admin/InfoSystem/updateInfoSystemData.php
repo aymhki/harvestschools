@@ -183,14 +183,14 @@ try {
 
     if (!$updateStaticOnly && isset($postData['stages'])) {
         $oldKeyStmt = $conn->prepare("SELECT section_key FROM info_system_stages WHERE stage_key = ?");
-        $stmt = $conn->prepare("INSERT INTO info_system_stages (stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE section_key=VALUES(section_key), section_title_en=VALUES(section_title_en), section_title_ar=VALUES(section_title_ar), name_en=VALUES(name_en), name_ar=VALUES(name_ar), is_offered=VALUES(is_offered), age_en=VALUES(age_en), age_ar=VALUES(age_ar), tuition_fees=VALUES(tuition_fees), sort_order=VALUES(sort_order)");
+        $stmt = $conn->prepare("INSERT INTO info_system_stages (stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, is_offered, age_en, age_ar, tuition_fees, admission_requirements_en, admission_requirements_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE section_key=VALUES(section_key), section_title_en=VALUES(section_title_en), section_title_ar=VALUES(section_title_ar), name_en=VALUES(name_en), name_ar=VALUES(name_ar), is_offered=VALUES(is_offered), age_en=VALUES(age_en), age_ar=VALUES(age_ar), tuition_fees=VALUES(tuition_fees), admission_requirements_en=VALUES(admission_requirements_en), admission_requirements_ar=VALUES(admission_requirements_ar), sort_order=VALUES(sort_order)");
         $checkStmt = $conn->prepare("SELECT section_title_en, section_title_ar FROM info_system_stages WHERE section_key = ? AND stage_key != ? LIMIT 1");
 
         $sectionTitles = [];
 
         $stagesBefore = info_system_snapshot(
             $conn,
-            "SELECT stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, IF(is_offered, 'Yes', 'No') AS is_offered, age_en, age_ar, tuition_fees, sort_order FROM info_system_stages",
+            "SELECT stage_key, dept_key, section_key, section_title_en, section_title_ar, name_en, name_ar, IF(is_offered, 'Yes', 'No') AS is_offered, age_en, age_ar, tuition_fees, admission_requirements_en, admission_requirements_ar, sort_order FROM info_system_stages",
             'stage_key'
         );
 
@@ -208,6 +208,8 @@ try {
                 'Age (EN)' => ['age_en', $st['age_en']],
                 'Age (AR)' => ['age_ar', $st['age_ar']],
                 'Tuition fees' => ['tuition_fees', $st['tuition_fees']],
+                'Admission requirements (EN)' => ['admission_requirements_en', $st['admission_requirements_en'] ?? ''],
+                'Admission requirements (AR)' => ['admission_requirements_ar', $st['admission_requirements_ar'] ?? ''],
                 'Sort order' => ['sort_order', $st['sort_order']],
             ]));
 
@@ -216,7 +218,10 @@ try {
             $oldRow = $oldKeyStmt->get_result()->fetch_assoc();
             $oldSectionKey = $oldRow ? $oldRow['section_key'] : null;
 
-            $stmt->bind_param("sssssssisssi", $st['stage_key'], $st['dept_key'], $st['section_key'], $st['section_title_en'], $st['section_title_ar'], $st['name_en'], $st['name_ar'], $isOff, $st['age_en'], $st['age_ar'], $st['tuition_fees'], $st['sort_order']);
+            $stageRequirementsEn = (string)($st['admission_requirements_en'] ?? '');
+            $stageRequirementsAr = (string)($st['admission_requirements_ar'] ?? '');
+
+            $stmt->bind_param("sssssssisssssi", $st['stage_key'], $st['dept_key'], $st['section_key'], $st['section_title_en'], $st['section_title_ar'], $st['name_en'], $st['name_ar'], $isOff, $st['age_en'], $st['age_ar'], $st['tuition_fees'], $stageRequirementsEn, $stageRequirementsAr, $st['sort_order']);
             $stmt->execute();
 
             $isMove = $oldSectionKey !== null && $oldSectionKey !== $st['section_key'];
@@ -366,6 +371,8 @@ try {
         $constants[$row['setting_key']] = $row['val'];
     }
 
+    $showUnofferedStages = ($constants['SHOW_UNOFFERED_STAGES'] ?? '1') === '1';
+
     $depts = [];
     $res = $conn->query("SELECT * FROM info_system_departments ORDER BY sort_order ASC");
     while ($row = $res->fetch_assoc()) {
@@ -434,6 +441,10 @@ try {
     $faqsFromDb = [];
 
     foreach ($staticContentRows as $row) {
+        if ($row['group_key'] === 'admission_notes') {
+            continue;
+        }
+
         if ($row['group_key'] === 'faq') {
             $faqsFromDb[$row['content_key']] = [
                 'q' => ['en' => $row['title_en'], 'ar' => $row['title_ar']],
@@ -565,7 +576,7 @@ try {
         foreach ($sections as $secKey => $stagesList) {
             foreach ($stagesList as $stage) {
                 $sName = $stage['name_en'];
-                $sOffered = $stage['is_offered'] ? 'Yes' : 'No';
+                $sOffered = ($showUnofferedStages || $stage['is_offered']) ? 'Yes' : 'No';
                 $sAge = $stage['age_en'];
                 $sFees = number_format($stage['tuition_fees']);
 
@@ -574,6 +585,44 @@ try {
                 $llmFees .= "- $sName: $sFees\n";
             }
         }
+    }
+
+    $requirementGroups = [];
+
+    foreach ($stagesData as $deptKey => $sections) {
+        foreach ($sections as $secKey => $stagesList) {
+            foreach ($stagesList as $stage) {
+                $requirementLines = public_info_requirement_lines($stage['admission_requirements_en'] ?? '');
+
+                if ($requirementLines === []) {
+                    continue;
+                }
+
+                $requirementSignature = implode("\n", $requirementLines);
+
+                if (!isset($requirementGroups[$requirementSignature])) {
+                    $requirementGroups[$requirementSignature] = ['lines' => $requirementLines, 'names' => []];
+                }
+
+                $requirementGroups[$requirementSignature]['names'][] = $stage['name_en'];
+            }
+        }
+    }
+
+    $llmRequirements = "";
+
+    foreach ($requirementGroups as $requirementGroup) {
+        $llmRequirements .= "\n" . implode(', ', $requirementGroup['names']) . ":\n";
+
+        foreach ($requirementGroup['lines'] as $requirementLine) {
+            $llmRequirements .= "- " . $requirementLine . "\n";
+        }
+    }
+
+    $notesRes = $conn->query("SELECT title_en, body_en FROM info_system_static_content WHERE group_key = 'admission_notes' ORDER BY sort_order ASC");
+
+    while ($notesRes && $noteRow = $notesRes->fetch_assoc()) {
+        $llmRequirements .= "\n" . $noteRow['title_en'] . ": " . $noteRow['body_en'] . "\n";
     }
 
     $schoolContactEmail = configured_email('contact-us');
@@ -638,12 +687,7 @@ $llmAge
 
 📋 ADMISSION REQUIREMENTS
 
-- Birth Certificate: Original copy — required for all grades
-- Recent Photos: 6 recent photos — required for all grades
-- Parent ID: Father and Mother ID copies — required for all grades
-- Immunization Record: Updated vaccination record — required for all grades
-- Medical Certificate: Issued by health insurance — required for Kindergarten 1 (KG1) only
-- Previous School Report: Last school report card — required from Kindergarten 2 (KG2) onwards through Senior 3 (Sr.3)
+$llmRequirements
 
 💰 TUITION FEES (ANNUAL)
 
@@ -687,9 +731,6 @@ Minimum Stage Age: https://www.harvestschools.com/minimum-stage-age
 Vacancies: https://www.harvestschools.com/careers
 Admission Process: https://www.harvestschools.com/admission/admission-process
 Admission Requirements: https://www.harvestschools.com/admission/admission-requirements
-Inside Egypt Requirements: https://www.harvestschools.com/admission/inside-egypt-requirements
-Outside Egypt Requirements: https://www.harvestschools.com/admission/outside-egypt-requirements
-Outside Egypt Requirements (Foreigners): https://www.harvestschools.com/admission/outside-egypt-requirements-foreigners
 Kindergarten International: https://www.harvestschools.com/academics/kindergarten-international
 Kindergarten National: https://www.harvestschools.com/academics/kindergarten-national
 Pre-Kindergarten: https://www.harvestschools.com/academics/pre-kindergarten
@@ -774,7 +815,7 @@ PROMPT;
         'contact_departments' => [],
         'ui' => [
             'main_title' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
-            'main_body' => ['en' => "Welcome to Harvest International Schools chat bot.\nPlease choose a topic below:", 'ar' => "مرحباً بكم في مدارس هارڤست الدولية.\nيرجى اختيار موضوع من القائمة:"],
+            'main_body' => ['en' => "Welcome to Harvest International Schools chatbot.\nPlease choose a topic below:", 'ar' => "مرحباً بكم في مدارس هارڤست الدولية.\nيرجى اختيار موضوع من القائمة:"],
             'main_body_fallback' => ['en' => 'Please choose a topic from the menu below:', 'ar' => 'يرجى اختيار موضوع من القائمة أدناه:'],
             'main_btn' => ['en' => 'Options', 'ar' => 'الخيارات'],
             'dept_title' => ['en' => 'Choose Department', 'ar' => 'اختر القسم'],
@@ -837,9 +878,13 @@ PROMPT;
                 foreach ($stageList as $stg) {
                     $stagesBuilt[$stg['stage_key']] = [
                         'name' => ['en' => $stg['name_en'], 'ar' => $stg['name_ar']],
-                        'offered' => (bool)$stg['is_offered'],
+                        'offered' => $showUnofferedStages ? true : (bool)$stg['is_offered'],
                         'age' => ['en' => $stg['age_en'], 'ar' => $stg['age_ar']],
-                        'fees' => (int)$stg['tuition_fees']
+                        'fees' => (int)$stg['tuition_fees'],
+                        'requirements' => [
+                            'en' => public_info_requirement_lines($stg['admission_requirements_en'] ?? ''),
+                            'ar' => public_info_requirement_lines($stg['admission_requirements_ar'] ?? '')
+                        ]
                     ];
                 }
 
@@ -856,6 +901,18 @@ PROMPT;
             ];
         }
     }
+
+    $admissionNotesArr = [];
+    $admissionNotesRes = $conn->query("SELECT content_key, title_en, title_ar, body_en, body_ar FROM info_system_static_content WHERE group_key = 'admission_notes' ORDER BY sort_order ASC");
+
+    while ($admissionNotesRes && $admissionNoteRow = $admissionNotesRes->fetch_assoc()) {
+        $admissionNotesArr[$admissionNoteRow['content_key']] = [
+            'title' => ['en' => $admissionNoteRow['title_en'], 'ar' => $admissionNoteRow['title_ar']],
+            'body'  => ['en' => $admissionNoteRow['body_en'], 'ar' => $admissionNoteRow['body_ar']],
+        ];
+    }
+
+    $schoolConfigArr['admission_notes'] = $admissionNotesArr;
 
     $fileContent .= "\$SCHOOL_CONFIG = " . arrayToCode($schoolConfigArr) . ";\n\n";
     $fileContent .= "\$DEPARTMENTS = " . arrayToCode($departmentsArr) . ";\n\n";

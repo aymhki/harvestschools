@@ -205,7 +205,7 @@
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    width: min(24rem, 100%);
+    width: min(30rem, 90%);
     margin-bottom: 0.75rem;
     padding: 0.4rem 0.6rem;
     border: var(--ff-border-width, 0.09rem) solid var(--ff-field-border, var(--primary-color));
@@ -1105,6 +1105,10 @@ td button {
 
     .table-pagination-controls {
         row-gap: 1rem;
+    }
+
+    .table-module-header-search {
+        margin-top: 0.75rem;
     }
 
 }

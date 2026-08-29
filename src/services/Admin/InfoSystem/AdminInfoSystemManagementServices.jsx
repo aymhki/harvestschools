@@ -97,7 +97,10 @@ const fetchAnalyticsData = async (navigate, setWebsiteAnalytics, setChatBotAnaly
             cacheAgeSeconds: website.cacheAgeSeconds,
         } : { configured: false, message: (website && website.message) || 'The website figures could not be loaded.' });
 
-    setChatBotAnalytics(chatBot && chatBot.success ? chatBot.data : null);
+    setChatBotAnalytics(chatBot && chatBot.success ? {
+        rows: chatBot.data,
+        reportingWindow: chatBot.reportingWindow,
+    } : null);
 }
 
 

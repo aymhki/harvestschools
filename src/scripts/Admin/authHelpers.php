@@ -302,8 +302,8 @@ function admin_log_action($conn, $action) {
         if ($action === '') { return; }
 
         $stmt = $conn->prepare(
-            "INSERT INTO admin_action_events (user_id, username, name, action)
-             SELECT u.id, u.username, u.name, ?
+            "INSERT INTO admin_action_events (user_id, username, name, action, created_at)
+             SELECT u.id, u.username, u.name, ?, UTC_TIMESTAMP()
              FROM admin_sessions s
              JOIN admin_users u ON u.id = s.user_id
              WHERE s.id = ?"

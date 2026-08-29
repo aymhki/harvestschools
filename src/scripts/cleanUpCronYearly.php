@@ -14,7 +14,7 @@ try {
     );
 
     $conn->set_charset("utf8mb4");
-    $conn->query("DELETE FROM admin_action_events WHERE created_at < NOW() - INTERVAL 2 YEAR;");
+    $conn->query("DELETE FROM admin_action_events WHERE created_at < UTC_TIMESTAMP() - INTERVAL 2 YEAR;");
     echo "Cron Job Successfully ran\n";
 
 } catch (Exception $e) {

@@ -98,6 +98,23 @@ try {
         return $item['title'];
     }, $policies['fee_exclusions'] ?? []));
 
+    $admissionRequirements = [];
+
+    foreach ($stages as $stage) {
+        if ($stage['admissionRequirements'] === []) {
+            continue;
+        }
+
+        $admissionRequirements[] = [
+            'key'            => $stage['key'],
+            'name'           => $stage['name'],
+            'departmentKey'  => $stage['departmentKey'],
+            'departmentName' => $stage['departmentName'],
+            'sortOrder'      => $stage['sortOrder'],
+            'requirements'   => $stage['admissionRequirements'],
+        ];
+    }
+
     $document = [
         'schemaVersion'  => PUBLIC_INFO_SCHEMA_VERSION,
         'language'       => $language,
@@ -105,6 +122,8 @@ try {
         'feeExclusions'  => $feeExclusions,
         'minimumAgeNote' => $profile['minimum_age_cutoff']['value'] ?? null,
         'departments'    => $departments,
+        'admissionRequirements' => $admissionRequirements,
+        'admissionRequirementNotes' => public_school_admission_notes($conn, $language),
     ];
 
     $document['contentHash'] = hash('sha256', json_encode($document, JSON_UNESCAPED_UNICODE));

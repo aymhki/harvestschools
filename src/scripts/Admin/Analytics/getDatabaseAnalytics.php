@@ -28,9 +28,10 @@ try {
 
     echo json_encode([
         "success" => true,
-        "message" => count($rows) > 1 ? "Data retrieved successfully" : "No chat bot activity is currently stored.",
+        "message" => count($rows) > 1 ? "Data retrieved successfully" : "No chatbot activity is currently stored.",
         "code" => 200,
-        "data" => $rows
+        "data" => $rows,
+        "reportingWindow" => analytics_chat_bot_window($conn)
     ]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

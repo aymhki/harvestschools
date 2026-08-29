@@ -11,6 +11,21 @@ const redirects = [
         to: '/careers',
         routers: [ROUTER_IDS.main, ROUTER_IDS.mobile],
     },
+    {
+        from: '/admission/inside-egypt-requirements',
+        to: '/admission/admission-requirements',
+        routers: [ROUTER_IDS.main, ROUTER_IDS.mobile],
+    },
+    {
+        from: '/admission/outside-egypt-requirements',
+        to: '/admission/admission-requirements',
+        routers: [ROUTER_IDS.main, ROUTER_IDS.mobile],
+    },
+    {
+        from: '/admission/outside-egypt-requirements-foreigners',
+        to: '/admission/admission-requirements',
+        routers: [ROUTER_IDS.main, ROUTER_IDS.mobile],
+    },
 ]
 
 

@@ -111,6 +111,65 @@
     font-size: large;
 }
 
+.admission-requirements-group {
+    margin-bottom: 3rem;
+}
+
+.admission-requirements-group h3 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-bottom: 1rem;
+}
+
+.admission-requirements-group-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    line-height: 1.6;
+}
+
+.admission-requirements-group-department {
+    color: var(--primary-color);
+    font-size: 0.75em;
+    letter-spacing: 0.02em;
+}
+
+.admission-requirements-group-stages {
+    font-weight: bold;
+}
+
+.admission-requirements-group .admission-requirements-list-container {
+    justify-content: center;
+}
+
+.admission-requirements-group .admission-requirements-list {
+    display: inline-block;
+    text-align: left;
+    margin: 0 auto;
+}
+
+.admission-requirements-group .admission-requirements-list:lang(ar) {
+    text-align: right;
+}
+
+.admission-note-question {
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+}
+
+.admission-note-answer {
+    white-space: pre-line;
+    padding-left: 1.25rem;
+}
+
+.admission-note-answer:lang(ar) {
+    padding-left: 0;
+    padding-right: 1.25rem;
+}
+
+
 @media (max-width: 768px) {
     .admission-requirements-list li p, .admission-requirements-list li {
         font-size: inherit;
@@ -119,10 +178,19 @@
     .admission-requirements-list li p, .admission-requirements-list li {
         font-size: small;
     }
+
+    .admission-requirements-group-line {
+        flex-direction: column;
+        gap: 0;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
     .admission-process-image {
         filter: invert(0.92) hue-rotate(180deg);
+    }
+
+    .admission-requirements-group-department {
+        color: var(--fb-white-color);
     }
 }

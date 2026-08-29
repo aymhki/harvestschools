@@ -888,6 +888,7 @@ function AdminLogin() {
                               setValue: null,
                               widthOfField: 1,
                               httpName: 'username',
+                              autoComplete: 'username',
                           },
                           {
                               id: passwordFieldId,
@@ -902,6 +903,7 @@ function AdminLogin() {
                               value: '',
                               setValue: null,
                               httpName: 'password',
+                              autoComplete: 'current-password',
                           },
                       ]
                   }

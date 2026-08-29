@@ -2,6 +2,9 @@
 require_once '../../headers.php';
 require_once '../authHelpers.php';
 require_once '../../permissionLevels.php';
+
+const ADMIN_ACTION_DISPLAY_TIME_ZONE = 'Africa/Cairo';
+
 $doc_root = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 $dbConfig = require dirname($doc_root) . '/configs/dbConfig.php';
 set_cors_headers();
@@ -28,10 +31,14 @@ try {
     }
 
     $headers = ["User ID", "Username", "Name", "Action", "Date & Time"];
+    $storedZone = new DateTimeZone('UTC');
+    $displayZone = new DateTimeZone(ADMIN_ACTION_DISPLAY_TIME_ZONE);
     $dataRows = [];
 
     $result = $conn->query(
-        "SELECT user_id, username, name, action, created_at FROM admin_action_events ORDER BY created_at DESC, id DESC"
+        "SELECT user_id, username, name, action, created_at
+         FROM admin_action_events
+         ORDER BY created_at DESC, id DESC"
     );
 
     if ($result->num_rows > 0) {
@@ -41,7 +48,7 @@ try {
                 (string)$row['username'],
                 (string)$row['name'],
                 (string)$row['action'],
-                (string)$row['created_at']
+                (new DateTime((string)$row['created_at'], $storedZone))->setTimezone($displayZone)->format('M j, Y g:i A')
             ];
         }
     }

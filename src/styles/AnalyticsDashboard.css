@@ -27,7 +27,6 @@
 .analytics-dashboard-heading span {
     font-size: 0.78rem;
     letter-spacing: normal;
-    color: var(--ad-ink-muted);
 }
 
 .analytics-dashboard-tiles {

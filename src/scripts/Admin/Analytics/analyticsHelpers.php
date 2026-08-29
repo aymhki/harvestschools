@@ -3,6 +3,7 @@
 const ANALYTICS_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
 const ANALYTICS_REPORT_URL = 'https://analyticsdata.googleapis.com/v1beta/properties/';
 const ANALYTICS_TIMEOUT_SECONDS = 10;
+const ANALYTICS_DISPLAY_TIME_ZONE = 'Africa/Cairo';
 
 
 
@@ -523,6 +524,55 @@ function analytics_chat_bot_rows($conn) {
     }
 
     return $rows;
+}
+
+
+function analytics_chat_bot_window($conn) {
+    $bounds = [];
+    $sources = [['chat_bot_user_sessions', 'updated_at']];
+    $historyTable = $conn->query("SHOW TABLES LIKE 'chat_bot_user_chat_history'");
+
+    if ($historyTable && $historyTable->num_rows > 0) {
+        $sources[] = ['chat_bot_user_chat_history', 'created_at'];
+    }
+
+    foreach ($sources as $source) {
+        $result = $conn->query("SELECT MIN({$source[1]}) AS earliest, MAX({$source[1]}) AS latest FROM {$source[0]}");
+        $row = $result ? $result->fetch_assoc() : null;
+
+        if ($row && $row['earliest'] !== null) {
+            $bounds[] = $row;
+        }
+    }
+
+    if ($bounds === []) {
+        return 'No activity currently retained';
+    }
+
+    $offset = $conn->query("SELECT TIMESTAMPDIFF(SECOND, NOW(), UTC_TIMESTAMP()) AS drift");
+    $offsetRow = $offset ? $offset->fetch_assoc() : null;
+    $drift = $offsetRow ? (int)$offsetRow['drift'] : 0;
+
+    $earliest = min(array_column($bounds, 'earliest'));
+    $latest = max(array_column($bounds, 'latest'));
+    $displayZone = new DateTimeZone(ANALYTICS_DISPLAY_TIME_ZONE);
+
+    $toDisplay = function ($stored) use ($drift, $displayZone) {
+        $moment = new DateTime($stored, new DateTimeZone('UTC'));
+        $moment->modify($drift . ' seconds');
+        $moment->setTimezone($displayZone);
+
+        return $moment;
+    };
+
+    $from = $toDisplay($earliest);
+    $to = $toDisplay($latest);
+
+    if ($from->format('Y-m-d') === $to->format('Y-m-d')) {
+        return 'Activity on ' . $to->format('j M Y');
+    }
+
+    return $from->format('j M Y') . ' to ' . $to->format('j M Y');
 }
 
 

@@ -196,7 +196,7 @@
     --mobile-nav-arrow-in-tabs-bar-z-index: 10;
     --tabs-bar-z-index: 100;
     --tabs-bar-height: 3.5rem;
-    --tab-min-width: 11rem;
+    --tab-min-width: 16rem;
 
     font-family: var(--english-normal-font);
 }

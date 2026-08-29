@@ -169,10 +169,10 @@ RankedBars.propTypes = {
 function AnalyticsDashboard({totals, usersOverTime, rankings, reportingWindow, cacheAgeSeconds}) {
     return (
         <div className={'analytics-dashboard'}>
-            <h3 className={'analytics-dashboard-heading'}>
+            <p className={'analytics-dashboard-heading'}>
                 Website traffic
                 <span>{reportingWindow} · {describeCacheAge(cacheAgeSeconds)}</span>
-            </h3>
+            </p>
 
             <div className={'analytics-dashboard-tiles'}>
                 {totals.map((total) => (
