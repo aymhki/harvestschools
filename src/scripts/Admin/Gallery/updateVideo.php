@@ -72,7 +72,7 @@ try {
     );
     $videoMoved = $placement !== '' && $placement !== GALLERY_PLACEMENT_KEEP;
 
-    admin_log_action($conn, 'Edited the gallery video #' . $videoId . ' ("' . $titleEn . '"): ' . $videoChanges . ($videoMoved ? '; repositioned it (' . $placement . ')' : '') . '.');
+    admin_log_action($conn, 'Edited the gallery video #' . $videoId . ' ("' . $titleEn . '"): ' . $videoChanges . ($videoMoved ? '; repositioned it (' . $placement . ')' : '') . '.', ADMIN_ACTION_CATEGORY_GALLERY);
     echo json_encode(["success" => true, "message" => "Video updated.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

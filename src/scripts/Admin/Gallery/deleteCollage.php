@@ -57,7 +57,7 @@ try {
         @rmdir($directory);
     }
 
-    admin_log_action($conn, 'Deleted the gallery collage #' . $collageId . ' ("' . (string)$collage['title_en'] . '" / "' . (string)$collage['title_ar'] . '", layout ' . (string)$collage['layout'] . ') and its ' . count($deletedPhotoNames) . ' photo' . (count($deletedPhotoNames) === 1 ? '' : 's') . ' (' . admin_list_summary($deletedPhotoNames) . ').');
+    admin_log_action($conn, 'Deleted the gallery collage #' . $collageId . ' ("' . (string)$collage['title_en'] . '" / "' . (string)$collage['title_ar'] . '", layout ' . (string)$collage['layout'] . ') and its ' . count($deletedPhotoNames) . ' photo' . (count($deletedPhotoNames) === 1 ? '' : 's') . ' (' . admin_list_summary($deletedPhotoNames) . ').', ADMIN_ACTION_CATEGORY_GALLERY);
     echo json_encode(["success" => true, "message" => "Collage deleted.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

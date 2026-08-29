@@ -473,6 +473,7 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                            'User ID',
                            'Username',
                            'Name',
+                           'Category',
                            'Date & Time'
                        ]
                    }

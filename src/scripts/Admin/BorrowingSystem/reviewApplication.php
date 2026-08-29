@@ -82,7 +82,7 @@ try {
                 . ($note === '' ? '' : "\r\n\r\nNote from the board: " . $note),
         ]);
 
-        admin_log_action($conn, 'Rejected the salary advance application #' . $applicationId . '.');
+        admin_log_action($conn, 'Rejected the salary advance application #' . $applicationId . '.', ADMIN_ACTION_CATEGORY_BORROWING_SYSTEM);
         echo json_encode(["success" => true, "message" => "Application rejected.", "code" => 200]);
         exit;
     }
@@ -251,7 +251,7 @@ try {
             . ($reason === '' ? '' : "\r\n\r\nReason for the change: " . $reason),
     ]);
 
-    admin_log_action($conn, 'Recorded a "' . $decision . '" decision on the salary advance application #' . $applicationId . '.');
+    admin_log_action($conn, 'Recorded a "' . $decision . '" decision on the salary advance application #' . $applicationId . '.', ADMIN_ACTION_CATEGORY_BORROWING_SYSTEM);
     echo json_encode([
         "success"   => true,
         "message"   => "Application approved and the repayment plan written.",

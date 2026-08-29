@@ -88,7 +88,7 @@ try {
 
     $current = public_calendar_current($conn, $calendarKey);
 
-    admin_log_action($conn, 'Deleted the ' . $academicYear . ' "' . $calendarKey . '" academic calendar and its ' . $removedEvents . ' events.');
+    admin_log_action($conn, 'Deleted the ' . $academicYear . ' "' . $calendarKey . '" academic calendar and its ' . $removedEvents . ' events.', ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS);
     echo json_encode([
         "success"       => true,
         "message"       => "Academic calendar deleted with " . $removedEvents . " events.",

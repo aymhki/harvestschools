@@ -195,7 +195,7 @@ try {
     admin_log_action($conn, 'Edited the admin user #' . $adminId . ' ("' . $editUsername . '"): ' . admin_changes_summary(
         ['Username' => $userBefore['username'] ?? null, 'Name' => $userBefore['name'] ?? null, 'Email' => $userBefore['email'] ?? null, 'Permissions' => $permsBefore],
         ['Username' => $editUsername, 'Name' => $editAdminName, 'Email' => $editAdminEmail, 'Permissions' => $permsAfter]
-    ) . ($updatePassword ? '; changed their password' : '') . '.');
+    ) . ($updatePassword ? '; changed their password' : '') . '.', ADMIN_ACTION_CATEGORY_ADMIN_USERS);
     echo json_encode(["success" => true, "message" => "Admin user updated successfully", "code" => 200]);
 
 } catch (Exception $e) {

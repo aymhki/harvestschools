@@ -62,7 +62,7 @@ try {
         exit;
     }
 
-    admin_log_action($conn, 'Deleted employee ' . $employeeCode . ' ("' . (string)($employeeBefore['name_en'] ?? '') . '", ' . (string)($employeeBefore['position_en'] ?? '') . ') from the staff directory.');
+    admin_log_action($conn, 'Deleted employee ' . $employeeCode . ' ("' . (string)($employeeBefore['name_en'] ?? '') . '", ' . (string)($employeeBefore['position_en'] ?? '') . ') from the staff directory.', ADMIN_ACTION_CATEGORY_STAFF_DIRECTORY);
     echo json_encode([
         "success" => true,
         "message" => trim("Employee deleted successfully. " . $borrowing['message']),

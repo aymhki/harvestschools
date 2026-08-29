@@ -291,7 +291,37 @@ function admin_list_summary(array $items, $limit = 10) {
     return implode(', ', array_slice($items, 0, $limit)) . ' and ' . ($count - $limit) . ' more';
 }
 
-function admin_log_action($conn, $action) {
+const ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS = 'academic_calendars';
+const ADMIN_ACTION_CATEGORY_ADMIN_USERS        = 'admin_users';
+const ADMIN_ACTION_CATEGORY_ALUMNI_STUDENTS    = 'alumni_students';
+const ADMIN_ACTION_CATEGORY_BORROWING_SYSTEM   = 'borrowing_system';
+const ADMIN_ACTION_CATEGORY_EVENT_BOOKINGS     = 'event_bookings';
+const ADMIN_ACTION_CATEGORY_GALLERY            = 'gallery';
+const ADMIN_ACTION_CATEGORY_INFO_SYSTEM        = 'info_system';
+const ADMIN_ACTION_CATEGORY_LIBRARY            = 'library';
+const ADMIN_ACTION_CATEGORY_PAGE_VISIBILITY    = 'page_visibility';
+const ADMIN_ACTION_CATEGORY_STAFF_DIRECTORY    = 'staff_directory';
+const ADMIN_ACTION_CATEGORY_OTHER              = 'other';
+
+const ADMIN_ACTION_CATEGORY_LABELS = [
+    ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS => 'Academic Calendars',
+    ADMIN_ACTION_CATEGORY_ADMIN_USERS        => 'Admin Users',
+    ADMIN_ACTION_CATEGORY_ALUMNI_STUDENTS    => 'Alumni Students',
+    ADMIN_ACTION_CATEGORY_BORROWING_SYSTEM   => 'Borrowing System',
+    ADMIN_ACTION_CATEGORY_EVENT_BOOKINGS     => 'Event Bookings',
+    ADMIN_ACTION_CATEGORY_GALLERY            => 'Gallery',
+    ADMIN_ACTION_CATEGORY_INFO_SYSTEM        => 'Info System',
+    ADMIN_ACTION_CATEGORY_LIBRARY            => 'Library',
+    ADMIN_ACTION_CATEGORY_PAGE_VISIBILITY    => 'Page Visibility',
+    ADMIN_ACTION_CATEGORY_STAFF_DIRECTORY    => 'Staff Directory',
+    ADMIN_ACTION_CATEGORY_OTHER              => 'Other',
+];
+
+function admin_action_category_label($categoryKey) {
+    return ADMIN_ACTION_CATEGORY_LABELS[(string)$categoryKey] ?? ADMIN_ACTION_CATEGORY_LABELS[ADMIN_ACTION_CATEGORY_OTHER];
+}
+
+function admin_log_action($conn, $action, $category) {
     try {
         $tokenHash = get_bearer_token_hash();
 
@@ -301,14 +331,18 @@ function admin_log_action($conn, $action) {
 
         if ($action === '') { return; }
 
+        if (!isset(ADMIN_ACTION_CATEGORY_LABELS[(string)$category])) {
+            $category = ADMIN_ACTION_CATEGORY_OTHER;
+        }
+
         $stmt = $conn->prepare(
-            "INSERT INTO admin_action_events (user_id, username, name, action, created_at)
-             SELECT u.id, u.username, u.name, ?, UTC_TIMESTAMP()
+            "INSERT INTO admin_action_events (user_id, username, name, action, category, created_at)
+             SELECT u.id, u.username, u.name, ?, ?, UTC_TIMESTAMP()
              FROM admin_sessions s
              JOIN admin_users u ON u.id = s.user_id
              WHERE s.id = ?"
         );
-        $stmt->bind_param("ss", $action, $tokenHash);
+        $stmt->bind_param("sss", $action, $category, $tokenHash);
         $stmt->execute();
         $stmt->close();
     } catch (Throwable $e) {

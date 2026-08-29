@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        admin_log_action($conn, 'Created the event booking #' . $bookingId . '.');
+        admin_log_action($conn, 'Created the event booking #' . $bookingId . '.', ADMIN_ACTION_CATEGORY_EVENT_BOOKINGS);
         echo json_encode([
             'success' => true,
             'message' => 'Booking created successfully',

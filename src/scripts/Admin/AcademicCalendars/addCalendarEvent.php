@@ -45,7 +45,7 @@ try {
         exit;
     }
 
-    admin_log_action($conn, 'Added a calendar event to the ' . (string)($data['academic_year'] ?? '') . ' "' . (string)($data['calendar_key'] ?? '') . '" academic calendar — Title (EN): "' . (string)($data['title_en'] ?? '') . '"; Title (AR): "' . (string)($data['title_ar'] ?? '') . '"; Start date: ' . admin_action_value($data['start_date'] ?? '') . '; End date: ' . admin_action_value($data['end_date'] ?? '') . '.');
+    admin_log_action($conn, 'Added a calendar event to the ' . (string)($data['academic_year'] ?? '') . ' "' . (string)($data['calendar_key'] ?? '') . '" academic calendar — Title (EN): "' . (string)($data['title_en'] ?? '') . '"; Title (AR): "' . (string)($data['title_ar'] ?? '') . '"; Start date: ' . admin_action_value($data['start_date'] ?? '') . '; End date: ' . admin_action_value($data['end_date'] ?? '') . '.', ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS);
     echo json_encode([
         "success" => true,
         "message" => "Event added.",

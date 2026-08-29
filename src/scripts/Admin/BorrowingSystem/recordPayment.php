@@ -96,7 +96,7 @@ try {
             . ($note === '' ? '' : "\r\n\r\nNote: " . $note),
     ]);
 
-    admin_log_action($conn, 'Recorded instalment #' . $installmentId . ' as ' . $newStatus . ' on the salary advance application #' . (int)$installment['application_id'] . '.');
+    admin_log_action($conn, 'Recorded instalment #' . $installmentId . ' as ' . $newStatus . ' on the salary advance application #' . (int)$installment['application_id'] . '.', ADMIN_ACTION_CATEGORY_BORROWING_SYSTEM);
     echo json_encode([
         "success" => true,
         "message" => "Instalment recorded as " . $newStatus . ".",

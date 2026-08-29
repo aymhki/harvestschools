@@ -61,7 +61,7 @@ try {
 
     calendar_resequence_events($conn, $calendarId);
 
-    admin_log_action($conn, 'Deleted calendar event #' . $eventId . ' ("' . (string)$owner['title_en'] . '", ' . (string)$owner['start_date'] . ' to ' . (string)$owner['end_date'] . ') from the ' . (string)$owner['academic_year'] . ' "' . (string)$owner['calendar_key'] . '" academic calendar.');
+    admin_log_action($conn, 'Deleted calendar event #' . $eventId . ' ("' . (string)$owner['title_en'] . '", ' . (string)$owner['start_date'] . ' to ' . (string)$owner['end_date'] . ') from the ' . (string)$owner['academic_year'] . ' "' . (string)$owner['calendar_key'] . '" academic calendar.', ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS);
     echo json_encode([
         "success" => true,
         "message" => "Event deleted.",

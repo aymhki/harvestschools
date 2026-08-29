@@ -11,6 +11,7 @@ function import_registry() {
     return [
         'library' => [
             'label'      => 'library book',   'plural' => 'library books',
+            'category'   => 'library',
             'descriptor' => 'library_import_descriptor',
             'authorise'  => 'library_import_authorise',
             'add'        => 'library_add_books',
@@ -18,6 +19,7 @@ function import_registry() {
         ],
         'staff' => [
             'label'      => 'employee',       'plural' => 'employees',
+            'category'   => 'staff_directory',
             'descriptor' => 'staff_import_descriptor',
             'authorise'  => 'staff_import_authorise',
             'add'        => 'staff_add_employees',
@@ -25,6 +27,7 @@ function import_registry() {
         ],
         'eventBookings' => [
             'label'      => 'booking',          'plural' => 'bookings',
+            'category'   => 'event_bookings',
             'descriptor' => 'event_booking_import_descriptor',
             'variants'   => 'event_booking_import_variants',
             'authorise'  => 'event_booking_import_authorise',
@@ -33,6 +36,7 @@ function import_registry() {
         ],
         'calendarEvents' => [
             'label'      => 'calendar event',  'plural' => 'calendar events',
+            'category'   => 'academic_calendars',
             'descriptor' => 'calendar_import_descriptor',
             'authorise'  => 'calendar_import_authorise',
             'add'        => 'calendar_add_events',

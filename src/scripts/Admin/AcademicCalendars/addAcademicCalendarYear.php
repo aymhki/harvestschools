@@ -137,7 +137,7 @@ try {
 
     $conn->commit();
 
-    admin_log_action($conn, 'Created the ' . $academicYear . ' "' . $calendarKey . '" academic calendar — Available from: ' . admin_action_value($availableFrom) . '; Note (EN): ' . admin_action_value($noteEn) . '; Note (AR): ' . admin_action_value($noteAr) . '; ' . count($events) . ' event' . (count($events) === 1 ? '' : 's') . ' (' . admin_list_summary(array_map(fn($event) => $event['title_en'] . ' ' . $event['start_date'] . ' to ' . $event['end_date'], $events)) . ').');
+    admin_log_action($conn, 'Created the ' . $academicYear . ' "' . $calendarKey . '" academic calendar — Available from: ' . admin_action_value($availableFrom) . '; Note (EN): ' . admin_action_value($noteEn) . '; Note (AR): ' . admin_action_value($noteAr) . '; ' . count($events) . ' event' . (count($events) === 1 ? '' : 's') . ' (' . admin_list_summary(array_map(fn($event) => $event['title_en'] . ' ' . $event['start_date'] . ' to ' . $event['end_date'], $events)) . ').', ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS);
     echo json_encode([
         "success"      => true,
         "message"      => count($events) === 0

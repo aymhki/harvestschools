@@ -128,7 +128,7 @@ try {
 
     $createdPermissionNames = array_column($conn->query("SELECT permission_id, permission_name FROM available_permissions")->fetch_all(MYSQLI_ASSOC), 'permission_name', 'permission_id');
 
-    admin_log_action($conn, 'Created the admin user #' . (int)$new_user_id . ' — Username: "' . $newUsername . '"; Name: "' . $newAdminName . '"; Email: ' . admin_action_value($newAdminEmail) . '; Permissions: ' . admin_list_summary(array_map(fn($p) => $createdPermissionNames[$p] ?? $p, $newAdminPermissionLevel)) . '.');
+    admin_log_action($conn, 'Created the admin user #' . (int)$new_user_id . ' — Username: "' . $newUsername . '"; Name: "' . $newAdminName . '"; Email: ' . admin_action_value($newAdminEmail) . '; Permissions: ' . admin_list_summary(array_map(fn($p) => $createdPermissionNames[$p] ?? $p, $newAdminPermissionLevel)) . '.', ADMIN_ACTION_CATEGORY_ADMIN_USERS);
     echo json_encode(["success" => true, "message" => "Admin user created successfully", "code" => 200]);
 
 } catch (Exception $e) {

@@ -166,7 +166,7 @@ try {
     admin_log_action($conn, 'Edited the event ceremony details: ' . admin_changes_summary(
         ['Date' => $metaBefore['ceremonyDate'] ?? null, 'Time' => $metaBefore['ceremonyTime'] ?? null, 'Time zone' => $metaBefore['timeZone'] ?? null, 'Location' => $metaBefore['locationName'] ?? null, 'Address' => $metaBefore['locationAddress'] ?? null],
         ['Date' => $ceremonyDate, 'Time' => $ceremonyTime, 'Time zone' => $timeZone, 'Location' => $locationName, 'Address' => $locationAddress]
-    ) . '.');
+    ) . '.', ADMIN_ACTION_CATEGORY_EVENT_BOOKINGS);
     echo json_encode([
         'success' => true,
         'message' => 'Ceremony details updated',

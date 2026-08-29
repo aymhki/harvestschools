@@ -73,7 +73,7 @@ try {
         $mediaDate
     );
 
-    admin_log_action($conn, 'Added the gallery collage #' . $collageId . ' — Title (EN): "' . $titleEn . '"; Title (AR): "' . $titleAr . '"; Layout: ' . $layout . '; Photos: ' . (int)($stored['stored'] ?? 0) . '; Position: ' . admin_action_value($_POST['placement'] ?? '') . '.');
+    admin_log_action($conn, 'Added the gallery collage #' . $collageId . ' — Title (EN): "' . $titleEn . '"; Title (AR): "' . $titleAr . '"; Layout: ' . $layout . '; Photos: ' . (int)($stored['stored'] ?? 0) . '; Position: ' . admin_action_value($_POST['placement'] ?? '') . '.', ADMIN_ACTION_CATEGORY_GALLERY);
     echo json_encode([
         "success"   => true,
         "message"   => "Collage added.",

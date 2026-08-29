@@ -71,7 +71,7 @@ try {
     admin_log_action($conn, 'Edited the details of the ' . $academicYear . ' "' . $calendarKey . '" academic calendar: ' . admin_changes_summary(
         ['Available from' => $calendar['available_from'], 'Note (EN)' => $calendar['note_en'], 'Note (AR)' => $calendar['note_ar']],
         ['Available from' => $availableFrom, 'Note (EN)' => $noteEn, 'Note (AR)' => $noteAr]
-    ) . '.');
+    ) . '.', ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS);
     echo json_encode([
         "success" => true,
         "message" => "Calendar details updated.",

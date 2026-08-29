@@ -1111,7 +1111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ) . ')';
                     }
 
-                    admin_log_action($conn, 'Edited the event booking #' . (int)($data['bookingId'] ?? 0) . ': ' . ($editedParts === [] ? 'no sections changed' : 'changed ' . implode(', ', $editedParts)) . '.');
+                    admin_log_action($conn, 'Edited the event booking #' . (int)($data['bookingId'] ?? 0) . ': ' . ($editedParts === [] ? 'no sections changed' : 'changed ' . implode(', ', $editedParts)) . '.', ADMIN_ACTION_CATEGORY_EVENT_BOOKINGS);
                     echo json_encode([
                         'success' => true,
                         'message' => 'Booking updated successfully',

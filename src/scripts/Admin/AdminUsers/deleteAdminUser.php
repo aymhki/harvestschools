@@ -65,7 +65,7 @@ try {
 
     $conn->commit();
 
-    admin_log_action($conn, 'Deleted the admin user #' . (int)$adminUserToDeleteId . ' ("' . (string)($deletedUser['username'] ?? '') . '" / ' . (string)($deletedUser['name'] ?? '') . ', ' . (string)($deletedUser['email'] ?? '') . ') and all of their sessions and permissions.');
+    admin_log_action($conn, 'Deleted the admin user #' . (int)$adminUserToDeleteId . ' ("' . (string)($deletedUser['username'] ?? '') . '" / ' . (string)($deletedUser['name'] ?? '') . ', ' . (string)($deletedUser['email'] ?? '') . ') and all of their sessions and permissions.', ADMIN_ACTION_CATEGORY_ADMIN_USERS);
     echo json_encode(["success" => true, "message" => "Admin user deleted successfully", "code" => 200]);
 
 

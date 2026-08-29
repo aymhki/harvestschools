@@ -107,7 +107,7 @@ try {
     admin_log_action($conn, 'Changed the alumni account "' . (string)$alumniRow['username'] . '" (' . $alumniName . '): ' . admin_changes_summary(
         ['Account status' => $alumniRow['account_status']],
         ['Account status' => $newStatus]
-    ) . '.');
+    ) . '.', ADMIN_ACTION_CATEGORY_ALUMNI_STUDENTS);
     echo json_encode([
         "success" => true,
         "message" => "Account status updated to '" . $newStatus . "' and the alumni student was notified by email.",

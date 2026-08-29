@@ -30,13 +30,13 @@ try {
         exit;
     }
 
-    $headers = ["User ID", "Username", "Name", "Action", "Date & Time"];
+    $headers = ["User ID", "Username", "Name", "Category", "Action", "Date & Time"];
     $storedZone = new DateTimeZone('UTC');
     $displayZone = new DateTimeZone(ADMIN_ACTION_DISPLAY_TIME_ZONE);
     $dataRows = [];
 
     $result = $conn->query(
-        "SELECT user_id, username, name, action, created_at
+        "SELECT user_id, username, name, category, action, created_at
          FROM admin_action_events
          ORDER BY created_at DESC, id DESC"
     );
@@ -47,6 +47,7 @@ try {
                 $row['user_id'] === null ? '' : (string)$row['user_id'],
                 (string)$row['username'],
                 (string)$row['name'],
+                admin_action_category_label($row['category']),
                 (string)$row['action'],
                 (new DateTime((string)$row['created_at'], $storedZone))->setTimezone($displayZone)->format('M j, Y g:i A')
             ];

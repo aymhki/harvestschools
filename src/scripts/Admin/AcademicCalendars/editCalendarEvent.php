@@ -75,7 +75,7 @@ try {
     admin_log_action($conn, 'Edited calendar event #' . $eventId . ' in the ' . (string)$owner['academic_year'] . ' "' . (string)$owner['calendar_key'] . '" academic calendar: ' . admin_changes_summary(
         ['Title (EN)' => $owner['title_en'], 'Title (AR)' => $owner['title_ar'], 'Start date' => $owner['start_date'], 'End date' => $owner['end_date']],
         ['Title (EN)' => $event['title_en'], 'Title (AR)' => $event['title_ar'], 'Start date' => $event['start_date'], 'End date' => $event['end_date']]
-    ) . '.');
+    ) . '.', ADMIN_ACTION_CATEGORY_ACADEMIC_CALENDARS);
     echo json_encode([
         "success" => true,
         "message" => "Event updated.",

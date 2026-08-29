@@ -210,7 +210,7 @@ try {
         $stmt->close();
         $conn->commit();
 
-        admin_log_action($conn, 'Deleted the event booking #' . $bookingId . ' and all of its related data.');
+        admin_log_action($conn, 'Deleted the event booking #' . $bookingId . ' and all of its related data.', ADMIN_ACTION_CATEGORY_EVENT_BOOKINGS);
         echo json_encode([
             'success' => true,
             'message' => "Booking and all related data successfully deleted",

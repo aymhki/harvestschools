@@ -45,7 +45,7 @@ try {
 
     library_resequence($conn, $categoryKey);
 
-    admin_log_action($conn, 'Deleted library book #' . $bookId . ' ("' . (string)($bookBefore['title_en'] ?? '') . '"' . (($bookBefore['series_en'] ?? '') === '' ? '' : ', series "' . (string)$bookBefore['series_en'] . '"') . ') from the "' . $categoryKey . '" category.');
+    admin_log_action($conn, 'Deleted library book #' . $bookId . ' ("' . (string)($bookBefore['title_en'] ?? '') . '"' . (($bookBefore['series_en'] ?? '') === '' ? '' : ', series "' . (string)$bookBefore['series_en'] . '"') . ') from the "' . $categoryKey . '" category.', ADMIN_ACTION_CATEGORY_LIBRARY);
     echo json_encode(["success" => true, "message" => "Book deleted.", "code" => 200]);
 } catch (Throwable $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage(), "code" => $e->getCode() ?: 500]);

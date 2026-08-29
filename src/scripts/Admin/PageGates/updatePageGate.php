@@ -62,7 +62,7 @@ try {
     admin_log_action($conn, 'Updated the public page "' . $pageId . '": ' . admin_changes_summary(
         ['Visible to the public' => isset($gateBefore['is_enabled']) ? (int)$gateBefore['is_enabled'] === 1 : null, 'Closed message (EN)' => $gateBefore['message_en'] ?? null, 'Closed message (AR)' => $gateBefore['message_ar'] ?? null],
         ['Visible to the public' => $isEnabled === 1, 'Closed message (EN)' => $messageEn, 'Closed message (AR)' => $messageAr]
-    ) . '.');
+    ) . '.', ADMIN_ACTION_CATEGORY_PAGE_VISIBILITY);
     echo json_encode([
         "success" => true,
         "message" => $isEnabled ? "Page switched on." : "Page switched off.",

@@ -985,7 +985,7 @@ PHP_CODE;
         throw new Exception("Failed to write to $configPath", 500);
     }
 
-    admin_log_action($conn, 'Saved the info system data and regenerated ' . basename($configPath) . '. ' . ($infoChanges === [] ? 'No values changed.' : implode(' | ', $infoChanges) . '.'));
+    admin_log_action($conn, 'Saved the info system data and regenerated ' . basename($configPath) . '. ' . ($infoChanges === [] ? 'No values changed.' : implode(' | ', $infoChanges) . '.'), ADMIN_ACTION_CATEGORY_INFO_SYSTEM);
     echo json_encode([
         "success" => true,
         "message" => "Database updated and botConfig.php generated successfully.",

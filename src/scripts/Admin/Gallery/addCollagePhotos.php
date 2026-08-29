@@ -42,7 +42,7 @@ try {
         exit;
     }
 
-    admin_log_action($conn, 'Added ' . $stored['stored'] . ' photo' . ($stored['stored'] === 1 ? '' : 's') . ' to the gallery collage #' . (int)$collage['id'] . ' ("' . (string)$collage['title_en'] . '") — ' . admin_list_summary(array_map(fn($file) => (string)($file['name'] ?? ''), $files)) . '.');
+    admin_log_action($conn, 'Added ' . $stored['stored'] . ' photo' . ($stored['stored'] === 1 ? '' : 's') . ' to the gallery collage #' . (int)$collage['id'] . ' ("' . (string)$collage['title_en'] . '") — ' . admin_list_summary(array_map(fn($file) => (string)($file['name'] ?? ''), $files)) . '.', ADMIN_ACTION_CATEGORY_GALLERY);
     echo json_encode([
         "success" => true,
         "message" => $stored['stored'] . ($stored['stored'] === 1 ? ' photo added.' : ' photos added.'),

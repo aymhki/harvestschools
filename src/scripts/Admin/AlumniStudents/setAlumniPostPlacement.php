@@ -67,7 +67,7 @@ try {
     admin_log_action($conn, 'Set the placement of the alumni post #' . $postId . ' ("' . (string)$postRow['title'] . '"): ' . admin_changes_summary(
         ['On the home page' => (int)$postRow['show_on_home'] === 1, 'On the alumni students page' => (int)$postRow['show_on_alumni_page'] === 1],
         ['On the home page' => $showOnHome === 1, 'On the alumni students page' => $showOnAlumniPage === 1]
-    ) . '.');
+    ) . '.', ADMIN_ACTION_CATEGORY_ALUMNI_STUDENTS);
     echo json_encode([
         "success" => true,
         "message" => "The post placement was updated.",

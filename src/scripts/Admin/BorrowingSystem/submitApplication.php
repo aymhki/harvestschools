@@ -250,7 +250,7 @@ try {
                   . " was sent to the board for review, and the score above still uses the stored value.";
     }
 
-    admin_log_action($conn, 'Submitted a salary advance application (#' . $applicationId . ') for employee ' . $employeeCode . '.');
+    admin_log_action($conn, 'Submitted a salary advance application (#' . $applicationId . ') for employee ' . $employeeCode . '.', ADMIN_ACTION_CATEGORY_BORROWING_SYSTEM);
     echo json_encode([
         "success"       => true,
         "message"       => $message,

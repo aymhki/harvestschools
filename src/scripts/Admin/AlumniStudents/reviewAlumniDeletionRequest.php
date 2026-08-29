@@ -95,7 +95,7 @@ try {
 
         alumni_send_email($alumniEmail, $subject, $body);
 
-        admin_log_action($conn, 'Approved the deletion request for the alumni account "' . (string)$requestRow['username'] . '" and deleted it with its posts and files.');
+        admin_log_action($conn, 'Approved the deletion request for the alumni account "' . (string)$requestRow['username'] . '" and deleted it with its posts and files.', ADMIN_ACTION_CATEGORY_ALUMNI_STUDENTS);
         echo json_encode([
             "success" => true,
             "message" => "The deletion request was approved. The alumni account '" . $requestRow['username'] . "', its posts, and its uploaded files were deleted, and the alumni student was notified by email.",
@@ -120,7 +120,7 @@ try {
 
     alumni_send_email($alumniEmail, $subject, $body);
 
-    admin_log_action($conn, 'Rejected the account deletion request from "' . $alumniName . '".');
+    admin_log_action($conn, 'Rejected the account deletion request from "' . $alumniName . '".', ADMIN_ACTION_CATEGORY_ALUMNI_STUDENTS);
     echo json_encode([
         "success" => true,
         "message" => "The deletion request was rejected and the alumni student was notified by email.",

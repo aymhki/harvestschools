@@ -67,7 +67,7 @@ try {
     $deleted = $stmt->affected_rows;
     $stmt->close();
 
-    admin_log_action($conn, ($scope === 'all' ? 'Deleted all ' . $deleted . ' library books' : 'Deleted ' . $deleted . ' library books from the "' . $categoryKey . '" category') . ' — ' . admin_list_summary($deletedTitles) . '.');
+    admin_log_action($conn, ($scope === 'all' ? 'Deleted all ' . $deleted . ' library books' : 'Deleted ' . $deleted . ' library books from the "' . $categoryKey . '" category') . ' — ' . admin_list_summary($deletedTitles) . '.', ADMIN_ACTION_CATEGORY_LIBRARY);
     echo json_encode([
         "success" => true,
         "message" => $deleted . ' book' . ($deleted === 1 ? '' : 's') . ' deleted.',

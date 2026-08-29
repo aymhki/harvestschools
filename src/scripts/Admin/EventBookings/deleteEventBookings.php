@@ -169,7 +169,7 @@ try {
         exit;
     }
 
-    admin_log_action($conn, ($scope === 'all' ? 'Deleted all ' : 'Deleted ') . count($bookingIds) . ' event booking' . (count($bookingIds) === 1 ? '' : 's') . ($scope === 'all' ? '' : ' in the "' . $division . '" division') . ' — booking ids: ' . admin_list_summary(array_map('strval', $bookingIds)) . '; also removed ' . count($studentIds) . ' student' . (count($studentIds) === 1 ? '' : 's') . ' and ' . count($parentIds) . ' parent' . (count($parentIds) === 1 ? '' : 's') . '.');
+    admin_log_action($conn, ($scope === 'all' ? 'Deleted all ' : 'Deleted ') . count($bookingIds) . ' event booking' . (count($bookingIds) === 1 ? '' : 's') . ($scope === 'all' ? '' : ' in the "' . $division . '" division') . ' — booking ids: ' . admin_list_summary(array_map('strval', $bookingIds)) . '; also removed ' . count($studentIds) . ' student' . (count($studentIds) === 1 ? '' : 's') . ' and ' . count($parentIds) . ' parent' . (count($parentIds) === 1 ? '' : 's') . '.', ADMIN_ACTION_CATEGORY_EVENT_BOOKINGS);
     echo json_encode([
         'success' => true,
         'message' => count($bookingIds) . ' booking' . (count($bookingIds) === 1 ? '' : 's')
