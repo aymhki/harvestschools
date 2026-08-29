@@ -150,7 +150,7 @@ function public_info_requirement_lines($value) {
 function public_school_stages($conn, $language, $includeUnoffered, $departmentKey = null) {
     $stages = [];
 
-    $sql = "SELECT s.stage_key, s.dept_key, s.section_key, s.section_title_en, s.section_title_ar, s.name_en, s.name_ar, s.is_offered, s.age_en, s.age_ar, s.tuition_fees, s.admission_requirements_en, s.admission_requirements_ar, s.sort_order, d.name_en AS dept_name_en, d.name_ar AS dept_name_ar
+    $sql = "SELECT s.stage_key, s.dept_key, s.section_key, s.section_title_en, s.section_title_ar, s.name_en, s.name_ar, s.is_offered, s.age_en, s.age_ar, s.tuition_fees, s.admission_requirements_en, s.admission_requirements_ar, s.sort_order, UNIX_TIMESTAMP(s.updated_at) AS updated_at, d.name_en AS dept_name_en, d.name_ar AS dept_name_ar
             FROM info_system_stages s
             LEFT JOIN info_system_departments d ON d.dept_key = s.dept_key";
 
@@ -199,6 +199,7 @@ function public_school_stages($conn, $language, $includeUnoffered, $departmentKe
             'tuitionFees'    => $normalisedFees,
             'admissionRequirements' => public_info_requirement_lines(public_info_localised($row, 'admission_requirements', $language)),
             'sortOrder'      => (int)$row['sort_order'],
+            'updatedAt'      => (int)$row['updated_at'],
             'routePath'      => PUBLIC_DEPARTMENT_ROUTE_PATHS[$row['dept_key']] ?? null,
         ];
     }
@@ -233,13 +234,14 @@ function public_school_admission_note_facts(array $notes, $language) {
 
 function public_school_admission_notes($conn, $language) {
     $notes = [];
-    $result = $conn->query("SELECT content_key, title_en, title_ar, body_en, body_ar FROM info_system_static_content WHERE group_key = 'admission_notes' ORDER BY sort_order ASC");
+    $result = $conn->query("SELECT content_key, title_en, title_ar, body_en, body_ar, UNIX_TIMESTAMP(updated_at) AS updated_at FROM info_system_static_content WHERE group_key = 'admission_notes' ORDER BY sort_order ASC");
 
     while ($result && $row = $result->fetch_assoc()) {
         $notes[] = [
-            'key'   => $row['content_key'],
-            'title' => public_info_localised($row, 'title', $language),
-            'body'  => public_info_localised($row, 'body', $language),
+            'key'       => $row['content_key'],
+            'title'     => public_info_localised($row, 'title', $language),
+            'body'      => public_info_localised($row, 'body', $language),
+            'updatedAt' => (int)$row['updated_at'],
         ];
     }
 

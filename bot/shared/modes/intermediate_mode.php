@@ -30,7 +30,7 @@ function admissionNotesText($lang) {
         }
 
         $title = $note['title'][$lang] ?? '';
-        $text .= "\n" . ($title === '' ? '' : "*" . $title . ":*\n") . $body . "\n";
+        $text .= "\n" . ($title === '' ? '' : "*" . $title . "*\n") . $body . "\n";
     }
 
     return $text;

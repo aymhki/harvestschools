@@ -103,6 +103,19 @@ function AdmissionRequirementsList() {
         }))
     }, [stages])
 
+    const formattedLastUpdated = useMemo(() => {
+        if (!stages?.admissionRequirementsLastUpdated) {
+            return ''
+        }
+
+        return new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'Africa/Cairo'
+        }).format(new Date(stages.admissionRequirementsLastUpdated * 1000))
+    }, [stages, language])
+
     const notes = stages?.admissionRequirementNotes || []
 
     return (
@@ -132,6 +145,12 @@ function AdmissionRequirementsList() {
                         </div>
                     </div>
                 ))}
+
+                {formattedLastUpdated && (
+                    <p>
+                        {t('common.last-updated', {ns: 'common'})} {formattedLastUpdated}
+                    </p>
+                )}
             </div>
 
             {notes.length > 0 && (

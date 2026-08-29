@@ -73,6 +73,19 @@ function MinimumStageAgeTables() {
             }))
     }, [stages, t])
 
+    const formattedLastUpdated = useMemo(() => {
+        if (!stages?.lastUpdated) {
+            return ''
+        }
+
+        return new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'Africa/Cairo'
+        }).format(new Date(stages.lastUpdated * 1000))
+    }, [stages, language])
+
     return (
         <>
 
@@ -85,6 +98,12 @@ function MinimumStageAgeTables() {
                        ignoreSideMarginsOnFixed={true}
                 />
             ))}
+
+            {formattedLastUpdated && (
+                <p>
+                    {t('common.last-updated', {ns: 'common'})} {formattedLastUpdated}
+                </p>
+            )}
         </>
     )
 }

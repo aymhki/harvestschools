@@ -98,12 +98,21 @@ try {
         return $item['title'];
     }, $policies['fee_exclusions'] ?? []));
 
+    $stagesLastUpdated = 0;
+
+    foreach ($stages as $stage) {
+        $stagesLastUpdated = max($stagesLastUpdated, $stage['updatedAt']);
+    }
+
     $admissionRequirements = [];
+    $admissionRequirementsLastUpdated = 0;
 
     foreach ($stages as $stage) {
         if ($stage['admissionRequirements'] === []) {
             continue;
         }
+
+        $admissionRequirementsLastUpdated = max($admissionRequirementsLastUpdated, $stage['updatedAt']);
 
         $admissionRequirements[] = [
             'key'            => $stage['key'],
@@ -115,15 +124,23 @@ try {
         ];
     }
 
+    $admissionRequirementNotes = public_school_admission_notes($conn, $language);
+
+    foreach ($admissionRequirementNotes as $note) {
+        $admissionRequirementsLastUpdated = max($admissionRequirementsLastUpdated, $note['updatedAt']);
+    }
+
     $document = [
         'schemaVersion'  => PUBLIC_INFO_SCHEMA_VERSION,
         'language'       => $language,
         'currency'       => $profile['tuition_currency']['value'] ?? 'EGP',
         'feeExclusions'  => $feeExclusions,
         'minimumAgeNote' => $profile['minimum_age_cutoff']['value'] ?? null,
+        'lastUpdated'    => $stagesLastUpdated,
         'departments'    => $departments,
         'admissionRequirements' => $admissionRequirements,
-        'admissionRequirementNotes' => public_school_admission_notes($conn, $language),
+        'admissionRequirementNotes' => $admissionRequirementNotes,
+        'admissionRequirementsLastUpdated' => $admissionRequirementsLastUpdated,
     ];
 
     $document['contentHash'] = hash('sha256', json_encode($document, JSON_UNESCAPED_UNICODE));

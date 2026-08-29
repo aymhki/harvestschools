@@ -72,6 +72,19 @@ function TuitionFeesTables() {
             }))
     }, [stages, t])
 
+    const formattedLastUpdated = useMemo(() => {
+        if (!stages?.lastUpdated) {
+            return ''
+        }
+
+        return new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'Africa/Cairo'
+        }).format(new Date(stages.lastUpdated * 1000))
+    }, [stages, language])
+
     const feeExclusions = stages?.feeExclusions || []
 
     return (
@@ -95,6 +108,12 @@ function TuitionFeesTables() {
                        currencySymbolPositions={['right-space']}
                 />
             ))}
+
+            {formattedLastUpdated && (
+                <p>
+                    {t('common.last-updated', {ns: 'common'})} {formattedLastUpdated}
+                </p>
+            )}
         </>
     )
 }
