@@ -1,7 +1,7 @@
 import PhotoSlider from "../modules/PhotoSlider.jsx";
 import '../styles/Home.css';
 import ParallaxScrollSection from "../modules/ParallaxScrollSection.jsx";
-import Form from "../modules/Form.jsx";
+import ChatWidget from "../modules/ChatWidget.jsx";
 import { useTranslation } from 'react-i18next';
 import { servePublicAsset } from "../services/General/GeneralServices.jsx";
 import CachedImage from "../modules/CachedImage.jsx";
@@ -32,14 +32,6 @@ function Home() {
     const homeSliderPhotos = [
         { id: 1, url: '/images/HomePage/VisionBackground.v6.avif', title: t("home.our-vision"), text: t("home.harvest-schools-vision") },
         { id: 2, url: '/images/CorporateHome/MissionBackground.jpg', title: t("home.our-mission"), text: t("home.harvest-schools-mission") },
-    ]
-
-    const contactUsFormFields = [
-        { id: 1, type: 'text', label: 'Name', displayLabel: t("home.contact-us-form-fields.name"), httpName: 'name', required: true, value: '', setValue: null, widthOfField: 1 },
-        { id: 2, type: 'email', label: 'Email', displayLabel: t("home.contact-us-form-fields.email"), httpName: 'email', required: true, value: '', setValue: null, widthOfField: 2 },
-        { id: 3, type: 'tel', label: 'Phone Number', displayLabel: t("home.contact-us-form-fields.phone-number"), httpName: 'phone', required: true, value: '', setValue: null, widthOfField: 2 },
-        {id:  4, type: 'select', label: 'Subject', displayLabel: t("home.contact-us-form-fields.subject"), httpName: 'subject', required: true, value: '', setValue: null, widthOfField: 1, choices: [t("home.contact-us-form-fields.admissions"), t("home.contact-us-form-fields.general-inquiry"), t("home.contact-us-form-fields.feedback"), t("home.contact-us-form-fields.other")]},
-        { id: 5, type: 'textarea', label: 'Message', displayLabel: t("home.contact-us-form-fields.message"), httpName: 'message', required: true, value: '', setValue: null, widthOfField: 1 }
     ]
 
     return (
@@ -159,7 +151,7 @@ function Home() {
                     </p>
 
 
-                    <Form fields={contactUsFormFields} sendPdf={false} formKey={'contact-us'} formTitle={'Contact Us Form Submission'} lang={"en"} captchaLength={2}/>
+                    <ChatWidget />
                 </div>
 
                 <div className="home-page-visit-us-section">

@@ -11,60 +11,11 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
 import {useLoadingWhile} from "../services/General/GlobalLoadingService.jsx";
-import {msgTimeout, turnstileSiteKey, TURNSTILE_SCRIPT_URL, TURNSTILE_SCRIPT_TIMEOUT_MS, setPendingTurnstileToken, ARABIC_MARKS_REGEX, normalizeArabicText} from "../services/General/GeneralUtils.jsx";
+import {msgTimeout, turnstileSiteKey, loadTurnstileScript, setPendingTurnstileToken, ARABIC_MARKS_REGEX, normalizeArabicText} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 import {createPortal} from "react-dom";
 
-
-let turnstileScriptPromise = null;
-
-const loadTurnstileScript = () => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') {
-        return Promise.resolve(false);
-    }
-
-    if (window.turnstile) {
-        return Promise.resolve(true);
-    }
-
-    if (turnstileScriptPromise) {
-        return turnstileScriptPromise;
-    }
-
-    turnstileScriptPromise = new Promise((resolve) => {
-        let settled = false;
-
-        const settle = (loaded) => {
-            if (settled) {
-                return;
-            }
-
-            settled = true;
-
-            if (!loaded) {
-                turnstileScriptPromise = null;
-            }
-
-            resolve(loaded);
-        };
-
-        try {
-            const script = document.createElement('script');
-            script.src = TURNSTILE_SCRIPT_URL;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => settle(!!window.turnstile);
-            script.onerror = () => settle(false);
-            document.head.appendChild(script);
-            setTimeout(() => settle(!!window.turnstile), TURNSTILE_SCRIPT_TIMEOUT_MS);
-        } catch (ignored) {
-            settle(false);
-        }
-    });
-
-    return turnstileScriptPromise;
-};
 
 const captchaSeededUnitRandom = (seed, index) => {
     const str = `${seed}_${index}`;

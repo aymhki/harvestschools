@@ -26,6 +26,15 @@
       "feedback": "Feedback",
       "other": "Other"
     },
-    "alumni-highlights": "Alumni Highlights"
+    "alumni-highlights": "Alumni Highlights",
+    "chat": {
+      "intro": "Chat with our assistant about admissions, tuition fees, stages and more. Start the chat below.",
+      "start": "Start Chat",
+      "reset": "Start Over",
+      "typing": "The assistant is typing",
+      "offline": "You are offline. Reconnect to chat with us.",
+      "error": "The chat assistant is unavailable right now. Please try again.",
+      "verification-failed": "Human verification could not load. Please refresh the page to chat with us."
+    }
   }
 }

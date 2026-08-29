@@ -96,6 +96,17 @@ function clearUserHistory($phone, $channel = null) {
     $stmt->execute([$phone, $channel]);
 }
 
+function resetSession($phone, $channel = null) {
+    $channel = $channel ?? activeChannel();
+    clearUserHistory($phone, $channel);
+    $stmt = db()->prepare("
+        UPDATE chat_bot_user_sessions
+        SET language = NULL, state = 'new', session_started_at = NOW(), last_message_at = NOW(), messages_since_feedback = 0
+        WHERE phone_number = ? AND channel = ?
+    ");
+    $stmt->execute([$phone, $channel]);
+}
+
 function getRelevantHistory($phone, $session, $limit = 50, $channel = null) {
     $channel = $channel ?? activeChannel();
     if (USE_HISTORY_ACROSS_SESSIONS === 1) {

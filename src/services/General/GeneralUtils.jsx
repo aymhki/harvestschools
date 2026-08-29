@@ -183,6 +183,55 @@ const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const TURNSTILE_SCRIPT_TIMEOUT_MS = 8000;
 
+let turnstileScriptPromise = null;
+
+const loadTurnstileScript = () => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+        return Promise.resolve(false);
+    }
+
+    if (window.turnstile) {
+        return Promise.resolve(true);
+    }
+
+    if (turnstileScriptPromise) {
+        return turnstileScriptPromise;
+    }
+
+    turnstileScriptPromise = new Promise((resolve) => {
+        let settled = false;
+
+        const settle = (loaded) => {
+            if (settled) {
+                return;
+            }
+
+            settled = true;
+
+            if (!loaded) {
+                turnstileScriptPromise = null;
+            }
+
+            resolve(loaded);
+        };
+
+        try {
+            const script = document.createElement('script');
+            script.src = TURNSTILE_SCRIPT_URL;
+            script.async = true;
+            script.defer = true;
+            script.onload = () => settle(!!window.turnstile);
+            script.onerror = () => settle(false);
+            document.head.appendChild(script);
+            setTimeout(() => settle(!!window.turnstile), TURNSTILE_SCRIPT_TIMEOUT_MS);
+        } catch (ignored) {
+            settle(false);
+        }
+    });
+
+    return turnstileScriptPromise;
+};
+
 const mfaResendCooldownSeconds = 30;
 const mfaResendMaxPerWindow = 5;
 const EventBookingLoginPageUrl = '/events/event-booking';
@@ -433,6 +482,7 @@ const ENDPOINTS = {
     setAlumniPostPlacement: '/scripts/Admin/AlumniStudents/setAlumniPostPlacement.php',
     deleteAlumniPostByAdmin: '/scripts/Admin/AlumniStudents/deleteAlumniPostByAdmin.php',
     serveAlumniFile: '/scripts/Admin/AlumniStudents/serveAlumniFile.php?file=',
+    webChat: '/scripts/Public/ChatBot/webChat.php',
 };
 
 const BASE_URLS = {
@@ -615,5 +665,6 @@ export {
     getCurrentLangCode,
     TURNSTILE_SCRIPT_URL,
     TURNSTILE_SCRIPT_TIMEOUT_MS,
+    loadTurnstileScript,
     isMobileApp
 }
