@@ -78,9 +78,6 @@ try {
 
     $response = curl_exec($curl);
     $statusCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-    curl_close($curl);
-
     $decoded = $response ? json_decode($response, true) : null;
 
     if ($statusCode !== 200 || !is_array($decoded)) {

@@ -41,9 +41,7 @@ function getRequirementsForStage($stageId, $stageName, $lang) {
     $lines = $stage['requirements'][$lang] ?? [];
 
     if (is_array($lines) && $lines !== []) {
-        $heading = $lang === 'en'
-            ? "*Admission Requirements for {$stageName}:*\n"
-            : "*متطلبات التقديم لمرحلة {$stageName}:*\n";
+        $heading = $lang === 'en' ? "*Admission Requirements for {$stageName}:*\n" : "*متطلبات التقديم لمرحلة {$stageName}:*\n";
 
         return $heading . '• ' . implode("\n• ", $lines) . "\n" . admissionNotesText($lang);
     }
@@ -305,7 +303,9 @@ function handleIntermediateMode($from, $message) {
                             : "*المصروفات الدراسية السنوية لمرحلة {$stageName}:* {$feesStr} {$currency}";
                         $responseText .= $disclaimer;
                     } elseif ($action === 'reqs') {
-                        $responseText = getRequirementsForStage($stageId, $stageName, $lang);
+                        sendText($from, getRequirementsForStage($stageId, $stageName, $lang));
+
+                        $responseText = ($lang === 'en') ? "Return to navigation:" : "العودة للقائمة:";
                     } else {
                         $responseText = ($lang === 'en')
                             ? "*{$stageName}* is currently offered at Harvest Schools."

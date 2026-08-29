@@ -6,6 +6,19 @@ require_once '../shared/text_utils.php';
 
 const WA_LIST_TITLE_LIMIT = 24;
 const WA_LIST_DESC_LIMIT  = 72;
+const WA_BODY_LIMIT       = 1024;
+
+function waBodyText($body) {
+    $body = (string) $body;
+
+    if (mb_strlen($body, 'UTF-8') <= WA_BODY_LIMIT) {
+        return $body;
+    }
+
+    file_put_contents(__DIR__ . '/error.log', date('c') . " waBodyText: body of " . mb_strlen($body, 'UTF-8') . " chars truncated to " . WA_BODY_LIMIT . "\n", FILE_APPEND);
+
+    return smartTruncate($body, WA_BODY_LIMIT);
+}
 
 function wa_request($payload) {
     $url = "https://graph.facebook.com/v26.0/" . WHATSAPP_PHONE_ID . "/messages";
@@ -46,7 +59,7 @@ function sendButtons($to, $body, $buttons) {
         "type" => "interactive",
         "interactive" => [
             "type" => "button",
-            "body" => ["text" => $body],
+            "body" => ["text" => waBodyText($body)],
             "action" => ["buttons" => $btnArr]
         ]
     ]);
@@ -74,7 +87,7 @@ function sendList($to, $body, $buttonText, $sections) {
         "type" => "interactive",
         "interactive" => [
             "type" => "list",
-            "body" => ["text" => $body],
+            "body" => ["text" => waBodyText($body)],
             "action" => [
                 "button" => smartTruncate($buttonText, 20),
                 "sections" => $preparedSections
