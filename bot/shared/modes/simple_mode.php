@@ -51,8 +51,8 @@ function handleSimpleMode($from, $message) {
 function askLanguage($to) {
     global $STRINGS;
     sendButtons($to, $STRINGS['choose_lang'], [
-        ["id" => "lang_en", "title" => "English"],
-        ["id" => "lang_ar", "title" => "العربية"]
+        ["id" => "lang_en", "title" => $STRINGS['btn_english']],
+        ["id" => "lang_ar", "title" => $STRINGS['btn_arabic']]
     ]);
 }
 

@@ -1013,14 +1013,8 @@ PROMPT;
             'en' => 'Start Chatting',
             'ar' => 'ابدأ المحادثة',
         ],
-        'btn_english' => [
-            'en' => 'English',
-            'ar' => 'English',
-        ],
-        'btn_arabic' => [
-            'en' => 'العربية',
-            'ar' => 'العربية',
-        ],
+        'btn_english' => 'English',
+        'btn_arabic'  => 'العربية'
     ];
 
     $STRINGS_ARRAY = [];
