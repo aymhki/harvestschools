@@ -187,6 +187,8 @@ function Form({
     const [videoThumbnailValues, setVideoThumbnailValues] = useState({});
     const [heicConverting, setHeicConverting] = useState({});
     const [videoThumbnailSeeking, setVideoThumbnailSeeking] = useState({});
+    const [videoThumbnailErrors, setVideoThumbnailErrors] = useState({});
+    const [filePreviewErrors, setFilePreviewErrors] = useState({});
     const [fileDropTargets, setFileDropTargets] = useState({});
     const [filePreviewUrls, setFilePreviewUrls] = useState({});
     const [showSelectDateModal, setShowSelectDateModal] = useState(false);
@@ -560,6 +562,8 @@ function Form({
 
         setVideoThumbnailUrls(videoUrls);
         setFilePreviewUrls(previewUrls);
+        setVideoThumbnailErrors({});
+        setFilePreviewErrors({});
 
         return () => {
             Object.values(videoUrls).forEach((objectUrl) => URL.revokeObjectURL(objectUrl));
@@ -1507,36 +1511,53 @@ function Form({
                 ) : (
                     <>
                         <div className="video-thumbnail-field-stage">
-                            <video
-                                className="video-thumbnail-field-preview"
-                                src={objectUrl}
-                                ref={fieldRefs.current[videoRefKey]}
-                                preload="metadata"
-                                muted
-                                playsInline
-                                onSeeking={() => markSeeking(true)}
-                                onSeeked={() => markSeeking(false)}
-                                onError={() => markSeeking(false)}
-                                onLoadedMetadata={(e) => {
-                                    const loaded = Number(e.target.duration) || 0;
+                            {videoThumbnailErrors[field.id] ? (
+                                <span className="video-thumbnail-field-error">
+                                    Could not load video preview, upload the video and wait for processing to edit the thumbnail frame
+                                </span>
+                            ) : (
+                                <video
+                                    className="video-thumbnail-field-preview"
+                                    src={objectUrl}
+                                    ref={fieldRefs.current[videoRefKey]}
+                                    preload="metadata"
+                                    muted
+                                    playsInline
+                                    onSeeking={() => markSeeking(true)}
+                                    onSeeked={() => markSeeking(false)}
+                                    onError={() => {
+                                        markSeeking(false);
+                                        setVideoThumbnailErrors(prev => ({...prev, [field.id]: true}));
+                                    }}
+                                    onLoadedMetadata={(e) => {
+                                        const video = e.target;
 
-                                    setVideoThumbnailDurations(prev => (
-                                        prev[field.id] === loaded ? prev : {...prev, [field.id]: loaded}
-                                    ));
+                                        if (video.videoWidth === 0 && video.videoHeight === 0) {
+                                            markSeeking(false);
+                                            setVideoThumbnailErrors(prev => ({...prev, [field.id]: true}));
+                                            return;
+                                        }
 
-                                    const scrubber = fieldRefs.current[scrubberRefKey];
+                                        const loaded = Number(video.duration) || 0;
 
-                                    if (scrubber && scrubber.current) {
-                                        scrubber.current.max = String(Math.max(loaded - 0.1, 0.1));
-                                    }
+                                        setVideoThumbnailDurations(prev => (
+                                            prev[field.id] === loaded ? prev : {...prev, [field.id]: loaded}
+                                        ));
 
-                                    const picked = fieldRefs.current[field.id];
-                                    const alreadyPicked = (picked && picked.current) ? Number(picked.current.value) : NaN;
-                                    const wanted = (Number.isFinite(alreadyPicked) && alreadyPicked > 0) ? alreadyPicked : (Number(field.defaultValue) || 0);
-                                    const startAt = Math.min(Math.max(wanted, 0), Math.max(loaded - 0.1, 0));
-                                    seekTo(Number(startAt.toFixed(1)), loaded);
-                                }}
-                            />
+                                        const scrubber = fieldRefs.current[scrubberRefKey];
+
+                                        if (scrubber && scrubber.current) {
+                                            scrubber.current.max = String(Math.max(loaded - 0.1, 0.1));
+                                        }
+
+                                        const picked = fieldRefs.current[field.id];
+                                        const alreadyPicked = (picked && picked.current) ? Number(picked.current.value) : NaN;
+                                        const wanted = (Number.isFinite(alreadyPicked) && alreadyPicked > 0) ? alreadyPicked : (Number(field.defaultValue) || 0);
+                                        const startAt = Math.min(Math.max(wanted, 0), Math.max(loaded - 0.1, 0));
+                                        seekTo(Number(startAt.toFixed(1)), loaded);
+                                    }}
+                                />
+                            )}
 
                             {videoThumbnailSeeking[field.id] && (
                                 <span className="video-thumbnail-field-seeking" role="status" aria-live="polite">
@@ -1670,8 +1691,26 @@ function Form({
 
                 {(chosenFile && previewUrl !== '') && (
                     String(chosenFile.type).startsWith('video/') ? (
-                        <video className="file-form-field-preview" src={previewUrl}
-                               preload="metadata" muted playsInline controls/>
+                        filePreviewErrors[field.id] ? (
+                            <label className="file-form-field-preview-error">
+                                Could not preview the video because format is not supported
+                            </label>
+                        ) : (
+                            <video
+                                className="file-form-field-preview"
+                                src={previewUrl}
+                                preload="metadata"
+                                muted
+                                playsInline
+                                controls
+                                onError={() => setFilePreviewErrors(prev => ({...prev, [field.id]: true}))}
+                                onLoadedMetadata={(e) => {
+                                    if (e.target.videoWidth === 0 && e.target.videoHeight === 0) {
+                                        setFilePreviewErrors(prev => ({...prev, [field.id]: true}));
+                                    }
+                                }}
+                            />
+                        )
                     ) : (
                         <img className="file-form-field-preview" src={previewUrl} alt={chosenFile.name}/>
                     )
@@ -2332,6 +2371,13 @@ function Form({
             setFileInputs(prev => ({...prev, [field.id]: chosen[0]}));
             syncFileInputElement(field, [chosen[0]]);
         }
+
+        setFilePreviewErrors(prev => {
+            const next = {...prev};
+            delete next[field.id];
+            return next;
+        });
+
 
         return '';
     };

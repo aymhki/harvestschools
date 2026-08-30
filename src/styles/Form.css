@@ -325,6 +325,16 @@
     stroke-linecap: round;
 }
 
+.video-thumbnail-field-error {
+    text-align: center;
+    width: 100%;
+}
+
+.file-form-field-preview-error {
+    width: 100%;
+    text-align: center;
+}
+
 @media (hover: hover) {
     .files-form-field-grid .files-form-field-grid-remove:hover {
         filter: drop-shadow(0 0 0.1rem var(--ff-field-border));
