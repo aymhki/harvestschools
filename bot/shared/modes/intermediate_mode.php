@@ -327,10 +327,12 @@ function handleIntermediateMode($from, $message) {
 
     sendMainMenuIntermediate($from, $lang, true);
 }
-function askLanguageMode($to) {
-    sendButtons($to, "Please choose your language.\nيرجى اختيار اللغة.", [
-        ["id" => "lang_en", "title" => "English"],
-        ["id" => "lang_ar", "title" => "العربية"]
+
+function askLanguage($to) {
+    global $STRINGS;
+    sendButtons($to, $STRINGS['choose_lang'], [
+        ["id" => "lang_en", "title" => $STRINGS['btn_english']],
+        ["id" => "lang_ar", "title" => $STRINGS['btn_arabic']]
     ]);
 }
 

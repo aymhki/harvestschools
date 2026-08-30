@@ -39,7 +39,7 @@ function handleSimpleMode($from, $message) {
             $deptName = $dept[$lang];
             $waLink = "https://wa.me/" . $dept['number'];
             $msg = $STRINGS['tap_to_chat'][$lang] . " *{$deptName}*:\n";
-            $urlBtnTitle = ($lang === 'en') ? 'Start Chatting' : 'ابدأ المحادثة';
+            $urlBtnTitle = $STRINGS['start_chatting'][$lang];
             sendCtaUrlButton($from, $msg, $urlBtnTitle, $waLink);
             return;
         }

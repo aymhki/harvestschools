@@ -36,6 +36,13 @@ function info_system_snapshot(mysqli $conn, $sql, $keyColumn, $bindValue = null)
     return $rows;
 }
 
+function dbText($row, $lang, $default = '') {
+    if (!$row) return $default;
+    $body = $row['body_' . $lang] ?? '';
+    $title = $row['title_' . $lang] ?? '';
+    return trim($body) !== '' ? $body : (trim($title) !== '' ? $title : $default);
+}
+
 function info_system_row_changes($noun, $key, $title, $beforeRow, array $fields) {
     $rowLabel = $noun . ' "' . $key . '"' . (trim((string)$title) === '' ? '' : ' (' . trim((string)$title) . ')');
 
@@ -439,6 +446,9 @@ try {
 
     $staticFromDb = [];
     $faqsFromDb = [];
+    $uiFromDb = [];
+    $mainOptionsFromDb = [];
+    $stringsFromDb = [];
 
     foreach ($staticContentRows as $row) {
         if ($row['group_key'] === 'admission_notes') {
@@ -450,6 +460,12 @@ try {
                 'q' => ['en' => $row['title_en'], 'ar' => $row['title_ar']],
                 'a' => ['en' => $row['body_en'], 'ar' => $row['body_ar']]
             ];
+        } elseif ($row['group_key'] === 'ui') {
+            $uiFromDb[$row['content_key']] = $row;
+        } elseif ($row['group_key'] === 'main_options') {
+            $mainOptionsFromDb[$row['content_key']] = $row;
+        } elseif ($row['group_key'] === 'strings') {
+            $stringsFromDb[$row['content_key']] = $row;
         } else {
             $staticFromDb[$row['content_key']] = ['en' => $row['body_en'], 'ar' => $row['body_ar']];
         }
@@ -811,49 +827,71 @@ PROMPT;
 
     $fileContent .= "\ndefine('SCHOOL_SYSTEM_PROMPT', <<< 'PROMPT'\n" . $systemPrompt . "\nPROMPT\n);\n\n";
 
+    $uiDefaults = [
+        'main_title' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
+        'main_body' => ['en' => "Welcome to Harvest International Schools chatbot.\nPlease choose a topic below:", 'ar' => "مرحباً بكم في مدارس هارڤست الدولية.\nيرجى اختيار موضوع من القائمة:"],
+        'main_body_fallback' => ['en' => 'Please choose a topic from the menu below:', 'ar' => 'يرجى اختيار موضوع من القائمة أدناه:'],
+        'main_btn' => ['en' => 'Options', 'ar' => 'الخيارات'],
+        'dept_title' => ['en' => 'Choose Department', 'ar' => 'اختر القسم'],
+        'dept_body' => ['en' => 'Please select the educational department:', 'ar' => 'يرجى اختيار القسم التعليمي:'],
+        'sec_title' => ['en' => 'Choose Stage Group', 'ar' => 'اختر المرحلة الدراسية'],
+        'sec_body' => ['en' => 'Please select the stage group:', 'ar' => 'يرجى اختيار المجموعة الدراسية:'],
+        'stage_title' => ['en' => 'Choose Grade', 'ar' => 'اختر الصف'],
+        'stage_body' => ['en' => 'Please select the specific grade:', 'ar' => 'يرجى اختيار الصف الدراسي بالتحديد:'],
+        'faq_title' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
+        'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
+        'back_btn' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
+        'apply_btn' => ['en' => 'Apply Now', 'ar' => 'تقدم الأن'],
+        'change_lang_btn' => ['en' => 'تغيير للعربية', 'ar' => 'Change to English'],
+        'nav_section' => ['en' => 'Navigation', 'ar' => 'التنقل'],
+        'contact_title' => ['en' => 'Contact Departments', 'ar' => 'أقسام التواصل'],
+        'contact_body' => ['en' => 'Please select the department you wish to chat with:', 'ar' => 'يرجى اختيار القسم الذي تريد التحدث معه:'],
+        'contact_hidden_note' => ['en' => 'Some departments are not shown here because they are not available for chat.', 'ar' => 'بعض الأقسام غير معروضة هنا لأنها غير متاحة للمحادثة.'],
+        'fees_disc_body' => ['en' => 'Select a department to view tuition fees, or view our discounts policy:', 'ar' => 'اختر القسم لعرض المصروفات أو اطلع على سياسة الخصومات:'],
+        'disc_section' => ['en' => 'Discounts', 'ar' => 'الخصومات'],
+        'disc_item' => ['en' => 'View Discounts', 'ar' => 'عرض الخصومات'],
+        'info_title' => ['en' => 'Information', 'ar' => 'معلومات'],
+        'info_body' => ['en' => 'Please select an option to continue:', 'ar' => 'يرجى الإختيار للمتابعة:'],
+        'faqs_item' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
+        'careers_item' => ['en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
+        'no_stgs' => ['en' => 'Sorry, all the stages in this stage group are not currently offered.', 'ar' => 'معذرة، كل المراحل الدراسية في هذه المجموعة غير متوفرة حاليًا.']
+        ];
+
+    $uiArr = [];
+    foreach ($uiDefaults as $key => $fallback) {
+        $row = $uiFromDb[$key] ?? null;
+        $uiArr[$key] = [
+            'en' => dbText($row, 'en', $fallback['en']),
+            'ar' => dbText($row, 'ar', $fallback['ar']),
+        ];
+    }
+
+    $mainOptionDefaults = [
+        ['id' => 'menu_stages', 'en' => 'Stages Offered', 'ar' => 'المراحل المتاحة'],
+        ['id' => 'menu_age', 'en' => 'Registration Age', 'ar' => 'سن القبول'],
+        ['id' => 'menu_reqs', 'en' => 'Admission Requirements', 'ar' => 'متطلبات التقديم'],
+        ['id' => 'menu_fees', 'en' => 'Tuition Fees & Discounts', 'ar' => 'المصروفات والخصومات'],
+        ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
+        ['id' => 'menu_address', 'en' => 'School Address', 'ar' => 'عنوان المدرسة'],
+        ['id' => 'menu_info', 'en' => 'FAQs & Careers', 'ar' => 'الأسئلة والوظائف'],
+        ['id' => 'menu_contact', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
+        ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
+    ];
+
+    $mainOptionsArr = [];
+    foreach ($mainOptionDefaults as $opt) {
+        $row = $mainOptionsFromDb[$opt['id']] ?? null;
+        $mainOptionsArr[] = [
+            'id' => $opt['id'],
+            'en' => dbText($row, 'en', $opt['en']),
+            'ar' => dbText($row, 'ar', $opt['ar']),
+        ];
+    }
+
     $schoolConfigArr = [
         'contact_departments' => [],
-        'ui' => [
-            'main_title' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
-            'main_body' => ['en' => "Welcome to Harvest International Schools chatbot.\nPlease choose a topic below:", 'ar' => "مرحباً بكم في مدارس هارڤست الدولية.\nيرجى اختيار موضوع من القائمة:"],
-            'main_body_fallback' => ['en' => 'Please choose a topic from the menu below:', 'ar' => 'يرجى اختيار موضوع من القائمة أدناه:'],
-            'main_btn' => ['en' => 'Options', 'ar' => 'الخيارات'],
-            'dept_title' => ['en' => 'Choose Department', 'ar' => 'اختر القسم'],
-            'dept_body' => ['en' => 'Please select the educational department:', 'ar' => 'يرجى اختيار القسم التعليمي:'],
-            'sec_title' => ['en' => 'Choose Stage Group', 'ar' => 'اختر المرحلة الدراسية'],
-            'sec_body' => ['en' => 'Please select the stage group:', 'ar' => 'يرجى اختيار المجموعة الدراسية:'],
-            'stage_title' => ['en' => 'Choose Grade', 'ar' => 'اختر الصف'],
-            'stage_body' => ['en' => 'Please select the specific grade:', 'ar' => 'يرجى اختيار الصف الدراسي بالتحديد:'],
-            'faq_title' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
-            'faq_body' => ['en' => 'Select a question to view the answer:', 'ar' => 'اختر سؤالاً لعرض الإجابة:'],
-            'back_btn' => ['en' => 'Main Menu', 'ar' => 'القائمة الرئيسية'],
-            'apply_btn' => ['en' => 'Apply Now', 'ar' => 'تقدم الأن'],
-            'change_lang_btn' => ['en' => 'تغيير للعربية', 'ar' => 'Change to English'],
-            'nav_section' => ['en' => 'Navigation', 'ar' => 'التنقل'],
-            'contact_title' => ['en' => 'Contact Departments', 'ar' => 'أقسام التواصل'],
-            'contact_body' => ['en' => 'Please select the department you wish to chat with:', 'ar' => 'يرجى اختيار القسم الذي تريد التحدث معه:'],
-            'unoffered_note' => ['en' => 'Please note that unavailable stages will not be shown here.', 'ar' => 'يرجى ملاحظة أنه لن يتم عرض المراحل غير المتاحة هنا.'],
-            'contact_hidden_note' => ['en' => 'Some departments are not shown here because they are not available for chat.', 'ar' => 'بعض الأقسام غير معروضة هنا لأنها غير متاحة للمحادثة.'],
-            'fees_disc_body' => ['en' => 'Select a department to view tuition fees, or view our discounts policy:', 'ar' => 'اختر القسم لعرض المصروفات أو اطلع على سياسة الخصومات:'],
-            'disc_section' => ['en' => 'Discounts', 'ar' => 'الخصومات'],
-            'disc_item' => ['en' => 'View Discounts', 'ar' => 'عرض الخصومات'],
-            'info_title' => ['en' => 'Information', 'ar' => 'معلومات'],
-            'info_body' => ['en' => 'Please select an option to continue:', 'ar' => 'يرجى الإختيار للمتابعة:'],
-            'faqs_item' => ['en' => 'FAQs', 'ar' => 'الأسئلة الشائعة'],
-            'careers_item' => ['en' => 'Careers / Vacancies', 'ar' => 'الوظائف المتاحة'],
-            'no_stgs' => ['en' => 'Sorry, all the stages in this stage group are not currently offered.', 'ar' => 'معذرة، كل المراحل الدراسية في هذه المجموعة غير متوفرة حاليًا.']
-        ],
-        'main_options' => [
-            ['id' => 'menu_stages', 'en' => 'Stages Offered', 'ar' => 'المراحل المتاحة'],
-            ['id' => 'menu_age', 'en' => 'Registration Age', 'ar' => 'سن القبول'],
-            ['id' => 'menu_reqs', 'en' => 'Admission Requirements', 'ar' => 'متطلبات التقديم'],
-            ['id' => 'menu_fees', 'en' => 'Tuition Fees & Discounts', 'ar' => 'المصروفات والخصومات'],
-            ['id' => 'menu_accr', 'en' => 'Accreditations', 'ar' => 'الاعتمادات'],
-            ['id' => 'menu_address', 'en' => 'School Address', 'ar' => 'عنوان المدرسة'],
-            ['id' => 'menu_info', 'en' => 'FAQs & Careers', 'ar' => 'الأسئلة والوظائف'],
-            ['id' => 'menu_contact', 'en' => 'Chat with a Department', 'ar' => 'التحدث مع احد الأقسام'],
-            ['id' => 'menu_apply', 'en' => 'Apply Now', 'ar' => 'تقدم الأن'],
-        ],
+        'ui' => $uiArr,
+        'main_options' => $mainOptionsArr,
         'static_content' => $staticContentArr,
         'faqs' => $faqsArr,
         'departments' => []
@@ -917,61 +955,88 @@ PROMPT;
     $fileContent .= "\$SCHOOL_CONFIG = " . arrayToCode($schoolConfigArr) . ";\n\n";
     $fileContent .= "\$DEPARTMENTS = " . arrayToCode($departmentsArr) . ";\n\n";
 
-    $fileContent .= <<<'PHP_CODE'
-$STRINGS = [
-    'choose_lang'   => "Please choose your language\nيرجى اختيار اللغة",
-    'welcome' => [
-        'en' => "Welcome! I'm the school's official assistant. How can I help you today?",
-        'ar' => "أهلاً بك! أنا المساعد الرسمي للمدرسة. كيف يمكنني مساعدتك اليوم؟",
-    ],
-    'feedback_prompt' => [
-        'en' => "Did this answer help you?",
-        'ar' => "هل كانت هذه الإجابة مفيدة؟",
-    ],
-    'btn_helpful' => [
-        'en' => "✓ Yes, helpful",
-        'ar' => "✓ نعم، مفيدة",
-    ],
-    'btn_not_helpful' => [
-        'en' => "✗ Need more help",
-        'ar' => "✗ أحتاج مساعدة",
-    ],
-    'anything_else' => [
-        'en' => "Great! Is there anything else I can help you with today?",
-        'ar' => "رائع! هل هناك أي شيء آخر يمكنني مساعدتك به اليوم؟",
-    ],
-    'escalate' => [
-        'en' => "I'm sorry my response wasn't helpful. Let me connect you with one of our representatives. Please select the department you want to contact:",
-        'ar' => "أعتذر إن لم تكن إجابتي مفيدة. دعني أساعدك على التواصل مع أحد ممثلينا. يرجى اختيار القسم الذي تريد التواصل معه:",
-    ],
-    'departments_title' => [
-        'en' => "Departments",
-        'ar' => "الأقسام",
-    ],
-    'hidden_departments_note' => [
-        'en' => "Some departments are not shown here because they are not available for chat.",
-        'ar' => "بعض الأقسام غير معروضة هنا لأنها غير متاحة للمحادثة.",
-    ],
-    'tap_to_chat' => [
-        'en' => "Tap the link to chat with",
-        'ar' => "اضغط على الرابط للتواصل مع",
-    ],
-    'choose_department' => [
-        'en' => "Choose the department you want to contact:",
-        'ar' => "اختر القسم الذي تريد التواصل معه:",
-    ],
-    'change_lang_btn' => [
-        'en' => 'تغيير للعربية',
-        'ar' => 'Change to English'
-    ],
-    'llm_error' => [
-        'en' => "Sorry, I couldn't process that.",
-        'ar' => "عذراً، لم أتمكن من معالجة ذلك.",
-    ],
-];
+    $stringDefaults = [
+        'choose_lang'   => "Please choose your language\nيرجى اختيار اللغة",
+        'welcome' => [
+            'en' => "Welcome! I'm the school's official assistant. How can I help you today?",
+            'ar' => "أهلاً بك! أنا المساعد الرسمي للمدرسة. كيف يمكنني مساعدتك اليوم؟",
+        ],
+        'feedback_prompt' => [
+            'en' => "Did this answer help you?",
+            'ar' => "هل كانت هذه الإجابة مفيدة؟",
+        ],
+        'btn_helpful' => [
+            'en' => "✓ Yes, helpful",
+            'ar' => "✓ نعم، مفيدة",
+        ],
+        'btn_not_helpful' => [
+            'en' => "✗ Need more help",
+            'ar' => "✗ أحتاج مساعدة",
+        ],
+        'anything_else' => [
+            'en' => "Great! Is there anything else I can help you with today?",
+            'ar' => "رائع! هل هناك أي شيء آخر يمكنني مساعدتك به اليوم؟",
+        ],
+        'escalate' => [
+            'en' => "I'm sorry my response wasn't helpful. Let me connect you with one of our representatives. Please select the department you want to contact:",
+            'ar' => "أعتذر إن لم تكن إجابتي مفيدة. دعني أساعدك على التواصل مع أحد ممثلينا. يرجى اختيار القسم الذي تريد التواصل معه:",
+        ],
+        'departments_title' => [
+            'en' => "Departments",
+            'ar' => "الأقسام",
+        ],
+        'hidden_departments_note' => [
+            'en' => "Some departments are not shown here because they are not available for chat.",
+            'ar' => "بعض الأقسام غير معروضة هنا لأنها غير متاحة للمحادثة.",
+        ],
+        'tap_to_chat' => [
+            'en' => "Tap the link to chat with",
+            'ar' => "اضغط على الرابط للتواصل مع",
+        ],
+        'choose_department' => [
+            'en' => "Choose the department you want to contact:",
+            'ar' => "اختر القسم الذي تريد التواصل معه:",
+        ],
+        'change_lang_btn' => [
+            'en' => 'تغيير للعربية',
+            'ar' => 'Change to English'
+        ],
+        'llm_error' => [
+            'en' => "Sorry, I couldn't process that.",
+            'ar' => "عذراً، لم أتمكن من معالجة ذلك.",
+        ],
+        'lang_changed' => [
+            'en' => "Language changed successfully.",
+            'ar' => "تم تغيير اللغة بنجاح.",
+        ],
+        'start_chatting' => [
+            'en' => 'Start Chatting',
+            'ar' => 'ابدأ المحادثة',
+        ],
+        'btn_english' => [
+            'en' => 'English',
+            'ar' => 'English',
+        ],
+        'btn_arabic' => [
+            'en' => 'العربية',
+            'ar' => 'العربية',
+        ],
+    ];
 
-PHP_CODE;
+    $STRINGS_ARRAY = [];
+    foreach ($stringDefaults as $key => $fallback) {
+        $row = $stringsFromDb[$key] ?? null;
+        if (is_array($fallback)) {
+            $STRINGS_ARRAY[$key] = [
+                'en' => dbText($row, 'en', $fallback['en']),
+                'ar' => dbText($row, 'ar', $fallback['ar']),
+            ];
+        } else {
+            $STRINGS_ARRAY[$key] = dbText($row, 'en', $fallback);
+        }
+    }
 
+    $fileContent .= "\n\$STRINGS = " . arrayToCode($STRINGS_ARRAY) . ";\n\n";
 
     if ($postData['is_development']) {
         $ASSETS_BASE = dirname($doc_root) . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR;

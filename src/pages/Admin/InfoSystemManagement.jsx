@@ -191,7 +191,7 @@ function InfoSystemManagement() {
 
     const profileCategories = ['identity', 'location', 'contact', 'social', 'hours', 'fees', 'admission', 'general'];
     const policyGroupKeys = ['discounts', 'accreditations', 'fee_exclusions'];
-    const staticContentGroupKeys = ['static', 'faq', 'admission_notes'];
+    const staticContentGroupKeys = ['static', 'faq', 'admission_notes', 'main_options', 'strings', 'ui'];
 
     const handleEditInitialization = (type, rowIndex) => {
         let rowData;
