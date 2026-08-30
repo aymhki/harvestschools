@@ -49,6 +49,7 @@ const PUBLIC_PAGE_INVENTORY = [
     ['id' => 'page.gallery-photos', 'path' => '/gallery/photos', 'section' => 'gallery', 'titleKey' => 'nav.photos', 'titleEn' => 'Photos', 'keywords' => ['photos', 'pictures', 'صور']],
     ['id' => 'page.gallery-videos', 'path' => '/gallery/videos', 'section' => 'gallery', 'titleKey' => 'nav.videos', 'titleEn' => 'Videos', 'keywords' => ['videos', 'فيديو']],
     ['id' => 'page.gallery-360-tour', 'path' => '/gallery/360-tour', 'section' => 'gallery', 'titleKey' => 'nav.360-tour', 'titleEn' => '360 Tour', 'keywords' => ['360', 'tour', 'virtual tour', 'جولة']],
+    ['id' => 'page.open-day-signup', 'path' => '/events/open-day-signup', 'section' => 'events', 'titleKey' => 'nav.open-day-signup', 'titleEn' => 'Open Day Signup', 'keywords' => ['events', 'فعاليات'] ]
 ];
 
 const PUBLIC_DEPARTMENT_ROUTE_PATHS = [

@@ -42,6 +42,41 @@ const fetchAllOpenDaySignups = async (navigate, setOpenDaySignups) => {
     }
 }
 
+const deleteAllOpenDaySignups = async (navigate) => {
+    const sessionId = await validateAdminSessionLocally();
+
+    if (!sessionId) {
+        navigate(adminLoginPageUrl, { replace: true });
+        return 'Session expired';
+    }
+
+    try {
+        const response = await fetch(endpoints.deleteOpenDaySignups,
+            {
+                method: 'POST',
+                headers: await buildAuthHeaders(sessionId)
+            });
+
+        const result = await response.json();
+
+        if (result && result.success) {
+            return result;
+        } else {
+            if (result && result.message) {
+                console.log(result.message);
+                return result.message;
+            }
+
+            if (result && result.code && (result.code === 401 || result.code === 403)) {
+                navigate(adminLoginPageUrl, { replace: true });
+            }
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 export {
-    fetchAllOpenDaySignups
+    fetchAllOpenDaySignups,
+    deleteAllOpenDaySignups
 }

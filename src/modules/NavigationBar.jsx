@@ -331,6 +331,10 @@ function NavigationBar({compactOrAdmin, isMobileApp}){
                         <li><Link to="/events/event-booking" onClick={closeMobileMenu}>
                             {t("nav.booking")}
                         </Link></li>
+
+                        <li><Link to="/events/open-day-signup" onClick={closeMobileMenu}>
+                            {t("nav.open-day-signup")}
+                        </Link></li>
                     </ul>
                 </li>
 

@@ -13,7 +13,6 @@ function OpenDaySignup() {
     const [, setIsLoading] = useLoading(false);
     const [openDaySignupFormSubmitted, setOpenDaySignupFormSubmitted] = useState(false)
     const [numberOfAttendees, setNumberOfAttendees] = useState(1);
-    const isOpenDaySignupsClosed = true;
 
     const basicConstantFields = useMemo(() => [
         {
@@ -143,111 +142,100 @@ function OpenDaySignup() {
         }
     }
 
-    if (isOpenDaySignupsClosed) {
-        return (
-            <>
 
-                <div className="open-day-signup-page">
-                    <p>
-                        {t("events-pages.open-day-signup-page.open-day-signups-not-open-message") }
-                    </p>
-                </div>
-            </>
-        );
-    } else {
-        return (
-            <>
+    return (
+        <>
 
-                <div className="open-day-signup-page">
-                    {!numberOfAttendeesSelected ? (
-                        <div className="number-of-attendees-selection">
-                            <h2>
-                                {t("events-pages.open-day-signup-page.welcome-to-open-day-signup")}
-                            </h2>
+            <div className="open-day-signup-page">
+                {!numberOfAttendeesSelected ? (
+                    <div className="number-of-attendees-selection">
+                        <h2>
+                            {t("events-pages.open-day-signup-page.welcome-to-open-day-signup")}
+                        </h2>
 
-                            <p>
-                                {t("events-pages.open-day-signup-page.please-enter-the-children-you-want-to-bring", {costPerChildField: formatNumberByLocale(costPerChildInOpenDaySignup)})}
-                            </p>
+                        <p>
+                            {t("events-pages.open-day-signup-page.please-enter-the-children-you-want-to-bring", {costPerChildField: formatNumberByLocale(costPerChildInOpenDaySignup)})}
+                        </p>
 
-                            <div className={"number-of-attendees-form-container"}>
-                                <Form fields=
-                                          {
-                                              [
-                                                  {
-                                                      id: 1,
-                                                      type: 'number',
-                                                      name: 'number-of-attendees',
-                                                      label: 'Number of Attendees',
-                                                      required: true,
-                                                      placeholder: t("events-pages.open-day-signup-page.number-of-attendees-field"),
-                                                      errorMsg: 'Please enter the number of children attending',
-                                                      value: '',
-                                                      setValue: null,
-                                                      widthOfField: 1,
-                                                      defaultValue: 1,
-                                                      minimumValue: 1,
-                                                      maximumValue: 2000,
-                                                      httpName: 'number-of-attendees',
-                                                      displayLabel: t("events-pages.open-day-signup-page.number-of-attendees-field")
-                                                  }
-                                              ]
-                                          }
-                                      hasDifferentOnSubmitBehaviour={true}
-                                      differentOnSubmitBehaviour={onSubmitNumberAttendeesSelected}
-                                      hasDifferentSubmitButtonText={true}
-                                      differentSubmitButtonText={[t("events-pages.open-day-signup-page.next-btn"), t("events-pages.open-day-signup-page.next-btn")]}
-                                      noClearOption={true}
-                                      noCaptcha={false}
-                                      noInputFieldsCache={true}
-                                      switchFooterButtonsOrder={true}
-                                      footerButtonsSpaceBetween={true}
+                        <div className={"number-of-attendees-form-container"}>
+                            <Form fields=
+                                      {
+                                          [
+                                              {
+                                                  id: 1,
+                                                  type: 'number',
+                                                  name: 'number-of-attendees',
+                                                  label: 'Number of Attendees',
+                                                  required: true,
+                                                  placeholder: t("events-pages.open-day-signup-page.number-of-attendees-field"),
+                                                  errorMsg: 'Please enter the number of children attending',
+                                                  value: '',
+                                                  setValue: null,
+                                                  widthOfField: 1,
+                                                  defaultValue: 1,
+                                                  minimumValue: 1,
+                                                  maximumValue: 2000,
+                                                  httpName: 'number-of-attendees',
+                                                  displayLabel: t("events-pages.open-day-signup-page.number-of-attendees-field")
+                                              }
+                                          ]
+                                      }
+                                  hasDifferentOnSubmitBehaviour={true}
+                                  differentOnSubmitBehaviour={onSubmitNumberAttendeesSelected}
+                                  hasDifferentSubmitButtonText={true}
+                                  differentSubmitButtonText={[t("events-pages.open-day-signup-page.next-btn"), t("events-pages.open-day-signup-page.next-btn")]}
+                                  noClearOption={true}
+                                  noCaptcha={true}
+                                  noInputFieldsCache={true}
+                                  switchFooterButtonsOrder={true}
+                                  footerButtonsSpaceBetween={true}
 
-                                />
-                            </div>
+                            />
                         </div>
-                    ) : (
-                        <>
-                            {!openDaySignupFormSubmitted ? (
-                                <div className="open-day-signup-step-container">
-                                    <h2>
-                                        {t("events-pages.open-day-signup-page.open-day-signup-form")}
-                                    </h2>
+                    </div>
+                ) : (
+                    <>
+                        {!openDaySignupFormSubmitted ? (
+                            <div className="open-day-signup-step-container">
+                                <h2>
+                                    {t("events-pages.open-day-signup-page.open-day-signup-form")}
+                                </h2>
 
-                                    <div className={"open-day-signup-form-container"}>
-                                        <Form
-                                            fields={openDaySignupFormFields}
-                                            hasDifferentOnSubmitBehaviour={true}
-                                            differentOnSubmitBehaviour={onSubmitOpenDaySignupFormBehaviour}
-                                            noCaptcha={false}
-                                            noInputFieldsCache={true}
-                                            switchFooterButtonsOrder={true}
-                                            footerButtonsSpaceBetween={true}
-                                            hasDifferentResetBehaviour={true}
-                                            differentResetBehaviour={onResetBehaviour}
-                                        />
-                                    </div>
-
-                                </div>
-                            ) : (
-                                <div className="open-day-signup-success-message">
-                                    <h2>
-                                        {t("events-pages.open-day-signup-page.confirmation-message")}
-                                    </h2>
-
-                                    <p>
-                                        {t("events-pages.open-day-signup-page.please-pay-message", {totalCostForAllChildren: formatNumberByLocale(numberOfAttendees * costPerChildInOpenDaySignup)})}
-                                    </p>
+                                <div className={"open-day-signup-form-container"}>
+                                    <Form
+                                        fields={openDaySignupFormFields}
+                                        hasDifferentOnSubmitBehaviour={true}
+                                        differentOnSubmitBehaviour={onSubmitOpenDaySignupFormBehaviour}
+                                        noCaptcha={false}
+                                        noInputFieldsCache={true}
+                                        switchFooterButtonsOrder={true}
+                                        footerButtonsSpaceBetween={true}
+                                        hasDifferentResetBehaviour={true}
+                                        differentResetBehaviour={onResetBehaviour}
+                                    />
                                 </div>
 
+                            </div>
+                        ) : (
+                            <div className="open-day-signup-success-message">
+                                <h2>
+                                    {t("events-pages.open-day-signup-page.confirmation-message")}
+                                </h2>
 
-                            )}
-                        </>
-                    )
-                    }
-                </div>
-            </>
-        );
-    }
+                                <p>
+                                    {t("events-pages.open-day-signup-page.please-pay-message", {totalCostForAllChildren: formatNumberByLocale(numberOfAttendees * costPerChildInOpenDaySignup)})}
+                                </p>
+                            </div>
+
+
+                        )}
+                    </>
+                )
+                }
+            </div>
+        </>
+    );
+
 }
 
 export default OpenDaySignup;

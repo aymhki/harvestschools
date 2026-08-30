@@ -353,6 +353,7 @@ const ENDPOINTS = {
     serveJobApplicationFile: '/scripts/Admin/JobApplications/serveJobApplicationFile.php?file=',
     submitOpenDaySignupForm: '/scripts/Public/OpenDaySignups/submitOpenDaySignupForm.php',
     getOpenDaySignups: '/scripts/Admin/OpenDaySignups/getOpenDaySignups.php',
+    deleteOpenDaySignups: '/scripts/Admin/OpenDaySignups/deleteOpenDaySignups.php',
     servePublicAssetFile: '/scripts/Public/General/servePublicAssetFile.php',
     servePublicVideoThumbnail: '/scripts/Public/General/serveVideoThumbnail.php',
     servePublicVideoPreviewFrames: '/scripts/Public/General/serveVideoPreviewFrames.php',
