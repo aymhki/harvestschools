@@ -49,6 +49,10 @@ function AppUpdateGate({ children }) {
         const restorePath = await getAndClearRestorePath()
 
         if (!restorePath) {
+            if (launchKind === LAUNCH_NORMAL && !hasOpenedDeepLinkRef.current) {
+                window.dispatchEvent(new Event('harvestNavigateHome'))
+            }
+
             return
         }
 

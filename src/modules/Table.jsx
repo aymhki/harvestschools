@@ -8,6 +8,8 @@ import {useTranslation} from 'react-i18next';
 import {normalizeArabicText} from "../services/General/GeneralUtils.jsx";
 import {ARABIC_PATTERN, renderWithLanguageSpans} from "../services/General/MixedLanguageText.jsx";
 import Form from "./Form.jsx";
+import { Capacitor } from '@capacitor/core';
+import {shareFileFromBlob} from "../services/General/NativeFileShareService.jsx";
 
 const IMPORT_FILE_LABEL = 'CSV file';
 
@@ -19,16 +21,27 @@ const escapeCsvField = (field) => {
 };
 
 
-const downloadCsv = (rows, fileName) => {
+const downloadCsv = async (rows, fileName) => {
     const csv = rows.map((row) => row.map(escapeCsvField).join(',')).join('\n');
-    const blob = new Blob([`\uFEFF${csv}`], {type: 'text/csv;charset=utf-8'});
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const csvWithBom = `\uFEFF${csv}`;
+    const blob = new Blob([csvWithBom], {type: 'text/csv;charset=utf-8'});
 
-    link.href = url;
-    link.download = fileName;
-    link.click();
-    window.URL.revokeObjectURL(url);
+    if (Capacitor.isNativePlatform()) {
+        try {
+            await shareFileFromBlob(blob, fileName, fileName);
+        } catch (ignored) {
+            console.log(ignored);
+        }
+    } else {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = fileName;
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+    }
 };
 
 
@@ -1817,16 +1830,26 @@ function Table({
                         )}
 
                         {finalTableData && allowExport && (
-                            <button onClick={() => {
+                            <button onClick={async () => {
                                 if (!finalTableData) return;
                                 const csv = finalTableData.map(row => row.map(escapeCsvField).join(',')).join('\n');
+                                const fileName = `${exportFileName ? exportFileName : 'table'}-${new Date().toISOString().split('T')[0]}.csv`;
                                 const blob = new Blob([csv], {type: 'text/csv'});
-                                const url = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `${exportFileName ? exportFileName : 'table'}-${new Date().toISOString().split('T')[0]}.csv`;
-                                a.click();
-                                window.URL.revokeObjectURL(url);
+
+                                if (Capacitor.isNativePlatform()) {
+                                    try {
+                                        await shareFileFromBlob(blob, fileName, fileName);
+                                    } catch (ignored) {
+                                        console.log(ignored);
+                                    }
+                                } else {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = fileName;
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                }
                             }}>
                                 Export CSV
                             </button>

@@ -16,7 +16,6 @@ import {
     attachCalendarNotificationHandlers,
     rescheduleAllSubscriptions,
 } from '../services/General/CalendarSubscriptionService.jsx';
-import { rememberRestorePath } from '../services/General/AppUpdaterService.jsx';
 import { LOCALES_UPDATED_EVENT } from '../services/General/OfflinePrefetchService.jsx';
 import { attachAssistantSyncTriggers } from '../services/Assistant/AssistantSyncService.jsx';
 import { mobileRoutes } from '../routes/routes.js';
@@ -162,9 +161,6 @@ function MobileAppRouter() {
         return attachAssistantSyncTriggers({ i18n });
     }, [i18n]);
 
-    useEffect(() => {
-        rememberRestorePath(location.pathname + location.search + location.hash);
-    }, [location]);
 
     useEffect(() => {
         const goToAppHome = () => navigate('/app-home');
