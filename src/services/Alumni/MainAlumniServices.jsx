@@ -23,6 +23,7 @@ import {
 } from "../General/CapacitorSecureAuthUtils.jsx";
 
 import {decodeCreateArgs, decodeGetArgs, bufToB64, passkeySupported} from "../General/PasskeyUtils.jsx";
+import {Capacitor} from "@capacitor/core";
 
 const ALUMNI_SESSION_NAME = 'harvest_schools_alumni';
 
@@ -168,7 +169,7 @@ const performAlumniLogin = async (username, password, navigate, persistBiometric
     try {
         const response = await fetch(endpoints.validateAlumniLogin, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', ...turnstileHeaders()},
+            headers: {'Content-Type': 'application/json', 'X-Client-Platform': Capacitor.isNativePlatform() ? 'native' : 'web', ...turnstileHeaders()},
             body: JSON.stringify({username, password}),
         });
 
