@@ -80,6 +80,13 @@ try {
         $stmt->execute();
         $stmt->close();
 
+        if ($decision === 'rejected') {
+            $stmt = $conn->prepare("UPDATE alumni_posts SET show_on_home = 0, show_on_alumni_page = 0, show_on_profile = 0 WHERE id = ?");
+            $stmt->bind_param("i", $postId);
+            $stmt->execute();
+            $stmt->close();
+        }
+
         if ($decision === 'approved') {
             $subject = 'Your alumni post was approved';
             $body = "Hello {$postRow['author_name']},\n\n"

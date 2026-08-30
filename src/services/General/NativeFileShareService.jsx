@@ -42,6 +42,23 @@ const shareFileFromBlob = async (blob, fileName, title) => {
 }
 
 
+const shareLink = async ({ title, text, url }) => {
+    let shared = false
+
+    if (isNativeRuntime()) {
+        await Share.share({ title, text, url })
+        Haptics.notification({ type: NotificationType.Success }).catch(() => null)
+        shared = true
+    } else if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+        await navigator.share({ title, text, url })
+        shared = true
+    }
+
+    return shared
+}
+
+
 export {
     shareFileFromBlob,
+    shareLink,
 }

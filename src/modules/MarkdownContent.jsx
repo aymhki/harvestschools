@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import {Fragment} from "react";
 import '../styles/MarkdownContent.css';
 import {alumniPublicFileUrl} from "../services/General/GeneralUtils.jsx";
+import {renderWithLanguageSpans, detectLanguage} from "../services/General/MixedLanguageText.jsx";
 
 const IMAGE_ALIGNMENTS = ['left', 'right', 'center', 'full'];
 
@@ -64,7 +65,7 @@ const parseInline = (text, keyPrefix, allowNested = true) => {
 
     while ((match = inlineRegex.exec(source)) !== null) {
         if (match.index > lastIndex) {
-            elements.push(source.slice(lastIndex, match.index));
+            elements.push(<Fragment key={`${keyPrefix}-txt-${matchIndex}`}>{renderWithLanguageSpans(source.slice(lastIndex, match.index))}</Fragment>);
         }
 
         const key = `${keyPrefix}-in-${matchIndex}`;
@@ -76,7 +77,7 @@ const parseInline = (text, keyPrefix, allowNested = true) => {
             if (src) {
                 elements.push(<img key={key} className={"markdown-inline-image"} src={src} alt={alt} loading="lazy"/>);
             } else {
-                elements.push(alt);
+                elements.push(<Fragment key={key}>{renderWithLanguageSpans(alt)}</Fragment>);
             }
         } else if (match[3] !== undefined) {
             const href = sanitizeLinkUrl(match[4]);
@@ -89,7 +90,7 @@ const parseInline = (text, keyPrefix, allowNested = true) => {
                     </a>
                 );
             } else {
-                elements.push(match[3]);
+                elements.push(<Fragment key={key}>{renderWithLanguageSpans(match[3])}</Fragment>);
             }
         } else if (match[5] !== undefined) {
             elements.push(<strong key={key}>{allowNested ? parseInline(match[5], key, false) : match[5]}</strong>);
@@ -104,7 +105,7 @@ const parseInline = (text, keyPrefix, allowNested = true) => {
     }
 
     if (lastIndex < source.length) {
-        elements.push(source.slice(lastIndex));
+        elements.push(<Fragment key={`${keyPrefix}-txt-end`}>{renderWithLanguageSpans(source.slice(lastIndex))}</Fragment>);
     }
 
     return elements;
@@ -209,9 +210,10 @@ const renderBlock = (block, blockIndex) => {
     switch (block.type) {
         case 'heading': {
             const children = parseInline(block.text, key);
-            if (block.level === 1) { return <h2 key={key}>{children}</h2>; }
-            if (block.level === 2) { return <h3 key={key}>{children}</h3>; }
-            return <h4 key={key}>{children}</h4>;
+            const blockLanguage = {lang: detectLanguage(block.text), dir: 'auto'};
+            if (block.level === 1) { return <h2 key={key} {...blockLanguage}>{children}</h2>; }
+            if (block.level === 2) { return <h3 key={key} {...blockLanguage}>{children}</h3>; }
+            return <h4 key={key} {...blockLanguage}>{children}</h4>;
         }
         case 'hr':
             return <hr key={key}/>;
@@ -225,29 +227,29 @@ const renderBlock = (block, blockIndex) => {
             return (
                 <figure key={key} className={`markdown-image-figure markdown-image-${block.alignment}`}>
                     <img src={src} alt={block.alt} loading="lazy"/>
-                    {block.alt && <figcaption>{block.alt}</figcaption>}
+                    {block.alt && <figcaption lang={detectLanguage(block.alt)} dir="auto">{renderWithLanguageSpans(block.alt)}</figcaption>}
                 </figure>
             );
         }
         case 'ul':
             return (
-                <ul key={key}>
+                <ul key={key} lang={detectLanguage(block.items.join(' '))} dir="auto">
                     {block.items.map((item, itemIndex) => (
-                        <li key={`${key}-li-${itemIndex}`}>{parseInline(item, `${key}-li-${itemIndex}`)}</li>
+                        <li key={`${key}-li-${itemIndex}`} lang={detectLanguage(item)} dir="auto">{parseInline(item, `${key}-li-${itemIndex}`)}</li>
                     ))}
                 </ul>
             );
         case 'ol':
             return (
-                <ol key={key}>
+                <ol key={key} lang={detectLanguage(block.items.join(' '))} dir="auto">
                     {block.items.map((item, itemIndex) => (
-                        <li key={`${key}-li-${itemIndex}`}>{parseInline(item, `${key}-li-${itemIndex}`)}</li>
+                        <li key={`${key}-li-${itemIndex}`} lang={detectLanguage(item)} dir="auto">{parseInline(item, `${key}-li-${itemIndex}`)}</li>
                     ))}
                 </ol>
             );
         case 'quote':
             return (
-                <blockquote key={key}>
+                <blockquote key={key} lang={detectLanguage(block.lines.join(' '))} dir="auto">
                     {block.lines.map((quoteLine, lineIndex) => (
                         <Fragment key={`${key}-q-${lineIndex}`}>
                             {lineIndex > 0 && <br/>}
@@ -258,7 +260,7 @@ const renderBlock = (block, blockIndex) => {
             );
         case 'paragraph':
             return (
-                <p key={key}>
+                <p key={key} lang={detectLanguage(block.lines.join(' '))} dir="auto">
                     {block.lines.map((paragraphLine, lineIndex) => (
                         <Fragment key={`${key}-p-${lineIndex}`}>
                             {lineIndex > 0 && <br/>}

@@ -32,6 +32,7 @@ try {
     $sql =
         "SELECT p.id, p.title, p.content,
                 DATE_FORMAT(COALESCE(p.reviewed_at, p.created_at), '%b %e, %Y') AS published_at,
+                DATE_FORMAT(COALESCE(p.reviewed_at, p.created_at), '%Y-%m-%dT%H:%i:%s') AS published_at_iso,
                 a.name AS author_name,
                 a.username AS author_username,
                 a.position AS author_position,
@@ -63,6 +64,7 @@ try {
             "title"                => $row['title'],
             "content"              => $row['content'],
             "publishedAt"          => $row['published_at'],
+            "publishedAtIso"       => $row['published_at_iso'],
             "authorName"           => $row['author_name'],
             "authorUsername"       => $row['author_username'],
             "authorPosition"       => $row['author_position'],

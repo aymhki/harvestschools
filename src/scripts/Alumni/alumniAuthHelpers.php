@@ -279,10 +279,17 @@ function alumni_login_rate_limited($conn, $userId) {
     return $recentFails >= $failMax;
 }
 
+const ALUMNI_RESERVED_USERNAMES = ['login', 'profile'];
+
 function alumni_validate_username($username) {
     if (strlen($username) < 3 || strlen($username) > 30 || !preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
         return "Username must be between 3 and 30 characters long and contain only letters, numbers, and underscores";
     }
+
+    if (in_array(strtolower($username), ALUMNI_RESERVED_USERNAMES, true)) {
+        return "That username is reserved. Please choose another one";
+    }
+
     return null;
 }
 

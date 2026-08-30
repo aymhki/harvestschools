@@ -312,6 +312,11 @@ td:lang(ar) {
 }
 
 .action-buttons-wrapper-in-table-module {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
     gap: 0.5rem;
 }
 

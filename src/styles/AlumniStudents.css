@@ -72,6 +72,95 @@
     line-height: 1.7;
 }
 
+.alumni-public-profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    width: min(100%, 52rem);
+    padding: 2.5rem 1.5rem;
+    background-color: var(--fb-white-color);
+    border-radius: 1rem;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.alumni-public-profile-avatar {
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.alumni-public-profile-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: var(--fb-white-color);
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.alumni-public-profile-name {
+    margin: 0.75rem 0 0 0;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    letter-spacing: 0.1rem;
+    color: var(--primary-color);
+}
+
+.alumni-public-profile-username {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.75;
+}
+
+.alumni-public-profile-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.alumni-public-profile-bio {
+    max-width: 40rem;
+    margin: 0.75rem 0 0 0;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.alumni-public-profile-avatar-fallback:lang(ar),
+.alumni-profile-header-avatar-fallback:lang(ar),
+.alumni-post-card-avatar-fallback:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+@media (max-width: 768px) {
+    .alumni-public-profile-card {
+        padding: 1.75rem 1rem;
+    }
+
+    .alumni-public-profile-avatar {
+        width: 6rem;
+        height: 6rem;
+    }
+
+    .alumni-public-profile-avatar-fallback {
+        font-size: 2.25rem;
+    }
+
+    .alumni-public-profile-name {
+        font-size: 1.9rem;
+    }
+}
+
 .alumni-login-page {
     display: flex;
     justify-content: center;
@@ -175,6 +264,31 @@
     color: var(--fb-white-color);
     font-size: 1.25rem;
     font-weight: bold;
+}
+
+.alumni-post-card-avatar-wrapper {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.alumni-post-card-author-link {
+    cursor: pointer;
+}
+
+@media (hover: hover) {
+    .alumni-post-card-author-link:hover .alumni-post-card-avatar {
+        border-color: var(--secondary-color);
+    }
+
+    p.alumni-post-card-author-link:hover {
+        text-decoration: underline;
+    }
+}
+
+.alumni-post-card-author-link:focus-visible {
+    outline: 0.15rem solid var(--secondary-color);
+    outline-offset: 0.15rem;
+    border-radius: 0.25rem;
 }
 
 .alumni-post-card-author-text {
@@ -305,8 +419,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
     height: auto;
     box-sizing: border-box;
+}
+
+.alumni-profile-page > .extreme-padding-container {
+    align-self: stretch;
 }
 
 .alumni-profile-wrapper {
@@ -446,6 +565,44 @@
 
 .alumni-status-chip-placement {
     background-color: var(--primary-color);
+}
+
+.alumni-post-card-author-details:lang(ar),
+.alumni-public-profile-username:lang(ar),
+.alumni-profile-post-item-meta:lang(ar),
+.alumni-profile-passkey-row span:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+.alumni-status-chip:lang(ar),
+.alumni-post-card-author-name:lang(ar) {
+    font-family: var(--arabic-normal-font-bold);
+}
+
+.alumni-public-profile-name:lang(ar),
+.alumni-post-card-title:lang(ar) {
+    font-family: var(--arabic-title-font);
+}
+
+.alumni-post-card span:lang(ar),
+.alumni-public-profile-card span:lang(ar),
+.alumni-profile-header-info span:lang(ar),
+.alumni-profile-post-item span:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+.alumni-post-card span:lang(en),
+.alumni-public-profile-card span:lang(en),
+.alumni-profile-header-info span:lang(en),
+.alumni-profile-post-item span:lang(en) {
+    font-family: var(--english-normal-font);
+}
+
+.alumni-profile-force-english,
+.alumni-profile-force-english:lang(ar) {
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-family: var(--english-normal-font);
 }
 
 .alumni-pending-update-banner {
@@ -882,6 +1039,30 @@
         background-color: var(--fb-white-color);
         color: var(--primary-color);
     }
+
+    .alumni-public-profile-card {
+        background-color: var(--light-dark-accent-color);
+        border: 1px solid var(--fb-white-color);
+        box-shadow: none;
+        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+    }
+
+    .alumni-public-profile-name {
+        color: var(--fb-white-color);
+    }
+
+    .alumni-public-profile-avatar {
+        border-color: var(--fb-white-color);
+    }
+
+    .alumni-public-profile-avatar-fallback {
+        background-color: var(--fb-white-color);
+        color: var(--primary-color);
+    }
+
+
+
+
 
     .alumni-profile-section {
         background-color: var(--light-dark-accent-color);

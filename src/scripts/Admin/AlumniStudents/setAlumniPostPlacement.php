@@ -35,13 +35,14 @@ try {
     $postId           = (int)($data['post_id'] ?? 0);
     $showOnHome       = !empty($data['show_on_home']) ? 1 : 0;
     $showOnAlumniPage = !empty($data['show_on_alumni_page']) ? 1 : 0;
+    $showOnProfile    = !empty($data['show_on_profile']) ? 1 : 0;
 
     if ($postId <= 0) {
         echo json_encode(["success" => false, "message" => "Bad Request: Missing post id", "code" => 400]);
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT status, title, show_on_home, show_on_alumni_page FROM alumni_posts WHERE id = ?");
+    $stmt = $conn->prepare("SELECT status, title, show_on_home, show_on_alumni_page, show_on_profile FROM alumni_posts WHERE id = ?");
     $stmt->bind_param("i", $postId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -54,19 +55,19 @@ try {
 
     $postRow = $result->fetch_assoc();
 
-    if ($postRow['status'] !== 'approved' && ($showOnHome === 1 || $showOnAlumniPage === 1)) {
-        echo json_encode(["success" => false, "message" => "Only approved posts can be placed on the home page or the alumni students page", "code" => 400]);
+    if ($postRow['status'] !== 'approved' && ($showOnHome === 1 || $showOnAlumniPage === 1 || $showOnProfile === 1)) {
+        echo json_encode(["success" => false, "message" => "Only approved posts can be placed on the home page, the alumni students page or the author's public profile", "code" => 400]);
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE alumni_posts SET show_on_home = ?, show_on_alumni_page = ? WHERE id = ?");
-    $stmt->bind_param("iii", $showOnHome, $showOnAlumniPage, $postId);
+    $stmt = $conn->prepare("UPDATE alumni_posts SET show_on_home = ?, show_on_alumni_page = ?, show_on_profile = ? WHERE id = ?");
+    $stmt->bind_param("iiii", $showOnHome, $showOnAlumniPage, $showOnProfile, $postId);
     $stmt->execute();
     $stmt->close();
 
     admin_log_action($conn, 'Set the placement of the alumni post #' . $postId . ' ("' . (string)$postRow['title'] . '"): ' . admin_changes_summary(
-        ['On the home page' => (int)$postRow['show_on_home'] === 1, 'On the alumni students page' => (int)$postRow['show_on_alumni_page'] === 1],
-        ['On the home page' => $showOnHome === 1, 'On the alumni students page' => $showOnAlumniPage === 1]
+        ['On the home page' => (int)$postRow['show_on_home'] === 1, 'On the alumni students page' => (int)$postRow['show_on_alumni_page'] === 1, 'On the public profile page' => (int)$postRow['show_on_profile'] === 1],
+        ['On the home page' => $showOnHome === 1, 'On the alumni students page' => $showOnAlumniPage === 1, 'On the public profile page' => $showOnProfile === 1]
     ) . '.', ADMIN_ACTION_CATEGORY_ALUMNI_STUDENTS);
     echo json_encode([
         "success" => true,

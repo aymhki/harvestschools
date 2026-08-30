@@ -6,69 +6,11 @@ import {animated, useSpring} from 'react-spring';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import {useTranslation} from 'react-i18next';
 import {normalizeArabicText} from "../services/General/GeneralUtils.jsx";
+import {ARABIC_PATTERN, renderWithLanguageSpans} from "../services/General/MixedLanguageText.jsx";
 import Form from "./Form.jsx";
 
 const IMPORT_FILE_LABEL = 'CSV file';
 
-const ARABIC_PATTERN = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
-const LATIN_PATTERN = /[A-Za-z\u00C0-\u024F]/;
-
-const classifyCharacter = (character) => {
-    if (ARABIC_PATTERN.test(character)) {
-        return 'ar';
-    }
-
-    return LATIN_PATTERN.test(character) ? 'en' : 'neutral';
-};
-
-const splitByLanguage = (text) => {
-    const runs = [];
-
-    for (const character of text) {
-        const type = classifyCharacter(character);
-        const previous = runs[runs.length - 1];
-
-        if (previous && previous.type === type) {
-            previous.text += character;
-            continue;
-        }
-
-        runs.push({type, text: character});
-    }
-
-    const merged = [];
-
-    runs.forEach((run, index) => {
-        const previous = runs[index - 1];
-        const next = runs[index + 1];
-        const sitsInsideOneLanguage = run.type === 'neutral'
-            && previous && next
-            && previous.type !== 'neutral'
-            && previous.type === next.type;
-
-        const type = sitsInsideOneLanguage ? previous.type : run.type;
-        const last = merged[merged.length - 1];
-
-        if (last && last.type === type) {
-            last.text += run.text;
-            return;
-        }
-
-        merged.push({type, text: run.text});
-    });
-
-    return merged;
-};
-
-const renderWithLanguageSpans = (value) => {
-    if (typeof value !== 'string' || !ARABIC_PATTERN.test(value) || !LATIN_PATTERN.test(value)) {
-        return value;
-    }
-
-    return splitByLanguage(value).map((segment, index) => (
-        segment.type === 'neutral' ? segment.text : <span key={index} lang={segment.type}>{segment.text}</span>
-    ));
-};
 
 const escapeCsvField = (field) => {
     const value = (field === null || field === undefined) ? '' : String(field);

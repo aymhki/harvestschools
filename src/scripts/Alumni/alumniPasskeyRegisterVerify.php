@@ -83,7 +83,6 @@ try {
         exit;
     }
 
-    if ($label === '') { $label = 'Passkey added ' . date('M j, Y'); }
 
     $stmt = $conn->prepare("INSERT INTO alumni_passkeys (user_id, credential_id, public_key, sign_count, label) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("issis", $userId, $credentialIdB64, $publicKeyPem, $signCount, $label);

@@ -3,6 +3,7 @@ import {useRef, useState} from "react";
 import MarkdownContent from "./MarkdownContent.jsx";
 import '../styles/AlumniStudents.css';
 import {msgTimeout} from "../services/General/GeneralUtils.jsx";
+import {useTranslation} from "react-i18next";
 import {LinkOutlined} from "@mui/icons-material";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
@@ -14,14 +15,10 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import PreviewIcon from '@mui/icons-material/Preview';
 import {capturePhotoAsFile, isCameraAvailable} from "../services/General/NativeCameraService.jsx";
 
-const IMAGE_ALIGNMENT_CHOICES = [
-    {value: 'center', label: 'Centered'},
-    {value: 'left', label: 'Left of text'},
-    {value: 'right', label: 'Right of text'},
-    {value: 'full', label: 'Full width'},
-];
+const IMAGE_ALIGNMENT_VALUES = ['center', 'left', 'right', 'full'];
 
 function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeholder}) {
+    const {t} = useTranslation(['students-life-pages']);
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
     const [showPreview, setShowPreview] = useState(false);
@@ -87,7 +84,7 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
 
     const handleInsertLink = () => {
         applyToSelection((selected, start) => {
-            const linkText = selected || 'link text';
+            const linkText = selected || t('students-life-pages.alumni-markdown-editor.link-text-sample');
             const text = `[${linkText}](https://)`;
             const urlStart = start + linkText.length + 3;
             return {
@@ -113,7 +110,7 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
             const alignmentSuffix = imageAlignment === 'center' ? '' : `|${imageAlignment}`;
             insertBlock(`![${caption}${alignmentSuffix}](${filePath})`);
         } catch (error) {
-            setEditorError(error.message || 'The image could not be uploaded.');
+            setEditorError(error.message || t('students-life-pages.alumni-markdown-editor.upload-failed'));
             setTimeout(() => setEditorError(''), msgTimeout);
         } finally {
             setIsUploadingImage(false);
@@ -125,7 +122,7 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
         event.target.value = '';
 
         if (file) {
-            await uploadAndInsertImage(file, 'Image');
+            await uploadAndInsertImage(file, t('students-life-pages.alumni-markdown-editor.image-caption-fallback'));
         }
     };
 
@@ -134,10 +131,10 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
             const capturedFile = await capturePhotoAsFile();
 
             if (capturedFile) {
-                await uploadAndInsertImage(capturedFile, 'Photo');
+                await uploadAndInsertImage(capturedFile, t('students-life-pages.alumni-markdown-editor.photo-caption-fallback'));
             }
         } catch (error) {
-            setEditorError(error.message || 'The camera could not be opened.');
+            setEditorError(error.message || t('students-life-pages.alumni-markdown-editor.camera-failed'));
             setTimeout(() => setEditorError(''), msgTimeout);
         }
     };
@@ -145,28 +142,28 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
     return (
         <div className={"alumni-markdown-editor"}>
             <div className={"alumni-markdown-editor-toolbar"}>
-                <button type="button" disabled={disabled} title="Heading" onClick={() => prefixLines('## ', 'Heading')}>
+                <button type="button" disabled={disabled} title={t('students-life-pages.alumni-markdown-editor.heading')} onClick={() => prefixLines('## ', t('students-life-pages.alumni-markdown-editor.heading-sample'))}>
                     <TitleIcon/>
                 </button>
 
-                <button type="button" disabled={disabled} title="Bold" onClick={() => wrapSelection('**', '**', 'bold text')}>
+                <button type="button" disabled={disabled} title={t('students-life-pages.alumni-markdown-editor.bold')} onClick={() => wrapSelection('**', '**', t('students-life-pages.alumni-markdown-editor.bold-sample'))}>
                     <FormatBoldIcon/>
                 </button>
 
-                <button type="button" disabled={disabled} title="Italic" onClick={() => wrapSelection('*', '*', 'italic text')}>
+                <button type="button" disabled={disabled} title={t('students-life-pages.alumni-markdown-editor.italic')} onClick={() => wrapSelection('*', '*', t('students-life-pages.alumni-markdown-editor.italic-sample'))}>
                     <FormatItalicIcon/>
                 </button>
 
-                <button type="button" disabled={disabled} title="Link" onClick={handleInsertLink}>
+                <button type="button" disabled={disabled} title={t('students-life-pages.alumni-markdown-editor.link')} onClick={handleInsertLink}>
 
                     <LinkOutlined/>
                 </button>
 
-                <button type="button" disabled={disabled} title="Bulleted list" onClick={() => prefixLines('- ', 'List item')}>
+                <button type="button" disabled={disabled} title={t('students-life-pages.alumni-markdown-editor.bulleted-list')} onClick={() => prefixLines('- ', t('students-life-pages.alumni-markdown-editor.list-item-sample'))}>
                     <FormatListBulletedIcon/>
                 </button>
 
-                <button type="button" disabled={disabled} title="Quote" onClick={() => prefixLines('> ', 'Quote')}>
+                <button type="button" disabled={disabled} title={t('students-life-pages.alumni-markdown-editor.quote')} onClick={() => prefixLines('> ', t('students-life-pages.alumni-markdown-editor.quote'))}>
                     <FormatQuoteIcon/>
                 </button>
 
@@ -176,20 +173,20 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
                     value={imageAlignment}
                     disabled={disabled || isUploadingImage}
                     onChange={(e) => setImageAlignment(e.target.value)}
-                    aria-label="Image position"
+                    aria-label={t('students-life-pages.alumni-markdown-editor.image-position')}
                     className={"select-form-field"}
                 >
-                    {IMAGE_ALIGNMENT_CHOICES.map(choice => (
-                        <option key={choice.value} value={choice.value}>{choice.label}</option>
+                    {IMAGE_ALIGNMENT_VALUES.map(choiceValue => (
+                        <option key={choiceValue} value={choiceValue}>{t(`students-life-pages.alumni-markdown-editor.alignment-${choiceValue}`)}</option>
                     ))}
                 </select>
 
-                <button type="button" disabled={disabled || isUploadingImage} title="Add a picture" onClick={handleImageButtonClick}>
+                <button type="button" disabled={disabled || isUploadingImage} title={t('students-life-pages.alumni-markdown-editor.add-a-picture')} onClick={handleImageButtonClick}>
                     <AddPhotoAlternateIcon/>
                 </button>
 
                 {isCameraAvailable() && (
-                    <button type="button" disabled={disabled || isUploadingImage} title="Take a photo" onClick={handleTakePhotoClick}>
+                    <button type="button" disabled={disabled || isUploadingImage} title={t('students-life-pages.alumni-markdown-editor.take-a-photo')} onClick={handleTakePhotoClick}>
                         <PhotoCameraIcon/>
                     </button>
                 )}
@@ -206,6 +203,7 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
 
                 <button
                     type="button"
+                    title={t('students-life-pages.alumni-markdown-editor.preview')}
                     className={showPreview ? 'alumni-markdown-editor-preview-toggle-active' : ''}
                     onClick={() => setShowPreview(prev => !prev)}
                 >
@@ -223,7 +221,7 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
                     value={value}
                     disabled={disabled}
                     className={"textarea-form-field"}
-                    placeholder={placeholder || "Share your story… Use the toolbar above for headings, formatting, and pictures."}
+                    placeholder={placeholder || t('students-life-pages.alumni-markdown-editor.editor-placeholder')}
                     onChange={(e) => onChange(e.target.value)}
                     dir="auto"
                 />
@@ -234,7 +232,7 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
                             <MarkdownContent content={value}/>
                         ) : (
                             <p className={"alumni-markdown-editor-preview-empty"}>
-                                The preview of your post will appear here as you write.
+                                {t('students-life-pages.alumni-markdown-editor.preview-empty')}
                             </p>
                         )}
                     </div>
@@ -242,7 +240,7 @@ function AlumniMarkdownEditor({value, onChange, onUploadImage, disabled, placeho
             </div>
 
             <p className={"alumni-markdown-editor-hint"}>
-                Tip: pictures added as &ldquo;Left of text&rdquo; or &ldquo;Right of text&rdquo; let your writing wrap around them, while &ldquo;Centered&rdquo; and &ldquo;Full width&rdquo; place them on their own line.
+                {t('students-life-pages.alumni-markdown-editor.hint')}
             </p>
         </div>
     );

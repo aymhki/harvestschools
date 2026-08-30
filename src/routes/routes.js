@@ -30,6 +30,7 @@ export const mainRoutes = [
     { path: '/students-life/alumni-students', page: 'StudentsLife/AlumniStudents/AlumniStudents.jsx' },
     { path: '/students-life/alumni-students/login', page: 'StudentsLife/AlumniStudents/AlumniLogin.jsx', prerender: false },
     { path: '/students-life/alumni-students/profile', page: 'StudentsLife/AlumniStudents/AlumniProfile.jsx', prerender: false },
+    { path: '/students-life/alumni-students/:username', page: 'StudentsLife/AlumniStudents/AlumniPublicProfile.jsx', prerender: false },
     { path: '/students-life/activities', page: 'StudentsLife/Activities.jsx' },
     { path: '/students-life/library', page: 'StudentsLife/Library/Library.jsx' },
     { path: '/students-life/library/english-fairy-tales', page: 'StudentsLife/Library/EnglishFairyTales.jsx' },

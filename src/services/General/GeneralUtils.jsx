@@ -238,9 +238,11 @@ const EventBookingLoginPageUrl = '/events/event-booking';
 const EventBookingDashboardPageUrl = '/events/event-booking/dashboard';
 const adminLoginPageUrl = '/admin-login';
 const adminDashboardPageUrl = '/admin-dashboard';
+const publicSiteOrigin = 'https://harvestschools.com';
 const alumniStudentsPageUrl = '/students-life/alumni-students';
 const alumniLoginPageUrl = '/students-life/alumni-students/login';
 const alumniProfilePageUrl = '/students-life/alumni-students/profile';
+const alumniPublicProfilePageUrl = (username) => `/students-life/alumni-students/${encodeURIComponent(username)}`;
 const costPerChildInOpenDaySignup = 150;
 
 const adminUserManagementPermissionLevel = "1000";
@@ -456,6 +458,7 @@ const ENDPOINTS = {
     searchEventBookingStudents: '/scripts/Parents/EventBookings/searchEventBookingStudents.php',
     recoverEventBookingUsername: '/scripts/Parents/EventBookings/recoverEventBookingUsername.php',
     getApprovedAlumniPosts: '/scripts/Public/AlumniStudents/getApprovedAlumniPosts.php',
+    getAlumniPublicProfile: '/scripts/Public/AlumniStudents/getAlumniPublicProfile.php',
     serveAlumniPublicFile: '/scripts/Public/AlumniStudents/serveAlumniPublicFile.php',
     checkAlumniSession: '/scripts/Alumni/checkAlumniSession.php',
     deleteAlumniSession: '/scripts/Alumni/deleteAlumniSession.php',
@@ -623,9 +626,11 @@ export {
     EventBookingDashboardPageUrl,
     adminLoginPageUrl,
     adminDashboardPageUrl,
+    publicSiteOrigin,
     alumniStudentsPageUrl,
     alumniLoginPageUrl,
     alumniProfilePageUrl,
+    alumniPublicProfilePageUrl,
     alumniPublicFileUrl,
     getAlumniSessionId,
     endpoints,

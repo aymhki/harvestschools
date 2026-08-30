@@ -148,11 +148,12 @@ const reviewAlumniPost = async (postId, target, decision, adminNote) => {
     });
 }
 
-const setAlumniPostPlacement = async (postId, showOnHome, showOnAlumniPage) => {
+const setAlumniPostPlacement = async (postId, showOnHome, showOnAlumniPage, showOnProfile) => {
     return postAdminAlumniAction(endpoints.setAlumniPostPlacement, {
         post_id: postId,
         show_on_home: showOnHome,
         show_on_alumni_page: showOnAlumniPage,
+        show_on_profile: showOnProfile,
     });
 }
 

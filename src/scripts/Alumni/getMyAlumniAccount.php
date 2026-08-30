@@ -37,6 +37,7 @@ try {
                 DATE_FORMAT(graduation_date, '%Y-%m-%d') AS graduation_date,
                 bio, profile_picture_link, account_status,
                 DATE_FORMAT(created_at, '%b %e, %Y') AS created_label,
+                DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s') AS created_iso,
                 DATE_FORMAT(last_login_at, '%b %e, %Y at %l:%i %p') AS last_login_label
          FROM alumni_students WHERE id = ?"
     );
@@ -62,6 +63,7 @@ try {
         "profilePictureLink" => $profileRow['profile_picture_link'],
         "accountStatus"      => $profileRow['account_status'],
         "memberSince"        => $profileRow['created_label'],
+        "memberSinceIso"     => $profileRow['created_iso'],
         "lastLogin"          => $profileRow['last_login_label'],
     ];
 
@@ -142,9 +144,11 @@ try {
     }
 
     $stmt = $conn->prepare(
-        "SELECT id, title, content, status, show_on_home, show_on_alumni_page, admin_note,
+        "SELECT id, title, content, status, show_on_home, show_on_alumni_page, show_on_profile, admin_note,
                 DATE_FORMAT(created_at, '%b %e, %Y') AS created_label,
-                DATE_FORMAT(reviewed_at, '%b %e, %Y') AS reviewed_label
+                DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s') AS created_iso,
+                DATE_FORMAT(reviewed_at, '%b %e, %Y') AS reviewed_label,
+                DATE_FORMAT(reviewed_at, '%Y-%m-%dT%H:%i:%s') AS reviewed_iso
          FROM alumni_posts
          WHERE alumni_id = ?
          ORDER BY created_at DESC"
@@ -167,9 +171,12 @@ try {
             "status"           => $row['status'],
             "showOnHome"       => (int)$row['show_on_home'] === 1,
             "showOnAlumniPage" => (int)$row['show_on_alumni_page'] === 1,
+            "showOnProfile"    => (int)$row['show_on_profile'] === 1,
             "adminNote"        => $row['admin_note'],
             "createdAt"        => $row['created_label'],
+            "createdAtIso"     => $row['created_iso'],
             "reviewedAt"       => $row['reviewed_label'],
+            "reviewedAtIso"    => $row['reviewed_iso'],
             "pendingEdit"      => null,
         ];
     }
@@ -209,7 +216,8 @@ try {
     }
 
     $stmt = $conn->prepare(
-        "SELECT id, label, DATE_FORMAT(created_at, '%b %e, %Y') AS created_label
+        "SELECT id, label, DATE_FORMAT(created_at, '%b %e, %Y') AS created_label,
+                DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s') AS created_iso
          FROM alumni_passkeys WHERE user_id = ? ORDER BY created_at DESC"
     );
     $stmt->bind_param("i", $userId);
@@ -224,6 +232,7 @@ try {
             "id"        => (int)$row['id'],
             "label"     => $row['label'],
             "createdAt" => $row['created_label'],
+            "createdAtIso" => $row['created_iso'],
         ];
     }
 

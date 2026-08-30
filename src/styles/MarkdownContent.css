@@ -6,30 +6,93 @@
     font-synthesis: weight style;
 }
 
+.markdown-content span:lang(ar),
+.markdown-content p:lang(ar),
+.markdown-content li:lang(ar),
+.markdown-content ul:lang(ar),
+.markdown-content ol:lang(ar),
+.markdown-content blockquote:lang(ar),
+.markdown-content figcaption:lang(ar) {
+    font-family: var(--arabic-normal-font);
+}
+
+.markdown-content span:lang(en),
+.markdown-content p:lang(en),
+.markdown-content li:lang(en),
+.markdown-content ul:lang(en),
+.markdown-content ol:lang(en),
+.markdown-content blockquote:lang(en),
+.markdown-content figcaption:lang(en) {
+    font-family: var(--english-normal-font);
+}
+
+.markdown-content h1:lang(ar),
+.markdown-content h2:lang(ar),
+.markdown-content h3:lang(ar),
+.markdown-content h1:lang(ar) span,
+.markdown-content h2:lang(ar) span,
+.markdown-content h3:lang(ar) span {
+    font-family: var(--arabic-title-font);
+}
+
+.markdown-content h1:lang(en),
+.markdown-content h2:lang(en),
+.markdown-content h3:lang(en),
+.markdown-content h1 span:lang(en),
+.markdown-content h2 span:lang(en),
+.markdown-content h3 span:lang(en) {
+    font-family: var(--english-title-font);
+}
+
+.markdown-content h1 span:lang(ar),
+.markdown-content h2 span:lang(ar),
+.markdown-content h3 span:lang(ar) {
+    font-family: var(--arabic-title-font);
+}
+
+.markdown-content strong:lang(ar),
+.markdown-content strong span:lang(ar) {
+    font-family: var(--arabic-normal-font-bold);
+}
+
+.markdown-content strong:lang(en),
+.markdown-content strong span:lang(en) {
+    font-family: var(--english-normal-font-bold);
+}
+
+.markdown-content code,
+.markdown-content code:lang(ar),
+.markdown-content code:lang(en),
+.markdown-content code span {
+    font-family: monospace;
+}
+
 .markdown-content::after {
     content: '';
     display: block;
     clear: both;
 }
 
+.markdown-content h1,
 .markdown-content h2,
-.markdown-content h3,
-.markdown-content h4 {
+.markdown-content h3 {
     color: var(--primary-color);
     line-height: 1.4;
     margin: 1.25rem 0 0.5rem 0;
 }
 
+.markdown-content h1 {
+    font-size: 2.25rem;
+    letter-spacing: 0.1rem;
+}
+
 .markdown-content h2 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    letter-spacing: 0.05rem;
 }
 
 .markdown-content h3 {
-    font-size: 1.25rem;
-}
-
-.markdown-content h4 {
-    font-size: 1.1rem;
+    font-size: 1.35rem;
 }
 
 .markdown-content p {
@@ -164,9 +227,9 @@
 }
 
 @media (prefers-color-scheme: dark) {
+    .markdown-content h1,
     .markdown-content h2,
-    .markdown-content h3,
-    .markdown-content h4 {
+    .markdown-content h3 {
         color: var(--fb-white-color);
     }
 

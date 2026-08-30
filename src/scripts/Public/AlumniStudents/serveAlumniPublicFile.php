@@ -1,6 +1,7 @@
 <?php
 require_once '../../headers.php';
 require_once '../../Alumni/alumniAuthHelpers.php';
+require_once __DIR__ . '/../SchoolInfo/publicRateLimit.php';
 set_cors_headers();
 
 function send_alumni_file_error(string $message, int $code = 500): void {
@@ -10,6 +11,10 @@ function send_alumni_file_error(string $message, int $code = 500): void {
 }
 
 try {
+    if (!public_rate_limit_allow('alumni-public-file', 240, 60)) {
+        public_rate_limit_reject();
+    }
+
     $filePathFromGet = isset($_GET['file']) ? (string)$_GET['file'] : '';
 
     if ($filePathFromGet === '') {

@@ -21,26 +21,30 @@ import {
     uploadAlumniPostImage,
     logoutCurrentAlumni,
 } from "../../../services/Alumni/MainAlumniServices.jsx";
-import {alumniPublicFileUrl, msgTimeout, isMobileApp, schoolFoundedYear} from "../../../services/General/GeneralUtils.jsx";
+import {alumniPublicFileUrl, alumniPublicProfilePageUrl, publicSiteOrigin, isMobileApp, schoolFoundedYear} from "../../../services/General/GeneralUtils.jsx";
+import {shareLink} from "../../../services/General/NativeFileShareService.jsx";
 import {passkeySupported} from "../../../services/General/PasskeyUtils.jsx";
 import { useLoading } from '../../../services/General/GlobalLoadingService.jsx'
+import {useTranslation} from "react-i18next";
+import {renderWithLanguageSpans, detectLanguage, localiseDigits, formatLocalisedDate} from "../../../services/General/MixedLanguageText.jsx";
 
-const PENDING_UPDATE_FIELD_LABELS = {
-    newUsername: 'Username',
-    newName: 'Name',
-    newEmail: 'Email',
-    newPosition: 'Position',
-    newGraduationDate: 'Graduation Date',
-    newBio: 'About You',
-    newProfilePictureLink: 'Profile Picture',
+const PENDING_UPDATE_FIELD_LABEL_KEYS = {
+    newUsername: 'field-username',
+    newName: 'field-name',
+    newEmail: 'field-email',
+    newPosition: 'field-position',
+    newGraduationDate: 'graduation-date',
+    newBio: 'about-you',
+    newProfilePictureLink: 'profile-picture',
 };
 
 function AlumniProfile() {
     const navigate = useNavigate();
+    const {t, i18n} = useTranslation(['students-life-pages']);
+    const language = i18n.language === 'ar' ? 'ar' : 'en';
     const [isLoading, setIsLoading] = useLoading(true);
     const [account, setAccount] = useState(null);
-    const [pageMessage, setPageMessage] = useState('');
-    const [pageError, setPageError] = useState('');
+    const [alertModal, setAlertModal] = useState(null);
 
     const [showEditProfileModal, setShowEditProfileModal] = useState(false);
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -63,6 +67,35 @@ function AlumniProfile() {
 
     const canUsePasskeys = passkeySupported() && !isMobileApp();
     const profilePageRef = useRef(null);
+
+    const publicProfileOrigin = (isMobileApp() || typeof window === 'undefined') ? publicSiteOrigin : window.location.origin;
+    const publicProfileUrl = account && account.profile && account.profile.username
+        ? `${publicProfileOrigin}${alumniPublicProfilePageUrl(account.profile.username)}`
+        : '';
+
+    const copyPublicProfileUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(publicProfileUrl);
+
+            return true;
+        } catch (ignored) {
+            console.log(ignored);
+
+            return false;
+        }
+    };
+
+    const handleSharePublicProfileUrl = async () => {
+        try {
+            const shared = await shareLink({url: publicProfileUrl});
+
+            if (!shared && await copyPublicProfileUrl()) {
+                showAlert(t('students-life-pages.alumni-profile-page.link-copied'));
+            }
+        } catch (ignored) {
+            console.log(ignored);
+        }
+    };
 
 
     const animateEditProfileModal = useSpring({
@@ -95,6 +128,12 @@ function AlumniProfile() {
         pointerEvents: showPostPreviewModal ? 'auto' : 'none',
     });
 
+    const animateAlertModal = useSpring({
+        opacity: alertModal ? 1 : 0,
+        transform: alertModal ? 'translateY(0%)' : 'translateY(100%)',
+        pointerEvents: alertModal ? 'auto' : 'none',
+    });
+
     const animateDeleteAccountRequestModal = useSpring({
         opacity: showDeleteAccountRequestModal ? 1 : 0,
         transform: showDeleteAccountRequestModal ? 'translateY(0%)' : 'translateY(100%)',
@@ -116,16 +155,12 @@ function AlumniProfile() {
         loadAccount();
     }, []);
 
-    const flashMessage = (message, isError = false) => {
-        if (isError) {
-            setPageError(message);
-            setTimeout(() => setPageError(''), msgTimeout);
-        } else {
-            setPageMessage(message);
-            setTimeout(() => setPageMessage(''), msgTimeout);
+    const showAlert = (message, isError = false) => {
+        if (!message) {
+            return;
         }
 
-        profilePageRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        setAlertModal({ message, isError });
     };
 
     const profile = account ? account.profile : null;
@@ -150,7 +185,7 @@ function AlumniProfile() {
         profilePicture: 7,
     };
 
-    const editProfilePictureFieldLabel = 'New Profile Picture';
+    const editProfilePictureFieldLabel = t('students-life-pages.alumni-profile-page.new-profile-picture');
 
     const changePasswordFieldIds = {
         currentPassword: 1,
@@ -179,11 +214,11 @@ function AlumniProfile() {
 
             if (result && result.success) {
                 setShowEditProfileModal(false);
-                flashMessage(result.message);
+                showAlert(t('students-life-pages.alumni-profile-page.update-submitted'));
                 await loadAccount();
                 return true;
             } else {
-                throw new Error((result && result.message) || 'The profile update could not be submitted.');
+                throw new Error((result && result.message) || t('students-life-pages.alumni-profile-page.update-failed'));
             }
         } catch (error) {
             throw new Error(error.message);
@@ -196,10 +231,10 @@ function AlumniProfile() {
         setIsLoading(false);
 
         if (result && result.success) {
-            flashMessage(result.message);
+            showAlert(t('students-life-pages.alumni-profile-page.update-cancelled'));
             await loadAccount();
         } else {
-            flashMessage((result && result.message) || 'Could not cancel the pending update.', true);
+            showAlert((result && result.message) || t('students-life-pages.alumni-profile-page.cancel-update-failed'), true);
         }
     };
 
@@ -221,10 +256,10 @@ function AlumniProfile() {
 
         if (result && result.success) {
             setShowDeleteAccountRequestModal(false);
-            flashMessage(result.message);
+            showAlert(t('students-life-pages.alumni-profile-page.deletion-submitted'));
             await loadAccount();
         } else {
-            setModalError((result && result.message) || 'The deletion request could not be submitted.');
+            setModalError((result && result.message) || t('students-life-pages.alumni-profile-page.deletion-failed'));
         }
     };
 
@@ -234,10 +269,10 @@ function AlumniProfile() {
         setIsLoading(false);
 
         if (result && result.success) {
-            flashMessage(result.message);
+            showAlert(t('students-life-pages.alumni-profile-page.deletion-cancelled'));
             await loadAccount();
         } else {
-            flashMessage((result && result.message) || 'Could not cancel the deletion request.', true);
+            showAlert((result && result.message) || t('students-life-pages.alumni-profile-page.cancel-deletion-failed'), true);
         }
     };
 
@@ -255,12 +290,12 @@ function AlumniProfile() {
         const confirmNewPassword = entries[`field_${changePasswordFieldIds.confirmNewPassword}`] || '';
 
         if (!currentPassword || !newPassword || !confirmNewPassword) {
-            setModalError('Please fill in all three password fields.');
+            setModalError(t('students-life-pages.alumni-profile-page.password-fields-required'));
             return;
         }
 
         if (newPassword !== confirmNewPassword) {
-            setModalError('The new passwords do not match.');
+            setModalError(t('students-life-pages.alumni-profile-page.passwords-mismatch'));
             return;
         }
 
@@ -272,12 +307,12 @@ function AlumniProfile() {
 
         if (result && result.success) {
             setShowChangePasswordModal(false);
-            flashMessage(result.message);
+            showAlert(t('students-life-pages.alumni-profile-page.password-changed'));
             if (profile && profile.username) {
                 await updateAlumniBiometricCredentials(profile.username, newPassword);
             }
         } else {
-            setModalError((result && result.message) || 'The password could not be changed.');
+            setModalError((result && result.message) || t('students-life-pages.alumni-profile-page.password-change-failed'));
         }
     };
 
@@ -290,10 +325,10 @@ function AlumniProfile() {
 
         if (result && result.success) {
             setNewPasskeyLabel('');
-            flashMessage('Your passkey was added. You can now sign in with it instead of your password.');
+            showAlert(t('students-life-pages.alumni-profile-page.passkey-added'));
             await loadAccount();
         } else if (result && !result.cancelled) {
-            flashMessage((result && result.message) || 'The passkey could not be added.', true);
+            showAlert((result && result.message) || t('students-life-pages.alumni-profile-page.passkey-add-failed'), true);
         }
     };
 
@@ -303,10 +338,10 @@ function AlumniProfile() {
         setIsLoading(false);
 
         if (result && result.success) {
-            flashMessage('The passkey was removed.');
+            showAlert(t('students-life-pages.alumni-profile-page.passkey-removed'));
             await loadAccount();
         } else {
-            flashMessage((result && result.message) || 'The passkey could not be removed.', true);
+            showAlert((result && result.message) || t('students-life-pages.alumni-profile-page.passkey-remove-failed'), true);
         }
     };
 
@@ -337,7 +372,7 @@ function AlumniProfile() {
         if (modalBusy) { return; }
 
         if (!composerTitle.trim() || !composerContent.trim()) {
-            setModalError('Please add both a title and some content before submitting.');
+            setModalError(t('students-life-pages.alumni-profile-page.post-fields-required'));
             return;
         }
 
@@ -352,10 +387,10 @@ function AlumniProfile() {
 
         if (result && result.success) {
             setShowPostComposerModal(false);
-            flashMessage(result.message);
+            showAlert(composerPost ? t('students-life-pages.alumni-profile-page.post-updated') : t('students-life-pages.alumni-profile-page.post-submitted'));
             await loadAccount();
         } else {
-            setModalError((result && result.message) || 'The post could not be submitted.');
+            setModalError((result && result.message) || t('students-life-pages.alumni-profile-page.post-failed'));
         }
     };
 
@@ -368,32 +403,29 @@ function AlumniProfile() {
         setShowDeletePostModal(false);
 
         if (result && result.success) {
-            flashMessage(result.message);
+            showAlert(t('students-life-pages.alumni-profile-page.post-deleted'));
             await loadAccount();
         } else {
-            flashMessage((result && result.message) || 'The post could not be deleted.', true);
+            showAlert((result && result.message) || t('students-life-pages.alumni-profile-page.post-delete-failed'), true);
         }
     };
 
     const describePostStatus = (post) => {
-        if (post.status === 'pending') { return 'Awaiting approval'; }
-        if (post.status === 'rejected') { return 'Not approved'; }
-        return 'Published';
+        if (post.status === 'pending') { return t('students-life-pages.alumni-profile-page.awaiting-approval'); }
+        if (post.status === 'rejected') { return t('students-life-pages.alumni-profile-page.not-approved'); }
+        return t('students-life-pages.alumni-profile-page.published');
     };
 
     return (
         <>
 
-            <title>Harvest International School | Students Life | Alumni Profile</title>
-            <meta name="description" content="Manage your Harvest International School alumni profile and share your stories with the Harvest community."/>
+            <title>{t('students-life-pages.alumni-profile-page.page-title')}</title>
+            <meta name="description" content={t('students-life-pages.alumni-profile-page.page-description')}/>
             <meta name="robots" content="noindex, nofollow"/>
 
             <div className={"alumni-profile-page"}>
                 <div className={"extreme-padding-container"}>
                     <div className={"alumni-profile-wrapper"} ref={profilePageRef}>
-                        {pageMessage && <p className={"alumni-inline-success-message"}>{pageMessage}</p>}
-                        {pageError && <p className={"alumni-inline-error-message"}>{pageError}</p>}
-
                         {profile && (
                             <>
                                 <div className={"alumni-profile-header-card"}>
@@ -404,39 +436,43 @@ function AlumniProfile() {
                                             alt={profile.name}
                                         />
                                     ) : (
-                                        <div className={"alumni-profile-header-avatar alumni-profile-header-avatar-fallback"}>
+                                        <div className={"alumni-profile-header-avatar alumni-profile-header-avatar-fallback"} lang={detectLanguage(profile.name || profile.username)}>
                                             {(profile.name || profile.username || '?').trim().charAt(0).toUpperCase()}
                                         </div>
                                     )}
 
                                     <div className={"alumni-profile-header-info"}>
-                                        <h2>{profile.name}</h2>
-                                        <p className={"alumni-profile-header-username"}>@{profile.username} · {profile.email}</p>
+                                        <h2 lang={detectLanguage(profile.name)} dir="auto">{renderWithLanguageSpans(profile.name)}</h2>
+                                        <p className={"alumni-profile-header-username alumni-profile-force-english"} lang={"en"} dir="ltr">@{profile.username} · {profile.email}</p>
 
-                                        {profile.position && <p>{profile.position}</p>}
+                                        {profile.position && <p lang={detectLanguage(profile.position)} dir="auto">{renderWithLanguageSpans(profile.position)}</p>}
 
                                         {profile.graduationDate && (
-                                            <p>Class of {profile.graduationDate.split('-')[0]}</p>
+                                            <p lang={language}>{t('students-life-pages.alumni-profile-page.class-of', {year: localiseDigits(profile.graduationDate.split('-')[0], language)})}</p>
                                         )}
 
-                                        {profile.bio && <p>{profile.bio}</p>}
+                                        {profile.bio && <p lang={detectLanguage(profile.bio)} dir="auto">{renderWithLanguageSpans(profile.bio)}</p>}
 
                                         {profile.memberSince && (
-                                            <p className={"alumni-profile-header-username"}>Member since {profile.memberSince}</p>
+                                            <p className={"alumni-profile-header-username"} lang={language}>{t('students-life-pages.alumni-profile-page.member-since', {date: formatLocalisedDate(profile.memberSinceIso, language, profile.memberSince)})}</p>
                                         )}
                                     </div>
 
                                     <div className={"alumni-profile-header-actions"}>
                                         {!pendingUpdate && (<button onClick={() => setShowEditProfileModal(true)} disabled={!!pendingUpdate}>
-                                            Edit Profile
+                                            {t('students-life-pages.alumni-profile-page.edit-profile')}
                                         </button>)}
 
+                                        <button onClick={handleSharePublicProfileUrl}>
+                                            {t('students-life-pages.alumni-profile-page.share')}
+                                        </button>
+
                                         <button onClick={openChangePasswordModal}>
-                                            Change Password
+                                            {t('students-life-pages.alumni-profile-page.change-password')}
                                         </button>
 
                                         <button className={"alumni-danger-button"} onClick={() => logoutCurrentAlumni(navigate)}>
-                                            Log Out
+                                            {t('students-life-pages.alumni-profile-page.log-out')}
                                         </button>
                                     </div>
                                 </div>
@@ -444,28 +480,28 @@ function AlumniProfile() {
                                 {pendingUpdate && (
                                     <div className={"alumni-profile-section"}>
                                         <div className={"alumni-profile-section-header"}>
-                                            <h2>Pending Profile Update</h2>
-                                            <span className={"alumni-status-chip alumni-status-chip-pending"}>Awaiting approval</span>
+                                            <h2>{t('students-life-pages.alumni-profile-page.pending-profile-update')}</h2>
+                                            <span className={"alumni-status-chip alumni-status-chip-pending"}>{t('students-life-pages.alumni-profile-page.awaiting-approval')}</span>
                                         </div>
 
                                         <div className={"alumni-pending-update-banner"}>
                                             You asked to change the following, and the school is reviewing it (submitted {pendingUpdate.submittedAt}):
                                             <ul>
-                                                {Object.keys(PENDING_UPDATE_FIELD_LABELS)
+                                                {Object.keys(PENDING_UPDATE_FIELD_LABEL_KEYS)
                                                     .filter(fieldKey => pendingUpdate[fieldKey] !== null && pendingUpdate[fieldKey] !== undefined)
                                                     .map(fieldKey => (
                                                         <li key={fieldKey}>
-                                                            {PENDING_UPDATE_FIELD_LABELS[fieldKey]}
-                                                            {fieldKey !== 'newProfilePictureLink' ? `: ${pendingUpdate[fieldKey]}` : ' (new picture uploaded)'}
+                                                            {t(`students-life-pages.alumni-profile-page.${PENDING_UPDATE_FIELD_LABEL_KEYS[fieldKey]}`)}
+                                                            {fieldKey !== 'newProfilePictureLink' ? `: ${pendingUpdate[fieldKey]}` : ` ${t('students-life-pages.alumni-profile-page.new-picture-uploaded')}`}
                                                         </li>
                                                     ))}
                                             </ul>
-                                            Your live profile stays unchanged until the school approves the update.
+                                            {t('students-life-pages.alumni-profile-page.pending-update-note')}
                                         </div>
 
                                         <div className={"alumni-profile-post-item-actions"}>
                                             <button className={"alumni-danger-button"} onClick={handleCancelPendingUpdate}>
-                                                Cancel this update
+                                                {t('students-life-pages.alumni-profile-page.cancel-this-update')}
                                             </button>
                                         </div>
                                     </div>
@@ -474,8 +510,8 @@ function AlumniProfile() {
                                 {!pendingUpdate && rejectedUpdate && rejectedUpdate.adminNote && (
                                     <div className={"alumni-profile-section"}>
                                         <div className={"alumni-profile-section-header"}>
-                                            <h2>Last Profile Update</h2>
-                                            <span className={"alumni-status-chip alumni-status-chip-rejected"}>Not approved</span>
+                                            <h2>{t('students-life-pages.alumni-profile-page.last-profile-update')}</h2>
+                                            <span className={"alumni-status-chip alumni-status-chip-rejected"}>{t('students-life-pages.alumni-profile-page.not-approved')}</span>
                                         </div>
 
                                         <p className={"alumni-note-from-school"}>
@@ -487,8 +523,8 @@ function AlumniProfile() {
                                 {pendingDeletionRequest && (
                                     <div className={"alumni-profile-section"}>
                                         <div className={"alumni-profile-section-header"}>
-                                            <h2>Account Deletion Request</h2>
-                                            <span className={"alumni-status-chip alumni-status-chip-pending"}>Awaiting review</span>
+                                            <h2>{t('students-life-pages.alumni-profile-page.account-deletion-request')}</h2>
+                                            <span className={"alumni-status-chip alumni-status-chip-pending"}>{t('students-life-pages.alumni-profile-page.awaiting-review')}</span>
                                         </div>
 
                                         <div className={"alumni-pending-update-banner"}>
@@ -498,7 +534,7 @@ function AlumniProfile() {
 
                                         <div className={"alumni-profile-post-item-actions"}>
                                             <button onClick={handleCancelDeletionRequest}>
-                                                Cancel this request
+                                                {t('students-life-pages.alumni-profile-page.cancel-this-request')}
                                             </button>
                                         </div>
                                     </div>
@@ -507,8 +543,8 @@ function AlumniProfile() {
                                 {!pendingDeletionRequest && rejectedDeletionRequest && rejectedDeletionRequest.adminNote && (
                                     <div className={"alumni-profile-section"}>
                                         <div className={"alumni-profile-section-header"}>
-                                            <h2>Last Deletion Request</h2>
-                                            <span className={"alumni-status-chip alumni-status-chip-rejected"}>Not approved</span>
+                                            <h2>{t('students-life-pages.alumni-profile-page.last-deletion-request')}</h2>
+                                            <span className={"alumni-status-chip alumni-status-chip-rejected"}>{t('students-life-pages.alumni-profile-page.not-approved')}</span>
                                         </div>
 
                                         <p className={"alumni-note-from-school"}>
@@ -520,16 +556,16 @@ function AlumniProfile() {
 
                                 <div className={"alumni-profile-section"}>
                                     <div className={"alumni-profile-section-header"}>
-                                        <h2>My Posts</h2>
+                                        <h2>{t('students-life-pages.alumni-profile-page.my-posts')}</h2>
 
                                         <button onClick={openNewPostComposer}>
-                                            New Post
+                                            {t('students-life-pages.alumni-profile-page.new-post')}
                                         </button>
                                     </div>
 
                                     {posts.length === 0 && (
                                         <p className={"alumni-profile-empty-hint"}>
-                                            You have not written any posts yet. Share your story with the Harvest community. Every post is reviewed by the school before it appears publicly.
+                                            {t('students-life-pages.alumni-profile-page.no-posts-hint')}
                                         </p>
                                     )}
 
@@ -542,27 +578,31 @@ function AlumniProfile() {
                                                         {describePostStatus(post)}
                                                     </span>
 
-                                                    {post.showOnHome && (
-                                                        <span className={"alumni-status-chip alumni-status-chip-placement"}>On the home page</span>
+                                                    {post.status === 'approved' && post.showOnHome && (
+                                                        <span className={"alumni-status-chip alumni-status-chip-placement"}>{t('students-life-pages.alumni-profile-page.on-the-home-page')}</span>
                                                     )}
 
-                                                    {post.showOnAlumniPage && (
-                                                        <span className={"alumni-status-chip alumni-status-chip-placement"}>On the alumni page</span>
+                                                    {post.status === 'approved' && post.showOnAlumniPage && (
+                                                        <span className={"alumni-status-chip alumni-status-chip-placement"}>{t('students-life-pages.alumni-profile-page.on-the-alumni-page')}</span>
+                                                    )}
+
+                                                    {post.status === 'approved' && post.showOnProfile && (
+                                                        <span className={"alumni-status-chip alumni-status-chip-placement"}>{t('students-life-pages.alumni-profile-page.on-my-public-page')}</span>
                                                     )}
 
                                                     {post.pendingEdit && post.pendingEdit.status === 'pending' && (
-                                                        <span className={"alumni-status-chip alumni-status-chip-pending"}>Edit awaiting approval</span>
+                                                        <span className={"alumni-status-chip alumni-status-chip-pending"}>{t('students-life-pages.alumni-profile-page.edit-awaiting-approval')}</span>
                                                     )}
                                                 </div>
 
-                                                <h3>{post.title}</h3>
+                                                <h3 lang={detectLanguage(post.title)} dir="auto">{renderWithLanguageSpans(post.title)}</h3>
                                             </div>
 
 
 
                                             <p className={"alumni-profile-post-item-meta"}>
-                                                Written {post.createdAt}
-                                                {post.reviewedAt ? ` · Reviewed ${post.reviewedAt}` : ''}
+                                                {t('students-life-pages.alumni-profile-page.written-on', {date: formatLocalisedDate(post.createdAtIso, language, post.createdAt)})}
+                                                {post.reviewedAt ? ` · ${t('students-life-pages.alumni-profile-page.reviewed-on', {date: formatLocalisedDate(post.reviewedAtIso, language, post.reviewedAt)})}` : ''}
                                             </p>
 
                                             {post.status === 'rejected' && post.adminNote && (
@@ -585,11 +625,11 @@ function AlumniProfile() {
                                                         setShowPostPreviewModal(true);
                                                     }}
                                                 >
-                                                    View
+                                                    {t('students-life-pages.alumni-profile-page.view')}
                                                 </button>
 
                                                 <button onClick={() => openEditPostComposer(post)}>
-                                                    Edit
+                                                    {t('students-life-pages.alumni-profile-page.edit')}
                                                 </button>
 
                                                 <button
@@ -599,7 +639,7 @@ function AlumniProfile() {
                                                         setShowDeletePostModal(true);
                                                     }}
                                                 >
-                                                    Delete
+                                                    {t('students-life-pages.alumni-profile-page.delete')}
                                                 </button>
                                             </div>
                                         </div>
@@ -608,22 +648,24 @@ function AlumniProfile() {
 
                                 <div className={"alumni-profile-section"}>
                                     <div className={"alumni-profile-section-header"}>
-                                        <h2>Passkeys</h2>
+                                        <h2>{t('students-life-pages.alumni-profile-page.passkeys')}</h2>
                                     </div>
 
                                     <p className={"alumni-profile-empty-hint"}>
-                                        Passkeys let you sign in with your fingerprint, face, or device PIN instead of your password.
+                                        {t('students-life-pages.alumni-profile-page.passkeys-hint')}
                                     </p>
 
                                     {passkeys.map(passkey => (
                                         <div key={passkey.id} className={"alumni-profile-passkey-row"}>
                                             <p>
-                                                {passkey.label}
-                                                <span>Added {passkey.createdAt}</span>
+                                                {passkey.label
+                                                    ? <span lang={detectLanguage(passkey.label)} dir="auto">{renderWithLanguageSpans(passkey.label)}</span>
+                                                    : t('students-life-pages.alumni-profile-page.passkey-default-label', {date: formatLocalisedDate(passkey.createdAtIso, language, passkey.createdAt)})}
+                                                <span lang={language}>{t('students-life-pages.alumni-profile-page.passkey-added-on', {date: formatLocalisedDate(passkey.createdAtIso, language, passkey.createdAt)})}</span>
                                             </p>
 
                                             <button className={"alumni-danger-button"} onClick={() => handleDeletePasskey(passkey.id)}>
-                                                Remove
+                                                {t('students-life-pages.alumni-profile-page.remove')}
                                             </button>
                                         </div>
                                     ))}
@@ -633,20 +675,20 @@ function AlumniProfile() {
                                             <input
                                                 type="text"
                                                 value={newPasskeyLabel}
-                                                placeholder={"Passkey name (e.g. My iPhone)"}
+                                                placeholder={t('students-life-pages.alumni-profile-page.passkey-name-placeholder')}
                                                 onChange={(e) => setNewPasskeyLabel(e.target.value)}
                                                 className={"text-form-field"}
                                             />
 
                                             <button onClick={handleRegisterPasskey}>
-                                                Add a Passkey
+                                                {t('students-life-pages.alumni-profile-page.add-a-passkey')}
                                             </button>
                                         </div>
                                     ) : (
 
                                         <p className={"alumni-profile-empty-hint"}>
-                                            {isMobileApp() ? 'Passkeys are managed from a web browser. This app already supports biometric sign-in on this device.' :
-                                                'Passkeys are not supported on this device or browser.'
+                                            {isMobileApp() ? t('students-life-pages.alumni-profile-page.passkeys-app-note') :
+                                                t('students-life-pages.alumni-profile-page.passkeys-unsupported')
                                             }
                                         </p>
 
@@ -664,18 +706,18 @@ function AlumniProfile() {
 
                     <div className={"alumni-modal-container"}>
                         <div className={"alumni-modal-header"}>
-                            <h3>Edit Profile</h3>
+                            <h3>{t('students-life-pages.alumni-profile-page.edit-profile')}</h3>
                         </div>
 
                         <div className={"alumni-modal-content"}>
                             <p className={"alumni-modal-content-note"}>
-                                Profile changes are reviewed by the school before they appear publicly. Your password is the only thing you can change instantly, from the Change Password option.
+                                {t('students-life-pages.alumni-profile-page.profile-changes-note')}
                             </p>
 
                             {showEditProfileModal && (
                                 <Form mailTo={''}
                                       sendPdf={false}
-                                      formTitle={"Alumni Edit Profile Form"}
+                                      formTitle={t('students-life-pages.alumni-profile-page.edit-profile-form-title')}
                                       lang={'en'}
                                       captchaLength={1}
                                       noInputFieldsCache={true}
@@ -683,7 +725,7 @@ function AlumniProfile() {
                                       hasDifferentOnSubmitBehaviour={true}
                                       differentOnSubmitBehaviour={handleSubmitProfileUpdate}
                                       hasDifferentSubmitButtonText={true}
-                                      differentSubmitButtonText={['Submit for Approval', 'Submitting...']}
+                                      differentSubmitButtonText={[t('students-life-pages.alumni-profile-page.submit-for-approval'), 'Submitting...']}
                                       noClearOption={true}
                                       centerSubmitButton={true}
                                       fullMarginField={true}
@@ -696,9 +738,9 @@ function AlumniProfile() {
                                               name: 'username',
                                               label: 'Username',
                                               required: true,
-                                              displayLabel: 'Username',
-                                              placeholder: 'Username',
-                                              errorMsg: 'Username must be 3-30 characters of letters, numbers, and underscores',
+                                              displayLabel: t('students-life-pages.alumni-profile-page.field-username'),
+                                              placeholder: t('students-life-pages.alumni-profile-page.field-username'),
+                                              errorMsg: t('students-life-pages.alumni-profile-page.username-error'),
                                               regex: '^[a-zA-Z0-9_]{3,30}$',
                                               value: profile.username || '',
                                               setValue: null,
@@ -709,11 +751,11 @@ function AlumniProfile() {
                                               id: editProfileFieldIds.name,
                                               type: 'text',
                                               name: 'name',
-                                              label: 'Full Name',
+                                              label: t('students-life-pages.alumni-profile-page.full-name'),
                                               required: true,
-                                              displayLabel: 'Full Name',
-                                              placeholder: 'Full Name',
-                                              errorMsg: 'Please enter your full name',
+                                              displayLabel: t('students-life-pages.alumni-profile-page.full-name'),
+                                              placeholder: t('students-life-pages.alumni-profile-page.full-name'),
+                                              errorMsg: t('students-life-pages.alumni-profile-page.name-error'),
                                               value: profile.name || '',
                                               setValue: null,
                                               widthOfField: 2,
@@ -725,9 +767,9 @@ function AlumniProfile() {
                                               name: 'email',
                                               label: 'Email',
                                               required: true,
-                                              displayLabel: 'Email',
-                                              placeholder: 'Email',
-                                              errorMsg: 'Please enter a valid email address',
+                                              displayLabel: t('students-life-pages.alumni-profile-page.field-email'),
+                                              placeholder: t('students-life-pages.alumni-profile-page.field-email'),
+                                              errorMsg: t('students-life-pages.alumni-profile-page.email-error'),
                                               value: profile.email || '',
                                               setValue: null,
                                               widthOfField: 2,
@@ -737,11 +779,11 @@ function AlumniProfile() {
                                               id: editProfileFieldIds.position,
                                               type: 'text',
                                               name: 'position',
-                                              label: 'Current Position',
+                                              label: t('students-life-pages.alumni-profile-page.current-position'),
                                               required: false,
-                                              displayLabel: 'Current Position',
-                                              placeholder: 'e.g. Software Engineer at ...',
-                                              errorMsg: 'Please enter your current position',
+                                              displayLabel: t('students-life-pages.alumni-profile-page.current-position'),
+                                              placeholder: t('students-life-pages.alumni-profile-page.position-placeholder'),
+                                              errorMsg: t('students-life-pages.alumni-profile-page.position-error'),
                                               value: profile.position || '',
                                               setValue: null,
                                               widthOfField: 2,
@@ -752,11 +794,11 @@ function AlumniProfile() {
                                               type: 'date',
                                               minYear: schoolFoundedYear,
                                               name: 'graduation-date',
-                                              label: 'Graduation Date',
+                                              label: t('students-life-pages.alumni-profile-page.graduation-date'),
                                               required: false,
-                                              displayLabel: 'Graduation Date',
-                                              placeholder: 'Graduation Date',
-                                              errorMsg: 'Please enter your graduation date',
+                                              displayLabel: t('students-life-pages.alumni-profile-page.graduation-date'),
+                                              placeholder: t('students-life-pages.alumni-profile-page.graduation-date'),
+                                              errorMsg: t('students-life-pages.alumni-profile-page.graduation-date-error'),
                                               value: profile.graduationDate || '',
                                               setValue: null,
                                               widthOfField: 1,
@@ -766,11 +808,11 @@ function AlumniProfile() {
                                               id: editProfileFieldIds.bio,
                                               type: 'textarea',
                                               name: 'bio',
-                                              label: 'About You',
+                                              label: t('students-life-pages.alumni-profile-page.about-you'),
                                               required: false,
-                                              displayLabel: 'About You',
-                                              placeholder: 'A short introduction about yourself',
-                                              errorMsg: 'Please tell us about yourself',
+                                              displayLabel: t('students-life-pages.alumni-profile-page.about-you'),
+                                              placeholder: t('students-life-pages.alumni-profile-page.bio-placeholder'),
+                                              errorMsg: t('students-life-pages.alumni-profile-page.bio-error'),
                                               value: profile.bio || '',
                                               setValue: null,
                                               widthOfField: 2,
@@ -782,10 +824,10 @@ function AlumniProfile() {
                                               name: 'new-profile-picture',
                                               label: editProfilePictureFieldLabel,
                                               required: false,
-                                              displayLabel: 'New Profile Picture (leave empty to keep the current one)',
-                                              placeholder: 'New Profile Picture',
+                                              displayLabel: t('students-life-pages.alumni-profile-page.new-profile-picture-hint'),
+                                              placeholder: t('students-life-pages.alumni-profile-page.new-profile-picture'),
                                               allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff', 'image/svg+xml', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'],
-                                              errorMsg: 'Please upload your profile picture in a valid image format',
+                                              errorMsg: t('students-life-pages.alumni-profile-page.profile-picture-error'),
                                               value: '',
                                               setValue: null,
                                               widthOfField: 2,
@@ -798,12 +840,12 @@ function AlumniProfile() {
 
                         <div className={"alumni-modal-footer"}>
                             <button onClick={() => setShowEditProfileModal(false)}>
-                                Close
+                                {t('students-life-pages.alumni-profile-page.close')}
                             </button>
 
                             {!pendingDeletionRequest && (
                                 <button className={"alumni-danger-button"} onClick={openDeleteAccountRequestModal}>
-                                    Request Account Deletion
+                                    {t('students-life-pages.alumni-profile-page.request-account-deletion')}
                                 </button>
                             )}
 
@@ -818,22 +860,21 @@ function AlumniProfile() {
 
                 <div className={"alumni-modal-container alumni-modal-container-narrow"}>
                     <div className={"alumni-modal-header"}>
-                        <h3>Request Account Deletion</h3>
+                        <h3>{t('students-life-pages.alumni-profile-page.request-account-deletion')}</h3>
                     </div>
 
                     <div className={"alumni-modal-content"}>
                         <p className={"alumni-modal-content-note"}>
-                            This sends a request to the school to permanently delete your alumni account, including your posts, profile updates, passkeys, and uploaded files.
-                            Your account stays active until the school approves the request, and you can cancel it from your profile page at any time before then.
+                            {t('students-life-pages.alumni-profile-page.deletion-modal-note')}
                         </p>
 
                         <div className={"alumni-modal-content-padding-wrapper"}>
                             <label className={"form-label-outside"}>
-                                Reason (optional)
+                                {t('students-life-pages.alumni-profile-page.reason-optional')}
                                 <textarea
                                     value={deleteAccountReason}
                                     className={"textarea-form-field field-with-label-on-top"}
-                                    placeholder={"Let the school know why you would like your account deleted"}
+                                    placeholder={t('students-life-pages.alumni-profile-page.deletion-reason-placeholder')}
                                     onChange={(e) => setDeleteAccountReason(e.target.value)}
                                 />
                             </label>
@@ -844,11 +885,11 @@ function AlumniProfile() {
 
                     <div className={"alumni-modal-footer"}>
                         <button onClick={() => setShowDeleteAccountRequestModal(false)}>
-                            Cancel
+                            {t('students-life-pages.alumni-profile-page.cancel')}
                         </button>
 
                         <button className={"alumni-danger-button"} onClick={handleRequestAccountDeletion} disabled={modalBusy}>
-                            {modalBusy ? 'Submitting...' : 'Submit Deletion Request'}
+                            {modalBusy ? 'Submitting...' : t('students-life-pages.alumni-profile-page.submit-deletion-request')}
                         </button>
                     </div>
                 </div>
@@ -859,7 +900,7 @@ function AlumniProfile() {
 
                 <div className={"alumni-modal-container alumni-modal-container-narrow"}>
                     <div className={"alumni-modal-header"}>
-                        <h3>Change Password</h3>
+                        <h3>{t('students-life-pages.alumni-profile-page.change-password')}</h3>
                     </div>
 
                     <div className={"alumni-modal-content"}>
@@ -871,16 +912,16 @@ function AlumniProfile() {
                                     httpName: 'current-password',
                                     type: 'password',
                                     widthOfField: 1,
-                                    label: 'Current Password',
-                                    displayLabel: 'Current Password',
+                                    label: t('students-life-pages.alumni-profile-page.current-password'),
+                                    displayLabel: t('students-life-pages.alumni-profile-page.current-password'),
                                     labelOutside: true,
                                     labelOnTop: true,
                                     required: true,
                                     value: '',
                                     setValue: null,
-                                    errorMsg: 'Please enter your current password',
+                                    errorMsg: t('students-life-pages.alumni-profile-page.current-password-error'),
                                     regex: '',
-                                    placeholder: 'Current Password',
+                                    placeholder: t('students-life-pages.alumni-profile-page.current-password'),
                                     dontLetTheBrowserSaveField: true,
                                     defaultValue: '',
                                     alwaysEnglish: true,
@@ -892,16 +933,16 @@ function AlumniProfile() {
                                     httpName: 'new-password',
                                     type: 'password',
                                     widthOfField: 1,
-                                    label: 'New Password',
-                                    displayLabel: 'New Password',
+                                    label: t('students-life-pages.alumni-profile-page.new-password'),
+                                    displayLabel: t('students-life-pages.alumni-profile-page.new-password'),
                                     labelOutside: true,
                                     labelOnTop: true,
                                     required: true,
                                     value: '',
                                     setValue: null,
-                                    errorMsg: 'Please enter your new password',
+                                    errorMsg: t('students-life-pages.alumni-profile-page.new-password-error'),
                                     regex: '',
-                                    placeholder: 'New Password',
+                                    placeholder: t('students-life-pages.alumni-profile-page.new-password'),
                                     dontLetTheBrowserSaveField: true,
                                     defaultValue: '',
                                     alwaysEnglish: true,
@@ -913,16 +954,16 @@ function AlumniProfile() {
                                     httpName: 'confirm-new-password',
                                     type: 'password',
                                     widthOfField: 1,
-                                    label: 'Confirm New Password',
-                                    displayLabel: 'Confirm New Password',
+                                    label: t('students-life-pages.alumni-profile-page.confirm-new-password'),
+                                    displayLabel: t('students-life-pages.alumni-profile-page.confirm-new-password'),
                                     labelOutside: true,
                                     labelOnTop: true,
                                     required: true,
                                     value: '',
                                     setValue: null,
-                                    errorMsg: 'Please confirm your new password',
+                                    errorMsg: t('students-life-pages.alumni-profile-page.confirm-new-password-error'),
                                     regex: '',
-                                    placeholder: 'Current Password',
+                                    placeholder: t('students-life-pages.alumni-profile-page.current-password'),
                                     dontLetTheBrowserSaveField: true,
                                     defaultValue: '',
                                     alwaysEnglish: true,
@@ -930,7 +971,7 @@ function AlumniProfile() {
                                 }
                             ]}
                             mailTo={''}
-                            formTitle={'Change Password'}
+                            formTitle={t('students-life-pages.alumni-profile-page.change-password')}
                             captchaLength={1}
                             noInputFieldsCache={true}
                             noCaptcha={true}
@@ -938,9 +979,9 @@ function AlumniProfile() {
                             differentOnSubmitBehaviour={handleChangePassword}
                             noClearOption={true}
                             hasDifferentSubmitButtonText={true}
-                            differentSubmitButtonText={['Change Password', 'Changing Password']}
+                            differentSubmitButtonText={[t('students-life-pages.alumni-profile-page.change-password'), t('students-life-pages.alumni-profile-page.changing-password')]}
                             hasDifferentSuccessMessage={true}
-                            differentSuccessMessage={'Password changed successfully'}
+                            differentSuccessMessage={t('students-life-pages.alumni-profile-page.password-changed')}
                             centerSubmitButton={true}
                             easySimpleCaptcha={true}
                             fullMarginField={true}
@@ -954,7 +995,7 @@ function AlumniProfile() {
                         />
 
                         <p className={"alumni-modal-content-note"}>
-                            The new password must be at least 8 characters long with an uppercase letter, a lowercase letter, a number, and a special character. Changing the password signs you out of your other devices.
+                            {t('students-life-pages.alumni-profile-page.password-policy-note')}
                         </p>
 
                         {modalError && <p className={"alumni-inline-error-message"}>{modalError}</p>}
@@ -962,7 +1003,7 @@ function AlumniProfile() {
 
                     <div className={"alumni-modal-footer"}>
                         <button onClick={() => setShowChangePasswordModal(false)}>
-                            Cancel
+                            {t('students-life-pages.alumni-profile-page.cancel')}
                         </button>
 
                         <div ref={changePasswordSubmitButtonRef} className={"alumni-profile-change-password-submit-button"} />
@@ -976,24 +1017,24 @@ function AlumniProfile() {
 
                 <div className={"alumni-modal-container alumni-markdown-post-editor"}>
                     <div className={"alumni-modal-header"}>
-                        <h3>{composerPost ? 'Edit Post' : 'New Post'}</h3>
+                        <h3>{composerPost ? t('students-life-pages.alumni-profile-page.edit-post') : t('students-life-pages.alumni-profile-page.new-post')}</h3>
                     </div>
 
                     <div className={"alumni-modal-content"}>
                         <p className={"alumni-modal-content-note"}>
                             {composerPost && composerPost.status === 'approved'
-                                ? 'This post is already published, so your edit will be reviewed by the school first. The current version stays visible until the edit is approved.'
-                                : 'Every post is reviewed by the school before it appears publicly.'}
+                                ? t('students-life-pages.alumni-profile-page.edit-post-note')
+                                : t('students-life-pages.alumni-profile-page.new-post-note')}
                         </p>
 
                         <label className={"form-label-outside"}>
-                            Title*
+                            {t('students-life-pages.alumni-profile-page.title-field')}
                             <input
                                 type="text"
                                 value={composerTitle}
                                 className={"text-form-field field-with-label-on-top"}
                                 maxLength={200}
-                                placeholder={"Give your story a title"}
+                                placeholder={t('students-life-pages.alumni-profile-page.title-placeholder')}
                                 onChange={(e) => setComposerTitle(e.target.value)}
                             />
                         </label>
@@ -1010,11 +1051,11 @@ function AlumniProfile() {
 
                     <div className={"alumni-modal-footer"}>
                         <button onClick={() => setShowPostComposerModal(false)}>
-                            Cancel
+                            {t('students-life-pages.alumni-profile-page.cancel')}
                         </button>
 
                         <button onClick={handleSubmitComposer} disabled={modalBusy}>
-                            {modalBusy ? 'Submitting...' : 'Submit for Approval'}
+                            {modalBusy ? 'Submitting...' : t('students-life-pages.alumni-profile-page.submit-for-approval')}
                         </button>
                     </div>
                 </div>
@@ -1034,7 +1075,7 @@ function AlumniProfile() {
 
                     <div className={"alumni-modal-footer"}>
                         <button onClick={() => setShowPostPreviewModal(false)}>
-                            Close
+                            {t('students-life-pages.alumni-profile-page.close')}
                         </button>
                     </div>
                 </div>
@@ -1045,26 +1086,48 @@ function AlumniProfile() {
 
                 <div className={"alumni-modal-container alumni-modal-container-narrow"}>
                     <div className={"alumni-modal-header"}>
-                        <h3>Delete Post</h3>
+                        <h3>{t('students-life-pages.alumni-profile-page.delete-post')}</h3>
                     </div>
 
                     <div className={"alumni-modal-content"}>
                         <p className={"alumni-modal-content-note"}>
                             Are you sure you want to permanently delete
-                            {postToDelete ? ` "${postToDelete.title}"` : ' this post'}? This cannot be undone
-                            {postToDelete && (postToDelete.showOnHome || postToDelete.showOnAlumniPage)
-                                ? ', and it will also disappear from the school pages where it is featured.'
+                            {postToDelete ? ` "${postToDelete.title}"` : ` ${t('students-life-pages.alumni-profile-page.this-post')}`}? This cannot be undone
+                            {postToDelete && (postToDelete.showOnHome || postToDelete.showOnAlumniPage || postToDelete.showOnProfile)
+                                ? t('students-life-pages.alumni-profile-page.delete-post-featured-note')
                                 : '.'}
                         </p>
                     </div>
 
                     <div className={"alumni-modal-footer"}>
                         <button onClick={() => setShowDeletePostModal(false)}>
-                            Cancel
+                            {t('students-life-pages.alumni-profile-page.cancel')}
                         </button>
 
                         <button className={"alumni-danger-button"} onClick={handleDeletePost} disabled={modalBusy}>
-                            {modalBusy ? 'Deleting...' : 'Delete'}
+                            {modalBusy ? 'Deleting...' : t('students-life-pages.alumni-profile-page.delete')}
+                        </button>
+                    </div>
+                </div>
+            </animated.div>
+
+            <animated.div style={animateAlertModal} className={"alumni-modal"}>
+                <div className={"alumni-modal-overlay"} onClick={() => setAlertModal(null)}/>
+
+                <div className={"alumni-modal-container alumni-modal-container-narrow"}>
+                    <div className={"alumni-modal-header"}>
+                        <h3>{alertModal && alertModal.isError ? t('students-life-pages.alumni-profile-page.alert-error-title') : t('students-life-pages.alumni-profile-page.alert-success-title')}</h3>
+                    </div>
+
+                    <div className={"alumni-modal-content"}>
+                        <p className={alertModal && alertModal.isError ? "alumni-inline-error-message" : "alumni-inline-success-message"}>
+                            {alertModal ? alertModal.message : ''}
+                        </p>
+                    </div>
+
+                    <div className={"alumni-modal-footer"}>
+                        <button onClick={() => setAlertModal(null)}>
+                            {t('students-life-pages.alumni-profile-page.close')}
                         </button>
                     </div>
                 </div>

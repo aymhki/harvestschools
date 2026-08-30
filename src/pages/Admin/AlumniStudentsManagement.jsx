@@ -42,6 +42,7 @@ const decisionFieldId = 1;
 const noteFieldId = 2;
 const placementHomeFieldId = 3;
 const placementAlumniFieldId = 4;
+const placementProfileFieldId = 5;
 const notifyAuthorFieldId = 5;
 
 const noteField = (displayLabel) => ({
@@ -339,14 +340,21 @@ function AlumniStudentsManagement() {
                 label: 'Home page', displayLabel: 'Show on the home page?', required: true,
                 errorMsg: 'Choose whether this post shows on the home page', value: '',
                 defaultValue: record.showOnHome ? 'Yes' : 'No', choices: ['No', 'Yes'],
-                widthOfField: 2, labelOutside: true, labelOnTop: true,
+                widthOfField: 3, labelOutside: true, labelOnTop: true,
             },
             {
                 id: placementAlumniFieldId, type: 'select', name: 'show-on-alumni', httpName: 'show-on-alumni',
                 label: 'Alumni page', displayLabel: 'Show on the alumni page?', required: true,
                 errorMsg: 'Choose whether this post shows on the alumni students page', value: '',
                 defaultValue: record.showOnAlumniPage ? 'Yes' : 'No', choices: ['No', 'Yes'],
-                widthOfField: 2, labelOutside: true, labelOnTop: true,
+                widthOfField: 3, labelOutside: true, labelOnTop: true,
+            },
+            {
+                id: placementProfileFieldId, type: 'select', name: 'show-on-profile', httpName: 'show-on-profile',
+                label: 'Profile page', displayLabel: "Show on the author's public page?", required: true,
+                errorMsg: "Choose whether this post shows on the author's public profile page", value: '',
+                defaultValue: record.showOnProfile ? 'Yes' : 'No', choices: ['No', 'Yes'],
+                widthOfField: 3, labelOutside: true, labelOnTop: true,
             },
         ]);
         setModalError('');
@@ -399,7 +407,8 @@ function AlumniStudentsManagement() {
         const result = await setAlumniPostPlacement(
             selectedPost.id,
             values[`field_${placementHomeFieldId}`] === 'Yes',
-            values[`field_${placementAlumniFieldId}`] === 'Yes'
+            values[`field_${placementAlumniFieldId}`] === 'Yes',
+            values[`field_${placementProfileFieldId}`] === 'Yes'
         );
 
         return finishModalAction(result, () => setShowPlacementModal(false), reloadPostsData);
@@ -525,7 +534,7 @@ function AlumniStudentsManagement() {
                        ],
                    }}
                    sortConfigParam={{column: 0, direction: 'descending'}}
-                   filterableColumns={['Status', 'Pending Edit', 'On Home Page', 'On Alumni Page']}
+                   filterableColumns={['Status', 'Pending Edit', 'On Home Page', 'On Alumni Page', 'On Profile Page']}
                    headerModuleElements={[
                        (
                            <button key={1} onClick={reloadPostsData} disabled={isLoading}>

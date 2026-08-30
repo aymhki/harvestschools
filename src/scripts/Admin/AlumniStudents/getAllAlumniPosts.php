@@ -25,12 +25,12 @@ try {
         exit;
     }
 
-    $headers = ["ID", "Author", "Title", "Status", "Pending Edit", "On Home Page", "On Alumni Page", "Created", "Reviewed"];
+    $headers = ["ID", "Author", "Title", "Status", "Pending Edit", "On Home Page", "On Alumni Page", "On Profile Page", "Created", "Reviewed"];
     $rows = [];
     $postRecordsById = [];
 
     $sql =
-        "SELECT p.id, p.alumni_id, p.title, p.content, p.status, p.show_on_home, p.show_on_alumni_page, p.admin_note,
+        "SELECT p.id, p.alumni_id, p.title, p.content, p.status, p.show_on_home, p.show_on_alumni_page, p.show_on_profile, p.admin_note,
                 DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i') AS created_label,
                 DATE_FORMAT(p.reviewed_at, '%Y-%m-%d %H:%i') AS reviewed_label,
                 a.username AS author_username, a.name AS author_name, a.email AS author_email,
@@ -63,6 +63,7 @@ try {
             $hasPendingEdit ? 'Yes' : 'No',
             ((int)$row['show_on_home'] === 1) ? 'Yes' : 'No',
             ((int)$row['show_on_alumni_page'] === 1) ? 'Yes' : 'No',
+            ((int)$row['show_on_profile'] === 1) ? 'Yes' : 'No',
             (string)$row['created_label'],
             (string)($row['reviewed_label'] ?? ''),
         ];
@@ -75,6 +76,7 @@ try {
             "status"               => $row['status'],
             "showOnHome"           => (int)$row['show_on_home'] === 1,
             "showOnAlumniPage"     => (int)$row['show_on_alumni_page'] === 1,
+            "showOnProfile"        => (int)$row['show_on_profile'] === 1,
             "adminNote"            => $row['admin_note'],
             "createdAt"            => $row['created_label'],
             "reviewedAt"           => $row['reviewed_label'],

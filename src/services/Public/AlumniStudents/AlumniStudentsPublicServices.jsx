@@ -27,6 +27,30 @@ const fetchApprovedAlumniPosts = async (placement, limit = 0) => {
     }
 }
 
+const fetchAlumniPublicProfile = async (username) => {
+    try {
+        const params = new URLSearchParams();
+        params.set('username', username);
+
+        const response = await fetch(`${endpoints.getAlumniPublicProfile}?${params.toString()}`, {method: 'GET'});
+        const result = await response.json();
+
+        if (result && result.success && result.profile) {
+            return {profile: result.profile, posts: Array.isArray(result.posts) ? result.posts : []};
+        }
+
+        if (result && result.message) {
+            console.log(result.message);
+        }
+
+        return null;
+    } catch (error) {
+        console.log(error.message);
+        return null;
+    }
+}
+
 export {
-    fetchApprovedAlumniPosts
+    fetchApprovedAlumniPosts,
+    fetchAlumniPublicProfile
 }
