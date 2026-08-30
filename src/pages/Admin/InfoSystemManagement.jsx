@@ -447,7 +447,7 @@ function InfoSystemManagement() {
             ),
             (
                 <button key={2} onClick={async () => await handleSyncInfoSystemSubmit()} disabled={isLoading}>
-                    {isLoading ? 'Syncing...' : 'Trigger Server Static Data Update'}
+                    {isLoading ? 'Syncing...' : 'Sync'}
                 </button>
             ),
         ];
@@ -745,8 +745,7 @@ function InfoSystemManagement() {
                         {currentEditType === 'staticContent' && (
                             <p className={"general-large-admin-action-modal-content-note"}>
                                 Note: This is what the chatbot sends word for word. *Text* renders bold and _text_ renders
-                                italic on WhatsApp, Messenger and Instagram. Changes only reach the bot after you press
-                                Trigger Server Static Data Update.
+                                italic on WhatsApp, Messenger and Instagram.
                             </p>
                         )}
 
