@@ -222,8 +222,8 @@ function AppUpdateGate({ children }) {
     useEffect(() => {
         return attachDeepLinkListener((path) => {
             hasOpenedDeepLinkRef.current = true
-
             navigateRef.current(path)
+            setLaunchKind(LAUNCH_NORMAL)
         })
     }, [])
 
