@@ -236,6 +236,7 @@ function MetaInfo() {
 
                                 <button className="meta-info-footer-button always-english-btn" onClick={async () => {
                                     await downloadQrCode(`${getQrCodeBaseUrl()}${location.pathname}`, "all-meta-info-qr-code");
+                                    await copyToClipboard(`${getQrCodeBaseUrl()}${location.pathname}`)
                                 }}>
                                     {t("meta-info.qr")}
                                 </button>
