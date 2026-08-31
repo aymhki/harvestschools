@@ -854,7 +854,7 @@ function InfoSystemManagement() {
 
                         {currentEditType === 'metaInfo' && (
                             <p className={"general-large-admin-action-modal-content-note"}>
-                                Note: This is what the /meta-info page shows and what its Copy buttons put on the clipboard.
+                                Note: This is what the /public-meta-info-links-card page shows and what its Copy buttons put on the clipboard.
                             </p>
                         )}
 

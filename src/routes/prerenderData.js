@@ -73,7 +73,7 @@ export const routeDataKeys = {
     '/academics/staff/british-staff': [`staff:british:${prerenderLanguage}`],
     '/academics/staff/american-staff': [`staff:american:${prerenderLanguage}`],
     '/academics/staff/kindergarten-staff': [`staff:kindergarten:${prerenderLanguage}`],
-    '/meta-info': [`metaInfo:${prerenderLanguage}`],
+    '/public-meta-info-links-card': [`metaInfo:${prerenderLanguage}`],
     '/admission/admission-fees': [`stages:${prerenderLanguage}`],
     '/admission/admission-requirements': [`stages:${prerenderLanguage}`],
     '/minimum-stage-age': [`stages:${prerenderLanguage}`],

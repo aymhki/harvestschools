@@ -3,7 +3,7 @@ import { servePublicAsset } from "../services/General/GeneralServices.jsx";
 import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import {useSpring, animated} from "react-spring";
-import {msgTimeout} from "../services/General/GeneralUtils.jsx";
+import {getQrCodeBaseUrl, msgTimeout, useToggleLanguage} from "../services/General/GeneralUtils.jsx";
 import { Capacitor } from "@capacitor/core";
 import {shareFileFromBlob} from "../services/General/NativeFileShareService.jsx";
 import {openInOwningApp} from "../services/General/ExternalSiteService.jsx"
@@ -14,7 +14,7 @@ import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 function MetaInfo() {
     const { t, i18n } = useTranslation(['meta-info']);
     const [showCopiedToClipboardAlert, setShowCopiedToClipboardAlert] = useState(false);
-
+    const toggleLanguage = useToggleLanguage({ignoreDocUpdate: false});
     const language = i18n.language === 'ar' ? 'ar' : 'en';
     const preloaded = usePreloadedData(`metaInfo:${language}`);
 
@@ -226,6 +226,18 @@ function MetaInfo() {
                                     await copyToClipboard(copyAll.flatMap((entry) => [entry.label + ":", entry.value]))
                                 }}>
                                     {t("meta-info.copy-all")}
+                                </button>
+
+                                <button  className="meta-info-footer-button toggle-language-btn" onClick={async () => {
+                                    language === 'ar' ? toggleLanguage({lng: 'en'} ) : toggleLanguage({lng: 'ar'})
+                                }}>
+                                    {language == 'ar' ? 'English' : 'العربية'}
+                                </button>
+
+                                <button className="meta-info-footer-button always-english-btn" onClick={async () => {
+                                    await downloadQrCode(`${getQrCodeBaseUrl()}${location.pathname}`, "all-meta-info-qr-code");
+                                }}>
+                                    {t("meta-info.qr")}
                                 </button>
                             </div>
                         )}

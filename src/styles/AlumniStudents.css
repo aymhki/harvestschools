@@ -276,10 +276,6 @@
 }
 
 @media (hover: hover) {
-    .alumni-post-card-author-link:hover .alumni-post-card-avatar {
-        border-color: var(--secondary-color);
-    }
-
     p.alumni-post-card-author-link:hover {
         text-decoration: underline;
     }

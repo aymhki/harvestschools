@@ -27,6 +27,14 @@
     font-family: var(--english-normal-font-bold) !important;
 }
 
+.toggle-language-btn:lang(ar) {
+    font-family: var(--english-normal-font-bold) !important;
+}
+
+.toggle-language-btn:lang(en) {
+    font-family: var(--arabic-normal-font) !important;
+}
+
 @font-face {
     font-family: 'Futura';
     src: url('/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),

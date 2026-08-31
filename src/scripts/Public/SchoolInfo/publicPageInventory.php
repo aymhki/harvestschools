@@ -2,7 +2,7 @@
 
 const PUBLIC_PAGE_INVENTORY = [
     ['id' => 'page.home', 'path' => '/home', 'section' => 'general', 'titleKey' => 'nav.home', 'titleEn' => 'Home', 'keywords' => ['home', 'main', 'الرئيسية']],
-    ['id' => 'page.meta-info', 'path' => '/meta-info', 'section' => 'general', 'titleKey' => 'nav.meta-info', 'titleEn' => 'Meta Info', 'keywords' => ['meta', 'info']],
+    ['id' => 'page.meta-info', 'path' => '/public-meta-info-links-card', 'section' => 'general', 'titleKey' => 'nav.meta-info', 'titleEn' => 'Meta Info', 'keywords' => ['meta', 'info']],
     ['id' => 'page.faqs', 'path' => '/faqs', 'section' => 'general', 'titleKey' => 'nav.frequently-asked-questions', 'titleEn' => 'FAQs', 'keywords' => ['faq', 'questions', 'أسئلة', 'الأسئلة الشائعة']],
     ['id' => 'page.minimum-stage-age', 'path' => '/minimum-stage-age', 'section' => 'general', 'titleKey' => 'nav.minimum-registration-age', 'titleEn' => 'Minimum Registration Age', 'keywords' => ['age', 'minimum age', 'registration age', 'سن القبول', 'العمر']],
     ['id' => 'page.careers', 'path' => '/careers', 'section' => 'general', 'titleKey' => 'nav.vacancies', 'titleEn' => 'Careers', 'keywords' => ['jobs', 'careers', 'hiring', 'وظائف', 'شغل', 'اشتغل']],

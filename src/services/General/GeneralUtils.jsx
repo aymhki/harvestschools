@@ -16,6 +16,18 @@ const getBaseUrl = (isAdmin = false) => {
     return isAdmin ? ADMIN_BASE_URLS.production : BASE_URLS.production;
 };
 
+const getQrCodeBaseUrl = (isAdmin) => {
+    if (isDevelopment()) {
+        return BASE_URLS.development;
+    } else {
+        if (isAdmin) {
+            return 'https://admin.harvestschools.com';
+        } else {
+            return 'https://harvestschools.com';
+        }
+    }
+};
+
 const generateEndpoints = () => {
     const fullEndpoints = {};
 
@@ -673,5 +685,6 @@ export {
     TURNSTILE_SCRIPT_URL,
     TURNSTILE_SCRIPT_TIMEOUT_MS,
     loadTurnstileScript,
-    isMobileApp
+    isMobileApp,
+    getQrCodeBaseUrl
 }
