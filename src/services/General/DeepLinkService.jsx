@@ -40,10 +40,6 @@ const attachDeepLinkListener = (navigateTo) => {
     }
 
     if (Capacitor.isNativePlatform()) {
-        CapacitorApp.getLaunchUrl()
-            .then((launch) => openIfNeeded(launch ? launch.url : null))
-            .catch((launchError) => console.warn('[deep-link] Could not read the launch link', launchError))
-
         CapacitorApp.addListener('appUrlOpen', (event) => openIfNeeded(event.url))
             .then((handle) => {
                 listenerHandle = handle

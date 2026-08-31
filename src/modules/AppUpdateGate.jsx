@@ -34,6 +34,7 @@ function AppUpdateGate({ children }) {
     const [isPreparing, setIsPreparing] = useState(Capacitor.isNativePlatform())
     const [progress, setProgress] = useState(0)
     const [showProgressBar, setShowProgressBar] = useState(SHOW_DOWNLOAD_PROGRESS_BAR)
+    const [initialLaunchPath, setInitialLaunchPath] = useState(null)
     const [isOffline, setIsOffline] = useState(false)
     const offlineListenerRef = useRef(null)
     const hasBootstrappedRef = useRef(false)
@@ -51,6 +52,13 @@ function AppUpdateGate({ children }) {
         if (!restorePath) {
             if (launchKind === LAUNCH_NORMAL && !hasOpenedDeepLinkRef.current) {
                 window.dispatchEvent(new Event('harvestNavigateHome'))
+            } else if (launchKind === LAUNCH_FROM_LINK && !hasOpenedDeepLinkRef.current && initialLaunchPath) {
+                hasOpenedDeepLinkRef.current = true
+                const here = window.location.pathname + window.location.search + window.location.hash
+
+                if (initialLaunchPath !== here) {
+                    navigateRef.current(initialLaunchPath, { replace: true })
+                }
             }
 
             return
@@ -61,7 +69,7 @@ function AppUpdateGate({ children }) {
         if (restorePath !== here && !hasOpenedDeepLinkRef.current) {
             navigateRef.current(restorePath, { replace: true })
         }
-    }, [])
+    }, [launchKind, initialLaunchPath])
 
     const runPrefetch = useCallback(async ({ reportProgress }) => {
         if (!Capacitor.isNativePlatform()) {
@@ -165,7 +173,12 @@ function AppUpdateGate({ children }) {
             .then((launch) => {
                 const path = launch && launch.url ? readPathFromDeepLink(launch.url) : null
 
-                setLaunchKind(path ? LAUNCH_FROM_LINK : LAUNCH_NORMAL)
+                if (path) {
+                    setInitialLaunchPath(path)
+                    setLaunchKind(LAUNCH_FROM_LINK)
+                } else {
+                    setLaunchKind(LAUNCH_NORMAL)
+                }
             })
             .catch(() => setLaunchKind(LAUNCH_NORMAL))
     }, [launchKind])
@@ -223,7 +236,6 @@ function AppUpdateGate({ children }) {
         return attachDeepLinkListener((path) => {
             hasOpenedDeepLinkRef.current = true
             navigateRef.current(path)
-            setLaunchKind(LAUNCH_NORMAL)
         })
     }, [])
 
