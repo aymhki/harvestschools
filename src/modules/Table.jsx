@@ -141,6 +141,7 @@ function Table({
     const tableModuleRef = useRef(null);
     const tableRef = useRef(null);
     const importFooterButtonsRef = useRef(null);
+    const allowActionStickyOnMobile = false
 
     const animateImportModal = useSpring({
         opacity: isImportModalOpen ? 1 : 0,
@@ -351,7 +352,7 @@ function Table({
     );
 
     const pinActionCols = stickyActionColumns
-        && (!isMobile || allowStickyOnMobile !== false)
+        && (!isMobile || allowActionStickyOnMobile !== false)
         && actionColsWidth > 0
         && containerWidth > 0
         && (leftStickyWidth + actionColsWidth) <= containerWidth * 0.7;
