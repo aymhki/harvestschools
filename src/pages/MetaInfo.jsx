@@ -85,6 +85,10 @@ function MetaInfo() {
     return (
         <>
             <div className="meta-info-page">
+                <title>Harvest International School | Meta Info</title>
+                <meta name="description" content={"Meta Info for Harvest International School."}/>
+                <meta name="robots" content="noindex, nofollow"/>
+
                 <div className="meta-info-container-wrapper">
                     <div className="meta-info-container">
                         <div className="meta-info-header-container">

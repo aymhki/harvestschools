@@ -157,6 +157,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
+    word-break: break-word;
 }
 
 .meta-info-footer-container {
