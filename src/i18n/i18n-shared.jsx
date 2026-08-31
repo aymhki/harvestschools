@@ -23,7 +23,8 @@ export const i18nConfig = {
         'vacancies-page',
         'corporate-home',
         'corporate-footer',
-        'corporate-nav'
+        'corporate-nav',
+        'meta-info'
     ],
     detection: {
         order: ['customUrlDetector', 'localStorage', 'navigator'],

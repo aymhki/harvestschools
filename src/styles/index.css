@@ -22,6 +22,11 @@
     font-family: var(--english-title-font) !important;
 }
 
+.always-english-btn, .always-english-btn:lang(ar) {
+    direction: ltr;
+    font-family: var(--english-normal-font-bold) !important;
+}
+
 @font-face {
     font-family: 'Futura';
     src: url('/assets/fonts/Futura/FuturaLT.woff2') format('woff2'),

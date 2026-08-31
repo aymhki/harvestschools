@@ -1,5 +1,6 @@
 export const mainRoutes = [
     { path: '/', page: 'Home.jsx' },
+    { path: '/meta-info', page: 'MetaInfo.jsx', prerender: true },
     { path: '/home', page: 'Home.jsx' },
     { path: '/more-info', page: 'FAQs/MoreInfo.jsx' },
     { path: '/faqs', page: 'FAQs/FAQs.jsx' },
