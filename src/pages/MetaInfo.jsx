@@ -1,28 +1,76 @@
 import '../styles/MetaInfo.css'
 import { servePublicAsset } from "../services/General/GeneralServices.jsx";
 import {useTranslation} from "react-i18next";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useSpring, animated} from "react-spring";
 import {msgTimeout} from "../services/General/GeneralUtils.jsx";
 import { Capacitor } from "@capacitor/core";
 import {shareFileFromBlob} from "../services/General/NativeFileShareService.jsx";
 import {openInOwningApp} from "../services/General/ExternalSiteService.jsx"
+import {fetchMetaInfo} from "../services/Public/SchoolInfo/PublicMetaInfoServices.jsx";
+import {usePreloadedData} from "../services/General/PrerenderDataContext.jsx";
+import { useLoading } from '../services/General/GlobalLoadingService.jsx'
 
 function MetaInfo() {
     const { t, i18n } = useTranslation(['meta-info']);
     const [showCopiedToClipboardAlert, setShowCopiedToClipboardAlert] = useState(false);
 
+    const language = i18n.language === 'ar' ? 'ar' : 'en';
+    const preloaded = usePreloadedData(`metaInfo:${language}`);
+
+    const [metaInfo, setMetaInfo] = useState(preloaded);
+    const [, setIsLoading] = useLoading(!preloaded);
+    const [hasFailed, setHasFailed] = useState(false);
+
     const qrInProd = true;
     const showQrButtons = import.meta.env?.DEV || qrInProd;
     const prependCountryCodeToPhoneNumberCopy = false;
 
-    const phoneNumberEnglishValue = t("meta-info.phone-number-value", { lng: "en" });
-    const whatsappLink = `https://wa.me/${phoneNumberEnglishValue.replace(/^\+/, "")}`;
+    const items = metaInfo?.items || [];
+    const phoneItem = items.find((item) => item.actions.includes('whatsapp'));
+
+    useEffect(() => {
+        let isActive = true;
+
+        if (!preloaded) {
+            setIsLoading(true);
+            setHasFailed(false);
+        }
+
+        fetchMetaInfo(language)
+            .then((data) => {
+                if (!isActive) {
+                    return;
+                }
+
+                if (data) {
+                    setMetaInfo(data);
+                    setHasFailed(false);
+                } else if (!preloaded) {
+                    setMetaInfo(null);
+                    setHasFailed(true);
+                }
+            })
+            .catch(() => {
+                if (isActive && !preloaded) {
+                    setMetaInfo(null);
+                    setHasFailed(true);
+                }
+            })
+            .finally(() => {
+                if (isActive) {
+                    setIsLoading(false);
+                }
+            });
+
+        return () => {
+            isActive = false;
+        };
+    }, [language, preloaded]);
 
     const copyToClipboardAnimation = useSpring({
         opacity: showCopiedToClipboardAlert ? 1 : 0,
-        transform: showCopiedToClipboardAlert ? 'translateY(0%)' : 'translateY(100%)',
-        config: { tension: 170, friction: 26 }
+        transform: showCopiedToClipboardAlert ? 'translateY(0%)' : 'translateY(100%)'
     });
 
     const downloadQrCode = async (value, fileName) => {
@@ -45,11 +93,10 @@ function MetaInfo() {
 
     const copyToClipboard = async (textToCopy) => {
 
-        const phoneNumberValue = t("meta-info.phone-number-value");
-        const countryCodePrefix = i18n.language === "ar" ? "+٠٢" : "+02";
+        const countryCodePrefix = language === "ar" ? "+٠٢" : "+02";
 
         const formatValue = (value) => {
-            if (prependCountryCodeToPhoneNumberCopy && value === phoneNumberValue) {
+            if (prependCountryCodeToPhoneNumberCopy && phoneItem && value === phoneItem.value) {
                 return countryCodePrefix + value;
             }
 
@@ -82,6 +129,46 @@ function MetaInfo() {
         }, msgTimeout);
     }
 
+    const renderActionButton = (item, action) => {
+        if (action === 'copy') {
+            return (
+                <button key={action} className="meta-info-body-grid-item-button" onClick={async () => {
+                    await copyToClipboard(item.value)
+                }}>
+                    {t("meta-info.copy")}
+                </button>
+            );
+        }
+
+        if (action === 'qr') {
+            if (!showQrButtons || !item.linkUrl) {
+                return null;
+            }
+
+            return (
+                <button key={action} className="meta-info-body-grid-item-button always-english-btn" onClick={async () => {
+                    await downloadQrCode(item.linkUrl, item.qrFileName);
+                }}>
+                    {t("meta-info.qr")}
+                </button>
+            );
+        }
+
+        if (!item.linkUrl) {
+            return null;
+        }
+
+        return (
+            <button key={action} className="meta-info-body-grid-item-button" onClick={() => {
+                openInOwningApp(item.linkUrl);
+            }}>
+                {t(`meta-info.${action}`)}
+            </button>
+        );
+    }
+
+    const copyAll = metaInfo?.copyAll || [];
+
     return (
         <>
             <div className="meta-info-page">
@@ -100,356 +187,48 @@ function MetaInfo() {
                             </div>
 
                             <div className="meta-info-header-title">
-                                <h3>
-                                    {t("meta-info.business-name")}
+                                <h3 lang={language}>
+                                    {metaInfo?.header?.value || ''}
                                 </h3>
                             </div>
                         </div>
 
+                        {(hasFailed || (metaInfo && items.length === 0)) && (
+                            <div className="meta-info-body-container error-state">
+                                <p>{t("meta-info.unavailable")}</p>
+                            </div>
+                        )}
+
                         <div className="meta-info-body-container">
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.name-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box">
+                            {items.map((item) => (
+                                <div className="meta-info-body-grid-item-container" key={item.key} lang={language}>
                                     <p>
-                                        {t("meta-info.name-value")}
+                                        {item.label}
                                     </p>
+
+
+                                    <div className={`meta-info-body-grid-item-value-box${item.forceEnglish ? ' always-english-value-box' : ''}`}>
+                                        <p>
+                                            {item.value}
+                                        </p>
+                                    </div>
+
+                                    <div className="meta-info-body-grid-item-button-wrapper">
+                                        {item.actions.map((action) => renderActionButton(item, action))}
+                                    </div>
                                 </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.name-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.address-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box">
-                                    <p>
-                                        {t("meta-info.address-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.address-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        openInOwningApp("https://maps.app.goo.gl/3CqafLC8KrCSydaH9");
-                                    }}>
-                                        {t("meta-info.maps")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.phone-number-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.phone-number-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.phone-number-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        const { openInOwningApp } = await import("../services/General/ExternalSiteService.jsx");
-                                        openInOwningApp(whatsappLink);
-                                    }}>
-                                        {t("meta-info.whatsapp")}
-                                    </button>
-
-                                    {showQrButtons &&
-                                        <button className="meta-info-body-grid-item-button always-english-btn" onClick={async () => {
-                                            await downloadQrCode(whatsappLink, "whatsapp-qr");
-                                        }}>
-                                            {t("meta-info.qr")}
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.bank-one-name-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box">
-                                    <p>
-                                        {t("meta-info.bank-one-name-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.bank-one-name-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.bank-one-account-number-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.bank-one-account-number-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.bank-one-account-number-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.bank-one-instapay-link-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.bank-one-instapay-link-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.bank-one-instapay-link-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        const { openInOwningApp } = await import("../services/General/ExternalSiteService.jsx");
-                                        openInOwningApp(t("meta-info.bank-one-instapay-link-value"));
-                                    }}>
-                                        {t("meta-info.instapay")}
-                                    </button>
-
-                                    {showQrButtons &&
-                                        <button className="meta-info-body-grid-item-button always-english-btn" onClick={async () => {
-                                            await downloadQrCode(t("meta-info.bank-one-instapay-link-value"), "bank-one-instapay-qr");
-                                        }}>
-                                            {t("meta-info.qr")}
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.bank-two-name-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box">
-                                    <p>
-                                        {t("meta-info.bank-two-name-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.bank-two-name-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.bank-two-account-number-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.bank-two-account-number-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.bank-two-account-number-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.bank-two-instapay-link-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.bank-two-instapay-link-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.bank-two-instapay-link-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        const { openInOwningApp } = await import("../services/General/ExternalSiteService.jsx");
-                                        openInOwningApp(t("meta-info.bank-two-instapay-link-value"));
-                                    }}>
-                                        {t("meta-info.instapay")}
-                                    </button>
-
-                                    {showQrButtons &&
-                                        <button className="meta-info-body-grid-item-button always-english-btn" onClick={async () => {
-                                            await downloadQrCode(t("meta-info.bank-two-instapay-link-value"), "bank-two-instapay-qr");
-                                        }}>
-                                            {t("meta-info.qr")}
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.email-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.email-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.email-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        const { openInOwningApp } = await import("../services/General/ExternalSiteService.jsx");
-                                        openInOwningApp(`mailto:${t("meta-info.email-value")}`);
-                                    }}>
-                                        {t("meta-info.email")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.website-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.website-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.website-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="meta-info-body-grid-item-container">
-                                <p>
-                                    {t("meta-info.facebook-label")}
-                                </p>
-
-
-                                <div className="meta-info-body-grid-item-value-box always-english-value-box">
-                                    <p>
-                                        {t("meta-info.facebook-value")}
-                                    </p>
-                                </div>
-
-                                <div className="meta-info-body-grid-item-button-wrapper">
-                                    <button className="meta-info-body-grid-item-button" onClick={async () => {
-                                        await copyToClipboard(t("meta-info.facebook-value"))
-                                    }}>
-                                        {t("meta-info.copy")}
-                                    </button>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
-                        <div className="meta-info-footer-container">
-                            <button className="meta-info-footer-button" onClick={async () => {
-                                await copyToClipboard([
-                                    t("meta-info.name-label") + ":",
-                                    t("meta-info.name-value"),
-                                    t("meta-info.phone-number-label") + ":",
-                                    t("meta-info.phone-number-value"),
-                                    t("meta-info.email-label") + ":",
-                                    t("meta-info.email-value"),
-                                    t("meta-info.website-label") + ":",
-                                    t("meta-info.website-value"),
-                                    t("meta-info.address-label") + ":",
-                                    t("meta-info.address-value"),
-                                    t("meta-info.facebook-label") + ":",
-                                    t("meta-info.facebook-value"),
-                                    t("meta-info.bank-one-name-label") + ":",
-                                    t("meta-info.bank-one-name-value"),
-                                    t("meta-info.bank-one-account-number-label") + ":",
-                                    t("meta-info.bank-one-account-number-value"),
-                                    t("meta-info.bank-one-instapay-link-label") + ":",
-                                    t("meta-info.bank-one-instapay-link-value"),
-                                    t("meta-info.bank-two-name-label") + ":",
-                                    t("meta-info.bank-two-name-value"),
-                                    t("meta-info.bank-two-account-number-label") + ":",
-                                    t("meta-info.bank-two-account-number-value"),
-                                    t("meta-info.bank-two-instapay-link-label") + ":",
-                                    t("meta-info.bank-two-instapay-link-value")
-                                ])
-                            }}>
-                                {t("meta-info.copy-all")}
-                            </button>
-                        </div>
+                        {copyAll.length > 0 && (
+                            <div className="meta-info-footer-container">
+                                <button className="meta-info-footer-button" onClick={async () => {
+                                    await copyToClipboard(copyAll.flatMap((entry) => [entry.label + ":", entry.value]))
+                                }}>
+                                    {t("meta-info.copy-all")}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

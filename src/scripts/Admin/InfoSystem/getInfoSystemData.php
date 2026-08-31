@@ -113,6 +113,25 @@ try {
 
     $staticContentData = moveColumnFirst(array_merge([$staticContentHeaders], $staticContentRows), "ID");
 
+    $metaInfoHeaders = [
+        "Item Key", "Placement", "Label (EN)", "Label (AR)", "Value (EN)", "Value (AR)",
+        "Actions", "Link URL", "Force English", "Copy All Order", "Is Active", "ID"
+    ];
+    $metaInfoRows = [];
+    $metaInfoTable = $conn->query("SHOW TABLES LIKE 'info_system_meta_info'");
+
+    if ($metaInfoTable && $metaInfoTable->num_rows > 0) {
+        $res = $conn->query("SELECT item_key, placement, label_en, label_ar, value_en, value_ar, actions, link_url, force_english, copy_all_order, is_active, sort_order FROM info_system_meta_info ORDER BY sort_order ASC");
+
+        while ($row = $res->fetch_assoc()) {
+            $row['force_english'] = $row['force_english'] == 1 ? 'Yes' : 'No';
+            $row['is_active'] = $row['is_active'] == 1 ? 'Yes' : 'No';
+            $metaInfoRows[] = array_map('strval', array_values($row));
+        }
+    }
+
+    $metaInfoData = moveColumnFirst(array_merge([$metaInfoHeaders], $metaInfoRows), "ID");
+
     $formEmailHeaders = ["Form Key", "Form", "Recipient Email", "Is Active", "ID"];
     $formEmailRows = [];
     $formEmailsTable = $conn->query("SHOW TABLES LIKE 'info_system_form_emails'");
@@ -139,7 +158,8 @@ try {
             "profile" => $profileData,
             "policies" => $policyData,
             "staticContent" => $staticContentData,
-            "formEmails" => $formEmailData
+            "formEmails" => $formEmailData,
+            "metaInfo" => $metaInfoData
         ]
     ]);
 } catch (Exception $e) {

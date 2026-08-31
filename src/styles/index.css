@@ -186,6 +186,7 @@
     --form-field-dropdown-z-index: 9001;
     --calendar-actions-modal-z-index: 2002;
     --spinner-overlay-z-index: 100000;
+    --copy-to-clipboard-alert-z-index: 100000;
 
     --parallax-scroll-base-z-index: 1;
     --parallax-scroll-top-z-index: 2;

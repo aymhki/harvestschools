@@ -12,6 +12,7 @@ import {fetchAnalyticsData, fetchInfoSystemData, updateInfoSystemData} from "../
 import { useLoading } from '../../services/General/GlobalLoadingService.jsx'
 
 const analyticsTabId = 7;
+const metaInfoTabId = 8;
 
 function InfoSystemManagement() {
     const navigate = useNavigate();
@@ -27,6 +28,7 @@ function InfoSystemManagement() {
     const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
     const [analyticsTabOpened, setAnalyticsTabOpened] = useState(() => Number(localStorage.getItem('activeTab_Info System Management')) === analyticsTabId);
     const [formEmailsData, setFormEmailsData] = useState(null);
+    const [metaInfoData, setMetaInfoData] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [resetEditModal, setResetEditModal] = useState(false);
     const [editFormFields, setEditFormFields] = useState(null);
@@ -50,7 +52,7 @@ function InfoSystemManagement() {
 
     const reloadData = async () => {
         setIsLoading(true);
-        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setStaticContentData, setFormEmailsData);
+        await fetchInfoSystemData(navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setStaticContentData, setFormEmailsData, setMetaInfoData);
         setIsLoading(false);
     };
 
@@ -118,6 +120,19 @@ function InfoSystemManagement() {
     const staticContentBodyEnColIndex = 5;
     const staticContentBodyArColIndex = 6;
 
+    const metaInfoSortOrderColIndex = 0;
+    const metaInfoKeyColIndex = 1;
+    const metaInfoPlacementColIndex = 2;
+    const metaInfoLabelEnColIndex = 3;
+    const metaInfoLabelArColIndex = 4;
+    const metaInfoValueEnColIndex = 5;
+    const metaInfoValueArColIndex = 6;
+    const metaInfoActionsColIndex = 7;
+    const metaInfoLinkUrlColIndex = 8;
+    const metaInfoForceEnglishColIndex = 9;
+    const metaInfoCopyAllOrderColIndex = 10;
+    const metaInfoIsActiveColIndex = 11;
+
     const policySortOrderColIndex = 0;
     const policyKeyColIndex = 1;
     const policyGroupKeyColIndex = 2;
@@ -182,6 +197,17 @@ function InfoSystemManagement() {
     const staticContentBodyEnFormFieldId = 5;
     const staticContentBodyArFormFieldId = 6;
 
+    const metaInfoPlacementFormFieldId = 1;
+    const metaInfoLabelEnFormFieldId = 2;
+    const metaInfoLabelArFormFieldId = 3;
+    const metaInfoValueEnFormFieldId = 4;
+    const metaInfoValueArFormFieldId = 5;
+    const metaInfoActionsFormFieldId = 6;
+    const metaInfoLinkUrlFormFieldId = 7;
+    const metaInfoForceEnglishFormFieldId = 8;
+    const metaInfoCopyAllOrderFormFieldId = 9;
+    const metaInfoIsActiveFormFieldId = 10;
+
     const policyKeyFormFieldId = 1;
     const policyGroupKeyFormFieldId = 2;
     const policyTitleEnFormFieldId = 3;
@@ -192,6 +218,7 @@ function InfoSystemManagement() {
     const profileCategories = ['identity', 'location', 'contact', 'social', 'hours', 'fees', 'admission', 'general'];
     const policyGroupKeys = ['discounts', 'accreditations', 'fee_exclusions'];
     const staticContentGroupKeys = ['static', 'faq', 'admission_notes', 'main_options', 'strings', 'ui'];
+    const metaInfoPlacements = ['grid', 'header'];
 
     const handleEditInitialization = (type, rowIndex) => {
         let rowData;
@@ -280,6 +307,20 @@ function InfoSystemManagement() {
                 { id: staticContentTitleArFormFieldId, type: 'text', name: 'title_ar', label: 'Title (AR)', required: false, value: '', defaultValue: rowData[staticContentTitleArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Title (AR) (The question for a FAQ, left empty for anything else)', lang: 'ar', httpName: 'static-content-title-ar' },
                 { id: staticContentBodyEnFormFieldId, type: 'textarea', name: 'body_en', label: 'Body (EN)', required: false, value: '', defaultValue: rowData[staticContentBodyEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Body (EN)', httpName: 'static-content-body-en' },
                 { id: staticContentBodyArFormFieldId, type: 'textarea', name: 'body_ar', label: 'Body (AR)', required: false, value: '', defaultValue: rowData[staticContentBodyArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Body (AR)', lang: 'ar', httpName: 'static-content-body-ar' },
+            ];
+        } else if (type === 'metaInfo') {
+            rowData = metaInfoData[rowIndex];
+            formFieldsConfig = [
+                { id: metaInfoPlacementFormFieldId, type: 'select', name: 'placement', label: 'Placement', required: true, choices: metaInfoPlacements, defaultValue: rowData[metaInfoPlacementColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Placement (header shows the row as the page title, grid shows it as a card)', httpName: 'meta-info-placement' },
+                { id: metaInfoIsActiveFormFieldId, type: 'select', name: 'is_active', label: 'Is Active', required: true, choices: ['Yes', 'No'], defaultValue: rowData[metaInfoIsActiveColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Is Active (No hides the row from the meta info page)', httpName: 'meta-info-is-active' },
+                { id: metaInfoLabelEnFormFieldId, type: 'text', name: 'label_en', label: 'Label (EN)', required: true, value: '', defaultValue: rowData[metaInfoLabelEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Label (EN)', httpName: 'meta-info-label-en' },
+                { id: metaInfoLabelArFormFieldId, type: 'text', name: 'label_ar', label: 'Label (AR)', required: true, value: '', defaultValue: rowData[metaInfoLabelArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Label (AR)', lang: 'ar', httpName: 'meta-info-label-ar' },
+                { id: metaInfoValueEnFormFieldId, type: 'textarea', name: 'value_en', label: 'Value (EN)', required: true, value: '', defaultValue: rowData[metaInfoValueEnColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Value (EN) (links, phone numbers and QR codes are always built from this one)', httpName: 'meta-info-value-en' },
+                { id: metaInfoValueArFormFieldId, type: 'textarea', name: 'value_ar', label: 'Value (AR)', required: false, value: '', defaultValue: rowData[metaInfoValueArColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Value (AR) (left empty falls back to the English value)', lang: 'ar', httpName: 'meta-info-value-ar' },
+                { id: metaInfoActionsFormFieldId, type: 'text', name: 'actions', label: 'Actions', required: false, value: '', defaultValue: rowData[metaInfoActionsColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Actions — comma separated, any of: copy, maps, whatsapp, instapay, email, link, qr', httpName: 'meta-info-actions' },
+                { id: metaInfoLinkUrlFormFieldId, type: 'text', name: 'link_url', label: 'Link URL', required: false, value: '', defaultValue: rowData[metaInfoLinkUrlColIndex], widthOfField: 1, labelOutside: true, labelOnTop: true, displayLabel: 'Link URL (left empty builds it from the English value: wa.me for whatsapp, mailto for email, the value itself for a link)', httpName: 'meta-info-link-url' },
+                { id: metaInfoForceEnglishFormFieldId, type: 'select', name: 'force_english', label: 'Force English', required: true, choices: ['Yes', 'No'], defaultValue: rowData[metaInfoForceEnglishColIndex], value: '', widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Force English (keeps the value left to right in Arabic, use it for numbers, emails and links)', httpName: 'meta-info-force-english' },
+                { id: metaInfoCopyAllOrderFormFieldId, type: 'number', name: 'copy_all_order', label: 'Copy All Order', required: true, value: '', defaultValue: rowData[metaInfoCopyAllOrderColIndex], widthOfField: 2, labelOutside: true, labelOnTop: true, displayLabel: 'Copy All Order (0 leaves the row out of Copy All)', minimumValue: 0, maximumValue: 1000, httpName: 'meta-info-copy-all-order' },
             ];
         }
 
@@ -406,6 +447,23 @@ function InfoSystemManagement() {
                         body_en: formDataJson[`field_${staticContentBodyEnFormFieldId}`] || '',
                         body_ar: formDataJson[`field_${staticContentBodyArFormFieldId}`] || '',
                         sort_order: Number(staticContentData[indexOfRowToEdit][staticContentSortOrderColIndex])
+                    }]
+                };
+            } else if (currentEditType === 'metaInfo') {
+                payload = {
+                    metaInfo: [{
+                        item_key: metaInfoData[indexOfRowToEdit][metaInfoKeyColIndex],
+                        placement: formDataJson[`field_${metaInfoPlacementFormFieldId}`],
+                        label_en: formDataJson[`field_${metaInfoLabelEnFormFieldId}`],
+                        label_ar: formDataJson[`field_${metaInfoLabelArFormFieldId}`],
+                        value_en: formDataJson[`field_${metaInfoValueEnFormFieldId}`] || '',
+                        value_ar: formDataJson[`field_${metaInfoValueArFormFieldId}`] || '',
+                        actions: formDataJson[`field_${metaInfoActionsFormFieldId}`] || '',
+                        link_url: formDataJson[`field_${metaInfoLinkUrlFormFieldId}`] || '',
+                        force_english: formDataJson[`field_${metaInfoForceEnglishFormFieldId}`],
+                        copy_all_order: Number(formDataJson[`field_${metaInfoCopyAllOrderFormFieldId}`]),
+                        is_active: formDataJson[`field_${metaInfoIsActiveFormFieldId}`],
+                        sort_order: Number(metaInfoData[indexOfRowToEdit][metaInfoSortOrderColIndex])
                     }]
                 };
             }
@@ -639,6 +697,32 @@ function InfoSystemManagement() {
         </div>
     );
 
+    const MetaInfo = () => (
+        <div className="admin-page-tab-content">
+            <Table tableData={metaInfoData}
+                   scrollable={true}
+                   compact={true}
+                   allowHideColumns={true}
+                   allowSticky={true}
+                   forceEnglishTable={true}
+                   allowSearch={true}
+                   searchPlaceholder={'Search meta info items'}
+                   allowEditEntryOption={true}
+                   onEditEntryOption={(rowIndex) => handleEditInitialization('metaInfo', rowIndex)}
+                   isLoading={isLoading}
+                   headerModuleElements={getTableModuleHeaderElements}
+                   sortConfigParam={{column: 0, direction: 'ascending'}}
+                   allowBreakWordColumns={{ "Value (EN)": '10rem', "Value (AR)": '10rem', "Link URL": '10rem' }}
+                   truncateValuesColumns={{'Value (EN)': 100, 'Value (AR)': 100, 'Link URL': 100}}
+                   filterableColumns={[
+                       'Placement',
+                       'Force English',
+                       'Is Active'
+                   ]}
+            />
+        </div>
+    );
+
     const FormEmails = () => (
         <div className="admin-page-tab-content">
             <Table tableData={formEmailsData}
@@ -693,6 +777,11 @@ function InfoSystemManagement() {
             id: 6,
             label: 'Form Emails',
             component: FormEmails
+        },
+        {
+            id: metaInfoTabId,
+            label: 'Meta Info',
+            component: MetaInfo
         },
         {
             id: analyticsTabId,
@@ -762,6 +851,12 @@ function InfoSystemManagement() {
                             </p>
                         )}
 
+
+                        {currentEditType === 'metaInfo' && (
+                            <p className={"general-large-admin-action-modal-content-note"}>
+                                Note: This is what the /meta-info page shows and what its Copy buttons put on the clipboard.
+                            </p>
+                        )}
 
                         {currentEditType === 'stages' && (
                             <p className={"general-large-admin-action-modal-content-note"}>

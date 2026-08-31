@@ -375,6 +375,7 @@ const ENDPOINTS = {
     getPublicSchoolStages: '/scripts/Public/SchoolInfo/getPublicSchoolStages.php',
     getPublicSchoolContacts: '/scripts/Public/SchoolInfo/getPublicSchoolContacts.php',
     getPublicStages: '/scripts/Public/SchoolInfo/getPublicStages.php',
+    getPublicMetaInfo: '/scripts/Public/SchoolInfo/getPublicMetaInfo.php',
     getPublicPageGates: '/scripts/Public/SchoolInfo/getPublicPageGates.php',
     getPageGates: '/scripts/Admin/PageGates/getPageGates.php',
     updatePageGate: '/scripts/Admin/PageGates/updatePageGate.php',

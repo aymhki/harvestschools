@@ -338,6 +338,47 @@ try {
         $stmt->close();
     }
 
+    if (!$updateStaticOnly && isset($postData['metaInfo'])) {
+        $stmt = $conn->prepare("INSERT INTO info_system_meta_info (item_key, placement, label_en, label_ar, value_en, value_ar, actions, link_url, force_english, copy_all_order, is_active, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE placement=VALUES(placement), label_en=VALUES(label_en), label_ar=VALUES(label_ar), value_en=VALUES(value_en), value_ar=VALUES(value_ar), actions=VALUES(actions), link_url=VALUES(link_url), force_english=VALUES(force_english), copy_all_order=VALUES(copy_all_order), is_active=VALUES(is_active), sort_order=VALUES(sort_order)");
+
+        $metaInfoBefore = info_system_snapshot($conn, "SELECT item_key, placement, label_en, label_ar, value_en, value_ar, actions, link_url, IF(force_english, 'Yes', 'No') AS force_english, copy_all_order, IF(is_active, 'Yes', 'No') AS is_active, sort_order FROM info_system_meta_info", 'item_key');
+
+        foreach ($postData['metaInfo'] as $mi) {
+            $placement = $mi['placement'] === 'header' ? 'header' : 'grid';
+            $actions = implode(',', public_meta_info_actions($mi['actions'] ?? ''));
+            $linkUrl = trim((string)($mi['link_url'] ?? ''));
+            $forceEnglish = $mi['force_english'] === 'Yes' ? 1 : 0;
+            $isActive = $mi['is_active'] === 'Yes' ? 1 : 0;
+            $copyAllOrder = (int)($mi['copy_all_order'] ?? 0);
+            $sortOrder = (int)($mi['sort_order'] ?? 0);
+
+            if ($linkUrl !== '' && preg_match('#^(https?://|mailto:|tel:)#i', $linkUrl) !== 1) {
+                $conn->rollback();
+                echo json_encode(["success" => false, "message" => "Invalid link URL: " . $linkUrl, "code" => 400]);
+                exit;
+            }
+
+            $infoChanges = array_merge($infoChanges, info_system_row_changes('Meta info item', $mi['item_key'], $mi['label_en'], $metaInfoBefore[$mi['item_key']] ?? null, [
+                'Placement' => ['placement', $placement],
+                'Label (EN)' => ['label_en', $mi['label_en']],
+                'Label (AR)' => ['label_ar', $mi['label_ar']],
+                'Value (EN)' => ['value_en', $mi['value_en']],
+                'Value (AR)' => ['value_ar', $mi['value_ar']],
+                'Actions' => ['actions', $actions],
+                'Link URL' => ['link_url', $linkUrl],
+                'Force English' => ['force_english', $forceEnglish === 1 ? 'Yes' : 'No'],
+                'Copy all order' => ['copy_all_order', $copyAllOrder],
+                'Active' => ['is_active', $isActive === 1 ? 'Yes' : 'No'],
+                'Sort order' => ['sort_order', $sortOrder],
+            ]));
+
+            $stmt->bind_param("ssssssssiiii", $mi['item_key'], $placement, $mi['label_en'], $mi['label_ar'], $mi['value_en'], $mi['value_ar'], $actions, $linkUrl, $forceEnglish, $copyAllOrder, $isActive, $sortOrder);
+            $stmt->execute();
+        }
+
+        $stmt->close();
+    }
+
     if (!$updateStaticOnly && isset($postData['formEmails'])) {
         $stmt = $conn->prepare("INSERT INTO info_system_form_emails (form_key, label, recipient_email, is_active, sort_order, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, NOW(), ?) ON DUPLICATE KEY UPDATE label=VALUES(label), recipient_email=VALUES(recipient_email), is_active=VALUES(is_active), sort_order=VALUES(sort_order), updated_at=NOW(), updated_by=VALUES(updated_by)");
 

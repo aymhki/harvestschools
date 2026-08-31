@@ -78,12 +78,17 @@
 .meta-info-header-image-container {
     display: flex;
     flex-direction: row;
-    object-fit: cover;
     border-radius: 0.5rem;
+    height: 100%;
+    min-width: 0;
 }
 
 .meta-info-header-image {
     border-radius: 0.5rem;
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+    display: block;
 }
 
 .meta-info-body-container {
@@ -96,19 +101,27 @@
     padding: 1rem;
 }
 
+.meta-info-body-container.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .copy-to-clipboard-alert-container {
     display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
-    bottom: 2rem;
+    bottom: calc(10rem + env(safe-area-inset-bottom));
     left: 0;
     align-content: center;
     width: 100%;
+    z-index: var(--copy-to-clipboard-alert-z-index);
 }
 
 .copy-to-clipboard-alert {
-    box-shadow: 0 0 0.5rem var(--primary-color);
+    box-shadow: 0 0 1rem var(--primary-color);
     background-color: var(--fb-white-color);
     border-radius: 0.5rem;
     text-align: center;
@@ -274,7 +287,7 @@
     }
 
     .copy-to-clipboard-alert {
-        box-shadow: 0 0 0.5rem var(--fb-white-color);
+        box-shadow: 0 0 1rem var(--fb-white-color);
         background-color: var(--light-dark-accent-color);
     }
 

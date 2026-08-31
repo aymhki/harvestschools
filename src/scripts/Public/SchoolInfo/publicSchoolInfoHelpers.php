@@ -248,6 +248,99 @@ function public_school_admission_notes($conn, $language) {
     return $notes;
 }
 
+const PUBLIC_META_INFO_ACTIONS = ['copy', 'maps', 'whatsapp', 'instapay', 'email', 'link', 'qr'];
+
+function public_meta_info_actions($value) {
+    $tokens = preg_split('/[\s,]+/', strtolower(trim((string)$value)));
+    $tokens = array_filter($tokens === false ? [] : $tokens);
+
+    return array_values(array_intersect(PUBLIC_META_INFO_ACTIONS, $tokens));
+}
+
+function public_meta_info_link($actions, $linkUrl, $englishValue) {
+    $explicit = trim((string)$linkUrl);
+
+    if ($explicit !== '') {
+        return $explicit;
+    }
+
+    $value = trim((string)$englishValue);
+
+    if ($value === '') {
+        return '';
+    }
+
+    if (in_array('whatsapp', $actions, true)) {
+        $digits = preg_replace('/\D+/', '', $value);
+
+        return $digits === '' ? '' : 'https://wa.me/' . $digits;
+    }
+
+    if (in_array('email', $actions, true)) {
+        return 'mailto:' . $value;
+    }
+
+    return preg_match('#^https?://#i', $value) === 1 ? $value : '';
+}
+
+function public_school_meta_info($conn, $language) {
+    $document = ['header' => null, 'items' => [], 'copyAll' => [], 'lastUpdated' => 0];
+    $table = $conn->query("SHOW TABLES LIKE 'info_system_meta_info'");
+
+    if (!$table || $table->num_rows === 0) {
+        return $document;
+    }
+
+    $copyAllRows = [];
+    $result = $conn->query("SELECT item_key, placement, label_en, label_ar, value_en, value_ar, actions, link_url, force_english, copy_all_order, sort_order, UNIX_TIMESTAMP(updated_at) AS updated_at FROM info_system_meta_info WHERE is_active = 1 ORDER BY sort_order ASC");
+
+    while ($result && $row = $result->fetch_assoc()) {
+        $value = public_info_localised($row, 'value', $language);
+
+        if ($value === null) {
+            continue;
+        }
+
+        $document['lastUpdated'] = max($document['lastUpdated'], (int)$row['updated_at']);
+        $label = public_info_localised($row, 'label', $language) ?? '';
+
+        if ($row['placement'] === 'header') {
+            if ($document['header'] === null) {
+                $document['header'] = ['key' => $row['item_key'], 'label' => $label, 'value' => $value];
+            }
+
+            continue;
+        }
+
+        $actions = public_meta_info_actions($row['actions']);
+
+        $document['items'][] = [
+            'key'          => $row['item_key'],
+            'label'        => $label,
+            'value'        => $value,
+            'englishValue' => (string)($row['value_en'] ?? ''),
+            'actions'      => $actions,
+            'linkUrl'      => public_meta_info_link($actions, $row['link_url'], $row['value_en']),
+            'qrFileName'   => str_replace('_', '-', $row['item_key']) . '-qr',
+            'forceEnglish' => (int)$row['force_english'] === 1,
+        ];
+
+        if ((int)$row['copy_all_order'] > 0) {
+            $copyAllRows[] = ['order' => (int)$row['copy_all_order'], 'label' => $label, 'value' => $value];
+        }
+    }
+
+    usort($copyAllRows, static function ($first, $second) {
+        return $first['order'] <=> $second['order'];
+    });
+
+    $document['copyAll'] = array_values(array_map(static function ($entry) {
+        return ['label' => $entry['label'], 'value' => $entry['value']];
+    }, $copyAllRows));
+
+    return $document;
+}
+
 function public_school_policies($conn, $language) {
     $groups = [];
     $result = $conn->query("SELECT item_key, group_key, title_en, title_ar, detail_en, detail_ar FROM info_system_policy_items ORDER BY group_key, sort_order ASC");

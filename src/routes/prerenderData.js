@@ -14,6 +14,7 @@ const CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'british
 const SCRIPT_PATHS = {
     staff: '/scripts/Public/Staff/getPublicStaff.php',
     stages: '/scripts/Public/SchoolInfo/getPublicStages.php',
+    metaInfo: '/scripts/Public/SchoolInfo/getPublicMetaInfo.php',
     library: '/scripts/Public/Library/getPublicLibrary.php',
     gallery: '/scripts/Public/Gallery/getPublicGallery.php',
     calendar: '/scripts/Public/Calendars/getPublicCalendar.php',
@@ -36,6 +37,11 @@ for (const department of STAFF_DEPARTMENTS) {
 
 prerenderFetchPlan[`stages:${prerenderLanguage}`] = {
     path: SCRIPT_PATHS.stages,
+    params: { lang: prerenderLanguage },
+};
+
+prerenderFetchPlan[`metaInfo:${prerenderLanguage}`] = {
+    path: SCRIPT_PATHS.metaInfo,
     params: { lang: prerenderLanguage },
 };
 
@@ -67,6 +73,7 @@ export const routeDataKeys = {
     '/academics/staff/british-staff': [`staff:british:${prerenderLanguage}`],
     '/academics/staff/american-staff': [`staff:american:${prerenderLanguage}`],
     '/academics/staff/kindergarten-staff': [`staff:kindergarten:${prerenderLanguage}`],
+    '/meta-info': [`metaInfo:${prerenderLanguage}`],
     '/admission/admission-fees': [`stages:${prerenderLanguage}`],
     '/admission/admission-requirements': [`stages:${prerenderLanguage}`],
     '/minimum-stage-age': [`stages:${prerenderLanguage}`],

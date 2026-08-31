@@ -2,7 +2,7 @@ import {validateAdminSessionLocally} from "../Session/MainAdminServices.jsx";
 import {adminLoginPageUrl, endpoints, buildAuthHeaders} from "../../General/GeneralUtils.jsx";
 
 
-const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setStaticContentData, setFormEmailsData) => {
+const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmentsData, setStagesData, setProfileData, setPoliciesData, setStaticContentData, setFormEmailsData, setMetaInfoData) => {
     const sessionId = await validateAdminSessionLocally();
 
     if (!sessionId) {
@@ -17,6 +17,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
     setPoliciesData(null);
     setStaticContentData(null);
     setFormEmailsData(null);
+    setMetaInfoData(null);
 
     try {
         const response = await fetch(endpoints.getInfoSystem, {method: 'GET',
@@ -32,6 +33,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
             setPoliciesData(result.data.policies);
             setStaticContentData(result.data.staticContent);
             setFormEmailsData(result.data.formEmails);
+            setMetaInfoData(result.data.metaInfo);
         } else {
             setGlobalSettingsData(null);
             setDepartmentsData(null);
@@ -40,6 +42,7 @@ const fetchInfoSystemData = async (navigate, setGlobalSettingsData, setDepartmen
             setPoliciesData(null);
             setStaticContentData(null);
             setFormEmailsData(null);
+            setMetaInfoData(null);
 
             if (result && result.message) {
                 console.log(result.message);

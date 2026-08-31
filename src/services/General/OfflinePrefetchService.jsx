@@ -9,6 +9,7 @@ import { servePublicAsset } from './GeneralServices.jsx'
 import { prefetchPublicStaff } from '../Public/Staff/PublicStaffServices.jsx'
 import { prefetchCalendars } from './SchoolCalendarsService.jsx'
 import { prefetchStages } from '../Public/SchoolInfo/PublicStagesServices.jsx'
+import { prefetchMetaInfo } from '../Public/SchoolInfo/PublicMetaInfoServices.jsx'
 import { prefetchLibrary } from '../Public/Library/PublicLibraryServices.jsx'
 import { prefetchGallery } from '../Public/Gallery/PublicGalleryServices.jsx'
 import { prefetchPageGates } from '../Public/SchoolInfo/PageGatesServices.jsx'
@@ -222,6 +223,12 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 onProgress: (percent) => report('stages', percent),
             })
 
+            report('meta-info', 0)
+
+            const metaInfoResult = await prefetchMetaInfo({
+                onProgress: (percent) => report('meta-info', percent),
+            })
+
             report('library', 0)
 
 
@@ -249,6 +256,7 @@ const runOfflinePrefetch = async ({ bundleVersion = null, force = false, onProgr
                 staff: staffResult,
                 calendars: calendarResult,
                 stages: stageResult,
+                metaInfo: metaInfoResult,
                 library: libraryResult,
                 gallery: galleryResult,
             }
