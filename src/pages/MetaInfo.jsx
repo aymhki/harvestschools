@@ -70,7 +70,8 @@ function MetaInfo() {
 
     const copyToClipboardAnimation = useSpring({
         opacity: showCopiedToClipboardAlert ? 1 : 0,
-        transform: showCopiedToClipboardAlert ? 'translateY(0%)' : 'translateY(100%)'
+        transform: showCopiedToClipboardAlert ? 'translateY(0%)' : 'translateY(-100%)',
+        config: { duration: 100 },
     });
 
     const downloadQrCode = async (value, fileName) => {
@@ -126,7 +127,7 @@ function MetaInfo() {
 
         setTimeout(() => {
             setShowCopiedToClipboardAlert(false);
-        }, msgTimeout);
+        }, (msgTimeout / 3) );
     }
 
     const renderActionButton = (item, action) => {

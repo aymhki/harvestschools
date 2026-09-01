@@ -64,7 +64,7 @@ function Footer() {
                         </div>
                     </div>
 
-                    <div className="mobile-footer-action-container" onClick={() => window.open('tel:+201028329668', '_blank')} >
+                    <div className="mobile-footer-action-container" onClick={() => window.open('tel:+201061894477', '_blank')} >
                         <div className="mobile-footer-call-icon">
                             <CachedImage src={servePublicAsset("/images/FooterLogos/mobile_ringing_icon.png")} alt="Call icon" className="mobile-footer-action-icon" fallbackClassName="mobile-footer-action-icon"/>
                         </div>

@@ -139,15 +139,12 @@ function Home() {
 
                     <p className="important-info-hyperlink-text">
                         {t("home.phone")} &nbsp;
-                        <span  onClick={() => window.open('tel:+201028329668')}>
-                             {t("home.01028329668,")}
+                        <span  onClick={() => window.open('tel:+201061894477')}>
+                             {t("home.01061894477,")}
                         </span> &nbsp;
-                        <span  onClick={() => window.open('tel:+201097875407')}>
-                            {t("home.01097875407,")}
+                        <span  onClick={() => window.open('tel:+201118900165')}>
+                            {t("home.01118900165")}
                         </span> &nbsp;
-                        <span onClick={() => window.open('tel:+201028940675')}>
-                            {t("home.01028940675")}
-                        </span>
                     </p>
 
 
