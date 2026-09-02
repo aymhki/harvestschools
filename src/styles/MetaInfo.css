@@ -16,7 +16,7 @@
     justify-content: center;
 }
 
-.meta-info-container {
+.meta-info-container, .meta-info-container-native-app {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,6 +25,9 @@
     box-shadow: 0 0 0.5rem var(--primary-color);
     border-radius: 0.5rem;
     box-sizing: border-box;
+}
+
+.meta-info-container {
     height: 85vh;
     width: 80vw;
 }
