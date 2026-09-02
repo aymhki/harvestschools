@@ -198,6 +198,11 @@
 @media (max-width: 768px) {
 
     .meta-info-container {
+        width: 100dvw;
+        height: 100dvh;
+    }
+
+    .meta-info-container-native-app {
         width: 95%;
         height: 80vh;
     }

@@ -3,7 +3,7 @@ import { servePublicAsset } from "../services/General/GeneralServices.jsx";
 import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import {useSpring, animated} from "react-spring";
-import {getQrCodeBaseUrl, msgTimeout, useToggleLanguage} from "../services/General/GeneralUtils.jsx";
+import {getQrCodeBaseUrl, msgTimeout, useToggleLanguage, useIsMobile} from "../services/General/GeneralUtils.jsx";
 import { Capacitor } from "@capacitor/core";
 import {shareFileFromBlob} from "../services/General/NativeFileShareService.jsx";
 import {openInOwningApp} from "../services/General/ExternalSiteService.jsx"
@@ -17,6 +17,8 @@ function MetaInfo() {
     const toggleLanguage = useToggleLanguage({ignoreDocUpdate: false});
     const language = i18n.language === 'ar' ? 'ar' : 'en';
     const preloaded = usePreloadedData(`metaInfo:${language}`);
+    const isMobile = useIsMobile(768);
+    const isNativeApp = Capacitor.isNativePlatform() && isMobile;
 
     const [metaInfo, setMetaInfo] = useState(preloaded);
     const [, setIsLoading] = useLoading(!preloaded);
@@ -178,7 +180,7 @@ function MetaInfo() {
                 <meta name="robots" content="noindex, nofollow"/>
 
                 <div className="meta-info-container-wrapper">
-                    <div className="meta-info-container">
+                    <div className={(isNativeApp) ? "meta-info-container-native-app" : "meta-info-container"}>
                         <div className="meta-info-header-container">
                             <div className="meta-info-header-image-container">
                                 <img src={servePublicAsset("/images/MetaInfo/Showcase.jpg")}
