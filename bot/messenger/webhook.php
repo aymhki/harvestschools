@@ -50,31 +50,11 @@ try {
         exit;
     }
 
-    $session = getSession($from);
     $message = normalizeMessengerMessage($messaging);
-
-    if (isset($message['type']) && $message['type'] === 'handover') {
-        $newOwner = $message['new_owner_app_id'] ?? null;
-        updateThreadOwner($from, $newOwner);
-        touchSession($from);
-        http_response_code(200);
-        exit;
-    }
 
     if (!$message) {
         http_response_code(200);
         exit;
-    }
-
-
-    if (isNewSession($session)) {
-        resetSession($from);
-    } else {
-        if (!isBotInControl($from)) {
-            touchSession($from);
-            http_response_code(200);
-            exit;
-        }
     }
 
     $channelOn = defined('BOT_ON_MESSENGER') ? BOT_ON_MESSENGER : BOT_ON;
@@ -99,16 +79,6 @@ try {
 http_response_code(200);
 
 function normalizeMessengerMessage($messaging) {
-
-
-    if (isset($messaging['take_thread_control']) || isset($messaging['pass_thread_control'])) {
-        $eventData = $messaging['take_thread_control'] ?? $messaging['pass_thread_control'];
-        $newOwner = $eventData['new_owner_app_id'] ?? null;
-        return [
-            'type' => 'handover',
-            'new_owner_app_id' => $newOwner
-        ];
-    }
 
     if (!empty($messaging['message']['is_echo'])
         || !empty($messaging['message']['is_deleted'])

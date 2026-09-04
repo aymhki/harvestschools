@@ -137,25 +137,3 @@ function resetMessageCounter($phone, $channel = null) {
     $stmt = db()->prepare("UPDATE chat_bot_user_sessions SET messages_since_feedback = 0 WHERE phone_number = ? AND channel = ?");
     $stmt->execute([$phone, $channel]);
 }
-
-
-function updateThreadOwner($phone, $ownerAppId, $channel = null) {
-    $channel = $channel ?? activeChannel();
-    $stmt = db()->prepare("
-        INSERT INTO chat_bot_user_sessions (phone_number, channel, thread_owner_app_id)
-        VALUES (?, ?, ?)
-        ON DUPLICATE KEY UPDATE thread_owner_app_id = VALUES(thread_owner_app_id)
-    ");
-    $stmt->execute([$phone, $channel, $ownerAppId]);
-}
-
-function isBotInControl($phone, $channel = null) {
-    $channel = $channel ?? activeChannel();
-    $botAppId = CHAT_BOT_APP_ID;
-
-    $stmt = db()->prepare("SELECT thread_owner_app_id FROM chat_bot_user_sessions WHERE phone_number = ? AND channel = ?");
-    $stmt->execute([$phone, $channel]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return !$result || $result['thread_owner_app_id'] === $botAppId;
-}
