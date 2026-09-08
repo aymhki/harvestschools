@@ -161,6 +161,20 @@ function AdminLogin() {
                 throw new Error(result.message);
             }
 
+            if (navigator.credentials) {
+                const username = formData.get(`field_${usernameFieldId}`);
+                const password = formData.get(`field_${passwordFieldId}`);
+
+                const cred = new PasswordCredential({
+                    id: username,
+                    password: password,
+                    name: 'Harvest Schools Admin',
+                    icon: 'https://harvestschools.com/assets/images/HarvestLogos/HarvestLogoCropped.avif'
+                });
+
+                navigator.credentials.store(cred).catch(err => console.log(err));
+            }
+
             return true;
 
         } catch (error) {
