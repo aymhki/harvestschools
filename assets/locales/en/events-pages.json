@@ -11,7 +11,9 @@
       "kg-calendars-option": "KG Calendars",
       "kg-calendars-option-description": "Detailed timelines of the Kindergarten academic year",
       "booking-login-option": "Event Bookings",
-      "booking-login-option-description": "Access event booking info, extras, and media"
+      "booking-login-option-description": "Access event booking info, extras, and media",
+      "playschool-calendar-option": "Playschool Calendar",
+      "playschool-calendar-option-description": "Detailed timeline of the Playschool academic year"
     },
     "common": {
       "download-calendar-btn": "Download Calendar",
@@ -41,6 +43,9 @@
     },
     "american-calendar-page": {
       "title": "American School Calendar"
+    },
+    "playschool-calendar-page": {
+      "title": "Playschool Calendar"
     },
     "kg-calendars-pages": {
       "options-page": {

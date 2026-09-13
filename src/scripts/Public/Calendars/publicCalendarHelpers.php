@@ -94,11 +94,6 @@ function public_calendar_document($conn, $calendarKey, $language) {
     return $document;
 }
 
-/**
- * Every published event across all six calendars, in the shape the knowledge
- * artifact has always used, so the MCP tools, Siri entities and Android app
- * functions keep working unchanged.
- */
 function public_calendar_all_events($conn, $language) {
     $events = [];
 

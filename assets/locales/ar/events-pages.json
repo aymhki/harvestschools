@@ -11,7 +11,9 @@
       "kg-calendars-option": "جداول  رياض الأطفال",
       "kg-calendars-option-description": "الجداول الزمنية للسنة الدراسية في قسم رياض الأطفال",
       "booking-login-option": "حجز الحفلات",
-      "booking-login-option-description": "دخول نظام حجز الحفلات"
+      "booking-login-option-description": "دخول نظام حجز الحفلات",
+      "playschool-calendar-option": "جدول البلاي سكول",
+      "playschool-calendar-option-description": "الجدول الزمني للسنة الدراسية في البلاي سكول"
     },
     "common": {
       "download-calendar-btn": "تحميل الجدول",
@@ -41,6 +43,9 @@
     },
     "american-calendar-page": {
       "title": "جدول القسم الأمريكي"
+    },
+    "playschool-calendar-page": {
+      "title": "جدول البلاي سكول"
     },
     "kg-calendars-pages": {
       "options-page": {

@@ -9,7 +9,7 @@ const LIBRARY_CATEGORIES = [
 
 const GALLERY_SECTIONS = ['photos', 'videos'];
 
-const CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'british-kg', 'american-kg'];
+const CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'british-kg', 'american-kg', 'playschool'];
 
 const SCRIPT_PATHS = {
     staff: '/scripts/Public/Staff/getPublicStaff.php',
@@ -93,4 +93,5 @@ export const routeDataKeys = {
     '/events/national-kg-calendar': [`calendar:national-kg:${prerenderLanguage}`],
     '/events/british-kg-calendar': [`calendar:british-kg:${prerenderLanguage}`],
     '/events/american-kg-calendar': [`calendar:american-kg:${prerenderLanguage}`],
+    '/events/playschool-calendar': [`calendar:playschool:${prerenderLanguage}`],
 };

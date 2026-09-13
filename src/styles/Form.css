@@ -504,6 +504,8 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
+    max-height: 20rem;
+    overflow: scroll;
 }
 
 .select-multiple-form-field:lang(ar) {

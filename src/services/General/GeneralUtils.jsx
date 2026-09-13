@@ -281,6 +281,7 @@ const academicCalendarPermissionLevels = {
     'national-kg': "19",
     'british-kg': "20",
     'american-kg': "21",
+    "playschool": "29"
 };
 const anyAcademicCalendarPermissionLevels = [
     academicCalendarsMasterPermissionLevel,

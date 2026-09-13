@@ -1804,7 +1804,7 @@ function Table({
                     <div className={"table-module-header-buttons-wrapper"}>
                         {finalTableData && allowHideColumns && (
                             <button onClick={() => setIsAccordionOpen(!isAccordionOpen)}>
-                                {'Columns'}
+                                {'Show/Hide Columns'}
                             </button>
                         )}
 

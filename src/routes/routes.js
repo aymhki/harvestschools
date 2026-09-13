@@ -50,6 +50,7 @@ export const mainRoutes = [
     { path: '/events/american-kg-calendar', page: 'Events/AmericanKGCalendar.jsx' },
     { path: '/events/british-kg-calendar', page: 'Events/BritishKGCalendar.jsx' },
     { path: '/events/national-kg-calendar', page: 'Events/NationalKGCalendar.jsx' },
+    { path: '/events/playschool-calendar', page: 'Events/PlayschoolCalendar.jsx' },
     { path: '/events/event-booking', page: 'Events/EventBooking/EventBookingLogin.jsx', prerender: false },
     { path: '/events/event-booking/dashboard', page: 'Events/EventBooking/EventBookingDashboard.jsx', prerender: false },
     { path: '/events/event-booking/media', page: 'Events/EventBooking/EventBookingMedia.jsx', prerender: false },

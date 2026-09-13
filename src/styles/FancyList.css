@@ -34,7 +34,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: min(95%, 48rem);
     padding: calc(var(--fancy-list-gap) * 2) var(--fancy-list-gap);
     border: 0.125rem dashed var(--read-only-field-grey-color);
     border-radius: var(--fancy-list-item-radius);

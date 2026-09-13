@@ -11,6 +11,7 @@ const SCHOOL_CALENDARS = [
     { id: 'national-kg', label: { en: 'National KG', ar: 'روضة ناشونال' }, titleKey: 'events-pages.kg-calendars-pages.national-kg-calendar.title', path: '/events/national-kg-calendar' },
     { id: 'british-kg', label: { en: 'British KG', ar: 'روضة بريطاني' }, titleKey: 'events-pages.kg-calendars-pages.british-kg-calendar.title', path: '/events/british-kg-calendar' },
     { id: 'american-kg', label: { en: 'American KG', ar: 'روضة أمريكي' }, titleKey: 'events-pages.kg-calendars-pages.american-kg-calendar.title', path: '/events/american-kg-calendar' },
+    { id: 'playschool', label: { en: 'Playschool', ar: 'بلاي سكول' }, titleKey: 'events-pages.playschool-calendar-page.title', path: '/events/playschool-calendar' },
 ]
 
 const CALENDAR_LANGUAGES = ['en', 'ar']

@@ -88,6 +88,7 @@ try {
     global $PAGE_GATES_MANAGEMENT;
     global $BORROWING_HR_MANAGEMENT;
     global $BORROWING_ACCOUNTING_MANAGEMENT;
+    global $PLAYSCHOOL_CALENDAR_MANAGEMENT;
     global $JACK_OF_ALL_TRADES;
 
 
@@ -203,6 +204,7 @@ try {
         $NATIONAL_KG_CALENDAR_MANAGEMENT  => $academicCalendarsTile,
         $BRITISH_KG_CALENDAR_MANAGEMENT   => $academicCalendarsTile,
         $AMERICAN_KG_CALENDAR_MANAGEMENT  => $academicCalendarsTile,
+        $PLAYSCHOOL_CALENDAR_MANAGEMENT  => $academicCalendarsTile,
         $LIBRARY_MANAGEMENT => [
             [
                 "title" => "Library",

@@ -8,6 +8,7 @@ const ACADEMIC_CALENDARS = [
     'national-kg'  => ['en' => 'National KG',     'ar' => 'روضة ناشونال',   'path' => '/events/national-kg-calendar',   'permission' => '19'],
     'british-kg'   => ['en' => 'British KG',      'ar' => 'روضة بريطاني',   'path' => '/events/british-kg-calendar',    'permission' => '20'],
     'american-kg'  => ['en' => 'American KG',     'ar' => 'روضة أمريكي',    'path' => '/events/american-kg-calendar',   'permission' => '21'],
+    'playschool'   => ['en' => 'Playschool',      'ar' => 'بلاي سكول',        'path' => '/events/playschool-calendar',    'permission' => '29'],
 ];
 
 const ACADEMIC_CALENDARS_MASTER_PERMISSION = '15';
@@ -42,8 +43,7 @@ function academic_calendars_for_permissions($permissionLevels) {
 
     $levels = array_map('strval', (array)$permissionLevels);
 
-    if (in_array(ACADEMIC_CALENDARS_MASTER_PERMISSION, $levels, true)
-        || in_array((string)$JACK_OF_ALL_TRADES, $levels, true)) {
+    if (in_array(ACADEMIC_CALENDARS_MASTER_PERMISSION, $levels, true) || in_array((string)$JACK_OF_ALL_TRADES, $levels, true)) {
         return academic_calendar_keys();
     }
 

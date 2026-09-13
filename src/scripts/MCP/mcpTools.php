@@ -1,7 +1,7 @@
 <?php
 
 
-const MCP_CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'british-kg', 'american-kg'];
+const MCP_CALENDAR_IDS = ['national', 'british', 'american', 'national-kg', 'british-kg', 'american-kg', 'playschool'];
 const MCP_DEPARTMENT_KEYS = ['reception', 'student_affairs', 'accounting', 'admissions', 'early', 'national', 'british', 'american'];
 const MCP_PAGE_SECTIONS = ['general', 'admission', 'academics', 'students-life', 'events', 'gallery'];
 const MCP_STAFF_DEPARTMENT_KEYS = ['national', 'british', 'american', 'kindergarten'];
@@ -105,7 +105,7 @@ function mcp_tool_schemas(): array {
         ],
         'find_academic_events' => [
             'title' => 'Find academic events',
-            'description' => 'Searches the six school academic calendars. Dates in the result are epoch milliseconds in '
+            'description' => 'Searches the seven school academic calendars. Dates in the result are epoch milliseconds in '
                 . 'UTC. An empty result means nothing matched - do not invent dates.',
             'inputSchema' => [
                 'type' => 'object',

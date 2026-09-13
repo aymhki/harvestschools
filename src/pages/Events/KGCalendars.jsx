@@ -34,6 +34,15 @@ function KGCalendars() {
             titleInArabic: false,
             descriptionInArabic: false
         },
+        {
+            title: t("events-pages.options-page.playschool-calendar-option"),
+            image: "/images/EventsPages/Calendar1.png",
+            description: t("events-pages.options-page.playschool-calendar-option-description"),
+            link: "/events/playschool-calendar",
+            buttonText: t("common.select", {ns: 'common'}),
+            titleInArabic: false,
+            descriptionInArabic: false
+        }
     ]
 
 
@@ -46,7 +55,7 @@ function KGCalendars() {
           <meta name="robots" content="index, follow"/>
           <meta name="googlebot" content="index, follow"/>
 
-          <OptionsGrid title={t("events-pages.kg-calendars-pages.options-page.title")} titleInArabic={false} options={options}/>
+          <OptionsGrid title={t("events-pages.kg-calendars-pages.options-page.title")} titleInArabic={false} options={options} compact={true}/>
       </div>
   );
 }

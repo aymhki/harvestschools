@@ -78,8 +78,7 @@ function calendar_authorise($conn) {
         "code"     => 200,
         "levels"   => $levels,
         "calendars" => $allowed,
-        "isMaster" => in_array(ACADEMIC_CALENDARS_MASTER_PERMISSION, $levels, true)
-                      || in_array((string)$JACK_OF_ALL_TRADES, $levels, true),
+        "isMaster" => in_array(ACADEMIC_CALENDARS_MASTER_PERMISSION, $levels, true) || in_array((string)$JACK_OF_ALL_TRADES, $levels, true),
     ];
 }
 
