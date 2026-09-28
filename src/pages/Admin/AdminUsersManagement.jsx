@@ -412,6 +412,8 @@ function AdminUsersManagement({loggedInUserId, setRefreshCurrentUserData}) {
                    allowHideColumns={true}
                    allowSticky={true}
                    forceEnglishTable={true}
+                   allowSearch={true}
+                   searchPlaceholder={"Search Admin Users"}
                    defaultHiddenColumns={
                         [
                             'Permissions In Numbers'
