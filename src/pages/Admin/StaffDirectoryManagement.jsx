@@ -249,6 +249,10 @@ function StaffDirectoryManagement() {
         setDeleteError(null);
     };
 
+    const columnDataTypes = {
+        "date": ["Hire Date"],
+    }
+
     return (
         <>
 
@@ -262,7 +266,8 @@ function StaffDirectoryManagement() {
                        isLoading={isLoading}
                        sortConfigParam={{column: 0, direction: 'ascending'}}
                        defaultHiddenColumns={['Address', 'Birth Date', 'Graduation Year', 'National ID', 'Insurance Number', 'Notes', 'Basic Salary', 'Hidden']}
-                       filterableColumns={['Departments', 'Display', 'Public', 'Classification']}
+                       filterableColumns={['Departments', 'Display', 'Public', 'Classification', 'Hire Date']}
+                       dataTypes={columnDataTypes}
                        allowSearch={true}
                        searchPlaceholder={'Search employees'}
                        currencyColumns={['Basic Salary']}
