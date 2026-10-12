@@ -22,12 +22,12 @@ function Activities() {
         <meta name="robots" content="index, follow"/>
         <meta name="googlebot" content="index, follow"/>
 
-            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={servePublicAsset('/images/Gallery/Photos/HarvestAcademy/HarvestAcademy5.jpg', {root: GALLERY_MEDIA_ROOT})} darken={true}
+            <ParallaxScrollSection title={t("students-life-pages.activities-page.activities-page-title")} backgroundImage={servePublicAsset('photos/HarvestAcademy/HarvestAcademy4.jpg', {root: GALLERY_MEDIA_ROOT})} darken={true}
                                    divElements={[
                                        (
                                              <div className={'students-life-activities-page-content'} key={1}>
                                                  <p>
-                                                     {t("students-life-pages.activities-page.activities-page-description")} <span onClick={() => window.open('tel:+201062255862')}>{t("students-life-pages.activities-page.contact-number")}</span>
+                                                     {t("students-life-pages.activities-page.activities-page-description")} <span onClick={() => window.open('tel:+201007834546')}>{t("students-life-pages.activities-page.contact-number")}</span>
                                                  </p>
                                              </div>
                                        )
@@ -35,23 +35,23 @@ function Activities() {
                                    noParallax={false}
             />
 
-        <div className={'extreme-padding-container'}>
-            <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>
+        {/*<div className={'extreme-padding-container'}>*/}
+        {/*    <Table tableData={finalTableData} numCols={3} ignoreSideMarginsOnFixed={true}/>*/}
 
-            <h1>
-                {t("students-life-pages.activities-page.enroll-now")}
-            </h1>
+        {/*    <h1>*/}
+        {/*        {t("students-life-pages.activities-page.enroll-now")}*/}
+        {/*    </h1>*/}
 
-            <Form sendPdf={false} formKey={'harvest-academy'} formTitle={'Harvest Academy Enrollment'} fields={[
-                {id: 1, type: 'text', label: 'Student Name', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.student-name-field"), httpName: 'student-name', required: true, value: '', setValue: null, widthOfField: 3 },
-                {id: 2, type: 'tel', label: 'Contact Phone Number', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.contact-phone-number-field"), httpName: 'contact-phone-number', required: true, value: '', setValue: null, widthOfField: 3 },
-                {id: 3, type: 'date', label: 'Date of Birth', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.date-of-birth-field"),  httpName: 'dob', required: true, value: '', setValue: null, widthOfField: 3 , errorMsg: 'Please enter a valid date in the format YYYY-MM-DD' },
-                {id: 4, type: 'select', multiple: true, label: 'Select a Sport (You can select more than one)', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.select-a-sport-field"), httpName: 'sport', required: true, value: '', setValue: null, widthOfField: 1, choices: [t("students-life-pages.activities-page.enroll-now-form-fields.swimming-option"), t("students-life-pages.activities-page.enroll-now-form-fields.football-option"), t("students-life-pages.activities-page.enroll-now-form-fields.gymnastics-option"), t("students-life-pages.activities-page.enroll-now-form-fields.basketball-option")], labelOutside: true, defaultValue: [] },
+        {/*    <Form sendPdf={false} formKey={'harvest-academy'} formTitle={'Harvest Academy Enrollment'} fields={[*/}
+        {/*        {id: 1, type: 'text', label: 'Student Name', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.student-name-field"), httpName: 'student-name', required: true, value: '', setValue: null, widthOfField: 3 },*/}
+        {/*        {id: 2, type: 'tel', label: 'Contact Phone Number', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.contact-phone-number-field"), httpName: 'contact-phone-number', required: true, value: '', setValue: null, widthOfField: 3 },*/}
+        {/*        {id: 3, type: 'date', label: 'Date of Birth', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.date-of-birth-field"),  httpName: 'dob', required: true, value: '', setValue: null, widthOfField: 3 , errorMsg: 'Please enter a valid date in the format YYYY-MM-DD' },*/}
+        {/*        {id: 4, type: 'select', multiple: true, label: 'Select a Sport (You can select more than one)', displayLabel: t("students-life-pages.activities-page.enroll-now-form-fields.select-a-sport-field"), httpName: 'sport', required: true, value: '', setValue: null, widthOfField: 1, choices: [t("students-life-pages.activities-page.enroll-now-form-fields.swimming-option"), t("students-life-pages.activities-page.enroll-now-form-fields.football-option"), t("students-life-pages.activities-page.enroll-now-form-fields.gymnastics-option"), t("students-life-pages.activities-page.enroll-now-form-fields.basketball-option")], labelOutside: true, defaultValue: [] },*/}
 
-            ]} captchaLength={1} lang={'en'}/>
+        {/*    ]} captchaLength={1} lang={'en'}/>*/}
 
 
-        </div>
+        {/*</div>*/}
 
     </div>
   );
