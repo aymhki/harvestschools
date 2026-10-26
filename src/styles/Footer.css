@@ -166,11 +166,11 @@
     }
 
     .mobile-footer-chat-icon {
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        filter: grayscale(100%) invert(100%) hue-rotate(180deg) contrast(90%) brightness(95%);
     }
 
     .mobile-footer-call-icon {
-        filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+        filter: grayscale(100%) invert(100%) hue-rotate(180deg) contrast(90%) brightness(95%);
     }
 
     .footer {
@@ -183,11 +183,11 @@
 
     @media (hover: hover) {
         .mobile-footer-chat-icon:hover {
-            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+            filter: grayscale(100%) invert(100%) hue-rotate(180deg) contrast(90%) brightness(95%) drop-shadow(0 0 0.5rem var(--fb-white-color));
         }
 
         .mobile-footer-call-icon:hover {
-            filter: drop-shadow(0 0 0.5rem var(--fb-white-color));
+            filter: grayscale(100%) invert(100%) hue-rotate(180deg) contrast(90%) brightness(95%) drop-shadow(0 0 0.5rem var(--fb-white-color));
         }
     }
 

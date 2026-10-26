@@ -248,4 +248,8 @@
         filter: grayscale(100%) invert(100%) hue-rotate(180deg) contrast(90%) brightness(95%);
     }
 
+    .accreditation-photo.no-night-flip {
+        filter: none;
+    }
+
 }
