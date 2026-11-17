@@ -396,6 +396,8 @@ function AlumniLogin() {
 
             if (turnstileToken) {
                 signupFormData.append('cf-turnstile-response', turnstileToken);
+            } else if (formData.get('cf-turnstile-fallback')) {
+                signupFormData.append('cf-turnstile-fallback', '1');
             }
 
             const result = await submitAlumniSignup(signupFormData);

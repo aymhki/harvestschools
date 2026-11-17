@@ -173,12 +173,20 @@ const sessionDuration = sessionDurationInHours * 60 * 60 * 1000;
 const msgTimeout = 5000;
 
 let pendingTurnstileToken = '';
+let pendingTurnstileFallback = false;
 
-const setPendingTurnstileToken = (token) => {
+const setPendingTurnstileToken = (token, fallback = false) => {
     pendingTurnstileToken = typeof token === 'string' ? token : '';
+    pendingTurnstileFallback = fallback === true && pendingTurnstileToken === '';
 };
 
-const turnstileHeaders = () => (pendingTurnstileToken ? {'X-Turnstile-Token': pendingTurnstileToken} : {});
+const turnstileHeaders = () => {
+    if (pendingTurnstileToken) {
+        return {'X-Turnstile-Token': pendingTurnstileToken};
+    }
+
+    return pendingTurnstileFallback ? {'X-Turnstile-Fallback': '1'} : {};
+};
 
 const ARABIC_MARKS_REGEX = /[\u064B-\u065F\u0670\u0640]/g;
 
@@ -193,9 +201,12 @@ const normalizeArabicText = (text) => String(text)
 const schoolFoundedYear = 2016;
 const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-const TURNSTILE_SCRIPT_TIMEOUT_MS = 8000;
+const TURNSTILE_SCRIPT_TIMEOUT_MS = 20000;
 
 let turnstileScriptPromise = null;
+let turnstileScriptFailure = '';
+
+const getTurnstileScriptFailure = () => turnstileScriptFailure;
 
 const loadTurnstileScript = () => {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -210,10 +221,12 @@ const loadTurnstileScript = () => {
         return turnstileScriptPromise;
     }
 
+    turnstileScriptFailure = '';
+
     turnstileScriptPromise = new Promise((resolve) => {
         let settled = false;
 
-        const settle = (loaded) => {
+        const settle = (loaded, failure = '') => {
             if (settled) {
                 return;
             }
@@ -221,6 +234,7 @@ const loadTurnstileScript = () => {
             settled = true;
 
             if (!loaded) {
+                turnstileScriptFailure = failure || 'unknown error';
                 turnstileScriptPromise = null;
             }
 
@@ -228,16 +242,29 @@ const loadTurnstileScript = () => {
         };
 
         try {
-            const script = document.createElement('script');
-            script.src = TURNSTILE_SCRIPT_URL;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => settle(!!window.turnstile);
-            script.onerror = () => settle(false);
-            document.head.appendChild(script);
-            setTimeout(() => settle(!!window.turnstile), TURNSTILE_SCRIPT_TIMEOUT_MS);
-        } catch (ignored) {
-            settle(false);
+            let script = document.querySelector(`script[src="${TURNSTILE_SCRIPT_URL}"]`);
+
+            if (script && script.dataset.failed === 'true') {
+                script.remove();
+                script = null;
+            }
+
+            if (!script) {
+                script = document.createElement('script');
+                script.src = TURNSTILE_SCRIPT_URL;
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
+
+            script.addEventListener('load', () => settle(!!window.turnstile, 'the script loaded but Turnstile did not start'));
+            script.addEventListener('error', () => {
+                script.dataset.failed = 'true';
+                settle(false, 'the script could not be downloaded (network, firewall or a browser extension may be blocking challenges.cloudflare.com)');
+            });
+            setTimeout(() => settle(!!window.turnstile, `the script did not load within ${TURNSTILE_SCRIPT_TIMEOUT_MS / 1000} seconds`), TURNSTILE_SCRIPT_TIMEOUT_MS);
+        } catch (error) {
+            settle(false, error && error.message ? error.message : 'unexpected error');
         }
     });
 
@@ -704,6 +731,7 @@ export {
     TURNSTILE_SCRIPT_URL,
     TURNSTILE_SCRIPT_TIMEOUT_MS,
     loadTurnstileScript,
+    getTurnstileScriptFailure,
     isMobileApp,
     getQrCodeBaseUrl,
     useIsMobile

@@ -42,6 +42,15 @@ function turnstile_client_is_native() {
 }
 
 
+function turnstile_fallback_declared() {
+    if (($_SERVER['HTTP_X_TURNSTILE_FALLBACK'] ?? '') === '1') {
+        return true;
+    }
+
+    return ($_POST['cf-turnstile-fallback'] ?? '') === '1';
+}
+
+
 function turnstile_log_outcome($mode, $detail = '') {
     $endpoint = $_SERVER['SCRIPT_NAME'] ?? 'unknown';
 
@@ -53,6 +62,10 @@ function verify_turnstile_token_if_present($explicitToken, $required) {
     $token = turnstile_token_from_request($explicitToken);
 
     if ($token === '') {
+        if ($required && turnstile_fallback_declared()) {
+            return ['ok' => true, 'mode' => 'fallback'];
+        }
+
 //        turnstile_log_outcome($required ? 'missing' : 'fallback');
 
         return $required ? ['ok' => false, 'mode' => 'missing'] : ['ok' => true, 'mode' => 'fallback'];
