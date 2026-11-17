@@ -11,7 +11,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import {useFormCache} from "../services/General/UseFormCache.jsx";
 import {useLoadingWhile} from "../services/General/GlobalLoadingService.jsx";
-import {msgTimeout, turnstileSiteKey, loadTurnstileScript, setPendingTurnstileToken, ARABIC_MARKS_REGEX, normalizeArabicText} from "../services/General/GeneralUtils.jsx";
+import {msgTimeout, turnstileSiteKey, loadTurnstileScript, getTurnstileScriptFailure, setPendingTurnstileToken, ARABIC_MARKS_REGEX, normalizeArabicText} from "../services/General/GeneralUtils.jsx";
 import {submitFormRequest} from "../services/General/GeneralServices.jsx";
 import { useTranslation } from 'react-i18next';
 import {createPortal} from "react-dom";
@@ -144,6 +144,7 @@ function Form({
                   captchaLength = 1,
                   noInputFieldsCache,
                   noCaptcha,
+                  allowFallbackMode = false,
                   hasDifferentOnSubmitBehaviour,
                   differentOnSubmitBehaviour,
                   noClearOption,
@@ -283,6 +284,8 @@ function Form({
     const turnstileTokenRef = useRef('');
     const turnstileRetriedRef = useRef(false);
     const [turnstileStatus, setTurnstileStatus] = useState('pending');
+    const [turnstileError, setTurnstileError] = useState('');
+    const [turnstileLoadAttempt, setTurnstileLoadAttempt] = useState(0);
     const [refsVersion, setRefsVersion] = useState(0);
     const refsHaveBeenSet = refsVersion > 0;
     const [cacheHaveBeenLoaded, setCacheHaveBeenLoaded] = useState(false);
@@ -2513,6 +2516,12 @@ function Form({
         }
     };
 
+    const retryTurnstile = () => {
+        setTurnstileError('');
+        setTurnstileStatus('pending');
+        setTurnstileLoadAttempt((attempt) => attempt + 1);
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
 
@@ -2530,7 +2539,7 @@ function Form({
                     return;
                 }
             } else if (!turnstileTokenRef.current) {
-                setGeneralFormError(t('all-forms.human-verification-pending'));
+                setGeneralFormError(turnstileError || t('all-forms.human-verification-pending'));
                 setTimeout(() => {
                     setGeneralFormError('');
                 }, msgTimeout);
@@ -2717,11 +2726,15 @@ function Form({
             formData.append('formKey', formKey);
             formData.append('formTitle', formTitle);
 
+            const usingManualCaptchaFallback = !noCaptcha && allowFallbackMode && turnstileStatus === 'failed' && !turnstileTokenRef.current;
+
             if (!noCaptcha && turnstileTokenRef.current) {
                 formData.append('cf-turnstile-response', turnstileTokenRef.current);
+            } else if (usingManualCaptchaFallback) {
+                formData.append('cf-turnstile-fallback', '1');
             }
 
-            setPendingTurnstileToken(noCaptcha ? '' : turnstileTokenRef.current);
+            setPendingTurnstileToken(noCaptcha ? '' : turnstileTokenRef.current, usingManualCaptchaFallback);
 
             if (hasDifferentOnSubmitBehaviour && differentOnSubmitBehaviour) {
                 try {
@@ -2990,13 +3003,23 @@ function Form({
 
         let cancelled = false;
 
+        const failTurnstile = (message) => {
+            turnstileTokenRef.current = '';
+
+            if (allowFallbackMode) {
+                setTurnstileStatus('failed');
+            } else {
+                setTurnstileError(message);
+            }
+        };
+
         loadTurnstileScript().then((loaded) => {
             if (cancelled) {
                 return;
             }
 
             if (!loaded || !window.turnstile || typeof window.turnstile.render !== 'function' || !turnstileContainerRef.current) {
-                setTurnstileStatus('failed');
+                failTurnstile(`The human verification could not be loaded: ${getTurnstileScriptFailure() || 'Cloudflare Turnstile is unavailable'}.`);
                 return;
             }
 
@@ -3009,9 +3032,10 @@ function Form({
                     callback: (token) => {
                         turnstileTokenRef.current = token || '';
                         turnstileRetriedRef.current = false;
+                        setTurnstileError('');
                         setTurnstileStatus('ready');
                     },
-                    'error-callback': () => {
+                    'error-callback': (errorCode) => {
                         turnstileTokenRef.current = '';
 
                         const canReset = turnstileWidgetIdRef.current !== null
@@ -3019,7 +3043,7 @@ function Form({
                             && typeof window.turnstile.reset === 'function';
 
                         if (turnstileRetriedRef.current || !canReset) {
-                            setTurnstileStatus('failed');
+                            failTurnstile(`The human verification failed (Cloudflare error code ${errorCode || 'unknown'}).`);
 
                             return;
                         }
@@ -3028,13 +3052,12 @@ function Form({
 
                         try {
                             window.turnstile.reset(turnstileWidgetIdRef.current);
-                        } catch (ignored) {
-                            setTurnstileStatus('failed');
+                        } catch (resetError) {
+                            failTurnstile(`The human verification could not be restarted (${resetError && resetError.message ? resetError.message : 'unknown error'}).`);
                         }
                     },
                     'unsupported-callback': () => {
-                        turnstileTokenRef.current = '';
-                        setTurnstileStatus('failed');
+                        failTurnstile('The human verification is not supported by this browser.');
                     },
                     'expired-callback': () => {
                         turnstileTokenRef.current = '';
@@ -3042,8 +3065,8 @@ function Form({
                         if (turnstileWidgetIdRef.current !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
                             try {
                                 window.turnstile.reset(turnstileWidgetIdRef.current);
-                            } catch (ignored) {
-                                setTurnstileStatus('failed');
+                            } catch (resetError) {
+                                failTurnstile(`The human verification could not be restarted (${resetError && resetError.message ? resetError.message : 'unknown error'}).`);
                             }
                         }
                     },
@@ -3053,8 +3076,8 @@ function Form({
                 });
 
                 turnstileWidgetIdRef.current = widgetId;
-            } catch (ignored) {
-                setTurnstileStatus('failed');
+            } catch (renderError) {
+                failTurnstile(`The human verification could not be started (${renderError && renderError.message ? renderError.message : 'unknown error'}).`);
             }
         });
 
@@ -3073,7 +3096,7 @@ function Form({
             turnstileTokenRef.current = '';
             turnstileRetriedRef.current = false;
         };
-    }, [noCaptcha]);
+    }, [noCaptcha, allowFallbackMode, turnstileLoadAttempt]);
 
     const drawCaptcha = useCallback(() => {
         const canvas = captchaCanvasRef.current;
@@ -3255,6 +3278,27 @@ function Form({
                 <div className={`${fullMarginField ? 'turnstile-wrapper-with-full-margin' : 'turnstile-wrapper'}${turnstileStatus === 'failed' ? ' turnstile-wrapper-hidden' : ''}`}>
                     <div ref={turnstileContainerRef} className="turnstile-container"/>
                 </div>
+                {turnstileError && turnstileStatus !== 'failed' && (
+                    <div className={fullMarginField ? 'turnstile-wrapper-with-full-margin' : 'turnstile-wrapper'}>
+                        <p className="general-form-error" role="alert">
+                            {turnstileError}{' '}
+                            <span
+                                className="various-login-text-options"
+                                role="button"
+                                tabIndex={0}
+                                onClick={retryTurnstile}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        retryTurnstile();
+                                    }
+                                }}
+                            >
+                                Retry
+                            </span>
+                        </p>
+                    </div>
+                )}
                 {turnstileStatus === 'failed' && (
                     <>
                         {!easySimpleCaptcha && (
@@ -3584,6 +3628,7 @@ Form.propTypes = {
     captchaLength: PropTypes.number,
     noInputFieldsCache: PropTypes.bool,
     noCaptcha: PropTypes.bool,
+    allowFallbackMode: PropTypes.bool,
     hasDifferentOnSubmitBehaviour: PropTypes.bool,
     differentOnSubmitBehaviour: PropTypes.func,
     noClearOption: PropTypes.bool,
