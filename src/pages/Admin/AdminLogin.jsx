@@ -566,7 +566,7 @@ function AdminLogin() {
 
     const renderMfaScreen = () => (
         <div className={'admin-login-mfa'}>
-            <p className={'admin-login-mfa-title'}>Verify it&apos;s you</p>
+            <h4 className={'admin-login-mfa-title'}>Verify it&apos;s you</h4>
 
             {mfaMethod === 'passkey' ? (
                 <>
@@ -699,7 +699,7 @@ function AdminLogin() {
 
     const renderForgotScreen = () => (
         <div className={'admin-login-mfa'}>
-            <p className={'admin-login-mfa-title'}>Reset your password</p>
+            <h4 className={'admin-login-mfa-title'}>Reset your password</h4>
             <p className={'admin-login-mfa-instructions'}>
                 Enter your username. If you have a verification method set up, you can reset your password with it.
             </p>
@@ -753,7 +753,7 @@ function AdminLogin() {
 
     const renderResetScreen = () => (
         <div className={'admin-login-mfa'}>
-            <p className={'admin-login-mfa-title'}>Set a new password</p>
+            <h4 className={'admin-login-mfa-title'}>Set a new password</h4>
 
             <p className={'admin-login-mfa-instructions'}>
                 {mfaMethod === 'passkey'
